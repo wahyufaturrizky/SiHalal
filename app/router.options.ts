@@ -1,7 +1,7 @@
-import type { RouteRecordRaw } from 'vue-router'
 import type { RouterConfig } from '@nuxt/schema'
+import type { RouteRecordRaw } from 'vue-router'
 
-const emailRouteComponent = () => import('@/pages/apps/email/index.vue')
+// const emailRouteComponent = () => import('@/pages/apps/email/index.vue')
 
 // 👉 Redirects
 const redirects: RouteRecordRaw[] = [
@@ -40,43 +40,43 @@ const redirects: RouteRecordRaw[] = [
 
 const routes: RouteRecordRaw[] = [
   // Email filter
-  {
-    path: '/apps/email/filter/:filter',
-    name: 'apps-email-filter',
-    component: emailRouteComponent,
-    meta: {
-      navActiveLink: 'apps-email',
-      layoutWrapperClasses: 'layout-content-height-fixed',
-    },
-  },
+  // {
+  //   path: '/apps/email/filter/:filter',
+  //   name: 'apps-email-filter',
+  //   component: emailRouteComponent,
+  //   meta: {
+  //     navActiveLink: 'apps-email',
+  //     layoutWrapperClasses: 'layout-content-height-fixed',
+  //   },
+  // },
 
   // Email label
-  {
-    path: '/apps/email/label/:label',
-    name: 'apps-email-label',
-    component: emailRouteComponent,
-    meta: {
-      // contentClass: 'email-application',
-      navActiveLink: 'apps-email',
-      layoutWrapperClasses: 'layout-content-height-fixed',
-    },
-  },
+  // {
+  //   path: '/apps/email/label/:label',
+  //   name: 'apps-email-label',
+  //   component: emailRouteComponent,
+  //   meta: {
+  //     // contentClass: 'email-application',
+  //     navActiveLink: 'apps-email',
+  //     layoutWrapperClasses: 'layout-content-height-fixed',
+  //   },
+  // },
 
-  {
-    path: '/dashboards/logistics',
-    name: 'dashboards-logistics',
-    component: () => import('@/pages/apps/logistics/dashboard.vue'),
-  },
-  {
-    path: '/dashboards/academy',
-    name: 'dashboards-academy',
-    component: () => import('@/pages/apps/academy/dashboard.vue'),
-  },
-  {
-    path: '/apps/ecommerce/dashboard',
-    name: 'apps-ecommerce-dashboard',
-    component: () => import('@/pages/dashboards/ecommerce.vue'),
-  },
+  // {
+  //   path: '/dashboards/logistics',
+  //   name: 'dashboards-logistics',
+  //   component: () => import('@/pages/apps/logistics/dashboard.vue'),
+  // },
+  // {
+  //   path: '/dashboards/academy',
+  //   name: 'dashboards-academy',
+  //   component: () => import('@/pages/apps/academy/dashboard.vue'),
+  // },
+  // {
+  //   path: '/apps/ecommerce/dashboard',
+  //   name: 'apps-ecommerce-dashboard',
+  //   component: () => import('@/pages/dashboards/ecommerce.vue'),
+  // },
 ]
 
 // https://router.vuejs.org/api/interfaces/routeroptions.html
