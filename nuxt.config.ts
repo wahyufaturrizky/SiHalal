@@ -1,19 +1,21 @@
-import { fileURLToPath } from 'node:url'
-import svgLoader from 'vite-svg-loader'
-import vuetify from 'vite-plugin-vuetify'
+import { fileURLToPath } from "node:url";
+import vuetify from "vite-plugin-vuetify";
+import svgLoader from "vite-svg-loader";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   app: {
     head: {
-      titleTemplate: '%s - NuxtJS Admin Template',
-      title: 'Materialize',
+      titleTemplate: "%s - NuxtJS Admin Template",
+      title: "Materialize",
 
-      link: [{
-        rel: 'icon',
-        type: 'image/x-icon',
-        href: `${process.env.NUXT_APP_BASE_URL}/favicon.ico`,
-      }],
+      link: [
+        {
+          rel: "icon",
+          type: "image/x-icon",
+          href: `${process.env.NUXT_APP_BASE_URL}/favicon.ico`,
+        },
+      ],
     },
   },
 
@@ -22,9 +24,9 @@ export default defineNuxtConfig({
   },
 
   css: [
-    '@core/scss/template/index.scss',
-    '@styles/styles.scss',
-    '@/plugins/iconify/icons.css',
+    "@core/scss/template/index.scss",
+    "@styles/styles.scss",
+    "@/plugins/iconify/icons.css",
   ],
 
   /*
@@ -33,47 +35,49 @@ export default defineNuxtConfig({
   */
   runtimeConfig: {
     // Private keys are only available on the server
-    AUTH_ORIGIN: process.env.AUTH_ORIGIN,
-    AUTH_SECRET: process.env.AUTH_SECRET,
+    authOrigin: "http://localhost:3000",
+    authSecret: "localsecret",
 
     // Public keys that are exposed to the client.
     public: {
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
+      apiBaseUrl: "http://localhost:3000/api",
     },
   },
   components: {
-    dirs: [{
-      path: '@/@core/components',
-      pathPrefix: false,
-    }, {
-      path: '@/views/demos',
-      pathPrefix: false,
-    }, {
-      path: '~/components/global',
-      global: true,
-    }, {
-      path: '~/components',
-      pathPrefix: false,
-    }],
+    dirs: [
+      {
+        path: "@/@core/components",
+        pathPrefix: false,
+      },
+      ,
+      {
+        path: "~/components/global",
+        global: true,
+      },
+      {
+        path: "~/components",
+        pathPrefix: false,
+      },
+    ],
   },
 
   auth: {
-    baseURL: process.env.AUTH_ORIGIN,
+    baseURL: process.env.NUXT_AUTH_ORIGIN,
     globalAppMiddleware: false,
 
     provider: {
-      type: 'authjs',
+      type: "authjs",
     },
   },
 
   plugins: [
-    '@/plugins/casl/index.ts',
-    '@/plugins/vuetify/index.ts',
-    '@/plugins/iconify/index.ts',
+    "@/plugins/casl/index.ts",
+    "@/plugins/vuetify/index.ts",
+    "@/plugins/iconify/index.ts",
   ],
 
   imports: {
-    dirs: ['./@core/utils', './@core/composable/', './plugins/*/composables/*'],
+    dirs: ["./@core/utils", "./@core/composable/", "./plugins/*/composables/*"],
   },
 
   hooks: {},
@@ -86,17 +90,17 @@ export default defineNuxtConfig({
     tsConfig: {
       compilerOptions: {
         paths: {
-          '@/*': ['../*'],
-          '@themeConfig': ['../themeConfig.ts'],
-          '@layouts/*': ['../@layouts/*'],
-          '@layouts': ['../@layouts'],
-          '@core/*': ['../@core/*'],
-          '@core': ['../@core'],
-          '@images/*': ['../assets/images/*'],
-          '@styles/*': ['../assets/styles/*'],
-          '@validators': ['../@core/utils/validators'],
-          '@db/*': ['../server/fake-db/*'],
-          '@api-utils/*': ['../server/utils/*'],
+          "@/*": ["../*"],
+          "@themeConfig": ["../themeConfig.ts"],
+          "@layouts/*": ["../@layouts/*"],
+          "@layouts": ["../@layouts"],
+          "@core/*": ["../@core/*"],
+          "@core": ["../@core"],
+          "@images/*": ["../assets/images/*"],
+          "@styles/*": ["../assets/styles/*"],
+          "@validators": ["../@core/utils/validators"],
+          "@db/*": ["../server/fake-db/*"],
+          "@api-utils/*": ["../server/utils/*"],
         },
       },
     },
@@ -110,24 +114,31 @@ export default defineNuxtConfig({
 
   vue: {
     compilerOptions: {
-      isCustomElement: tag => tag === 'swiper-container' || tag === 'swiper-slide',
+      isCustomElement: (tag) =>
+        tag === "swiper-container" || tag === "swiper-slide",
     },
   },
 
   vite: {
-    define: { 'process.env': {} },
+    define: { "process.env": {} },
 
     resolve: {
       alias: {
-        '@': fileURLToPath(new URL('.', import.meta.url)),
-        '@themeConfig': fileURLToPath(new URL('./themeConfig.ts', import.meta.url)),
-        '@core': fileURLToPath(new URL('./@core', import.meta.url)),
-        '@layouts': fileURLToPath(new URL('./@layouts', import.meta.url)),
-        '@images': fileURLToPath(new URL('./assets/images/', import.meta.url)),
-        '@styles': fileURLToPath(new URL('./assets/styles/', import.meta.url)),
-        '@configured-variables': fileURLToPath(new URL('./assets/styles/variables/_template.scss', import.meta.url)),
-        '@db': fileURLToPath(new URL('./server/fake-db/', import.meta.url)),
-        '@api-utils': fileURLToPath(new URL('./server/utils/', import.meta.url)),
+        "@": fileURLToPath(new URL(".", import.meta.url)),
+        "@themeConfig": fileURLToPath(
+          new URL("./themeConfig.ts", import.meta.url)
+        ),
+        "@core": fileURLToPath(new URL("./@core", import.meta.url)),
+        "@layouts": fileURLToPath(new URL("./@layouts", import.meta.url)),
+        "@images": fileURLToPath(new URL("./assets/images/", import.meta.url)),
+        "@styles": fileURLToPath(new URL("./assets/styles/", import.meta.url)),
+        "@configured-variables": fileURLToPath(
+          new URL("./assets/styles/variables/_template.scss", import.meta.url)
+        ),
+        "@db": fileURLToPath(new URL("./server/fake-db/", import.meta.url)),
+        "@api-utils": fileURLToPath(
+          new URL("./server/utils/", import.meta.url)
+        ),
       },
     },
 
@@ -136,35 +147,33 @@ export default defineNuxtConfig({
     },
 
     optimizeDeps: {
-      exclude: ['vuetify'],
-      entries: [
-        './**/*.vue',
-      ],
+      exclude: ["vuetify"],
+      entries: ["./**/*.vue"],
     },
 
     plugins: [
       svgLoader(),
       vuetify({
         styles: {
-          configFile: 'assets/styles/variables/_vuetify.scss',
+          configFile: "assets/styles/variables/_vuetify.scss",
         },
       }),
     ],
   },
 
   build: {
-    transpile: ['vuetify'],
+    transpile: ["vuetify"],
   },
 
   i18n: {
-    vueI18n: 'i18n.config.ts',
+    vueI18n: "i18n.config.ts",
   },
 
   modules: [
-    '@vueuse/nuxt',
-    '@nuxtjs/i18n',
-    '@nuxtjs/device',
-    '@sidebase/nuxt-auth',
-    '@pinia/nuxt',
+    "@vueuse/nuxt",
+    "@nuxtjs/i18n",
+    "@nuxtjs/device",
+    "@sidebase/nuxt-auth",
+    "@pinia/nuxt",
   ],
-})
+});
