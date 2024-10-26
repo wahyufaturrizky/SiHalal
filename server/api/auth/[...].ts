@@ -20,7 +20,7 @@ export default NuxtAuthHandler({
       credentials: {}, // Object is required but can be left empty.
       async authorize(credentials: any) {
         const { user } = await $fetch<any>(
-          `${useRuntimeConfig().public.apiBaseUrl}/login/`,
+          `${runtimeConfig.public.apiBaseUrl}/login/`,
           {
             method: "POST",
             body: JSON.stringify(credentials),

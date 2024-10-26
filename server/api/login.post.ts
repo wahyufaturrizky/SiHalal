@@ -1,34 +1,37 @@
-import { db } from '@/server/fake-db/auth'
+import { db } from "@/server/fake-db/auth";
 
-export default defineEventHandler(async event => {
-  const { email, password } = await readBody(event)
+export default defineEventHandler(async (event) => {
+  console.log(event);
+  const { email, password } = await readBody(event);
 
   if (!email || !password) {
     throw createError({
       statusCode: 403,
-      statusMessage: 'Email and Password is required to login',
+      statusMessage: "Email and Password is required to login",
       data: {
-        email: ['Email and Password is required to login'],
+        email: ["Email and Password is required to login"],
       },
-    })
+    });
   }
 
-  const dbUser = db.users.find(u => u.email === email && u.password === password)
+  const dbUser = db.users.find(
+    (u) => u.email === email && u.password === password
+  );
 
   if (!dbUser) {
     throw createError({
       statusCode: 403,
-      statusMessage: 'Invalid email or password',
+      statusMessage: "Invalid email or password",
       data: {
-        email: ['Invalid email or password'],
+        email: ["Invalid email or password"],
       },
-    })
+    });
   }
 
   // ℹ️ Don't send password in response
-  const { password: _, ...user } = dbUser
+  const { password: _, ...user } = dbUser;
 
   return {
     user,
-  }
-})
+  };
+});

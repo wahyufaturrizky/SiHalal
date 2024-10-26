@@ -13,7 +13,7 @@ export default defineNuxtConfig({
         {
           rel: "icon",
           type: "image/x-icon",
-          href: `${process.env.NUXT_APP_BASE_URL}/favicon.ico`,
+          href: `${process.env.NUXT_PUBLIC_APP_BASE_URL}/favicon.ico`,
         },
       ],
     },
@@ -41,6 +41,7 @@ export default defineNuxtConfig({
     // Public keys that are exposed to the client.
     public: {
       apiBaseUrl: "http://localhost:3000/api",
+      appBaseUrl: "localhost:3000",
     },
   },
   components: {
