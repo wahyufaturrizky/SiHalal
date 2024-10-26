@@ -17,24 +17,12 @@ const redirects: RouteRecordRaw[] = [
         const userRole = sessionData.value?.user.role
 
         if (userRole === 'admin')
-          return { name: 'dashboards-crm' }
-        if (userRole === 'client')
-          return { name: 'access-control' }
+          return { name: 'index' }
 
         return { name: 'login', query: to.query }
       },
     },
     component: h('div'),
-  },
-  {
-    path: '/pages/user-profile',
-    name: 'pages-user-profile',
-    redirect: () => ({ name: 'pages-user-profile-tab', params: { tab: 'profile' } }),
-  },
-  {
-    path: '/pages/account-settings',
-    name: 'pages-account-settings',
-    redirect: () => ({ name: 'pages-account-settings-tab', params: { tab: 'account' } }),
   },
 ]
 
@@ -61,7 +49,6 @@ const routes: RouteRecordRaw[] = [
   //     layoutWrapperClasses: 'layout-content-height-fixed',
   //   },
   // },
-
   // {
   //   path: '/dashboards/logistics',
   //   name: 'dashboards-logistics',
@@ -81,11 +68,7 @@ const routes: RouteRecordRaw[] = [
 
 // https://router.vuejs.org/api/interfaces/routeroptions.html
 export default <RouterConfig>{
-  routes: scannedRoutes => [
-    ...redirects,
-    ...routes,
-    ...scannedRoutes,
-  ],
+  routes: scannedRoutes => [...redirects, ...routes, ...scannedRoutes],
   scrollBehaviorType: 'smooth',
   scrollBehavior(to) {
     if (to.hash)

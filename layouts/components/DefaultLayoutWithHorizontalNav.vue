@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import navItems from '@/navigation/horizontal'
+import navItems from '@/navigation/index'
 
 import { themeConfig } from '@themeConfig'
 
@@ -16,7 +16,7 @@ import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 </script>
 
 <template>
-  <HorizontalNavLayout :nav-items="navItems">
+  <HorizontalNavLayout :nav-items="navItems.horizontal">
     <!-- 👉 navbar -->
     <template #navbar>
       <NuxtLink

@@ -1,9 +1,9 @@
-import { ensurePrefix } from '@antfu/utils'
+import { ensurePrefix } from "@antfu/utils";
 
 export const getPublicUrl = (path: string) => {
-  const baseUrl = process.env.NUXT_APP_BASE_URL ?? ''
+  const baseUrl = useRuntimeConfig().public.apiBaseUrl ?? "";
 
-  const pathWithBaseUrl = `${baseUrl}${path}`
+  const pathWithBaseUrl = `${baseUrl}${path}`;
 
-  return `${ensurePrefix('/', pathWithBaseUrl)}`.replaceAll('//', '/')
-}
+  return `${ensurePrefix("/", pathWithBaseUrl)}`.replaceAll("//", "/");
+};
