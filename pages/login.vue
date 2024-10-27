@@ -92,7 +92,7 @@ async function login() {
 }
 const captchaError = useState("captchaError", () => false);
 const onSubmit = async () => {
-  const captchaResponse = await $fetch("/_turnstile/validate", {
+  const captchaResponse = await $fetch("/api/validateTurnstile", {
     method: "POST",
     body: { token: turnstile.value },
   });
