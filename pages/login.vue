@@ -1,169 +1,144 @@
 <script setup lang="ts">
-import type { User } from 'next-auth'
-import type { NuxtError } from 'nuxt/app'
+import type { User } from "next-auth";
+import type { NuxtError } from "nuxt/app";
 
-import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
-import { themeConfig } from '@themeConfig'
-import { VForm } from 'vuetify/components/VForm'
+import { themeConfig } from "@themeConfig";
+import { VForm } from "vuetify/components/VForm";
 
-import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
-import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
-import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
-import authV2LoginIllustrationLight from '@images/pages/auth-v2-login-illustration-light.png'
-import authV2LoginMaskDark from '@images/pages/auth-v2-login-mask-dark.png'
-import authV2LoginMaskLight from '@images/pages/auth-v2-login-mask-light.png'
-import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
+import { VNodeRenderer } from "@/@layouts/components/VNodeRenderer";
+import bseImage from "@images/bse.png";
+import NoImage from "@images/no-image.png";
+import ossImage from "@images/oss.png";
+import authV2LoginIllustrationBorderedDark from "@images/pages/auth-v2-login-illustration-bordered-dark.png";
+import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-illustration-bordered-light.png";
+import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
+import authV2LoginMaskDark from "@images/pages/auth-v2-login-mask-dark.png";
+import authV2LoginMaskLight from "@images/pages/auth-v2-login-mask-light.png";
+import { useDisplay } from "vuetify";
 
-const { signIn, data: sessionData } = useAuth()
+const { signIn, data: sessionData } = useAuth();
+const { mdAndUp } = useDisplay();
 
 const authThemeImg = useGenerateImageVariant(
-  authV2LoginIllustrationLight,
+  NoImage,
   authV2LoginIllustrationDark,
   authV2LoginIllustrationBorderedLight,
   authV2LoginIllustrationBorderedDark,
-  true)
+  true
+);
 
-const authThemeMask = useGenerateImageVariant(authV2LoginMaskLight, authV2LoginMaskDark)
+const authThemeMask = useGenerateImageVariant(
+  authV2LoginMaskLight,
+  authV2LoginMaskDark
+);
 
 definePageMeta({
-  layout: 'blank',
+  layout: "blank",
   unauthenticatedOnly: true,
+});
 
-})
+const isPasswordVisible = ref(false);
 
-const isPasswordVisible = ref(false)
+const route = useRoute();
 
-const route = useRoute()
-
-const ability = useAbility()
+const ability = useAbility();
 
 const errors = ref<Record<string, string | undefined>>({
   email: undefined,
   password: undefined,
-})
-
-const refVForm = ref<VForm>()
+});
+const turnstile = ref();
+const refVForm = ref<VForm>();
 
 const credentials = ref({
-  email: 'admin@demo.com',
-  password: 'admin',
-})
+  email: "admin@demo.com",
+  password: "admin",
+});
 
-const rememberMe = ref(false)
+const rememberMe = ref(false);
 
 async function login() {
-  const response = await signIn('credentials', {
-    callbackUrl: '/',
+  const response = await signIn("credentials", {
+    callbackUrl: "/",
     redirect: false,
     ...credentials.value,
-  })
+  });
 
   // If error is not null => Error is occurred
   if (response && response.error) {
-    const apiStringifiedError = response.error
-    const apiError: NuxtError = JSON.parse(apiStringifiedError)
+    const apiStringifiedError = response.error;
+    const apiError: NuxtError = JSON.parse(apiStringifiedError);
 
-    errors.value = apiError.data as Record<string, string | undefined>
+    errors.value = apiError.data as Record<string, string | undefined>;
 
     // If err => Don't execute further
-    return
+    return;
   }
 
   // Reset error on successful login
-  errors.value = {}
+  errors.value = {};
 
   // Update user abilities
-  const { user } = sessionData.value!
+  const { user } = sessionData.value!;
 
-  useCookie<Partial<User>>('userData').value = user
+  useCookie<Partial<User>>("userData").value = user;
 
   // Save user abilities in cookie so we can retrieve it back on refresh
-  useCookie<User['abilityRules']>('userAbilityRules').value = user.abilityRules
+  useCookie<User["abilityRules"]>("userAbilityRules").value = user.abilityRules;
 
-  ability.update(user.abilityRules ?? [])
+  ability.update(user.abilityRules ?? []);
 
-  navigateTo(route.query.to ? String(route.query.to) : '/', { replace: true })
+  navigateTo(route.query.to ? String(route.query.to) : "/", { replace: true });
 }
-
-const onSubmit = () => {
-  refVForm.value?.validate()
-    .then(({ valid: isValid }) => {
-      if (isValid)
-        login()
-    })
-}
+const captchaError = useState("captchaError", () => false);
+const onSubmit = async () => {
+  const captchaResponse = await $fetch("/_turnstile/validate", {
+    method: "POST",
+    body: { token: turnstile.value },
+  });
+  if (!captchaResponse.success) {
+    captchaError.value = true;
+    return;
+  }
+  refVForm.value?.validate().then(({ valid: isValid }) => {
+    if (isValid) login();
+  });
+};
 </script>
 
 <template>
-  <NuxtLink to="/">
-    <div class="auth-logo app-logo">
-      <VNodeRenderer :nodes="themeConfig.app.logo" />
-      <h1 class="app-logo-title">
-        {{ themeConfig.app.title }}
-      </h1>
-    </div>
-  </NuxtLink>
+  <VSnackbar v-model="captchaError" location="top" color="error">
+    Captcha failed
+  </VSnackbar>
 
-  <VRow
-    no-gutters
-    class="auth-wrapper"
-  >
-    <VCol
-      md="8"
-      class="d-none d-md-flex align-center justify-center position-relative"
-    >
-      <div class="d-flex align-center justify-center pa-10">
-        <img
-          :src="authThemeImg"
-          class="auth-illustration w-100"
-          alt="auth-illustration"
-        >
-      </div>
-      <VImg
-        :src="authThemeMask"
-        class="d-none d-md-flex auth-footer-mask"
-        alt="auth-mask"
-      />
-    </VCol>
-
+  <VRow no-gutters class="auth-wrapper">
     <VCol
       cols="12"
-      md="4"
+      md="6"
       class="auth-card-v2 d-flex align-center justify-center"
-      style="background-color: rgb(var(--v-theme-surface));"
     >
-      <VCard
-        flat
-        :max-width="500"
-        class="mt-12 mt-sm-0 pa-5 pa-lg-7"
-      >
+      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
+        <v-card-text>
+          <NuxtLink to="/">
+            <div class="auth-logo app-logo">
+              <VNodeRenderer :nodes="themeConfig.app.logo" />
+            </div>
+          </NuxtLink>
+        </v-card-text>
         <VCardText>
           <h4 class="text-h4 mb-1">
-            Welcome to <span class="text-capitalize">{{ themeConfig.app.title }}!</span> 👋🏻
+            Selamat Datang di
+            <span class="text-capitalize" color="#652672">{{
+              themeConfig.app.title
+            }}</span>
           </h4>
           <p class="mb-0">
-            Please sign-in to your account and start the adventure
+            Login untuk mengakses fitur pada web {{ themeConfig.app.title }}
           </p>
-        </VCardText>
-        <VCardText>
-          <VAlert
-            color="primary"
-            variant="tonal"
-          >
-            <p class="text-caption mb-2 text-primary">
-              Admin Email: <strong>admin@demo.com</strong> / Pass: <strong>admin</strong>
-            </p>
-            <p class="text-caption mb-0 text-primary">
-              Client Email: <strong>client@demo.com</strong> / Pass: <strong>client</strong>
-            </p>
-          </VAlert>
         </VCardText>
 
         <VCardText>
-          <VForm
-            ref="refVForm"
-            @submit.prevent="onSubmit"
-          >
+          <VForm ref="refVForm" @submit.prevent="onSubmit">
             <VRow>
               <!-- email -->
               <VCol cols="12">
@@ -187,15 +162,16 @@ const onSubmit = () => {
                   :rules="[requiredValidator]"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   :error-messages="errors.password"
-                  :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
+                  :append-inner-icon="
+                    isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'
+                  "
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
 
-                <div class="d-flex align-center flex-wrap justify-space-between my-6 gap-x-2">
-                  <VCheckbox
-                    v-model="rememberMe"
-                    label="Remember me"
-                  />
+                <div
+                  class="d-flex align-center flex-wrap justify-space-between my-6 gap-x-2"
+                >
+                  <VCheckbox v-model="rememberMe" label="Remember me" />
                   <!-- <NuxtLink
                     class="text-primary"
                     :to="{ name: 'forgot-password' }"
@@ -203,55 +179,71 @@ const onSubmit = () => {
                     Forgot Password?
                   </NuxtLink> -->
                 </div>
+                <div class="my-6 gap-x-2">
+                  <NuxtTurnstile v-model="turnstile" class="text-center" />
+                </div>
 
-                <VBtn
-                  block
-                  type="submit"
-                >
-                  Login
-                </VBtn>
+                <VBtn block type="submit"> Login </VBtn>
               </VCol>
 
               <!-- create account -->
-              <VCol
-                cols="12"
-                class="text-body-1 text-center"
-              >
-                <span class="d-inline-block">
-                  New on our platform?
-                </span>
-                <!-- <NuxtLink
+              <VCol cols="12" class="text-body-1 text-center">
+                <span class="d-inline-block"> Belum punya akun ?</span>
+                <NuxtLink
                   class="text-primary ms-1 d-inline-block text-body-1"
-                  :to="{ name: 'register' }"
+                  :to="{ name: 'index' }"
                 >
-                  Create an account
-                </NuxtLink> -->
+                  Daftar di sini
+                </NuxtLink>
               </VCol>
 
-              <VCol
-                cols="12"
-                class="d-flex align-center"
-              >
+              <!-- <VCol cols="12" class="d-flex align-center">
                 <VDivider />
                 <span class="mx-4 text-high-emphasis">or</span>
                 <VDivider />
-              </VCol>
+              </VCol> -->
 
               <!-- auth providers -->
-              <VCol
-                cols="12"
-                class="text-center"
-              >
+              <!-- <VCol cols="12" class="text-center">
                 <AuthProvider />
-              </VCol>
+              </VCol> -->
             </VRow>
           </VForm>
         </VCardText>
+        <VCardText>
+          <VCol cols="12" class="text-body-1 text-center">
+            <span class="d-inline-block">Terhubung Ke</span>
+          </VCol>
+          <VRow align="center" justify="center">
+            <VCol cols="12" md="auto" class="d-flex align-center">
+              <VImg :src="ossImage" width="100" height="48" />
+            </VCol>
+            <VCol cols="12" md="auto" class="d-flex align-center">
+              <VImg :src="bseImage" width="100" height="48" />
+            </VCol>
+          </VRow>
+        </VCardText>
       </VCard>
+    </VCol>
+    <VCol
+      v-if="mdAndUp"
+      cols="12"
+      md="6"
+      class="auth-card-v2 d-flex align-center justify-center"
+    >
+      <VImg :src="NoImage" />
     </VCol>
   </VRow>
 </template>
 
 <style lang="scss">
 @use "@core/scss/template/pages/page-auth.scss";
+.auth-logo {
+  div {
+    svg {
+      height: 60px;
+      width: 33px;
+    }
+  }
+}
 </style>

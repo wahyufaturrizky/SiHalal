@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       titleTemplate: "%s - NuxtJS Admin Template",
-      title: "Materialize",
+      title: "SiHalal",
 
       link: [
         {
@@ -43,6 +43,9 @@ export default defineNuxtConfig({
       apiBaseUrl: "http://localhost:3000/api",
       appBaseUrl: "localhost:3000",
     },
+    turnstile : {
+    secretKey : ''
+    }
   },
   components: {
     dirs: [
@@ -170,11 +173,9 @@ export default defineNuxtConfig({
     vueI18n: "i18n.config.ts",
   },
 
-  modules: [
-    "@vueuse/nuxt",
-    "@nuxtjs/i18n",
-    "@nuxtjs/device",
-    "@sidebase/nuxt-auth",
-    "@pinia/nuxt",
-  ],
+  modules: ["@vueuse/nuxt", "@nuxtjs/i18n", "@nuxtjs/device", "@sidebase/nuxt-auth", "@pinia/nuxt", "@nuxtjs/turnstile"],
+  turnstile : {
+    siteKey : '1x00000000000000000000AA',
+    addValidateEndpoint: true
+  }
 });
