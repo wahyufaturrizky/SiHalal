@@ -1,14 +1,11 @@
 FROM node:20.18.0-slim as builder
 WORKDIR /app
 ARG BUILD_ENV
-COPY package*.json ./
-COPY pnpm-lock.yaml ./
+COPY . .
 RUN npm install -g pnpm
 RUN pnpm install
 
-COPY . .
-
-RUN pnpm run build:${BUILD_ENV}
+RUN pnpm run build
 
 FROM node:20.18.0-slim
 

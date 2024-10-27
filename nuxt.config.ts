@@ -13,7 +13,7 @@ export default defineNuxtConfig({
         {
           rel: "icon",
           type: "image/x-icon",
-          href: `${process.env.NUXT_PUBLIC_APP_BASE_URL}/favicon.ico`,
+          href: `/favicon.ico`,
         },
       ],
     },
@@ -35,16 +35,15 @@ export default defineNuxtConfig({
   */
   runtimeConfig: {
     // Private keys are only available on the server
-    authOrigin: "http://localhost:3000",
-    authSecret: "localsecret",
+    authSecret: process.env.NUXT_AUTH_SECRET || "",
 
     // Public keys that are exposed to the client.
     public: {
-      apiBaseUrl: "http://localhost:3000/api",
-      appBaseUrl: "localhost:3000",
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || "",
+      appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || "",
     },
     turnstile : {
-    secretKey : ''
+    secretKey : process.env.NUXT_TURNSTILE_SECRET_KEY || ''
     }
   },
   components: {
@@ -66,7 +65,7 @@ export default defineNuxtConfig({
   },
 
   auth: {
-    baseURL: process.env.NUXT_AUTH_ORIGIN,
+    baseURL: process.env.AUTH_ORIGIN,
     globalAppMiddleware: false,
 
     provider: {
@@ -176,6 +175,5 @@ export default defineNuxtConfig({
   modules: ["@vueuse/nuxt", "@nuxtjs/i18n", "@nuxtjs/device", "@sidebase/nuxt-auth", "@pinia/nuxt", "@nuxtjs/turnstile"],
   turnstile : {
     siteKey : '1x00000000000000000000AA',
-    addValidateEndpoint: true
   }
 });
