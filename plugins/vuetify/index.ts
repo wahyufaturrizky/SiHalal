@@ -1,10 +1,10 @@
 import { deepMerge } from '@antfu/utils'
 
+import '@mdi/font/css/materialdesignicons.min.css'
 import { createVuetify } from 'vuetify'
 import { VBtn } from 'vuetify/components/VBtn'
 import { createVueI18nAdapter } from 'vuetify/locale/adapters/vue-i18n'
 import defaults from './defaults'
-import { icons } from './icons'
 import { staticPrimaryColor, staticPrimaryDarkenColor, themes } from './theme'
 import { themeConfig } from '@themeConfig'
 
@@ -43,7 +43,10 @@ export default defineNuxtPlugin(nuxtApp => {
       IconBtn: VBtn,
     },
     defaults,
-    icons,
+
+    icons: {
+      defaultSet: 'mdi', // This is already the default value - only for display purposes
+    },
     theme: optionTheme,
     locale: { adapter: createVueI18nAdapter({ i18n, useI18n }) },
   })

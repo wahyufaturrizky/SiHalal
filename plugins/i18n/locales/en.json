@@ -1,8 +1,13 @@
 {
   "dashboard": "Dashboard",
   "registrasi_sh": "Registrasi SH",
-  "sh_dalam_negeri": "SH Dalam Negeri",
-  "pengajuan_reguler": "Pengajuan Reguler",
+  "Sertifikasi": "Certification",
+  "pengajuan_reguler": "Regular Submission",
+  "tagihan_jatuh_tempo": "Due Date Invoice",
+  "tagihan_invoice": "Invoice",
+  "manajemen_pengguna": "User Management",
+  "uam_role": "Role",
+  "uam_user": "User",
   "Error": "Error",
   "$vuetify": {
     "badge": "Badge",
