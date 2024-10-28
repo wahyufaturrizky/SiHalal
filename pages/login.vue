@@ -5,6 +5,7 @@ import type { NuxtError } from "nuxt/app";
 import { themeConfig } from "@themeConfig";
 import { VForm } from "vuetify/components/VForm";
 
+import { emailValidator, requiredValidator } from "#imports";
 import { VNodeRenderer } from "@/@layouts/components/VNodeRenderer";
 import bseImage from "@images/bse.png";
 import NoImage from "@images/no-image.png";
@@ -37,7 +38,8 @@ definePageMeta({
   unauthenticatedOnly: true,
 });
 
-const isPasswordVisible = ref(false);
+const isPasswordVisible = useState("isPasswordVisible", () => false);
+const isDisabledSubmit = useState("isDisabledSubmit", () => true);
 
 const route = useRoute();
 
@@ -47,7 +49,7 @@ const errors = ref<Record<string, string | undefined>>({
   email: undefined,
   password: undefined,
 });
-const turnstile = ref();
+const turnstile = useState("turnstile");
 const refVForm = ref<VForm>();
 
 const credentials = ref({
@@ -55,7 +57,7 @@ const credentials = ref({
   password: "admin",
 });
 
-const rememberMe = ref(false);
+const rememberMe = useState("rememberMe", () => false);
 
 async function login() {
   const response = await signIn("credentials", {
@@ -92,18 +94,21 @@ async function login() {
 }
 const captchaError = useState("captchaError", () => false);
 const onSubmit = async () => {
-  const captchaResponse = await $fetch("/api/validateTurnstile", {
-    method: "POST",
-    body: { token: turnstile.value },
-  });
-  if (!captchaResponse.success) {
-    captchaError.value = true;
-    return;
-  }
   refVForm.value?.validate().then(({ valid: isValid }) => {
     if (isValid) login();
   });
 };
+watch(turnstile, async (newValue, oldValue) => {
+  console.log(newValue);
+  const captchaResponse = await $fetch("/api/validateTurnstile", {
+    method: "POST",
+    body: { token: newValue },
+  });
+  if (!captchaResponse.success) {
+    captchaError.value = true;
+  }
+  isDisabledSubmit.value = false;
+});
 </script>
 
 <template>
@@ -115,7 +120,7 @@ const onSubmit = async () => {
     <VCol
       cols="12"
       md="6"
-      class="auth-card-v2 d-flex align-center justify-center"
+      class="auth-card-v2 d-flex align-center justify-center bg-white"
     >
       <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
         <v-card-text>
@@ -183,7 +188,9 @@ const onSubmit = async () => {
                   <NuxtTurnstile v-model="turnstile" class="text-center" />
                 </div>
 
-                <VBtn block type="submit"> Login </VBtn>
+                <VBtn block type="submit" :disabled="isDisabledSubmit">
+                  Login
+                </VBtn>
               </VCol>
 
               <!-- create account -->
@@ -231,7 +238,7 @@ const onSubmit = async () => {
       md="6"
       class="auth-card-v2 d-flex align-center justify-center"
     >
-      <VImg :src="NoImage" />
+      <VImg :src="NoImage" height="100dvh" cover />
     </VCol>
   </VRow>
 </template>
@@ -245,5 +252,8 @@ const onSubmit = async () => {
       width: 33px;
     }
   }
+}
+.bg-white {
+  background-color: white;
 }
 </style>
