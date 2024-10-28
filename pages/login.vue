@@ -5,6 +5,7 @@ import type { NuxtError } from "nuxt/app";
 import { themeConfig } from "@themeConfig";
 import { VForm } from "vuetify/components/VForm";
 
+import { emailValidator, requiredValidator } from "#imports";
 import { VNodeRenderer } from "@/@layouts/components/VNodeRenderer";
 import bseImage from "@images/bse.png";
 import NoImage from "@images/no-image.png";
