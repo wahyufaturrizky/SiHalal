@@ -2,9 +2,9 @@
 import type { User } from 'next-auth'
 import type { NuxtError } from 'nuxt/app'
 
-import { themeConfig } from '@themeConfig'
 import { useDisplay } from 'vuetify'
 import { VForm } from 'vuetify/components/VForm'
+import { themeConfig } from '@themeConfig'
 
 import { VNodeRenderer } from '@/@layouts/components/VNodeRenderer'
 import bseImage from '@images/bse.png'
@@ -51,12 +51,23 @@ const errors = ref<Record<string, string | undefined>>({
 const turnstile = ref()
 const refVForm = ref<VForm>()
 
-const credentials = ref({
-  email: 'admin@demo.com',
-  password: 'admin',
-})
+// const credentials = ref({
+//   typeUser: '',
+//   name: '',
+//   email: 'admin@demo.com',
+//   noHandphone: '',
+//   password: 'admin',
+//   passwordConfrim: '',
+// })
 
-const rememberMe = ref(false)
+const form = ref({
+  typeUser: '',
+  name: '',
+  email: '',
+  noHandphone: '',
+  password: '',
+  passwordConfrim: '',
+})
 
 async function login() {
   const response = await signIn('credentials', {
@@ -109,16 +120,20 @@ const onSubmit = async () => {
       login()
   })
 }
+
+const typeUser = ['Pelaku Usaha', 'Buisness Actor', 'Impoter']
 </script>
 
 <template>
-  <VSnackbar
+  <!--
+    <VSnackbar
     v-model="captchaError"
     location="top"
     color="error"
-  >
+    >
     Captcha failed
-  </VSnackbar>
+    </VSnackbar>
+  -->
 
   <VRow
     no-gutters
@@ -143,8 +158,7 @@ const onSubmit = async () => {
         </VCardText>
         <VCardText>
           <h4 class="text-h4 mb-1">
-            Selamat Datang di
-            <span
+            Buat Akun <span
               class="text-capitalize"
               color="#652672"
             >{{
@@ -152,7 +166,7 @@ const onSubmit = async () => {
             }}</span>
           </h4>
           <p class="mb-0">
-            Login untuk mengakses fitur pada web {{ themeConfig.app.title }}
+            Silahkan buat akun menggunakan fitur web {{ themeConfig.app.title }}
           </p>
         </VCardText>
 
@@ -162,25 +176,55 @@ const onSubmit = async () => {
             @submit.prevent="onSubmit"
           >
             <VRow>
+              <!-- Tipe Pengguna -->
+              <VCol cols="12">
+                Tipe Pengguna
+                <VSelect
+                  v-model="form.typeUser"
+                  :items="typeUser"
+                  placeholder="Pilih tipe Pengguna"
+                  eager
+                />
+              </VCol>
+
+              <!-- nama -->
+              <VCol cols="12">
+                Nama
+                <VTextField
+                  v-model="form.name"
+                  :rules="[requiredValidator]"
+                  type="text"
+                  :error-messages="errors.name"
+                />
+              </VCol>
+
               <!-- email -->
               <VCol cols="12">
+                Email
                 <VTextField
-                  v-model="credentials.email"
-                  label="Email"
-                  placeholder="johndoe@email.com"
-                  type="email"
-                  autofocus
-                  :rules="[requiredValidator, emailValidator]"
+                  v-model="form.email"
+                  :rules="[requiredValidator]"
+                  type="text"
                   :error-messages="errors.email"
+                />
+              </VCol>
+
+              <!-- no Handphone -->
+              <VCol cols="12">
+                Nomor Handphone
+                <VTextField
+                  v-model="form.noHandphone"
+                  :rules="[requiredValidator]"
+                  type="text"
+                  :error-messages="errors.noHandphone"
                 />
               </VCol>
 
               <!-- password -->
               <VCol cols="12">
+                Kata Sandi
                 <VTextField
-                  v-model="credentials.password"
-                  label="Password"
-                  placeholder="············"
+                  v-model="form.password"
                   :rules="[requiredValidator]"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   :error-messages="errors.password"
@@ -189,33 +233,30 @@ const onSubmit = async () => {
                   "
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
+              </VCol>
 
-                <div class="d-flex align-center flex-wrap justify-space-between my-6 gap-x-2">
-                  <VCheckbox
-                    v-model="rememberMe"
-                    label="Remember me"
-                  />
-                  <!--
-                    <NuxtLink
-                    class="text-primary"
-                    :to="{ name: 'forgot-password' }"
-                    >
-                    Forgot Password?
-                    </NuxtLink>
-                  -->
-                </div>
-                <div class="my-6 gap-x-2">
-                  <NuxtTurnstile
-                    v-model="turnstile"
-                    class="text-center"
-                  />
-                </div>
+              <!-- password confrim -->
+              <VCol cols="12">
+                Konfirmasi Kata Sandi
+                <VTextField
+                  v-model="form.passwordConfrim"
+                  :rules="[requiredValidator]"
+                  :type="isPasswordVisible ? 'text' : 'password'"
+                  :error-messages="errors.password"
+                  :append-inner-icon="
+                    isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'
+                  "
+                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                />
+              </VCol>
 
+              <VCol cols="12">
                 <VBtn
                   block
+                  disabled
                   type="submit"
                 >
-                  Login
+                  Buat Akun
                 </VBtn>
               </VCol>
 
@@ -224,12 +265,12 @@ const onSubmit = async () => {
                 cols="12"
                 class="text-body-1 text-center"
               >
-                <span class="d-inline-block"> Belum punya akun ?</span>
+                <span class="d-inline-block"> Sudah punya akun ?</span>
                 <NuxtLink
                   class="text-primary ms-1 d-inline-block text-body-1"
-                  :to="{ name: 'register' }"
+                  :to="{ name: 'index' }"
                 >
-                  Daftar di sini
+                  Masuk di sini
                 </NuxtLink>
               </VCol>
 
