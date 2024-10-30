@@ -250,7 +250,8 @@ body,
     & input::placeholder,
     input#{&}::placeholder,
     textarea#{&}::placeholder {
-      color: rgba(var(--v-theme-on-surface), var(--v-disabled-opacity)) !important;
+      // color: rgba(var(--v-theme-on-surface), var(--v-disabled-opacity)) !important;
+      color: rgba($color: #746D76, $alpha: 0.8) !important;
       opacity: 1 !important;
     }
   }
