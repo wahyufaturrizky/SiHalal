@@ -1,12 +1,8 @@
 <script setup lang="ts">
-import type { User } from "next-auth";
-import type { NuxtError } from "nuxt/app";
-
 import { themeConfig } from "@themeConfig";
 import { useDisplay } from "vuetify";
 import type { VForm } from "vuetify/components/VForm";
 
-import { emailValidator, requiredValidator } from "#imports";
 import NoImage from "@images/no-image.png";
 import authV2LoginIllustrationBorderedDark from "@images/pages/auth-v2-login-illustration-bordered-dark.png";
 import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-illustration-bordered-light.png";
@@ -63,65 +59,37 @@ const form = ref({
   noHandphone: null,
 });
 
-async function login() {
-  const response = await signIn("credentials", {
-    callbackUrl: "/",
-    redirect: false,
-    ...credentials.value,
-  });
+// validasi
 
-  // If error is not null => Error is occurred
-  if (response && response.error) {
-    const apiStringifiedError = response.error;
-    const apiError: NuxtError = JSON.parse(apiStringifiedError);
+const isDisabledEmail = ref(false);
+const isDisabledNoHp = ref(false);
 
-    errors.value = apiError.data as Record<string, string | undefined>;
+const requiredValidatorEmail = (value: string) => {
+  isDisabledNoHp.value = false;
 
-    // If err => Don't execute further
-    return;
-  }
-
-  // Reset error on successful login
-  errors.value = {};
-
-  // Update user abilities
-  const { user } = sessionData.value!;
-
-  useCookie<Partial<User>>("userData").value = user;
-
-  // Save user abilities in cookie so we can retrieve it back on refresh
-  useCookie<User["abilityRules"]>("userAbilityRules").value = user.abilityRules;
-
-  ability.update(user.abilityRules ?? []);
-
-  navigateTo(route.query.to ? String(route.query.to) : "/", { replace: true });
-}
-const captchaError = useState("captchaError", () => false);
-
-const onSubmit = async () => {
-  // const captchaResponse = await $fetch("/api/validateTurnstile", {
-  //   method: "POST",
-  //   body: { token: turnstile.value },
-  // });
-
-  // if (!captchaResponse.success) {
-  //   captchaError.value = true;
-
-  //   return;
-  // }
-  refVForm.value?.validate().then(({ valid: isValid }) => {
-    if (isValid) login();
-  });
+  return !!value || "Wajib diisi Email";
 };
 
-// check  disableSubmit
-const isDisabledSubmit = computed(() => {
-  return !form.email.value;
-});
+const requiredValidatorNoHandphone = (value: string) => {
+  isDisabledEmail.value = false;
 
-// validasi
+  return !!value || "Wajib diisi Nomor Handphone";
+};
+
+const currentTab = ref(0);
+
+const emailValidator = (value: string) => {
+  const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+  isDisabledNoHp.value = true;
+
+  return isValid || "Masukkan format email benar";
+};
+
 const phoneValidator = (value: string) => {
-  const isValid = /^\d{10,13}$/.test(value);
+  const isValid = /^08\d{8,11}$/.test(value);
+
+  isDisabledEmail.value = true;
 
   return (
     isValid ||
@@ -129,16 +97,75 @@ const phoneValidator = (value: string) => {
   );
 };
 
-const requiredValidator = (value: string) => !!value || "Wajib diisi";
+function onlyNumber(event) {
+  // Hanya angka yang diperbolehkan
+  form.value.noHandphone = event.target.value.replace(/\D/g, "");
+}
 
-const currentTab = ref(0);
-
-const isPhoneTabDisabled = computed(() => {
-  console.log(form.value.email, "email ini");
-
-  // Misalnya, tab kedua dinonaktifkan jika email belum terisi
-  return form.value.email || errors.value.email;
+const isDisabledSubmitEmail = computed(() => {
+  return !form.value.email || emailValidator(form.value.email) !== true;
 });
+
+const isDisabledSubmitNoHandphone = computed(() => {
+  return (
+    !form.value.noHandphone || phoneValidator(form.value.noHandphone) !== true
+  );
+});
+
+const isOtpEmail = ref(false);
+const isOtpNoHandphone = ref(false);
+
+const onSubmitEmail = () => {
+  // try {
+  // }
+  // catch (error) {
+  //   console.log(error, 'ini error')
+  // }
+  isOtpEmail.value = true;
+};
+
+const kodeOtpEmail = ref("");
+const kodeOtpNoHandphone = ref("");
+
+const onSumbitKodeEmail = () => {
+  console.log(kodeOtpEmail, "otp email");
+};
+
+const isDisabledKodeEmail = computed(() => {
+  return !kodeOtpEmail.value || kodeOtpEmail.value.length !== 6;
+});
+
+const isDisabledKodeNomorHandphone = computed(() => {
+  return !kodeOtpNoHandphone.value || kodeOtpNoHandphone.value.length !== 6;
+});
+
+const cooldown = ref(60);
+
+const startCooldown = () => {
+  cooldown.value = 60;
+
+  const interval = setInterval(() => {
+    if (cooldown.value > 0) cooldown.value--;
+    else clearInterval(interval);
+  }, 1000);
+};
+
+const resendCode = () => {
+  startCooldown();
+
+  // Tambahkan logic pengiriman ulang kode di sini
+  console.log("Kode dikirim ulang!");
+};
+
+onMounted(() => {
+  startCooldown();
+});
+
+const onSubmitNomerHandphone = () => {
+  isOtpNoHandphone.value = true;
+};
+
+const onSubmitKodeNomerHandphone = () => {};
 </script>
 
 <template>
@@ -162,7 +189,7 @@ const isPhoneTabDisabled = computed(() => {
         <VCardText>
           <h3 class="text-h4 mb-1">Akun Kamu Berhasil Terdaftar!</h3>
           <p class="mb-0">
-            Terima kasih telha membuat akun di website
+            Terima kasih telah membuat akun di website
             {{ themeConfig.app.title }}, untuk proses selanjutnya verfikasi
             menggunakan email atua nomor handphone yang telah terdaftar
           </p>
@@ -170,46 +197,120 @@ const isPhoneTabDisabled = computed(() => {
 
         <VCardText>
           <VTabs v-model="currentTab" grow>
-            <VTab>Email</VTab>
-            <VTab :disabled="isPhoneTabDisabled"> NomorHandphone </VTab>
+            <VTab :disabled="isDisabledEmail"> Email </VTab>
+            <VTab :disabled="isDisabledNoHp"> NomorHandphone </VTab>
           </VTabs>
 
           <VWindow v-model="currentTab" class="mt-5">
             <VWindowItem key="1">
               <VCol cols="12">
-                <h3 class="verifikasi-title">Verifikasi dengan Email</h3>
-                <p>klik button untuk mengirim kode verifikasi</p>
-                <VTextField
-                  v-model="form.email"
-                  class="mb-5"
-                  :rules="[requiredValidator, emailValidator]"
-                  type="text"
-                  :error-messages="errors.email"
-                  placeholder="Masukan Email"
-                />
+                <!-- Verifikasi Email  -->
+                <p class="verifikasi-title text-email">
+                  Verifikasi dengan Email
+                </p>
+                <div v-if="!isOtpEmail">
+                  <p>klik button untuk mengirim kode verifikasi</p>
+                  <VTextField
+                    v-model="form.email"
+                    class="mb-5"
+                    :rules="[requiredValidatorEmail, emailValidator]"
+                    type="text"
+                    :error-messages="errors.email"
+                    placeholder="Masukan Email"
+                  />
 
-                <VBtn block :disabled="isDisabledSubmit" type="submit">
-                  Kirim Kode Verifikasi
-                </VBtn>
+                  <VBtn
+                    block
+                    :disabled="isDisabledSubmitEmail"
+                    type="submit"
+                    @click="onSubmitEmail"
+                  >
+                    Kirim Kode Verifikasi
+                  </VBtn>
+                </div>
+                <!-- verifikasi end email -->
+
+                <!-- Verfikasi kode  Email -->
+                <div v-if="isOtpEmail">
+                  <p>Kami telah mengirimkan kode verifikasi ke email</p>
+                  <b>"{{ form.email }}"</b>
+                  <VOtpInput
+                    v-model="kodeOtpEmail"
+                    class="mb-2"
+                    variant="solo-filled"
+                  />
+                  <p>
+                    Belum terima kode?
+                    <span v-if="cooldown > 0">({{ cooldown }}) detik</span>
+                    <span v-else>
+                      <a href="#" @click.prevent="resendCode">Kirim Ulang</a>
+                    </span>
+                  </p>
+                  <VBtn
+                    block
+                    type="submit"
+                    :disabled="isDisabledKodeEmail"
+                    @click="onSumbitKodeEmail"
+                  >
+                    Verifikasi Kode
+                  </VBtn>
+                </div>
+                <!-- end verifikasi   email -->
               </VCol>
             </VWindowItem>
             <VWindowItem key="2">
-              <h3 class="verifikasi-title">
+              <p class="verifikasi-title text-nomor-handphone">
                 Verifikasi dengan Nomor Handphone
-              </h3>
-              <p>klik button untuk mengirim kode verifikasi</p>
-              <VTextField
-                v-model="form.noHandphone"
-                class="mb-5"
-                :rules="[requiredValidator, phoneValidator]"
-                type="text"
-                :error-messages="errors.email"
-                placeholder="Masukan Email"
-              />
+              </p>
+              <!-- verifikasi  nomer Handphone  -->
+              <div v-if="!isOtpNoHandphone">
+                <p>klik button untuk mengirim kode verifikasi</p>
+                <VTextField
+                  v-model="form.noHandphone"
+                  class="mb-5"
+                  :rules="[requiredValidatorNoHandphone, phoneValidator]"
+                  type="text"
+                  maxlength="13"
+                  :error-messages="errors.noHandphone"
+                  placeholder="Masukan Nomor Handphone"
+                  @input="onlyNumber"
+                />
 
-              <VBtn block :disabled="isDisabledSubmit" type="submit">
-                Kirim Kode Verifikasi
-              </VBtn>
+                <VBtn
+                  v-model="kodeOtpNoHandphone"
+                  block
+                  :disabled="isDisabledSubmitNoHandphone"
+                  type="submit"
+                  @click="onSubmitNomerHandphone"
+                >
+                  Kirim Kode Verifikasi
+                </VBtn>
+              </div>
+
+              <div v-if="isOtpNoHandphone">
+                <p>Kami telah mengirimkan kode verifikasi ke nomor handphone</p>
+                <b>"{{ form.noHandphone }}"</b>
+                <VOtpInput
+                  v-model="kodeOtpNoHandphone"
+                  class="mb-2"
+                  variant="solo-filled"
+                />
+                <p>
+                  Belum terima kode?
+                  <span v-if="cooldown > 0">({{ cooldown }}) detik</span>
+                  <span v-else>
+                    <a href="#" @click.prevent="resendCode"> Kirim Ulang </a>
+                  </span>
+                </p>
+                <VBtn
+                  block
+                  type="submit"
+                  :disabled="isDisabledKodeNomorHandphone"
+                  @click="onSubmitKodeNomerHandphone"
+                >
+                  Verifikasi Kode
+                </VBtn>
+              </div>
             </VWindowItem>
           </VWindow>
         </VCardText>
@@ -255,6 +356,14 @@ const isPhoneTabDisabled = computed(() => {
       inline-size: 33px;
     }
   }
+}
+
+.text-email {
+  size: 18;
+}
+
+.text-text-nomor-handphone {
+  size: 18;
 }
 
 .bg-white {
