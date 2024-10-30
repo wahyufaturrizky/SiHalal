@@ -165,6 +165,9 @@ export default defineNuxtConfig({
     vue: {
       template: { transformAssetUrls },
     },
+    ssr: {
+      noExternal: ["vuetify"],
+    },
   },
 
   build: {

@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-const { injectSkinClasses } = useSkins()
+const { injectSkinClasses } = useSkins();
 
 // ℹ️ This will inject classes in body tag for accurate styling
-injectSkinClasses()
+injectSkinClasses();
 </script>
 
 <template>

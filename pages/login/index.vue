@@ -174,9 +174,15 @@ watch(turnstile, async (newValue, oldValue) => {
                 />
 
                 <div
-                  class="d-flex align-center flex-wrap justify-space-between my-6 gap-x-2"
+                  class="d-flex align-center flex-wrap justify-end my-2 gap-x-2"
                 >
-                  <VCheckbox v-model="rememberMe" label="Remember me" />
+                  <NuxtLink
+                    class="text-secondary ms-1 d-inline-block text-body-1"
+                    :to="{ name: 'forgot-password' }"
+                  >
+                    Lupa kata sandi
+                  </NuxtLink>
+                  <!-- <VCheckbox v-model="rememberMe" label="Remember me" /> -->
                   <!-- <NuxtLink
                     class="text-primary"
                     :to="{ name: 'forgot-password' }"
