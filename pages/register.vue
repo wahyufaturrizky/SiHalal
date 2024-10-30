@@ -138,7 +138,7 @@ const isDisabledSubmit = computed(() => {
 
 // validasi
 const phoneValidator = (value: string) => {
-  const isValid = /^\d{10,13}$/.test(value);
+  const isValid = /^08\d{8,11}$/.test(value);
 
   return (
     isValid ||
