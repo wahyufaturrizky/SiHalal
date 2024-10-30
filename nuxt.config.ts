@@ -1,5 +1,5 @@
 import { fileURLToPath } from "node:url";
-import vuetify from "vite-plugin-vuetify";
+import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 import svgLoader from "vite-svg-loader";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -42,9 +42,9 @@ export default defineNuxtConfig({
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || "",
       appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || "",
     },
-    turnstile : {
-    secretKey : process.env.NUXT_TURNSTILE_SECRET_KEY || ''
-    }
+    turnstile: {
+      secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY || "",
+    },
   },
   components: {
     dirs: [
@@ -150,7 +150,7 @@ export default defineNuxtConfig({
     },
 
     optimizeDeps: {
-      exclude: ["vuetify"],
+      // exclude: ["vuetify"],
       entries: ["./**/*.vue"],
     },
 
@@ -162,6 +162,9 @@ export default defineNuxtConfig({
         },
       }),
     ],
+    vue: {
+      template: { transformAssetUrls },
+    },
   },
 
   build: {
@@ -172,8 +175,21 @@ export default defineNuxtConfig({
     vueI18n: "i18n.config.ts",
   },
 
-  modules: ["@vueuse/nuxt", "@nuxtjs/i18n", "@nuxtjs/device", "@sidebase/nuxt-auth", "@pinia/nuxt", "@nuxtjs/turnstile"],
-  turnstile : {
-    siteKey : '1x00000000000000000000AA',
-  }
+  modules: [
+    "@vueuse/nuxt",
+    "@nuxtjs/i18n",
+    "@nuxtjs/device",
+    "@sidebase/nuxt-auth",
+    "@pinia/nuxt",
+    "@nuxtjs/turnstile",
+    (_options, nuxt) => {
+      nuxt.hooks.hook("vite:extendConfig", (config) => {
+        // @ts-expect-error
+        config.plugins.push(vuetify({ autoImport: true }));
+      });
+    },
+  ],
+  turnstile: {
+    siteKey: "1x00000000000000000000AA",
+  },
 });

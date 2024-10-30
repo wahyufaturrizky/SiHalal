@@ -99,13 +99,13 @@ const onSubmit = async () => {
   });
 };
 watch(turnstile, async (newValue, oldValue) => {
-  console.log(newValue);
   const captchaResponse = await $fetch("/api/validateTurnstile", {
     method: "POST",
     body: { token: newValue },
   });
   if (!captchaResponse.success) {
     captchaError.value = true;
+    return;
   }
   isDisabledSubmit.value = false;
 });
