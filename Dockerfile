@@ -1,4 +1,4 @@
-FROM node:20.18.0-slim as builder
+FROM node:20.18.0-slim AS builder
 WORKDIR /app
 ARG BUILD_ENV
 COPY . .
