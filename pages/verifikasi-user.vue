@@ -98,7 +98,6 @@ const phoneValidator = (value: string) => {
 };
 
 function onlyNumber(event) {
-  // Hanya angka yang diperbolehkan
   form.value.noHandphone = event.target.value.replace(/\D/g, "");
 }
 
@@ -122,6 +121,7 @@ const onSubmitEmail = () => {
   //   console.log(error, 'ini error')
   // }
   isOtpEmail.value = true;
+  startCooldown()
 };
 
 const kodeOtpEmail = ref("");
@@ -131,41 +131,43 @@ const onSumbitKodeEmail = () => {
   console.log(kodeOtpEmail, "otp email");
 };
 
-const isDisabledKodeEmail = computed(() => {
-  return !kodeOtpEmail.value || kodeOtpEmail.value.length !== 6;
-});
 
-const isDisabledKodeNomorHandphone = computed(() => {
-  return !kodeOtpNoHandphone.value || kodeOtpNoHandphone.value.length !== 6;
-});
 
-const cooldown = ref(60);
-
-const startCooldown = () => {
-  cooldown.value = 60;
-
-  const interval = setInterval(() => {
-    if (cooldown.value > 0) cooldown.value--;
-    else clearInterval(interval);
-  }, 1000);
-};
-
-const resendCode = () => {
-  startCooldown();
-
-  // Tambahkan logic pengiriman ulang kode di sini
-  console.log("Kode dikirim ulang!");
-};
-
-onMounted(() => {
-  startCooldown();
-});
 
 const onSubmitNomerHandphone = () => {
   isOtpNoHandphone.value = true;
 };
 
 const onSubmitKodeNomerHandphone = () => {};
+
+
+import { ref } from 'vue';
+  
+const cooldown = ref(0);
+const isDisabled = ref(false);
+  
+const handleVerificationSubmit = (otp) => {
+    console.log('Verification code submitted:', otp);
+  };
+  
+const handleResendOtp = () => {
+    console.log('Resend OTP triggered');
+    startCooldown();
+  };
+  
+const startCooldown = () => {
+    cooldown.value = 60;
+  
+const interval = setInterval(() => {
+      if (cooldown.value > 0) {
+        cooldown.value--;
+      } else {
+        clearInterval(interval);
+        isDisabled.value = false;
+      }
+    }, 1000);
+  };
+
 </script>
 
 <template>
@@ -234,26 +236,10 @@ const onSubmitKodeNomerHandphone = () => {};
                 <div v-if="isOtpEmail">
                   <p>Kami telah mengirimkan kode verifikasi ke email</p>
                   <b>"{{ form.email }}"</b>
-                  <VOtpInput
-                    v-model="kodeOtpEmail"
-                    class="mb-2"
-                    variant="solo-filled"
-                  />
-                  <p>
-                    Belum terima kode?
-                    <span v-if="cooldown > 0">({{ cooldown }}) detik</span>
-                    <span v-else>
-                      <a href="#" @click.prevent="resendCode">Kirim Ulang</a>
-                    </span>
-                  </p>
-                  <VBtn
-                    block
-                    type="submit"
-                    :disabled="isDisabledKodeEmail"
-                    @click="onSumbitKodeEmail"
-                  >
-                    Verifikasi Kode
-                  </VBtn>
+                  <OtpVerification
+                      :cooldown="cooldown"
+                      @submitVerificationCode="handleVerificationSubmit"
+                      @resendOtp="handleResendOtp"/>
                 </div>
                 <!-- end verifikasi   email -->
               </VCol>
@@ -290,26 +276,12 @@ const onSubmitKodeNomerHandphone = () => {};
               <div v-if="isOtpNoHandphone">
                 <p>Kami telah mengirimkan kode verifikasi ke nomor handphone</p>
                 <b>"{{ form.noHandphone }}"</b>
-                <VOtpInput
-                  v-model="kodeOtpNoHandphone"
-                  class="mb-2"
-                  variant="solo-filled"
-                />
-                <p>
-                  Belum terima kode?
-                  <span v-if="cooldown > 0">({{ cooldown }}) detik</span>
-                  <span v-else>
-                    <a href="#" @click.prevent="resendCode"> Kirim Ulang </a>
-                  </span>
-                </p>
-                <VBtn
-                  block
-                  type="submit"
-                  :disabled="isDisabledKodeNomorHandphone"
-                  @click="onSubmitKodeNomerHandphone"
-                >
-                  Verifikasi Kode
-                </VBtn>
+                <OtpVerification
+        :cooldown="cooldown"
+        @submitVerificationCode="handleVerificationSubmit"
+        @resendOtp="handleResendOtp"
+      />
+      <v-btn @click="startCooldown" :disabled="isDisabled">Kirim Kode</v-btn>
               </div>
             </VWindowItem>
           </VWindow>
