@@ -160,6 +160,9 @@ importers:
       '@fullcalendar/vue3':
         specifier: 6.1.15
         version: 6.1.15(@fullcalendar/core@6.1.15)(vue@3.3.13(typescript@5.5.4))
+      '@iconify-json/fa':
+        specifier: ^1.2.0
+        version: 1.2.0
       '@iconify-json/mdi':
         specifier: 1.1.68
         version: 1.1.68
@@ -1043,6 +1046,9 @@ packages:
 
   '@iconify-json/carbon@1.2.4':
     resolution: {integrity: sha512-DhW2jjMVGwV0DLHc0cmDYohdtGxMra8UuwgjHrryPy+rQX4gXhJwCBBVP2h2UG/92AoRCTn7zUJve4WvY5MLYg==}
+
+  '@iconify-json/fa@1.2.0':
+    resolution: {integrity: sha512-D49fT0bDtnoJIEE2586VDL6Yuti6BBYWA90GIeZabJ6KZ8WXylw+EhQfz6weMDr0HrRDFV/mzwS8gpWADBprMA==}
 
   '@iconify-json/logos@1.2.3':
     resolution: {integrity: sha512-JLHS5hgZP1b55EONAWNeqBUuriRfRNKWXK4cqYx0PpVaJfIIMiiMxFfvoQiX/bkE9XgkLhcKmDUqL3LXPdXPwQ==}
@@ -7357,6 +7363,10 @@ snapshots:
       '@iconify/types': 2.0.0
 
   '@iconify-json/carbon@1.2.4':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/fa@1.2.0':
     dependencies:
       '@iconify/types': 2.0.0
 
