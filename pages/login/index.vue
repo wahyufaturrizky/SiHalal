@@ -49,7 +49,7 @@ const errors = ref<Record<string, string | undefined>>({
   email: undefined,
   password: undefined,
 });
-const turnstile = useState("turnstile");
+const turnstile = ref(null);
 const refVForm = ref<VForm>();
 
 const credentials = ref({
@@ -63,7 +63,9 @@ async function login() {
   const response = await signIn("credentials", {
     callbackUrl: "/",
     redirect: false,
-    ...credentials.value,
+    email: credentials.value.email,
+    password: credentials.value.password,
+    token: turnstile.value,
   });
 
   // If error is not null => Error is occurred
@@ -98,22 +100,22 @@ const onSubmit = async () => {
     if (isValid) login();
   });
 };
-watch(turnstile, async (newValue, oldValue) => {
-  const captchaResponse = await $fetch("/api/validateTurnstile", {
-    method: "POST",
-    body: { token: newValue },
-  });
-  if (!captchaResponse.success) {
-    captchaError.value = true;
-    return;
-  }
-  isDisabledSubmit.value = false;
-});
+// watch(turnstile, async (newValue, oldValue) => {
+//   const captchaResponse = await $fetch("/api/validateTurnstile", {
+//     method: "POST",
+//     body: { token: newValue },
+//   });
+//   if (!captchaResponse.success) {
+//     captchaError.value = true;
+//     return;
+//   }
+//   isDisabledSubmit.value = false;
+// });
 </script>
 
 <template>
   <VSnackbar v-model="captchaError" location="top" color="error">
-    Captcha failed
+    Captcha Salah
   </VSnackbar>
 
   <VRow no-gutters class="auth-wrapper">
@@ -194,7 +196,7 @@ watch(turnstile, async (newValue, oldValue) => {
                   <NuxtTurnstile v-model="turnstile" class="text-center" />
                 </div>
 
-                <VBtn block type="submit" :disabled="isDisabledSubmit">
+                <VBtn block type="submit" :disabled="turnstile === null">
                   Login
                 </VBtn>
               </VCol>
