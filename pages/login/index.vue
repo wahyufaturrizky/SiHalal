@@ -110,7 +110,7 @@ const onSubmit = async () => {
       <VCol
         cols="12"
         md="6"
-        class="auth-card-v2 d-flex align-center justify-center bg-white"
+        class="auth-card-v2 d-flex align-center justify-center login-bg"
       >
         <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
           <v-card-text>
@@ -250,7 +250,7 @@ const onSubmit = async () => {
     }
   }
 }
-.bg-white {
-  background-color: white;
+.login-bg {
+  background-color: rgb(var(--v-theme-surface));
 }
 </style>
