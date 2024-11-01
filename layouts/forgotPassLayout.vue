@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import NoImage from "@images/no-image.png";
 import { useDisplay } from "vuetify";
-
+const { isSnackbarVisible, snackColor, snackMessage } = useSnackbar();
 const { mdAndUp } = useDisplay();
 </script>
 
 <template>
+  <VSnackbar v-model="isSnackbarVisible" location="top" :color="snackColor">
+    {{ snackMessage }}
+  </VSnackbar>
   <VRow no-gutters>
     <VCol
       cols="12"

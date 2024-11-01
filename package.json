@@ -65,6 +65,7 @@
     "@fullcalendar/list": "6.1.15",
     "@fullcalendar/timegrid": "6.1.15",
     "@fullcalendar/vue3": "6.1.15",
+    "@iconify-json/fa": "^1.2.0",
     "@iconify-json/mdi": "1.1.68",
     "@iconify-json/ri": "1.1.22",
     "@iconify/tools": "4.0.4",

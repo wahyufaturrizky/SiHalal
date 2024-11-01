@@ -1,12 +1,14 @@
 export default defineEventHandler(async (event) => {
-  const { token } = await readBody(event)
+  const body = await readBody(event);
 
-  if (!token) {
+  if (!body.token) {
     throw createError({
       statusCode: 422,
-      statusMessage: 'Token not provided.',
-    })
+      statusMessage: "Token not provided.",
+    });
   }
 
-  return await verifyTurnstileToken(token)
-})
+  return await verifyTurnstileToken(
+    body.token || body["cf-turnstile-response"]
+  );
+});
