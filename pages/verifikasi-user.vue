@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { themeConfig } from "@themeConfig";
+import { ref } from "vue";
 import { useDisplay } from "vuetify";
 import type { VForm } from "vuetify/components/VForm";
 
@@ -121,7 +122,7 @@ const onSubmitEmail = () => {
   //   console.log(error, 'ini error')
   // }
   isOtpEmail.value = true;
-  startCooldown()
+  startCooldown();
 };
 
 const kodeOtpEmail = ref("");
@@ -131,43 +132,36 @@ const onSumbitKodeEmail = () => {
   console.log(kodeOtpEmail, "otp email");
 };
 
-
-
-
 const onSubmitNomerHandphone = () => {
   isOtpNoHandphone.value = true;
 };
 
 const onSubmitKodeNomerHandphone = () => {};
 
-
-import { ref } from 'vue';
-  
 const cooldown = ref(0);
 const isDisabled = ref(false);
-  
-const handleVerificationSubmit = (otp) => {
-    console.log('Verification code submitted:', otp);
-  };
-  
-const handleResendOtp = () => {
-    console.log('Resend OTP triggered');
-    startCooldown();
-  };
-  
-const startCooldown = () => {
-    cooldown.value = 60;
-  
-const interval = setInterval(() => {
-      if (cooldown.value > 0) {
-        cooldown.value--;
-      } else {
-        clearInterval(interval);
-        isDisabled.value = false;
-      }
-    }, 1000);
-  };
 
+const handleVerificationSubmit = (otp) => {
+  console.log("Verification code submitted:", otp);
+};
+
+const handleResendOtp = () => {
+  console.log("Resend OTP triggered");
+  startCooldown();
+};
+
+const startCooldown = () => {
+  cooldown.value = 60;
+
+  const interval = setInterval(() => {
+    if (cooldown.value > 0) {
+      cooldown.value--;
+    } else {
+      clearInterval(interval);
+      isDisabled.value = false;
+    }
+  }, 1000);
+};
 </script>
 
 <template>
@@ -229,6 +223,13 @@ const interval = setInterval(() => {
                   >
                     Kirim Kode Verifikasi
                   </VBtn>
+
+                  <RouterLink to="/register" class="back-link">
+                    <span class="back-icon">
+                      ← Kembali ke Halaman Buat Akun</span
+                    >
+                  </RouterLink>
+                  <v-btn variant="text"> Button </v-btn>
                 </div>
                 <!-- verifikasi end email -->
 
@@ -237,9 +238,10 @@ const interval = setInterval(() => {
                   <p>Kami telah mengirimkan kode verifikasi ke email</p>
                   <b>"{{ form.email }}"</b>
                   <OtpVerification
-                      :cooldown="cooldown"
-                      @submitVerificationCode="handleVerificationSubmit"
-                      @resendOtp="handleResendOtp"/>
+                    :cooldown="cooldown"
+                    @submit-verification-code="handleVerificationSubmit"
+                    @resend-otp="handleResendOtp"
+                  />
                 </div>
                 <!-- end verifikasi   email -->
               </VCol>
@@ -277,11 +279,13 @@ const interval = setInterval(() => {
                 <p>Kami telah mengirimkan kode verifikasi ke nomor handphone</p>
                 <b>"{{ form.noHandphone }}"</b>
                 <OtpVerification
-        :cooldown="cooldown"
-        @submitVerificationCode="handleVerificationSubmit"
-        @resendOtp="handleResendOtp"
-      />
-      <v-btn @click="startCooldown" :disabled="isDisabled">Kirim Kode</v-btn>
+                  :cooldown="cooldown"
+                  @submit-verification-code="handleVerificationSubmit"
+                  @resend-otp="handleResendOtp"
+                />
+                <VBtn :disabled="isDisabled" @click="startCooldown">
+                  Kirim Kode
+                </VBtn>
               </div>
             </VWindowItem>
           </VWindow>
@@ -340,5 +344,21 @@ const interval = setInterval(() => {
 
 .bg-white {
   background-color: white;
+}
+
+.back-icon {
+  align-items: center;
+  justify-content: center;
+  margin-block-start: 24px;
+  margin-inline-end: 5px;
+}
+
+.back-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7c4d9e; /* Warna teks */
+  font-size: 14px;
+  text-decoration: none;
 }
 </style>
