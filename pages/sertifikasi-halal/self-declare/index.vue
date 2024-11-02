@@ -55,7 +55,7 @@ const router = useRouter()
 
 const hanleSubmitRequest = answer => {
   console.log('answer request : ', answer)
-  router.push("/sertifikasi-halal/self-declare-detail")
+  router.push("/sertifikasi-halal/self-declare/detail")
 }
 </script>
 
