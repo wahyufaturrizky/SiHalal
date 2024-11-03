@@ -1,50 +1,49 @@
 <script setup lang="ts">
-import { themeConfig } from "@themeConfig";
-import { ref } from "vue";
-import { useDisplay } from "vuetify";
-import type { VForm } from "vuetify/components/VForm";
+import { themeConfig } from '@themeConfig'
+import { useDisplay } from 'vuetify'
+import type { VForm } from 'vuetify/components/VForm'
 
-import NoImage from "@images/no-image.png";
-import authV2LoginIllustrationBorderedDark from "@images/pages/auth-v2-login-illustration-bordered-dark.png";
-import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-illustration-bordered-light.png";
-import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
-import authV2LoginMaskDark from "@images/pages/auth-v2-login-mask-dark.png";
-import authV2LoginMaskLight from "@images/pages/auth-v2-login-mask-light.png";
+import NoImage from '@images/no-image.png'
+import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
+import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
+import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
 
-const { signIn, data: sessionData } = useAuth();
-const { mdAndUp } = useDisplay();
+// import Otp from '@layouts/components/otp.vue'
+
+const { signIn, data: sessionData } = useAuth()
+const { mdAndUp } = useDisplay()
 
 const authThemeImg = useGenerateImageVariant(
   NoImage,
   authV2LoginIllustrationDark,
   authV2LoginIllustrationBorderedLight,
   authV2LoginIllustrationBorderedDark,
-  true
-);
+  true,
+)
 
-const authThemeMask = useGenerateImageVariant(
-  authV2LoginMaskLight,
-  authV2LoginMaskDark
-);
+// const authThemeMask = useGenerateImageVariant(
+//   authV2LoginMaskLight,
+//   authV2LoginMaskDark,
+// )
 
 definePageMeta({
-  layout: "blank",
+  layout: 'forgotPassLayout',
   unauthenticatedOnly: true,
-});
+})
 
-const isPasswordVisible = ref(false);
+const isPasswordVisible = ref(false)
 
-const route = useRoute();
+const route = useRoute()
 
-const ability = useAbility();
+const ability = useAbility()
 
 const errors = ref<Record<string, string | undefined>>({
   email: undefined,
   noHandphone: undefined,
-});
+})
 
 // const turnstile = ref();
-const refVForm = ref<VForm>();
+const refVForm = ref<VForm>()
 
 // const credentials = ref({
 //   typeUser: '',
@@ -58,62 +57,63 @@ const refVForm = ref<VForm>();
 const form = ref({
   email: null,
   noHandphone: null,
-});
+})
 
 // validasi
 
-const isDisabledEmail = ref(false);
-const isDisabledNoHp = ref(false);
+const isDisabledEmail = ref(false)
+const isDisabledNoHp = ref(false)
 
 const requiredValidatorEmail = (value: string) => {
-  isDisabledNoHp.value = false;
+  isDisabledNoHp.value = false
 
-  return !!value || "Wajib diisi Email";
-};
+  return !!value || 'Wajib diisi Email'
+}
 
 const requiredValidatorNoHandphone = (value: string) => {
-  isDisabledEmail.value = false;
+  isDisabledEmail.value = false
 
-  return !!value || "Wajib diisi Nomor Handphone";
-};
+  return !!value || 'Wajib diisi Nomor Handphone'
+}
 
-const currentTab = ref(0);
+const currentTab = ref(0)
 
 const emailValidator = (value: string) => {
-  const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 
-  isDisabledNoHp.value = true;
+  isDisabledNoHp.value = true
 
-  return isValid || "Masukkan format email benar";
-};
+  return isValid || 'Masukkan format email benar'
+}
 
 const phoneValidator = (value: string) => {
-  const isValid = /^08\d{8,11}$/.test(value);
+  const isValid = /^08\d{8,11}$/.test(value)
 
-  isDisabledEmail.value = true;
+  isDisabledEmail.value = true
 
   return (
-    isValid ||
-    'Nomor Handphone harus dimulai dengan "08" dan berjumlah 10-13 digit angka'
-  );
-};
+    isValid
+    || 'Nomor Handphone harus dimulai dengan "08" dan berjumlah 10-13 digit angka'
+  )
+}
 
 function onlyNumber(event) {
-  form.value.noHandphone = event.target.value.replace(/\D/g, "");
+  // Hanya angka yang diperbolehkan
+  form.value.noHandphone = event.target.value.replace(/\D/g, '')
 }
 
 const isDisabledSubmitEmail = computed(() => {
-  return !form.value.email || emailValidator(form.value.email) !== true;
-});
+  return !form.value.email || emailValidator(form.value.email) !== true
+})
 
 const isDisabledSubmitNoHandphone = computed(() => {
   return (
     !form.value.noHandphone || phoneValidator(form.value.noHandphone) !== true
-  );
-});
+  )
+})
 
-const isOtpEmail = ref(false);
-const isOtpNoHandphone = ref(false);
+const isOtpEmail = ref(false)
+const isOtpNoHandphone = ref(false)
 
 const onSubmitEmail = () => {
   // try {
@@ -121,47 +121,52 @@ const onSubmitEmail = () => {
   // catch (error) {
   //   console.log(error, 'ini error')
   // }
-  isOtpEmail.value = true;
-  startCooldown();
-};
+  isOtpEmail.value = true
+}
 
-const kodeOtpEmail = ref("");
-const kodeOtpNoHandphone = ref("");
+const kodeOtpEmail = ref('')
+const kodeOtpNoHandphone = ref('')
 
 const onSumbitKodeEmail = () => {
-  console.log(kodeOtpEmail, "otp email");
-};
+  console.log(kodeOtpEmail, 'otp email')
+}
 
-const onSubmitNomerHandphone = () => {
-  isOtpNoHandphone.value = true;
-};
+const isDisabledKodeEmail = computed(() => {
+  return !kodeOtpEmail.value || kodeOtpEmail.value.length !== 6
+})
 
-const onSubmitKodeNomerHandphone = () => {};
+const isDisabledKodeNomorHandphone = computed(() => {
+  return !kodeOtpNoHandphone.value || kodeOtpNoHandphone.value.length !== 6
+})
 
-const cooldown = ref(0);
-const isDisabled = ref(false);
-
-const handleVerificationSubmit = (otp) => {
-  console.log("Verification code submitted:", otp);
-};
-
-const handleResendOtp = () => {
-  console.log("Resend OTP triggered");
-  startCooldown();
-};
+const cooldown = ref(60)
 
 const startCooldown = () => {
-  cooldown.value = 60;
+  cooldown.value = 60
 
   const interval = setInterval(() => {
-    if (cooldown.value > 0) {
-      cooldown.value--;
-    } else {
-      clearInterval(interval);
-      isDisabled.value = false;
-    }
-  }, 1000);
-};
+    if (cooldown.value > 0)
+      cooldown.value--
+    else clearInterval(interval)
+  }, 1000)
+}
+
+const resendCode = () => {
+  startCooldown()
+
+  // Tambahkan logic pengiriman ulang kode di sini
+  console.log('Kode dikirim ulang!')
+}
+
+onMounted(() => {
+  startCooldown()
+})
+
+const onSubmitNomerHandphone = () => {
+  isOtpNoHandphone.value = true
+}
+
+const onSubmitKodeNomerHandphone = () => {}
 </script>
 
 <template>
@@ -175,15 +180,24 @@ const startCooldown = () => {
     </VSnackbar>
   -->
 
-  <VRow no-gutters class="auth-wrapper">
+  <VRow
+    no-gutters
+    class="auth-wrapper"
+  >
     <VCol
       cols="12"
       md="6"
       class="auth-card-v2 d-flex align-center justify-center bg-white"
     >
-      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
+      <VCard
+        flat
+        :max-width="500"
+        class="mt-12 mt-sm-0 pa-5 pa-lg-7"
+      >
         <VCardText>
-          <h3 class="text-h4 mb-1">Akun Kamu Berhasil Terdaftar!</h3>
+          <h3 class="text-h4 mb-1">
+            Akun Kamu Berhasil Terdaftar!
+          </h3>
           <p class="mb-0">
             Terima kasih telah membuat akun di website
             {{ themeConfig.app.title }}, untuk proses selanjutnya verfikasi
@@ -192,12 +206,22 @@ const startCooldown = () => {
         </VCardText>
 
         <VCardText>
-          <VTabs v-model="currentTab" grow>
-            <VTab :disabled="isDisabledEmail"> Email </VTab>
-            <VTab :disabled="isDisabledNoHp"> NomorHandphone </VTab>
+          <VTabs
+            v-model="currentTab"
+            grow
+          >
+            <VTab :disabled="isDisabledEmail">
+              Email
+            </VTab>
+            <VTab :disabled="isDisabledNoHp">
+              NomorHandphone
+            </VTab>
           </VTabs>
 
-          <VWindow v-model="currentTab" class="mt-5">
+          <VWindow
+            v-model="currentTab"
+            class="mt-5"
+          >
             <VWindowItem key="1">
               <VCol cols="12">
                 <!-- Verifikasi Email  -->
@@ -224,12 +248,13 @@ const startCooldown = () => {
                     Kirim Kode Verifikasi
                   </VBtn>
 
-                  <RouterLink to="/register" class="back-link">
+                  <RouterLink
+                    to="/register"
+                    class="back-link"
+                  >
                     <span class="back-icon">
-                      ← Kembali ke Halaman Buat Akun</span
-                    >
+                      ← Kembali ke Halaman Buat Akun</span>
                   </RouterLink>
-                  <v-btn variant="text"> Button </v-btn>
                 </div>
                 <!-- verifikasi end email -->
 
@@ -237,11 +262,37 @@ const startCooldown = () => {
                 <div v-if="isOtpEmail">
                   <p>Kami telah mengirimkan kode verifikasi ke email</p>
                   <b>"{{ form.email }}"</b>
-                  <OtpVerification
-                    :cooldown="cooldown"
-                    @submit-verification-code="handleVerificationSubmit"
-                    @resend-otp="handleResendOtp"
+                  <VOtpInput
+                    v-model="kodeOtpEmail"
+                    class="mb-2"
+                    variant="solo-filled"
                   />
+                  <p>
+                    Belum terima kode?
+                    <span v-if="cooldown > 0">({{ cooldown }}) detik</span>
+                    <span v-else>
+                      <a
+                        href="#"
+                        @click.prevent="resendCode"
+                      >Kirim Ulang</a>
+                    </span>
+                  </p>
+                  <VBtn
+                    block
+                    type="submit"
+                    :disabled="isDisabledKodeEmail"
+                    @click="onSumbitKodeEmail"
+                  >
+                    Verifikasi Kode
+                  </VBtn>
+
+                  <RouterLink
+                    to="/register"
+                    class="back-link"
+                  >
+                    <span class="back-icon">
+                      ← Kembali ke Halaman Buat Akun</span>
+                  </RouterLink>
                 </div>
                 <!-- end verifikasi   email -->
               </VCol>
@@ -273,19 +324,48 @@ const startCooldown = () => {
                 >
                   Kirim Kode Verifikasi
                 </VBtn>
+                <RouterLink
+                  to="/register"
+                  class="back-link"
+                >
+                  <span class="back-icon">
+                    ← Kembali ke Halaman Buat Akun</span>
+                </RouterLink>
               </div>
 
               <div v-if="isOtpNoHandphone">
                 <p>Kami telah mengirimkan kode verifikasi ke nomor handphone</p>
                 <b>"{{ form.noHandphone }}"</b>
-                <OtpVerification
-                  :cooldown="cooldown"
-                  @submit-verification-code="handleVerificationSubmit"
-                  @resend-otp="handleResendOtp"
+                <VOtpInput
+                  v-model="kodeOtpNoHandphone"
+                  class="mb-2"
+                  variant="solo-filled"
                 />
-                <VBtn :disabled="isDisabled" @click="startCooldown">
-                  Kirim Kode
+                <p>
+                  Belum terima kode?
+                  <span v-if="cooldown > 0">({{ cooldown }}) detik</span>
+                  <span v-else>
+                    <a
+                      href="#"
+                      @click.prevent="resendCode"
+                    > Kirim Ulang </a>
+                  </span>
+                </p>
+                <VBtn
+                  block
+                  type="submit"
+                  :disabled="isDisabledKodeNomorHandphone"
+                  @click="onSubmitKodeNomerHandphone"
+                >
+                  Verifikasi Kode
                 </VBtn>
+                <RouterLink
+                  to="/register"
+                  class="back-link"
+                >
+                  <span class="back-icon">
+                    ← Kembali ke Halaman Buat Akun</span>
+                </RouterLink>
               </div>
             </VWindowItem>
           </VWindow>
