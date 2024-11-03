@@ -1,4 +1,5 @@
 import { NuxtAuthHandler } from "#auth";
+import { TurnstileValidationResponse } from "@nuxtjs/turnstile/runtime/types.js";
 import CredentialsProvider from "next-auth/providers/credentials";
 import type { NuxtError } from "nuxt/app";
 
@@ -19,6 +20,17 @@ export default NuxtAuthHandler({
       name: "Credentials",
       credentials: {}, // Object is required but can be left empty.
       async authorize(credentials: any) {
+        console.log(credentials);
+        const turnstile = await $fetch<TurnstileValidationResponse>(
+          `${runtimeConfig.public.apiBaseUrl}/validateTurnstile`,
+          { method: "POST", body: { token: credentials.token } }
+        );
+        if (!turnstile.success) {
+          throw createError({
+            statusCode: 403,
+            statusMessage: "captcha-failed",
+          });
+        }
         const { user } = await $fetch<any>(
           `${runtimeConfig.public.apiBaseUrl}/login/`,
           {

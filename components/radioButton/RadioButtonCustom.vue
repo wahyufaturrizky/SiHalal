@@ -6,7 +6,7 @@
       type="radio"
       :value="value"
       :checked="isSelected"
-      @change="select"
+      v-model="selectedValueProxy"
     />
   </label>
 </template>
@@ -24,9 +24,10 @@ const updateSelectedValue = inject("updateSelectedValue") as (
 ) => void;
 
 const isSelected = computed(() => selectedValue?.value === props.value);
-function select() {
-  updateSelectedValue(props.value);
-}
+const selectedValueProxy = computed({
+  get: () => selectedValue?.value,
+  set: (val) => updateSelectedValue(val),
+});
 </script>
 
 <style scoped>

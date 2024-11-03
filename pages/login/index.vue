@@ -49,7 +49,6 @@ const errors = ref<Record<string, string | undefined>>({
   email: undefined,
   password: undefined,
 });
-
 const turnstile = useState("turnstile");
 const refVForm = ref<VForm>();
 
@@ -64,7 +63,9 @@ async function login() {
   const response = await signIn("credentials", {
     callbackUrl: "/",
     redirect: false,
-    ...credentials.value,
+    email: credentials.value.email,
+    password: credentials.value.password,
+    token: turnstile.value,
   });
 
   // If error is not null => Error is occurred
@@ -94,23 +95,21 @@ async function login() {
   navigateTo(route.query.to ? String(route.query.to) : "/", { replace: true });
 }
 const captchaError = useState("captchaError", () => false);
-
 const onSubmit = async () => {
+  // sendSnackbar("error bang", "success");
   refVForm.value?.validate().then(({ valid: isValid }) => {
     if (isValid) login();
   });
 };
-
 watch(turnstile, async (newValue, oldValue) => {
   console.log(newValue);
-
   const captchaResponse = await $fetch("/api/validateTurnstile", {
     method: "POST",
     body: { token: newValue },
   });
-
-  if (!captchaResponse.success) captchaError.value = true;
-
+  if (!captchaResponse.success) {
+    captchaError.value = true;
+  }
   isDisabledSubmit.value = false;
 });
 </script>
@@ -127,13 +126,13 @@ watch(turnstile, async (newValue, oldValue) => {
       class="auth-card-v2 d-flex align-center justify-center bg-white"
     >
       <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
-        <VCardText>
+        <v-card-text>
           <NuxtLink to="/">
             <div class="auth-logo app-logo">
               <VNodeRenderer :nodes="themeConfig.app.logo" />
             </div>
           </NuxtLink>
-        </VCardText>
+        </v-card-text>
         <VCardText>
           <h4 class="text-h4 mb-1">
             Selamat Datang di
@@ -146,72 +145,69 @@ watch(turnstile, async (newValue, oldValue) => {
           </p>
         </VCardText>
 
-        <VCardText>
-          <VForm ref="refVForm" @submit.prevent="onSubmit">
-            <VRow>
-              <!-- email -->
-              <VCol cols="12">
-                <VTextField
-                  v-model="credentials.email"
-                  label="Email"
-                  placeholder="johndoe@email.com"
-                  type="email"
-                  autofocus
-                  :rules="[requiredValidator, emailValidator]"
-                  :error-messages="errors.email"
-                />
-              </VCol>
+          <VCardText>
+            <VForm ref="refVForm" @submit.prevent="onSubmit">
+              <VRow>
+                <!-- email -->
+                <VCol cols="12">
+                  <VTextField
+                    v-model="credentials.email"
+                    label="Email"
+                    placeholder="johndoe@email.com"
+                    type="email"
+                    autofocus
+                    :rules="[requiredValidator, emailValidator]"
+                    :error-messages="errors.email"
+                  />
+                </VCol>
 
-              <!-- password -->
-              <VCol cols="12">
-                <VTextField
-                  v-model="credentials.password"
-                  label="Password"
-                  placeholder="············"
-                  :rules="[requiredValidator]"
-                  :type="isPasswordVisible ? 'text' : 'password'"
-                  :error-messages="errors.password"
-                  :append-inner-icon="
-                    isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'
-                  "
-                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
-                />
+                <!-- password -->
+                <VCol cols="12">
+                  <VTextField
+                    v-model="credentials.password"
+                    label="Password"
+                    placeholder="············"
+                    :rules="[requiredValidator]"
+                    :type="isPasswordVisible ? 'text' : 'password'"
+                    :error-messages="errors.password"
+                    :append-inner-icon="
+                      isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'
+                    "
+                    @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                  />
 
                 <div
                   class="d-flex align-center flex-wrap justify-space-between my-6 gap-x-2"
                 >
                   <VCheckbox v-model="rememberMe" label="Remember me" />
-                  <!--
-                    <NuxtLink
+                  <!-- <NuxtLink
                     class="text-primary"
                     :to="{ name: 'forgot-password' }"
                     >
                     Forgot Password?
-                    </NuxtLink>
-                  -->
+                  </NuxtLink> -->
                 </div>
                 <div class="my-6 gap-x-2">
                   <NuxtTurnstile v-model="turnstile" class="text-center" />
                 </div>
 
-                <VBtn block type="submit" :disabled="isDisabledSubmit">
-                  Login
-                </VBtn>
-              </VCol>
+                  <VBtn block type="submit" :disabled="turnstile === null">
+                    Login
+                  </VBtn>
+                </VCol>
 
               <!-- create account -->
               <VCol cols="12" class="text-body-1 text-center">
                 <span class="d-inline-block"> Belum punya akun ?</span>
                 <NuxtLink
                   class="text-primary ms-1 d-inline-block text-body-1"
-                  :to="{ name: 'register' }"
+                  :to="{ name: 'index' }"
                 >
                   Daftar di sini
                 </NuxtLink>
               </VCol>
 
-              <!--
-                <VCol cols="12" class="d-flex align-center">
+              <!-- <VCol cols="12" class="d-flex align-center">
                 <VDivider />
                 <span class="mx-4 text-high-emphasis">or</span>
                 <VDivider />
@@ -219,11 +215,9 @@ watch(turnstile, async (newValue, oldValue) => {
               -->
 
               <!-- auth providers -->
-              <!--
-                <VCol cols="12" class="text-center">
+              <!-- <VCol cols="12" class="text-center">
                 <AuthProvider />
-                </VCol>
-              -->
+              </VCol> -->
             </VRow>
           </VForm>
         </VCardText>
