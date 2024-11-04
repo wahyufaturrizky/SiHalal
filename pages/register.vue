@@ -1,0 +1,384 @@
+<script setup lang="ts">
+import { themeConfig } from '@themeConfig'
+import { useDisplay } from 'vuetify'
+import { VForm } from 'vuetify/components/VForm'
+
+import { emailValidator, requiredValidator } from '#imports'
+import { VNodeRenderer } from '@/@layouts/components/VNodeRenderer'
+import bseImage from '@images/bse.png'
+import NoImage from '@images/no-image.png'
+import ossImage from '@images/oss.png'
+import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
+import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
+import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
+import authV2LoginMaskDark from '@images/pages/auth-v2-login-mask-dark.png'
+import authV2LoginMaskLight from '@images/pages/auth-v2-login-mask-light.png'
+
+const { signIn, data: sessionData } = useAuth()
+const { mdAndUp } = useDisplay()
+
+const authThemeImg = useGenerateImageVariant(
+  NoImage,
+  authV2LoginIllustrationDark,
+  authV2LoginIllustrationBorderedLight,
+  authV2LoginIllustrationBorderedDark,
+  true,
+)
+
+const authThemeMask = useGenerateImageVariant(
+  authV2LoginMaskLight,
+  authV2LoginMaskDark,
+)
+
+definePageMeta({
+  layout: 'blank',
+  unauthenticatedOnly: true,
+})
+
+const isPasswordVisible = ref(false)
+
+const route = useRoute()
+
+const ability = useAbility()
+
+const errors = ref<Record<string, string | undefined>>({
+  email: undefined,
+  typeUser: undefined,
+  name: undefined,
+  noHandphone: undefined,
+  password: undefined,
+  passwordConfirm: undefined,
+})
+
+// const turnstile = ref();
+const refVForm = ref<VForm>()
+
+const form = ref({
+  typeUser: null,
+  name: null,
+  email: null,
+  noHandphone: null,
+  password: null,
+  passwordConfirm: null,
+})
+
+const onSubmit = async () => {
+  // const captchaResponse = await $fetch("/api/validateTurnstile", {
+  //   method: "POST",
+  //   body: { token: turnstile.value },
+  // });
+
+  // if (!captchaResponse.success) {
+  //   captchaError.value = true;
+
+  //   return;
+  // }
+  // refVForm.value?.validate().then(({ valid: isValid }) => {
+  //   if (isValid) login();
+  // });
+
+  refVForm.value?.validate().then(async ({ valid: isValid }) => {
+    if (isValid) {
+      // Definisikan payload
+      const payload = {
+        typeUser: form.value.typeUser,
+        name: form.value.name,
+        email: form.value.email,
+        noHandphone: form.value.noHandphone,
+        password: form.value.password,
+        passwordConfirm: form.value.passwordConfirm,
+      }
+
+      // console.log(payload, "isi payload");
+      navigateTo('/verifikasi-user')
+
+      // try {
+
+      //   const response = await api.post('/api/register', payload)
+
+      // if (response.status === 200) {
+
+      //     navigateTo('/verifikasi-user');
+      //   }
+      //   console.log('Akun berhasil dibuat:', response.data)
+      // }
+      // catch (error) {
+      //   console.error('Error saat membuat akun:', error)
+      // }
+    }
+
+    // else {
+    //   console.error("Form tidak valid, periksa input Anda.");
+    // }
+  })
+}
+
+const typeUserItem = ['Pelaku Usaha', 'Buisness Actor', 'Impoter']
+
+// check  disableSubmit
+const isDisabledSubmit = computed(() => {
+  return !(
+    form.value.typeUser
+    && form.value.name
+    && form.value.email
+    && form.value.noHandphone
+    && form.value.password
+    && form.value.passwordConfirm
+  )
+})
+
+// validasi
+const phoneValidator = (value: string) => {
+  const isValid = /^08\d{8,11}$/.test(value)
+
+  return (
+    isValid
+    || 'Nomor Handphone harus dimulai dengan "08" dan berjumlah 10-13 digit angka'
+  )
+}
+
+const requiredValidator = (value: string) => !!value || 'Wajib diisi'
+</script>
+
+<template>
+  <!--
+    <VSnackbar
+    v-model="captchaError"
+    location="top"
+    color="error"
+    >
+    Captcha failed
+    </VSnackbar>
+  -->
+
+  <VRow
+    no-gutters
+    class="auth-wrapper"
+  >
+    <VCol
+      cols="12"
+      md="6"
+      class="auth-card-v2 d-flex align-center justify-center bg-white"
+    >
+      <VCard
+        flat
+        :max-width="500"
+        class="mt-12 mt-sm-0 pa-5 pa-lg-7"
+      >
+        <VCardText>
+          <NuxtLink to="/">
+            <div class="auth-logo app-logo">
+              <VNodeRenderer :nodes="themeConfig.app.logo" />
+            </div>
+          </NuxtLink>
+        </VCardText>
+        <VCardText>
+          <h4 class="text-h4 mb-1">
+            Buat Akun
+            <span
+              class="text-capitalize"
+              color="#652672"
+            >{{
+              themeConfig.app.title
+            }}</span>
+          </h4>
+          <p class="mb-0">
+            Silahkan buat akun menggunakan fitur web {{ themeConfig.app.title }}
+          </p>
+        </VCardText>
+
+        <VCardText>
+          <VForm
+            ref="refVForm"
+            @submit.prevent="onSubmit"
+          >
+            <VRow>
+              <!-- Tipe Pengguna -->
+              <VCol cols="12">
+                <b> Tipe Pengguna</b>
+
+                <VSelect
+                  v-model="form.typeUser"
+                  :items="typeUserItem"
+                  placeholder="Pilih tipe pengguna"
+                  :rules="[requiredValidator]"
+                  clearable
+                  eager
+                />
+              </VCol>
+
+              <!-- nama -->
+              <VCol cols="12">
+                <b> Nama</b>
+                <VTextField
+                  v-model="form.name"
+                  :rules="[requiredValidator]"
+                  placeholder="Masukan Nama"
+                  type="text"
+                  :error-messages="errors.name"
+                />
+              </VCol>
+
+              <!-- email -->
+              <VCol cols="12">
+                <b> Email </b>
+                <VTextField
+                  v-model="form.email"
+                  :rules="[requiredValidator, emailValidator]"
+                  type="text"
+                  :error-messages="errors.email"
+                  placeholder="Masukan Email"
+                />
+              </VCol>
+
+              <!-- no Handphone -->
+              <VCol cols="12">
+                <b> Nomor Handphone</b>
+                <VTextField
+                  v-model="form.noHandphone"
+                  :rules="[requiredValidator, phoneValidator]"
+                  type="tel"
+                  maxlength="13"
+                  placeholder="Masukan Nomor Handphone"
+                  :error-messages="errors.noHandphone"
+                />
+              </VCol>
+
+              <!-- password -->
+              <VCol cols="12">
+                <b> Kata Sandi</b>
+                <VTextField
+                  v-model="form.password"
+                  :rules="[requiredValidator]"
+                  :type="isPasswordVisible ? 'text' : 'password'"
+                  :error-messages="errors.password"
+                  :append-inner-icon="
+                    isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'
+                  "
+                  placeholder="Masukan kata sandi"
+                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                />
+              </VCol>
+
+              <!-- password confrim -->
+              <VCol cols="12">
+                <b>Konfirmasi Kata Sandi</b>
+                <VTextField
+                  v-model="form.passwordConfirm"
+                  :rules="[requiredValidator]"
+                  :type="isPasswordVisible ? 'text' : 'password'"
+                  :error-messages="errors.password"
+                  :append-inner-icon="
+                    isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'
+                  "
+                  placeholder="Masukan konfirmasi kata sandi"
+                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                />
+              </VCol>
+
+              <VCol cols="12">
+                <VBtn
+                  block
+                  :disabled="isDisabledSubmit"
+                  type="submit"
+                >
+                  Buat Akun
+                </VBtn>
+              </VCol>
+              <!-- disabled -->
+
+              <!-- create account -->
+              <VCol
+                cols="12"
+                class="text-body-1 text-center"
+              >
+                <span class="d-inline-block"> Sudah punya akun ?</span>
+                <NuxtLink
+                  class="text-primary ms-1 d-inline-block text-body-1"
+                  :to="{ name: 'index' }"
+                >
+                  Masuk di sini
+                </NuxtLink>
+              </VCol>
+
+              <!--
+                <VCol cols="12" class="d-flex align-center">
+                <VDivider />
+                <span class="mx-4 text-high-emphasis">or</span>
+                <VDivider />
+                </VCol>
+              -->
+
+              <!-- auth providers -->
+              <!--
+                <VCol cols="12" class="text-center">
+                <AuthProvider />
+                </VCol>
+              -->
+            </VRow>
+          </VForm>
+        </VCardText>
+        <VCardText>
+          <VCol
+            cols="12"
+            class="text-body-1 text-center"
+          >
+            <span class="d-inline-block">Terhubung Ke</span>
+          </VCol>
+          <VRow
+            align="center"
+            justify="center"
+          >
+            <VCol
+              cols="12"
+              md="auto"
+              class="d-flex align-center"
+            >
+              <VImg
+                :src="ossImage"
+                width="100"
+                height="48"
+              />
+            </VCol>
+            <VCol
+              cols="12"
+              md="auto"
+              class="d-flex align-center"
+            >
+              <VImg
+                :src="bseImage"
+                width="100"
+                height="48"
+              />
+            </VCol>
+          </VRow>
+        </VCardText>
+      </VCard>
+    </VCol>
+    <VCol
+      v-if="mdAndUp"
+      cols="12"
+      md="6"
+      class="auth-card-v2 d-flex align-center justify-center"
+    >
+      <VImg :src="NoImage" />
+    </VCol>
+  </VRow>
+</template>
+
+<style lang="scss">
+@use "@core/scss/template/pages/page-auth";
+
+.auth-logo {
+  div {
+    svg {
+      block-size: 60px;
+      inline-size: 33px;
+    }
+  }
+}
+
+.bg-white {
+  background-color: white;
+}
+</style>
