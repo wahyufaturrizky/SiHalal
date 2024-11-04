@@ -53,6 +53,10 @@ export default [
         title: "Inquiry",
         to: "fasilitator-list-inquiry-facilitation",
       },
+      {
+        title: "Pembatalan Permohonan",
+        to: "fasilitator-list-canceled-facilitation",
+      },
     ],
   },
 ];
