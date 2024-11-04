@@ -115,15 +115,11 @@ watch(turnstile, async (newValue, oldValue) => {
 </script>
 
 <template>
-  <VSnackbar v-model="captchaError" location="top" color="error">
-    Captcha failed
-  </VSnackbar>
-
   <VRow no-gutters class="auth-wrapper">
     <VCol
       cols="12"
       md="6"
-      class="auth-card-v2 d-flex align-center justify-center bg-white"
+      class="auth-card-v2 d-flex align-center justify-center login-bg"
     >
       <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
         <v-card-text>
@@ -145,36 +141,36 @@ watch(turnstile, async (newValue, oldValue) => {
           </p>
         </VCardText>
 
-          <VCardText>
-            <VForm ref="refVForm" @submit.prevent="onSubmit">
-              <VRow>
-                <!-- email -->
-                <VCol cols="12">
-                  <VTextField
-                    v-model="credentials.email"
-                    label="Email"
-                    placeholder="johndoe@email.com"
-                    type="email"
-                    autofocus
-                    :rules="[requiredValidator, emailValidator]"
-                    :error-messages="errors.email"
-                  />
-                </VCol>
+        <VCardText>
+          <VForm ref="refVForm" @submit.prevent="onSubmit">
+            <VRow>
+              <!-- email -->
+              <VCol cols="12">
+                <VTextField
+                  v-model="credentials.email"
+                  label="Email"
+                  placeholder="johndoe@email.com"
+                  type="email"
+                  autofocus
+                  :rules="[requiredValidator, emailValidator]"
+                  :error-messages="errors.email"
+                />
+              </VCol>
 
-                <!-- password -->
-                <VCol cols="12">
-                  <VTextField
-                    v-model="credentials.password"
-                    label="Password"
-                    placeholder="············"
-                    :rules="[requiredValidator]"
-                    :type="isPasswordVisible ? 'text' : 'password'"
-                    :error-messages="errors.password"
-                    :append-inner-icon="
-                      isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'
-                    "
-                    @click:append-inner="isPasswordVisible = !isPasswordVisible"
-                  />
+              <!-- password -->
+              <VCol cols="12">
+                <VTextField
+                  v-model="credentials.password"
+                  label="Password"
+                  placeholder="············"
+                  :rules="[requiredValidator]"
+                  :type="isPasswordVisible ? 'text' : 'password'"
+                  :error-messages="errors.password"
+                  :append-inner-icon="
+                    isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'
+                  "
+                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                />
 
                 <div
                   class="d-flex align-center flex-wrap justify-space-between my-6 gap-x-2"
@@ -191,10 +187,10 @@ watch(turnstile, async (newValue, oldValue) => {
                   <NuxtTurnstile v-model="turnstile" class="text-center" />
                 </div>
 
-                  <VBtn block type="submit" :disabled="turnstile === null">
-                    Login
-                  </VBtn>
-                </VCol>
+                <VBtn block type="submit" :disabled="turnstile === null">
+                  Login
+                </VBtn>
+              </VCol>
 
               <!-- create account -->
               <VCol cols="12" class="text-body-1 text-center">
@@ -258,8 +254,7 @@ watch(turnstile, async (newValue, oldValue) => {
     }
   }
 }
-
-.bg-white {
-  background-color: white;
+.login-bg {
+  background-color: rgb(var(--v-theme-surface));
 }
 </style>

@@ -36,7 +36,7 @@ const selectedValueProxy = computed({
   align-items: center;
   justify-content: space-between; /* Align text to the left and circle to the right */
   padding: 12px 16px;
-  border: 1px solid #ddd;
+  border: 1px solid rgba(var(--v-theme-grey-300));
   border-radius: 8px;
   margin-bottom: 8px;
   cursor: pointer;
@@ -47,7 +47,7 @@ const selectedValueProxy = computed({
   appearance: none;
   width: 20px;
   height: 20px;
-  border: 2px solid #5e3052; /* Border color for unselected state */
+  border: 2px solid rgba(var(--v-theme-primary)); /* Border color for unselected state */
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -61,14 +61,16 @@ const selectedValueProxy = computed({
   content: "";
   width: 12px;
   height: 12px;
-  background-color: #5e3052; /* Dot color for selected state */
+  background-color: rgba(
+    var(--v-theme-primary)
+  ); /* Dot color for selected state */
   border-radius: 50%;
   opacity: 0;
   transition: opacity 0.3s;
 }
 
 .radio-circle:checked {
-  border-color: #5e3052;
+  border-color: rgba(var(--v-theme-primary));
 }
 
 .radio-circle:checked::after {
@@ -83,7 +85,7 @@ const selectedValueProxy = computed({
 
 .radio-text {
   font-size: 1rem;
-  color: #333;
+  color: rgba(var(--v-theme-on-background));
   margin-right: 2rem;
 }
 </style>

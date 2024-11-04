@@ -8,7 +8,7 @@
   </VRow>
   <VRow no-gutters>
     <VCol class="d-flex align-center justify-center">
-      <v-card>
+      <v-card max-width="80dvh" class="mb-5">
         <VWindow
           v-model="stepStore.step"
           class="d-flex align-center justify-center"
@@ -39,6 +39,12 @@
           <VWindowItem :value="2">
             <LuarNegeri />
           </VWindowItem>
+          <VWindowItem :value="3">
+            <DalamNegeri />
+          </VWindowItem>
+          <VWindowItem :value="4">
+            <InstansiPemerintahan />
+          </VWindowItem>
         </VWindow>
       </v-card>
     </VCol>
@@ -48,6 +54,8 @@
 <script lang="ts" setup>
 import { VNodeRenderer } from "@/@layouts/components/VNodeRenderer";
 import { themeConfig } from "@/themeConfig";
+import DalamNegeri from "@/views/pages/new-account/DalamNegeri.vue";
+import InstansiPemerintahan from "@/views/pages/new-account/InstansiPemerintahan.vue";
 import LuarNegeri from "@/views/pages/new-account/LuarNegeri.vue";
 
 definePageMeta({
