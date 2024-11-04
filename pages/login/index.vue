@@ -115,35 +115,32 @@ watch(turnstile, async (newValue, oldValue) => {
 </script>
 
 <template>
-  <VSnackbar v-model="captchaError" location="top" color="error">
-    Captcha failed
-  </VSnackbar>
-
-  <VRow no-gutters class="auth-wrapper">
-    <VCol
-      cols="12"
-      md="6"
-      class="auth-card-v2 d-flex align-center justify-center bg-white"
-    >
-      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
-        <v-card-text>
-          <NuxtLink to="/">
-            <div class="auth-logo app-logo">
-              <VNodeRenderer :nodes="themeConfig.app.logo" />
-            </div>
-          </NuxtLink>
-        </v-card-text>
-        <VCardText>
-          <h4 class="text-h4 mb-1">
-            Selamat Datang di
-            <span class="text-capitalize" color="#652672">{{
-              themeConfig.app.title
-            }}</span>
-          </h4>
-          <p class="mb-0">
-            Login untuk mengakses fitur pada web {{ themeConfig.app.title }}
-          </p>
-        </VCardText>
+  <ClientOnly>
+    <VRow no-gutters class="auth-wrapper">
+      <VCol
+        cols="12"
+        md="6"
+        class="auth-card-v2 d-flex align-center justify-center login-bg"
+      >
+        <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
+          <v-card-text>
+            <NuxtLink to="/">
+              <div class="auth-logo app-logo">
+                <VNodeRenderer :nodes="themeConfig.app.logo" />
+              </div>
+            </NuxtLink>
+          </v-card-text>
+          <VCardText>
+            <h4 class="text-h4 mb-1">
+              Selamat Datang di
+              <span class="text-capitalize" color="#652672">{{
+                themeConfig.app.title
+              }}</span>
+            </h4>
+            <p class="mb-0">
+              Login untuk mengakses fitur pada web {{ themeConfig.app.title }}
+            </p>
+          </VCardText>
 
           <VCardText>
             <VForm ref="refVForm" @submit.prevent="onSubmit">
@@ -258,8 +255,7 @@ watch(turnstile, async (newValue, oldValue) => {
     }
   }
 }
-
-.bg-white {
-  background-color: white;
+.login-bg {
+  background-color: rgb(var(--v-theme-surface));
 }
 </style>
