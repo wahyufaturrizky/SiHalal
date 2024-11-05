@@ -6,6 +6,11 @@
   "tagihan_jatuh_tempo": "Due Date Invoice",
   "tagihan_invoice": "Invoice",
   "manajemen_pengguna": "User Management",
+  "fasilitator": {
+    "new_fasilitator": "New Fasilitator",
+    "inquiry": "Inquiry",
+    "cancellation_of_application": "Pembatalan Permohonan"
+  },
   "uam_role": "Role",
   "uam_user": "User",
   "Error": "Error",
