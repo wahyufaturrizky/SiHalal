@@ -92,6 +92,7 @@
 
 <script lang="ts" setup>
 import { emailValidator, integerValidator, requiredValidator } from "#imports";
+import onlyAcceptNumber from "@/utils/onlyAcceptNumber";
 const stepStore = useMyNewAccountStepStore();
 const country = ["Indonesia", "Malaysia", "Singapore"];
 </script>

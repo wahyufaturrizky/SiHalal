@@ -65,4 +65,14 @@ export default [
       },
     ],
   },
-]
+  {
+    title: "New Fasilitator",
+    icon: { icon: "ri-home-smile-line" },
+    children: [
+      {
+        title: "Inquiry",
+        to: "fasilitator-list-inquiry-facilitation",
+      },
+    ],
+  },
+];
