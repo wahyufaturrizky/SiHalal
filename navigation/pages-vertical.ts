@@ -40,4 +40,19 @@ export default [
       },
     ],
   },
+  { heading: 'registrasi_shln' },
+  {
+    title: 'sh_luar_negeri',
+    icon: { icon: 'ri-id-card-line' },
+    children: [
+      {
+        title: 'shln_submission',
+        to: 'sertifikasi-halal-shln-submission',
+      },
+      {
+        title: 'shln_invoice',
+        to: 'sertifikasi-halal-shln-invoice',
+      },
+    ],
+  },
 ]
