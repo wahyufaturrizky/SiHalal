@@ -138,6 +138,18 @@ export default [
         title: "shln_invoice",
         to: "sertifikasi-halal-shln-invoice",
       },
+      {
+        title: "shln_verification",
+        to: "sertifikasi-halal-shln-verification",
+      },
+      {
+        title: "shln_payment",
+        to: "sertifikasi-halal-shln-payment",
+      },
+      {
+        title: "shln_inquiry",
+        to: "sertifikasi-halal-shln-inquiry",
+      },
     ],
   },
   {

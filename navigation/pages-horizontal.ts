@@ -49,83 +49,83 @@ export default [
         children: [
           {
             title: "pendaftaran_online.bahan_non_sertif",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-non-certified-material-approval",
           },
           {
             title: "pendaftaran_online.distribusi_kf",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-distribution-to-kf-secretariat",
           },
           {
             title: "pendaftaran_online.verifikasi_ol",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-online-verification",
           },
           {
             title: "pendaftaran_online.status_komite",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-status-received-by-fatwa-committee",
           },
           {
             title: "pendaftaran_online.verifikasi_kf",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-verification-report-secretariat-kf",
           },
           {
             title: "pendaftaran_online.verifikasi_sd",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-self-declare-verification",
           },
           {
             title: "pendaftaran_online.laporan_verifikasi",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-verification-report",
           },
           {
             title: "pendaftaran_online.verifikasi_auditor",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-auditor-verification",
           },
           {
             title: "pendaftaran_online.verifikasi_fasilitator",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-facilitator-verification",
           },
           {
             title: "pendaftaran_online.entri_data_sert_penyelia",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-data-entry-supervisor-certificate",
           },
           {
             title: "pendaftaran_online.info_bayar",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-payment-information",
           },
           {
             title: "pendaftaran_online.update_sidang_fatwa",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-fatwa-session-update",
           },
           {
             title: "pendaftaran_online.penerbit_sertifikat",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-certificate-issuance",
           },
           {
             title: "pendaftaran_online.penerbit_sertifikat_sd",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-self-declare-certificate-issuance",
           },
           {
             title: "pendaftaran_online.lampiran_sertifikat",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-certificate-attachment",
           },
           {
             title: "pendaftaran_online.proses_persetujuan",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-approval-process",
           },
           {
             title: "pendaftaran_online.perubahan_produk",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-product-change",
           },
           {
             title: "pendaftaran_online.daftar_fasilitasi",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-facilitation-list",
           },
           {
             title: "pendaftaran_online.duplikat_data",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-data-duplication",
           },
           {
             title: "pendaftaran_online.permohonan_rev_sh",
-            to: "sertifikasi-halal-reguler",
+            to: "online-registration-sh-revision-request",
           },
         ],
       },
@@ -150,49 +150,32 @@ export default [
     ],
   },
   {
-    title: "registrasi_sh",
+    title: "registrasi_shln",
     icon: { icon: "ri-more-line" },
     children: [
       {
-        title: "sh_dalam_negeri",
-        icon: { icon: "ri-home-smile-line" },
+        title: "sh_luar_negeri",
+        icon: { icon: "ri-id-card-line" },
         children: [
           {
-            title: "pengajuan_reguler",
-            to: "sertifikasi-halal-reguler",
+            title: "shln_submission",
+            to: "sertifikasi-halal-shln-submission",
           },
-        ],
-      },
-    ],
-  },
-
-  {
-    title: "registrasi_sh",
-    icon: { icon: "ri-more-line" },
-    children: [
-      {
-        title: "sh_dalam_negeri",
-        icon: { icon: "ri-home-smile-line" },
-        children: [
           {
-            title: "pengajuan_reguler",
-            to: "sertifikasi-halal-reguler",
+            title: "shln_invoice",
+            to: "sertifikasi-halal-shln-invoice",
           },
-        ],
-      },
-    ],
-  },
-  {
-    title: "registrasi_sh",
-    icon: { icon: "ri-more-line" },
-    children: [
-      {
-        title: "sh_dalam_negeri",
-        icon: { icon: "ri-home-smile-line" },
-        children: [
           {
-            title: "pengajuan_reguler",
-            to: "sertifikasi-halal-reguler",
+            title: "shln_verification",
+            to: "sertifikasi-halal-shln-verification",
+          },
+          {
+            title: "shln_payment",
+            to: "sertifikasi-halal-shln-payment",
+          },
+          {
+            title: "shln_inquiry",
+            to: "sertifikasi-halal-shln-inquiry",
           },
         ],
       },
