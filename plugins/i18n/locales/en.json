@@ -9,7 +9,8 @@
   "fasilitator": {
     "new_fasilitator": "New Fasilitator",
     "inquiry": "Inquiry",
-    "cancellation_of_application": "Pembatalan Permohonan"
+    "cancellation_of_application": "Pembatalan Permohonan",
+    "invoice": "invoice"
   },
   "uam_role": "Role",
   "uam_user": "User",
