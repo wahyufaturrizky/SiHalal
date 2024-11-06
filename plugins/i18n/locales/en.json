@@ -9,7 +9,8 @@
   "fasilitator": {
     "new_fasilitator": "New Fasilitator",
     "inquiry": "Inquiry",
-    "cancellation_of_application": "Pembatalan Permohonan"
+    "cancellation_of_application": "Pembatalan Permohonan",
+    "invoice": "invoice"
   },
   "registrasi_shln": "Registrasi shln",
   "sh_luar_negeri": "SH Luar Negeri",
