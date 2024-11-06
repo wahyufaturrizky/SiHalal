@@ -1,5 +1,16 @@
 <script setup lang="ts">
 
+const items = [{
+  'No' : '1',
+  'Submission Number' : 'xxxx',
+  'NIB/Business Id No' : 'xxxxx',
+  'NPWP/Taxpayer id No.' : 'xxxxx',
+  'Date' : 'xxxxx',
+  'Action' : 'xxxx'
+},]
+
+
+
 </script>
 
 <template>
@@ -29,69 +40,7 @@
       </VRow>
       <VRow>
         <VCol>
-          <VTable class="border rounded-lg">
-            <thead>
-            <tr>
-              <th class="text-uppercase table-width-5">
-                No
-              </th>
-              <th class="text-uppercase table-width-10">
-                Submission Number
-              </th>
-              <th class="text-uppercase table-width-20">
-                NIB/Business Id No
-              </th>
-              <th class="text-uppercase table-width-10">
-                NPWP/Taxpayer id No.
-              </th>
-              <th class="text-uppercase table-width-10">
-                Date
-              </th>
-              <th class="text-uppercase table-width-10">
-                Action
-              </th>
-            </tr>
-            </thead>
-<!--            <tbody class="border">-->
-<!--            <tr v-if="filteredSubmissions.length === 0">-->
-<!--              <td colspan="9">-->
-<!--                <DataKosong />-->
-<!--              </td>-->
-<!--            </tr>-->
-<!--            <tr-->
-<!--              v-for="item in filteredSubmissions"-->
-<!--              :key="item.no"-->
-<!--            >-->
-<!--              <td class="table-width-5">-->
-<!--                {{ item.no }}-->
-<!--              </td>-->
-<!--              <td class="table-width-10">-->
-<!--                {{ item.idReg }}-->
-<!--              </td>-->
-<!--              <td class="table-width-20">-->
-<!--                {{ item.regNo }}-->
-<!--              </td>-->
-<!--              <td class="table-width-10">-->
-<!--                {{ item.date }}-->
-<!--              </td>-->
-<!--              <td class="table-width-10">-->
-<!--                {{ item.name }}-->
-<!--              </td>-->
-<!--              <td class="table-width-10">-->
-<!--                {{ item.productType }}-->
-<!--              </td>-->
-<!--              <td class="table-width-10">-->
-<!--                {{ item.status }}-->
-<!--              </td>-->
-<!--              <td class="table-width-10">-->
-<!--                {{ item.brand }}-->
-<!--              </td>-->
-<!--              <td class="table-width-10">-->
-<!--                {{ item.action }}-->
-<!--              </td>-->
-<!--            </tr>-->
-<!--            </tbody>-->
-          </VTable>
+          <VDataTable :items-per-page-options="5" :items="items"/>
         </VCol>
       </VRow>
     </VCard>
