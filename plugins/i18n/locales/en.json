@@ -12,6 +12,10 @@
     "cancellation_of_application": "Pembatalan Permohonan",
     "invoice": "invoice"
   },
+  "registrasi_shln": "Registrasi shln",
+  "sh_luar_negeri": "SH Luar Negeri",
+  "shln_submission" : "Submission",
+  "shln_invoice" : "Invoice",
   "uam_role": "Role",
   "uam_user": "User",
   "Error": "Error",
