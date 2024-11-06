@@ -1,0 +1,92 @@
+{
+    "dashboard": "Dashboard",
+    "registrasi_sh": "Registrasi SH",
+    "Sertifikasi": "Certification",
+    "pengajuan_reguler": "Regular Submission",
+    "tagihan_jatuh_tempo": "Due Date Invoice",
+    "tagihan_invoice": "Invoice",
+    "manajemen_pengguna": "User Management",
+    "pendaftaran_online": {
+        "title": "Pendaftaran Online",
+        "bahan_non_sertif": "Persetujuan Bahan Non Sertifikasi",
+        "distribusi_kf": "Distribusi ke Sekretariat KF",
+        "verifikasi_ol": "Verifikasi Online",
+        "status_komite": "Status Diterima Komite Fatwa",
+        "verifikasi_kf": "Laporan Verifikasi Sekretariat KF",
+        "verifikasi_sd": "Verifikasi Self Declare",
+        "laporan_verifikasi": "Laporan Verifikasi",
+        "verifikasi_auditor": "Verifikasi Auditor",
+        "verifikasi_fasilitator": "Verifikasi Fasilitator",
+        "entri_data_sert_penyelia": "Entri Data Sertifikasi Penyelia",
+        "info_bayar": "Informasi Pembayaran",
+        "update_sidang_fatwa": "Update Sidang Fatwa",
+        "penerbit_sertifikat": "Penerbitan Sertifikat",
+        "penerbit_sertifikat_sd": "Penerbitan Sertifikat Self Declare",
+        "lampiran_sertifikat": "Lampiran Sertifikat",
+        "proses_persetujuan": "Proses Persetujuan",
+        "perubahan_produk": "Perubahan Produk",
+        "daftar_fasilitasi": "Daftar Fasilitasi",
+        "duplikat_data": "Duplikat Data",
+        "permohonan_rev_sh": "Permohonan Revisi SH"
+    },
+    "fasilitator": {
+        "new_fasilitator": "New Fasilitator",
+        "inquiry": "Inquiry",
+        "cancellation_of_application": "Pembatalan Permohonan",
+        "invoice": "invoice"
+    },
+    "registrasi_shln": "Registrasi shln",
+    "sh_luar_negeri": "SH Luar Negeri",
+    "shln_submission": "Submission",
+    "shln_invoice": "Invoice",
+    "uam_role": "Role",
+    "uam_user": "User",
+    "Error": "Error",
+    "$vuetify": {
+        "badge": "Badge",
+        "noDataText": "No data available",
+        "loading": "loading",
+        "close": "Close",
+        "open": "open",
+        "dataFooter": {
+            "itemsPerPageText": "Items per page:",
+            "itemsPerPageAll": "All",
+            "pageText": "{0}-{1} of {2}",
+            "firstPage": "First Page",
+            "prevPage": "Previous Page",
+            "nextPage": "Next Page",
+            "lastPage": "Last Page"
+        },
+        "pagination": {
+            "ariaLabel": {
+                "root": "root",
+                "previous": "previous",
+                "next": "next",
+                "currentPage": "currentPage",
+                "page": "page",
+                "first": "first",
+                "last": "last"
+            }
+        },
+        "carousel": {
+            "ariaLabel": {
+                "delimiter": "Carousel slide {0} of {1}"
+            }
+        },
+        "input": {
+            "clear": "clear",
+            "appendAction": "appendAction",
+            "prependAction": "prependAction",
+            "counterSize": "counterSize",
+            "otp": "otp"
+        },
+        "fileInput": {
+            "counterSize": "counterSize"
+        },
+        "rating": {
+            "ariaLabel": {
+                "item": "item"
+            }
+        }
+    }
+}

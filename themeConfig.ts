@@ -37,18 +37,8 @@ export const { themeConfig, layoutConfig } = defineThemeConfig({
         },
         {
           label: "Indonesia",
-          i18nLang: "in",
+          i18nLang: "id",
           isRTL: false,
-        },
-        {
-          label: "French",
-          i18nLang: "fr",
-          isRTL: false,
-        },
-        {
-          label: "Arabic",
-          i18nLang: "ar",
-          isRTL: true,
         },
       ],
     },

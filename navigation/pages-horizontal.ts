@@ -44,6 +44,92 @@ export default [
         ],
       },
       {
+        title: "pendaftaran_online.title",
+        icon: { icon: "fa-drivers-license-o" },
+        children: [
+          {
+            title: "pendaftaran_online.bahan_non_sertif",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.distribusi_kf",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.verifikasi_ol",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.status_komite",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.verifikasi_kf",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.verifikasi_sd",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.laporan_verifikasi",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.verifikasi_auditor",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.verifikasi_fasilitator",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.entri_data_sert_penyelia",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.info_bayar",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.update_sidang_fatwa",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.penerbit_sertifikat",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.penerbit_sertifikat_sd",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.lampiran_sertifikat",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.proses_persetujuan",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.perubahan_produk",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.daftar_fasilitasi",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.duplikat_data",
+            to: "sertifikasi-halal-reguler",
+          },
+          {
+            title: "pendaftaran_online.permohonan_rev_sh",
+            to: "sertifikasi-halal-reguler",
+          },
+        ],
+      },
+      {
         title: "fasilitator.new_fasilitator",
         icon: { icon: "ri-home-smile-line" },
         children: [
@@ -112,4 +198,4 @@ export default [
       },
     ],
   },
-]
+];
