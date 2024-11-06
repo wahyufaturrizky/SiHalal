@@ -46,33 +46,66 @@ export default [
     ],
   },
   {
-    title: 'registrasi_shln',
-    icon: { icon: 'ri-more-line' },
+    title: 'fasilitator.new_fasilitator',
+    icon: { icon: 'ri-home-smile-line' },
     children: [
       {
-        title: 'sh_luar_negeri',
-        icon: { icon: 'ri-id-card-line' },
+        title: 'fasilitator.inquiry',
+        to: 'fasilitator-list-inquiry-facilitation',
+      },
+      {
+        title: 'fasilitator.cancellation_of_application',
+        to: 'fasilitator-list-canceled-facilitation',
+      },
+    ],
+  },
+  {
+    title: "registrasi_sh",
+    icon: { icon: "ri-more-line" },
+    children: [
+      {
+        title: "sh_dalam_negeri",
+        icon: { icon: "ri-home-smile-line" },
         children: [
           {
-            title: 'shln_submission',
-            to: 'sertifikasi-halal-shln-submission',
+            title: "pengajuan_reguler",
+            to: "sertifikasi-halal-reguler",
           },
+        ],
+      },
+    ],
+  },
+
+  {
+    title: "registrasi_sh",
+    icon: { icon: "ri-more-line" },
+    children: [
+      {
+        title: "sh_dalam_negeri",
+        icon: { icon: "ri-home-smile-line" },
+        children: [
           {
-            title: 'shln_invoice',
-            to: 'sertifikasi-halal-shln-invoice',
+            title: "pengajuan_reguler",
+            to: "sertifikasi-halal-reguler",
           },
         ],
       },
     ],
   },
   {
-    title: "New Fasilitator",
-    icon: { icon: "ri-home-smile-line" },
+    title: "registrasi_sh",
+    icon: { icon: "ri-more-line" },
     children: [
       {
-        title: "Inquiry",
-        to: "fasilitator-list-inquiry-facilitation",
+        title: "sh_dalam_negeri",
+        icon: { icon: "ri-home-smile-line" },
+        children: [
+          {
+            title: "pengajuan_reguler",
+            to: "sertifikasi-halal-reguler",
+          },
+        ],
       },
     ],
   },
-];
+]

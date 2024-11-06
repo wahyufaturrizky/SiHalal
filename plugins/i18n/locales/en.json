@@ -6,6 +6,11 @@
   "tagihan_jatuh_tempo": "Due Date Invoice",
   "tagihan_invoice": "Invoice",
   "manajemen_pengguna": "User Management",
+  "fasilitator": {
+    "new_fasilitator": "New Fasilitator",
+    "inquiry": "Inquiry",
+    "cancellation_of_application": "Pembatalan Permohonan"
+  },
   "registrasi_shln": "Registrasi shln",
   "sh_luar_negeri": "SH Luar Negeri",
   "shln_submission" : "Submission",
