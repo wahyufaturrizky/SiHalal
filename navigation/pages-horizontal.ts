@@ -43,23 +43,23 @@ export default [
           },
         ],
       },
-    ],
-  },
-  {
-    title: "fasilitator.new_fasilitator",
-    icon: { icon: "ri-home-smile-line" },
-    children: [
       {
-        title: "fasilitator.inquiry",
-        to: "fasilitator-list-inquiry-facilitation",
-      },
-      {
-        title: "fasilitator.cancellation_of_application",
-        to: "fasilitator-list-canceled-facilitation",
-      },
-      {
-        title: "fasilitator.invoice.",
-        to: "fasilitator-list-invoice",
+        title: "fasilitator.new_fasilitator",
+        icon: { icon: "ri-home-smile-line" },
+        children: [
+          {
+            title: "fasilitator.inquiry",
+            to: "fasilitator-list-inquiry-facilitation",
+          },
+          {
+            title: "fasilitator.cancellation_of_application",
+            to: "fasilitator-list-canceled-fasilitation",
+          },
+          {
+            title: "fasilitator.invoice",
+            to: "fasilitator-list-invoice",
+          },
+        ],
       },
     ],
   },
