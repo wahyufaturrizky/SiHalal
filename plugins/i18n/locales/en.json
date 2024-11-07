@@ -1,11 +1,83 @@
 {
   "dashboard": "Dashboard",
-  "registrasi_sh": "Registrasi SH",
+  "registrar": "Registrar",
+  "facilitator_profile": "Profile",
+  "registrasi_sh": "SH Registration",
   "Sertifikasi": "Certification",
   "pengajuan_reguler": "Regular Submission",
   "tagihan_jatuh_tempo": "Due Date Invoice",
   "tagihan_invoice": "Invoice",
   "manajemen_pengguna": "User Management",
+  "pendaftaran_online": {
+    "title": "Pendaftaran Online",
+    "bahan_non_sertif": "Persetujuan Bahan Non Sertifikasi",
+    "distribusi_kf": "Distribusi ke Sekretariat KF",
+    "verifikasi_ol": "Verifikasi Online",
+    "status_komite": "Status Diterima Komite Fatwa",
+    "verifikasi_kf": "Laporan Verifikasi Sekretariat KF",
+    "verifikasi_sd": "Verifikasi Self Declare",
+    "laporan_verifikasi": "Laporan Verifikasi",
+    "verifikasi_auditor": "Verifikasi Auditor",
+    "verifikasi_fasilitator": "Verifikasi Fasilitator",
+    "entri_data_sert_penyelia": "Entri Data Sertifikasi Penyelia",
+    "info_bayar": "Informasi Pembayaran",
+    "update_sidang_fatwa": "Update Sidang Fatwa",
+    "penerbit_sertifikat": "Penerbitan Sertifikat",
+    "penerbit_sertifikat_sd": "Penerbitan Sertifikat Self Declare",
+    "lampiran_sertifikat": "Lampiran Sertifikat",
+    "proses_persetujuan": "Proses Persetujuan",
+    "perubahan_produk": "Perubahan Produk",
+    "daftar_fasilitasi": "Daftar Fasilitasi",
+    "duplikat_data": "Duplikat Data",
+    "permohonan_rev_sh": "Permohonan Revisi SH"
+  },
+  "fasilitator": {
+    "new_fasilitator": "New Fasilitator",
+    "inquiry": "Inquiry",
+    "cancellation_of_application": "Pembatalan Permohonan",
+    "invoice": "invoice"
+  },
+  "registrasi_shln": "Registrasi SHLN",
+  "sh_luar_negeri": "SH Luar Negeri",
+  "sh_domestic": {
+    "title": "SH Domestic",
+    "self_declare": "Self Declare Submission",
+    "status_request": "Status Request",
+    "revision": "Revisi Sertifikasi Halal",
+    "bill": "Bill",
+    "due_bill": "Due Bill",
+    "guide": "Guidance & Halal Label"
+  },
+  "internal_audit": {
+    "title": "Internal Audit",
+    "entry": "Internal Audit Entry",
+    "status": "Observation Status"
+  },
+  "facilitate": {
+    "heading": "Facilitate Registration",
+    "heading-invoice": "Invoice",
+    "entry": "Facilitate Entry",
+    "list": "Facilitate List",
+    "invoice": "Facilitate Invoice"
+  },
+  "pelaku_usaha": {
+    "heading": "Daftar Pelaku Usaha",
+    "inquery": "Inquery",
+    "cancel": "Cancelation"
+  },
+  "information": {
+    "heading": "Information",
+    "material": {
+      "title": "Material",
+      "faq": "FAQ",
+      "reference": "Reference"
+    }
+  },
+  "shln_submission": "Submission",
+  "shln_invoice": "Invoice",
+  "shln_verification": "Verifikasi",
+  "shln_payment": "Pembayaran",
+  "shln_inquiry": "Inquiry",
   "uam_role": "Role",
   "uam_user": "User",
   "Error": "Error",
