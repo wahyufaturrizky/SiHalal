@@ -22,7 +22,12 @@ import {
   runSVGO,
 } from "@iconify/tools";
 import type { IconifyJSON } from "@iconify/types";
-import { getIcons, getIconsCSS, stringToIcon } from "@iconify/utils";
+import {
+  getIcons,
+  getIconsCSS,
+  mergeIconData,
+  stringToIcon,
+} from "@iconify/utils";
 
 /**
  * Script configuration
@@ -164,6 +169,18 @@ const target = join(__dirname, "icons.css");
       const content = JSON.parse(
         await fs.readFile(filename, "utf8")
       ) as IconifyJSON;
+      if (content.aliases) {
+        Object.keys(content.aliases).forEach((aliasName) => {
+          const alias = content.aliases[aliasName];
+          if (alias.parent && content.icons[alias.parent]) {
+            // Create a full icon from alias and parent
+            content.icons[aliasName] = mergeIconData(
+              content.icons[alias.parent],
+              alias
+            );
+          }
+        });
+      }
 
       // Filter icons
       if (typeof item !== "string" && item.icons?.length) {
