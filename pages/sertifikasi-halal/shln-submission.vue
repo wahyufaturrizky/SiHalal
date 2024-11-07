@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import NewRequestDialog from "@/views/pages/shln/NewRequestDialog.vue"
+import NewRequestDialog from "@/views/pages/shln/NewRequestDialog.vue";
 
 const items = ref([{
   'No' : '1',
@@ -29,7 +29,7 @@ const requestDialogVisible = ref(false)
 const router = useRouter()
 const hanleSubmitRequest = answer => {
   console.log('answer request : ', answer)
-  router.push("/sertifikasi-halal/shln-detail")
+  router.push("/sertifikasi-halal/shln-detail/123456789")
 }
 
 const openModalsRequest = () => {
