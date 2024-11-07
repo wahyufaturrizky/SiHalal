@@ -49,7 +49,7 @@ const errors = ref<Record<string, string | undefined>>({
   email: undefined,
   password: undefined,
 });
-const turnstile = useState("turnstile");
+const turnstile = ref();
 const refVForm = ref<VForm>();
 
 const credentials = ref({
@@ -167,29 +167,18 @@ watch(turnstile, async (newValue, oldValue) => {
                   :type="isPasswordVisible ? 'text' : 'password'"
                   :error-messages="errors.password"
                   :append-inner-icon="
-                    isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'
+                    isPasswordVisible
+                      ? 'fa-eye-slash fa-reguler'
+                      : 'fa-eye fa-reguler'
                   "
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
 
-                <div
-                  class="d-flex align-center flex-wrap justify-space-between my-6 gap-x-2"
-                >
-                  <VCheckbox v-model="rememberMe" label="Remember me" />
-                  <!-- <NuxtLink
-                    class="text-primary"
-                    :to="{ name: 'forgot-password' }"
-                    >
-                    Forgot Password?
-                  </NuxtLink> -->
-                </div>
                 <div class="my-6 gap-x-2">
                   <NuxtTurnstile v-model="turnstile" class="text-center" />
                 </div>
 
-                <VBtn block type="submit" :disabled="turnstile === null">
-                  Login
-                </VBtn>
+                <VBtn block type="submit" :disabled="!turnstile"> Login </VBtn>
               </VCol>
 
               <!-- create account -->
@@ -197,7 +186,7 @@ watch(turnstile, async (newValue, oldValue) => {
                 <span class="d-inline-block"> Belum punya akun ?</span>
                 <NuxtLink
                   class="text-primary ms-1 d-inline-block text-body-1"
-                  :to="{ name: 'index' }"
+                  :to="{ name: 'register' }"
                 >
                   Daftar di sini
                 </NuxtLink>
