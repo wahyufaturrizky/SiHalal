@@ -1,8 +1,10 @@
 {
     "dashboard": "Dashboard",
+    "registrar": "Pendaftar",
     "registrasi_sh": "Registrasi SH",
+    "facilitator_profile": "Profil",
     "Sertifikasi": "Certification",
-    "pengajuan_reguler": "Regular Submission",
+    "pengajuan_reguler": "Pengajuan Reguler",
     "tagihan_jatuh_tempo": "Due Date Invoice",
     "tagihan_invoice": "Invoice",
     "manajemen_pengguna": "User Management",
@@ -34,6 +36,40 @@
         "inquiry": "Inquiry",
         "cancellation_of_application": "Pembatalan Permohonan",
         "invoice": "invoice"
+    },
+    "sh_domestic": {
+        "title": "SH Dalam Negeri",
+        "self_declare": "Pengajuan Self Declare",
+        "status_request": "Status Permohonan",
+        "revision": "Revisi Sertifikasi Halal",
+        "bill": "Tagihan",
+        "due_bill": "Jatuh Tempo",
+        "guide": "Pedoman & Label Halal"
+    },
+    "internal_audit": {
+        "title": "Audit Internal",
+        "entry": "Pengisian Audit Internal",
+        "status": "Status Pengawasan"
+    },
+    "facilitate": {
+        "heading": "Registrasi Fasilitasi",
+        "heading-invoice": "Invoice",
+        "entry": "Entri Fasilitasi",
+        "list": "Daftar Fasilitasi",
+        "invoice": "Invoice Fasilitasi"
+    },
+    "pelaku_usaha": {
+        "heading": "Daftar Pelaku Usaha",
+        "inquery": "Inquery",
+        "cancel": "Pembatalan"
+    },
+    "information": {
+        "heading": "Informasi",
+        "material": {
+            "title": "Materi",
+            "faq": "FAQ",
+            "reference": "Referensi"
+        }
     },
     "registrasi_shln": "Registrasi SHLN",
     "sh_luar_negeri": "SH Luar Negeri",

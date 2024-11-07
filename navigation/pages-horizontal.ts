@@ -8,6 +8,11 @@ export default [
     subject: "AclDemo",
   },
   {
+    title: "Pelaku Usaha",
+    icon: { icon: "mdi-account-tie" },
+    to: "pelaku-usaha",
+  },
+  {
     title: "registrasi_sh",
     icon: { icon: "ri-more-line" },
     children: [
@@ -130,22 +135,106 @@ export default [
         ],
       },
       {
-        title: "fasilitator.new_fasilitator",
-        icon: { icon: "ri-home-smile-line" },
+        title: "sh_domestic.title",
+        icon: { icon: "mdi-card-account-details-outline" },
         children: [
           {
-            title: "fasilitator.inquiry",
-            to: "fasilitator-list-inquiry-facilitation",
+            title: "pengajuan_reguler",
+            to: "sh-domestic-submission-reguler",
           },
           {
-            title: "fasilitator.cancellation_of_application",
-            to: "fasilitator-list-canceled-fasilitation",
+            title: "sh_domestic.self_declare",
+            to: "sh-domestic-submission-self-declare",
           },
           {
-            title: "fasilitator.invoice",
-            to: "fasilitator-list-invoice",
+            title: "sh_domestic.status_request",
+            to: "sh-domestic-submission-status",
+          },
+          {
+            title: "sh_domestic.revision",
+            to: "sh-domestic-certificate-revision",
+          },
+          {
+            title: "sh_domestic.bill",
+            to: "sh-domestic-bill",
+          },
+          {
+            title: "sh_domestic.due_bill",
+            to: "sh-domestic-due-bill",
+          },
+          {
+            title: "sh_domestic.guide",
+            to: "sh-domestic-guide-halal-label",
           },
         ],
+      },
+      {
+        title: "internal_audit.title",
+        icon: { icon: "mdi-list-box-outline" },
+        children: [
+          {
+            title: "internal_audit.entry",
+            to: "internal-audit-entry",
+          },
+          {
+            title: "internal_audit.status",
+            to: "internal-audit-status",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "registrar",
+    icon: { icon: "ri-more-line" },
+    children: [
+      {
+        title: "Profile",
+        to: "facilitator-profile",
+        icon: { icon: "mdi-account" },
+      },
+    ],
+  },
+  {
+    title: "facilitate.heading",
+    icon: { icon: "ri-more-line" },
+    children: [
+      {
+        title: "facilitate.entry",
+        to: "facilitation-entry",
+        icon: { icon: "mdi-card-account-details-outline" },
+      },
+      {
+        title: "facilitate.list",
+        to: "facilitation-register",
+        icon: { icon: "mdi-list-box-outline" },
+      },
+    ],
+  },
+  {
+    title: "pelaku_usaha.heading",
+    icon: { icon: "ri-more-line" },
+    children: [
+      {
+        title: "pelaku_usaha.inquery",
+        to: "facilitator-list-inquiry-facilitation",
+        icon: { icon: "mdi-help-circle-outline" },
+      },
+      {
+        title: "pelaku_usaha.cancel",
+        to: "facilitator-list-canceled-facilitation",
+        icon: { icon: "mdi-calendar-remove-outline" },
+      },
+    ],
+  },
+  {
+    title: "facilitate.heading-invoice",
+    icon: { icon: "ri-more-line" },
+    children: [
+      {
+        title: "facilitate.invoice",
+        to: "facilitator-list-invoice",
+        icon: { icon: "mdi-invoice-text-outline" },
       },
     ],
   },
@@ -178,6 +267,20 @@ export default [
             to: "sertifikasi-halal-shln-inquiry",
           },
         ],
+      },
+    ],
+  },
+  {
+    title: "information.material.title",
+    icon: { icon: "mdi-book-open-blank-variant-outline" },
+    children: [
+      {
+        title: "information.material.faq",
+        to: "material-faq",
+      },
+      {
+        title: "information.material.reference",
+        to: "material-reference",
       },
     ],
   },
