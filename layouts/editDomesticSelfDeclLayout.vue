@@ -37,7 +37,9 @@ onMounted(() => {
             ><PelakuUsahaMain></PelakuUsahaMain
           ></VTabsWindowItem>
           <VTabsWindowItem value="2"><PengajuanMain /></VTabsWindowItem>
-          <VTabsWindowItem value="3">three</VTabsWindowItem>
+          <VTabsWindowItem value="3"
+            ><PabrikOutletMain></PabrikOutletMain
+          ></VTabsWindowItem>
           <VTabsWindowItem value="4">four</VTabsWindowItem>
           <VTabsWindowItem value="5">five</VTabsWindowItem>
           <VTabsWindowItem value="6">six</VTabsWindowItem>
