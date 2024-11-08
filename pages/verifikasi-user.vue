@@ -8,8 +8,6 @@ import authV2LoginIllustrationBorderedDark from "@images/pages/auth-v2-login-ill
 import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-illustration-bordered-light.png";
 import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
 
-// import Otp from '@layouts/components/otp.vue'
-
 const { signIn, data: sessionData } = useAuth();
 const { mdAndUp } = useDisplay();
 
@@ -139,10 +137,10 @@ const isDisabledKodeNomorHandphone = computed(() => {
   return !kodeOtpNoHandphone.value || kodeOtpNoHandphone.value.length !== 6;
 });
 
-const cooldown = ref(60);
+const cooldown = ref(30);
 
 const startCooldown = () => {
-  cooldown.value = 60;
+  cooldown.value = 30;
 
   const interval = setInterval(() => {
     if (cooldown.value > 0) cooldown.value--;
@@ -150,11 +148,19 @@ const startCooldown = () => {
   }, 1000);
 };
 
+const notifBar = useSnackbar();
+
+const notif = () => {
+  notifBar.sendSnackbar("Kode Verifikasi Berhasil Dikirim Ulang", "success");
+};
+
 const resendCode = () => {
+  console.log("Kode dikirim ulang!");
+
+  // notif();
   startCooldown();
 
   // Tambahkan logic pengiriman ulang kode di sini
-  console.log("Kode dikirim ulang!");
 };
 
 onMounted(() => {
@@ -229,9 +235,9 @@ const onSubmitKodeNomerHandphone = () => {};
                   </VBtn>
 
                   <RouterLink to="/register" class="back-link">
-                    <VBtn class="back-icon">
+                    <span class="back-icon">
                       ← Kembali ke Halaman Buat Akun
-                    </VBtn>
+                    </span>
                   </RouterLink>
                 </div>
                 <!-- verifikasi end email -->
@@ -247,11 +253,16 @@ const onSubmitKodeNomerHandphone = () => {};
                   />
                   <p>
                     Belum terima kode?
-                    <span v-if="cooldown > 0">({{ cooldown }}) detik</span>
+                    <span v-if="cooldown > 0"
+                      >Kirim Ulang dalam ({{ cooldown }}) detik</span
+                    >
                     <span v-else>
-                      <a href="#" @click.prevent="resendCode">Kirim Ulang</a>
+                      <VBtn variant="text" @click="resendCode"
+                        >Kirim Ulang</VBtn
+                      >
                     </span>
                   </p>
+                  <!-- <OtpVerification /> -->
                   <VBtn
                     block
                     type="submit"
@@ -312,9 +323,13 @@ const onSubmitKodeNomerHandphone = () => {};
                 />
                 <p>
                   Belum terima kode?
-                  <span v-if="cooldown > 0">({{ cooldown }}) detik</span>
+                  <span v-if="cooldown > 0"
+                    >Kirim Ulang dalam ({{ cooldown }}) detik</span
+                  >
                   <span v-else>
-                    <a href="#" @click.prevent="resendCode"> Kirim Ulang </a>
+                    <VBtn variant="text" @click="resendCode">
+                      Kirim Ulang
+                    </VBtn>
                   </span>
                 </p>
                 <VBtn
