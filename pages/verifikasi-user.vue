@@ -25,7 +25,7 @@ const authThemeImg = useGenerateImageVariant(
 // )
 
 definePageMeta({
-  layout: "forgotPassLayout",
+  layout: "blank",
   unauthenticatedOnly: true,
 });
 
@@ -137,10 +137,10 @@ const isDisabledKodeNomorHandphone = computed(() => {
   return !kodeOtpNoHandphone.value || kodeOtpNoHandphone.value.length !== 6;
 });
 
-const cooldown = ref(30);
+const cooldown = ref(60);
 
 const startCooldown = () => {
-  cooldown.value = 30;
+  cooldown.value = 60;
 
   const interval = setInterval(() => {
     if (cooldown.value > 0) cooldown.value--;
@@ -148,14 +148,10 @@ const startCooldown = () => {
   }, 1000);
 };
 
-const notifBar = useSnackbar();
-
-const notif = () => {
-  notifBar.sendSnackbar("Kode Verifikasi Berhasil Dikirim Ulang", "success");
-};
+const { sendSnackbar } = useSnackbar();
 
 const resendCode = () => {
-  console.log("Kode dikirim ulang!");
+  sendSnackbar("Kode Verifikasi Berhasil Dikirim Ulang", "success");
 
   // notif();
   startCooldown();
@@ -175,16 +171,6 @@ const onSubmitKodeNomerHandphone = () => {};
 </script>
 
 <template>
-  <!--
-    <VSnackbar
-    v-model="captchaError"
-    location="top"
-    color="error"
-    >
-    Captcha failed
-    </VSnackbar>
-  -->
-
   <VRow no-gutters class="auth-wrapper">
     <VCol
       cols="12"
@@ -234,11 +220,9 @@ const onSubmitKodeNomerHandphone = () => {};
                     Kirim Kode Verifikasi
                   </VBtn>
 
-                  <RouterLink to="/register" class="back-link">
-                    <span class="back-icon">
-                      ← Kembali ke Halaman Buat Akun
-                    </span>
-                  </RouterLink>
+                  <a href="/register" class="back-icon">
+                    ← Kembali ke Halaman Buat Akun
+                  </a>
                 </div>
                 <!-- verifikasi end email -->
 
@@ -257,9 +241,7 @@ const onSubmitKodeNomerHandphone = () => {};
                       >Kirim Ulang dalam ({{ cooldown }}) detik</span
                     >
                     <span v-else>
-                      <VBtn variant="text" @click="resendCode"
-                        >Kirim Ulang</VBtn
-                      >
+                      <a @click="resendCode">Kirim Ulang</a>
                     </span>
                   </p>
                   <!-- <OtpVerification /> -->
@@ -272,11 +254,9 @@ const onSubmitKodeNomerHandphone = () => {};
                     Verifikasi Kode
                   </VBtn>
 
-                  <RouterLink to="/register" class="back-link">
-                    <span class="back-icon">
-                      ← Kembali ke Halaman Buat Akun</span
-                    >
-                  </RouterLink>
+                  <a href="/register" class="back-icon">
+                    ← Kembali ke Halaman Buat Akun
+                  </a>
                 </div>
                 <!-- end verifikasi   email -->
               </VCol>
@@ -308,9 +288,9 @@ const onSubmitKodeNomerHandphone = () => {};
                 >
                   Kirim Kode Verifikasi
                 </VBtn>
-                <RouterLink to="/register" class="back-link">
-                  <span class="back-icon"> ← Kembali ke Halaman Buat Akun</span>
-                </RouterLink>
+                <a href="/register" class="back-icon">
+                  ← Kembali ke Halaman Buat Akun
+                </a>
               </div>
 
               <div v-if="isOtpNoHandphone">
@@ -327,9 +307,7 @@ const onSubmitKodeNomerHandphone = () => {};
                     >Kirim Ulang dalam ({{ cooldown }}) detik</span
                   >
                   <span v-else>
-                    <VBtn variant="text" @click="resendCode">
-                      Kirim Ulang
-                    </VBtn>
+                    <a @click="resendCode">Kirim Ulang</a>
                   </span>
                 </p>
                 <VBtn
@@ -340,9 +318,9 @@ const onSubmitKodeNomerHandphone = () => {};
                 >
                   Verifikasi Kode
                 </VBtn>
-                <RouterLink to="/register" class="back-link">
-                  <span class="back-icon"> ← Kembali ke Halaman Buat Akun</span>
-                </RouterLink>
+                <a href="/register" class="back-icon">
+                  ← Kembali ke Halaman Buat Akun
+                </a>
               </div>
             </VWindowItem>
           </VWindow>
