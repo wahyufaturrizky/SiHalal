@@ -3,24 +3,58 @@
     <div style="max-height: 50svh; overflow-y: auto">
       <VRow>
         <VCol :cols="12">
-          <VCard height="20svh" title="Data Pelaku Usaha">
-            <VCardText>tes</VCardText>
+          <VCard title="Data Pelaku Usaha">
+            <VCardText>
+              <DataPelakuUsaha></DataPelakuUsaha>
+            </VCardText>
           </VCard>
         </VCol>
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <VCard title="Penanggung Jawab"></VCard>
+          <VCard title="Penanggung Jawab">
+            <VCardText><PenanggungJawab></PenanggungJawab></VCardText>
+          </VCard>
         </VCol>
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <VCard title="Aspek Legal"></VCard>
+          <VCard>
+            <VCardTitle>
+              <VRow>
+                <VCol cols="5"><p>Aspek Legal</p></VCol>
+                <VCol cols="7" style="display: flex; justify-content: end"
+                  ><VBtn
+                    density="compact"
+                    variant="outlined"
+                    append-icon="fa-plus"
+                    >Tambah</VBtn
+                  ></VCol
+                >
+              </VRow>
+            </VCardTitle>
+            <VCardText><AspekLegalTable></AspekLegalTable></VCardText>
+          </VCard>
         </VCol>
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <VCard title="Penyelia Halal"></VCard>
+          <VCard>
+            <VCardTitle>
+              <VRow>
+                <VCol cols="5"><p>Penyelia Halal</p></VCol>
+                <VCol cols="7" style="display: flex; justify-content: end"
+                  ><VBtn
+                    density="compact"
+                    variant="outlined"
+                    append-icon="fa-plus"
+                    >Tambah</VBtn
+                  ></VCol
+                >
+              </VRow>
+            </VCardTitle>
+            <VCardText><AspekLegalTable></AspekLegalTable></VCardText>
+          </VCard>
         </VCol>
       </VRow>
       <VRow>
