@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import type { User } from "next-auth";
-import type { NuxtError } from "nuxt/app";
-
 import { themeConfig } from "@themeConfig";
 import { useDisplay } from "vuetify";
 import { VForm } from "vuetify/components/VForm";
@@ -17,7 +14,7 @@ import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustratio
 import authV2LoginMaskDark from "@images/pages/auth-v2-login-mask-dark.png";
 import authV2LoginMaskLight from "@images/pages/auth-v2-login-mask-light.png";
 
-const { signIn, data: sessionData } = useAuth();
+const { signIn, data: sessionData, status } = useAuth();
 const { mdAndUp } = useDisplay();
 
 const authThemeImg = useGenerateImageVariant(
@@ -53,46 +50,32 @@ const turnstile = ref();
 const refVForm = ref<VForm>();
 
 const credentials = ref({
-  email: "admin@demo.com",
-  password: "admin",
+  email: "dito@email.com",
+  password: "password",
 });
 
 const rememberMe = useState("rememberMe", () => false);
 
 async function login() {
-  const response = await signIn("credentials", {
-    callbackUrl: "/",
-    redirect: false,
-    email: credentials.value.email,
-    password: credentials.value.password,
-    token: turnstile.value,
-  });
-
-  // If error is not null => Error is occurred
-  if (response && response.error) {
-    const apiStringifiedError = response.error;
-    const apiError: NuxtError = JSON.parse(apiStringifiedError);
-
-    errors.value = apiError.data as Record<string, string | undefined>;
-
-    // If err => Don't execute further
+  try {
+    const response = await signIn({
+      callbackUrl: "/",
+      redirect: false,
+      email: credentials.value.email,
+      password: credentials.value.password,
+      token: turnstile.value,
+    });
+    navigateTo(route.query.to ? String(route.query.to) : "/", {
+      replace: true,
+    });
+  } catch (error) {
+    useSnackbar().sendSnackbar("username atau password salah", "error");
     return;
   }
 
-  // Reset error on successful login
-  errors.value = {};
+  // If error is not null => Error is occurred
 
   // Update user abilities
-  const { user } = sessionData.value!;
-
-  useCookie<Partial<User>>("userData").value = user;
-
-  // Save user abilities in cookie so we can retrieve it back on refresh
-  useCookie<User["abilityRules"]>("userAbilityRules").value = user.abilityRules;
-
-  ability.update(user.abilityRules ?? []);
-
-  navigateTo(route.query.to ? String(route.query.to) : "/", { replace: true });
 }
 const captchaError = useState("captchaError", () => false);
 const onSubmit = async () => {
@@ -101,17 +84,6 @@ const onSubmit = async () => {
     if (isValid) login();
   });
 };
-watch(turnstile, async (newValue, oldValue) => {
-  console.log(newValue);
-  const captchaResponse = await $fetch("/api/validateTurnstile", {
-    method: "POST",
-    body: { token: newValue },
-  });
-  if (!captchaResponse.success) {
-    captchaError.value = true;
-  }
-  isDisabledSubmit.value = false;
-});
 </script>
 
 <template>
@@ -138,6 +110,7 @@ watch(turnstile, async (newValue, oldValue) => {
           </h4>
           <p class="mb-0">
             Login untuk mengakses fitur pada web {{ themeConfig.app.title }}
+            {{ status }}
           </p>
         </VCardText>
 
@@ -149,7 +122,7 @@ watch(turnstile, async (newValue, oldValue) => {
                 <VTextField
                   v-model="credentials.email"
                   label="Email"
-                  placeholder="johndoe@email.com"
+                  placeholder="Masukkan Email"
                   type="email"
                   autofocus
                   :rules="[requiredValidator, emailValidator]"

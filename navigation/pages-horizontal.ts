@@ -4,8 +4,8 @@ export default [
     title: "dashboard",
     icon: { icon: "ri-home-smile-line" },
     to: "index",
-    action: "read",
-    subject: "AclDemo",
+    action: "manage",
+    subject: ["Pelaku Usaha"],
   },
   {
     title: "Pelaku Usaha",
