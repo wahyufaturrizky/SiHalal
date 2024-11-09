@@ -14,9 +14,6 @@ initConfigStore();
 const configStore = useConfigStore();
 const { isMobile } = useDevice();
 const snackbar = useSnackbar();
-watch(snackbar.isSnackbarVisible, (newVal, oldVal) => {
-  console.log(newVal);
-});
 if (isMobile) configStore.appContentLayoutNav = "vertical";
 </script>
 
