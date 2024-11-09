@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import AspekLegalCard from "@/components/pelakuUsahaProfile/AspekLegalCard.vue";
+import DivisiUnitUsaha from "@/components/pelakuUsahaProfile/DivisiUnitUsaha.vue";
+import PerizinanCard from "@/components/pelakuUsahaProfile/PerizinanCard.vue";
 import SubPelakuUsahaLayout from "@/layouts/subPelakuUsahaLayout.vue";
 const tablePabrikHeader = [
   { title: "No", key: "no" },
@@ -28,17 +31,20 @@ const tableOutletHeader = [
         >
       </VRow>
     </template>
+
+    <!-- left content -->
     <template #leftContent>
+      <VRow
+        ><VCol cols="12"><ProfileCard></ProfileCard></VCol
+      ></VRow>
       <VRow>
         <VCol cols="12">
-          <VCard>
-            <VCardTitle>
-              <VRow>
-                <VCol cols="5"><p>Aspek Legal</p></VCol>
-              </VRow>
-            </VCardTitle>
-            <VCardText><AspekLegalTable></AspekLegalTable></VCardText>
-          </VCard>
+          <PenanggungJawabCard></PenanggungJawabCard>
+        </VCol>
+      </VRow>
+      <VRow>
+        <VCol cols="12">
+          <AspekLegalCard></AspekLegalCard>
         </VCol>
       </VRow>
       <VRow>
@@ -82,41 +88,22 @@ const tableOutletHeader = [
         </VCol>
       </VRow>
     </template>
+
+    <!-- right content -->
     <template #rightContent>
       <VRow>
         <VCol :cols="12">
-          <VCard>
-            <VCardTitle>
-              <VRow>
-                <VCol cols="5"><p>Perizinan</p></VCol>
-              </VRow>
-            </VCardTitle>
-            <VCardText></VCardText>
-          </VCard>
+          <PerizinanCard></PerizinanCard>
         </VCol>
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <VCard>
-            <VCardTitle>
-              <VRow>
-                <VCol cols="5"><p>KBLI</p></VCol>
-              </VRow>
-            </VCardTitle>
-            <VCardText></VCardText>
-          </VCard>
+          <KBLICard></KBLICard>
         </VCol>
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <VCard>
-            <VCardTitle>
-              <VRow>
-                <VCol cols="5"><p>Divisi / Unit Usaha</p></VCol>
-              </VRow>
-            </VCardTitle>
-            <VCardText></VCardText>
-          </VCard>
+          <DivisiUnitUsaha></DivisiUnitUsaha>
         </VCol>
       </VRow>
     </template>
