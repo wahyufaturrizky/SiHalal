@@ -12,7 +12,7 @@ const isOpen = ref(true)
 </script>
 
 <template>
-  <VCard class="pa-6">
+  <VCard class="pa-4">
     <VRow justify="end">
       <VCol cols="11">
         <h5 class="text-h5">

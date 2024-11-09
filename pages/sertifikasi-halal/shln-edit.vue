@@ -1,5 +1,6 @@
 <template>
   <div>
+    <KembaliButton />
     <p class="text-h4">Edit Foreign Halal Certificate Requirements</p>
     <v-card class="pa-4">
       <v-tabs
