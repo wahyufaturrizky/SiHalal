@@ -1,5 +1,5 @@
 <template>
-  <VWindow v-model="domesticWindow">
+  <VWindow v-model="domesticWindow" :touch="false">
     <VWindowItem :value="1" style="min-width: 30dvw">
       <v-card-text>
         <p class="text-h5 font-weight-bold">Form Profil perusahaan</p>
