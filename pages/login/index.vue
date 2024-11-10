@@ -47,10 +47,11 @@ const errors = ref<Record<string, string | undefined>>({
   password: undefined,
 });
 const turnstile = ref();
+const buttonClicked = ref(false);
 const refVForm = ref<VForm>();
 
 const credentials = ref({
-  email: "dito@email.com",
+  email: "ditorp1511@gmail.com",
   password: "password",
 });
 
@@ -70,6 +71,7 @@ async function login() {
     });
   } catch (error) {
     useSnackbar().sendSnackbar("username atau password salah", "error");
+    buttonClicked.value = false;
     return;
   }
 
@@ -80,6 +82,8 @@ async function login() {
 const captchaError = useState("captchaError", () => false);
 const onSubmit = async () => {
   // sendSnackbar("error bang", "success");
+  buttonClicked.value = true;
+  console.log("ini", buttonClicked.value || !turnstile.value);
   refVForm.value?.validate().then(({ valid: isValid }) => {
     if (isValid) login();
   });
@@ -151,7 +155,13 @@ const onSubmit = async () => {
                   <NuxtTurnstile v-model="turnstile" class="text-center" />
                 </div>
 
-                <VBtn block type="submit" :disabled="!turnstile"> Login </VBtn>
+                <VBtn
+                  block
+                  type="submit"
+                  :disabled="!turnstile || buttonClicked"
+                >
+                  Login
+                </VBtn>
               </VCol>
 
               <!-- create account -->
