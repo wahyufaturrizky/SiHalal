@@ -11,6 +11,7 @@ import {
 
 interface Props {
   item: NavLink;
+  roles: string[];
 
   // ℹ️ We haven't added this prop in vertical nav because we don't need such differentiation in vertical nav for styling
   isSubItem?: boolean;
@@ -19,10 +20,12 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   isSubItem: false,
 });
+const isShown = props.roles.some((item) => props.item.roles?.includes(item));
 </script>
 
 <template>
   <li
+    v-if="isShown"
     class="nav-link"
     :class="[
       {
