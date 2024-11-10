@@ -1,21 +1,25 @@
 <script setup lang="ts">
+import { computed } from "vue"
+import { useDisplay } from "vuetify"
+
 const props = defineProps({
   parentBtnLabel: String,
   cardItem: Object,
-  cardWidth: Number,
 })
+
+const { mdAndUp } = useDisplay()
+
+const dialogMaxWidth = computed(() => {
+  return mdAndUp.value ? 700 : '90%'
+})
+
 </script>
 
 <template>
-  <div>
-    <VBtn variant="outlined">
-      {{ props.parentBtnLabel }}
-      <VDialog
-        activator="parent"
-        :max-width="props.cardWidth"
-      >
-        <slot name="content" />
-      </VDialog>
-    </VBtn>
-  </div>
+  <VBtn variant="outlined" block>
+    {{ props.parentBtnLabel }}
+    <VDialog activator="parent" :max-width="dialogMaxWidth">
+      <slot name="content" />
+    </VDialog>
+  </VBtn>
 </template>
