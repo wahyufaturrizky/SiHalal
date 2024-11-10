@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import AspekLegalCard from "@/components/pelakuUsahaProfile/AspekLegalCard.vue";
+import DivisiUnitUsaha from "@/components/pelakuUsahaProfile/DivisiUnitUsaha.vue";
+import PerizinanCard from "@/components/pelakuUsahaProfile/PerizinanCard.vue";
 import SubPelakuUsahaLayout from "@/layouts/subPelakuUsahaLayout.vue";
 const tablePabrikHeader = [
   { title: "No", key: "no" },
@@ -14,32 +17,6 @@ const tableOutletHeader = [
   { title: "Nama", key: "name" },
   { title: "Alamat", key: "address" },
 ];
-
-
-const tablePerizinanHeader = [
-  { title: "No", key: "no" },
-  { title: "Penerbit", key: "publisher" },
-  { title: "Nama Izin", key: "permission_name" },
-  { title: "Nomor", key: "number" },
-  { title: "Tanggal", key: "date" },
-  { title: "Document", key: "document"}
-]
-
-const tableKBLIHeader = [
-  { title: "No", key: "no" },
-  { title: "No. KBLI", key: "kbli_number" },
-  { title: "Nama KBLI", key: "kbli_name" },
-  { title: "Nama Usaha", key: "business_name" },
-  { title: "Alamat", key: "address" },
-  { title: "Modal Usaha", key: "business_capital"}
-]
-
-const tableBussinessUnitHeader = [
-  { title: "No", key: "no" },
-  { title: "Divisi / Unit Usaha", key: "bussiness_unit" },
-  { title: "Alamat", key: "address" },
-  { title: "Username", key: "username" }
-]
 </script>
 
 <template>
@@ -48,23 +25,26 @@ const tableBussinessUnitHeader = [
       <VRow>
         <VCol><h3>Detail Pelaku Usaha</h3></VCol>
         <VCol style="display: flex; justify-content: end"
-          ><VBtn density="compact" variant="outlined" prepend-icon=""
-            >Ubah</VBtn
-          ></VCol
+        ><VBtn density="compact" variant="outlined" prepend-icon=""
+        >Ubah</VBtn
+        ></VCol
         >
       </VRow>
     </template>
+
+    <!-- left content -->
     <template #leftContent>
+      <VRow
+      ><VCol cols="12"><ProfileCard></ProfileCard></VCol
+      ></VRow>
       <VRow>
         <VCol cols="12">
-          <VCard>
-            <VCardTitle>
-              <VRow>
-                <VCol cols="5"><p>Aspek Legal</p></VCol>
-              </VRow>
-            </VCardTitle>
-            <VCardText><AspekLegalTable></AspekLegalTable></VCardText>
-          </VCard>
+          <PenanggungJawabCard></PenanggungJawabCard>
+        </VCol>
+      </VRow>
+      <VRow>
+        <VCol cols="12">
+          <AspekLegalCard></AspekLegalCard>
         </VCol>
       </VRow>
       <VRow>
@@ -108,68 +88,22 @@ const tableBussinessUnitHeader = [
         </VCol>
       </VRow>
     </template>
+
+    <!-- right content -->
     <template #rightContent>
       <VRow>
         <VCol :cols="12">
-          <VCard>
-            <VCardTitle>
-              <VRow>
-                <VCol cols="5"><p>Perizinan</p>
-                  <BasicDataPopup
-                    parent-btn-label="Lihat Detail"
-                    :card-width="700"
-                  >
-                    <template #content>
-                      <VDataTable  :headers="tablePerizinanHeader"/>
-                    </template>
-                  </BasicDataPopup>
-                </VCol>
-              </VRow>
-            </VCardTitle>
-            <VCardText></VCardText>
-          </VCard>
+          <PerizinanCard></PerizinanCard>
         </VCol>
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <VCard>
-            <VCardTitle>
-              <VRow>
-                <VCol cols="5"><p>KBLI</p>
-                  <BasicDataPopup
-                    parent-btn-label="Lihat Detail"
-                    :card-width="700"
-                  >
-                    <template #content>
-                      <VDataTable :headers="tableKBLIHeader"/>
-                    </template>
-                  </BasicDataPopup>
-                </VCol>
-              </VRow>
-            </VCardTitle>
-            <VCardText></VCardText>
-          </VCard>
+          <KBLICard></KBLICard>
         </VCol>
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <VCard>
-            <VCardTitle>
-              <VRow>
-                <VCol cols="5"><p>Divisi / Unit Usaha</p>
-                  <BasicDataPopup
-                    parent-btn-label="Lihat Detail"
-                    :card-width="700"
-                  >
-                    <template #content>
-                      <VDataTable :headers="tableBussinessUnitHeader"/>
-                    </template>
-                  </BasicDataPopup>
-                </VCol>
-              </VRow>
-            </VCardTitle>
-            <VCardText></VCardText>
-          </VCard>
+          <DivisiUnitUsaha></DivisiUnitUsaha>
         </VCol>
       </VRow>
     </template>
