@@ -14,6 +14,32 @@ const tableOutletHeader = [
   { title: "Nama", key: "name" },
   { title: "Alamat", key: "address" },
 ];
+
+
+const tablePerizinanHeader = [
+  { title: "No", key: "no" },
+  { title: "Penerbit", key: "publisher" },
+  { title: "Nama Izin", key: "permission_name" },
+  { title: "Nomor", key: "number" },
+  { title: "Tanggal", key: "date" },
+  { title: "Document", key: "document"}
+]
+
+const tableKBLIHeader = [
+  { title: "No", key: "no" },
+  { title: "No. KBLI", key: "kbli_number" },
+  { title: "Nama KBLI", key: "kbli_name" },
+  { title: "Nama Usaha", key: "business_name" },
+  { title: "Alamat", key: "address" },
+  { title: "Modal Usaha", key: "business_capital"}
+]
+
+const tableBussinessUnitHeader = [
+  { title: "No", key: "no" },
+  { title: "Divisi / Unit Usaha", key: "bussiness_unit" },
+  { title: "Alamat", key: "address" },
+  { title: "Username", key: "username" }
+]
 </script>
 
 <template>
@@ -88,7 +114,16 @@ const tableOutletHeader = [
           <VCard>
             <VCardTitle>
               <VRow>
-                <VCol cols="5"><p>Perizinan</p></VCol>
+                <VCol cols="5"><p>Perizinan</p>
+                  <BasicDataPopup
+                    parent-btn-label="Lihat Detail"
+                    :card-width="700"
+                  >
+                    <template #content>
+                      <VDataTable  :headers="tablePerizinanHeader"/>
+                    </template>
+                  </BasicDataPopup>
+                </VCol>
               </VRow>
             </VCardTitle>
             <VCardText></VCardText>
@@ -100,7 +135,16 @@ const tableOutletHeader = [
           <VCard>
             <VCardTitle>
               <VRow>
-                <VCol cols="5"><p>KBLI</p></VCol>
+                <VCol cols="5"><p>KBLI</p>
+                  <BasicDataPopup
+                    parent-btn-label="Lihat Detail"
+                    :card-width="700"
+                  >
+                    <template #content>
+                      <VDataTable :headers="tableKBLIHeader"/>
+                    </template>
+                  </BasicDataPopup>
+                </VCol>
               </VRow>
             </VCardTitle>
             <VCardText></VCardText>
@@ -112,7 +156,16 @@ const tableOutletHeader = [
           <VCard>
             <VCardTitle>
               <VRow>
-                <VCol cols="5"><p>Divisi / Unit Usaha</p></VCol>
+                <VCol cols="5"><p>Divisi / Unit Usaha</p>
+                  <BasicDataPopup
+                    parent-btn-label="Lihat Detail"
+                    :card-width="700"
+                  >
+                    <template #content>
+                      <VDataTable :headers="tableBussinessUnitHeader"/>
+                    </template>
+                  </BasicDataPopup>
+                </VCol>
               </VRow>
             </VCardTitle>
             <VCardText></VCardText>
