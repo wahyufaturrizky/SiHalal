@@ -1,10 +1,12 @@
+<script setup lang="ts">
+const panelOpen = ref(0)
+</script>
+
 <template>
-  <VCard>
-    <VCardTitle>
-      <VRow>
-        <VCol cols="5"><p>Aspek Legal</p></VCol>
-      </VRow>
-    </VCardTitle>
-    <VCardText><AspekLegalTable></AspekLegalTable></VCardText>
-  </VCard>
+  <VExpansionPanels v-model="panelOpen">
+    <VExpansionPanel>
+      <VExpansionPanelTitle><h2>Aspek Legal</h2></VExpansionPanelTitle>
+      <VExpansionPanelText><AspekLegalTable /></VExpansionPanelText>
+    </VExpansionPanel>
+  </VExpansionPanels>
 </template>
