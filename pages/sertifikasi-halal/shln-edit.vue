@@ -2,34 +2,31 @@
   <div>
     <KembaliButton />
     <p class="text-h4">Edit Foreign Halal Certificate Requirements</p>
-    <v-card class="pa-4">
-      <v-tabs
-          v-model="tab">
-        <v-tab value="identity">identity</v-tab>
-        <v-tab value="document">document</v-tab>
-        <v-tab value="manufacture">manufacture</v-tab>
-        <v-tab value="product">product</v-tab>
-      </v-tabs>
+    <v-tabs v-model="tab">
+      <v-tab value="identity">identity</v-tab>
+      <v-tab value="document">document</v-tab>
+      <v-tab value="manufacture">manufacture</v-tab>
+      <v-tab value="product">product</v-tab>
+    </v-tabs>
 
-      <v-card-text>
-        <v-tabs-window v-model="tab">
-          <v-tabs-window-item value="identity">
-            <EditIdentity/>
-          </v-tabs-window-item>
+    <v-card-text>
+      <v-tabs-window v-model="tab">
+        <v-tabs-window-item value="identity">
+          <EditIdentity/>
+        </v-tabs-window-item>
 
-          <v-tabs-window-item value="document">
-            <EditDocument />
-          </v-tabs-window-item>
+        <v-tabs-window-item value="document">
+          <EditDocument />
+        </v-tabs-window-item>
 
-          <v-tabs-window-item value="manufacture">
-            <EditManufacture />
-          </v-tabs-window-item>
-          <v-tabs-window-item value="product">
-            <EditProduct />
-          </v-tabs-window-item>
-        </v-tabs-window>
-      </v-card-text>
-    </v-card>
+        <v-tabs-window-item value="manufacture">
+          <EditManufacture />
+        </v-tabs-window-item>
+        <v-tabs-window-item value="product">
+          <EditProduct />
+        </v-tabs-window-item>
+      </v-tabs-window>
+    </v-card-text>
   </div>
 </template>
 

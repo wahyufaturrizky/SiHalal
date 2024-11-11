@@ -36,12 +36,18 @@ const handleRegister = () => {
   closeDialog()
 }
 
+import { useDisplay } from 'vuetify'
+const { mdAndUp } = useDisplay()
+const dialogMaxWidth = computed(() => {
+  return mdAndUp.value ? 500 : '90%'
+})
+
 </script>
 
 <template>
   <VDialog
     v-model="localDialogVisible"
-    max-width="24%"
+    :max-width="dialogMaxWidth"
   >
     <VCard class="pa-2">
       <VCardTitle class="headline d-flex space-between align-center">

@@ -58,32 +58,40 @@ const timelineEvents = ref([
 <div>
   <KembaliButton />
   <VRow>
-    <VCol cols="9">
+    <VCol cols="8">
       <p class="text-h4">Foreign Halal Certificate Registration Submission</p>
     </VCol>
-    <VCol cols="3">
-      <VBtn
-        class="mr-4"
-        color="primary"
-        append-icon="ri-delete-bin-6-line"
-        @click="deleteItem"
-      >
-      </VBtn>
-      <VBtn
-        class="mr-4"
-        color="primary"
-        append-icon="ri-edit-line"
-        @click="editItem"
-      >
-        Edit
-      </VBtn>
-      <VBtn
-        color="primary"
-        append-icon="ri-send-plane-line"
-        @click="submitItem"
-      >
-        Submit
-      </VBtn>
+    <VCol cols="4">
+      <VRow justify="end" class="gap-1">
+        <VCol cols="auto">
+          <VBtn
+            variant="outlined"
+            color="error"
+            @click="deleteItem"
+          >
+            <VIcon icon="ri-delete-bin-6-line"></VIcon>
+          </VBtn>
+        </VCol>
+        <VCol cols="auto">
+          <VBtn
+            variant="outlined"
+            color="primary"
+            append-icon="ri-edit-line"
+            @click="editItem"
+          >
+            Edit
+          </VBtn>
+        </VCol>
+        <VCol cols="auto">
+          <VBtn
+            variant="outlined"
+            color="primary"
+            append-icon="ri-send-plane-line"
+            @click="submitItem">
+            Submit
+          </VBtn>
+        </VCol>
+      </VRow>
     </VCol>
   </VRow>
 
@@ -92,7 +100,7 @@ const timelineEvents = ref([
     <VCol cols="8">
       <ExpandCard title="Importer" class="mb-6">
         <InfoRow name="Name">SAMSUL</InfoRow>
-        <InfoRow name="NIB/ Business Id No.">9876849859494</InfoRow>
+        <InfoRow name="NIB/ Business Id No.">{{userId}}</InfoRow>
         <InfoRow name="API-P / API-U"></InfoRow>
         <InfoRow name="NPWP / Taxpayer Id No.">21932103120310</InfoRow>
         <InfoRow name="Address">Sumbang. RT/RW-, Sumbang, Curio</InfoRow>
@@ -135,8 +143,8 @@ const timelineEvents = ref([
         <InfoRow name="Halal Registration Number">-</InfoRow>
         <InfoRow name="IssuedDate">-</InfoRow>
         <InfoRow name="Expired Date">21932103120310</InfoRow>
-        <InfoRow name="Status"><VBtn>Draft</VBtn></InfoRow>
-        <InfoRow name="Download Halal Registration Number"><i class="fa-solid fa-download"></i></InfoRow>
+        <InfoRow name="Status"><VBtn variant="outlined">Draft</VBtn></InfoRow>
+        <InfoRow name="Download Halal Registration Number"><VBtn ><VIcon icon="ri-download-line"></VIcon></VBtn></InfoRow>
       </ExpandCard>
 
       <ExpandCard title="Tracking">
