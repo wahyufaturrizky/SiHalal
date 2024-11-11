@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const panelOpen = ref(0)
+const panelOpen = ref(0);
 </script>
 
 <template>
