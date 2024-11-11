@@ -1,36 +1,48 @@
 <script lang="ts" setup>
-import { NuxtLink } from '#components'
+import { NuxtLink } from "#components";
 
-import { layoutConfig } from '@layouts'
-import { can } from '@layouts/plugins/casl'
-import type { NavLink } from '@layouts/types'
-import { getComputedNavLinkToProp, getDynamicI18nProps, isNavLinkActive } from '@layouts/utils'
+import { layoutConfig } from "@layouts";
+import type { NavLink } from "@layouts/types";
+import {
+  getComputedNavLinkToProp,
+  getDynamicI18nProps,
+  isNavLinkActive,
+} from "@layouts/utils";
 
 interface Props {
-  item: NavLink
+  item: NavLink;
+  roles: string[];
 
   // ℹ️ We haven't added this prop in vertical nav because we don't need such differentiation in vertical nav for styling
-  isSubItem?: boolean
+  isSubItem?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   isSubItem: false,
-})
+});
+const isShown = props.roles.some((item) => props.item.roles?.includes(item));
 </script>
 
 <template>
   <li
-    v-if="can(item.action, item.subject)"
+    v-if="isShown"
     class="nav-link"
-    :class="[{
-      'sub-item': props.isSubItem,
-      'disabled': item.disable,
-    }]"
+    :class="[
+      {
+        'sub-item': props.isSubItem,
+        disabled: item.disable,
+      },
+    ]"
   >
     <Component
       :is="item.to ? NuxtLink : 'a'"
       v-bind="getComputedNavLinkToProp(item)"
-      :class="{ 'router-link-active router-link-exact-active': isNavLinkActive(item, $router) }"
+      :class="{
+        'router-link-active router-link-exact-active': isNavLinkActive(
+          item,
+          $router
+        ),
+      }"
     >
       <Component
         :is="layoutConfig.app.iconRenderer || 'div'"

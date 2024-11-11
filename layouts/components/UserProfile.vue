@@ -1,32 +1,23 @@
 <script setup lang="ts">
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
+import { PerfectScrollbar } from "vue3-perfect-scrollbar";
 
-const ability = useAbility()
+const ability = useAbility();
 
 // TODO: Get type from backend
-const userData = useCookie<any>('userData')
-
-const { signOut } = useAuth()
+const { data: userData, signOut } = useAuth();
 
 async function logout() {
   try {
-    await signOut({ redirect: false })
+    await signOut({ redirect: false });
 
-    // Remove "userData" from cookie
-    userData.value = null
-
-    // Reset user abilities
-    ability.update([])
-
-    navigateTo({ name: 'login' })
-  }
-  catch (error) {
-    throw createError(error)
+    navigateTo({ name: "login" });
+  } catch (error) {
+    throw createError(error);
   }
 }
 
 const userProfileList = [
-  { type: 'divider' },
+  { type: "divider" },
   // {
   //   type: 'navItem',
   //   icon: 'ri-user-line',
@@ -46,7 +37,7 @@ const userProfileList = [
   //   to: { name: 'pages-account-settings-tab', params: { tab: 'billing-plans' } },
   //   chipsProps: { color: 'error', text: '4', size: 'small' },
   // },
-]
+];
 </script>
 
 <template>
@@ -63,89 +54,16 @@ const userProfileList = [
     <VAvatar
       class="cursor-pointer"
       size="38"
-      :color="!(userData && userData.avatar) ? 'primary' : undefined"
-      :variant="!(userData && userData.avatar) ? 'tonal' : undefined"
+      :color="'primary'"
+      :variant="'tonal'"
     >
-      <VImg
-        v-if="userData && userData.avatar"
-        :src="userData.avatar"
-      />
-      <VIcon
-        v-else
-        icon="ri-user-line"
-      />
+      <!-- <VImg v-if="userData && userData.avatar" :src="userData.avatar" /> -->
+      <VIcon icon="ri-user-line" />
 
       <!-- SECTION Menu -->
-      <VMenu
-        activator="parent"
-        width="230"
-        location="bottom end"
-        offset="15px"
-      >
+      <VMenu activator="parent" width="230" location="bottom end" offset="15px">
         <VList>
-          <VListItem class="px-4">
-            <div class="d-flex gap-x-2 align-center">
-              <VAvatar
-                :color="!(userData && userData.avatar) ? 'primary' : undefined"
-                :variant="!(userData && userData.avatar) ? 'tonal' : undefined"
-              >
-                <VImg
-                  v-if="userData && userData.avatar"
-                  :src="userData.avatar"
-                />
-                <VIcon
-                  v-else
-                  icon="ri-user-line"
-                />
-              </VAvatar>
-
-              <div>
-                <div class="text-body-2 font-weight-medium text-high-emphasis">
-                  {{ userData.fullName || userData.username }}
-                </div>
-                <div class="text-capitalize text-caption text-disabled">
-                  {{ userData.role }}
-                </div>
-              </div>
-            </div>
-          </VListItem>
-
           <PerfectScrollbar :options="{ wheelPropagation: false }">
-            <template
-              v-for="item in userProfileList"
-              :key="item.title"
-            >
-              <VListItem
-                v-if="item.type === 'navItem'"
-                :to="item.to"
-                class="px-4"
-              >
-                <template #prepend>
-                  <VIcon
-                    :icon="item.icon"
-                    size="22"
-                  />
-                </template>
-
-                <VListItemTitle>{{ item.title }}</VListItemTitle>
-
-                <template
-                  v-if="item.chipsProps"
-                  #append
-                >
-                  <VChip
-                    v-bind="item.chipsProps"
-                    variant="elevated"
-                  />
-                </template>
-              </VListItem>
-
-              <VDivider
-                v-else
-                class="my-1"
-              />
-            </template>
-
             <VListItem class="px-4">
               <VBtn
                 block

@@ -1,23 +1,25 @@
 <script lang="ts" setup>
-import { HorizontalNavGroup, HorizontalNavLink } from '@layouts/components'
-import type { HorizontalNavItems, NavGroup, NavLink } from '@layouts/types'
+import { HorizontalNavGroup, HorizontalNavLink } from "@layouts/components";
+import type { HorizontalNavItems, NavGroup, NavLink } from "@layouts/types";
 
 defineProps<{
-  navItems: HorizontalNavItems
-}>()
+  navItems: HorizontalNavItems;
+}>();
 
 const resolveNavItemComponent = (item: NavLink | NavGroup) => {
-  if ('children' in item)
-    return HorizontalNavGroup
+  if ("children" in item) return HorizontalNavGroup;
 
-  return HorizontalNavLink
-}
+  return HorizontalNavLink;
+};
+const { data: sessionData } = useAuth();
+const userRole = sessionData.value?.roles.map((role) => role.name);
 </script>
 
 <template>
   <ul class="nav-items">
     <Component
       :is="resolveNavItemComponent(item)"
+      :roles="userRole"
       v-for="(item, index) in navItems"
       :key="index"
       :item="item"

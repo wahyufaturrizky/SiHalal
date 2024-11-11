@@ -1,13 +1,11 @@
 <template>
-  <div>
-    
-  </div>
+  <div></div>
 </template>
 
 <script lang="ts" setup>
-
+definePageMeta({
+  action: "manage",
+  subject: ["Pelaku Usaha"],
+});
 </script>
-
-<style>
-
-</style>
+<style></style>
