@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AspekLegalModal from "@/views/pages/pelaku-usaha/AspekLegalModal.vue";
+// import AspekLegalModal from "@/views/pages/pelaku-usaha/AspekLegalModal.vue";
 
 const panelOpen = ref(0);
 

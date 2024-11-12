@@ -2,8 +2,9 @@
 import DivisiUnitUsaha from "@/components/pelakuUsahaProfile/DivisiUnitUsaha.vue";
 import PerizinanCard from "@/components/pelakuUsahaProfile/PerizinanCard.vue";
 import SubPelakuUsahaLayout from "@/layouts/subPelakuUsahaLayout.vue";
-import DeleteConfirmation from "@/views/pages/pelaku-usaha/DeleteConfirmation.vue";
-import SaveConfirmation from "@/views/pages/pelaku-usaha/SaveConfirmation.vue";
+
+// import DeleteConfirmation from "@/views/pages/pelaku-usaha/DeleteConfirmation.vue";
+// import SaveConfirmation from "@/views/pages/pelaku-usaha/SaveConfirmation.vue";
 
 const tablePabrikHeader = [
   { title: "No", key: "no" },

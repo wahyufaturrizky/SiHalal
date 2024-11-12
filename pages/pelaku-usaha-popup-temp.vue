@@ -1,15 +1,4 @@
 <script setup lang="ts">
-import AspekLegalModal from "@/views/pages/pelaku-usaha/AspekLegalModal.vue";
-import DataDivisiModal from "@/views/pages/pelaku-usaha/DataDivisiModal.vue";
-import DataOuletModal from "@/views/pages/pelaku-usaha/DataOuletModal.vue";
-import DataOutletUploadModal from "@/views/pages/pelaku-usaha/DataOutletUploadModal.vue";
-import DataPabrikModal from "@/views/pages/pelaku-usaha/DataPabrikModal.vue";
-import DataPenyeliaHalalModal from "@/views/pages/pelaku-usaha/DataPenyeliaHalalModal.vue";
-import DeleteConfirmation from "@/views/pages/pelaku-usaha/DeleteConfirmation.vue";
-import ListDataDivisionModal from "@/views/pages/pelaku-usaha/ListDataDivisionModal.vue";
-import SaveConfirmation from "@/views/pages/pelaku-usaha/SaveConfirmation.vue";
-import UpdateConfirmation from "@/views/pages/pelaku-usaha/UpdateConfirmation.vue";
-
 const handleAddAspekLegalConfirm = (formData) => {
   console.log("Add confirmed:", formData);
 };
