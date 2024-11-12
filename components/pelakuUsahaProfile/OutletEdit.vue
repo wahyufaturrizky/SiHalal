@@ -1,13 +1,17 @@
 <script setup lang="ts">
-const panelOpen = ref(0);
+const panelOpen = ref(0)
 
 const tableOutletHeader = [
-  { title: "No", key: "no" },
-  { title: "Nama", key: "name" },
-  { title: "Alamat", key: "address" },
-];
+  { title: 'No', key: 'no' },
+  { title: 'Nama', key: 'name' },
+  { title: 'Alamat', key: 'address' },
+]
 
-const items = ref([]);
+const items = ref([])
+
+const handleAddAspekLegalConfirm = formData => {
+  console.log('Add confirmed:', formData)
+}
 </script>
 
 <template>
@@ -17,8 +21,14 @@ const items = ref([]);
         <div class="header">
           <h2>Outlet</h2>
           <div class="button-group">
-            <button class="btn-tambah">Tambah +</button>
-            <button class="btn-upload">Upload ↓</button>
+            <DataOuletModal
+              mode="add"
+              @confirm-add="handleAddAspekLegalConfirm"
+              @cancel="() => console.log('Add cancelled')"
+            />
+            <button class="btn-upload">
+              Upload ↓
+            </button>
           </div>
         </div>
       </VExpansionPanelTitle>
@@ -29,7 +39,7 @@ const items = ref([]);
             src="https://cdn-icons-png.flaticon.com/512/3213/3213083.png"
             alt="Empty mailbox"
             class="mailbox-icon"
-          />
+          >
           <span class="empty-text">Data Kosong</span>
         </div>
       </VExpansionPanelText>

@@ -1,30 +1,34 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref } from 'vue';
 
-const panelOpen = ref(0);
+const panelOpen = ref(0)
 
 const tablePabrikHeader = [
-  { title: "No", key: "no" },
-  { title: "Nama", key: "name" },
-  { title: "Alamat", key: "address" },
-  { title: "Action", key: "action", align: "end" },
-];
+  { title: 'No', key: 'no' },
+  { title: 'Nama', key: 'name' },
+  { title: 'Alamat', key: 'address' },
+  { title: 'Action', key: 'action', align: 'end' },
+]
 
 const pabrikData = ref([
   {
     no: 1,
-    name: "My Drink Oke",
+    name: 'My Drink Oke',
     address:
-      "Sumbawa Banget, RT002/RW002, Sumbang, Curio, Kab.Enrekang, Sulawesi Selatan",
+      'Sumbawa Banget, RT002/RW002, Sumbang, Curio, Kab.Enrekang, Sulawesi Selatan',
   },
-]);
+])
 
 function handleEdit(item) {
-  console.log("Edit item:", item);
+  console.log('Edit item:', item)
 }
 
 function handleDelete(item) {
-  console.log("Delete item:", item);
+  console.log('Delete item:', item)
+}
+
+const handleAddAspekLegalConfirm = formData => {
+  console.log('Add confirmed:', formData)
 }
 </script>
 
@@ -36,13 +40,20 @@ function handleDelete(item) {
       </VExpansionPanelTitle>
       <VExpansionPanelText>
         <div class="d-flex justify-end mb-4">
-          <VBtn
+          <!--
+            <VBtn
             color="primary"
             outlined
             @click="() => console.log('Tambah item')"
-          >
+            >
             Tambah <VIcon>mdi-plus</VIcon>
-          </VBtn>
+            </VBtn>
+          -->
+          <DataPabrikModal
+            mode="add"
+            @confirm-add="handleAddAspekLegalConfirm"
+            @cancel="() => console.log('Add cancelled')"
+          />
         </div>
         <VDataTable
           :headers="tablePabrikHeader"
@@ -53,20 +64,37 @@ function handleDelete(item) {
           <template #[`item.action`]="{ item }">
             <VMenu>
               <template #activator="{ props }">
-                <VBtn icon variant="text" v-bind="props">
+                <VBtn
+                  icon
+                  variant="text"
+                  v-bind="props"
+                >
                   <VIcon>mdi-dots-vertical</VIcon>
                 </VBtn>
               </template>
               <VList>
                 <VListItem>
                   <VListItemTitle>
-                    <VIcon class="mr-2"> mdi-pencil </VIcon>
+                    <VIcon class="mr-2">
+                      mdi-pencil
+                    </VIcon>
                     Ubah
+                    <DataPabrikModal
+                      mode="edit"
+                      :initial-data="initialDataForEdit"
+                      @confirm-edit="handleEditConfirm"
+                      @cancel="() => console.log('Edit cancelled')"
+                    />
                   </VListItemTitle>
                 </VListItem>
                 <VListItem>
                   <VListItemTitle class="text-red">
-                    <VIcon color="red" class="mr-2"> mdi-delete </VIcon>
+                    <VIcon
+                      color="red"
+                      class="mr-2"
+                    >
+                      mdi-delete
+                    </VIcon>
                     Hapus
                   </VListItemTitle>
                 </VListItem>
