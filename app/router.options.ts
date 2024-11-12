@@ -1,5 +1,5 @@
-import type { RouterConfig } from '@nuxt/schema'
-import type { RouteRecordRaw } from 'vue-router'
+import type { RouterConfig } from "@nuxt/schema";
+import type { RouteRecordRaw } from "vue-router";
 
 // const emailRouteComponent = () => import('@/pages/apps/email/index.vue')
 
@@ -8,23 +8,23 @@ const redirects: RouteRecordRaw[] = [
   // ℹ️ We are redirecting to different pages based on role.
   // NOTE: Role is just for UI purposes. ACL is based on abilities.
   {
-    path: '/',
-    name: 'index',
+    path: "/",
+    name: "index",
     meta: {
-      middleware: to => {
-        const { data: sessionData } = useAuth()
+      middleware: (to) => {
+        const { data: sessionData, status } = useAuth();
+        console.log("ini status ", status.value);
 
-        const userRole = sessionData.value?.user.role
+        // const userRole = sessionData.value?.roles
 
-        if (userRole === 'admin')
-          return { name: 'index' }
+        if (status.value == "authenticated") return { name: "index" };
 
-        return { name: 'login', query: to.query }
+        return { name: "login", query: to.query };
       },
     },
-    component: h('div'),
+    component: h("div"),
   },
-]
+];
 
 const routes: RouteRecordRaw[] = [
   // Email filter
@@ -37,7 +37,6 @@ const routes: RouteRecordRaw[] = [
   //     layoutWrapperClasses: 'layout-content-height-fixed',
   //   },
   // },
-
   // Email label
   // {
   //   path: '/apps/email/label/:label',
@@ -64,16 +63,15 @@ const routes: RouteRecordRaw[] = [
   //   name: 'apps-ecommerce-dashboard',
   //   component: () => import('@/pages/dashboards/ecommerce.vue'),
   // },
-]
+];
 
 // https://router.vuejs.org/api/interfaces/routeroptions.html
 export default <RouterConfig>{
-  routes: scannedRoutes => [...redirects, ...routes, ...scannedRoutes],
-  scrollBehaviorType: 'smooth',
+  routes: (scannedRoutes) => [...redirects, ...routes, ...scannedRoutes],
+  scrollBehaviorType: "smooth",
   scrollBehavior(to) {
-    if (to.hash)
-      return { el: to.hash, behavior: 'smooth', top: 60 }
+    if (to.hash) return { el: to.hash, behavior: "smooth", top: 60 };
 
-    return { top: 0 }
+    return { top: 0 };
   },
-}
+};

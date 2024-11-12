@@ -8,8 +8,9 @@
   </VRow>
   <VRow no-gutters>
     <VCol class="d-flex align-center justify-center">
-      <v-card max-width="80dvh" class="mb-5">
+      <v-card max-width="100dvh" class="mb-5">
         <VWindow
+          :touch="false"
           v-model="stepStore.step"
           class="d-flex align-center justify-center"
         >

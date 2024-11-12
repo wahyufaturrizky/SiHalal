@@ -36,6 +36,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Private keys are only available on the server
     authSecret: process.env.NUXT_AUTH_SECRET || "",
+    authBaseUrl: process.env.NUXT_AUTH_BASE_URL || "",
 
     // Public keys that are exposed to the client.
     public: {
@@ -65,11 +66,36 @@ export default defineNuxtConfig({
   },
 
   auth: {
-    baseURL: process.env.AUTH_ORIGIN,
+    baseURL: "/api/auth",
     globalAppMiddleware: false,
 
     provider: {
-      type: "authjs",
+      type: "local",
+      endpoints: {
+        signIn: { path: "/login", method: "post" },
+        signOut: { path: "/logout", method: "post" },
+        getSession: { path: "/session", method: "get" },
+        signUp: false,
+      },
+      token: {
+        signInResponseTokenPointer: "/token",
+        type: "bearer",
+        cookieName: "accessToken",
+        headerName: "Authorization",
+        maxAgeInSeconds: 3600,
+        sameSiteAttribute: "lax",
+        secureCookieAttribute: false,
+      },
+      session: {
+        dataType: {
+          email: "string",
+          id: "string",
+          roles:
+            "{ name: string, permissions: { group: string, name: string, url: string }[] }[]",
+          username: "string",
+        },
+        dataResponsePointer: "/user",
+      },
     },
   },
 

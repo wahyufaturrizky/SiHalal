@@ -1,119 +1,97 @@
 <script setup lang="ts">
 interface UserData {
-  id: number | undefined
-  fullName: string | undefined
-  company: string
-  role: string
-  username: string
-  country: string
-  contact: string | undefined
-  email: string | undefined
-  currentPlan: string
-  status: string | undefined
-  avatar: string
-  taskDone: number | null
-  projectDone: number | null
-  taxId: string
-  language: string[]
+  id: string | undefined;
+  email: string | undefined;
+  roles: RolesUser[];
+  username: string | undefined;
+}
+interface RolesUser {
+  name: string | undefined;
+  permission: RolesPermission[];
+}
+interface RolesPermission {
+  group: string | undefined;
+  name: string | undefined;
+  url: string | undefined;
 }
 
 interface Props {
-  userData?: UserData
-  isDialogVisible: boolean
+  userData?: UserData;
+  isDialogVisible: boolean;
 }
 
 interface Emit {
-  (e: 'submit', value: UserData): void
-  (e: 'update:isDialogVisible', val: boolean): void
+  (e: "submit", value: UserData): void;
+  (e: "update:isDialogVisible", val: boolean): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   userData: () => ({
-    avatar: '',
-    company: '',
-    contact: '',
-    country: null,
-    currentPlan: '',
-    email: '',
-    fullName: '',
-    id: 0,
-    role: '',
-    status: null,
-    username: '',
-    language: [],
-    projectDone: 0,
-    taskDone: 0,
-    taxId: '',
+    id: "",
+    email: "",
+    roles: [],
+    username: [],
   }),
-})
+});
 
-const emit = defineEmits<Emit>()
+const emit = defineEmits<Emit>();
 
-const userData = ref<UserData>(structuredClone(toRaw(props.userData)))
+const userData = ref<UserData>(structuredClone(toRaw(props.userData)));
 
-watch(() => props, () => {
-  userData.value = structuredClone(toRaw(props.userData))
-})
+watch(
+  () => props,
+  () => {
+    userData.value = structuredClone(toRaw(props.userData));
+  }
+);
 
 const onFormSubmit = () => {
-  emit('update:isDialogVisible', false)
-  emit('submit', userData.value)
-}
+  emit("update:isDialogVisible", false);
+  emit("submit", userData.value);
+};
 
 const onFormReset = () => {
-  userData.value = structuredClone(toRaw(props.userData))
+  userData.value = structuredClone(toRaw(props.userData));
 
-  emit('update:isDialogVisible', false)
-}
+  emit("update:isDialogVisible", false);
+};
 
 const dialogVisibleUpdate = (val: boolean) => {
-  emit('update:isDialogVisible', val)
-}
+  emit("update:isDialogVisible", val);
+};
 </script>
 
 <template>
   <VDialog
-    :width="$vuetify.display.smAndDown ? 'auto' : 900 "
+    :width="$vuetify.display.smAndDown ? 'auto' : 900"
     :model-value="props.isDialogVisible"
     @update:model-value="dialogVisibleUpdate"
   >
     <VCard class="pa-sm-11 pa-3">
       <!-- 👉 dialog close btn -->
-      <DialogCloseBtn
-        variant="text"
-        size="default"
-        @click="onFormReset"
-      />
+      <DialogCloseBtn variant="text" size="default" @click="onFormReset" />
 
       <VCardText class="pt-5">
         <div class="text-center pb-6">
-          <h4 class="text-h4 mb-2">
-            Edit User Information
-          </h4>
+          <h4 class="text-h4 mb-2">Edit User Information</h4>
           <div class="text-body-1">
             Updating user details will receive a privacy audit.
           </div>
         </div>
 
         <!-- 👉 Form -->
-        <VForm
-          class="mt-4"
-          @submit.prevent="onFormSubmit"
-        >
+        <VForm class="mt-4" @submit.prevent="onFormSubmit">
           <VRow>
             <!-- 👉 First Name -->
-            <VCol
-              cols="12"
-              md="6"
-            >
+            <VCol cols="12" md="6">
               <VTextField
-                v-model="userData.fullName.split(' ')[0]"
+                v-model="userData.email"
                 label="First Name"
                 placeholder="John"
               />
             </VCol>
 
-            <!-- 👉 Last Name -->
+            <!-- 👉 Last Name
             <VCol
               cols="12"
               md="6"
@@ -123,7 +101,7 @@ const dialogVisibleUpdate = (val: boolean) => {
                 label="Last Name"
                 placeholder="doe"
               />
-            </VCol>
+            </VCol> -->
 
             <!-- 👉 User Name  -->
 
@@ -136,10 +114,7 @@ const dialogVisibleUpdate = (val: boolean) => {
             </VCol>
 
             <!-- 👉 Billing Email -->
-            <VCol
-              cols="12"
-              md="6"
-            >
+            <VCol cols="12" md="6">
               <VTextField
                 v-model="userData.email"
                 label="Billing Email"
@@ -148,7 +123,7 @@ const dialogVisibleUpdate = (val: boolean) => {
             </VCol>
 
             <!-- 👉 Status -->
-            <VCol
+            <!-- <VCol
               cols="12"
               md="6"
             >
@@ -158,10 +133,10 @@ const dialogVisibleUpdate = (val: boolean) => {
                 label="Status"
                 placeholder="Status"
               />
-            </VCol>
+            </VCol> -->
 
             <!-- 👉 Tax Id -->
-            <VCol
+            <!-- <VCol
               cols="12"
               md="6"
             >
@@ -170,10 +145,10 @@ const dialogVisibleUpdate = (val: boolean) => {
                 label="Tax Id"
                 placeholder="Tax-3456789"
               />
-            </VCol>
+            </VCol> -->
 
             <!-- 👉 Contact -->
-            <VCol
+            <!-- <VCol
               cols="12"
               md="6"
             >
@@ -182,10 +157,10 @@ const dialogVisibleUpdate = (val: boolean) => {
                 label="Contact"
                 placeholder="+1 9876543210"
               />
-            </VCol>
+            </VCol> -->
 
             <!-- 👉 Language -->
-            <VCol
+            <!-- <VCol
               cols="12"
               md="6"
             >
@@ -198,13 +173,10 @@ const dialogVisibleUpdate = (val: boolean) => {
                 closable-chips
                 multiple
               />
-            </VCol>
+            </VCol> -->
 
             <!-- 👉 Country -->
-            <VCol
-              cols="12"
-              md="6"
-            >
+            <VCol cols="12" md="6">
               <VSelect
                 v-model="userData.country"
                 :items="['United States', 'United Kingdom', 'France']"
@@ -215,26 +187,14 @@ const dialogVisibleUpdate = (val: boolean) => {
 
             <!-- 👉 Switch -->
             <VCol cols="12">
-              <VSwitch
-                density="compact"
-                label="Use as a billing address?"
-              />
+              <VSwitch density="compact" label="Use as a billing address?" />
             </VCol>
 
             <!-- 👉 Submit and Cancel -->
-            <VCol
-              cols="12"
-              class="d-flex flex-wrap justify-center gap-4"
-            >
-              <VBtn type="submit">
-                Submit
-              </VBtn>
+            <VCol cols="12" class="d-flex flex-wrap justify-center gap-4">
+              <VBtn type="submit"> Submit </VBtn>
 
-              <VBtn
-                color="secondary"
-                variant="outlined"
-                @click="onFormReset"
-              >
+              <VBtn color="secondary" variant="outlined" @click="onFormReset">
                 Cancel
               </VBtn>
             </VCol>

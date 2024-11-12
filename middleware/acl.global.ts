@@ -1,5 +1,3 @@
-import { canNavigate } from "@layouts/plugins/casl";
-
 export default defineNuxtRouteMiddleware((to) => {
   /*
    * If it's a public route, continue navigation. This kind of pages are allowed to visited by login & non-login users. Basically, without any restrictions.
@@ -19,20 +17,23 @@ export default defineNuxtRouteMiddleware((to) => {
     if (isLoggedIn) return navigateTo("/");
     else return undefined;
   }
-
-  if (!canNavigate(to) && to.matched.length) {
-    /* eslint-disable indent */
-    return navigateTo(
-      isLoggedIn
-        ? { name: "not-authorized" }
-        : {
-            name: "login",
-            query: {
-              ...to.query,
-              to: to.fullPath !== "/" ? to.path : undefined,
-            },
-          }
-    );
-    /* eslint-enable indent */
+  // console.log(!canNavigate(to) && to.matched.length);
+  if (!isLoggedIn) {
+    return navigateTo({ name: "login" });
   }
+  // if (!canNavigate(to) && to.matched.length) {
+  //   /* eslint-disable indent */
+  //   return navigateTo(
+  //     isLoggedIn
+  //       ? { name: "not-authorized" }
+  //       : {
+  //           name: "login",
+  //           query: {
+  //             ...to.query,
+  //             to: to.fullPath !== "/" ? to.path : undefined,
+  //           },
+  //         }
+  //   );
+  //   /* eslint-enable indent */
+  // }
 });
