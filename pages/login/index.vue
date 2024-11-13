@@ -51,8 +51,8 @@ const buttonClicked = ref(false);
 const refVForm = ref<VForm>();
 
 const credentials = ref({
-  email: "gery.nugroho@gmail.com",
-  password: "Test1234",
+  email: "",
+  password: "",
 });
 
 const rememberMe = useState("rememberMe", () => false);

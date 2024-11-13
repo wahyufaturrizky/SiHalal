@@ -21,13 +21,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (!isLoggedIn) {
     return navigateTo({ name: "login" });
   }
-  const { getSession, user } = useMyAuthUserStore();
-  await getSession();
-  if (user?.new_user) {
+
+  const { getSession } = useMyAuthUserStore();
+  const user = await getSession();
+  if (to.path === "/login/new-account") {
+    if (!user.value?.new_user) {
+      return navigateTo("/");
+    }
+  } else if (user.value?.new_user) {
     return navigateTo("/login/new-account");
-  }
-  if (to.path == "/login/new-account" && !user?.new_user) {
-    return navigateTo("/");
   }
 
   // if (!canNavigate(to) && to.matched.length) {
