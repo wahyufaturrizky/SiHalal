@@ -29,6 +29,12 @@ const onClickSendAgain = () => {
   submitEmail();
 };
 
+const emit = defineEmits([
+  "emailSentSuccess",
+  "emailSentFailed",
+  "emailAddrSent",
+]);
+
 const emailRule = [
   (val: string): boolean | string => {
     const regexEmail =
@@ -57,11 +63,15 @@ const submitEmail = async () => {
       if (error.value) {
         throw error.value;
       }
-
+      emit("emailSentSuccess", true);
+      emit("emailSentFailed", false);
+      emit("emailAddrSent", emailAddr.value);
       data.value = data.value ? "Request succeeded!" : "Request failed";
     }
   } catch (err) {
     result.value = "Request failed";
+    emit("emailSentFailed", true);
+    emit("emailSentSuccess", false);
     emailSubmittedBtn.value = true;
   }
 };
