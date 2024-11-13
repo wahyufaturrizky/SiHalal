@@ -47,6 +47,7 @@ export default defineNuxtConfig({
       secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY || "",
     },
   },
+
   components: {
     dirs: [
       {
@@ -218,7 +219,10 @@ export default defineNuxtConfig({
       });
     },
   ],
+
   turnstile: {
     siteKey: "1x00000000000000000000AA",
   },
+
+  compatibilityDate: "2024-11-12",
 });
