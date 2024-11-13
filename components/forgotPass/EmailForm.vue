@@ -1,12 +1,13 @@
 <script setup lang="ts">
 const isVerified = ref(false);
 const inputDisabled = ref(false);
-const submitDisabled = ref(false);
+const submitDisabled = ref(true);
 const sendAgainDisabled = ref(true);
 const countdownMount = ref(false);
+const emailSubmittedBtn = ref(false);
 
 const handleCountdownDone = () => {
-  console.log("countdown done");
+  // console.log("countdown done");
   sendAgainDisabled.value = false;
   inputDisabled.value = false;
   countdownMount.value = false;
@@ -17,12 +18,62 @@ const onClickEmailSubmit = () => {
   submitDisabled.value = true;
   sendAgainDisabled.value = true;
   countdownMount.value = true;
+  submitEmail();
+  // emailSubmittedBtn.value = true;
 };
 
 const onClickSendAgain = () => {
   countdownMount.value = true;
   inputDisabled.value = true;
   sendAgainDisabled.value = true;
+  submitEmail();
+};
+
+const emit = defineEmits([
+  "emailSentSuccess",
+  "emailSentFailed",
+  "emailAddrSent",
+]);
+
+const emailRule = [
+  (val: string): boolean | string => {
+    const regexEmail =
+      /^(?!.*[._]{2})[a-z0-9._]+\@[a-z]+\.(com|co.id|go.id|id|net)$/;
+    submitDisabled.value = true;
+    if (regexEmail.test(val)) {
+      submitDisabled.value = false;
+      return true;
+    }
+    return "Harap masukkan email yang valid!";
+  },
+  (v: string) => !!v || "This field is required",
+];
+
+const emailAddr = ref("");
+const result = ref<string | null>(null);
+const submitEmail = async () => {
+  try {
+    if (emailAddr.value !== "") {
+      const { data, error } = await useFetch("/api/auth/forgotinq", {
+        method: "POST",
+        body: { email: emailAddr.value }, // Payload for POST
+      });
+
+      emailSubmittedBtn.value = true;
+      if (error.value) {
+        throw error.value;
+      }
+      emit("emailSentSuccess", true);
+      emit("emailSentFailed", false);
+      emit("emailAddrSent", emailAddr.value);
+      data.value = data.value ? "Request succeeded!" : "Request failed";
+    }
+  } catch (err) {
+    result.value = "Request failed";
+    emit("emailSentFailed", true);
+    emit("emailSentSuccess", false);
+    emailSubmittedBtn.value = true;
+  }
 };
 </script>
 <template>
@@ -37,6 +88,8 @@ const onClickSendAgain = () => {
             placeholder="Masukkan email"
             base-color="#746D76"
             :disabled="inputDisabled"
+            :rules="emailRule"
+            v-model="emailAddr"
           ></VTextField>
         </VItemGroup>
       </VCol>
@@ -47,7 +100,7 @@ const onClickSendAgain = () => {
         <CountdownTimer
           v-on:countdown-done="handleCountdownDone"
           v-if="countdownMount"
-          :timer-start-in-second="153"
+          :timer-start-in-second="60"
         ></CountdownTimer>
       </VCol>
     </VRow>
@@ -56,13 +109,13 @@ const onClickSendAgain = () => {
         <VBtn
           @click="onClickEmailSubmit"
           :disabled="submitDisabled"
-          v-if="!submitDisabled"
+          v-if="!emailSubmittedBtn"
           width="500"
           >Kirim Verifikasi Lewat Email</VBtn
         >
         <VBtn
           @click="onClickSendAgain"
-          v-if="submitDisabled"
+          v-if="emailSubmittedBtn"
           :disabled="sendAgainDisabled"
           width="500"
           >Kirim Ulang</VBtn
