@@ -1,46 +1,45 @@
 <script setup lang="ts">
-import { useDisplay } from 'vuetify'
-import { VForm } from 'vuetify/components/VForm'
-import { themeConfig } from '@themeConfig'
+import { themeConfig } from "@themeConfig";
+import { useDisplay } from "vuetify";
+import { VForm } from "vuetify/components/VForm";
 
-import { emailValidator, requiredValidator } from '#imports'
-import { VNodeRenderer } from '@/@layouts/components/VNodeRenderer'
-import bseImage from '@images/bse.png'
-import NoImage from '@images/no-image.png'
-import ossImage from '@images/oss.png'
-import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
-import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
-import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
-import authV2LoginMaskDark from '@images/pages/auth-v2-login-mask-dark.png'
-import authV2LoginMaskLight from '@images/pages/auth-v2-login-mask-light.png'
+import { emailValidator, requiredValidator } from "#imports";
+import { VNodeRenderer } from "@/@layouts/components/VNodeRenderer";
+import bseImage from "@images/bse.png";
+import NoImage from "@images/no-image.png";
+import ossImage from "@images/oss.png";
+import authV2LoginIllustrationBorderedDark from "@images/pages/auth-v2-login-illustration-bordered-dark.png";
+import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-illustration-bordered-light.png";
+import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
+import authV2LoginMaskDark from "@images/pages/auth-v2-login-mask-dark.png";
+import authV2LoginMaskLight from "@images/pages/auth-v2-login-mask-light.png";
 
-const { signIn, data: sessionData } = useAuth()
-const { mdAndUp } = useDisplay()
+const { mdAndUp } = useDisplay();
 
 const authThemeImg = useGenerateImageVariant(
   NoImage,
   authV2LoginIllustrationDark,
   authV2LoginIllustrationBorderedLight,
   authV2LoginIllustrationBorderedDark,
-  true,
-)
+  true
+);
 
 const authThemeMask = useGenerateImageVariant(
   authV2LoginMaskLight,
-  authV2LoginMaskDark,
-)
+  authV2LoginMaskDark
+);
 
 definePageMeta({
-  layout: 'blank',
+  layout: "blank",
   unauthenticatedOnly: true,
-})
+});
 
-const isPasswordVisible = ref(false)
-const isPasswordVisibleConfrim = ref(false)
+const isPasswordVisible = ref(false);
+const isPasswordVisibleConfrim = ref(false);
 
-const route = useRoute()
+const route = useRoute();
 
-const ability = useAbility()
+const ability = useAbility();
 
 const errors = ref<Record<string, string | undefined>>({
   email: undefined,
@@ -49,10 +48,10 @@ const errors = ref<Record<string, string | undefined>>({
   noHandphone: undefined,
   password: undefined,
   passwordConfirm: undefined,
-})
+});
 
 // const turnstile = ref();
-const refVForm = ref<VForm>()
+const refVForm = ref<VForm>();
 
 const form = ref({
   typeUser: null,
@@ -61,7 +60,7 @@ const form = ref({
   noHandphone: null,
   password: null,
   passwordConfirm: null,
-})
+});
 
 const onSubmit = async () => {
   // const captchaResponse = await $fetch("/api/validateTurnstile", {
@@ -81,81 +80,106 @@ const onSubmit = async () => {
   refVForm.value?.validate().then(async ({ valid: isValid }) => {
     if (isValid) {
       // Definisikan payload
+      // const payload = {
+
+      //   typeUser: form.value.typeUser,
+      //   name: form.value.name,
+      //   email: form.value.email,
+      //   noHandphone: form.value.noHandphone,
+      //   password: form.value.password,
+      //   passwordConfirm: form.value.passwordConfirm,
+      // }
+
       const payload = {
-        typeUser: form.value.typeUser,
+        role_id: "7913d132-ef22-4d66-bd11-7ac830e1e3d1",
         name: form.value.name,
         email: form.value.email,
-        noHandphone: form.value.noHandphone,
+        phone_number: form.value.noHandphone,
         password: form.value.password,
-        passwordConfirm: form.value.passwordConfirm,
+        confirm_password: form.value.passwordConfirm,
+      };
+
+      try {
+        const response = await fetch(
+          "http://117.53.45.155:8081/api/v1/users/api/register",
+          {
+            method: "POST", // Mengatur metode menjadi POST
+            headers: {
+              "Content-Type": "application/json", // Mengatur tipe konten
+            },
+            body: JSON.stringify(payload), // Mengubah payload menjadi format JSON
+          }
+        );
+
+        if (response.ok) {
+          // Cek apakah response berhasil
+          const data = await response.json();
+
+          console.log("Akun berhasil dibuat:", data);
+          navigateTo({
+            path: "/verifikasi-user",
+            query: { data: JSON.stringify(data) },
+          });
+
+          console.error("Gagal membuat akun:", response.status);
+        }
+      } catch (error) {
+        console.error("Error saat membuat akun:", error);
       }
-
-      // console.log(payload, "isi payload");
-      navigateTo('/verifikasi-user')
-
-      // try {
-
-      //   const response = await api.post('/api/register', payload)
-
-      // if (response.status === 200) {
-
-      //     navigateTo('/verifikasi-user');
-      //   }
-      //   console.log('Akun berhasil dibuat:', response.data)
-      // }
-      // catch (error) {
-      //   console.error('Error saat membuat akun:', error)
-      // }
     }
+  });
+};
 
-    // else {
-    //   console.error("Form tidak valid, periksa input Anda.");
-    // }
-  })
-}
-
-const typeUserItem = ['Pelaku Usaha', 'Buisness Actor', 'Impoter']
+const typeUserItem = ["Pelaku Usaha", "Buisness Actor", "Impoter"];
 
 // check  disableSubmit
 const isDisabledSubmit = computed(() => {
   return !(
-    form.value.typeUser
-    && form.value.name
-    && form.value.email
-    && form.value.noHandphone
-    && form.value.password
-    && form.value.passwordConfirm
-  )
-})
+    form.value.typeUser &&
+    form.value.name &&
+    form.value.email &&
+    form.value.noHandphone &&
+    form.value.password &&
+    form.value.passwordConfirm
+  );
+});
 
 // validasi
 const phoneValidator = (value: string) => {
-  const isValid = /^08\d{8,11}$/.test(value)
+  const isValid = /^08\d{8,11}$/.test(value);
 
   return (
-    isValid
-    || 'Nomor Handphone harus dimulai dengan "08" dan berjumlah 10-13 digit angka'
-  )
-}
+    isValid ||
+    'Nomor Handphone harus dimulai dengan "08" dan berjumlah 10-13 digit angka'
+  );
+};
 
-const requiredValidator = (value: string) => !!value || 'Wajib diisi'
+const requiredValidator = (value: string) => !!value || "Wajib diisi";
 
-const requiredSamePassword = value =>
-  value === form.value.password || 'Kata sandi tidak sama!'
+const requiredSamePassword = (value) =>
+  value === form.value.password || "Kata sandi tidak sama!";
 
-const requiredMinLength = value => value.length >= 8 || 'Pastikan kata sandi minimal 8 karakter!'
+const requiredMinLength = (value) =>
+  value.length >= 8 || "Pastikan kata sandi minimal 8 karakter!";
 
-const requiredValidasinoHP = value => value !== '08123456789' || 'Nomor handphone sudah terdaftar, gunakan nomor lain!'
+const requiredValidasinoHP = (value) =>
+  value !== "08123456789" ||
+  "Nomor handphone sudah terdaftar, gunakan nomor lain!";
 
-const requiredValidasiEmail = value => value !== 'hallal@gmail.com' || 'Email sudah terdaftar,silahkan gunakan email lain!'
+const requiredValidasiEmail = (value) =>
+  value !== "hallal@gmail.com" ||
+  "Email sudah terdaftar,silahkan gunakan email lain!";
 
 // Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!
 // jika error pas di input maka tapil diatas
-const { sendSnackbar } = useSnackbar()
+const { sendSnackbar } = useSnackbar();
 
 const global = () => {
-  sendSnackbar('Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!', 'error')
-}
+  sendSnackbar(
+    "Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!",
+    "error"
+  );
+};
 </script>
 
 <template>
@@ -169,20 +193,13 @@ const global = () => {
     </VSnackbar>
   -->
 
-  <VRow
-    no-gutters
-    class="auth-wrapper"
-  >
+  <VRow no-gutters class="auth-wrapper">
     <VCol
       cols="12"
       md="6"
       class="auth-card-v2 d-flex align-center justify-center bg-white"
     >
-      <VCard
-        flat
-        :max-width="500"
-        class="mt-12 mt-sm-0 pa-5 pa-lg-7"
-      >
+      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
         <VCardText>
           <NuxtLink to="/">
             <div class="auth-logo app-logo">
@@ -193,10 +210,7 @@ const global = () => {
         <VCardText>
           <h4 class="text-h4 mb-1">
             Buat Akun
-            <span
-              class="text-capitalize"
-              color="#652672"
-            >{{
+            <span class="text-capitalize" color="#652672">{{
               themeConfig.app.title
             }}</span>
           </h4>
@@ -206,10 +220,7 @@ const global = () => {
         </VCardText>
 
         <VCardText>
-          <VForm
-            ref="refVForm"
-            @submit.prevent="onSubmit"
-          >
+          <VForm ref="refVForm" @submit.prevent="onSubmit">
             <VRow>
               <!-- Tipe Pengguna -->
               <VCol cols="12">
@@ -242,7 +253,11 @@ const global = () => {
                 <b> Email </b>
                 <VTextField
                   v-model="form.email"
-                  :rules="[requiredValidator, emailValidator, requiredValidasiEmail]"
+                  :rules="[
+                    requiredValidator,
+                    emailValidator,
+                    requiredValidasiEmail,
+                  ]"
                   type="text"
                   :error-messages="errors.email"
                   placeholder="Masukan Email"
@@ -254,7 +269,11 @@ const global = () => {
                 <b> Nomor Handphone</b>
                 <VTextField
                   v-model="form.noHandphone"
-                  :rules="[requiredValidator, phoneValidator, requiredValidasinoHP]"
+                  :rules="[
+                    requiredValidator,
+                    phoneValidator,
+                    requiredValidasinoHP,
+                  ]"
                   type="tel"
                   maxlength="13"
                   placeholder="Masukan Nomor Handphone"
@@ -283,33 +302,32 @@ const global = () => {
                 <b>Konfirmasi Kata Sandi</b>
                 <VTextField
                   v-model="form.passwordConfirm"
-                  :rules="[requiredValidator, requiredMinLength, requiredSamePassword]"
+                  :rules="[
+                    requiredValidator,
+                    requiredMinLength,
+                    requiredSamePassword,
+                  ]"
                   :type="isPasswordVisibleConfrim ? 'text' : 'password'"
                   :error-messages="errors.password"
                   :append-inner-icon="
                     isPasswordVisibleConfrim ? 'ri-eye-off-line' : 'ri-eye-line'
                   "
                   placeholder="Masukan konfirmasi kata sandi"
-                  @click:append-inner="isPasswordVisibleConfrim = !isPasswordVisibleConfrim"
+                  @click:append-inner="
+                    isPasswordVisibleConfrim = !isPasswordVisibleConfrim
+                  "
                 />
               </VCol>
 
               <VCol cols="12">
-                <VBtn
-                  block
-                  :disabled="isDisabledSubmit"
-                  type="submit"
-                >
+                <VBtn block :disabled="isDisabledSubmit" type="submit">
                   Buat Akun
                 </VBtn>
               </VCol>
               <!-- disabled -->
 
               <!-- create account -->
-              <VCol
-                cols="12"
-                class="text-body-1 text-center"
-              >
+              <VCol cols="12" class="text-body-1 text-center">
                 <span class="d-inline-block"> Sudah punya akun ?</span>
                 <NuxtLink
                   class="text-primary ms-1 d-inline-block text-body-1"
@@ -337,37 +355,15 @@ const global = () => {
           </VForm>
         </VCardText>
         <VCardText>
-          <VCol
-            cols="12"
-            class="text-body-1 text-center"
-          >
+          <VCol cols="12" class="text-body-1 text-center">
             <span class="d-inline-block">Terhubung Ke</span>
           </VCol>
-          <VRow
-            align="center"
-            justify="center"
-          >
-            <VCol
-              cols="12"
-              md="auto"
-              class="d-flex align-center"
-            >
-              <VImg
-                :src="ossImage"
-                width="100"
-                height="48"
-              />
+          <VRow align="center" justify="center">
+            <VCol cols="12" md="auto" class="d-flex align-center">
+              <VImg :src="ossImage" width="100" height="48" />
             </VCol>
-            <VCol
-              cols="12"
-              md="auto"
-              class="d-flex align-center"
-            >
-              <VImg
-                :src="bseImage"
-                width="100"
-                height="48"
-              />
+            <VCol cols="12" md="auto" class="d-flex align-center">
+              <VImg :src="bseImage" width="100" height="48" />
             </VCol>
           </VRow>
         </VCardText>

@@ -1,114 +1,128 @@
 <script setup lang="ts">
-import { themeConfig } from "@themeConfig";
-import { useDisplay } from "vuetify";
-import { VForm } from "vuetify/components/VForm";
+import { themeConfig } from '@themeConfig'
+import { useDisplay } from 'vuetify'
+import { VForm } from 'vuetify/components/VForm'
 
-import { emailValidator, requiredValidator } from "#imports";
-import { VNodeRenderer } from "@/@layouts/components/VNodeRenderer";
-import bseImage from "@images/bse.png";
-import NoImage from "@images/no-image.png";
-import ossImage from "@images/oss.png";
-import authV2LoginIllustrationBorderedDark from "@images/pages/auth-v2-login-illustration-bordered-dark.png";
-import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-illustration-bordered-light.png";
-import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
-import authV2LoginMaskDark from "@images/pages/auth-v2-login-mask-dark.png";
-import authV2LoginMaskLight from "@images/pages/auth-v2-login-mask-light.png";
+import { emailValidator, requiredValidator } from '#imports'
+import { VNodeRenderer } from '@/@layouts/components/VNodeRenderer'
+import bseImage from '@images/bse.png'
+import NoImage from '@images/no-image.png'
+import ossImage from '@images/oss.png'
+import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
+import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
+import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
+import authV2LoginMaskDark from '@images/pages/auth-v2-login-mask-dark.png'
+import authV2LoginMaskLight from '@images/pages/auth-v2-login-mask-light.png'
 
-const { signIn, data: sessionData, status } = useAuth();
-const { mdAndUp } = useDisplay();
+const { signIn, data: sessionData, status } = useAuth()
+const { mdAndUp } = useDisplay()
 
 const authThemeImg = useGenerateImageVariant(
   NoImage,
   authV2LoginIllustrationDark,
   authV2LoginIllustrationBorderedLight,
   authV2LoginIllustrationBorderedDark,
-  true
-);
+  true,
+)
 
 const authThemeMask = useGenerateImageVariant(
   authV2LoginMaskLight,
-  authV2LoginMaskDark
-);
+  authV2LoginMaskDark,
+)
 
 definePageMeta({
-  layout: "blank",
+  layout: 'blank',
   unauthenticatedOnly: true,
-});
+})
 
-const isPasswordVisible = useState("isPasswordVisible", () => false);
-const isDisabledSubmit = useState("isDisabledSubmit", () => true);
+const isPasswordVisible = useState('isPasswordVisible', () => false)
+const isDisabledSubmit = useState('isDisabledSubmit', () => true)
 
-const route = useRoute();
+const route = useRoute()
 
-const ability = useAbility();
+const ability = useAbility()
 
 const errors = ref<Record<string, string | undefined>>({
   email: undefined,
   password: undefined,
-});
-const turnstile = ref();
-const buttonClicked = ref(false);
-const refVForm = ref<VForm>();
+})
+
+const turnstile = ref()
+const buttonClicked = ref(false)
+const refVForm = ref<VForm>()
 
 const credentials = ref({
-  email: "ditorp1511@gmail.com",
-  password: "password",
-});
+  email: 'ditorp1511@gmail.com',
+  password: 'password',
+})
 
-const rememberMe = useState("rememberMe", () => false);
+const rememberMe = useState('rememberMe', () => false)
 
 async function login() {
   try {
     const response = await signIn({
-      callbackUrl: "/",
+      callbackUrl: '/',
       redirect: false,
       email: credentials.value.email,
       password: credentials.value.password,
       token: turnstile.value,
-    });
-    navigateTo(route.query.to ? String(route.query.to) : "/", {
+    })
+
+    navigateTo(route.query.to ? String(route.query.to) : '/', {
       replace: true,
-    });
-  } catch (error) {
-    useSnackbar().sendSnackbar("username atau password salah", "error");
-    buttonClicked.value = false;
-    return;
+    })
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('username atau password salah', 'error')
+    buttonClicked.value = false
   }
 
   // If error is not null => Error is occurred
 
   // Update user abilities
 }
-const captchaError = useState("captchaError", () => false);
+const captchaError = useState('captchaError', () => false)
+
 const onSubmit = async () => {
   // sendSnackbar("error bang", "success");
-  buttonClicked.value = true;
-  console.log("ini", buttonClicked.value || !turnstile.value);
+  buttonClicked.value = true
+  console.log('ini', buttonClicked.value || !turnstile.value)
   refVForm.value?.validate().then(({ valid: isValid }) => {
-    if (isValid) login();
-  });
-};
+    if (isValid)
+      login()
+  })
+}
 </script>
 
 <template>
-  <VRow no-gutters class="auth-wrapper">
+  <VRow
+    no-gutters
+    class="auth-wrapper"
+  >
     <VCol
       cols="12"
       md="6"
       class="auth-card-v2 d-flex align-center justify-center login-bg"
     >
-      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
-        <v-card-text>
+      <VCard
+        flat
+        :max-width="500"
+        class="mt-12 mt-sm-0 pa-5 pa-lg-7"
+      >
+        <VCardText>
           <NuxtLink to="/">
             <div class="auth-logo app-logo">
               <VNodeRenderer :nodes="themeConfig.app.logo" />
             </div>
           </NuxtLink>
-        </v-card-text>
+        </VCardText>
         <VCardText>
           <h4 class="text-h4 mb-1">
             Selamat Datang di
-            <span class="text-capitalize" color="#652672">{{
+            <span
+              class="text-capitalize"
+              color="#652672"
+            >{{
               themeConfig.app.title
             }}</span>
           </h4>
@@ -119,7 +133,10 @@ const onSubmit = async () => {
         </VCardText>
 
         <VCardText>
-          <VForm ref="refVForm" @submit.prevent="onSubmit">
+          <VForm
+            ref="refVForm"
+            @submit.prevent="onSubmit"
+          >
             <VRow>
               <!-- email -->
               <VCol cols="12">
@@ -152,7 +169,10 @@ const onSubmit = async () => {
                 />
 
                 <div class="my-6 gap-x-2">
-                  <NuxtTurnstile v-model="turnstile" class="text-center" />
+                  <NuxtTurnstile
+                    v-model="turnstile"
+                    class="text-center"
+                  />
                 </div>
 
                 <VBtn
@@ -165,7 +185,10 @@ const onSubmit = async () => {
               </VCol>
 
               <!-- create account -->
-              <VCol cols="12" class="text-body-1 text-center">
+              <VCol
+                cols="12"
+                class="text-body-1 text-center"
+              >
                 <span class="d-inline-block"> Belum punya akun ?</span>
                 <NuxtLink
                   class="text-primary ms-1 d-inline-block text-body-1"
@@ -175,7 +198,8 @@ const onSubmit = async () => {
                 </NuxtLink>
               </VCol>
 
-              <!-- <VCol cols="12" class="d-flex align-center">
+              <!--
+                <VCol cols="12" class="d-flex align-center">
                 <VDivider />
                 <span class="mx-4 text-high-emphasis">or</span>
                 <VDivider />
@@ -183,22 +207,46 @@ const onSubmit = async () => {
               -->
 
               <!-- auth providers -->
-              <!-- <VCol cols="12" class="text-center">
+              <!--
+                <VCol cols="12" class="text-center">
                 <AuthProvider />
-              </VCol> -->
+                </VCol>
+              -->
             </VRow>
           </VForm>
         </VCardText>
         <VCardText>
-          <VCol cols="12" class="text-body-1 text-center">
+          <VCol
+            cols="12"
+            class="text-body-1 text-center"
+          >
             <span class="d-inline-block">Terhubung Ke</span>
           </VCol>
-          <VRow align="center" justify="center">
-            <VCol cols="12" md="auto" class="d-flex align-center">
-              <VImg :src="ossImage" width="100" height="48" />
+          <VRow
+            align="center"
+            justify="center"
+          >
+            <VCol
+              cols="12"
+              md="auto"
+              class="d-flex align-center"
+            >
+              <VImg
+                :src="ossImage"
+                width="100"
+                height="48"
+              />
             </VCol>
-            <VCol cols="12" md="auto" class="d-flex align-center">
-              <VImg :src="bseImage" width="100" height="48" />
+            <VCol
+              cols="12"
+              md="auto"
+              class="d-flex align-center"
+            >
+              <VImg
+                :src="bseImage"
+                width="100"
+                height="48"
+              />
             </VCol>
           </VRow>
         </VCardText>
@@ -210,7 +258,11 @@ const onSubmit = async () => {
       md="6"
       class="auth-card-v2 d-flex align-center justify-center"
     >
-      <VImg :src="NoImage" height="100dvh" cover />
+      <VImg
+        :src="NoImage"
+        height="100dvh"
+        cover
+      />
     </VCol>
   </VRow>
 </template>
@@ -226,6 +278,7 @@ const onSubmit = async () => {
     }
   }
 }
+
 .login-bg {
   background-color: rgb(var(--v-theme-surface));
 }
