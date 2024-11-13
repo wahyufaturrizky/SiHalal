@@ -240,104 +240,108 @@ const fetchType = ref([]);
         <VCardText>
           <VForm ref="refVForm" @submit.prevent="onSubmit">
             <VRow>
-              <!-- Tipe Pengguna -->
-              <VCol cols="12">
-                <b> Tipe Pengguna</b>
+              <VCol cols="12" style="max-height: 45svh; overflow-y: auto">
+                <!-- Tipe Pengguna -->
+                <VCol cols="12">
+                  <b> Tipe Pengguna</b>
 
-                <VSelect
-                  v-model="form.typeUser"
-                  :items="fetchType"
-                  :rules="[requiredValidator]"
-                  item-title="name"
-                  item-value="id"
-                  label="Pilih tipe pengguna"
-                  persistent-hint
-                  return-object
-                  single-line
-                />
-              </VCol>
+                  <VSelect
+                    v-model="form.typeUser"
+                    :items="fetchType"
+                    :rules="[requiredValidator]"
+                    item-title="name"
+                    item-value="id"
+                    label="Pilih tipe pengguna"
+                    persistent-hint
+                    return-object
+                    single-line
+                  />
+                </VCol>
 
-              <!-- nama -->
-              <VCol cols="12">
-                <b> Nama</b>
-                <VTextField
-                  v-model="form.name"
-                  :rules="[requiredValidator]"
-                  placeholder="Masukan Nama"
-                  type="text"
-                  :error-messages="errors.name"
-                />
-              </VCol>
+                <!-- nama -->
+                <VCol cols="12">
+                  <b> Nama</b>
+                  <VTextField
+                    v-model="form.name"
+                    :rules="[requiredValidator]"
+                    placeholder="Masukan Nama"
+                    type="text"
+                    :error-messages="errors.name"
+                  />
+                </VCol>
 
-              <!-- email -->
-              <VCol cols="12">
-                <b> Email </b>
-                <VTextField
-                  v-model="form.email"
-                  :rules="[
-                    requiredValidator,
-                    emailValidator,
-                    requiredValidasiEmail,
-                  ]"
-                  type="text"
-                  :error-messages="errors.email"
-                  placeholder="Masukan Email"
-                />
-              </VCol>
+                <!-- email -->
+                <VCol cols="12">
+                  <b> Email </b>
+                  <VTextField
+                    v-model="form.email"
+                    :rules="[
+                      requiredValidator,
+                      emailValidator,
+                      requiredValidasiEmail,
+                    ]"
+                    type="text"
+                    :error-messages="errors.email"
+                    placeholder="Masukan Email"
+                  />
+                </VCol>
 
-              <!-- no Handphone -->
-              <VCol cols="12">
-                <b> Nomor Handphone</b>
-                <VTextField
-                  v-model="form.noHandphone"
-                  :rules="[
-                    requiredValidator,
-                    phoneValidator,
-                    requiredValidasinoHP,
-                  ]"
-                  type="tel"
-                  maxlength="13"
-                  placeholder="Masukan Nomor Handphone"
-                  :error-messages="errors.noHandphone"
-                />
-              </VCol>
+                <!-- no Handphone -->
+                <VCol cols="12">
+                  <b> Nomor Handphone</b>
+                  <VTextField
+                    v-model="form.noHandphone"
+                    :rules="[
+                      requiredValidator,
+                      phoneValidator,
+                      requiredValidasinoHP,
+                    ]"
+                    type="tel"
+                    maxlength="13"
+                    placeholder="Masukan Nomor Handphone"
+                    :error-messages="errors.noHandphone"
+                  />
+                </VCol>
 
-              <!-- password -->
-              <VCol cols="12">
-                <b> Kata Sandi</b>
-                <VTextField
-                  v-model="form.password"
-                  :rules="[requiredValidator, requiredMinLength]"
-                  :type="isPasswordVisible ? 'text' : 'password'"
-                  :error-messages="errors.password"
-                  :append-inner-icon="
-                    isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'
-                  "
-                  placeholder="Masukan kata sandi"
-                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
-                />
-              </VCol>
+                <!-- password -->
+                <VCol cols="12">
+                  <b> Kata Sandi</b>
+                  <VTextField
+                    v-model="form.password"
+                    :rules="[requiredValidator, requiredMinLength]"
+                    :type="isPasswordVisible ? 'text' : 'password'"
+                    :error-messages="errors.password"
+                    :append-inner-icon="
+                      isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'
+                    "
+                    placeholder="Masukan kata sandi"
+                    @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                  />
+                </VCol>
 
-              <!-- password confrim -->
-              <VCol cols="12">
-                <b>Konfirmasi Kata Sandi</b>
-                <VTextField
-                  v-model="form.passwordConfirm"
-                  :rules="[
-                    requiredValidator,
-                    requiredMinLength,
-                    requiredSamePassword,
-                  ]"
-                  :type="isPasswordVisibleConfrim ? 'text' : 'password'"
-                  :error-messages="errors.password"
-                  :append-inner-icon="
-                    isPasswordVisibleConfrim ? 'ri-eye-off-line' : 'ri-eye-line'
-                  "
-                  placeholder="Masukan konfirmasi kata sandi"
-                  @click:append-inner="
-                    isPasswordVisibleConfrim = !isPasswordVisibleConfrim
-                  "
-                />
+                <!-- password confrim -->
+                <VCol cols="12">
+                  <b>Konfirmasi Kata Sandi</b>
+                  <VTextField
+                    v-model="form.passwordConfirm"
+                    :rules="[
+                      requiredValidator,
+                      requiredMinLength,
+                      requiredSamePassword,
+                    ]"
+                    :type="isPasswordVisibleConfrim ? 'text' : 'password'"
+                    :error-messages="errors.password"
+                    :append-inner-icon="
+                      isPasswordVisibleConfrim
+                        ? 'ri-eye-off-line'
+                        : 'ri-eye-line'
+                    "
+                    placeholder="Masukan konfirmasi kata sandi"
+                    @click:append-inner="
+                      isPasswordVisibleConfrim = !isPasswordVisibleConfrim
+                    "
+                  />
+                </VCol>
               </VCol>
 
               <VCol cols="12">
