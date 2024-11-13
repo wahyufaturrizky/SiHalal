@@ -113,26 +113,24 @@ const isDisabledSubmitNoHandphone = computed(() => {
 const isOtpEmail = ref(false)
 const isOtpNoHandphone = ref(false)
 
-const isSucess = ref (false)
+const isSucess = ref(false)
 
 const onSubmitEmail = async () => {
-
   const payload = {
-    channel: "email",
-    destination: form.value.email
+    channel: 'email',
+    destination: form.value.email,
   }
 
   try {
-  const response = await $api('/auth/send-otp', {
-        method: "POST", // Mengatur metode menjadi POST
-            headers: {
-              "Content-Type": "application/json", 
-            },
-            body: JSON.stringify(payload), 
-          })
+    const response = await $api('/auth/send-otp', {
+      method: 'POST', // Mengatur metode menjadi POST
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
 
-          console.log("RESPONSE SEND OTP : ", response)
-       
+    console.log('RESPONSE SEND OTP : ', response)
   }
   catch (error) {
     console.log(error, 'ini error')
@@ -144,33 +142,33 @@ const onSubmitEmail = async () => {
 const kodeOtpEmail = ref('')
 const kodeOtpNoHandphone = ref('')
 
-
 const onSumbitKodeEmail = async () => {
+  const payload = {
+    user_id: route.query.id,
+    otp: kodeOtpEmail.value,
+  }
 
-    const payload = {
-      user_id: route.query.id,
-      otp: kodeOtpEmail.value
-    }
+  console.log('payload : {} ', payload)
 
-    console.log("payload : {} ", payload)
-
-    try {
+  try {
     const response = await $api('/auth/verify-otp', {
-        method: "POST", // Mengatur metode menjadi POST
-            headers: {
-              "Content-Type": "application/json", 
-            },
-            body: JSON.stringify(payload), 
-          })
+      method: 'POST', // Mengatur metode menjadi POST
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
 
-      console.log("RESPONSE VERIF OTP : ", response)  
+    console.log('RESPONSE VERIF OTP : ', response)
 
-      console.log(kodeOtpEmail, 'otp email')
-      isSucess.value = true
-    }catch(error){
-      console.log("ADA ERROR NIH BANG ", error)
-    }
+    console.log(kodeOtpEmail, 'otp email')
+    isSucess.value = true
+  }
+  catch (error) {
+    console.log('ADA ERROR NIH BANG ', error)
+  }
 }
+
 const isDisabledKodeEmail = computed(() => {
   return !kodeOtpEmail.value || kodeOtpEmail.value.length !== 6
 })
@@ -193,11 +191,32 @@ const startCooldown = () => {
 
 const { sendSnackbar } = useSnackbar()
 
-const resendCode = () => {
+const resendCode = async () => {
   sendSnackbar('Kode Verifikasi Berhasil Dikirim Ulang', 'success')
 
-  // notif();
+  const payload = {
+    channel: 'email',
+    destination: form.value.email,
+  }
+
   startCooldown()
+
+  try {
+    const response = await $api('/auth/send-otp', {
+      method: 'POST', // Mengatur metode menjadi POST
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+
+    console.log('RESPONSE SEND OTP dari RESEND : ', response)
+  }
+  catch (error) {
+    console.log(error, 'ini error')
+  }
+
+  // notif();
 
   // Tambahkan logic pengiriman ulang kode di sini
 }
@@ -251,7 +270,10 @@ const onSubmitKodeNomerHandphone = () => {
             <VTab :disabled="isDisabledEmail">
               Email
             </VTab>
-            <VTab :disabled="isDisabledNoHp">
+            <VTab
+              v-if="false"
+              :disabled="isDisabledNoHp"
+            >
               NomorHandphone
             </VTab>
           </VTabs>
@@ -456,7 +478,9 @@ const onSubmitKodeNomerHandphone = () => {
                       </VIcon>
                       Sukses!
                     </h2>
-                    <p>Verifikasi dengan Nomor Handphone telah berhasil dilakukan</p>
+                    <p>
+                      Verifikasi dengan Nomor Handphone telah berhasil dilakukan
+                    </p>
                   </VCol>
                 </VRow>
                 <VRow class="mt-4">

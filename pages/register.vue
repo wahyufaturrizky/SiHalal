@@ -3,7 +3,7 @@ import { themeConfig } from "@themeConfig";
 import { useDisplay } from "vuetify";
 import { VForm } from "vuetify/components/VForm";
 
-import { emailValidator, requiredValidator } from "#imports";
+import { requiredValidator } from "#imports";
 import { VNodeRenderer } from "@/@layouts/components/VNodeRenderer";
 import bseImage from "@images/bse.png";
 import NoImage from "@images/no-image.png";
@@ -62,7 +62,7 @@ const form = ref({
   passwordConfirm: null,
 });
 
-const router = useRouter()
+const router = useRouter();
 
 const onSubmit = async () => {
   // const captchaResponse = await $fetch("/api/validateTurnstile", {
@@ -102,32 +102,32 @@ const onSubmit = async () => {
       };
 
       try {
-
-        const response = await $api('/auth/register', {
-        method: "POST", // Mengatur metode menjadi POST
-            headers: {
-              "Content-Type": "application/json", // Mengatur tipe konten
-            },
-            body: JSON.stringify(payload), // Mengubah payload menjadi format JSON
-          })
-
+        const response = await $api("/auth/register", {
+          method: "POST", // Mengatur metode menjadi POST
+          headers: {
+            "Content-Type": "application/json", // Mengatur tipe konten
+          },
+          body: JSON.stringify(payload), // Mengubah payload menjadi format JSON
+        });
 
         if (response.code === 2000) {
           // Cek apakah response berhasil
-          const data = response.data
+          const data = response.data;
 
           console.log("Akun berhasil dibuat:", data);
+
           // navigateTo({
           //   path: "/verifikasi-user"
           // });
-          const id = data.user.id
-          console.log("id : ", id)
+          const id = data.user.id;
+
+          console.log("id : ", id);
 
           navigateTo({
-            path: '/verifikasi-user',
-            query: {
-              id: id,            }
-          })
+            path: "/verifikasi-user",
+            query: { id },
+          });
+
           // router.push({ name: 'verifikasi-user', params: { id: id } })
         }
       } catch (error) {
@@ -161,6 +161,13 @@ const phoneValidator = (value: string) => {
   );
 };
 
+const emailValidator = (value: string) => {
+  const isValid =
+    /^(?!.*[.]{2})[a-z0-9.]+@[a-z]+.(com|co.id|go.id|id|net)$/.test(value);
+
+  return isValid || "Format  Email digunakan salah";
+};
+
 const requiredValidator = (value: string) => !!value || "Wajib diisi";
 
 const requiredSamePassword = (value) =>
@@ -181,12 +188,12 @@ const requiredValidasiEmail = (value) =>
 // jika error pas di input maka tapil diatas
 const { sendSnackbar } = useSnackbar();
 
-const global = () => {
-  sendSnackbar(
-    "Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!",
-    "error"
-  );
-};
+// const global = () => {
+//   sendSnackbar(
+//     "Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!",
+//     "error"
+//   );
+// };
 </script>
 
 <template>
