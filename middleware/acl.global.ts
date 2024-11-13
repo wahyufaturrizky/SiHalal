@@ -9,10 +9,10 @@ export default defineNuxtRouteMiddleware((to) => {
   const isLoggedIn = status.value === "authenticated";
 
   /*
-      If user is logged in and is trying to access login like page, redirect to home
-      else allow visiting the page
-      (WARN: Don't allow executing further by return statement because next code will check for permissions)
-     */
+  If user is logged in and is trying to access login like page, redirect to home
+  else allow visiting the page
+  (WARN: Don't allow executing further by return statement because next code will check for permissions)
+  */
   if (to.meta.unauthenticatedOnly) {
     if (isLoggedIn) return navigateTo("/");
     else return undefined;
@@ -21,6 +21,12 @@ export default defineNuxtRouteMiddleware((to) => {
   if (!isLoggedIn) {
     return navigateTo({ name: "login" });
   }
+  const { getSession, user } = useMyAuthUserStore();
+  useMyAuthUserStore().getSession();
+  if (user?.new_user) {
+    return navigateTo("/login/new-account");
+  }
+
   // if (!canNavigate(to) && to.matched.length) {
   //   /* eslint-disable indent */
   //   return navigateTo(

@@ -66,7 +66,8 @@ export const integerValidator = (value: unknown) => {
 // 👉 Regex Validator
 export const regexValidator = (
   value: unknown,
-  regex: RegExp | string
+  regex: RegExp | string,
+  message: string
 ): string | boolean => {
   if (isEmpty(value)) return true;
 
@@ -77,6 +78,17 @@ export const regexValidator = (
     return value.every((val) => regexValidator(val, regeX));
 
   return regeX.test(String(value)) || "Format kolom Regex tidak valid";
+};
+export const phoneNumberIdValidator = (value: unknown): string | boolean => {
+  if (isEmpty(value)) return true;
+
+  let regeX = /^08\d{8,11}$/;
+  if (typeof regeX === "string") regeX = new RegExp(regeX);
+
+  return (
+    regeX.test(String(value)) ||
+    "Nomor Hp harus diawali 08 dan diantara 10-13 digit"
+  );
 };
 
 // 👉 Alpha Validator
@@ -104,7 +116,7 @@ export const lengthValidator = (value: unknown, length: number) => {
 
   return (
     String(value).length === length ||
-    `Kolom Minimal Karakter harus memiliki setidaknya ${length} karakter`
+    `Kolom Minimal Karakter harus memiliki ${length} karakter`
   );
 };
 

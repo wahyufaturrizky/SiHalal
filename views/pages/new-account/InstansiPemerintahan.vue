@@ -1,91 +1,136 @@
 <template>
   <v-card-text>
     <p class="text-h5 font-weight-bold">Pendaftaran Pelaku Usaha</p>
-    <v-form>
+    <v-form ref="governorForm" @submit.prevent="onSubmit">
       <VRow>
         <VCol cols="12" class="mb-0 pb-0">
           <p class="text-h6 font-weight-bold">Informasi Pribadi</p>
         </VCol>
         <VCol cols="12" md="6">
+          <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
+            Nama Pelaku Usaha (Sesuai KTP)
+          </div>
           <VTextField
-            label="Nama Pelaku Usaha (Sesuai KTP)"
+            v-model="formSubmit.business_actor_name"
             placeholder="Masukkan Nama Pelaku Usaha"
             :rules="[requiredValidator]"
             require
           />
         </VCol>
         <VCol cols="12" md="6">
+          <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
+            Nomor KTP/NIK
+          </div>
           <VTextField
-            label="Nomor KTP/NIK"
+            v-model="formSubmit.nik"
             placeholder="Masukkan Nomor KTP/NIK"
-            :rules="[requiredValidator, integerValidator]"
+            :rules="[
+              requiredValidator,
+              integerValidator,
+              lengthValidator(formSubmit.nik, 16),
+            ]"
             @input="onlyAcceptNumber"
             require
           />
         </VCol>
         <VCol cols="12" md="6">
+          <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
+            Nomor Telepon
+          </div>
           <VTextField
-            label="Nomor Telepon"
+            v-model="formSubmit.phone"
             placeholder="Masukkan Nomor Telepon"
-            :rules="[requiredValidator]"
+            :rules="[
+              requiredValidator,
+              integerValidator,
+              phoneNumberIdValidator,
+            ]"
             require
           />
         </VCol>
         <VCol cols="12" md="6">
+          <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
+            Email
+          </div>
           <VTextField
-            label="Email"
+            v-model="formSubmit.email"
             placeholder="Masukkan Email"
             :rules="[requiredValidator, emailValidator]"
             require
           />
         </VCol>
         <VCol cols="12">
+          <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
+            Alamat (Sesuai KTP)
+          </div>
           <VTextField
-            label="Alamat (Sesuai KTP)"
+            v-model="formSubmit.address"
             placeholder="Masukkan Alamat"
             :rules="[requiredValidator]"
             require
           />
         </VCol>
         <VCol cols="12">
+          <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
+            Provinsi
+          </div>
           <VSelect
-            :items="country"
+            :items="province"
+            item-value="code"
+            item-title="name"
+            v-model="formSubmit.province_code"
             :rules="[requiredValidator]"
             require
-            placeholder="Provinsi"
-            label="Pilih Provinsi"
+            v-on:update:model-value="getDistrict"
+            placeholder="Pilih Provinsi"
           />
         </VCol>
         <VCol cols="12">
+          <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
+            Kabupaten/Kota
+          </div>
           <VSelect
-            :items="country"
+            :items="district"
+            item-value="code"
+            item-title="name"
+            v-model="formSubmit.city_code"
             :rules="[requiredValidator]"
+            v-on:update:model-value="getSubDistrict"
             require
-            placeholder="Kabupaten/Kota"
-            label="Pilih Kabupaten/Kota"
+            placeholder="Pilih Kabupaten/Kota"
           />
         </VCol>
         <VCol cols="12">
+          <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
+            Kecamatan
+          </div>
           <VSelect
-            :items="country"
+            v-model="formSubmit.sub_district_code"
+            :items="subDistrict"
+            item-value="code"
+            item-title="name"
             :rules="[requiredValidator]"
             require
-            placeholder="Kecamatan"
-            label="Pilih Kecamatan"
+            placeholder="Pilih Kecamatan"
           />
         </VCol>
         <VCol cols="12">
-          <VSelect
-            :items="country"
-            :rules="[requiredValidator]"
-            require
-            placeholder="Kelurahan/Desa"
-            label="Pilih Kelurahan/Desa"
-          />
-        </VCol>
-        <VCol cols="12">
+          <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
+            Kelurahan/Desa
+          </div>
           <VTextField
-            label="Kode Pos"
+            v-model="formSubmit.village"
+            placeholder="Masukkan Kelurahan/Desa"
+            :rules="[requiredValidator]"
+            require
+          />
+        </VCol>
+        <VCol cols="12">
+          <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
+            Kode Pos
+          </div>
+          <VTextField
+            v-model="formSubmit.postal_code"
             placeholder="Masukkan Kode Pos"
             :rules="[requiredValidator, integerValidator]"
             require
@@ -96,26 +141,39 @@
           <p class="text-h6 font-weight-bold">Informasi Badan Usaha</p>
         </VCol>
         <VCol cols="12">
+          <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
+            Jenis Badan Usaha
+          </div>
           <VSelect
-            :items="country"
+            v-model="formSubmit.business_type"
+            :items="badanUsaha"
+            item-value="code"
+            item-title="name"
             :rules="[requiredValidator]"
             require
-            placeholder="Jenis Badan Usaha"
-            label="Pilih Jenis Badan Usaha"
+            placeholder="Pilih Jenis Badan Usaha"
           />
         </VCol>
         <VCol cols="12">
+          <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
+            Jenis Skala Usaha
+          </div>
           <VSelect
-            :items="country"
+            v-model="formSubmit.business_scale"
+            :items="skalaUsaha"
+            item-value="code"
+            item-title="name"
             :rules="[requiredValidator]"
             require
-            placeholder="Jenis Skala Usaha"
-            label="Pilih Jenis Skala Usaha"
+            placeholder="Pilih Jenis Skala Usaha"
           />
         </VCol>
         <VCol cols="12">
+          <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
+            Modal Usaha
+          </div>
           <VTextField
-            label="Modal Usaha"
+            v-model="formSubmit.venture_capital"
             placeholder="Masukkan Modal Usaha"
             :rules="[requiredValidator, integerValidator]"
             require
@@ -123,18 +181,23 @@
           />
         </VCol>
         <VCol cols="12">
+          <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
+            KBLI
+          </div>
           <VSelect
-            :items="country"
+            v-model="formSubmit.kbli"
+            :items="kbli"
+            item-title="judul_kbli"
+            item-value="kbli"
             :rules="[requiredValidator]"
             require
-            placeholder="KBLI"
-            label="Pilih KBLI"
+            placeholder="Pilih KBLI"
           />
         </VCol>
       </VRow>
       <VRow class="flex-row-reverse">
         <VCol cols="12" md="auto">
-          <VBtn block type="submit"> Kirim </VBtn>
+          <VBtn block type="submit" :disabled="buttonClicked"> Kirim </VBtn>
         </VCol>
         <VCol cols="12" md="auto">
           <VBtn
@@ -153,9 +216,129 @@
 
 <script lang="ts" setup>
 import { emailValidator, integerValidator, requiredValidator } from "#imports";
+import type {
+  MasterBadanUsaha,
+  MasterDistrict,
+  MasterProvince,
+  MasterSubDistrict,
+} from "@/server/interface/master.iface";
+import { NewAccountGovernment } from "@/server/interface/new-account.iface";
 import onlyAcceptNumber from "@/utils/onlyAcceptNumber";
+import { VForm } from "vuetify/components";
 const stepStore = useMyNewAccountStepStore();
-const country = ["Indonesia", "Malaysia", "Singapore"];
+const backToForm = () => {
+  stepStore.goToStep(1);
+  formSubmit.value = {
+    business_actor_name: "",
+    nik: "",
+    phone: "",
+    email: "",
+    address: "",
+    province_code: null,
+    city_code: null,
+    sub_district_code: null,
+    village: null,
+    postal_code: "",
+    business_type: null,
+    business_scale: null,
+    venture_capital: 0,
+    kbli: null,
+  };
+};
+const province = ref();
+const district = ref();
+const subDistrict = ref();
+const badanUsaha = ref();
+const skalaUsaha = ref();
+const kbli = ref();
+onMounted(async () => {
+  const response: MasterProvince[] = await $api("/master/province", {
+    method: "get",
+  });
+  const response2: MasterBadanUsaha[] = await $api("/master/business-entity", {
+    method: "get",
+  });
+  const response3: MasterBadanUsaha[] = await $api("/master/kbli", {
+    method: "get",
+  });
+  const response4: MasterBadanUsaha[] = await $api(
+    "/master/business-entity-scale",
+    {
+      method: "get",
+    }
+  );
+  province.value = response;
+  badanUsaha.value = response2;
+  kbli.value = response3;
+  skalaUsaha.value = response4;
+});
+const getDistrict = async () => {
+  formSubmit.value.city_code = null;
+  formSubmit.value.sub_district_code = null;
+  const response: MasterDistrict[] = await $api("/master/district", {
+    method: "post",
+    body: {
+      province: formSubmit.value.province_code,
+    },
+  });
+  district.value = response;
+};
+const getSubDistrict = async () => {
+  formSubmit.value.sub_district_code = null;
+  const response: MasterSubDistrict[] = await $api("/master/subdistrict", {
+    method: "post",
+    body: {
+      district: formSubmit.value.city_code,
+    },
+  });
+  subDistrict.value = response;
+};
+const formSubmit = ref<NewAccountGovernment>({
+  business_actor_name: "",
+  nik: "",
+  phone: "",
+  email: "",
+  address: "",
+  province_code: null,
+  city_code: null,
+  sub_district_code: null,
+  village: null,
+  postal_code: "",
+  business_type: "",
+  business_scale: null,
+  venture_capital: 0,
+  kbli: null,
+});
+const governorForm = ref<VForm>();
+const buttonClicked = ref(false);
+// const errorStatus = ref("")
+
+const onSubmit = async () => {
+  buttonClicked.value = true;
+  governorForm.value?.validate().then(({ valid: isValid }) => {
+    if (isValid) submitGovernor();
+    else buttonClicked.value = false;
+  });
+};
+
+const submitGovernor = async () => {
+  buttonClicked.value = true;
+  formSubmit.value.venture_capital = parseInt(
+    formSubmit.value.venture_capital.toString()
+  );
+  const res = await $api("/new-account/business-actor/government", {
+    method: "post",
+    body: formSubmit.value,
+  });
+  if (res.code != 2000) {
+    useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
+    buttonClicked.value = false;
+    return;
+  }
+  useAuth().signOut();
+  useSnackbar().sendSnackbar("Data Pelaku Usaha Berhasil Disimpan", "success");
+  navigateTo("/login");
+};
 </script>
 
 <style lang="scss">
