@@ -8,10 +8,14 @@
     ></VRow>
     <br />
     <VRow>
-      <VCol cols="8" style="overflow-y: auto; max-height: 65svh"
+      <VCol
+        cols="8"
+        style="overflow-y: auto; max-height: 65svh; z-index: 0 !important"
         ><slot name="leftContent"></slot
       ></VCol>
-      <VCol cols="4" style="overflow-y: auto; max-height: 65svh"
+      <VCol
+        cols="4"
+        style="overflow-y: auto; max-height: 65svh; z-index: 0 !important"
         ><slot name="rightContent"></slot
       ></VCol>
     </VRow>
