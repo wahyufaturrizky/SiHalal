@@ -9,6 +9,7 @@ const legalHeader = [
   { title: "Action", key: "action" },
 ];
 </script>
+
 <template>
-  <VDataTable :headers="legalHeader"></VDataTable>
+  <VDataTable :headers="legalHeader" />
 </template>

@@ -46,6 +46,7 @@ const errors = ref<Record<string, string | undefined>>({
   email: undefined,
   password: undefined,
 });
+
 const turnstile = ref();
 const buttonClicked = ref(false);
 const refVForm = ref<VForm>();
@@ -66,13 +67,13 @@ async function login() {
       password: credentials.value.password,
       token: turnstile.value,
     });
+
     navigateTo(route.query.to ? String(route.query.to) : "/", {
       replace: true,
     });
   } catch (error) {
     useSnackbar().sendSnackbar("username atau password salah", "error");
     buttonClicked.value = false;
-    return;
   }
 
   // If error is not null => Error is occurred
@@ -80,6 +81,7 @@ async function login() {
   // Update user abilities
 }
 const captchaError = useState("captchaError", () => false);
+
 const onSubmit = async () => {
   // sendSnackbar("error bang", "success");
   buttonClicked.value = true;
@@ -98,13 +100,13 @@ const onSubmit = async () => {
       class="auth-card-v2 d-flex align-center justify-center login-bg"
     >
       <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
-        <v-card-text>
+        <VCardText>
           <NuxtLink to="/">
             <div class="auth-logo app-logo">
               <VNodeRenderer :nodes="themeConfig.app.logo" />
             </div>
           </NuxtLink>
-        </v-card-text>
+        </VCardText>
         <VCardText>
           <h4 class="text-h4 mb-1">
             Selamat Datang di
@@ -175,7 +177,8 @@ const onSubmit = async () => {
                 </NuxtLink>
               </VCol>
 
-              <!-- <VCol cols="12" class="d-flex align-center">
+              <!--
+                <VCol cols="12" class="d-flex align-center">
                 <VDivider />
                 <span class="mx-4 text-high-emphasis">or</span>
                 <VDivider />
@@ -183,9 +186,11 @@ const onSubmit = async () => {
               -->
 
               <!-- auth providers -->
-              <!-- <VCol cols="12" class="text-center">
+              <!--
+                <VCol cols="12" class="text-center">
                 <AuthProvider />
-              </VCol> -->
+                </VCol>
+              -->
             </VRow>
           </VForm>
         </VCardText>
@@ -226,6 +231,7 @@ const onSubmit = async () => {
     }
   }
 }
+
 .login-bg {
   background-color: rgb(var(--v-theme-surface));
 }
