@@ -11,7 +11,7 @@ const resolveNavItemComponent = (item: NavLink | NavGroup) => {
 
   return HorizontalNavLink;
 };
-const { data: sessionData } = useAuth();
+const sessionData = await useMyAuthUserStore().getSession();
 const userRole = sessionData.value?.roles.map((role) => role.name);
 </script>
 

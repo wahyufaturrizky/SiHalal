@@ -1,6 +1,5 @@
 import { NuxtError } from "nuxt/app";
 const runtimeConfig = useRuntimeConfig();
-
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
   if (typeof authorizationHeader === "undefined") {
@@ -10,18 +9,16 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
+  const { district } = await readBody(event);
   const { data } = await $fetch<any>(
-    `${runtimeConfig.authBaseUrl}/api/check-token`,
+    `${runtimeConfig.coreBaseUrl}/api/list/kabupaten/${district}/kecamatan`,
     {
-      method: "POST",
-      body: JSON.stringify({
-        token: authorizationHeader.split("bearer ")[1],
-        access: "/v1/users",
-      }),
+      method: "get",
+      headers: { Authorization: authorizationHeader },
     }
   ).catch((err: NuxtError) => {
     throw createError({
-      statusCode: err.statusCode || 403,
+      statusCode: err.statusCode,
       statusMessage: JSON.stringify(err.data),
     });
   });

@@ -65,7 +65,8 @@ const updateIsVerticalNavScrolled = (val: boolean) =>
 const handleNavScroll = (evt: Event) => {
   isVerticalNavScrolled.value = (evt.target as HTMLElement).scrollTop > 0;
 };
-const { data: sessionData } = useAuth();
+// const { data: sessionData } = useAuth();
+const sessionData = await useMyAuthUserStore().getSession();
 const userRole = sessionData.value?.roles.map((role) => role.name);
 
 const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered);
