@@ -157,17 +157,17 @@ const emailValidator = (value: string) => {
 
 const requiredValidator = (value: string) => !!value || "Wajib diisi";
 
-const requiredSamePassword = (value) =>
+const requiredSamePassword = (value: string) =>
   value === form.value.password || "Kata sandi tidak sama!";
 
-const requiredMinLength = (value) =>
+const requiredMinLength = (value: string) =>
   value.length >= 8 || "Pastikan kata sandi minimal 8 karakter!";
 
-const requiredValidasinoHP = (value) =>
+const requiredValidasinoHP = (value: string) =>
   value !== "08123456789" ||
   "Nomor handphone sudah terdaftar, gunakan nomor lain!";
 
-const requiredValidasiEmail = (value) =>
+const requiredValidasiEmail = (value: string) =>
   value !== "hallal@gmail.com" ||
   "Email sudah terdaftar,silahkan gunakan email lain!";
 
@@ -183,27 +183,21 @@ const { sendSnackbar } = useSnackbar();
 // };
 onMounted(async () => {
   try {
-    const response = await $api("/auth/type-role", {
+    const response: any = await $api("/auth/type-role", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
+    }).then((resp: any) => {
+      console.log("fetch type = ", resp);
+      fetchType.value = resp?.filter((val: any) => val.name !== ""); // Menyimpan data ke dalam ref
     });
-
-    fetchType.value = response.data; // Menyimpan data ke dalam ref
-    console.log("fetch", fetchType.value, "fetch");
   } catch (error) {
     console.error("Gagal mengambil data:", error);
   }
 });
 
-const items = ref([
-  { id: "7913d132-ef22-4d66-bd11-7ac830e1e3de", name: "Pelaku Usaha" },
-  { id: "dadb053e-613a-4ae0-9c52-1e955c4374f0", name: "Verifikator HLN" },
-  { id: "ae839e9d-0078-4a15-9223-9bca9dee630f", name: "Keuangan" },
-
-  // { id: '7913d132-ef22-4d66-bd11-7ac830e1e3d1', name: '' },
-]);
+const fetchType = ref([]);
 </script>
 
 <template>
@@ -252,7 +246,7 @@ const items = ref([
 
                 <VSelect
                   v-model="form.typeUser"
-                  :items="items"
+                  :items="fetchType"
                   :rules="[requiredValidator]"
                   item-title="name"
                   item-value="id"
