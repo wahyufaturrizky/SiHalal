@@ -51,8 +51,10 @@
   display: flex;
   align-items: center;
   column-gap: 0.5rem;
+  color: #fff;
 
   .app-logo-title {
+    color: #fff !important;
     font-size: 1.25rem;
     font-weight: 600;
     letter-spacing: 0.27px;

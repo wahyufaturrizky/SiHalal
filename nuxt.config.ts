@@ -92,8 +92,9 @@ export default defineNuxtConfig({
         dataType: {
           email: "string",
           id: "string",
+          is_verified: "boolean",
           new_user: "boolean",
-          otp: "string",
+          phone_number: "string",
           roles:
             "{ name: string, permissions: { group: string, name: string, url: string }[] }[]",
           username: "string",
