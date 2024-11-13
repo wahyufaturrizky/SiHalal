@@ -1,4 +1,4 @@
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware(async (to) => {
   /*
    * If it's a public route, continue navigation. This kind of pages are allowed to visited by login & non-login users. Basically, without any restrictions.
    * Examples of public routes are, 404, under maintenance, etc.
@@ -22,9 +22,12 @@ export default defineNuxtRouteMiddleware((to) => {
     return navigateTo({ name: "login" });
   }
   const { getSession, user } = useMyAuthUserStore();
-  useMyAuthUserStore().getSession();
+  await getSession();
   if (user?.new_user) {
     return navigateTo("/login/new-account");
+  }
+  if (to.path == "/login/new-account" && !user?.new_user) {
+    return navigateTo("/");
   }
 
   // if (!canNavigate(to) && to.matched.length) {
