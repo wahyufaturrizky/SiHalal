@@ -1,23 +1,20 @@
 <script lang="ts" setup>
-import { HorizontalNav } from '@layouts/components'
-import type { HorizontalNavItems } from '@layouts/types'
+import { HorizontalNav } from "@layouts/components";
+import type { HorizontalNavItems } from "@layouts/types";
 
 // ℹ️ Using import from `@layouts` causing build to hangup
 // import { useLayouts } from '@layouts'
-import { useLayoutConfigStore } from '@layouts/stores/config'
+import { useLayoutConfigStore } from "@layouts/stores/config";
 
 defineProps<{
-  navItems: HorizontalNavItems
-}>()
+  navItems: HorizontalNavItems;
+}>();
 
-const configStore = useLayoutConfigStore()
+const configStore = useLayoutConfigStore();
 </script>
 
 <template>
-  <div
-    class="layout-wrapper"
-    :class="configStore._layoutClasses"
-  >
+  <div class="layout-wrapper" :class="configStore._layoutClasses">
     <div
       class="layout-navbar-and-nav-container"
       :class="configStore.isNavbarBlurEnabled && 'header-blur'"
@@ -131,6 +128,7 @@ const configStore = useLayoutConfigStore()
 // 👉 Horizontal nav nav
 .layout-horizontal-nav {
   z-index: variables.$layout-horizontal-nav-z-index;
+  background-color: #471b50;
 
   // .horizontal-nav-sticky & {
   //   width: 100%;
