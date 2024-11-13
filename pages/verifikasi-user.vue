@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { themeConfig } from '@themeConfig'
 import { useDisplay } from 'vuetify'
 import type { VForm } from 'vuetify/components/VForm'
-import { themeConfig } from '@themeConfig'
 
 import NoImage from '@images/no-image.png'
 import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
@@ -115,23 +115,62 @@ const isOtpNoHandphone = ref(false)
 
 const isSucess = ref (false)
 
-const onSubmitEmail = () => {
-  // try {
-  // }
-  // catch (error) {
-  //   console.log(error, 'ini error')
-  // }
+const onSubmitEmail = async () => {
+
+  const payload = {
+    channel: "email",
+    destination: form.value.email
+  }
+
+  try {
+  const response = await $api('/auth/send-otp', {
+        method: "POST", // Mengatur metode menjadi POST
+            headers: {
+              "Content-Type": "application/json", 
+            },
+            body: JSON.stringify(payload), 
+          })
+
+          console.log("RESPONSE SEND OTP : ", response)
+       
+  }
+  catch (error) {
+    console.log(error, 'ini error')
+  }
+
   isOtpEmail.value = true
 }
 
 const kodeOtpEmail = ref('')
 const kodeOtpNoHandphone = ref('')
 
-const onSumbitKodeEmail = () => {
-  console.log(kodeOtpEmail, 'otp email')
-  isSucess.value = true
-}
 
+const onSumbitKodeEmail = async () => {
+
+    const payload = {
+      user_id: route.query.id,
+      otp: kodeOtpEmail.value
+    }
+
+    console.log("payload : {} ", payload)
+
+    try {
+    const response = await $api('/auth/verify-otp', {
+        method: "POST", // Mengatur metode menjadi POST
+            headers: {
+              "Content-Type": "application/json", 
+            },
+            body: JSON.stringify(payload), 
+          })
+
+      console.log("RESPONSE VERIF OTP : ", response)  
+
+      console.log(kodeOtpEmail, 'otp email')
+      isSucess.value = true
+    }catch(error){
+      console.log("ADA ERROR NIH BANG ", error)
+    }
+}
 const isDisabledKodeEmail = computed(() => {
   return !kodeOtpEmail.value || kodeOtpEmail.value.length !== 6
 })

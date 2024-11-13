@@ -62,6 +62,8 @@ const form = ref({
   passwordConfirm: null,
 });
 
+const router = useRouter()
+
 const onSubmit = async () => {
   // const captchaResponse = await $fetch("/api/validateTurnstile", {
   //   method: "POST",
@@ -100,28 +102,33 @@ const onSubmit = async () => {
       };
 
       try {
-        const response = await fetch(
-          "http://117.53.45.155:8081/api/v1/users/api/register",
-          {
-            method: "POST", // Mengatur metode menjadi POST
+
+        const response = await $api('/auth/register', {
+        method: "POST", // Mengatur metode menjadi POST
             headers: {
               "Content-Type": "application/json", // Mengatur tipe konten
             },
             body: JSON.stringify(payload), // Mengubah payload menjadi format JSON
-          }
-        );
+          })
 
-        if (response.ok) {
+
+        if (response.code === 2000) {
           // Cek apakah response berhasil
-          const data = await response.json();
+          const data = response.data
 
           console.log("Akun berhasil dibuat:", data);
-          navigateTo({
-            path: "/verifikasi-user",
-            query: { data: JSON.stringify(data) },
-          });
+          // navigateTo({
+          //   path: "/verifikasi-user"
+          // });
+          const id = data.user.id
+          console.log("id : ", id)
 
-          console.error("Gagal membuat akun:", response.status);
+          navigateTo({
+            path: '/verifikasi-user',
+            query: {
+              id: id,            }
+          })
+          // router.push({ name: 'verifikasi-user', params: { id: id } })
         }
       } catch (error) {
         console.error("Error saat membuat akun:", error);
