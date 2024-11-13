@@ -30,6 +30,22 @@ export default defineNuxtRouteMiddleware(async (to) => {
   //   query: { id: user.value?.id, email: user.value?.email },
   // });
   // }
+  if (to.path === "/register") {
+    if (isLoggedIn) {
+      return navigateTo("/");
+    }
+  } else if (!isLoggedIn) {
+    return navigateTo("/register");
+  }
+
+  if (to.path === "/verifikasi-user") {
+    if (user.value?.is_verified) {
+      return navigateTo("/");
+    }
+  } else if (!user.value?.is_verified) {
+    return navigateTo("/login");
+  }
+
   if (to.path === "/login/new-account") {
     if (!user.value?.new_user) {
       return navigateTo("/");
