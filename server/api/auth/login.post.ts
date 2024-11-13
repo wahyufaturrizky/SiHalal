@@ -35,11 +35,13 @@ export default defineEventHandler(async (event) => {
       statusMessage: "username or password wrong",
     });
   });
-  setCookie(
-    event,
-    "roles",
-    JSON.stringify(data.user.roles.map((role: any) => role.name))
-  );
+  if (!data.user.is_verified) {
+    throw createError({
+      statusCode: 400,
+      message: "username or password wrong",
+      data: data,
+    });
+  }
 
   return data || null;
 });

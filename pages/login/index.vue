@@ -14,7 +14,7 @@ import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustratio
 import authV2LoginMaskDark from "@images/pages/auth-v2-login-mask-dark.png";
 import authV2LoginMaskLight from "@images/pages/auth-v2-login-mask-light.png";
 
-const { signIn, data: sessionData, status } = useAuth();
+const { signIn, data: sessionData, status, signOut } = useAuth();
 const { mdAndUp } = useDisplay();
 
 const authThemeImg = useGenerateImageVariant(
@@ -72,6 +72,17 @@ async function login() {
       replace: true,
     });
   } catch (error) {
+    if (error.data.statusCode == 400) {
+      console.log(error.data.data.id);
+      navigateTo({
+        path: "/verifikasi-user",
+        query: {
+          id: error.data.data.user.id,
+          email: error.data.data.user.email,
+        },
+      });
+      return;
+    }
     useSnackbar().sendSnackbar("username atau password salah", "error");
     buttonClicked.value = false;
   }
@@ -85,7 +96,6 @@ const captchaError = useState("captchaError", () => false);
 const onSubmit = async () => {
   // sendSnackbar("error bang", "success");
   buttonClicked.value = true;
-  console.log("ini", buttonClicked.value || !turnstile.value);
   refVForm.value?.validate().then(({ valid: isValid }) => {
     if (isValid) login();
   });

@@ -24,6 +24,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const { getSession } = useMyAuthUserStore();
   const user = await getSession();
+  // if (to.path === "/verifikasi-user" && !user.value?.is_verified) {
+  // return navigateTo({
+  //   path: "/verifikasi-user",
+  //   query: { id: user.value?.id, email: user.value?.email },
+  // });
+  // }
   if (to.path === "/login/new-account") {
     if (!user.value?.new_user) {
       return navigateTo("/");
