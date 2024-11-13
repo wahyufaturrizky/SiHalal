@@ -37,6 +37,7 @@ export default defineNuxtConfig({
     // Private keys are only available on the server
     authSecret: process.env.NUXT_AUTH_SECRET || "",
     authBaseUrl: process.env.NUXT_AUTH_BASE_URL || "",
+    coreBaseUrl: process.env.NUXT_CORE_BASE_URL || "",
 
     // Public keys that are exposed to the client.
     public: {
@@ -91,6 +92,8 @@ export default defineNuxtConfig({
         dataType: {
           email: "string",
           id: "string",
+          new_user: "boolean",
+          otp: "string",
           roles:
             "{ name: string, permissions: { group: string, name: string, url: string }[] }[]",
           username: "string",
