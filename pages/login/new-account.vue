@@ -8,11 +8,12 @@
   </VRow>
   <VRow no-gutters>
     <VCol class="d-flex align-center justify-center">
-      <v-card max-width="100dvh" class="mb-5">
+      <v-card class="mb-5">
         <VWindow
           :touch="false"
           v-model="stepStore.step"
           class="d-flex align-center justify-center"
+          style="max-width: 90dvw"
         >
           <VWindowItem :value="1">
             <v-card-text>

@@ -1,6 +1,6 @@
 import { NuxtError } from "nuxt/app";
+import NewAccountForeign from "~/server/interface/new-account.iface";
 const runtimeConfig = useRuntimeConfig();
-
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
   if (typeof authorizationHeader === "undefined") {
@@ -10,20 +10,21 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-  const { data } = await $fetch<any>(
-    `${runtimeConfig.authBaseUrl}/api/check-token`,
+  const body: NewAccountForeign = await readBody(event);
+  console.log(body);
+  const data = await $fetch<any>(
+    `${runtimeConfig.coreBaseUrl}/api/v1/business-actor/foreign`,
     {
-      method: "POST",
-      body: JSON.stringify({
-        token: authorizationHeader.split("bearer ")[1],
-        access: "/v1/users",
-      }),
+      method: "post",
+      body: body,
+      headers: { Authorization: authorizationHeader },
     }
   ).catch((err: NuxtError) => {
     throw createError({
-      statusCode: err.statusCode || 403,
+      statusCode: err.statusCode,
       statusMessage: JSON.stringify(err.data),
     });
   });
+  console.log(data);
   return data || null;
 });
