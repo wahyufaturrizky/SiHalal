@@ -62,8 +62,6 @@ import LuarNegeri from "@/views/pages/new-account/LuarNegeri.vue";
 
 definePageMeta({
   layout: "blank",
-  unauthenticatedOnly: true,
-  public: true,
 });
 
 const stepStore = useMyNewAccountStepStore();
