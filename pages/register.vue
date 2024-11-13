@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { themeConfig } from '@themeConfig'
 import { useDisplay } from 'vuetify'
 import { VForm } from 'vuetify/components/VForm'
+import { themeConfig } from '@themeConfig'
 
 import { emailValidator, requiredValidator } from '#imports'
 import { VNodeRenderer } from '@/@layouts/components/VNodeRenderer'
@@ -36,6 +36,7 @@ definePageMeta({
 })
 
 const isPasswordVisible = ref(false)
+const isPasswordVisibleConfrim = ref(false)
 
 const route = useRoute()
 
@@ -138,6 +139,23 @@ const phoneValidator = (value: string) => {
 }
 
 const requiredValidator = (value: string) => !!value || 'Wajib diisi'
+
+const requiredSamePassword = value =>
+  value === form.value.password || 'Kata sandi tidak sama!'
+
+const requiredMinLength = value => value.length >= 8 || 'Pastikan kata sandi minimal 8 karakter!'
+
+const requiredValidasinoHP = value => value !== '08123456789' || 'Nomor handphone sudah terdaftar, gunakan nomor lain!'
+
+const requiredValidasiEmail = value => value !== 'hallal@gmail.com' || 'Email sudah terdaftar,silahkan gunakan email lain!'
+
+// Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!
+// jika error pas di input maka tapil diatas
+const { sendSnackbar } = useSnackbar()
+
+const global = () => {
+  sendSnackbar('Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!', 'error')
+}
 </script>
 
 <template>
@@ -224,7 +242,7 @@ const requiredValidator = (value: string) => !!value || 'Wajib diisi'
                 <b> Email </b>
                 <VTextField
                   v-model="form.email"
-                  :rules="[requiredValidator, emailValidator]"
+                  :rules="[requiredValidator, emailValidator, requiredValidasiEmail]"
                   type="text"
                   :error-messages="errors.email"
                   placeholder="Masukan Email"
@@ -236,7 +254,7 @@ const requiredValidator = (value: string) => !!value || 'Wajib diisi'
                 <b> Nomor Handphone</b>
                 <VTextField
                   v-model="form.noHandphone"
-                  :rules="[requiredValidator, phoneValidator]"
+                  :rules="[requiredValidator, phoneValidator, requiredValidasinoHP]"
                   type="tel"
                   maxlength="13"
                   placeholder="Masukan Nomor Handphone"
@@ -249,7 +267,7 @@ const requiredValidator = (value: string) => !!value || 'Wajib diisi'
                 <b> Kata Sandi</b>
                 <VTextField
                   v-model="form.password"
-                  :rules="[requiredValidator]"
+                  :rules="[requiredValidator, requiredMinLength]"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   :error-messages="errors.password"
                   :append-inner-icon="
@@ -265,14 +283,14 @@ const requiredValidator = (value: string) => !!value || 'Wajib diisi'
                 <b>Konfirmasi Kata Sandi</b>
                 <VTextField
                   v-model="form.passwordConfirm"
-                  :rules="[requiredValidator]"
-                  :type="isPasswordVisible ? 'text' : 'password'"
+                  :rules="[requiredValidator, requiredMinLength, requiredSamePassword]"
+                  :type="isPasswordVisibleConfrim ? 'text' : 'password'"
                   :error-messages="errors.password"
                   :append-inner-icon="
-                    isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'
+                    isPasswordVisibleConfrim ? 'ri-eye-off-line' : 'ri-eye-line'
                   "
                   placeholder="Masukan konfirmasi kata sandi"
-                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                  @click:append-inner="isPasswordVisibleConfrim = !isPasswordVisibleConfrim"
                 />
               </VCol>
 
