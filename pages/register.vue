@@ -65,20 +65,6 @@ const form = ref({
 const router = useRouter();
 
 const onSubmit = async () => {
-  // const captchaResponse = await $fetch("/api/validateTurnstile", {
-  //   method: "POST",
-  //   body: { token: turnstile.value },
-  // });
-
-  // if (!captchaResponse.success) {
-  //   captchaError.value = true;
-
-  //   return;
-  // }
-  // refVForm.value?.validate().then(({ valid: isValid }) => {
-  //   if (isValid) login();
-  // });
-
   refVForm.value?.validate().then(async ({ valid: isValid }) => {
     if (isValid) {
       // Definisikan payload
@@ -93,7 +79,7 @@ const onSubmit = async () => {
       // }
 
       const payload = {
-        role_id: "7913d132-ef22-4d66-bd11-7ac830e1e3d1",
+        role_id: form.value.typeUser.id,
         name: form.value.name,
         email: form.value.email,
         phone_number: form.value.noHandphone,
@@ -120,12 +106,13 @@ const onSubmit = async () => {
           //   path: "/verifikasi-user"
           // });
           const id = data.user.id;
+          const email = data.user.email;
 
           console.log("id : ", id);
 
           navigateTo({
             path: "/verifikasi-user",
-            query: { id },
+            query: { id, email },
           });
 
           // router.push({ name: 'verifikasi-user', params: { id: id } })
@@ -194,6 +181,29 @@ const { sendSnackbar } = useSnackbar();
 //     "error"
 //   );
 // };
+onMounted(async () => {
+  try {
+    const response = await $api("/auth/type-role", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    fetchType.value = response.data; // Menyimpan data ke dalam ref
+    console.log("fetch", fetchType.value, "fetch");
+  } catch (error) {
+    console.error("Gagal mengambil data:", error);
+  }
+});
+
+const items = ref([
+  { id: "7913d132-ef22-4d66-bd11-7ac830e1e3de", name: "Pelaku Usaha" },
+  { id: "dadb053e-613a-4ae0-9c52-1e955c4374f0", name: "Verifikator HLN" },
+  { id: "ae839e9d-0078-4a15-9223-9bca9dee630f", name: "Keuangan" },
+
+  // { id: '7913d132-ef22-4d66-bd11-7ac830e1e3d1', name: '' },
+]);
 </script>
 
 <template>
@@ -242,11 +252,14 @@ const { sendSnackbar } = useSnackbar();
 
                 <VSelect
                   v-model="form.typeUser"
-                  :items="typeUserItem"
-                  placeholder="Pilih tipe pengguna"
+                  :items="items"
                   :rules="[requiredValidator]"
-                  clearable
-                  eager
+                  item-title="name"
+                  item-value="id"
+                  label="Pilih tipe pengguna"
+                  persistent-hint
+                  return-object
+                  single-line
                 />
               </VCol>
 
