@@ -150,7 +150,7 @@ const onSumbitKodeEmail = async () => {
   console.log("payload : {} ", payload);
 
   try {
-    const response = await $api("/auth/verify-otp", {
+    const response: any = await $api("/auth/verify-otp", {
       method: "POST", // Mengatur metode menjadi POST
       headers: {
         "Content-Type": "application/json",
@@ -161,8 +161,19 @@ const onSumbitKodeEmail = async () => {
     console.log("RESPONSE VERIF OTP : ", response);
 
     console.log(kodeOtpEmail, "otp email");
-    if (response === 200) isSucess.value = true;
-    else isSucess.value = false;
+    if (response?.code === 2000) {
+      isSucess.value = true;
+      const { data: userData, signOut } = useAuth();
+      if (userData == null) {
+        await signOut({ redirect: false });
+
+        navigateTo({ name: "login" });
+      } else {
+        navigateTo("/login/new-account");
+      }
+    } else {
+      isSucess.value = false;
+    }
   } catch (error) {
     console.log("ADA ERROR NIH BANG ", error);
   }
