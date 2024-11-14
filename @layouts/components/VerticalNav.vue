@@ -159,6 +159,7 @@ const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered);
       </PerfectScrollbar>
     </slot>
     <slot name="after-nav-items" />
+    <div class="layout-vertical-background-img"></div>
   </Component>
 </template>
 
@@ -193,6 +194,13 @@ const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered);
   inset-inline-start: 0;
   transition: inline-size 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
   will-change: transform, inline-size;
+
+  background-image: url("@images/logo.svg"); /* Replace with your image URL */
+  background-size: 25svh;
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-blend-mode: soft-light;
+  background-position-y: 52svh;
 
   .nav-header {
     display: flex;
