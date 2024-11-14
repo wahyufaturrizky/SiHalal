@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { layoutConfig } from "@layouts";
 import { TransitionExpand, VerticalNavLink } from "@layouts/components";
-import { canViewNavMenuGroup } from "@layouts/plugins/casl";
 import { useLayoutConfigStore } from "@layouts/stores/config";
 import { injectionKeyIsVerticalNavHovered } from "@layouts/symbols";
 import type { NavGroup } from "@layouts/types";
@@ -18,6 +17,7 @@ defineOptions({
 
 const props = defineProps<{
   item: NavGroup;
+  roles: string[];
 }>();
 
 const route = useRoute();
@@ -149,11 +149,12 @@ watch(
 watch(configStore.isVerticalNavMini(isVerticalNavHovered), (val) => {
   isGroupOpen.value = val ? false : isGroupActive.value;
 });
+const isShown = props.roles.some((item) => props.item.roles?.includes(item));
 </script>
 
 <template>
   <li
-    v-if="canViewNavMenuGroup(item)"
+    v-if="isShown"
     class="nav-group"
     :class="[
       {
@@ -208,6 +209,7 @@ watch(configStore.isVerticalNavMini(isVerticalNavHovered), (val) => {
       <ul v-show="isGroupOpen" class="nav-group-children">
         <Component
           :is="'children' in child ? 'VerticalNavGroup' : VerticalNavLink"
+          :roles="child.roles"
           v-for="child in item.children"
           :key="child.title"
           :item="child"

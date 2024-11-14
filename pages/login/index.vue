@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import type { User } from "next-auth";
-import type { NuxtError } from "nuxt/app";
-
 import { themeConfig } from "@themeConfig";
 import { useDisplay } from "vuetify";
 import { VForm } from "vuetify/components/VForm";
@@ -17,7 +14,7 @@ import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustratio
 import authV2LoginMaskDark from "@images/pages/auth-v2-login-mask-dark.png";
 import authV2LoginMaskLight from "@images/pages/auth-v2-login-mask-light.png";
 
-const { signIn, data: sessionData } = useAuth();
+const { signIn, data: sessionData, status, signOut } = useAuth();
 const { mdAndUp } = useDisplay();
 
 const authThemeImg = useGenerateImageVariant(
@@ -49,69 +46,60 @@ const errors = ref<Record<string, string | undefined>>({
   email: undefined,
   password: undefined,
 });
+
 const turnstile = ref();
+const buttonClicked = ref(false);
 const refVForm = ref<VForm>();
 
 const credentials = ref({
-  email: "admin@demo.com",
-  password: "admin",
+  email: "",
+  password: "",
 });
 
 const rememberMe = useState("rememberMe", () => false);
 
 async function login() {
-  const response = await signIn("credentials", {
-    callbackUrl: "/",
-    redirect: false,
-    email: credentials.value.email,
-    password: credentials.value.password,
-    token: turnstile.value,
-  });
+  try {
+    const response = await signIn({
+      callbackUrl: "/",
+      redirect: false,
+      email: credentials.value.email,
+      password: credentials.value.password,
+      token: turnstile.value,
+    });
 
-  // If error is not null => Error is occurred
-  if (response && response.error) {
-    const apiStringifiedError = response.error;
-    const apiError: NuxtError = JSON.parse(apiStringifiedError);
-
-    errors.value = apiError.data as Record<string, string | undefined>;
-
-    // If err => Don't execute further
-    return;
+    navigateTo(route.query.to ? String(route.query.to) : "/", {
+      replace: true,
+    });
+  } catch (error) {
+    if (error.data.statusCode == 400) {
+      console.log(error.data.data.id);
+      navigateTo({
+        path: "/verifikasi-user",
+        query: {
+          id: error.data.data.user.id,
+          email: error.data.data.user.email,
+        },
+      });
+      return;
+    }
+    useSnackbar().sendSnackbar("username atau password salah", "error");
+    buttonClicked.value = false;
   }
 
-  // Reset error on successful login
-  errors.value = {};
+  // If error is not null => Error is occurred
 
   // Update user abilities
-  const { user } = sessionData.value!;
-
-  useCookie<Partial<User>>("userData").value = user;
-
-  // Save user abilities in cookie so we can retrieve it back on refresh
-  useCookie<User["abilityRules"]>("userAbilityRules").value = user.abilityRules;
-
-  ability.update(user.abilityRules ?? []);
-
-  navigateTo(route.query.to ? String(route.query.to) : "/", { replace: true });
 }
 const captchaError = useState("captchaError", () => false);
+
 const onSubmit = async () => {
   // sendSnackbar("error bang", "success");
+  buttonClicked.value = true;
   refVForm.value?.validate().then(({ valid: isValid }) => {
     if (isValid) login();
   });
 };
-watch(turnstile, async (newValue, oldValue) => {
-  console.log(newValue);
-  const captchaResponse = await $fetch("/api/validateTurnstile", {
-    method: "POST",
-    body: { token: newValue },
-  });
-  if (!captchaResponse.success) {
-    captchaError.value = true;
-  }
-  isDisabledSubmit.value = false;
-});
 </script>
 
 <template>
@@ -122,13 +110,13 @@ watch(turnstile, async (newValue, oldValue) => {
       class="auth-card-v2 d-flex align-center justify-center login-bg"
     >
       <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
-        <v-card-text>
+        <VCardText>
           <NuxtLink to="/">
             <div class="auth-logo app-logo">
               <VNodeRenderer :nodes="themeConfig.app.logo" />
             </div>
           </NuxtLink>
-        </v-card-text>
+        </VCardText>
         <VCardText>
           <h4 class="text-h4 mb-1">
             Selamat Datang di
@@ -138,6 +126,7 @@ watch(turnstile, async (newValue, oldValue) => {
           </h4>
           <p class="mb-0">
             Login untuk mengakses fitur pada web {{ themeConfig.app.title }}
+            {{ status }}
           </p>
         </VCardText>
 
@@ -149,7 +138,7 @@ watch(turnstile, async (newValue, oldValue) => {
                 <VTextField
                   v-model="credentials.email"
                   label="Email"
-                  placeholder="johndoe@email.com"
+                  placeholder="Masukkan Email"
                   type="email"
                   autofocus
                   :rules="[requiredValidator, emailValidator]"
@@ -178,7 +167,13 @@ watch(turnstile, async (newValue, oldValue) => {
                   <NuxtTurnstile v-model="turnstile" class="text-center" />
                 </div>
 
-                <VBtn block type="submit" :disabled="!turnstile"> Login </VBtn>
+                <VBtn
+                  block
+                  type="submit"
+                  :disabled="!turnstile || buttonClicked"
+                >
+                  Login
+                </VBtn>
               </VCol>
 
               <!-- create account -->
@@ -192,7 +187,8 @@ watch(turnstile, async (newValue, oldValue) => {
                 </NuxtLink>
               </VCol>
 
-              <!-- <VCol cols="12" class="d-flex align-center">
+              <!--
+                <VCol cols="12" class="d-flex align-center">
                 <VDivider />
                 <span class="mx-4 text-high-emphasis">or</span>
                 <VDivider />
@@ -200,9 +196,11 @@ watch(turnstile, async (newValue, oldValue) => {
               -->
 
               <!-- auth providers -->
-              <!-- <VCol cols="12" class="text-center">
+              <!--
+                <VCol cols="12" class="text-center">
                 <AuthProvider />
-              </VCol> -->
+                </VCol>
+              -->
             </VRow>
           </VForm>
         </VCardText>
@@ -243,6 +241,7 @@ watch(turnstile, async (newValue, oldValue) => {
     }
   }
 }
+
 .login-bg {
   background-color: rgb(var(--v-theme-surface));
 }

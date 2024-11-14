@@ -8,8 +8,6 @@ import authV2LoginIllustrationBorderedDark from "@images/pages/auth-v2-login-ill
 import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-illustration-bordered-light.png";
 import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
 
-// import Otp from '@layouts/components/otp.vue'
-
 const { signIn, data: sessionData } = useAuth();
 const { mdAndUp } = useDisplay();
 
@@ -27,7 +25,7 @@ const authThemeImg = useGenerateImageVariant(
 // )
 
 definePageMeta({
-  layout: "forgotPassLayout",
+  layout: "blank",
   unauthenticatedOnly: true,
 });
 
@@ -55,7 +53,7 @@ const refVForm = ref<VForm>();
 // })
 
 const form = ref({
-  email: null,
+  email: route.query.email,
   noHandphone: null,
 });
 
@@ -115,20 +113,70 @@ const isDisabledSubmitNoHandphone = computed(() => {
 const isOtpEmail = ref(false);
 const isOtpNoHandphone = ref(false);
 
-const onSubmitEmail = () => {
-  // try {
-  // }
-  // catch (error) {
-  //   console.log(error, 'ini error')
-  // }
+const isSucess = ref(false);
+
+const onSubmitEmail = async () => {
+  const payload = {
+    channel: "email",
+    destination: form.value.email,
+  };
+
+  try {
+    const response = await $api("/auth/send-otp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    console.log("RESPONSE SEND OTP : ", response);
+  } catch (error) {
+    console.log(error, "ini error");
+  }
+
   isOtpEmail.value = true;
 };
 
 const kodeOtpEmail = ref("");
 const kodeOtpNoHandphone = ref("");
 
-const onSumbitKodeEmail = () => {
-  console.log(kodeOtpEmail, "otp email");
+const onSumbitKodeEmail = async () => {
+  const payload = {
+    user_id: route.query.id,
+    otp: kodeOtpEmail.value,
+  };
+
+  console.log("payload : {} ", payload);
+
+  try {
+    const response: any = await $api("/auth/verify-otp", {
+      method: "POST", // Mengatur metode menjadi POST
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    console.log("RESPONSE VERIF OTP : ", response);
+
+    console.log(kodeOtpEmail, "otp email");
+    if (response?.code === 2000) {
+      isSucess.value = true;
+      const { data: userData, signOut } = useAuth();
+      if (userData == null) {
+        await signOut({ redirect: false });
+
+        navigateTo({ name: "login" });
+      } else {
+        navigateTo("/login/new-account");
+      }
+    } else {
+      isSucess.value = false;
+    }
+  } catch (error) {
+    console.log("ADA ERROR NIH BANG ", error);
+  }
 };
 
 const isDisabledKodeEmail = computed(() => {
@@ -150,11 +198,35 @@ const startCooldown = () => {
   }, 1000);
 };
 
-const resendCode = () => {
+const { sendSnackbar } = useSnackbar();
+
+const resendCode = async () => {
+  sendSnackbar("Kode Verifikasi Berhasil Dikirim Ulang", "success");
+
+  const payload = {
+    channel: "email",
+    destination: form.value.email,
+  };
+
   startCooldown();
 
+  try {
+    const response = await $api("/auth/send-otp", {
+      method: "POST", // Mengatur metode menjadi POST
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    console.log("RESPONSE SEND OTP dari RESEND : ", response);
+  } catch (error) {
+    console.log(error, "ini error");
+  }
+
+  // notif();
+
   // Tambahkan logic pengiriman ulang kode di sini
-  console.log("Kode dikirim ulang!");
 };
 
 onMounted(() => {
@@ -165,20 +237,14 @@ const onSubmitNomerHandphone = () => {
   isOtpNoHandphone.value = true;
 };
 
-const onSubmitKodeNomerHandphone = () => {};
+const onSubmitKodeNomerHandphone = () => {
+  isSucess.value = true;
+
+  // sendSnackbar('Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali', 'error')
+};
 </script>
 
 <template>
-  <!--
-    <VSnackbar
-    v-model="captchaError"
-    location="top"
-    color="error"
-    >
-    Captcha failed
-    </VSnackbar>
-  -->
-
   <VRow no-gutters class="auth-wrapper">
     <VCol
       cols="12"
@@ -198,23 +264,26 @@ const onSubmitKodeNomerHandphone = () => {};
         <VCardText>
           <VTabs v-model="currentTab" grow>
             <VTab :disabled="isDisabledEmail"> Email </VTab>
-            <VTab :disabled="isDisabledNoHp"> NomorHandphone </VTab>
+            <VTab v-if="false" :disabled="isDisabledNoHp">
+              NomorHandphone
+            </VTab>
           </VTabs>
 
           <VWindow v-model="currentTab" class="mt-5">
             <VWindowItem key="1">
               <VCol cols="12">
                 <!-- Verifikasi Email  -->
-                <p class="verifikasi-title text-email">
+                <p v-if="!isSucess" class="verifikasi-title text-email">
                   Verifikasi dengan Email
                 </p>
-                <div v-if="!isOtpEmail">
+                <div v-if="!isOtpEmail && !isSucess">
                   <p>klik button untuk mengirim kode verifikasi</p>
                   <VTextField
                     v-model="form.email"
                     class="mb-5"
                     :rules="[requiredValidatorEmail, emailValidator]"
                     type="text"
+                    disabled="true"
                     :error-messages="errors.email"
                     placeholder="Masukan Email"
                   />
@@ -227,17 +296,16 @@ const onSubmitKodeNomerHandphone = () => {};
                   >
                     Kirim Kode Verifikasi
                   </VBtn>
-
-                  <RouterLink to="/register" class="back-link">
-                    <VBtn class="back-icon">
+                  <div class="back-link">
+                    <a href="/register" class="back-icon">
                       ← Kembali ke Halaman Buat Akun
-                    </VBtn>
-                  </RouterLink>
+                    </a>
+                  </div>
                 </div>
                 <!-- verifikasi end email -->
 
                 <!-- Verfikasi kode  Email -->
-                <div v-if="isOtpEmail">
+                <div v-if="isOtpEmail && !isSucess">
                   <p>Kami telah mengirimkan kode verifikasi ke email</p>
                   <b>"{{ form.email }}"</b>
                   <VOtpInput
@@ -247,11 +315,14 @@ const onSubmitKodeNomerHandphone = () => {};
                   />
                   <p>
                     Belum terima kode?
-                    <span v-if="cooldown > 0">({{ cooldown }}) detik</span>
+                    <span v-if="cooldown > 0"
+                      >Kirim Ulang dalam ({{ cooldown }}) detik</span
+                    >
                     <span v-else>
-                      <a href="#" @click.prevent="resendCode">Kirim Ulang</a>
+                      <a @click="resendCode">Kirim Ulang</a>
                     </span>
                   </p>
+                  <!-- <OtpVerification /> -->
                   <VBtn
                     block
                     type="submit"
@@ -260,14 +331,42 @@ const onSubmitKodeNomerHandphone = () => {};
                   >
                     Verifikasi Kode
                   </VBtn>
-
-                  <RouterLink to="/register" class="back-link">
-                    <span class="back-icon">
-                      ← Kembali ke Halaman Buat Akun</span
-                    >
-                  </RouterLink>
+                  <div class="back-link">
+                    <a href="/register" class="back-icon">
+                      ← Kembali ke Halaman Buat Akun
+                    </a>
+                  </div>
                 </div>
                 <!-- end verifikasi   email -->
+
+                <!-- Verfikasi  Sucess kode  Email -->
+                <div v-if="isSucess">
+                  <VRow>
+                    <VCol>
+                      <h2 class="text-success">
+                        <VIcon color="green" size="30">
+                          mdi-check-circle
+                        </VIcon>
+                        Sukses!
+                      </h2>
+                      <p>Verifikasi dengan email telah berhasil dilakukan</p>
+                    </VCol>
+                  </VRow>
+                  <VRow class="mt-4">
+                    <VCol>
+                      <VBtn
+                        outlined
+                        style="inline-size: 100%"
+                        class="text-none text-body-1 font-weight-medium custom-btn"
+                        href="/register"
+                      >
+                        Pergi ke Halaman Login
+                        <VIcon end> mdi-arrow-right </VIcon>
+                      </VBtn>
+                    </VCol>
+                  </VRow>
+                </div>
+                <!-- Verfikasi end  Sucess kode  Email -->
               </VCol>
             </VWindowItem>
             <VWindowItem key="2">
@@ -275,7 +374,7 @@ const onSubmitKodeNomerHandphone = () => {};
                 Verifikasi dengan Nomor Handphone
               </p>
               <!-- verifikasi  nomer Handphone  -->
-              <div v-if="!isOtpNoHandphone">
+              <div v-if="!isOtpNoHandphone && !isSucess">
                 <p>klik button untuk mengirim kode verifikasi</p>
                 <VTextField
                   v-model="form.noHandphone"
@@ -297,12 +396,16 @@ const onSubmitKodeNomerHandphone = () => {};
                 >
                   Kirim Kode Verifikasi
                 </VBtn>
-                <RouterLink to="/register" class="back-link">
-                  <span class="back-icon"> ← Kembali ke Halaman Buat Akun</span>
-                </RouterLink>
+                <div class="back-link">
+                  <a href="/register" class="back-icon">
+                    ← Kembali ke Halaman Buat Akun
+                  </a>
+                </div>
               </div>
+              <!-- end verfikasi noHandphoen -->
 
-              <div v-if="isOtpNoHandphone">
+              <!-- OTP noHandphone -->
+              <div v-if="isOtpNoHandphone && !isSucess">
                 <p>Kami telah mengirimkan kode verifikasi ke nomor handphone</p>
                 <b>"{{ form.noHandphone }}"</b>
                 <VOtpInput
@@ -312,9 +415,11 @@ const onSubmitKodeNomerHandphone = () => {};
                 />
                 <p>
                   Belum terima kode?
-                  <span v-if="cooldown > 0">({{ cooldown }}) detik</span>
+                  <span v-if="cooldown > 0"
+                    >Kirim Ulang dalam ({{ cooldown }}) detik</span
+                  >
                   <span v-else>
-                    <a href="#" @click.prevent="resendCode"> Kirim Ulang </a>
+                    <a @click="resendCode">Kirim Ulang</a>
                   </span>
                 </p>
                 <VBtn
@@ -325,10 +430,42 @@ const onSubmitKodeNomerHandphone = () => {};
                 >
                   Verifikasi Kode
                 </VBtn>
-                <RouterLink to="/register" class="back-link">
-                  <span class="back-icon"> ← Kembali ke Halaman Buat Akun</span>
-                </RouterLink>
+                <div class="back-link">
+                  <a href="/register" class="back-icon">
+                    ← Kembali ke Halaman Buat Akun
+                  </a>
+                </div>
               </div>
+              <!-- OTP end nomerHandphone  -->
+
+              <!-- Verfikasi  Sucess kode  Email -->
+              <div v-if="isSucess">
+                <VRow>
+                  <VCol>
+                    <h2 class="text-success">
+                      <VIcon color="green" size="30"> mdi-check-circle </VIcon>
+                      Sukses!
+                    </h2>
+                    <p>
+                      Verifikasi dengan Nomor Handphone telah berhasil dilakukan
+                    </p>
+                  </VCol>
+                </VRow>
+                <VRow class="mt-4">
+                  <VCol>
+                    <VBtn
+                      outlined
+                      style="inline-size: 100%"
+                      class="text-none text-body-1 font-weight-medium custom-btn"
+                      href="/register"
+                    >
+                      Pergi ke Halaman Login
+                      <VIcon end> mdi-arrow-right </VIcon>
+                    </VBtn>
+                  </VCol>
+                </VRow>
+              </div>
+              <!-- Verfikasi end  Sucess kode  Email -->
             </VWindowItem>
           </VWindow>
         </VCardText>
@@ -402,5 +539,28 @@ const onSubmitKodeNomerHandphone = () => {};
   color: #7c4d9e; /* Warna teks */
   font-size: 14px;
   text-decoration: none;
+}
+
+.text-success {
+  color: #4caf50;
+}
+
+.custom-btn {
+  border: 2px solid #6b2b77 !important;
+  border-radius: 8px;
+  background-color: #fff !important;
+  block-size: 44px;
+  color: #6b2b77 !important;
+}
+
+.custom-btn:hover {
+  border: 2px solid #fff !important;
+  background-color: #fff !important;
+  color: #fff !important;
+  opacity: 0.9;
+}
+
+.v-btn {
+  text-transform: none !important;
 }
 </style>
