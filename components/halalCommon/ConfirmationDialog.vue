@@ -6,6 +6,7 @@ const props = defineProps({
   parentBtnLabel: { type: String, required: true },
   parentBtnVariant: { type: String, required: false },
   parentBtnColor: { type: String, required: false, default: "primary" },
+  appendIcon: { type: String, required: false, default: "" },
   cardItem: { type: Object, required: true },
   cardWidth: { type: Number, required: true },
   title: { type: String, required: true },
@@ -46,7 +47,7 @@ const dialogMaxWidth = computed(() => {
 
 <template>
   <div class="ma-1">
-    <VBtn @click="openDialog" :variant="props.parentBtnVariant" :color="props.parentBtnColor">
+    <VBtn @click="openDialog" :variant="props.parentBtnVariant" :color="props.parentBtnColor" :append-icon="props.appendIcon">
       {{ props.parentBtnLabel }}
     </VBtn>
 

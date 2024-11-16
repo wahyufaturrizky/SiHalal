@@ -67,7 +67,7 @@ const openModalsRequest = () => {
       <VRow>
         <VCol>
           <VDataTable :items="filteredItems"/>
-        </VCol>v
+        </VCol>
       </VRow>
     </VCard>
     <NewRequestDialog
