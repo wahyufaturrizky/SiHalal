@@ -1,23 +1,61 @@
 <script setup lang="ts">
-import { computed } from "vue"
-import { useDisplay } from "vuetify"
+import { computed } from "vue";
+import { useDisplay } from "vuetify";
 
 const props = defineProps({
   parentBtnLabel: String,
   cardItem: Object,
-})
+  variant: {
+    type: String,
+    default: "outlined",
+  },
+  density: {
+    type: String,
+    default: "default",
+  },
+  prependIcon: {
+    type: String,
+    default: "",
+  },
+  appendIcon: {
+    type: String,
+    default: "",
+  },
+  maxWidth: {
+    type: [String, Number],
+    default: 700,
+  },
 
-const { mdAndUp } = useDisplay()
+  closePopUp: {
+    type: Function,
+    default: () => {},
+    required: false,
+  },
+});
+
+const { mdAndUp } = useDisplay();
+
+// Define responsive font size
+const buttonFontSize = computed(() => {
+  return mdAndUp.value ? "16px" : "12px";
+});
 
 const dialogMaxWidth = computed(() => {
-  return mdAndUp.value ? 700 : '90%'
+  return typeof props.maxWidth === "number" ? props.maxWidth : props.maxWidth;
 })
-
 </script>
 
 <template>
-  <VBtn variant="outlined" block>
-    {{ props.parentBtnLabel }}
+  <VBtn
+    :variant="variant"
+    :density="density"
+    block
+    :prepend-icon="prependIcon"
+    :append-icon="appendIcon"
+    :style="{ fontSize: buttonFontSize }"
+    @click="closePopUpHandler"
+  >
+    {{ parentBtnLabel }}
     <VDialog activator="parent" :max-width="dialogMaxWidth">
       <slot name="content" />
     </VDialog>
