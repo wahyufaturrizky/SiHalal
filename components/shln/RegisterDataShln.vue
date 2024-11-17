@@ -1,46 +1,72 @@
-<script setup>
-const registrationData = {
-  status: "Verification",
-  registrationNo: "RC-2024-0001676",
-};
+<script setup lang="ts">
+interface Props {
+  status?: string
+  registrationNumber?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  status: 'Verification',
+  registrationNumber: '-',
+})
+
+const getStatusColor = (status: string): string => {
+  const statusColors: Record<string, string> = {
+    Verification: 'success',
+    Pending: 'warning',
+    Rejected: 'error',
+  }
+
+  return statusColors[status] || 'grey'
+}
 </script>
 
 <template>
-  <VCard class="registration-data" max-width="400">
-    <VCardTitle class="text-h6 pb-2"> Registration Data </VCardTitle>
+  <VCardText class="pa-0">
+    <VRow
+      no-gutters
+      align="center"
+      justify="space-between"
+      class="mb-2"
+    >
+      <VCol cols="auto">
+        <span class="text-grey-darken-1">Status</span>
+      </VCol>
+      <VCol cols="auto">
+        <VChip
+          :color="getStatusColor(status)"
+          text-color="white"
+          size="small"
+          class="px-2"
+        >
+          {{ status }}
+        </VChip>
+      </VCol>
+    </VRow>
 
-    <VCardText>
-      <VRow dense>
-        <VCol cols="4">
-          <div class="text-subtitle-2 font-weight-medium">Status</div>
-        </VCol>
-        <VCol cols="8">
-          <div>{{ registrationData.status }}</div>
-        </VCol>
-      </VRow>
+    <VDivider class="my-3" />
 
-      <VRow dense>
-        <VCol cols="4">
-          <div class="text-subtitle-2 font-weight-medium">Registration No.</div>
-        </VCol>
-        <VCol cols="8">
-          <div>{{ registrationData.registrationNo }}</div>
-        </VCol>
-      </VRow>
-    </VCardText>
-  </VCard>
+    <VRow
+      no-gutters
+      align="center"
+      justify="space-between"
+    >
+      <VCol cols="auto">
+        <span class="text-grey-darken-1">Halal Registration Number</span>
+      </VCol>
+      <VCol cols="auto">
+        <span>{{ registrationNumber }}</span>
+      </VCol>
+    </VRow>
+  </VCardText>
 </template>
 
 <style scoped>
-.registration-data {
-  border-radius: 8px;
+.v-card {
+  border: none !important;
+  box-shadow: none !important;
 }
 
-.v-card-text {
-  padding-block-end: 8px;
-}
-
-.v-row {
-  margin: 0;
+.v-chip {
+  font-weight: normal;
 }
 </style>

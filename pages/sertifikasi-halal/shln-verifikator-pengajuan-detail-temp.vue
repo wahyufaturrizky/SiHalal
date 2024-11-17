@@ -1,22 +1,9 @@
 <script lang="ts" setup>
-const tablePabrikHeader = [
-  { title: "No", key: "no" },
-  { title: "Jenis", key: "kind" },
-  { title: "No. Dokumen", key: "no_docs" },
-  { title: "Tanggal", key: "date" },
-  { title: "Masa Berlaku", key: "exp_date" },
-  { title: "Instansi Penerbit", key: "publisher" },
-];
+import SHLNVerfikasiLayout from '@/layouts/SHLNVerfikasiLayout.vue';
 
-const tableOutletHeader = [
-  { title: "No", key: "no" },
-  { title: "Nama", key: "name" },
-  { title: "Alamat", key: "address" },
-];
-
-const panelOpenPabrik = ref(0);
-const panelOpenOutlet = ref(0);
-const panelOpenPenyeliaHallal = ref(0);
+const panelOpenImporter = ref(0)
+const panelOpenImporterContract = ref(0)
+const openPanelRegisterData = ref(0)
 </script>
 
 <template>
@@ -24,7 +11,10 @@ const panelOpenPenyeliaHallal = ref(0);
     <template #pageTitle>
       <VRow>
         <VCol><h3>Foreign Halal Cerficate Requirements Details</h3></VCol>
-        <VCol style="display: flex; justify-content: end">
+      </VRow>
+
+      <VRow>
+        <VCol style="display: flex; justify-content: start;">
           <VBtn
             density="compact"
             variant="outlined"
@@ -33,30 +23,34 @@ const panelOpenPenyeliaHallal = ref(0);
           >
             Detail
           </VBtn>
-
+        </VCol>
+        <VCol style="display: flex; justify-content: end;">
           <VBtn
+            class="mr-2"
             density="compact"
             variant="outlined"
             prepend-icon=""
-            @click="onEdit"
+            @click="onReturn"
           >
             Return
           </VBtn>
 
           <VBtn
+            class="mr-2"
             density="compact"
             variant="outlined"
             prepend-icon=""
-            @click="onEdit"
+            @click="onReject"
           >
             Reject
           </VBtn>
 
           <VBtn
+            class="mr-2"
             density="compact"
             variant="outlined"
             prepend-icon=""
-            @click="onEdit"
+            @click="onApprove"
           >
             Approve
           </VBtn>
@@ -68,7 +62,7 @@ const panelOpenPenyeliaHallal = ref(0);
     <template #leftContent>
       <VRow>
         <VCol cols="12">
-          <VExpansionPanels v-model="panelOpenPabrik">
+          <VExpansionPanels v-model="panelOpenImporter">
             <VExpansionPanel>
               <VExpansionPanelTitle>
                 <h2><b> Importer </b></h2>
@@ -83,24 +77,12 @@ const panelOpenPenyeliaHallal = ref(0);
       </VRow>
       <VRow>
         <VCol cols="12">
-          <VExpansionPanels v-model="panelOpenOutlet">
+          <VExpansionPanels v-model="panelOpenImporterContract">
             <VExpansionPanel>
-              <VExpansionPanelTitle><h2>Outlet</h2></VExpansionPanelTitle>
+              <VExpansionPanelTitle><h2><b>Importer's Point of Contract </b> </h2></VExpansionPanelTitle>
               <VExpansionPanelText>
-                <VDataTable :headers="tableOutletHeader" />
+                <ImporterDetail />
               </VExpansionPanelText>
-            </VExpansionPanel>
-          </VExpansionPanels>
-        </VCol>
-      </VRow>
-      <VRow>
-        <VCol :cols="12">
-          <VExpansionPanels v-model="panelOpenPenyeliaHallal">
-            <VExpansionPanel>
-              <VExpansionPanelTitle>
-                <h2>Penyelia Halal</h2>
-              </VExpansionPanelTitle>
-              <VExpansionPanelText><AspekLegalTable /></VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
         </VCol>
@@ -111,17 +93,25 @@ const panelOpenPenyeliaHallal = ref(0);
     <template #rightContent>
       <VRow>
         <VCol :cols="12">
-          <PerizinanCard />
+          <VExpansionPanels v-model="openPanelRegisterData">
+            <VExpansionPanel>
+              <VExpansionPanelTitle><h2>Registration Data</h2></VExpansionPanelTitle>
+              <VExpansionPanelText>
+                <RegisterDataShln />
+              </VExpansionPanelText>
+            </VExpansionPanel>
+          </VExpansionPanels>
         </VCol>
       </VRow>
+
       <VRow>
         <VCol :cols="12">
-          <KBLICard />
-        </VCol>
-      </VRow>
-      <VRow>
-        <VCol :cols="12">
-          <DivisiUnitUsaha />
+          <VCard>
+            <VCardTitle><h2>Tracking</h2></VCardTitle>
+            <VCardText>
+              <TrackingShln />
+            </VCardText>
+          </VCard>
         </VCol>
       </VRow>
     </template>
