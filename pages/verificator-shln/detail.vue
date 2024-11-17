@@ -36,7 +36,9 @@ onMounted(() => {
         <VTabsWindowItem value="3"
           ><VerificatorDetailManufacture
         /></VTabsWindowItem>
-        <VTabsWindowItem value="4">four</VTabsWindowItem>
+        <VTabsWindowItem value="4">
+          <VerificatorDetailProduct />
+        </VTabsWindowItem>
       </VTabsWindow>
     </VCol>
   </VRow>
