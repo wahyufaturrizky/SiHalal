@@ -15,9 +15,9 @@ const isOpen = ref(true)
   <VCard class="pa-4">
     <VRow justify="end">
       <VCol cols="11">
-        <h5 class="text-h5">
+        <p class="text-h3">
           {{ props.title }}
-        </h5>
+        </p>
       </VCol>
       <VCol cols="1">
         <VBtn
