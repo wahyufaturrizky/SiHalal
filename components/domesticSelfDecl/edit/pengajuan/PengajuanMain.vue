@@ -144,9 +144,9 @@
         <br />
         <div style="display: flex; justify-content: end">
           <VItemGroup style="display: inline-flex">
-            <VBtn variant="outlined">Surat Permohonan</VBtn>
+            <SuratPermohonanModal></SuratPermohonanModal>
             <div style="margin-left: 1svw"></div>
-            <VBtn variant="outlined">Surat Pernyataan</VBtn>
+            <SuratPernyataanModal></SuratPernyataanModal>
           </VItemGroup>
         </div>
       </VExpansionPanelText>
