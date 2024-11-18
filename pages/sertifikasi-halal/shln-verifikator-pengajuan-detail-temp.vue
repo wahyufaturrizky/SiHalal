@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import SHLNVerfikasiLayout from '@/layouts/SHLNVerfikasiLayout.vue';
+import SHLNVerfikasiLayout from "@/layouts/SHLNVerfikasiLayout.vue";
 
-const panelOpenImporter = ref(0)
-const panelOpenImporterContract = ref(0)
-const openPanelRegisterData = ref(0)
+const panelOpenImporter = ref(0);
+const panelOpenImporterContract = ref(0);
+const openPanelRegisterData = ref(0);
 </script>
 
 <template>
@@ -14,7 +14,7 @@ const openPanelRegisterData = ref(0)
       </VRow>
 
       <VRow>
-        <VCol style="display: flex; justify-content: start;">
+        <VCol style="display: flex; justify-content: start">
           <VBtn
             density="compact"
             variant="outlined"
@@ -24,36 +24,27 @@ const openPanelRegisterData = ref(0)
             Detail
           </VBtn>
         </VCol>
-        <VCol style="display: flex; justify-content: end;">
-          <VBtn
+        <VCol style="display: flex; justify-content: end">
+          <VerificationReturnConfirmation />
+          <VerificationRejectConfirmation />
+          <!--
+            <VBtn
             class="mr-2"
             density="compact"
             variant="outlined"
             prepend-icon=""
-            @click="onReturn"
-          >
-            Return
-          </VBtn>
-
-          <VBtn
-            class="mr-2"
-            density="compact"
-            variant="outlined"
-            prepend-icon=""
+            color="error"
             @click="onReject"
-          >
+            >
             Reject
-          </VBtn>
-
-          <VBtn
-            class="mr-2"
-            density="compact"
-            variant="outlined"
-            prepend-icon=""
-            @click="onApprove"
-          >
+            </VBtn>
+          -->
+          <VerificationSaveConfirmation />
+          <!--
+            <VBtn @click="openDialog" variant="flat"  >
             Approve
-          </VBtn>
+            </VBtn>
+          -->
         </VCol>
       </VRow>
     </template>
@@ -79,7 +70,11 @@ const openPanelRegisterData = ref(0)
         <VCol cols="12">
           <VExpansionPanels v-model="panelOpenImporterContract">
             <VExpansionPanel>
-              <VExpansionPanelTitle><h2><b>Importer's Point of Contract </b> </h2></VExpansionPanelTitle>
+              <VExpansionPanelTitle>
+                <h2>
+                  <b>Importer's Point of Contract </b>
+                </h2>
+              </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <ImporterDetail />
               </VExpansionPanelText>
@@ -95,7 +90,9 @@ const openPanelRegisterData = ref(0)
         <VCol :cols="12">
           <VExpansionPanels v-model="openPanelRegisterData">
             <VExpansionPanel>
-              <VExpansionPanelTitle><h2>Registration Data</h2></VExpansionPanelTitle>
+              <VExpansionPanelTitle>
+                <h2>Registration Data</h2>
+              </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <RegisterDataShln />
               </VExpansionPanelText>
