@@ -71,7 +71,7 @@ const dialogMaxWidth = computed(() => {
           </VBtn>
         </VCardActions>
       </VCard>
-    </VDialog>A
+    </VDialog>
   </div>
 </template>
 
