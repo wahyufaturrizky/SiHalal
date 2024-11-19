@@ -4,8 +4,6 @@ import { useDisplay } from "vuetify";
 
 const emit = defineEmits(["confirm", "cancel"]);
 
-const inputValue = ref("");
-
 const isVisible = ref(false);
 
 const openDialog = () => {
@@ -38,11 +36,11 @@ const dialogMaxWidth = computed(() => {
   <div class="ma-1">
     <VBtn
       variant="outlined"
-      color="error"
-      append-icon="ri-close-line"
+      color="success"
+      append-icon="ri-check-line"
       @click="openDialog"
     >
-      Reject
+      Approve
     </VBtn>
 
     <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
@@ -50,7 +48,7 @@ const dialogMaxWidth = computed(() => {
         <VCardTitle
           class="text-h5 font-weight-bold d-flex justify-space-between align-center"
         >
-          <span>Return Confirmation </span>
+          <span>Approve Confirmation </span>
           <VBtn
             icon
             color="transparent"
@@ -63,22 +61,13 @@ const dialogMaxWidth = computed(() => {
         </VCardTitle>
         <VCardText>
           <p class="mb-2">Are you sure you want to Return this submission?</p>
-          <VTextarea
-            v-model="inputValue"
-            placeholder="Input Return Note (Opsional) "
-            clearable
-            auto-grow
-            dense
-            outlined
-            :style="{ maxWidth: '100%' }"
-          />
+          <VCardActions style="display: flex; justify-content: end">
+            <VBtn variant="outlined" text @click="cancel"> Cancel </VBtn>
+            <VBtn color="success" variant="flat" @click="confirm">
+              Approve
+            </VBtn>
+          </VCardActions>
         </VCardText>
-        <VCardActions>
-          <VBtn variant="outlined" text @click="cancel"> Cancel </VBtn>
-          <VBtn color="error" variant="flat" @click="confirm">
-            Yes, Reject
-          </VBtn>
-        </VCardActions>
       </VCard>
     </VDialog>
   </div>

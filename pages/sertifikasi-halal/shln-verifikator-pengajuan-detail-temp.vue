@@ -15,36 +15,15 @@ const openPanelRegisterData = ref(0);
 
       <VRow>
         <VCol style="display: flex; justify-content: start">
-          <VBtn
-            density="compact"
-            variant="outlined"
-            prepend-icon=""
-            @click="onEdit"
-          >
+          <VBtn variant="flat" prepend-icon="" color="primary" @click="onEdit">
             Detail
           </VBtn>
         </VCol>
         <VCol style="display: flex; justify-content: end">
           <VerificationReturnConfirmation />
           <VerificationRejectConfirmation />
-          <!--
-            <VBtn
-            class="mr-2"
-            density="compact"
-            variant="outlined"
-            prepend-icon=""
-            color="error"
-            @click="onReject"
-            >
-            Reject
-            </VBtn>
-          -->
-          <VerificationSaveConfirmation />
-          <!--
-            <VBtn @click="openDialog" variant="flat"  >
-            Approve
-            </VBtn>
-          -->
+
+          <VerificationApproveConfirmationDetail />
         </VCol>
       </VRow>
     </template>
