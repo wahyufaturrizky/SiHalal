@@ -1,14 +1,18 @@
 <template>
   <VContainer>
     <KembaliButton />
-    <VRow class="justify-space-between">
-      <VCol cols="auto">
+    <VRow class="d-flex justify-space-between align-center">
+      <VCol class="">
         <h3 class="text-h3">
           Detail Pengajuan Self Declare
         </h3>
       </VCol>
       <VCol cols="3">
-        icon
+        <VRow class="d-flex justify-end align-center ga-2">
+          <VBtn variant="outlined" color="error"><VIcon icon="ri-delete-bin-5-line"></VIcon></VBtn>
+          <VBtn variant="outlined" append-icon="ri-edit-line">Edit</VBtn>
+          <VBtn>Kirim</VBtn>
+        </VRow>
       </VCol>
     </VRow>
 
