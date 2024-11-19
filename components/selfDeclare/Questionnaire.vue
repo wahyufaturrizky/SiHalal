@@ -73,12 +73,13 @@ const handleSubmit = () => {
         </VForm>
       </VCardText>
       <VCardActions>
-        <VBtn @click="closeDialog">
+        <VBtn @click="closeDialog" variant="outlined" color="error">
           Batal
         </VBtn>
         <VBtn
           color="primary"
           @click="handleSubmit"
+          variant="flat"
         >
           Simpan
         </VBtn>
