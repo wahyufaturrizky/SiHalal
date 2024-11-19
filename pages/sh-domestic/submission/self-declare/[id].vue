@@ -39,7 +39,6 @@
 </template>
 
 <script setup lang="ts">
-import TextFormView from "@/components/selfDeclare/InfoRow.vue"
 
 const route = useRoute()
 
