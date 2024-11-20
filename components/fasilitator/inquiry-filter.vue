@@ -1,20 +1,21 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 
-// Data form untuk menyimpan input pengguna
 const form = ref({
-  nomorPendaftaran: "",
-  namaPelakuUsaha: "",
-  merekDagang: "",
-  statusPermohonan: "",
-  kodeFasilitasi: "",
+  nomorPendaftaran: null,
+  namaPelakuUsaha: null,
+  merekDagang: null,
+  statusPermohonan: null,
+  kodeFasilitasi: null,
+  typePengajuan: null,
+  layarExcel: null,
 });
 
-// Opsi untuk select status permohonan dan kode fasilitasi
 const statusPermohonanOptions = ["Reguler", "Prioritas", "Lainnya"];
 const kodeFasilitasiOptions = ["Kode 1", "Kode 2", "Kode 3"];
+const typePengajuanOptions = ["1", "2", "3"];
+const layarExcelOptions = ["1excel", "2layar"];
 
-// Fungsi untuk menampilkan hasil
 const viewResults = () => {
   console.log(form.value);
 };
@@ -23,7 +24,10 @@ const viewResults = () => {
 <template>
   <VCard>
     <VCardTitle>
-      <span class="text-h6 font-weight-bold">Filter</span>
+      <div class="d-flex justify-space-between align-center">
+        <span class="text-h2 font-weight-bold">Filter</span>
+        <VBtn color="primary" @click="viewResults"> Cari </VBtn>
+      </div>
     </VCardTitle>
     <VCardText>
       <VRow>
@@ -45,19 +49,32 @@ const viewResults = () => {
         <VCol cols="12" sm="4">
           <VSelect
             v-model="form.statusPermohonan"
-            label="Status Permohonan"
+            placeholder="Pilih Status Permohonanan"
             :items="statusPermohonanOptions"
           />
         </VCol>
         <VCol cols="12" sm="4">
           <VSelect
+            v-model="form.typePengajuan"
+            placeholder="Pilih Tipe pengajuan"
+            :items="typePengajuanOptions"
+          />
+        </VCol>
+
+        <VCol cols="12" sm="4">
+          <VSelect
             v-model="form.kodeFasilitasi"
-            label="Kode Fasilitasi"
+            placeholder="Kode Fasilitasi"
             :items="kodeFasilitasiOptions"
           />
         </VCol>
+
         <VCol cols="12" sm="4">
-          <VBtn color="primary" @click="viewResults"> View </VBtn>
+          <VSelect
+            v-model="form.layarExcel"
+            placeholder="Kode Fasilitasi"
+            :items="layarExcelOptions"
+          />
         </VCol>
       </VRow>
     </VCardText>

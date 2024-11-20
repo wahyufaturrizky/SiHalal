@@ -8,25 +8,23 @@ const items = [
     "Jenis Daftar": "wdbadbaiwd",
     "Jenis Produk": "awdbuabdiawbdi",
     "Merk Dagangan": "awidbiabdiw",
-    Status: "Done",
     "Kode Fasilitasi": "O30F",
+    Status: "Done",
   },
 ];
 </script>
 
 <template>
   <div>
-    <VRow>
-      <VCard class="w-100">
-        <VCardTitle>Data Pengajuan Sertifikasi Halal</VCardTitle>
-        <VCardItem>
-          <VRow>
-            <VCol>
-              <VDataTable :items="items" />
-            </VCol>
-          </VRow>
-        </VCardItem>
-      </VCard>
-    </VRow>
+    <VCard class="w-100">
+      <VCardTitle>Data Pengajuan Sertifikasi Halal</VCardTitle>
+      <VCardItem>
+        <VRow>
+          <VCol>
+            <VDataTable :items="items" />
+          </VCol>
+        </VRow>
+      </VCardItem>
+    </VCard>
   </div>
 </template>
