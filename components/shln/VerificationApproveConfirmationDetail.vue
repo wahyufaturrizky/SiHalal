@@ -15,7 +15,8 @@ const closeDialog = () => {
 };
 
 const confirm = () => {
-  emit("confirm");
+  emit("confirm", inputValue.value);
+  inputValue.value = "";
   closeDialog();
 };
 
@@ -33,7 +34,12 @@ const dialogMaxWidth = computed(() => {
 
 <template>
   <div class="ma-1">
-    <VBtn variant="outlined" color="success" @click="openDialog">
+    <VBtn
+      variant="outlined"
+      color="success"
+      append-icon="ri-check-line"
+      @click="openDialog"
+    >
       Approve
     </VBtn>
 
@@ -54,12 +60,14 @@ const dialogMaxWidth = computed(() => {
           </VBtn>
         </VCardTitle>
         <VCardText>
-          <p class="mb-2">Are you sure you want to approve this submission?</p>
+          <p class="mb-2">Are you sure you want to Return this submission?</p>
+          <VCardActions style="display: flex; justify-content: end">
+            <VBtn variant="outlined" text @click="cancel"> Cancel </VBtn>
+            <VBtn color="success" variant="flat" @click="confirm">
+              Approve
+            </VBtn>
+          </VCardActions>
         </VCardText>
-        <VCardActions>
-          <VBtn variant="outlined" text @click="cancel"> Cancel </VBtn>
-          <VBtn color="success" variant="flat" @click="confirm"> Approve </VBtn>
-        </VCardActions>
       </VCard>
     </VDialog>
   </div>

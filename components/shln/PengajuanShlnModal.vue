@@ -39,25 +39,26 @@ const items = [
 
 const tableSelected = ref([]);
 </script>
+
 <template>
   <VDialog max-width="70svw" max-height="60svh">
     <template #activator="{ props: openModal }">
-      <VBtn v-bind="openModal">Add Submission</VBtn>
+      <VBtn v-bind="openModal"> Add Submission </VBtn>
     </template>
     <template #default="{ isActive }">
       <VCard>
-        <VCardTitle
-          style="margin-top: 2svh; margin-left: 1svw; margin-right: 1svw"
-        >
+        <VCardTitle style="margin-block-start: 2svh; margin-inline: 1svw">
           <VRow>
-            <VCol cols="10"><h3>Submission</h3></VCol>
-            <VCol cols="2" style="display: flex; justify-content: end"
-              ><VIcon
+            <VCol cols="10">
+              <h3>Submission</h3>
+            </VCol>
+            <VCol cols="2" style="display: flex; justify-content: end">
+              <VIcon
                 size="small"
                 icon="fa-times"
                 @click="isActive.value = false"
-              ></VIcon
-            ></VCol>
+              />
+            </VCol>
           </VRow>
         </VCardTitle>
         <VCardText>
@@ -68,7 +69,7 @@ const tableSelected = ref([]);
                 append-inner-icon="mdi-magnify"
                 density="compact"
                 placeholder="Search data"
-              ></VTextField>
+              />
             </VCol>
           </VRow>
 
@@ -76,23 +77,24 @@ const tableSelected = ref([]);
           <VRow>
             <VCol>
               <VDataTableServer
+                v-model="tableSelected"
                 :items="items"
                 :headers="headerTable"
                 :items-length="10"
                 :show-select="true"
-                v-model="tableSelected"
               >
                 <template #item.status="{ item }">
                   <VChip
                     style="
+                      border-radius: 10px;
                       background-color: #edf6ed;
                       color: #49a84c;
                       outline: auto;
-                      border-radius: 10px;
                     "
                     variant="elevated"
-                    >{{ item.status }}</VChip
                   >
+                    {{ item.status }}
+                  </VChip>
                 </template>
               </VDataTableServer>
             </VCol>
@@ -105,18 +107,18 @@ const tableSelected = ref([]);
               height="40px"
               variant="outlined"
               @click="isActive.value = false"
-              >Cancel</VBtn
             >
+              Cancel
+            </VBtn>
             <VBtn
               width="103px"
               height="40px"
               variant="flat"
               @click="isActive.value = false"
-              >Add
-              {{
-                tableSelected.length > 0 ? "(" + tableSelected.length + ")" : ""
-              }}</VBtn
             >
+              Add
+              {{ tableSelected.length > 0 ? `(${tableSelected.length})` : "" }}
+            </VBtn>
           </div>
         </template>
       </VCard>
