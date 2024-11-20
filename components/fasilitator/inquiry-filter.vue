@@ -24,8 +24,8 @@ const viewResults = () => {
 <template>
   <VCard>
     <VCardTitle>
-      <div class="d-flex justify-space-between align-center">
-        <span class="text-h2 font-weight-bold">Filter</span>
+      <div class="d-flex mb-3 mt-3 justify-space-between align-center">
+        <span class="text-h4 font-weight-bold">Filter</span>
         <VBtn color="primary" @click="viewResults"> Cari </VBtn>
       </div>
     </VCardTitle>
@@ -72,7 +72,7 @@ const viewResults = () => {
         <VCol cols="12" sm="4">
           <VSelect
             v-model="form.layarExcel"
-            placeholder="Kode Fasilitasi"
+            placeholder="Pilih Layer/ Excel"
             :items="layarExcelOptions"
           />
         </VCol>

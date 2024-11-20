@@ -17,7 +17,7 @@ const items = [
 <template>
   <div>
     <VCard class="w-100">
-      <VCardTitle>Data Pengajuan Sertifikasi Halal</VCardTitle>
+      <VCardTitle class="mt-3"> Data Pengajuan Sertifikasi Halal </VCardTitle>
       <VCardItem>
         <VRow>
           <VCol>
