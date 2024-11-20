@@ -42,42 +42,41 @@
         <p class="text-h5 font-weight-bold">Data Nomor Induk Berusaha</p>
         <VRow>
           <VCol cols="4"> Nomor Induk Bersama </VCol>
-          <VCol cols="8"> : {{ nibData?.nib }} </VCol>
+          <VCol cols="8"> : {{ domesticForm?.nib }} </VCol>
         </VRow>
         <VRow>
           <VCol cols="4"> Nama Perusahaan </VCol>
-          <VCol cols="8"> : {{ nibData?.nama_perseroan }} </VCol>
+          <VCol cols="8"> : {{ domesticForm?.company_name }} </VCol>
         </VRow>
         <VRow>
           <VCol cols="4"> Alamat </VCol>
           <VCol cols="8">
-            : {{ nibData?.alamat_perseroan }} -
-            {{ nibAlamat ? getAddressString(nibAlamat) : "" }}
+            {{ domesticForm?.address }}
           </VCol>
         </VRow>
         <VRow>
           <VCol cols="4"> NPWP </VCol>
-          <VCol cols="8"> : {{ nibData?.npwp_perseroan }} </VCol>
+          <VCol cols="8"> : {{ domesticForm?.npwp }} </VCol>
         </VRow>
         <VRow>
           <VCol cols="4"> Status NIB </VCol>
           <VCol cols="8">
             :
-            <span :class="`${statusNib == '' ? '' : 'text-error'}`">{{
-              statusNib == "" ? "-" : statusNib
+            <span :class="`${registeredNib?.status ? 'text-error' : ''}`">{{
+              registeredNib?.status ? registeredNib.message : "-"
             }}</span>
           </VCol>
         </VRow>
         <VRow>
           <VCol cols="4"> Kategori Pelaku Usaha </VCol>
           <VCol cols="8">
-            : {{ nibData?.flag_umk == "Y" ? "UMK" : "Non UMK" }}
+            : {{ nibData?.pelaku_usaha.flag_umk == "Y" ? "UMK" : "Non UMK" }}
           </VCol>
         </VRow>
         <VRow>
           <VCol cols="4"> Modal Dasar </VCol>
           <VCol cols="8">
-            : {{ IDRupiah.format(nibData?.total_modal_dasar) }}
+            : {{ IDRupiah.format(domesticForm?.authorized_capital) }}
           </VCol>
         </VRow>
         <VDivider class="my-5" />
@@ -132,12 +131,16 @@ import type {
   AlamatNib,
   NewAccountDomestic,
 } from "@/server/interface/new-account.iface";
-import type NIB from "@/server/interface/nib.iface";
-import type { DataNib } from "@/server/interface/nib.iface";
+import {
+  type NIB,
+  type NIBData,
+  type RegisteredNib,
+} from "@/server/interface/nib.iface";
 import type { VForm } from "vuetify/components";
 const nib = ref("");
-const nibData = ref<DataNib>();
+const nibData = ref<NIBData>();
 const nibAlamat = ref<AlamatNib>();
+const registeredNib = ref<RegisteredNib>();
 const buttonClicked = ref(false);
 const buttonClicked2 = ref(false);
 const nibForm = ref<VForm>();
@@ -186,45 +189,40 @@ const checkNib = async () => {
     method: "post",
     body: { nib: nib.value },
   });
-  if (res.data.pelaku_usaha.responinqueryNIB.kode != 400) {
-    nibData.value = res.data.pelaku_usaha.responinqueryNIB.dataNIB;
-    nibAlamat.value = await getAddress(nibData.value?.daerah_id_user_proses);
+  if (res.code != 4000) {
+    nibData.value = res.data;
+    nibAlamat.value = await getAddress(
+      nibData.value.pelaku_usaha.daerah_id_user_proses
+    );
     daftarUsaha.value = await Promise.all(
-      nibData.value.data_proyek.map(async (data) => {
-        const address = await getAddress(
-          data.data_lokasi_proyek[0].proyek_daerah_id
-        );
+      nibData.value.pelaku_usaha.DataProyek.map(async (data) => {
+        const address = await getAddress(data.proyek_daerah_id);
         return {
           kbli: data.kbli,
-          namausaha: data.uraian_usaha,
-          address:
-            data.data_lokasi_proyek.length != 0
-              ? `${
-                  data.data_lokasi_proyek[0].alamat_usaha
-                } -  ${getAddressString(address)}`
-              : "",
-          modalUsaha: data.jumlah_investasi,
+          namausaha: data.business_name,
+          address: `${data.address} -  ${getAddressString(address)}`,
+          modalUsaha: data.investment_amount,
         };
       })
     );
     domesticForm.value = {
-      nib: nibData.value.nib,
-      date_release_nib: nibData.value.tgl_terbit_nib,
-      company_name: nibData.value.nama_perseroan,
-      address: getAddressString(nibAlamat.value),
-      status_nib: nibData.value.status_nib,
-      npwp: nibData.value.npwp_perseroan,
-      business_actor_category: nibData.value.flag_umk,
-      authorized_capital: nibData.value.total_modal_dasar,
-      data_proyek: [
-        {
-          kbli: daftarUsaha.value.kbli,
-          business_name: daftarUsaha.value.namausaha,
-          address: daftarUsaha.value.address,
-          authorized_capital: daftarUsaha.value.modalUsaha,
-        },
-      ],
+      nib: nibData.value.pelaku_usaha.nib,
+      date_release_nib: nibData.value.pelaku_usaha.date_release_nib,
+      company_name: nibData.value.pelaku_usaha.company_name,
+      address: `${nibData.value.pelaku_usaha.address} - ${getAddressString(
+        nibAlamat.value
+      )}`,
+      status_nib: nibData.value.pelaku_usaha.status_nib,
+      npwp: nibData.value.pelaku_usaha.npwp,
+      business_actor_category:
+        nibData.value.pelaku_usaha.business_actor_category,
+      authorized_capital: nibData.value.pelaku_usaha.authorized_capital,
+      data_proyek: daftarUsaha.value,
     };
+    registeredNib.value = res.registered_nib;
+    if (registeredNib.value.status) {
+      buttonClicked2.value = true;
+    }
     domesticWindow.value = 2;
   } else {
     useSnackbar().sendSnackbar("NIB tidak ditemukan", "error");
