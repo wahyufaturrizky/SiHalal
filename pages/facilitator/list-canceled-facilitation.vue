@@ -1,9 +1,8 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div>
-    <VContainer class="py-4">
-      <TabelCanceledFasilitasi />
-    </VContainer>
-  </div>
+  <VContainer>
+    <h3>Pembatalan</h3>
+    <TabelCanceledFasilitasi />
+  </VContainer>
 </template>
