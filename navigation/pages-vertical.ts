@@ -292,6 +292,18 @@ export default [
     icon: { icon: "mdi-invoice-text-outline" },
     roles: ["Pelaku Usaha", "Admin"],
   },
+  {
+    title: "Invoice - Fasilitator Finance",
+    to: "finance-invoice",
+    icon: { icon: "mdi-invoice-text-outline" },
+    roles: ["Pelaku Usaha", "Admin"],
+  },
+  {
+    title: "Invoice - Fasilitator Fasilitasi",
+    to: "facilitation-invoice",
+    icon: { icon: "mdi-invoice-text-outline" },
+    roles: ["Pelaku Usaha", "Admin"],
+  },
   { heading: "information.heading" },
   {
     title: "information.material.title",
