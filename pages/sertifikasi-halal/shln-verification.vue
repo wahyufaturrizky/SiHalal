@@ -19,6 +19,23 @@ const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
 
+const itemsSubmission = ref<
+  {
+    date: string;
+    hcb: string;
+    id: string;
+    importir_name: string;
+    nib: string;
+    register_number: string;
+    status: string;
+  }[]
+>([]);
+
+const itemPerPageSubmission = ref(10);
+const totalItemsSubmission = ref(0);
+const loadingSubmission = ref(false);
+const pageSubmission = ref(1);
+
 const loadItem = async (page: number, size: number, keyword: string = "") => {
   try {
     loading.value = true;
@@ -41,87 +58,42 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
   }
 };
 
+const loadItemSubmission = async (
+  pageParams: number,
+  sizeParams: number,
+  keywordParams: string = ""
+) => {
+  try {
+    loadingSubmission.value = true;
+
+    const response = await $api("/shln/verification/submission", {
+      method: "get",
+      params: {
+        page: pageParams,
+        size: sizeParams,
+        keyword: keywordParams,
+      },
+    });
+
+    itemsSubmission.value = response.data;
+    totalItemsSubmission.value = response.total_item;
+    loadingSubmission.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingSubmission.value = false;
+  }
+};
+
 const debouncedFetch = debounce(loadItem, 500);
+const debouncedFetchLoadItemSubmission = debounce(loadItemSubmission, 500);
 
 onMounted(async () => {
   await loadItem(1, itemPerPage.value, "");
+  await loadItemSubmission(1, itemPerPageSubmission.value, "");
 });
 
-// const items = ref([
-//   {
-//     no: "1",
-//     registration_number: "123456",
-//     importers_name: "PT ABCD",
-//     nib_business_id_no: "987654321",
-//     npwp_taxpayer_id_no: "01.234.567.8-901.000",
-//     date: "2024-11-01",
-//     status: "Pending",
-//     hcb: "Yes",
-//     registration_date: "2024-01-01",
-//     submit_date: "2024-01-01",
-//     verifikator: "2132131",
-//     check: false,
-//   },
-//   {
-//     no: "2",
-//     registration_number: "654321",
-//     importers_name: "PT EFGH",
-//     nib_business_id_no: "123456789",
-//     npwp_taxpayer_id_no: "02.345.678.9-123.000",
-//     date: "2024-11-05",
-//     status: "Approved",
-//     hcb: "No",
-//     registration_date: "2024-01-01",
-//     submit_date: "2024-01-01",
-//     verifikator: "2132131",
-//     check: false,
-//   },
-//   {
-//     no: "3",
-//     registration_number: "789123",
-//     importers_name: "PT IJKL",
-//     nib_business_id_no: "192837465",
-//     npwp_taxpayer_id_no: "03.456.789.0-234.000",
-//     date: "2024-11-10",
-//     status: "Pending",
-//     hcb: "Yes",
-//     registration_date: "2024-01-01",
-//     submit_date: "2024-01-01",
-//     verifikator: "2132131",
-//     check: false,
-//   },
-//   {
-//     no: "4",
-//     registration_number: "321654",
-//     importers_name: "PT MNOP",
-//     nib_business_id_no: "564738291",
-//     npwp_taxpayer_id_no: "04.567.890.1-345.000",
-//     date: "2024-11-12",
-//     status: "Rejected",
-//     hcb: "No",
-//     registration_date: "2024-01-01",
-//     submit_date: "2024-01-01",
-//     verifikator: "2132131",
-//     check: false,
-//   },
-//   {
-//     no: "5",
-//     registration_number: "654987",
-//     importers_name: "PT QRST",
-//     nib_business_id_no: "203948576",
-//     npwp_taxpayer_id_no: "05.678.901.2-456.000",
-//     date: "2024-11-15",
-//     status: "Approved",
-//     hcb: "Yes",
-//     registration_date: "2024-01-01",
-//     submit_date: "2024-01-01",
-//     verifikator: "2132131",
-//     check: false,
-//   },
-// ]);
-
 const verifikatorTableHeader = [
-  { title: "No", key: "no" },
+  { title: "No", key: "id" },
   { title: "Registration Number", key: "21354453435543131" },
   { title: "Importer's Name", key: "nama_importir" },
   { title: "NIB / Business ID No", key: "nib" },
@@ -130,21 +102,30 @@ const verifikatorTableHeader = [
 ];
 
 const verifikatorTablePopUpHeader = [
-  { title: "No", key: "no" },
-  { title: "Registration Number", key: "registration_number" },
-  { title: "NIB / Business ID No", key: "nib_business_id_no" },
+  { title: "No", key: "id" },
+  { title: "Registration Number", key: "register_number" },
+  { title: "NIB / Business ID No", key: "nib" },
   { title: "HCB", key: "hcb" },
-  { title: "Registration Date", key: "registration_date" },
-  { title: "Submit Date", key: "submit_date" },
-  { title: "Verifikator", key: "verifikator" },
+  { title: "Registration Date", key: "date" },
+  { title: "Submit Date", key: "date" },
+  { title: "Verifikator", key: "importir_name" },
   { title: "Status", key: "status" },
   { title: "Action", key: "check" },
 ];
 
 const searchQuery = ref("");
+const searchQuerySubmission = ref("");
 
 const handleInput = () => {
   debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
+};
+
+const handleInputSubmission = (searchQuerySubmissionParams: string) => {
+  debouncedFetchLoadItemSubmission(
+    pageSubmission.value,
+    itemPerPageSubmission.value,
+    searchQuerySubmissionParams
+  );
 };
 
 const handleAdd = (selectedItems: any[]) => {
@@ -154,8 +135,6 @@ const handleAdd = (selectedItems: any[]) => {
 const handleCancel = (message: string) => {
   console.log("Cancel message:", message);
 };
-
-const showPopup = ref(false); // Control dialog visibility
 </script>
 
 <template>
@@ -167,11 +146,24 @@ const showPopup = ref(false); // Control dialog visibility
           <p class="text-h5">Submission List</p>
         </VCol>
         <VCol class="d-flex justify-end align-center" cols="6" md="2">
-          <VerificationDataTableSelector
+          <VerificationDataTableSelectorVerificationSubmission
             :headers="verifikatorTablePopUpHeader"
-            :items="items"
+            :items="itemsSubmission"
+            :searchquerysubmission="searchQuerySubmission"
+            :itemperpagesubmission="itemPerPageSubmission"
+            :loading-submission="loadingSubmission"
+            :pagesubmission="pageSubmission"
+            :totalitemssubmission="totalItemsSubmission"
+            @handle-input-submission="handleInputSubmission"
             @add="handleAdd"
             @cancel="handleCancel"
+            @update:options="
+              loadItemSubmission(
+                pageSubmission,
+                itemPerPageSubmission,
+                searchQuerySubmission
+              )
+            "
           />
         </VCol>
       </VRow>
@@ -198,7 +190,7 @@ const showPopup = ref(false); // Control dialog visibility
             :items-length="totalItems"
             @update:options="loadItem(page, itemPerPage, searchQuery)"
           >
-            <template #item.index="{ index }">
+            <template #item.id="{ index }">
               {{ index + 1 + (page - 1) * itemPerPage }}
             </template>
             <template #item.tgl_daftar="{ item }">
