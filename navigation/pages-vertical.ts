@@ -236,6 +236,11 @@ export default [
         roles: ["Pelaku Usaha", "Admin"],
       },
       {
+        title: "Invoice - Pelaku Usaha",
+        to: "finance-invoice-pelaku-usaha",
+        roles: ["Pelaku Usaha", "Admin"],
+      },
+      {
         title: "shln_verification",
         to: "sertifikasi-halal-shln-verification",
         roles: ["Pelaku Usaha", "Admin"],
