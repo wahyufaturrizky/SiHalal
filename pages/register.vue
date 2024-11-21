@@ -5,6 +5,7 @@ import { VForm } from "vuetify/components/VForm";
 
 import { requiredValidator } from "#imports";
 import { VNodeRenderer } from "@/@layouts/components/VNodeRenderer";
+import onlyAcceptNumber from "@/utils/onlyAcceptNumber";
 import bseImage from "@images/bse.png";
 import NoImage from "@images/no-image.png";
 import ossImage from "@images/oss.png";
@@ -96,6 +97,8 @@ const onSubmit = async () => {
           body: JSON.stringify(payload), // Mengubah payload menjadi format JSON
         });
 
+        // console.log("log", response);
+
         if (response.code === 2000) {
           // Cek apakah response berhasil
           const data = response.data;
@@ -116,6 +119,13 @@ const onSubmit = async () => {
           });
 
           // router.push({ name: 'verifikasi-user', params: { id: id } })
+        } else if (response.code === 4001) {
+          sendSnackbar(`${response.errors.list_error}`, "error");
+        } else {
+          sendSnackbar(
+            "Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!",
+            "error"
+          );
         }
       } catch (error) {
         console.error("Error saat membuat akun:", error);
@@ -139,20 +149,23 @@ const isDisabledSubmit = computed(() => {
 });
 
 // validasi
-const phoneValidator = (value: string) => {
-  const isValid = /^08\d{8,11}$/.test(value);
+// const phoneValidator = (value: string) => {
+//   const isValid = /^08\d{8,11}$/.test(value);
 
-  return (
-    isValid ||
-    'Nomor Handphone harus dimulai dengan "08" dan berjumlah 10-13 digit angka'
-  );
-};
+//   return (
+//     isValid ||
+//     'Nomor Handphone harus dimulai dengan "08" dan berjumlah 10-13 digit angka'
+//   );
+// };
 
 const emailValidator = (value: string) => {
+  if (value.includes("-"))
+    return "Format email tidak bisa menggunakan dash (-)";
+
   const isValid =
     /^(?!.*[.]{2})[a-z0-9.]+@[a-z]+.(com|co.id|go.id|id|net)$/.test(value);
 
-  return isValid || "Format  Email digunakan salah";
+  return isValid || " Format Email digunakan salah";
 };
 
 const requiredValidator = (value: string) => !!value || "Wajib diisi";
@@ -175,12 +188,6 @@ const requiredValidasiEmail = (value: string) =>
 // jika error pas di input maka tapil diatas
 const { sendSnackbar } = useSnackbar();
 
-// const global = () => {
-//   sendSnackbar(
-//     "Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!",
-//     "error"
-//   );
-// };
 onMounted(async () => {
   try {
     const response: any = await $api("/auth/type-role", {
@@ -240,7 +247,7 @@ const fetchType = ref([]);
         <VCardText>
           <VForm ref="refVForm" @submit.prevent="onSubmit">
             <VRow>
-              <VCol cols="12" style="max-height: 45svh; overflow-y: auto">
+              <VCol cols="12" style="max-block-size: 45svh; overflow-y: auto">
                 <!-- Tipe Pengguna -->
                 <VCol cols="12">
                   <b> Tipe Pengguna</b>
@@ -283,7 +290,15 @@ const fetchType = ref([]);
                     type="text"
                     :error-messages="errors.email"
                     placeholder="Masukan Email"
-                  />
+                  >
+                    <template #append-inner>
+                      <VIcon
+                        v-if="errorMessage"
+                        color="error"
+                        icon="mdi-alert-circle"
+                      />
+                    </template>
+                  </VTextField>
                 </VCol>
 
                 <!-- no Handphone -->
@@ -291,15 +306,12 @@ const fetchType = ref([]);
                   <b> Nomor Handphone</b>
                   <VTextField
                     v-model="form.noHandphone"
-                    :rules="[
-                      requiredValidator,
-                      phoneValidator,
-                      requiredValidasinoHP,
-                    ]"
+                    :rules="[requiredValidator, requiredValidasinoHP]"
                     type="tel"
                     maxlength="13"
                     placeholder="Masukan Nomor Handphone"
                     :error-messages="errors.noHandphone"
+                    @input="onlyAcceptNumber"
                   />
                 </VCol>
 

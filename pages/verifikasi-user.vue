@@ -163,6 +163,7 @@ const onSumbitKodeEmail = async () => {
     console.log(kodeOtpEmail, "otp email");
     if (response?.code === 2000) {
       isSucess.value = true;
+
       const { data: userData, signOut } = useAuth();
       if (userData == null) {
         await signOut({ redirect: false });
@@ -264,9 +265,7 @@ const onSubmitKodeNomerHandphone = () => {
         <VCardText>
           <VTabs v-model="currentTab" grow>
             <VTab :disabled="isDisabledEmail"> Email </VTab>
-            <VTab v-if="false" :disabled="isDisabledNoHp">
-              NomorHandphone
-            </VTab>
+            <VTab :disabled="isDisabledNoHp"> NomorHandphone </VTab>
           </VTabs>
 
           <VWindow v-model="currentTab" class="mt-5">
