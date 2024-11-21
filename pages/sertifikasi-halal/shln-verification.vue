@@ -40,7 +40,7 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
   try {
     loading.value = true;
 
-    const response = await $api("/shln/verification", {
+    const response = await $api("/shln/verificator", {
       method: "get",
       params: {
         page,
@@ -66,7 +66,7 @@ const loadItemSubmission = async (
   try {
     loadingSubmission.value = true;
 
-    const response = await $api("/shln/verification/submission", {
+    const response = await $api("/shln/verificator/submission", {
       method: "get",
       params: {
         page: pageParams,
@@ -91,6 +91,10 @@ onMounted(async () => {
   await loadItem(1, itemPerPage.value, "");
   await loadItemSubmission(1, itemPerPageSubmission.value, "");
 });
+
+const refresh = async () => {
+  await loadItem(1, itemPerPage.value, "");
+};
 
 const verifikatorTableHeader = [
   { title: "No", key: "id" },
@@ -128,10 +132,6 @@ const handleInputSubmission = (searchQuerySubmissionParams: string) => {
   );
 };
 
-const handleAdd = (selectedItems: any[]) => {
-  console.log("Selected items:", selectedItems);
-};
-
 const handleCancel = (message: string) => {
   console.log("Cancel message:", message);
 };
@@ -155,8 +155,8 @@ const handleCancel = (message: string) => {
             :pagesubmission="pageSubmission"
             :totalitemssubmission="totalItemsSubmission"
             @handle-input-submission="handleInputSubmission"
-            @add="handleAdd"
             @cancel="handleCancel"
+            @refresh="refresh"
             @update:options="
               loadItemSubmission(
                 pageSubmission,
