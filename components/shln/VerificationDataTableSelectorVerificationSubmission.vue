@@ -30,13 +30,14 @@ const props = defineProps({
 });
 
 const emit = defineEmits<{
-  (event: "add", selectedItems: any[]): void;
   (event: "cancel", message: string): void;
   (event: "handle-input-submission", searchQuerySubmission: string): void;
   (event: "update"): void;
+  (event: "refresh"): void;
 }>();
 
 const searchQuerySubmission = ref("");
+const loadingAddSubmission = ref(false);
 
 const dialogVisible = ref(false);
 
@@ -45,7 +46,7 @@ const checkedItems = ref<{ [key: string]: boolean }>({});
 const itemsWithCheckbox = computed(() => {
   return props.items.map((item) => ({
     ...item,
-    isChecked: checkedItems.value[item.no] || false,
+    isChecked: checkedItems.value[item.id] || false,
   }));
 });
 
@@ -61,16 +62,42 @@ const cancelSelection = () => {
   dialogVisible.value = false;
 };
 
+const postSubmission = async (selectedItems: string[]) => {
+  try {
+    loadingAddSubmission.value = true;
+
+    const res = await $api(
+      "/shln/verificator/assign-certificate-halal-foreign",
+      {
+        method: "post",
+        body: {
+          certificate_id: selectedItems,
+        },
+      }
+    );
+
+    if (res?.code === 200)
+      useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+    else useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+
+    dialogVisible.value = false;
+    loadingAddSubmission.value = false;
+    emit("refresh");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    dialogVisible.value = false;
+    loadingAddSubmission.value = false;
+  }
+};
+
 const addSelection = () => {
   const selectedItems = Object.keys(checkedItems.value)
     .filter((key) => checkedItems.value[key])
     .map((key) => {
-      return props.items.find((item) => item.no === key);
+      return props.items.find((item) => item.id === key);
     });
 
-  // Emit add event and close dialog
-  emit("add", selectedItems);
-  dialogVisible.value = false;
+  postSubmission(selectedItems.map((item) => item.id));
 };
 
 const { mdAndUp } = useDisplay();
@@ -126,8 +153,23 @@ const handleInput = () => {
                 (props.pagesubmission - 1) * props.itemperpagesubmission
               }}
             </template>
+            <template #item.register_number="{ item }">
+              {{ item.register_number || "NA" }}
+            </template>
+            <template #item.nib="{ item }">
+              {{ item.nib || "NA" }}
+            </template>
+            <template #item.hcb="{ item }">
+              {{ item.hcb || "NA" }}
+            </template>
+            <template #item.importir_name="{ item }">
+              {{ item.importir_name || "NA" }}
+            </template>
+            <template #item.status="{ item }">
+              {{ item.status || "NA" }}
+            </template>
             <template #item.check="{ item }">
-              <VCheckbox v-model="checkedItems[item.no]" />
+              <VCheckbox v-model="checkedItems[item.id]" />
             </template>
           </VDataTableServer>
         </VCol>
@@ -142,8 +184,14 @@ const handleInput = () => {
           >
             Cancel
           </VBtn>
-          <VBtn color="primary" @click="addSelection">
-            Add ({{ checkedItemsCount }})
+          <VBtn
+            :disabled="loadingaddsubmission"
+            color="primary"
+            @click="addSelection"
+          >
+            {{ loadingaddsubmission ? "Loading..." : "Add" }} ({{
+              checkedItemsCount
+            }})
           </VBtn>
         </VCol>
       </VRow>
