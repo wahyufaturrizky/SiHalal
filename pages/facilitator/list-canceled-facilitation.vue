@@ -1,8 +1,6 @@
 <script setup lang="ts"></script>
 
 <template>
-  <VContainer>
-    <h3>Pembatalan</h3>
-    <TabelCanceledFasilitasi />
-  </VContainer>
+  <h2 class="mt-3">Pembatalan</h2>
+  <TabelCanceledFasilitasi />
 </template>
