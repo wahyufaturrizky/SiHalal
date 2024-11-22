@@ -6,10 +6,10 @@ import { VDataTableServer } from "vuetify/components";
 const items = ref<
   {
     id: string;
-    no_shln: string;
-    nib: string;
-    npwp: string;
     nama_importir: string;
+    nib: string;
+    no_daftar: string;
+    npwp: string;
     tgl_daftar: string;
   }[]
 >([]);
@@ -21,7 +21,7 @@ const page = ref(1);
 
 const headers = [
   { title: "No", key: "index", align: "start" },
-  { title: "Submission Number", key: "no_shln", align: "start" },
+  { title: "Submission Number", key: "no_daftar", align: "start" },
   { title: "Importer Name's", key: "nama_importir", align: "start" },
   { title: "NIB/Bussiness Id No", key: "nib", align: "start" },
   { title: "NPWP/Taxpayer Id No.", key: "npwp", align: "start" },
@@ -71,8 +71,6 @@ const searchQuery = ref("");
 onMounted(async () => {
   await loadItem(1, itemPerPage.value, "");
 });
-console.log(items);
-
 // const filteredItems = computed(() => {
 //   if (!searchQuery.value)
 //     return items.value

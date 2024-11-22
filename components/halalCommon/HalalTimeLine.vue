@@ -1,24 +1,10 @@
 <script setup lang="ts">
-import { computed, defineProps } from 'vue'
-
-interface TimelineItem {
-  title: string
-  date: string
-  description: string
-}
+import type { ShlnTracking } from "@/pages/sertifikasi-halal/shln-detail/[id].vue";
 
 const props = defineProps<{
-  timelineData?: TimelineItem[]
-}>()
-
-const timelineItems = computed(() => {
-  return props.timelineData && props.timelineData.length
-    ? props.timelineData
-    : [
-        { title: 'Register', date: '2024/10/05', description: 'Dummy User 1' },
-        { title: 'Draft', date: '2024/09/10', description: 'Dummy User 2' },
-    ]
-})
+  event: ShlnTracking[];
+}>();
+console.log(props.event);
 </script>
 
 <template>
@@ -32,24 +18,23 @@ const timelineItems = computed(() => {
       class="v-timeline--variant-outlined"
     >
       <VTimelineItem
-        v-for="(item, index) in timelineItems"
-        :key="index"
+        v-for="item in event"
         dot-color="rgb(var(--v-theme-surface))"
         size="x-small"
       >
         <template #icon>
-          <VIcon
-            icon="ri-circle-line"
-            color="primary"
-            size="16"
-          />
+          <VIcon icon="ri-circle-line" color="primary" size="16" />
         </template>
-        <div class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2">
-          <span class="app-timeline-title">{{ item.title }}</span>
-          <span class="app-timeline-meta">{{ item.date }}</span>
+        <div
+          class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
+        >
+          <span class="app-timeline-title">
+            {{ item.status }}
+          </span>
+          <span class="app-timeline-meta">{{ item.created_at }}</span>
         </div>
         <div class="app-timeline-text mt-1">
-          {{ item.description }}
+          {{ item.username }}
         </div>
       </VTimelineItem>
     </VTimeline>
