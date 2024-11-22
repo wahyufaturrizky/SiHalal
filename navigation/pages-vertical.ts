@@ -322,4 +322,32 @@ export default [
       },
     ],
   },
+  { heading: "sidang_self_declare.title" },
+  {
+    title: "sidang_self_declare.title",
+    icon: { icon: "mdi-scale-balance" },
+    roles: ["Pelaku Usaha", "Admin"],
+    children: [
+      {
+        title: "sidang_self_declare.proses_sidang",
+        to: "sidang-self-declare-proses-sidang",
+        roles: ["Pelaku Usaha", "Admin"],
+      },
+      {
+        title: "sidang_self_declare.entry_ketetapan_halal",
+        to: "sidang-self-declare-entry-ketetapan-halal",
+        roles: ["Pelaku Usaha", "Admin"],
+      },
+      {
+        title: "sidang_self_declare.inquiry",
+        to: "sidang-self-declare-inquiry",
+        roles: ["Pelaku Usaha", "Admin"],
+      },
+      {
+        title: "sidang_self_declare.rekapitulasi",
+        to: "sidang-self-declare-rekapitulasi",
+        roles: ["Pelaku Usaha", "Admin"],
+      },
+    ],
+  },
 ];
