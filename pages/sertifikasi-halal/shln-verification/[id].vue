@@ -28,6 +28,8 @@ const loadItemById = async () => {
 onMounted(async () => {
   await loadItemById();
 });
+
+const navigateAction = () => {};
 </script>
 
 <template>
@@ -39,7 +41,12 @@ onMounted(async () => {
 
       <VRow>
         <VCol style="display: flex; justify-content: start">
-          <VBtn variant="flat" prepend-icon="" color="primary" @click="onEdit">
+          <VBtn
+            variant="flat"
+            prepend-icon=""
+            color="primary"
+            @click="navigateAction"
+          >
             Detail
           </VBtn>
         </VCol>
