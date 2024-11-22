@@ -71,6 +71,13 @@
             "reference": "Referensi"
         }
     },
+    "sidang_self_declare": {
+      "title" : "Sidang Self Declare",
+      "proses_sidang" : "Proses Sidang",
+      "entry_ketetapan_halal": "Entri Ketetapan Halal",
+      "inquiry": "Inquiry",
+      "rekapitulasi" : "Rekapitulasi"
+    },
     "registrasi_shln": "Registrasi SHLN",
     "sh_luar_negeri": "SH Luar Negeri",
     "shln_submission": "Submission",

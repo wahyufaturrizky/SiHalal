@@ -36,23 +36,17 @@ const handleRegister = () => {
   closeDialog()
 }
 
-import { useDisplay } from 'vuetify'
-const { mdAndUp } = useDisplay()
-const dialogMaxWidth = computed(() => {
-  return mdAndUp.value ? 500 : '90%'
-})
-
 </script>
 
 <template>
   <VDialog
     v-model="localDialogVisible"
-    :max-width="dialogMaxWidth"
+    max-width="24%"
   >
-    <VCard class="pa-2">
+    <VCard class="py-4 px-8">
       <VCardTitle class="headline d-flex space-between align-center">
         <h4>
-          Foreign Halal Certificate Registration
+          Layanan Sertifikasi Halal
         </h4>
         <VSpacer />
         <VBtn
@@ -66,24 +60,33 @@ const dialogMaxWidth = computed(() => {
         </VBtn>
       </VCardTitle>
       <VCardText>
+        <p class="text-body-2 ">
+          Ajukan Permohonan Anda untuk mendapatkan sertifikat halal dari BPJPH dengan memilih salah satu layanan dibawah ini:
+        </p>
         <VCard
-          class="my-2 pa-4 d-flex flex-column mx-auto mb-8"
+          class="my-4 pa-4 d-flex flex-column mx-auto mb-8"
           elevation="4"
           width="90%"
         >
           <h3 class="font-weight-bold text-center ">
-            New
+            Baru
           </h3>
-          <p class="text-center text-body-2 mt-2">Register your Foreign Halal Certificate to receive BPJPH Registration Number</p>
+          <p class="text-center text-body-2 mt-2">Proses sertifikasi halal untuk produk baru yang belum pernah / belum memiliki sertifikat halal sebelumnya</p>
           <VBtn
             color="primary"
             class="mt-2 text-center"
             @click="handleRegister"
             width="100%"
           >
-            Register
+            Daftar
           </VBtn>
         </VCard>
+        <VSelect
+          v-model="selectedKBLI"
+          :items="kbliOptions"
+          label="Pilih KBLI/Usaha/Kegiatan"
+          outlined
+        />
       </VCardText>
     </VCard>
   </VDialog>

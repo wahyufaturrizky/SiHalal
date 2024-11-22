@@ -302,18 +302,23 @@ export default [
         children: [
           {
             title: "shln_submission",
-            to: "sertifikasi-halal-shln-submission",
+            to: "sertifikasi-halal-luar-negeri-submission",
             roles: ["Pelaku Usaha", "Admin"],
           },
           {
             title: "shln_invoice",
             roles: ["Pelaku Usaha", "Admin"],
-            to: "sertifikasi-halal-shln-invoice",
+            to: "sertifikasi-halal-luar-negeri-invoice",
+          },
+          {
+            title: "Invoice - Pelaku Usaha",
+            to: "finance-invoice-pelaku-usaha",
+            roles: ["Pelaku Usaha", "Admin"],
           },
           {
             title: "shln_verification",
-            to: "sertifikasi-halal-shln-verification",
-            roles: ["Pelaku Usaha", "Admin"],
+            to: "sertifikasi-halal-luar-negeri-verification",
+            roles: ["Pelaku Usaha", "Verifikator HLN", "Admin"],
           },
           {
             title: "shln_payment",
@@ -322,7 +327,7 @@ export default [
           },
           {
             title: "shln_inquiry",
-            to: "sertifikasi-halal-shln-inquiry",
+            to: "sertifikasi-halal-luar-negeri-inquiry",
             roles: ["Pelaku Usaha", "Admin"],
           },
         ],
@@ -342,6 +347,33 @@ export default [
       {
         title: "information.material.reference",
         to: "material-reference",
+        roles: ["Pelaku Usaha", "Admin"],
+      },
+    ],
+  },
+  {
+    title: "sidang_self_declare.title",
+    icon: { icon: "mdi-scale-balance" },
+    roles: ["Pelaku Usaha", "Admin"],
+    children: [
+      {
+        title: "sidang_self_declare.proses_sidang",
+        to: "sidang-self-declare-proses-sidang",
+        roles: ["Pelaku Usaha", "Admin"],
+      },
+      {
+        title: "sidang_self_declare.entry_ketetapan_halal",
+        to: "sidang-self-declare-entry-ketetapan-halal",
+        roles: ["Pelaku Usaha", "Admin"],
+      },
+      {
+        title: "sidang_self_declare.inquiry",
+        to: "sidang-self-declare-inquiry",
+        roles: ["Pelaku Usaha", "Admin"],
+      },
+      {
+        title: "sidang_self_declare.rekapitulasi",
+        to: "sidang-self-declare-rekapitulasi",
         roles: ["Pelaku Usaha", "Admin"],
       },
     ],
