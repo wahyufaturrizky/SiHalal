@@ -66,6 +66,8 @@ const form = ref({
 const router = useRouter();
 
 const onSubmit = async () => {
+  localStorage.setItem("formData", JSON.stringify(form.value));
+
   refVForm.value?.validate().then(async ({ valid: isValid }) => {
     if (isValid) {
       // Definisikan payload
@@ -212,20 +214,15 @@ onMounted(async () => {
   }
 });
 
+onMounted(() => {
+  const savedData = localStorage.getItem("formData");
+  if (savedData) form.value = JSON.parse(savedData);
+});
+
 const fetchType = ref([]);
 </script>
 
 <template>
-  <!--
-    <VSnackbar
-    v-model="captchaError"
-    location="top"
-    color="error"
-    >
-    Captcha failed
-    </VSnackbar>
-  -->
-
   <VRow no-gutters class="auth-wrapper">
     <VCol
       cols="12"
@@ -278,10 +275,11 @@ const fetchType = ref([]);
                   <b> Nama</b>
                   <VTextField
                     v-model="form.name"
-                    :rules="[requiredValidator]"
                     placeholder="Masukan Nama"
                     type="text"
+                    :rules="[requiredValidator]"
                     :error-messages="errors.name"
+                    @blur="validateName"
                   />
                 </VCol>
 
@@ -298,15 +296,7 @@ const fetchType = ref([]);
                     type="text"
                     :error-messages="errors.email"
                     placeholder="Masukan Email"
-                  >
-                    <template #append-inner>
-                      <VIcon
-                        v-if="errorMessage"
-                        color="error"
-                        icon="mdi-alert-circle"
-                      />
-                    </template>
-                  </VTextField>
+                  />
                 </VCol>
 
                 <!-- no Handphone -->

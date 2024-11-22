@@ -53,8 +53,10 @@ const refVForm = ref<VForm>();
 // })
 
 const form = ref({
-  email: route.query.payload.email,
-  noHandphone: route.query.payload.phone_number,
+  email: route.query?.payload ? JSON.parse(route.query.payload).email : "",
+  noHandphone: route.query?.payload
+    ? JSON.parse(route.query.payload).phone_number
+    : "",
 });
 
 // validasi
@@ -62,43 +64,7 @@ const form = ref({
 const isDisabledEmail = ref(false);
 const isDisabledNoHp = ref(false);
 
-const requiredValidatorEmail = (value: string) => {
-  isDisabledNoHp.value = false;
-
-  return !!value || "Wajib diisi Email";
-};
-
-const requiredValidatorNoHandphone = (value: string) => {
-  isDisabledEmail.value = false;
-
-  return !!value || "Wajib diisi Nomor Handphone";
-};
-
 const currentTab = ref(0);
-
-const emailValidator = (value: string) => {
-  const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-
-  isDisabledNoHp.value = true;
-
-  return isValid || "Masukkan format email benar";
-};
-
-const phoneValidator = (value: string) => {
-  const isValid = /^08\d{8,11}$/.test(value);
-
-  isDisabledEmail.value = true;
-
-  return (
-    isValid ||
-    'Nomor Handphone harus dimulai dengan "08" dan berjumlah 10-13 digit angka'
-  );
-};
-
-function onlyNumber(event) {
-  // Hanya angka yang diperbolehkan
-  form.value.noHandphone = event.target.value.replace(/\D/g, "");
-}
 
 const isDisabledSubmitEmail = computed(() => {
   return !form.value.email || emailValidator(form.value.email) !== true;
@@ -116,21 +82,22 @@ const isOtpNoHandphone = ref(false);
 const isSucess = ref(false);
 
 const onSubmitEmail = async () => {
+  isDisabledNoHp.value = true;
+
   const payload = {
     channel: "email",
     destination: form.value.email,
   };
 
   try {
-    const response = await $api("/auth/send-otp", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    console.log("RESPONSE SEND OTP : ", response);
+    // const response = await $api("/auth/send-otp", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(payload),
+    // });
+    // console.log("RESPONSE SEND OTP : ", response);
   } catch (error) {
     console.log(error, "ini error");
   }
@@ -141,15 +108,11 @@ const onSubmitEmail = async () => {
 const kodeOtpEmail = ref("");
 const kodeOtpNoHandphone = ref("");
 
-console.log(route.query.payload, "route");
-
-const onSumbitKodeEmail = async () => {
+const onSubmitKodeEmail = async () => {
   const payload = {
     user_id: route.query.payload.role_id,
     otp: kodeOtpEmail.value,
   };
-
-  console.log("payload : {} ", payload);
 
   try {
     const response: any = await $api("/auth/verify-otp", {
@@ -160,9 +123,9 @@ const onSumbitKodeEmail = async () => {
       body: JSON.stringify(payload),
     });
 
-    console.log("RESPONSE VERIF OTP : ", response);
+    // console.log('RESPONSE VERIF OTP : ', response)
 
-    console.log(kodeOtpEmail, "otp email");
+    // console.log(kodeOtpEmail, "otp email");
     if (response?.code === 2000) {
       isSucess.value = true;
 
@@ -238,6 +201,7 @@ onMounted(() => {
 
 const onSubmitNomerHandphone = () => {
   isOtpNoHandphone.value = true;
+  isDisabledEmail.value = true;
 };
 
 const onSubmitKodeNomerHandphone = () => {
@@ -282,7 +246,6 @@ const onSubmitKodeNomerHandphone = () => {
                   <VTextField
                     v-model="form.email"
                     class="mb-5"
-                    :rules="[requiredValidatorEmail, emailValidator]"
                     type="text"
                     disabled="true"
                     :error-messages="errors.email"
@@ -328,7 +291,7 @@ const onSubmitKodeNomerHandphone = () => {
                     block
                     type="submit"
                     :disabled="isDisabledKodeEmail"
-                    @click="onSumbitKodeEmail"
+                    @click="onSubmitKodeEmail"
                   >
                     Verifikasi Kode
                   </VBtn>
@@ -380,12 +343,10 @@ const onSubmitKodeNomerHandphone = () => {
                 <VTextField
                   v-model="form.noHandphone"
                   class="mb-5"
-                  :rules="[requiredValidatorNoHandphone, phoneValidator]"
                   type="text"
                   maxlength="13"
                   :error-messages="errors.noHandphone"
                   placeholder="Masukan Nomor Handphone"
-                  @input="onlyNumber"
                 />
 
                 <VBtn
