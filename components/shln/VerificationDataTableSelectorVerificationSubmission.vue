@@ -144,6 +144,7 @@ const handleInput = () => {
             :items-length="props.totalitemssubmission"
             :headers="props.headers"
             :items="items"
+            loading-text="Loading..."
             @update:options="emit('update')"
           >
             <template #item.id="{ index }">

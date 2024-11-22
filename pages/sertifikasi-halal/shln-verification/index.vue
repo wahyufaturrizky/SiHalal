@@ -98,7 +98,7 @@ const refresh = async () => {
 
 const verifikatorTableHeader = [
   { title: "No", key: "id" },
-  { title: "Registration Number", key: "21354453435543131" },
+  { title: "Registration Number", key: "no_daftar" },
   { title: "Importer's Name", key: "nama_importir" },
   { title: "NIB / Business ID No", key: "nib" },
   { title: "NPWP / Taxpayer ID No", key: "no_daftar" },
@@ -188,6 +188,7 @@ const handleCancel = (message: string) => {
             :items="items"
             :loading="loading"
             :items-length="totalItems"
+            loading-text="Loading..."
             @update:options="loadItem(page, itemPerPage, searchQuery)"
           >
             <template #item.id="{ index }">
