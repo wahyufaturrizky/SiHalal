@@ -74,11 +74,11 @@
     }
   },
   "sidang_self_declare": {
-    "title" : "Sidang Self Declare",
-    "proses_sidang" : "Proses Sidang",
+    "title": "Sidang Self Declare",
+    "proses_sidang": "Proses Sidang",
     "entry_ketetapan_halal": "Entri Ketetapan Halal",
     "inquiry": "Inquiry",
-    "rekapitulasi" : "Rekapitulasi"
+    "rekapitulasi": "Rekapitulasi"
   },
   "shln_submission": "Submission",
   "shln_invoice": "Invoice",
@@ -134,5 +134,12 @@
         "item": "item"
       }
     }
+  },
+  "self_declare": {
+    "title": "Pengajuan Sertifikat Halal",
+    "cek_data_pengajuan": "Check Data Pengajuan",
+    "proses_verval": "Proses Verval",
+    "info_sertifikat_self_declare": "Info Sertifikat Self Declare",
+    "update_foto_produk": "Update Foto Produk"
   }
 }
