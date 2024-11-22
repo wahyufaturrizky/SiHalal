@@ -7,14 +7,6 @@ const emit = defineEmits<{
   (event: "update"): void;
 }>();
 
-const handleInputSubmission = () => {
-  debouncedFetchLoadItemSubmission(
-    pageSubmission.value,
-    itemPerPageSubmission.value,
-    searchQuerySubmission.value
-  );
-};
-
 const searchQuerySubmission = ref("");
 const loadingAddSubmission = ref(false);
 
@@ -38,6 +30,48 @@ const totalItemsSubmission = ref(0);
 const pageSubmission = ref(1);
 
 const checkedItems = ref<{ [key: string]: boolean }>({});
+
+const loadItemSubmission = async (
+  pageParams: number,
+  sizeParams: number,
+  keywordParams: string = ""
+) => {
+  try {
+    loadingSubmission.value = true;
+
+    const response = await $api("/shln/verificator/submission", {
+      method: "get",
+      params: {
+        page: pageParams,
+        size: sizeParams,
+        keyword: keywordParams,
+      },
+    });
+
+    itemsSubmission.value = response.data || [];
+    totalItemsSubmission.value = response.total_item;
+    loadingSubmission.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingSubmission.value = false;
+  }
+};
+
+const debouncedFetch = debounce(loadItemSubmission, 500);
+
+debouncedFetch(
+  pageSubmission.value,
+  itemPerPageSubmission.value,
+  searchQuerySubmission.value
+);
+
+const handleInputSubmission = () => {
+  debouncedFetch(
+    pageSubmission.value,
+    itemPerPageSubmission.value,
+    searchQuerySubmission.value
+  );
+};
 
 const verifikatorTablePopUpHeader = [
   { title: "No", key: "id" },
@@ -95,32 +129,6 @@ const postSubmission = async (selectedItems: string[]) => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     dialogVisible.value = false;
     loadingAddSubmission.value = false;
-  }
-};
-
-const loadItemSubmission = async (
-  pageParams: number,
-  sizeParams: number,
-  keywordParams: string = ""
-) => {
-  try {
-    loadingSubmission.value = true;
-
-    const response = await $api("/shln/verificator/submission", {
-      method: "get",
-      params: {
-        page: pageParams,
-        size: sizeParams,
-        keyword: keywordParams,
-      },
-    });
-
-    itemsSubmission.value = response.data || [];
-    totalItemsSubmission.value = response.total_item;
-    loadingSubmission.value = false;
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingSubmission.value = false;
   }
 };
 
@@ -218,7 +226,7 @@ const openDialog = () => {
             Cancel
           </VBtn>
           <VBtn
-            :disabled="loadingaddsubmission"
+            :disabled="loadingaddsubmission || checkedItemsCount === 0"
             color="primary"
             @click="addSelection"
           >

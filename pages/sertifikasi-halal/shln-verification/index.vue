@@ -9,6 +9,7 @@ const items = ref<
     nama_lph: string;
     nib: string;
     no_daftar: string;
+    npwp: string;
     status_reg: string;
     tgl_daftar: string;
   }[]
@@ -56,8 +57,9 @@ const verifikatorTableHeader = [
   { title: "Registration Number", key: "no_daftar" },
   { title: "Importer's Name", key: "nama_importir" },
   { title: "NIB / Business ID No", key: "nib" },
-  { title: "NPWP / Taxpayer ID No", key: "no_daftar" },
+  { title: "NPWP / Taxpayer ID No", key: "npwp" },
   { title: "Date", key: "tgl_daftar" },
+  { title: "Action", key: "action" },
 ];
 
 const searchQuery = ref("");
@@ -68,6 +70,10 @@ const handleInput = () => {
 
 const handleCancel = (message: string) => {
   console.log("Cancel message:", message);
+};
+
+const navigateAction = (id: string) => {
+  navigateTo(`/sertifikasi-halal/shln-verification/${id}`);
 };
 </script>
 
@@ -115,6 +121,17 @@ const handleCancel = (message: string) => {
             </template>
             <template #item.tgl_daftar="{ item }">
               {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+            </template>
+            <template #item.action="{ item }">
+              <div class="d-flex gap-1">
+                <IconBtn size="small">
+                  <VIcon
+                    icon="ri-arrow-right-line"
+                    color="primary"
+                    @click="navigateAction(item.id)"
+                  />
+                </IconBtn>
+              </div>
             </template>
           </VDataTableServer>
         </VCol>
