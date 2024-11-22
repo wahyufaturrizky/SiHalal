@@ -19,23 +19,6 @@ const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
 
-const itemsSubmission = ref<
-  {
-    date: string;
-    hcb: string;
-    id: string;
-    importir_name: string;
-    nib: string;
-    register_number: string;
-    status: string;
-  }[]
->([]);
-
-const itemPerPageSubmission = ref(10);
-const totalItemsSubmission = ref(0);
-const loadingSubmission = ref(false);
-const pageSubmission = ref(1);
-
 const loadItem = async (page: number, size: number, keyword: string = "") => {
   try {
     loading.value = true;
@@ -58,38 +41,10 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
   }
 };
 
-const loadItemSubmission = async (
-  pageParams: number,
-  sizeParams: number,
-  keywordParams: string = ""
-) => {
-  try {
-    loadingSubmission.value = true;
-
-    const response = await $api("/shln/verificator/submission", {
-      method: "get",
-      params: {
-        page: pageParams,
-        size: sizeParams,
-        keyword: keywordParams,
-      },
-    });
-
-    itemsSubmission.value = response.data;
-    totalItemsSubmission.value = response.total_item;
-    loadingSubmission.value = false;
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingSubmission.value = false;
-  }
-};
-
 const debouncedFetch = debounce(loadItem, 500);
-const debouncedFetchLoadItemSubmission = debounce(loadItemSubmission, 500);
 
 onMounted(async () => {
   await loadItem(1, itemPerPage.value, "");
-  await loadItemSubmission(1, itemPerPageSubmission.value, "");
 });
 
 const refresh = async () => {
@@ -105,31 +60,10 @@ const verifikatorTableHeader = [
   { title: "Date", key: "tgl_daftar" },
 ];
 
-const verifikatorTablePopUpHeader = [
-  { title: "No", key: "id" },
-  { title: "Registration Number", key: "register_number" },
-  { title: "NIB / Business ID No", key: "nib" },
-  { title: "HCB", key: "hcb" },
-  { title: "Registration Date", key: "date" },
-  { title: "Submit Date", key: "date" },
-  { title: "Verifikator", key: "importir_name" },
-  { title: "Status", key: "status" },
-  { title: "Action", key: "check" },
-];
-
 const searchQuery = ref("");
-const searchQuerySubmission = ref("");
 
 const handleInput = () => {
   debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
-};
-
-const handleInputSubmission = (searchQuerySubmissionParams: string) => {
-  debouncedFetchLoadItemSubmission(
-    pageSubmission.value,
-    itemPerPageSubmission.value,
-    searchQuerySubmissionParams
-  );
 };
 
 const handleCancel = (message: string) => {
@@ -147,23 +81,8 @@ const handleCancel = (message: string) => {
         </VCol>
         <VCol class="d-flex justify-end align-center" cols="6" md="2">
           <VerificationDataTableSelectorVerificationSubmission
-            :headers="verifikatorTablePopUpHeader"
-            :items="itemsSubmission"
-            :searchquerysubmission="searchQuerySubmission"
-            :itemperpagesubmission="itemPerPageSubmission"
-            :loading-submission="loadingSubmission"
-            :pagesubmission="pageSubmission"
-            :totalitemssubmission="totalItemsSubmission"
-            @handle-input-submission="handleInputSubmission"
             @cancel="handleCancel"
             @refresh="refresh"
-            @update:options="
-              loadItemSubmission(
-                pageSubmission,
-                itemPerPageSubmission,
-                searchQuerySubmission
-              )
-            "
           />
         </VCol>
       </VRow>
