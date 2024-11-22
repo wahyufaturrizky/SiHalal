@@ -88,48 +88,56 @@ const onSubmit = async () => {
         confirm_password: form.value.passwordConfirm,
       };
 
-      try {
-        const response = await $api("/auth/register", {
-          method: "POST", // Mengatur metode menjadi POST
-          headers: {
-            "Content-Type": "application/json", // Mengatur tipe konten
-          },
-          body: JSON.stringify(payload), // Mengubah payload menjadi format JSON
-        });
+      const id = payload.role_id;
+      const email = payload.email;
 
-        // console.log("log", response);
+      navigateTo({
+        path: "/verifikasi-user",
+        query: { id, email, payload: JSON.stringify(payload) },
+      });
 
-        if (response.code === 2000) {
-          // Cek apakah response berhasil
-          const data = response.data;
+      // try {
+      //   const response = await $api("/auth/register", {
+      //     method: "POST", // Mengatur metode menjadi POST
+      //     headers: {
+      //       "Content-Type": "application/json", // Mengatur tipe konten
+      //     },
+      //     body: JSON.stringify(payload), // Mengubah payload menjadi format JSON
+      //   });
 
-          console.log("Akun berhasil dibuat:", data);
+      //   // console.log("log", response);
 
-          // navigateTo({
-          //   path: "/verifikasi-user"
-          // });
-          const id = data.user.id;
-          const email = data.user.email;
+      //   if (response.code === 2000) {
+      //     // Cek apakah response berhasil
+      //     const data = response.data;
 
-          console.log("id : ", id);
+      //     console.log("Akun berhasil dibuat:", data);
 
-          navigateTo({
-            path: "/verifikasi-user",
-            query: { id, email },
-          });
+      //     // navigateTo({
+      //     //   path: "/verifikasi-user"
+      //     // });
+      //     const id = data.user.id;
+      //     const email = data.user.email;
 
-          // router.push({ name: 'verifikasi-user', params: { id: id } })
-        } else if (response.code === 4001) {
-          sendSnackbar(`${response.errors.list_error}`, "error");
-        } else {
-          sendSnackbar(
-            "Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!",
-            "error"
-          );
-        }
-      } catch (error) {
-        console.error("Error saat membuat akun:", error);
-      }
+      //     console.log("id : ", id);
+
+      //     navigateTo({
+      //       path: "/verifikasi-user",
+      //       query: { id, email, payload },
+      //     });
+
+      //     // router.push({ name: 'verifikasi-user', params: { id: id } })
+      //   } else if (response.code === 4001) {
+      //     sendSnackbar(`${response.errors.list_error}`, "error");
+      //   } else {
+      //     sendSnackbar(
+      //       "Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!",
+      //       "error"
+      //     );
+      //   }
+      // } catch (error) {
+      //   console.error("Error saat membuat akun:", error);
+      // }
     }
   });
 };

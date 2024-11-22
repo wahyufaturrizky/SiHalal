@@ -53,8 +53,8 @@ const refVForm = ref<VForm>();
 // })
 
 const form = ref({
-  email: route.query.email,
-  noHandphone: null,
+  email: route.query.payload.email,
+  noHandphone: route.query.payload.phone_number,
 });
 
 // validasi
@@ -141,9 +141,11 @@ const onSubmitEmail = async () => {
 const kodeOtpEmail = ref("");
 const kodeOtpNoHandphone = ref("");
 
+console.log(route.query.payload, "route");
+
 const onSumbitKodeEmail = async () => {
   const payload = {
-    user_id: route.query.id,
+    user_id: route.query.payload.role_id,
     otp: kodeOtpEmail.value,
   };
 
