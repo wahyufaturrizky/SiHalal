@@ -227,18 +227,23 @@ export default [
     children: [
       {
         title: "shln_submission",
-        to: "sertifikasi-halal-shln-submission",
+        to: "sertifikasi-halal-luar-negeri-submission",
         roles: ["Pelaku Usaha", "Admin"],
       },
       {
         title: "shln_invoice",
-        to: "sertifikasi-halal-shln-invoice",
+        to: "sertifikasi-halal-luar-negeri-invoice",
+        roles: ["Pelaku Usaha", "Admin"],
+      },
+      {
+        title: "Invoice - Pelaku Usaha",
+        to: "finance-invoice-pelaku-usaha",
         roles: ["Pelaku Usaha", "Admin"],
       },
       {
         title: "shln_verification",
-        to: "sertifikasi-halal-shln-verification",
-        roles: ["Pelaku Usaha", "Admin"],
+        to: "sertifikasi-halal-luar-negeri-verification",
+        roles: ["Pelaku Usaha", "Verifikator HLN", "Admin"],
       },
       {
         title: "shln_payment",
@@ -247,7 +252,7 @@ export default [
       },
       {
         title: "shln_inquiry",
-        to: "sertifikasi-halal-shln-inquiry",
+        to: "sertifikasi-halal-luar-negeri-inquiry",
         roles: ["Pelaku Usaha", "Admin"],
       },
     ],
