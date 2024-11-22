@@ -10,7 +10,7 @@ const openPanelRegisterData = ref(0);
   <SHLNVerfikasiLayout>
     <template #pageTitle>
       <VRow>
-        <VCol><h3>Foreign Halal Cerficate Requirements Details</h3></VCol>
+        <VCol><h3>Foreign Halal Certificate Requirements Details</h3></VCol>
       </VRow>
 
       <VRow>
