@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const tabs = ref(0);
+const route = useRoute();
+const shlnId = route.params.id;
 onMounted(() => {
   tabs.value = 0;
 });

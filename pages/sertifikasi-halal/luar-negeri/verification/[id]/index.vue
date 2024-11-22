@@ -8,6 +8,7 @@ const loading = ref(false);
 const data = ref(false);
 
 const route = useRoute();
+const shlnId = route.params.id;
 
 const loadItemById = async () => {
   try {
@@ -29,7 +30,9 @@ onMounted(async () => {
   await loadItemById();
 });
 
-const navigateAction = () => {};
+const navigateAction = () => {
+  navigateTo(`/sertifikasi-halal/luar-negeri/verification/${shlnId}/detail`);
+};
 </script>
 
 <template>

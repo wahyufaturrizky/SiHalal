@@ -73,7 +73,7 @@ const handleCancel = (message: string) => {
 };
 
 const navigateAction = (id: string) => {
-  navigateTo(`/sertifikasi-halal/shln-verification/${id}`);
+  navigateTo(`/sertifikasi-halal/luar-negeri/verification/${id}`);
 };
 </script>
 

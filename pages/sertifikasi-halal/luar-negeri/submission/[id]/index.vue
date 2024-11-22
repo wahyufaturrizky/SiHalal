@@ -59,14 +59,17 @@ interface ShlnRegistration {
   submission_number: string;
 }
 
-const router = useRouter();
+const route = useRoute();
+const shlnId = route.params.id;
 const deleteDialog = ref(false);
 const deleteItem = () => {
   deleteDialog.value = true;
 };
 
+const deleteSUbmission = () => {};
+
 const editItem = () => {
-  router.push("/sertifikasi-halal/shln-edit");
+  navigateTo(`/sertifikasi-halal/luar-negeri/submission/${shlnId}/edit`);
 };
 
 const submitItem = () => {
@@ -89,9 +92,6 @@ const formatDate = new Intl.DateTimeFormat("en-GB");
 const item = ref<ShlnDetail>();
 const tracking = ref<ShlnTracking[]>();
 const registration = ref<ShlnRegistration>();
-const route = useRoute();
-
-const shlnId = route.params.id;
 
 const loadItem = async () => {
   try {
@@ -335,15 +335,12 @@ const timelineEvents = ref([
           </VRow>
           <VRow class="flex-row-reverse">
             <VCol cols="12" md="auto">
-              <VBtn block color="error" type="submit"> Delete </VBtn>
+              <VBtn block color="error" @click="deleteSubmission">
+                Delete
+              </VBtn>
             </VCol>
             <VCol cols="12" md="auto">
-              <VBtn
-                block
-                variant="outlined"
-                type="reset"
-                @click="deleteDialog = false"
-              >
+              <VBtn block variant="outlined" @click="deleteDialog = false">
                 Cancel
               </VBtn>
             </VCol>
