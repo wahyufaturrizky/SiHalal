@@ -4,6 +4,32 @@ import SHLNVerfikasiLayout from "@/layouts/SHLNVerfikasiLayout.vue";
 const panelOpenImporter = ref(0);
 const panelOpenImporterContract = ref(0);
 const openPanelRegisterData = ref(0);
+const loading = ref(false);
+const data = ref(false);
+
+const route = useRoute();
+
+const loadItemById = async () => {
+  try {
+    loading.value = true;
+
+    const response = await $api(`/shln/verificator/${route.params.id}`, {
+      method: "get",
+    });
+
+    data.value = response.data;
+    loading.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
+  }
+};
+
+onMounted(async () => {
+  await loadItemById();
+});
+
+const navigateAction = () => {};
 </script>
 
 <template>
@@ -15,7 +41,12 @@ const openPanelRegisterData = ref(0);
 
       <VRow>
         <VCol style="display: flex; justify-content: start">
-          <VBtn variant="flat" prepend-icon="" color="primary" @click="onEdit">
+          <VBtn
+            variant="flat"
+            prepend-icon=""
+            color="primary"
+            @click="navigateAction"
+          >
             Detail
           </VBtn>
         </VCol>
