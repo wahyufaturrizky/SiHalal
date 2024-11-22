@@ -144,7 +144,7 @@ const redirectToForgotPass = () => {
                   label="Email"
                   placeholder="Masukkan Email"
                   type="email"
-                  autofocus
+                  :autofocus="false"
                   :rules="[requiredValidator, emailValidator]"
                   :error-messages="errors.email"
                 />
