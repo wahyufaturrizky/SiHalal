@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import NewRequestDialog from "@/views/pages/shln/NewRequestDialog.vue";
+// import NewRequestDialog from "@/views/pages/shln/NewRequestDialog.vue";
 import ShlnRegisterDialog from "@/views/pages/shln/ShlnRegisterDialog.vue";
 import { VDataTableServer } from "vuetify/components";
+
 const items = ref<
   {
     id: string;
@@ -12,10 +13,12 @@ const items = ref<
     tgl_daftar: string;
   }[]
 >([]);
+
 const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
+
 const headers = [
   { title: "No", key: "index", align: "start" },
   { title: "Submission Number", key: "no_daftar", align: "start" },
@@ -25,20 +28,11 @@ const headers = [
   { title: "Date", key: "tgl_daftar", align: "start" },
   { title: "Action", key: "action" },
 ];
-const formatDateIntl = (date) => {
-  return new Intl.DateTimeFormat("en-GB").format(date);
-};
-function debounce(func, delay) {
-  let timer;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => func(...args), delay);
-  };
-}
 
 const loadItem = async (page: number, size: number, no_shln: string = "") => {
   try {
     loading.value = true;
+
     const response = await $api("/shln/submission", {
       method: "get",
       params: {
@@ -47,6 +41,7 @@ const loadItem = async (page: number, size: number, no_shln: string = "") => {
         no_shln,
       },
     });
+
     items.value = response.data;
     totalItems.value = response.total_item;
     loading.value = false;
@@ -55,10 +50,13 @@ const loadItem = async (page: number, size: number, no_shln: string = "") => {
     loading.value = false;
   }
 };
+
 const debouncedFetch = debounce(loadItem, 500);
+
 const handleInput = () => {
   debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
 };
+
 // const items = ref([{
 //   'No' : '1',
 //   'Submission Number' : 'xxxx',
@@ -69,6 +67,7 @@ const handleInput = () => {
 // },])
 
 const searchQuery = ref("");
+
 onMounted(async () => {
   await loadItem(1, itemPerPage.value, "");
 });
@@ -86,14 +85,16 @@ onMounted(async () => {
 const requestDialogVisible = ref(false);
 
 const router = useRouter();
+
 const hanleSubmitRequest = (shln_id: string | null) => {
   if (shln_id != null) {
     // console.log(`/sertifikasi-halal/shln-detail/${shln_id}`);
-    navigateTo(`/sertifikasi-halal/shln-detail/` + shln_id);
+    navigateTo(`/sertifikasi-halal/shln-detail/${shln_id}`);
   }
 };
+
 const navigateAction = (id: string) => {
-  navigateTo(`/sertifikasi-halal/shln-detail/` + id);
+  navigateTo(`/sertifikasi-halal/shln-detail/${id}`);
 };
 
 const openModalsRequest = () => {
@@ -130,12 +131,12 @@ const openModalsRequest = () => {
       <VRow>
         <VCol>
           <VDataTableServer
+            v-model:items-per-page="itemPerPage"
+            v-model:page="page"
             :headers="headers"
             :items-length="totalItems"
             :loading="loading"
             :items="items"
-            v-model:items-per-page="itemPerPage"
-            v-model:page="page"
             @update:options="loadItem(page, itemPerPage, searchQuery)"
           >
             <template #item.index="{ index }">

@@ -47,11 +47,16 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   if (to.path === "/login/new-account") {
-    if (!user.value?.new_user) {
+    if (
+      !user.value?.new_user ||
+      user.value.roles.some((role) => role.name != "Pelaku Usaha")
+    ) {
       return navigateTo("/");
     }
   } else if (user.value?.new_user) {
-    return navigateTo("/login/new-account");
+    if (user.value.roles.some((role) => role.name == "Pelaku Usaha")) {
+      return navigateTo("/login/new-account");
+    }
   }
 
   // if (!canNavigate(to) && to.matched.length) {

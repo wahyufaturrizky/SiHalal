@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import VerificationReturnConfirmation from "@/components/shln/VerificationReturnConfirmation.vue"
+import VerificationSaveConfirmation from "@/components/shln/VerificationSaveConfirmation.vue"
 import { ref } from 'vue'
 const headers = [
   {title: 'No' , key: 'no'},
@@ -12,12 +13,16 @@ const items = ref([
   {no: '1', manufacture_name: 'Allyn Group', address: 'Jl. Mangga Besar Raya 211 Mangga Besar, Jakarta', country: 'Thailand'},
 ])
 
-const handleReturnConfirmation = (inputValue : String) => {
+const snakeBar = useSnackbar()
+
+const handleReturnConfirmation = (inputValue: string) => {
   console.log("INPUT RETURN NYA DISINI YA : ", inputValue)
+  snakeBar.sendSnackbar("Submission Successfully Returned ", "success")
 }
 
 const handleApproveConfirmation = () => {
   console.log("INPUT APPROVE NYA DISINI YA : ")
+  snakeBar.sendSnackbar("Submission Successfully Approved ", "success")
 }
 </script>
 
@@ -35,7 +40,7 @@ const handleApproveConfirmation = () => {
                 <VerificationReturnConfirmation @confirm="handleReturnConfirmation"/>
               </VCol>
               <VCol cols="6">
-                <VerificationApproveConfirmation @confirm="handleApproveConfirmation" />
+                <VerificationSaveConfirmation @confirm="handleApproveConfirmation"/>
               </VCol>
             </VRow>
           </VCol>

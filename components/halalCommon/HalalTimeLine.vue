@@ -33,7 +33,6 @@ console.log(props.event);
           </span>
           <span class="app-timeline-meta">{{ item.created_at }}</span>
         </div>
-
         <div class="app-timeline-text mt-1">
           {{ item.username }}
         </div>

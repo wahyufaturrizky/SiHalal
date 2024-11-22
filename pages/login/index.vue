@@ -71,7 +71,7 @@ async function login() {
     navigateTo(route.query.to ? String(route.query.to) : "/", {
       replace: true,
     });
-  } catch (error) {
+  } catch (error: any) {
     if (error.data.statusCode == 400) {
       console.log(error.data.data.id);
       navigateTo({
@@ -99,6 +99,10 @@ const onSubmit = async () => {
   refVForm.value?.validate().then(({ valid: isValid }) => {
     if (isValid) login();
   });
+};
+
+const redirectToForgotPass = () => {
+  navigateTo("/forgot-password");
 };
 </script>
 
@@ -140,7 +144,7 @@ const onSubmit = async () => {
                   label="Email"
                   placeholder="Masukkan Email"
                   type="email"
-                  autofocus
+                  :autofocus="false"
                   :rules="[requiredValidator, emailValidator]"
                   :error-messages="errors.email"
                 />
@@ -162,6 +166,15 @@ const onSubmit = async () => {
                   "
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
+
+                <VCol cols="12" class="text-body-1 text-right">
+                  <NuxtLink
+                    class="text-primary ms-1 d-inline-block text-body-1"
+                    :to="{ name: 'forgot-password' }"
+                  >
+                    Lupa Kata Sandi?
+                  </NuxtLink>
+                </VCol>
 
                 <div class="my-6 gap-x-2">
                   <NuxtTurnstile v-model="turnstile" class="text-center" />
