@@ -8,7 +8,7 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  loadingdocumentmra: {
+  datadocumentmra: {
     type: Object,
     required: true,
   },
@@ -24,7 +24,7 @@ const {
 } = props.datadocumentloa || {};
 
 const { country, expired_date, halal_institution_name, issued_date } =
-  props.loadingdocumentmra || {};
+  props.datadocumentmra || {};
 
 const { document, document_no, verification_link, file } =
   props.datadocumentfhc || {};

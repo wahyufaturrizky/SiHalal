@@ -123,7 +123,7 @@ onMounted(async () => {
           <ShlnDocumentDetail
             :datadocumentfhc="dataDocumentFHC"
             :datadocumentloa="dataDocumentLOA"
-            :loadingdocumentmra="loadingDocumentMRA"
+            :datadocumentmra="dataDocumentMRA"
           />
         </VTabsWindowItem>
         <VTabsWindowItem value="3">
