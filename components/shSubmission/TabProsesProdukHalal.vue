@@ -1,4 +1,10 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const props = defineProps({
+  userRoles: {
+    type: Array<string> || null,
+  },
+});
+</script>
 
 <template>
   <VCard class="pb-5">
@@ -6,15 +12,15 @@
       <div class="font-weight-bold text-h4">Proses Produk Halal</div>
     </VCardTitle>
     <VCardText>
-      <VItemGroup>
+      <VItemGroup v-if="!props.userRoles?.includes('Verifikator')">
         <VLabel>Proses</VLabel>
         <VTextField placeholder="Masukkan Proses" density="compact">
           <template #append>
             <VBtn variant="outlined">Tambah</VBtn>
           </template>
         </VTextField>
+        <br />
       </VItemGroup>
-      <br />
       <VItemGroup>
         <VLabel>Proses Produksi</VLabel>
         <VTextarea placeholder="Masukkan Proses Produksi" density="compact" />
