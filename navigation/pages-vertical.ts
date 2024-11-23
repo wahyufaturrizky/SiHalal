@@ -223,7 +223,7 @@ export default [
   {
     title: "sh_luar_negeri",
     icon: { icon: "ri-id-card-line" },
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Pelaku Usaha", "Verifikator HLN", "Admin"],
     children: [
       {
         title: "shln_submission",
