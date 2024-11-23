@@ -73,6 +73,10 @@
       "reference": "Reference"
     }
   },
+  "sidang_fatwa": {
+    "title" : "Sidang Fatwa",
+    "proses_sidang" : "Proses Sidang"
+  },
   "sidang_self_declare": {
     "title" : "Sidang Self Declare",
     "proses_sidang" : "Proses Sidang",
