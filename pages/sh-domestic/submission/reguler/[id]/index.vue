@@ -10,7 +10,7 @@
       <VCol cols="3">
         <VRow class="d-flex justify-end align-center ga-2">
           <VBtn variant="outlined" color="error"><VIcon icon="ri-delete-bin-5-line"></VIcon></VBtn>
-          <VBtn variant="outlined" append-icon="ri-edit-line" @click="navigateTo('/edit')">Ubah</VBtn>
+          <VBtn variant="outlined" append-icon="ri-edit-line" @click="navigateTo(`/sh-domestic/submission/reguler/${id}/edit`)">Ubah</VBtn>
           <VBtn>Kirim</VBtn>
         </VRow>
       </VCol>
