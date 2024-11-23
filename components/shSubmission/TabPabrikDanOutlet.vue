@@ -4,14 +4,14 @@ const dialogUse = ref("CREATE");
 const dialogType = ref("Pabrik");
 const factoryHeader = [
   { title: "No", value: "index" },
-  { title: "nama", value: "name" },
+  { title: "Nama", value: "name" },
   { title: "Alamat", value: "address" },
   { title: "Status", value: "status" },
   { title: "Action", value: "actions" },
 ];
 const outletHeader = [
   { title: "No", value: "index" },
-  { title: "nama", value: "name" },
+  { title: "Nama", value: "name" },
   { title: "Alamat", value: "address" },
   { title: "Action", value: "actions" },
 ];
@@ -107,12 +107,71 @@ const handleOpenDialog = (type: string) => {
       </VDataTable>
     </VCardText>
   </VCard>
-  <FactoryAndOutletModal
+  <ShSubmissionDetailFormModal
+    :dialog-title="`Tambah Data ${dialogType}`"
     :dialog-visible="dialogVisible"
     :dialog-use="dialogUse"
-    :dialog-type="dialogType"
     @update:dialog-visible="dialogVisible = $event"
-  />
+  >
+    <VCardText>
+      <VForm>
+        <VItemGroup v-if="dialogType === 'Pabrik'">
+          <VLabel>Lokasi Pabrik</VLabel>
+          <VSelect placeholder="Pilih Lokasi Pabrik" density="compact" />
+          <br />
+        </VItemGroup>
+        <VItemGroup>
+          <VLabel>Nama {{ dialogType }}</VLabel>
+          <VTextField
+            :placeholder="`Isi Nama ${dialogType}`"
+            density="compact"
+          />
+        </VItemGroup>
+        <br />
+        <VItemGroup>
+          <VLabel>Alamat {{ dialogType }}</VLabel>
+          <VTextField
+            :placeholder="`Isi Alamat ${dialogType}`"
+            density="compact"
+          />
+        </VItemGroup>
+        <br />
+        <VRow>
+          <VCol cols="6">
+            <VItemGroup>
+              <VLabel>Kab/Kota</VLabel>
+              <VTextField placeholder="Isi Kabupaten/Kota" density="compact" />
+            </VItemGroup>
+          </VCol>
+          <VCol cols="6">
+            <VItemGroup>
+              <VLabel>Provinsi</VLabel>
+              <VTextField placeholder="Isi Provinsi" density="compact" />
+            </VItemGroup>
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol cols="6">
+            <VItemGroup>
+              <VLabel>Negara</VLabel>
+              <VTextField placeholder="Isi Negara" density="compact" />
+            </VItemGroup>
+          </VCol>
+          <VCol cols="6">
+            <VItemGroup>
+              <VLabel>Kode Pos</VLabel>
+              <VTextField placeholder="Isi Kode Pos" density="compact" />
+            </VItemGroup>
+          </VCol>
+        </VRow>
+        <VItemGroup v-if="dialogType === 'Pabrik'">
+          <br />
+          <VLabel>Status Pabrik</VLabel>
+          <VSelect placeholder="Pilih Alamat Pabrik" density="compact" />
+        </VItemGroup>
+      </VForm>
+    </VCardText>
+  </ShSubmissionDetailFormModal>
 </template>
 
 <style scoped></style>
