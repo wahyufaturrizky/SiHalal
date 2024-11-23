@@ -29,12 +29,8 @@ const putVerificatorReturn = async (comment: string[]) => {
       },
     });
 
-    if (res?.code === 2000) {
-      useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
-      router.go(-1);
-    } else {
-      useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
-    }
+    if (res?.code === 2000) router.go(-1);
+    else useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
 
     inputValue.value = "";
     closeDialog();

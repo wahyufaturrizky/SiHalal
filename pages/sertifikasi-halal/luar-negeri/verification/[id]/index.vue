@@ -14,7 +14,7 @@ const loadItemById = async () => {
   try {
     loading.value = true;
 
-    const response = await $api(`/shln/verificator/${route.params.id}`, {
+    const response = await $api(`/shln/verificator/${shlnId}`, {
       method: "get",
     });
 
