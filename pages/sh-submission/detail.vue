@@ -37,7 +37,9 @@ const tab = ref("identity");
           <TabPabrikDanOutlet />
         </VTabsWindowItem>
         <VTabsWindowItem value="material"> </VTabsWindowItem>
-        <VTabsWindowItem value="product"> </VTabsWindowItem>
+        <VTabsWindowItem value="product">
+          <TabProduk />
+        </VTabsWindowItem>
         <VTabsWindowItem value="process">
           <TabProsesProdukHalal />
         </VTabsWindowItem>
