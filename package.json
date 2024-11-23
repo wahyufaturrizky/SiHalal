@@ -75,6 +75,7 @@
     "@intlify/unplugin-vue-i18n": "4.0.0",
     "@mdi/font": "^7.4.47",
     "@mdi/js": "^7.4.47",
+    "@nuxt/scripts": "^0.9.5",
     "@nuxtjs/device": "3.1.1",
     "@pinia/nuxt": "0.5.3",
     "@sidebase/nuxt-auth": "0.8.1",
@@ -134,5 +135,6 @@
     "@types/video.js": "^7",
     "sass": "1.76.0",
     "vue": "3.3.13"
-  }
+  },
+  "packageManager": "pnpm@9.14.2+sha512.6e2baf77d06b9362294152c851c4f278ede37ab1eba3a55fda317a4a17b209f4dbb973fb250a77abc463a341fcb1f17f17cfa24091c4eb319cda0d9b84278387"
 }
