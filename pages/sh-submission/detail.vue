@@ -43,7 +43,9 @@ const tab = ref("identity");
         <VTabsWindowItem value="process">
           <TabProsesProdukHalal />
         </VTabsWindowItem>
-        <VTabsWindowItem value="declare"> </VTabsWindowItem>
+        <VTabsWindowItem value="declare">
+          <TabPernyataan />
+        </VTabsWindowItem>
       </VTabsWindow>
     </VCol>
   </VRow>

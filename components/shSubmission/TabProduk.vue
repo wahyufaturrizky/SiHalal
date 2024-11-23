@@ -49,7 +49,7 @@ const onFileChange = (event: any) => {
 </script>
 
 <template>
-  <VCard class="mb-10">
+  <VCard>
     <VCardTitle class="my-5 d-flex justify-space-between align-center">
       <div class="font-weight-bold text-h4">Daftar Nama Produk</div>
       <div>
