@@ -33,10 +33,14 @@ const tab = ref("identity");
         <VTabsWindowItem value="document">
           <TabPengajuan />
         </VTabsWindowItem>
-        <VTabsWindowItem value="manufacture"> </VTabsWindowItem>
+        <VTabsWindowItem value="manufacture">
+          <TabPabrikDanOutlet />
+        </VTabsWindowItem>
         <VTabsWindowItem value="material"> </VTabsWindowItem>
         <VTabsWindowItem value="product"> </VTabsWindowItem>
-        <VTabsWindowItem value="process"> </VTabsWindowItem>
+        <VTabsWindowItem value="process">
+          <TabProsesProdukHalal />
+        </VTabsWindowItem>
         <VTabsWindowItem value="declare"> </VTabsWindowItem>
       </VTabsWindow>
     </VCol>
