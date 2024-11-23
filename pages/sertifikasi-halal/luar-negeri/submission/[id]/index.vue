@@ -1,5 +1,5 @@
 <script setup lang="ts">
-interface ShlnDetail {
+export interface ShlnDetail {
   hcb: Hcb;
   hcn: Hcn;
   id: string;
@@ -50,7 +50,7 @@ export interface ShlnTracking {
   status: string;
   username: string;
 }
-interface ShlnRegistration {
+export interface ShlnRegistration {
   download_file: string;
   expired_date: string;
   issued_date: string;
@@ -62,11 +62,31 @@ interface ShlnRegistration {
 const route = useRoute();
 const shlnId = route.params.id;
 const deleteDialog = ref(false);
+
 const deleteItem = () => {
   deleteDialog.value = true;
 };
 
-const deleteSUbmission = () => {};
+const deleteSubmission = async () => {
+  try {
+    const response = await $api("/shln/submission/delete", {
+      method: "post",
+      body: {
+        id: shlnId,
+      },
+    });
+
+    if (!response.data.code == 2000) {
+      useSnackbar().sendSnackbar("gagal menghapus data", "error");
+
+      return;
+    }
+    navigateTo("/sertifikasi-halal/luar-negeri/submission");
+    useSnackbar().sendSnackbar("Berhasil menghapus data", "success");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kecsalahan", "error");
+  }
+};
 
 const editItem = () => {
   navigateTo(`/sertifikasi-halal/luar-negeri/submission/${shlnId}/edit`);
@@ -81,10 +101,13 @@ const headersProduct = [
   { title: "Product Name", key: "name", align: "start" },
   { title: "HS Code", key: "hs_code", align: "start" },
 ];
+
 const headersDocument = [
   { title: "No", key: "index", align: "start" },
   { title: "Document Type", key: "document_type", align: "start" },
   { title: "Upload", key: "download", align: "start" },
+  { title: "notes", key: "notes", align: "start" },
+  { title: "status", key: "status", align: "start" },
   { title: "Action", key: "action", align: "start" },
 ];
 
@@ -101,11 +124,13 @@ const loadItem = async () => {
         id: shlnId,
       },
     });
+
     item.value = response.data;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+
 const loadTracking = async () => {
   try {
     const response = await $api("/shln/submission/tracking", {
@@ -114,11 +139,13 @@ const loadTracking = async () => {
         id: shlnId,
       },
     });
+
     tracking.value = response.data;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+
 const loadRegistration = async () => {
   try {
     const response = await $api("/shln/submission/registration", {
@@ -127,11 +154,13 @@ const loadRegistration = async () => {
         id: shlnId,
       },
     });
+
     registration.value = response.data;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+
 onMounted(() => {
   Promise.allSettled([loadItem(), loadTracking(), loadRegistration()]);
   console.log(tracking.value);
@@ -190,8 +219,8 @@ const timelineEvents = ref([
       <VCol cols="4">
         <VRow justify="end" class="gap-1">
           <VCol cols="auto">
-            <VBtn variant="outlined" color="error" @click="deleteItem">
-              <VIcon icon="ri-delete-bin-6-line"></VIcon>
+            <VBtn variant="outlined" color="error" @click="deleteSubmission">
+              <VIcon icon="ri-delete-bin-6-line" />
             </VBtn>
           </VCol>
           <VCol cols="auto">
@@ -221,44 +250,78 @@ const timelineEvents = ref([
     <VRow>
       <VCol cols="8">
         <ExpandCard title="Importer" class="mb-6">
-          <InfoRow name="Name">{{ item?.profile.name }}</InfoRow>
-          <InfoRow name="NIB/ Business Id No.">{{ item?.profile.nib }}</InfoRow>
-          <InfoRow name="API-P / API-U">{{ item?.profile.api_type }}</InfoRow>
-          <InfoRow name="NPWP / Taxpayer Id No.">{{
-            item?.profile.npwp
-          }}</InfoRow>
-          <InfoRow name="Address">{{ item?.profile.address }}</InfoRow>
-          <InfoRow name="Province">{{ item?.profile.province }}</InfoRow>
-          <InfoRow name="Regence">{{ item?.profile.regency }}</InfoRow>
-          <InfoRow name="Sub-District">{{
-            item?.profile.sub_district
-          }}</InfoRow>
+          <InfoRow name="Name">
+            {{ item?.profile.name }}
+          </InfoRow>
+          <InfoRow name="NIB/ Business Id No.">
+            {{ item?.profile.nib }}
+          </InfoRow>
+          <InfoRow name="API-P / API-U">
+            {{ item?.profile.api_type }}
+          </InfoRow>
+          <InfoRow name="NPWP / Taxpayer Id No.">
+            {{ item?.profile.npwp }}
+          </InfoRow>
+          <InfoRow name="Address">
+            {{ item?.profile.address }}
+          </InfoRow>
+          <InfoRow name="Province">
+            {{ item?.profile.province }}
+          </InfoRow>
+          <InfoRow name="Regence">
+            {{ item?.profile.regency }}
+          </InfoRow>
+          <InfoRow name="Sub-District">
+            {{ item?.profile.sub_district }}
+          </InfoRow>
           <ThinLine :thickness="1" />
-          <InfoRow name="Halal Certification Body (HCB)">{{
-            item?.hcb.hcb_id
-          }}</InfoRow>
+          <InfoRow name="Halal Certification Body (HCB)">
+            {{ item?.hcb.hcb_id }}
+          </InfoRow>
           <ThinLine :thickness="1" />
-          <InfoRow name="Company Name">{{ item?.hcb.company_name }}</InfoRow>
-          <InfoRow name="Company / Corporate Id No. ">{{
-            item?.hcb.corporate_id_number
-          }}</InfoRow>
-          <InfoRow name="Country">{{ item?.hcb.country }}</InfoRow>
-          <InfoRow name="Address">{{ item?.hcb.address }}</InfoRow>
+          <InfoRow name="Company Name">
+            {{ item?.hcb.company_name }}
+          </InfoRow>
+          <InfoRow name="Company / Corporate Id No. ">
+            {{ item?.hcb.corporate_id_number }}
+          </InfoRow>
+          <InfoRow name="Country">
+            {{ item?.hcb.country }}
+          </InfoRow>
+          <InfoRow name="Address">
+            {{ item?.hcb.address }}
+          </InfoRow>
           <ThinLine :thickness="1" />
-          <InfoRow name="Halal Certification Number">{{
-            item?.hcn.hcn_number
-          }}</InfoRow>
-          <InfoRow name="Issued Date">{{ item?.hcn.issued_date }}</InfoRow>
-          <InfoRow name="Expired Date">{{ item?.hcn.expired_date }}</InfoRow>
-          <InfoRow name="Scope">{{ item?.hcn.scope }}</InfoRow>
+          <InfoRow name="Halal Certification Number">
+            {{ item?.hcn.hcn_number }}
+          </InfoRow>
+          <InfoRow name="Issued Date">
+            {{ item?.hcn.issued_date }}
+          </InfoRow>
+          <InfoRow name="Expired Date">
+            {{ item?.hcn.expired_date }}
+          </InfoRow>
+          <InfoRow name="Scope">
+            {{ item?.hcn.scope }}
+          </InfoRow>
         </ExpandCard>
 
         <ExpandCard title="Importer's Point of Contract" class="mb-6">
-          <InfoRow name="Name">{{ item?.importer.name }}</InfoRow>
-          <InfoRow name="Position">{{ item?.importer.position }}</InfoRow>
-          <InfoRow name="Email">{{ item?.importer.email }}</InfoRow>
-          <InfoRow name="Phone No.">{{ item?.importer.phone_number }}</InfoRow>
-          <InfoRow name="Address">{{ item?.importer.address }}</InfoRow>
+          <InfoRow name="Name">
+            {{ item?.importer.name }}
+          </InfoRow>
+          <InfoRow name="Position">
+            {{ item?.importer.position }}
+          </InfoRow>
+          <InfoRow name="Email">
+            {{ item?.importer.email }}
+          </InfoRow>
+          <InfoRow name="Phone No.">
+            {{ item?.importer.phone_number }}
+          </InfoRow>
+          <InfoRow name="Address">
+            {{ item?.importer.address }}
+          </InfoRow>
         </ExpandCard>
 
         <ExpandCard title="Products" class="mb-6">
@@ -286,45 +349,45 @@ const timelineEvents = ref([
 
       <VCol cols="4">
         <ExpandCard title="Registration Data" class="mb-6">
-          <InfoRow name="Submission Number">{{
-            registration?.submission_number
-          }}</InfoRow>
-          <InfoRow name="Halal Registration Number">{{
-            registration?.registration_number
-          }}</InfoRow>
-          <InfoRow name="IssuedDate">{{ registration?.issued_date }}</InfoRow>
-          <InfoRow name="Expired Date">{{
-            registration?.expired_date
-          }}</InfoRow>
-          <InfoRow name="Status"
-            ><VBtn variant="outlined">{{ registration?.status }}</VBtn></InfoRow
-          >
-          <InfoRow name="Download Halal Registration Number"
-            ><VBtn :href="registration?.download_file" target="_blank"
-              ><VIcon icon="ri-download-line"></VIcon></VBtn
-          ></InfoRow>
+          <InfoRow name="Submission Number">
+            {{ registration?.submission_number }}
+          </InfoRow>
+          <InfoRow name="Halal Registration Number">
+            {{ registration?.registration_number }}
+          </InfoRow>
+          <InfoRow name="IssuedDate">
+            {{ registration?.issued_date }}
+          </InfoRow>
+          <InfoRow name="Expired Date">
+            {{ registration?.expired_date }}
+          </InfoRow>
+          <InfoRow name="Status">
+            <VBtn variant="outlined">
+              {{ registration?.status }}
+            </VBtn>
+          </InfoRow>
+          <InfoRow name="Download Halal Registration Number">
+            <VBtn :href="registration?.download_file" target="_blank">
+              <VIcon icon="ri-download-line" />
+            </VBtn>
+          </InfoRow>
         </ExpandCard>
 
         <ExpandCard title="Tracking">
-          <v-skeleton-loader
+          <VSkeletonLoader
             v-if="tracking == undefined"
             :loading="true"
             type="list-item-two-line"
           >
-            <v-list-item
-              lines="two"
-              subtitle="Subtitle"
-              title="Title"
-              rounded
-            ></v-list-item>
-          </v-skeleton-loader>
+            <VListItem lines="two" subtitle="Subtitle" title="Title" rounded />
+          </VSkeletonLoader>
           <HalalTimeLine v-if="tracking != undefined" :event="tracking" />
         </ExpandCard>
       </VCol>
     </VRow>
-    <v-dialog v-model="deleteDialog" width="auto">
-      <v-card>
-        <v-card-text>
+    <VDialog v-model="deleteDialog" width="auto">
+      <VCard>
+        <VCardText>
           <p class="text-h5 font-weight-bold">Delete Submission</p>
           <VRow>
             <VCol cols="12">
@@ -345,9 +408,9 @@ const timelineEvents = ref([
               </VBtn>
             </VCol>
           </VRow>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+        </VCardText>
+      </VCard>
+    </VDialog>
   </div>
 </template>
 
