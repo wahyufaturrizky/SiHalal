@@ -17,6 +17,7 @@ export default defineEventHandler(async (event) => {
     `${runtimeConfig.public.apiBaseUrl}/validateTurnstile`,
     { method: "POST", body: { token: token } }
   );
+  console.log(turnstile);
   if (!turnstile.success) {
     throw createError({
       statusCode: 401,
@@ -33,6 +34,7 @@ export default defineEventHandler(async (event) => {
     throw createError({
       statusCode: 401,
       statusMessage: "username or password wrong",
+      data: err.data,
     });
   });
   if (!data.user.is_verified) {

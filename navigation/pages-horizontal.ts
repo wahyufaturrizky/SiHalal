@@ -17,7 +17,7 @@ export default [
   {
     title: "registrasi_sh",
     icon: { icon: "ri-more-line" },
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Pelaku Usaha", "Verifikator HLN", "Admin"],
     children: [
       {
         title: "Sertifikasi",
@@ -293,7 +293,7 @@ export default [
   {
     title: "registrasi_shln",
     icon: { icon: "ri-more-line" },
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Pelaku Usaha", "Verifikator HLN", "Admin"],
     children: [
       {
         title: "sh_luar_negeri",
