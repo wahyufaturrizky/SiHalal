@@ -1,69 +1,97 @@
 <script setup lang="ts">
-import { computed, defineEmits, ref } from 'vue'
-import { useDisplay } from 'vuetify'
+import { computed, ref } from "vue";
+import { useDisplay } from "vuetify";
 
+const route = useRoute();
+const router = useRouter();
 
-const inputValue = ref("")
+const inputValue = ref("");
+const loading = ref(false);
 
-const emit = defineEmits(['confirm', 'cancel'])
-
-const isVisible = ref(false)
+const isVisible = ref(false);
 
 const openDialog = () => {
-  isVisible.value = true
-}
+  isVisible.value = true;
+};
 
 const closeDialog = () => {
-  isVisible.value = false
-}
+  isVisible.value = false;
+};
+
+const putVerificatorReturn = async (comment: string[]) => {
+  try {
+    loading.value = true;
+
+    const res = await $api(`/shln/verificator/return/${route.params.id}`, {
+      method: "put",
+      body: {
+        comment,
+      },
+    });
+
+    if (res?.code === 2000) {
+      useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+      router.go(-1);
+    } else {
+      useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+    }
+
+    inputValue.value = "";
+    closeDialog();
+    loading.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    inputValue.value = "";
+    closeDialog();
+    loading.value = false;
+  }
+};
 
 const confirm = () => {
-  emit('confirm', inputValue.value)
-  inputValue.value = ""
-  closeDialog()
-}
+  putVerificatorReturn(inputValue.value);
+};
 
 const cancel = () => {
-  emit('cancel')
-  closeDialog()
-}
+  inputValue.value = "";
+  closeDialog();
+};
 
-const { mdAndUp } = useDisplay()
+const { mdAndUp } = useDisplay();
 
 const dialogMaxWidth = computed(() => {
-  return mdAndUp ? 700 : '90%'
-})
+  return mdAndUp ? 700 : "90%";
+});
 </script>
 
 <template>
   <div class="ma-1">
-    <VBtn @click="openDialog" variant="outlined" color="primary" append-icon="ri-reset-left-line">
+    <VBtn
+      variant="outlined"
+      color="primary"
+      append-icon="ri-reset-left-line"
+      @click="openDialog"
+    >
       Return
     </VBtn>
 
-    <VDialog
-      v-model="isVisible"
-      :max-width="dialogMaxWidth"
-    >
-      <VCard >
-        <VCardTitle class="text-h5 font-weight-bold d-flex justify-space-between align-center">
+    <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
+      <VCard>
+        <VCardTitle
+          class="text-h5 font-weight-bold d-flex justify-space-between align-center"
+        >
           <span>Return Confirmation </span>
           <VBtn
             icon
             color="transparent"
-            style="border: none;"
+            style="border: none"
             elevation="0"
             @click="closeDialog"
           >
-            <VIcon color="black">
-              ri-close-line
-            </VIcon>
+            <VIcon color="black"> ri-close-line </VIcon>
           </VBtn>
         </VCardTitle>
-        <VCardText >
-          <p class="mb-2">
-            Are you sure you want to Return this submission?
-          </p>
+        <VCardText>
+          <p class="mb-2">Are you sure you want to Return this submission?</p>
           <VTextarea
             v-model="inputValue"
             placeholder="Input Return Note (Opsional) "
@@ -75,11 +103,14 @@ const dialogMaxWidth = computed(() => {
           />
         </VCardText>
         <VCardActions>
-          <VBtn @click="cancel" variant="outlined" text >
-            Cancel
-          </VBtn>
-          <VBtn @click="confirm" color="primary" variant="flat" >
-            Yes, Return
+          <VBtn variant="outlined" text @click="cancel"> Cancel </VBtn>
+          <VBtn
+            :disabled="loading"
+            color="primary"
+            variant="flat"
+            @click="confirm"
+          >
+            {{ loading ? "Loading..." : "Yes, Return" }}
           </VBtn>
         </VCardActions>
       </VCard>
@@ -87,5 +118,4 @@ const dialogMaxWidth = computed(() => {
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
