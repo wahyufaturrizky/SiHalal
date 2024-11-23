@@ -2,8 +2,6 @@ import type { NuxtError } from "nuxt/app";
 
 const runtimeConfig = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
-  console.log("@event", event);
-
   const authorizationHeader = getRequestHeader(event, "Authorization");
   const id = getRouterParam(event, "id");
 
