@@ -94,7 +94,7 @@ const hanleSubmitRequest = (shln_id: string | null) => {
 };
 
 const navigateAction = (id: string) => {
-  navigateTo(`/sertifikasi-halal/shln-detail/${id}`);
+  navigateTo(`/sertifikasi-halal/luar-negeri/submission/${id}`);
 };
 
 const openModalsRequest = () => {
