@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 const tab = ref("identity");
+
+const sessionData = await useMyAuthUserStore().getSession();
+const userRoles = sessionData.value?.roles.map((role) => role.name);
 </script>
 
 <template>
@@ -10,8 +13,24 @@ const tab = ref("identity");
     </VCol>
   </VRow>
   <VRow>
-    <VCol cols="12">
+    <VCol>
       <h1>Detail Pengajuan</h1>
+    </VCol>
+    <VCol v-if="userRoles?.includes('Verifikator')" class="d-flex justify-end">
+      <VBtn
+        color="primary"
+        variant="outlined"
+        text="Lihat Laporan"
+        class="me-4"
+      />
+      <VBtn
+        color="primary"
+        variant="outlined"
+        text="Pengembalian"
+        class="me-4"
+      />
+      <VBtn color="#49A84C" text="Tandai OK" class="me-4" />
+      <VBtn color="error" text="Dibatalkan" />
     </VCol>
   </VRow>
   <VRow>
@@ -41,7 +60,7 @@ const tab = ref("identity");
           <TabProduk />
         </VTabsWindowItem>
         <VTabsWindowItem value="process">
-          <TabProsesProdukHalal />
+          <TabProsesProdukHalal :user-roles="userRoles" />
         </VTabsWindowItem>
         <VTabsWindowItem value="declare">
           <TabPernyataan />
