@@ -24,14 +24,15 @@ const putVerificatorDocumentLOAReturn = async (comment: string[]) => {
         method: "put",
         body: {
           comment,
-          loadid: props.id,
+          loaid: props.id,
         },
       }
     );
 
-    if (res?.code === 2000) router.go(-1);
-    else useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
-
+    if (res?.code === 2000) {
+    } else {
+      useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+    }
     inputValue.value = "";
     isActive.value = false;
     loading.value = false;
