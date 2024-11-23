@@ -223,7 +223,7 @@ export default [
   {
     title: "sh_luar_negeri",
     icon: { icon: "ri-id-card-line" },
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Pelaku Usaha", "Verifikator HLN", "Admin"],
     children: [
       {
         title: "shln_submission",
@@ -324,6 +324,19 @@ export default [
         title: "information.material.reference",
         to: "material-reference",
         roles: ["Pelaku Usaha", "Admin"],
+      },
+    ],
+  },
+  { heading: "sidang_fatwa.title" },
+  {
+    title: "sidang_fatwa.title",
+    icon: { icon: "mdi-scale-balance" },
+    roles: ["Komisi", "Komite Fatwa", "Pelaku Usaha", "Admin"],
+    children: [
+      {
+        title: "sidang_fatwa.proses_sidang",
+        to: "sidang-fatwa-proses-sidang",
+        roles: ["Komisi", "Komite Fatwa", "Pelaku Usaha", "Admin"],
       },
     ],
   },

@@ -1,3 +1,54 @@
+<script setup lang="ts">
+const props = defineProps({
+  id: {
+    type: String,
+    required: true,
+  },
+});
+
+const route = useRoute();
+
+const inputValue = ref("");
+const loading = ref(false);
+const isActive = ref(false);
+
+const router = useRouter();
+
+const putVerificatorDocumentLOAReturn = async (comment: string[]) => {
+  try {
+    loading.value = true;
+
+    const res = await $api(
+      `/shln/verificator/document/loa/return/${route.params.id}`,
+      {
+        method: "put",
+        body: {
+          comment,
+          loaid: props.id,
+        },
+      }
+    );
+
+    if (res?.code === 2000) {
+    } else {
+      useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+    }
+    inputValue.value = "";
+    isActive.value = false;
+    loading.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    inputValue.value = "";
+    isActive.value = false;
+    loading.value = false;
+  }
+};
+
+const onConfirm = () => {
+  putVerificatorDocumentLOAReturn(inputValue.value);
+};
+</script>
+
 <template>
   <VDialog>
     <template #activator="{ props: openModal }">
@@ -6,20 +57,23 @@
         density="compact"
         variant="outlined"
         append-icon="fa-undo"
-        >Return</VBtn
       >
+        Return
+      </VBtn>
     </template>
     <template #default="{ isActive }">
       <VCard max-width="50svw">
         <VCardTitle>
           <VRow>
-            <VCol cols="10"><h3>Return Confirmation</h3></VCol>
+            <VCol cols="10">
+              <h3>Return Confirmation</h3>
+            </VCol>
             <VCol cols="2" style="display: flex; justify-content: end">
               <VIcon
                 size="small"
                 icon="fa-times"
                 @click="isActive.value = false"
-              ></VIcon>
+              />
             </VCol>
           </VRow>
         </VCardTitle>
@@ -32,14 +86,24 @@
           <VRow>
             <VCol cols="12">
               <VTextarea
+                v-model="inputValue"
+                clearable
+                auto-grow
+                dense
+                outlined
+                :style="{ maxWidth: '100%' }"
                 placeholder="Input Return Notes (Optional)"
-              ></VTextarea>
+              />
             </VCol>
           </VRow>
         </VCardText>
         <VCardActions>
-          <VBtn variant="outlined" @click="isActive.value = false">Cancel</VBtn>
-          <VBtn variant="elevated">Yes, Return</VBtn>
+          <VBtn variant="outlined" @click="isActive.value = false">
+            Cancel
+          </VBtn>
+          <VBtn :disabled="loading" variant="elevated" @click="onConfirm">
+            {{ loading ? "Loading..." : "Yes, Return" }}
+          </VBtn>
         </VCardActions>
       </VCard>
     </template>
