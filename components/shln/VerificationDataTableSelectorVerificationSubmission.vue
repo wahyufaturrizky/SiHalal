@@ -59,12 +59,6 @@ const loadItemSubmission = async (
 
 const debouncedFetch = debounce(loadItemSubmission, 500);
 
-debouncedFetch(
-  pageSubmission.value,
-  itemPerPageSubmission.value,
-  searchQuerySubmission.value
-);
-
 const handleInputSubmission = () => {
   debouncedFetch(
     pageSubmission.value,

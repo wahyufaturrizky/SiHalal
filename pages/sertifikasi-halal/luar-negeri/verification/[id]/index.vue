@@ -5,7 +5,7 @@ const panelOpenImporter = ref(0);
 const panelOpenImporterContract = ref(0);
 const openPanelRegisterData = ref(0);
 const loading = ref(false);
-const data = ref(false);
+const data = ref();
 
 const route = useRoute();
 const shlnId = route.params.id;
@@ -18,7 +18,9 @@ const loadItemById = async () => {
       method: "get",
     });
 
-    data.value = response.data;
+    if (response.code === 2000) data.value = response.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
     loading.value = false;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -36,7 +38,7 @@ const navigateAction = () => {
 </script>
 
 <template>
-  <SHLNVerfikasiLayout>
+  <SHLNVerfikasiLayout v-if="!loading">
     <template #pageTitle>
       <VRow>
         <VCol><h3>Foreign Halal Certificate Requirements Details</h3></VCol>
@@ -73,7 +75,7 @@ const navigateAction = () => {
               </VExpansionPanelTitle>
 
               <VExpansionPanelText>
-                <Importer />
+                <Importer :data="data" />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -89,7 +91,7 @@ const navigateAction = () => {
                 </h2>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <ImporterDetail />
+                <ImporterDetail :data="data" />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
