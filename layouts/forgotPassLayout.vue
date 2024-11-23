@@ -7,7 +7,7 @@ const { mdAndUp } = useDisplay();
 
 <template>
   <VSnackbar v-model="isSnackbarVisible" location="top" :color="snackColor">
-    {{ snackMessage }}
+    <v-icon left>fa-circle-info</v-icon> {{ snackMessage }}
   </VSnackbar>
   <VRow no-gutters>
     <VCol
