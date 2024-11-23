@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event);
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/certificate-halal-foreign/${id}/document/fhc/${body.loaid}/return`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/certificate-halal-foreign/${id}/document/fhc/${body.docid}/return`,
     {
       method: "put",
       body: {

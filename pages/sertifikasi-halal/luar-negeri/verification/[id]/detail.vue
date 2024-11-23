@@ -4,8 +4,12 @@ const route = useRoute();
 const shlnId = route.params.id;
 const data = ref();
 const dataDocumentLOA = ref();
+const dataDocumentFHC = ref();
+const dataDocumentMRA = ref();
 const loading = ref(false);
 const loadingDocumentLOA = ref(false);
+const loadingDocumentFHC = ref(false);
+const loadingDocumentMRA = ref(false);
 
 const loadItemById = async () => {
   try {
@@ -43,9 +47,47 @@ const loadDocumentLOAById = async () => {
   }
 };
 
+const loadDocumentFHCById = async () => {
+  try {
+    loadingDocumentFHC.value = true;
+
+    const response = await $api(`/shln/verificator/document/fhc/${shlnId}`, {
+      method: "get",
+    });
+
+    if (response.code === 2000) dataDocumentFHC.value = response.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
+    loadingDocumentFHC.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingDocumentFHC.value = false;
+  }
+};
+
+const loadDocumentMRAById = async () => {
+  try {
+    loadingDocumentMRA.value = true;
+
+    const response = await $api(`/shln/verificator/document/mra/${shlnId}`, {
+      method: "get",
+    });
+
+    if (response.code === 2000) dataDocumentMRA.value = response.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
+    loadingDocumentMRA.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingDocumentMRA.value = false;
+  }
+};
+
 onMounted(async () => {
   await loadItemById();
   await loadDocumentLOAById();
+  await loadDocumentFHCById();
+  await loadDocumentMRAById();
 });
 </script>
 
@@ -78,7 +120,11 @@ onMounted(async () => {
           <ShlnSubmissionDetail :data="data" />
         </VTabsWindowItem>
         <VTabsWindowItem value="2">
-          <ShlnDocumentDetail :datadocumentloa="dataDocumentLOA" />
+          <ShlnDocumentDetail
+            :datadocumentfhc="dataDocumentFHC"
+            :datadocumentloa="dataDocumentLOA"
+            :loadingdocumentmra="loadingDocumentMRA"
+          />
         </VTabsWindowItem>
         <VTabsWindowItem value="3">
           <VerificatorDetailManufacture />
