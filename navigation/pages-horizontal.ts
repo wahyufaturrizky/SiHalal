@@ -352,6 +352,18 @@ export default [
     ],
   },
   {
+    title: "sidang_fatwa.title",
+    icon: { icon: "mdi-scale-balance" },
+    roles: ["Komisi", "Komite Fatwa", "Admin"],
+    children: [
+      {
+        title: "sidang_fatwa.proses_sidang",
+        to: "sidang-fatwa-proses-sidang",
+        roles: ["Komisi", "Komite Fatwa", "Admin"],
+      },
+    ],
+  },
+  {
     title: "sidang_self_declare.title",
     icon: { icon: "mdi-scale-balance" },
     roles: ["Pelaku Usaha", "Admin"],
