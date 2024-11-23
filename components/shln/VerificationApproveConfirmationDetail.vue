@@ -20,17 +20,12 @@ const putVerificatorApprove = async () => {
   try {
     loading.value = true;
 
-    const res = await $api(`/shln/verificator/approve/${route.params.id}`, {
+    const res = await $api(`/shln/verificator/accept/${route.params.id}`, {
       method: "put",
-      body: {},
     });
 
-    if (res?.code === 2000) {
-      useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
-      router.go(-1);
-    } else {
-      useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
-    }
+    if (res?.code === 2000) router.go(-1);
+    else useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
 
     closeDialog();
     loading.value = false;
