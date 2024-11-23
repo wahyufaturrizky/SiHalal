@@ -4,6 +4,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  documenttype: {
+    type: String,
+    required: true,
+  },
 });
 
 const route = useRoute();
@@ -12,14 +16,12 @@ const inputValue = ref("");
 const loading = ref(false);
 const isActive = ref(false);
 
-const router = useRouter();
-
 const putVerificatorDocumentLOAReturn = async (comment: string[]) => {
   try {
     loading.value = true;
 
     const res = await $api(
-      `/shln/verificator/document/loa/return/${route.params.id}`,
+      `/shln/verificator/document/${documenttype}/return/${route.params.id}`,
       {
         method: "put",
         body: {

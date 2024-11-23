@@ -113,7 +113,7 @@ const downloadLOA = (file) => {
         </VCardText>
         <VCardActions style="justify-content: end">
           <div>
-            <ReturnConfirmationModal :id="id" />
+            <ReturnConfirmationModal :id="id" documenttype="loa" />
             <ApproveConfirmationModal />
           </div>
         </VCardActions>
@@ -187,7 +187,7 @@ const downloadLOA = (file) => {
         </VCardText>
         <VCardActions style="justify-content: end">
           <div>
-            <ReturnConfirmationModal />
+            <ReturnConfirmationModal :id="id" documenttype="loa" />
             <ApproveConfirmationModal />
           </div>
         </VCardActions>
