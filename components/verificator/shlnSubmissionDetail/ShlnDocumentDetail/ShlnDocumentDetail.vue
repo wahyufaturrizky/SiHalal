@@ -12,6 +12,53 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  datatrackingloa: {
+    type: Object,
+    required: true,
+  },
+  datatrackingfhc: {
+    type: Object,
+    required: true,
+  },
+});
+
+const route = useRoute();
+const shlnId = route.params.id;
+
+const loadingListDocument = ref(false);
+const dataListDocument = ref();
+const totalItems = ref(0);
+const itemPerPage = ref(10);
+const page = ref(1);
+
+const loadItemListDocumentById = async (page: number, size: number) => {
+  try {
+    loadingListDocument.value = true;
+
+    const response = await $api(`/shln/verificator/document/list/${shlnId}`, {
+      method: "get",
+      params: {
+        page,
+        size,
+      },
+    });
+
+    if (response.code === 2000) {
+      dataListDocument.value = response.data || [];
+      totalItems.value = response?.total_item;
+      loadingListDocument.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingListDocument.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingListDocument.value = false;
+  }
+};
+
+onMounted(async () => {
+  await loadItemListDocumentById(1, itemPerPage.value);
 });
 
 const {
@@ -36,14 +83,36 @@ const MRA = [
   { id: 4, key: "Country", value: country },
 ];
 
-const tracking = [
-  { id: 1, key: "Verification", value: "fachrudin@panganlestari.com" },
-  { id: 2, key: "Submitted", value: "fachrudin@panganlestari.com" },
-];
+const trackingLOA = props.datatrackingloa?.map((item) => {
+  const { username, status, id } = item || {};
+
+  return {
+    id,
+    key: status,
+    value: username,
+  };
+});
+
+const trackingFHC = props.datatrackingfhc?.map((item) => {
+  const { username, status, id } = item || {};
+
+  return {
+    id,
+    key: status,
+    value: username,
+  };
+});
 
 const downloadLOA = (file) => {
   window.open(file, "_blank");
 };
+
+const headers = [
+  { title: "No", key: "no" },
+  { title: "Document Types", key: "type" },
+  { title: "Upload / Download", key: "file" },
+  { title: "HS Code", key: "record" },
+];
 </script>
 
 <template>
@@ -139,7 +208,7 @@ const downloadLOA = (file) => {
         <VCardItem>
           <VTimeline side="end">
             <VTimelineItem
-              v-for="item in tracking"
+              v-for="item in trackingLOA"
               :key="item.id"
               dot-color="blue"
               max-height="30svh"
@@ -210,7 +279,7 @@ const downloadLOA = (file) => {
         <VCardItem>
           <VTimeline side="end">
             <VTimelineItem
-              v-for="item in tracking"
+              v-for="item in trackingFHC"
               :key="item.id"
               dot-color="blue"
               max-height="30svh"
@@ -232,64 +301,26 @@ const downloadLOA = (file) => {
       <VCard>
         <VCardTitle>Requirement Document</VCardTitle>
         <VCardText>
-          <VTable>
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Document Types</th>
-                <th>Upload / Download</th>
-                <th>Record History</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>Letter of Application</td>
-                <td>
-                  <VBtn density="compact">
-                    <VFileInput
-                      prepend-icon="fa-download"
-                      density="compact"
-                      hide-input
-                      style="color: white"
-                    />
-                  </VBtn>
-                </td>
-                <td
-                  style="
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                  "
-                >
-                  <VIcon icon="fa-history" />
-                </td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Business License Number</td>
-                <td>
-                  <VBtn density="compact">
-                    <VFileInput
-                      prepend-icon="fa-download"
-                      density="compact"
-                      hide-input
-                      style="color: white"
-                    />
-                  </VBtn>
-                </td>
-                <td
-                  style="
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                  "
-                >
-                  <VIcon color="" icon="fa-history" />
-                </td>
-              </tr>
-            </tbody>
-          </VTable>
+          <VDataTableServer
+            v-model:items-per-page="itemPerPage"
+            v-model:page="page"
+            :headers="headers"
+            :items="dataListDocument"
+            :loading="loadingListDocument"
+            :items-length="totalItems"
+            loading-text="Loading..."
+            @update:options="loadItemListDocumentById(page, itemPerPage)"
+          >
+            <template #item.no="{ index }">
+              {{ index + 1 + (page - 1) * itemPerPage }}
+            </template>
+            <template #item.file="{ item }">
+              <VBtn icon="fa-download" density="compact" />
+            </template>
+            <template #item.record="{ item }">
+              <VIcon icon="fa-history" />
+            </template>
+          </VDataTableServer>
         </VCardText>
       </VCard>
     </VCol>

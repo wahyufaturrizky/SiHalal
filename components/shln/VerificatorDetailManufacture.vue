@@ -1,21 +1,63 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+const props = defineProps({
+  datalistmanufacturetracking: {
+    type: Object,
+    required: true,
+  },
+});
+
+const route = useRoute();
+
+const shlnId = route.params.id;
+
+const loadingListManufacture = ref(false);
+const dataListManufacture = ref();
+const totalItems = ref(0);
+const itemPerPage = ref(10);
+const page = ref(1);
+
+const loadItemListManufactureById = async (page: number, size: number) => {
+  try {
+    loadingListManufacture.value = true;
+
+    const response = await $api(
+      `/shln/verificator/manufacture/list/${shlnId}`,
+      {
+        method: "get",
+        params: {
+          page,
+          size,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      dataListManufacture.value = response.data || [];
+      totalItems.value = response?.total_item;
+
+      loadingListManufacture.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingListManufacture.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingListManufacture.value = false;
+  }
+};
+
+onMounted(async () => {
+  await loadItemListManufactureById(1, itemPerPage.value);
+});
+
 const headers = [
   { title: "No", key: "no" },
-  { title: "Manufacture Name", key: "manufacture_name" },
+  { title: "Manufacture Name", key: "name" },
   { title: "Address", key: "address" },
   { title: "Country", key: "country" },
 ];
-
-const items = ref([
-  {
-    no: "1",
-    manufacture_name: "Allyn Group",
-    address: "Jl. Mangga Besar Raya 211 Mangga Besar, Jakarta",
-    country: "Thailand",
-  },
-]);
 </script>
 
 <template>
@@ -37,14 +79,29 @@ const items = ref([
             </VRow>
           </VCol>
         </VRow>
-        <VDataTable :headers="headers" :items="items" />
+        <VDataTableServer
+          v-model:items-per-page="itemPerPage"
+          v-model:page="page"
+          :headers="headers"
+          :items="dataListManufacture"
+          :loading="loadingListManufacture"
+          :items-length="totalItems"
+          loading-text="Loading..."
+          @update:options="loadItemListManufactureById(page, itemPerPage)"
+        >
+          <template #item.no="{ index }">
+            {{ index + 1 + (page - 1) * itemPerPage }}
+          </template>
+        </VDataTableServer>
       </VCard>
     </VCol>
 
     <VCol cols="4">
       <VCard class="pa-4">
         <p class="text-h3">Tracking</p>
-        <HalalTimeLine :events="timelineEvents" />
+        <VerificatorTrackingManufactureTimeLine
+          :datalistmanufacturetracking="props.datalistmanufacturetracking"
+        />
       </VCard>
     </VCol>
   </VRow>

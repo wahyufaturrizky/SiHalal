@@ -4,7 +4,14 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  datadetailregistration: {
+    type: Object,
+    required: true,
+  },
 });
+
+const { status, registration_number, issued_date } =
+  props.datadetailregistration || {};
 
 const tracking = props.data?.map((item: any) => {
   const { status, username, id } = item || {};
@@ -17,9 +24,9 @@ const tracking = props.data?.map((item: any) => {
 });
 
 const registData = [
-  { id: 1, key: "Status", value: "Verification" },
-  { id: 2, key: "Registration No.", value: "RC-2024-0001676" },
-  { id: 3, key: "Date", value: "14/10/2024" },
+  { id: 1, key: "Status", value: status },
+  { id: 2, key: "Registration No.", value: registration_number },
+  { id: 3, key: "Date", value: issued_date },
 ];
 </script>
 

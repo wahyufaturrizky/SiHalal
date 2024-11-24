@@ -3,15 +3,26 @@ const tabs = ref(0);
 const route = useRoute();
 const shlnId = route.params.id;
 const data = ref();
+const dataDetailRegistration = ref();
 const dataDocumentLOA = ref();
 const dataDocumentFHC = ref();
 const dataDocumentMRA = ref();
 const dataTracking = ref();
+const dataLOATracking = ref();
+const dataListManufactureTracking = ref();
+const dataListProductTracking = ref();
+const dataFHCTracking = ref();
 const loading = ref(false);
+const loadingDetailRegistration = ref(false);
 const loadingDocumentLOA = ref(false);
 const loadingDocumentFHC = ref(false);
 const loadingDocumentMRA = ref(false);
 const loadingTracking = ref(false);
+const loadingLOATracking = ref(false);
+const loadingFHCTracking = ref(false);
+const loadingListProductTracking = ref(false);
+
+const loadingListManufactureTracking = ref(false);
 
 const loadItemById = async () => {
   try {
@@ -31,6 +42,27 @@ const loadItemById = async () => {
   }
 };
 
+const loadItemDetailRegistrationById = async () => {
+  try {
+    loadingDetailRegistration.value = true;
+
+    const response = await $api(
+      `/shln/verificator/detail/registration/${shlnId}`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) dataDetailRegistration.value = response.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
+    loadingDetailRegistration.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingDetailRegistration.value = false;
+  }
+};
+
 const loadItemTrackingById = async () => {
   try {
     loadingTracking.value = true;
@@ -46,6 +78,91 @@ const loadItemTrackingById = async () => {
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loadingTracking.value = false;
+  }
+};
+
+const loadItemListProductTrackingById = async () => {
+  try {
+    loadingListProductTracking.value = true;
+
+    const response = await $api(
+      `/shln/verificator/product/list-tracking/${shlnId}`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) dataListProductTracking.value = response.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
+    loadingListProductTracking.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingListProductTracking.value = false;
+  }
+};
+
+const loadItemListManufactureTrackingById = async () => {
+  try {
+    loadingListManufactureTracking.value = true;
+
+    const response = await $api(
+      `/shln/verificator/manufacture/list-tracking/${shlnId}`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000)
+      dataListManufactureTracking.value = response.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
+    loadingListManufactureTracking.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingListManufactureTracking.value = false;
+  }
+};
+
+const loadItemLOATrackingById = async () => {
+  try {
+    loadingLOATracking.value = true;
+
+    const response = await $api(
+      `/shln/verificator/document/loa/tracking/${shlnId}`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) dataLOATracking.value = response.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
+    loadingLOATracking.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingLOATracking.value = false;
+  }
+};
+
+const loadItemFHCTrackingById = async () => {
+  try {
+    loadingFHCTracking.value = true;
+
+    const response = await $api(
+      `/shln/verificator/document/fhc/tracking/${shlnId}`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) dataFHCTracking.value = response.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
+    loadingFHCTracking.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingFHCTracking.value = false;
   }
 };
 
@@ -107,8 +224,13 @@ onMounted(async () => {
   await loadItemById();
   await loadDocumentLOAById();
   await loadItemTrackingById();
+  await loadItemDetailRegistrationById();
   await loadDocumentFHCById();
   await loadDocumentMRAById();
+  await loadItemLOATrackingById();
+  await loadItemFHCTrackingById();
+  await loadItemListProductTrackingById();
+  await loadItemListManufactureTrackingById();
 });
 </script>
 
@@ -139,27 +261,42 @@ onMounted(async () => {
       !loadingDocumentLOA &&
       !loadingDocumentFHC &&
       !loadingDocumentMRA &&
-      !loadingTracking
+      !loadingTracking &&
+      !loadingLOATracking &&
+      !loadingFHCTracking &&
+      !loadingListProductTracking &&
+      !loadingListManufactureTracking &&
+      !loadingDetailRegistration
     "
   >
     <VCol>
       <VTabsWindow v-model="tabs">
         <br />
         <VTabsWindowItem value="1">
-          <ShlnSubmissionDetail :datatracking="dataTracking" :data="data" />
+          <ShlnSubmissionDetail
+            :datatracking="dataTracking"
+            :data="data"
+            :datadetailregistration="dataDetailRegistration"
+          />
         </VTabsWindowItem>
         <VTabsWindowItem value="2">
           <ShlnDocumentDetail
             :datadocumentfhc="dataDocumentFHC"
             :datadocumentloa="dataDocumentLOA"
             :datadocumentmra="dataDocumentMRA"
+            :datatrackingloa="dataLOATracking"
+            :datatrackingfhc="dataFHCTracking"
           />
         </VTabsWindowItem>
         <VTabsWindowItem value="3">
-          <VerificatorDetailManufacture />
+          <VerificatorDetailManufacture
+            :datalistmanufacturetracking="dataListManufactureTracking"
+          />
         </VTabsWindowItem>
         <VTabsWindowItem value="4">
-          <VerificatorDetailProduct />
+          <VerificatorDetailProduct
+            :datalistproducttracking="dataListProductTracking"
+          />
         </VTabsWindowItem>
       </VTabsWindow>
     </VCol>
