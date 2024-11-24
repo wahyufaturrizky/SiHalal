@@ -139,11 +139,8 @@
       }
     }
   },
-  "self_declare": {
-    "title": "Pengajuan Sertifikat Halal",
-    "cek_data_pengajuan": "Check Data Pengajuan",
-    "proses_verval": "Proses Verval",
-    "info_sertifikat_self_declare": "Info Sertifikat Self Declare",
-    "update_foto_produk": "Update Foto Produk"
+  "sh-submission": {
+    "title": "Halal Certificate Submission",
+    "detail": "Check Submission Data"
   }
 }

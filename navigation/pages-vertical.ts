@@ -1,24 +1,12 @@
 // title ambil dari locales
 export default [
+  { heading: "Menu Utama" },
   {
     title: "dashboard",
     icon: { icon: "fa-home" },
     to: "index",
     action: "read",
-    roles: ["Pelaku Usaha", "Admin"],
-  },
-  { heading: "Menu" },
-  {
-    title: "self_declare.title",
-    icon: { icon: "fa-solid fa-id-card" },
-    roles: ["Pendamping", "Pelaku Usaha"],
-    children: [
-      {
-        title: "self_declare.cek_data_pengajuan",
-        to: "self-declare-cek-data-pengajuan",
-        roles: ["Pendamping", "Pelaku Usaha"],
-      },
-    ],
+    roles: ["Pelaku Usaha", "Admin", "Pendamping"],
   },
   {
     title: "Pelaku Usaha",
@@ -377,6 +365,18 @@ export default [
         title: "sidang_self_declare.rekapitulasi",
         to: "sidang-self-declare-rekapitulasi",
         roles: ["Pelaku Usaha", "Admin"],
+      },
+    ],
+  },
+  {
+    title: "sh-submission.title",
+    icon: { icon: "fa-id-card" },
+    roles: ["Pendamping"],
+    children: [
+      {
+        title: "sh-submission.detail",
+        to: "sh-submission-detail",
+        roles: ["Pendamping"],
       },
     ],
   },
