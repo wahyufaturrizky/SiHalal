@@ -1,6 +1,19 @@
 <script setup lang="ts">
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
+import { useDisplay } from 'vuetify'
+
+const emit = defineEmits(['confirm'])
+
+const isVisible = ref(false)
+
+const openDialog = () => {
+  isVisible.value = true
+}
+
+const closeDialog = () => {
+  isVisible.value = false
+}
 
 const form = ref({
   name: null,
@@ -13,14 +26,49 @@ const form = ref({
   skDate: null,
   skph: null,
   spph: null,
-  ktp: null
+  ktp: null,
 })
 
+const resetForm = () => {
+  form.value = {
+    name: null,
+    idNo: null,
+    religion: null,
+    cerificateDate: null,
+    cerificateNumber: null,
+    skNumber: null,
+    phoneNumber: null,
+    skDate: null,
+    skph: null,
+    spph: null,
+    ktp: null,
+  }
+}
+
+const confirm = () => {
+  emit('confirm', form.value)
+  resetForm()
+  closeDialog()
+}
+
+const cancel = () => {
+  closeDialog()
+}
+
+const { mdAndUp } = useDisplay()
+
+const dialogMaxWidth = computed(() => {
+  return mdAndUp.value ? 700 : '90%'
+})
 </script>
 
 <template>
   <div class="ma-1">
-    <VBtn @click="openDialog" variant="outlined" append-icon="ri-add-line">
+    <VBtn
+      variant="outlined"
+      append-icon="ri-add-line"
+      @click="openDialog"
+    >
       Tambah
     </VBtn>
     <VDialog
@@ -37,7 +85,9 @@ const form = ref({
             elevation="0"
             @click="closeDialog"
           >
-            <VIcon color="black">ri-close-line</VIcon>
+            <VIcon color="black">
+              ri-close-line
+            </VIcon>
           </VBtn>
         </VCardTitle>
         <VCardText>
@@ -56,7 +106,7 @@ const form = ref({
               />
             </VCol>
             <VCol cols="6">
-              <VLabel for="phoneNumber" >
+              <VLabel for="phoneNumber">
                 No. Kontak
               </VLabel>
               <VTextField
@@ -115,8 +165,13 @@ const form = ref({
               <VLabel for="certificateDate">
                 Tanggal Sertifikat
               </VLabel>
-              <VueDatePicker placeholder="Isi Tanggal Sertifikat" teleport-center id="tanggalDocument" v-model="form.certificateDate" :enable-time-picker="false" />
-
+              <VueDatePicker
+                id="tanggalDocument"
+                v-model="form.certificateDate"
+                placeholder="Isi Tanggal Sertifikat"
+                teleport-center
+                :enable-time-picker="false"
+              />
             </VCol>
           </VRow>
           <VRow class="mb-2">
@@ -148,37 +203,83 @@ const form = ref({
               />
             </VCol>
           </VRow>
-          <VFileInput
-            v-model="form.skph"
-            label="Unggah Sertifikat Kompetensi Penyelia Halal"
-            outlined
-            dense
-            accept=".pdf,.jpg,.png"
-            class="mb-2"
-          />
-          <VFileInput
-            v-model="form.spph"
-            label="Unggah Sertifikat Pelatihan Penyelia Halal"
-            outlined
-            dense
-            accept=".pdf,.jpg,.png"
-            class="mb-2"
-          />
-          <VFileInput
-            v-model="form.ktp"
-            label="Unggah KTP"
-            outlined
-            dense
-            accept=".pdf,.jpg,.png"
-            class="mb-2"
-          />
+          <VRow class="d-flex justify-space-between align-center">
+            <VCol cols="6">
+              <VLabel for="skph">
+                <strong>Unggah Sertifikat Kompetensi Penyelia Halal</strong>
+              </VLabel>
+            </VCol>
+            <VCol cols="5">
+              <VFileInput
+                id="skph"
+                v-model="form.skph"
+                clearable
+                :label="form.skph ? '' : 'Choose File'"
+                outlined
+                dense
+                class="border rounded pa-0"
+                clear-icon="ri-delete-bin-6-line"
+                variant="plain"
+                prepend-icon="none"
+              />
+            </VCol>
+          </VRow>
+
+          <VRow class="d-flex justify-space-between align-center">
+            <VCol cols="6">
+              <VLabel for="skph">
+                <strong>Unggah Sertifikat Pelatihan Penyelia Halal</strong>
+              </VLabel>
+            </VCol>
+            <VCol cols="5">
+              <VFileInput
+                id="skph"
+                v-model="form.spph"
+                clearable
+                :label="form.spph ? '' : 'Choose File'"
+                outlined
+                dense
+                class="border rounded pa-0"
+                clear-icon="ri-delete-bin-6-line"
+                variant="plain"
+                prepend-icon="none"
+              />
+            </VCol>
+          </VRow>
+          <VRow class="d-flex justify-space-between align-center mb-4">
+            <VCol cols="6">
+              <VLabel for="ktp">
+                <strong>Unggah KTP</strong>
+              </VLabel>
+            </VCol>
+            <VCol cols="5">
+              <VFileInput
+                id="ktp"
+                v-model="form.ktp"
+                clearable
+                :label="form.ktp ? '' : 'Choose File'"
+                outlined
+                dense
+                class="border rounded pa-0"
+                clear-icon="ri-delete-bin-6-line"
+                variant="plain"
+                prepend-icon="none"
+              />
+            </VCol>
+          </VRow>
         </VCardText>
 
         <div class="d-flex justify-end gap-2">
-          <VBtn @click="cancel" variant="outlined">
+          <VBtn
+            variant="outlined"
+            @click="cancel"
+          >
             Batal
           </VBtn>
-          <VBtn @click="confirm" color="primary">
+          <VBtn
+            color="primary"
+            @click="confirm"
+          >
             Tambah
           </VBtn>
         </div>

@@ -81,7 +81,7 @@ const donwloadKtp = item => {
 <template>
   <VCard class="pa-4 mb-8">
     <VCardTitle class="d-flex justify-space-between align-center">
-      <span class="text-h3">Pabrik</span>
+      <span class="text-h3">Penyelia Halal</span>
       <FormTambahPenyeliaHalal @confirm="save"/>
     </VCardTitle>
     <VCardItem>
@@ -124,7 +124,7 @@ const donwloadKtp = item => {
             <VIcon>mdi-dots-vertical</VIcon>
             <VMenu activator="parent" :close-on-content-click="false">
               <VCard>
-                <FormEditPabrik :initial-data="item" @confirm="update"/>
+                <FormEditPenyeliaHalal :initial-data="item" @confirm="update"/>
                 <VBtn variant="text" color="error" prepend-icon="ri-delete-bin-6-line"
                       @click="remove(item.no)" block >
                   Hapus

@@ -55,7 +55,7 @@ const save = form => {
           <VIcon>mdi-dots-vertical</VIcon>
           <VMenu activator="parent" :close-on-content-click="false">
             <VCard>
-              <FormEditPabrik :initial-data="item" @confirm="update"/>
+              <FormEditOutlet :initial-data="item" @confirm="update"/>
               <VBtn variant="text" color="error" prepend-icon="ri-delete-bin-6-line"
                     @click="remove(item.no)" block >
                 Hapus

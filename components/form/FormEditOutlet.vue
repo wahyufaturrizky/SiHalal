@@ -138,7 +138,7 @@ const dialogMaxWidth = computed(() => {
             <VTextField
               id="zipCode"
               v-model="form.zipCode"
-              label="Isi Kode Pos"
+              placeholder="Isi Kode Pos"
               outlined
               dense
               required

@@ -3,9 +3,10 @@
 </script>
 
 <template>
-<div>
-  Edit Bahan
-</div>
+  <FormDaftarNamaBahanDanKemasan />
+  <FormDaftarNamaProduk />
+  <FormCatatanPembelianBahan />
+  <FormPemeriksaanBahan />
 </template>
 
 <style scoped lang="scss">

@@ -3,9 +3,7 @@
 </script>
 
 <template>
-<div>
-  Komitmen dan tanggung jawab
-</div>
+  <FormKomitmenDanTanggungJawab />
 </template>
 
 <style scoped lang="scss">
