@@ -12,6 +12,7 @@ interface TimelineItem {
 const tabs = ref([
   { text: 'Pelaku Usaha', value: 'pelaku_usaha' },
   { text: 'Pengajuan', value: 'pengajuan' },
+  { text: 'Bahan', value: 'bahan' },
   { text: 'Produk', value: 'produk' },
   { text: 'Melacak', value: 'melacak' },
 ]);
@@ -43,16 +44,16 @@ const formatDate = (date: string): string => {
 
 const showTimeline = ref(false);
 
-const items = ref<
-  {
-    id: string;
-    jenis_bahan: string;
-    nama_bahan: string;
-    produsen: string;
-    no_sertifikat_halal: string;
-    keterangan: string;
-  }[]
->([]);
+// const items = ref<
+//   {
+//     id: string;
+//     jenis_bahan: string;
+//     nama_bahan: string;
+//     produsen: string;
+//     no_sertifikat_halal: string;
+//     keterangan: string;
+//   }[]
+// >([]);
 
 const itemPerPage = ref(10);
 const totalItems = ref(0);
@@ -101,10 +102,72 @@ const verifikatorTableHeader = [
   { title: "Action", key: "action" },
 ];
 
+// Dummy data
+const items = ref([
+  {
+    id: 1,
+    jenis_bahan: "Cleaning Agent",
+    nama_bahan: "Air",
+    produsen: "Produsen A",
+    nomor_sertifikat_halal: "123456",
+    keterangan: "Digunakan untuk mencuci",
+  },
+  {
+    id: 2,
+    jenis_bahan: "Kemasan",
+    nama_bahan: "Alumunium Foil",
+    produsen: "Produsen B",
+    nomor_sertifikat_halal: "789012",
+    keterangan: "Kemasan tahan panas",
+  },
+  {
+    id: 3,
+    jenis_bahan: "Cleaning Agent",
+    nama_bahan: "Sabun Pencuci",
+    produsen: "Produsen C",
+    nomor_sertifikat_halal: "345678",
+    keterangan: "Menghilangkan noda",
+  },
+  {
+    id: 4,
+    jenis_bahan: "Kemasan",
+    nama_bahan: "Plastik",
+    produsen: "Produsen D",
+    nomor_sertifikat_halal: "-",
+    keterangan: "Kemasan fleksibel",
+  },
+  {
+    id: 5,
+    jenis_bahan: "Cleaning Agent",
+    nama_bahan: "Detergent",
+    produsen: "Produsen E",
+    nomor_sertifikat_halal: "901234",
+    keterangan: "Membersihkan bahan",
+  },
+]);
+
 const handleAddProductConfirm = formData => {
   console.log('Add confirmed:', formData)
 }
 
+const file = ref<File | null>(null);
+const fileInputRef = ref<HTMLInputElement | null>(null);
+
+// Handle file upload
+const handleFileUpload = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    file.value = input.files[0];
+    console.log('File uploaded:', file.value.name);
+  } else {
+    console.log('No file selected');
+  }
+};
+
+// Trigger file input click
+const triggerFileInputClick = () => {
+  fileInputRef.value?.click();
+};  
 </script>
 
 <template>
@@ -135,6 +198,83 @@ const handleAddProductConfirm = formData => {
         </v-tabs>
       </VCol>
     </VRow>
+
+    <!-- Tab Content -->
+    <VRow v-if="tab === 'bahan'">
+      <VCol>
+        <VCard variant="flat" class="pa-4">
+      <VRow>
+        <VCol>
+          <p class="text-h3">Daftar Nama Bahan dan Kemasan</p>
+        </VCol>
+        <VCol class="d-flex justify-end align-center" cols="0" md="2">
+          <TambahBahanModalHalal
+            mode="add"
+            @confirm-add="handleAddProductConfirm"
+            @cancel="() => console.log('Add cancelled')"
+          />
+          <VContainer>
+            <VBtn @click="triggerFileInputClick" color="primary" variant="outlined" class="d-flex align-center">
+              <VIcon size="20">ri-upload-line</VIcon>
+              <span class="ml-2">Upload File</span>
+            </VBtn>
+            <!-- Hidden File Input -->
+            <input
+                ref="fileInputRef"
+                type="file"
+                style="display: none;"
+                accept=".pdf,.doc,.docx"
+                @change="handleFileUpload"
+              />
+          </VContainer>
+        </VCol>
+      </VRow>
+      <VRow>
+        <VCol>
+          <v-alert
+            type="warning"
+            variant="tonal"
+            color="#652672"
+          >
+          <ol>
+            <li>1. Termasuk  isikan bahan dengan kategori cleaning agent seperti: Air, Sabun Pencuci, Detergent, dll</li>
+            <li>2. Isikan nama kemasan produk, contoh: Alumunium foil, standing pouch, plastik, dll</li>
+          </ol>
+          </v-alert>
+        </VCol>
+      </VRow>
+      <VRow>
+        <VCol>
+          <VDataTableServer
+            v-model:items-per-page="itemPerPage"
+            v-model:page="page"
+            :headers="verifikatorTableHeader"
+            :items="items"
+            :loading="loading"
+            :items-length="totalItems"
+            loading-text="Loading..."
+            @update:options="loadItem(page, itemPerPage, searchQuery)"
+          >
+            <template #item.id="{ index }">
+              {{ index + 1 + (page - 1) * itemPerPage }}
+            </template>
+            <template #item.tgl_daftar="{ item }">
+              {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+            </template>
+            <template #item.action="{ item }">
+              <div class="d-flex gap-1">
+                <UbahBahanModalHalal
+                    @confirm-edit="handleEditProductConfirm"
+                    @cancel="() => console.log('Add cancelled')"
+                  />
+              </div>
+            </template>
+          </VDataTableServer>
+        </VCol>
+      </VRow>
+    </VCard>
+  </VCol> 
+</VRow>
 
     <!-- Tab Content -->
     <VRow v-if="tab === 'produk'">
