@@ -1,34 +1,70 @@
 <script setup lang="ts">
+const props = defineProps({
+  datadocumentloa: {
+    type: Object,
+    required: true,
+  },
+  datadocumentfhc: {
+    type: Object,
+    required: true,
+  },
+  datadocumentmra: {
+    type: Object,
+    required: true,
+  },
+});
+
+const {
+  authorized_company,
+  authorizer_company,
+  date,
+  id,
+  letter_no,
+  loa_document,
+} = props.datadocumentloa || {};
+
+const { country, expired_date, halal_institution_name, issued_date } =
+  props.datadocumentmra || {};
+
+const { document, document_no, verification_link, file } =
+  props.datadocumentfhc || {};
+
 const MRA = [
-  { id: 1, key: "Halal Institution Name", value: "Halal Transaction Inc." },
-  { id: 2, key: "Issued Date", value: "20/02/2024" },
-  { id: 3, key: "Expired Date", value: "20/02/2028" },
-  { id: 4, key: "Country", value: "USA" },
+  { id: 1, key: "Halal Institution Name", value: halal_institution_name },
+  { id: 2, key: "Issued Date", value: issued_date },
+  { id: 3, key: "Expired Date", value: expired_date },
+  { id: 4, key: "Country", value: country },
 ];
+
 const tracking = [
   { id: 1, key: "Verification", value: "fachrudin@panganlestari.com" },
   { id: 2, key: "Submitted", value: "fachrudin@panganlestari.com" },
 ];
+
+const downloadLOA = (file) => {
+  window.open(file, "_blank");
+};
 </script>
+
 <template>
   <VRow>
     <VCol cols="12">
       <VCard>
-        <VCardTitle
-          ><h3>Mutual Recognition Agreement / MRA Document</h3></VCardTitle
-        >
-        <VCardSubtitle
-          ><p>
-            Document for Mutual Halal Certificate Recognition
-          </p></VCardSubtitle
-        >
+        <VCardTitle>
+          <h3>Mutual Recognition Agreement / MRA Document</h3>
+        </VCardTitle>
+        <VCardSubtitle>
+          <p>Document for Mutual Halal Certificate Recognition</p>
+        </VCardSubtitle>
         <VCardText>
-          <VRow no-gutters v-for="item in MRA" :key="item.id">
-            <VCol cols="3">{{ item.key }}</VCol>
-            <VCol cols="1">:</VCol>
-            <VCol cols="8"
-              ><p>{{ item.value }}</p></VCol
-            >
+          <VRow v-for="item in MRA" :key="item.id" no-gutters>
+            <VCol cols="3">
+              {{ item.key }}
+            </VCol>
+            <VCol cols="1"> : </VCol>
+            <VCol cols="8">
+              <p>{{ item.value }}</p>
+            </VCol>
           </VRow>
         </VCardText>
       </VCard>
@@ -38,57 +74,61 @@ const tracking = [
     <VCol cols="8">
       <VCard>
         <VCardTitle><h3>Letter of Authorization / LoA Document</h3></VCardTitle>
-        <VCardSubtitle
-          ><p>
-            An Appointment Letter from the Exporter to the importer
-          </p></VCardSubtitle
-        >
+        <VCardSubtitle>
+          <p>An Appointment Letter from the Exporter to the importer</p>
+        </VCardSubtitle>
         <VCardText>
           <VRow>
-            <VCol cols="3">Authorizer Company</VCol>
-            <VCol cols="1">:</VCol>
-            <VCol cols="8"><p>MACDONALD MEAT COMPANY</p></VCol>
-          </VRow>
-          <VRow>
-            <VCol cols="3">Authorized Company</VCol>
-            <VCol cols="1">:</VCol>
-            <VCol cols="8"><p>PT.Pangan Lestari</p></VCol>
-          </VRow>
-          <VRow>
-            <VCol cols="3">Date</VCol>
-            <VCol cols="1">:</VCol>
-            <VCol cols="8"><p>03/09/2024</p></VCol>
-          </VRow>
-          <VRow>
-            <VCol cols="3">Letter No.</VCol>
-            <VCol cols="1">:</VCol>
-            <VCol cols="8"><p>-</p></VCol>
-          </VRow>
-          <VRow>
-            <VCol cols="3">LoA Document</VCol>
-            <VCol cols="1">:</VCol>
+            <VCol cols="3"> Authorizer Company </VCol>
+            <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <VBtn density="compact">
-                <VFileInput
-                  prepend-icon="fa-download"
-                  density="compact"
-                  hide-input
-                  style="color: white"
-                >
-                </VFileInput>
-              </VBtn>
+              <p>{{ authorizer_company }}</p>
             </VCol>
           </VRow>
           <VRow>
-            <VCol cols="3">Catatan Pengembalian</VCol>
-            <VCol cols="1">:</VCol>
-            <VCol cols="8"><VTextField density="compact"></VTextField></VCol>
+            <VCol cols="3"> Authorized Company </VCol>
+            <VCol cols="1"> : </VCol>
+            <VCol cols="8">
+              <p>{{ authorized_company }}</p>
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol cols="3"> Date </VCol>
+            <VCol cols="1"> : </VCol>
+            <VCol cols="8">
+              <p>{{ date }}</p>
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol cols="3"> Letter No. </VCol>
+            <VCol cols="1"> : </VCol>
+            <VCol cols="8">
+              <p>{{ letter_no }}</p>
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol cols="3"> LoA Document </VCol>
+            <VCol cols="1"> : </VCol>
+            <VCol cols="8">
+              <VBtn
+                icon="fa-download"
+                density="compact"
+                @click="downloadLOA(loa_document)"
+              />
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol cols="3"> Catatan Pengembalian </VCol>
+            <VCol cols="1"> : </VCol>
+            <VCol cols="8">
+              <VTextField density="compact" />
+            </VCol>
           </VRow>
         </VCardText>
         <VCardActions style="justify-content: end">
           <div>
-            <ReturnConfirmationModal></ReturnConfirmationModal>
-            <ApproveConfirmationModal></ApproveConfirmationModal>
+            <ReturnConfirmationModal :id="id" documenttype="loa" />
+            <ApproveConfirmationModal :id="id" documenttype="loa" />
           </div>
         </VCardActions>
       </VCard>
@@ -99,13 +139,15 @@ const tracking = [
         <VCardItem>
           <VTimeline side="end">
             <VTimelineItem
-              dot-color="blue"
               v-for="item in tracking"
               :key="item.id"
+              dot-color="blue"
               max-height="30svh"
             >
               <div>
-                <div class="text-h6">{{ item.key }}</div>
+                <div class="text-h6">
+                  {{ item.key }}
+                </div>
                 <p>{{ item.value }}</p>
               </div>
             </VTimelineItem>
@@ -117,45 +159,47 @@ const tracking = [
   <VRow>
     <VCol cols="8">
       <VCard>
-        <VCardTitle
-          ><h3>Original of the Foreign Halal Certificate</h3></VCardTitle
-        >
+        <VCardTitle>
+          <h3>Original of the Foreign Halal Certificate</h3>
+        </VCardTitle>
         <VCardText>
           <VRow>
-            <VCol cols="3">Document</VCol>
-            <VCol cols="1">:</VCol>
-            <VCol cols="8"><p>MACDONALD MEAT COMPANY</p></VCol>
+            <VCol cols="3"> Document </VCol>
+            <VCol cols="1"> : </VCol>
+            <VCol cols="8">
+              <p>{{ document }}</p>
+            </VCol>
           </VRow>
           <VRow>
-            <VCol cols="3">Document No.</VCol>
-            <VCol cols="1">:</VCol>
-            <VCol cols="8"><p>PT.Pangan Lestari</p></VCol>
+            <VCol cols="3"> Document No. </VCol>
+            <VCol cols="1"> : </VCol>
+            <VCol cols="8">
+              <p>{{ document_no }}</p>
+            </VCol>
           </VRow>
           <VRow>
-            <VCol cols="3">Verification Link (Optional)</VCol>
-            <VCol cols="1">:</VCol>
-            <VCol cols="8"><p>03/09/2024</p></VCol>
+            <VCol cols="3"> Verification Link (Optional) </VCol>
+            <VCol cols="1"> : </VCol>
+            <VCol cols="8">
+              <p>{{ verification_link }}</p>
+            </VCol>
           </VRow>
           <VRow style="display: flex; align-items: center">
-            <VCol cols="3">File</VCol>
-            <VCol cols="1">:</VCol>
+            <VCol cols="3"> File </VCol>
+            <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <VBtn>
-                <VFileInput
-                  prepend-icon="fa-download"
-                  density="compact"
-                  hide-input
-                  style="color: white"
-                >
-                </VFileInput>
-              </VBtn>
+              <VBtn
+                icon="fa-download"
+                density="compact"
+                @click="downloadLOA(file)"
+              />
             </VCol>
           </VRow>
         </VCardText>
         <VCardActions style="justify-content: end">
           <div>
-            <ReturnConfirmationModal></ReturnConfirmationModal>
-            <ApproveConfirmationModal></ApproveConfirmationModal>
+            <ReturnConfirmationModal :id="id" documenttype="fhc" />
+            <ApproveConfirmationModal :id="id" documenttype="fhc" />
           </div>
         </VCardActions>
       </VCard>
@@ -166,13 +210,15 @@ const tracking = [
         <VCardItem>
           <VTimeline side="end">
             <VTimelineItem
-              dot-color="blue"
               v-for="item in tracking"
               :key="item.id"
+              dot-color="blue"
               max-height="30svh"
             >
               <div>
-                <div class="text-h6">{{ item.key }}</div>
+                <div class="text-h6">
+                  {{ item.key }}
+                </div>
                 <p>{{ item.value }}</p>
               </div>
             </VTimelineItem>
@@ -206,8 +252,7 @@ const tracking = [
                       density="compact"
                       hide-input
                       style="color: white"
-                    >
-                    </VFileInput>
+                    />
                   </VBtn>
                 </td>
                 <td
@@ -217,7 +262,7 @@ const tracking = [
                     align-items: center;
                   "
                 >
-                  <VIcon icon="fa-history"></VIcon>
+                  <VIcon icon="fa-history" />
                 </td>
               </tr>
               <tr>
@@ -230,8 +275,7 @@ const tracking = [
                       density="compact"
                       hide-input
                       style="color: white"
-                    >
-                    </VFileInput>
+                    />
                   </VBtn>
                 </td>
                 <td
@@ -241,7 +285,7 @@ const tracking = [
                     align-items: center;
                   "
                 >
-                  <VIcon color="" icon="fa-history"></VIcon>
+                  <VIcon color="" icon="fa-history" />
                 </td>
               </tr>
             </tbody>

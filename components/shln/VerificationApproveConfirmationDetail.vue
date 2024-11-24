@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { computed, defineEmits, ref } from "vue";
+import { computed, ref } from "vue";
 import { useDisplay } from "vuetify";
 
-const emit = defineEmits(["confirm", "cancel"]);
+const router = useRouter();
+const route = useRoute();
 
 const isVisible = ref(false);
+const loading = ref(false);
 
 const openDialog = () => {
   isVisible.value = true;
@@ -14,14 +16,31 @@ const closeDialog = () => {
   isVisible.value = false;
 };
 
+const putVerificatorApprove = async () => {
+  try {
+    loading.value = true;
+
+    const res = await $api(`/shln/verificator/accept/${route.params.id}`, {
+      method: "put",
+    });
+
+    if (res?.code === 2000) router.go(-1);
+    else useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+
+    closeDialog();
+    loading.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    closeDialog();
+    loading.value = false;
+  }
+};
+
 const confirm = () => {
-  emit("confirm", inputValue.value);
-  inputValue.value = "";
-  closeDialog();
+  putVerificatorApprove();
 };
 
 const cancel = () => {
-  emit("cancel");
   closeDialog();
 };
 
@@ -63,8 +82,13 @@ const dialogMaxWidth = computed(() => {
           <p class="mb-2">Are you sure you want to Return this submission?</p>
           <VCardActions style="display: flex; justify-content: end">
             <VBtn variant="outlined" text @click="cancel"> Cancel </VBtn>
-            <VBtn color="success" variant="flat" @click="confirm">
-              Approve
+            <VBtn
+              :disabled="loading"
+              color="success"
+              variant="flat"
+              @click="confirm"
+            >
+              {{ loading ? "Loading..." : "Approve" }}
             </VBtn>
           </VCardActions>
         </VCardText>

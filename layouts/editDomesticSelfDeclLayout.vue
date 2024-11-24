@@ -11,14 +11,6 @@ onMounted(() => {
     ></VRow>
     <VRow>
       <VCol :cols="6"><h2>Ubah Pengajuan Self Declare</h2></VCol>
-      <VCol :cols="6" style="display: inline-flex; justify-content: flex-end">
-        <div>
-          <VBtn color="error" variant="outlined" style="margin-right: 1svw"
-            >Batal</VBtn
-          >
-        </div>
-        <div><VBtn>Simpan Perubahan</VBtn></div>
-      </VCol>
     </VRow>
     <VRow>
       <VCol :cols="12">
@@ -40,10 +32,14 @@ onMounted(() => {
           <VTabsWindowItem value="3"
             ><PabrikOutletMain></PabrikOutletMain
           ></VTabsWindowItem>
-          <VTabsWindowItem value="4">four</VTabsWindowItem>
-          <VTabsWindowItem value="5">five</VTabsWindowItem>
-          <VTabsWindowItem value="6">six</VTabsWindowItem>
-          <VTabsWindowItem value="7">seven</VTabsWindowItem>
+          <VTabsWindowItem value="4"><BahanMain></BahanMain></VTabsWindowItem>
+          <VTabsWindowItem value="5"><ProdukMain></ProdukMain></VTabsWindowItem>
+          <VTabsWindowItem value="6">
+            <EditProsesProdukHalalSelfDeclareSubmission></EditProsesProdukHalalSelfDeclareSubmission>
+          </VTabsWindowItem>
+          <VTabsWindowItem value="7">
+            <EditPernyataanSelfDeclareSubmision></EditPernyataanSelfDeclareSubmision>
+          </VTabsWindowItem>
         </VTabsWindow>
       </VCol>
     </VRow>

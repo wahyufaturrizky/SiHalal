@@ -37,7 +37,8 @@ definePageMeta({
 
 const isPasswordVisible = useState("isPasswordVisible", () => false);
 const isDisabledSubmit = useState("isDisabledSubmit", () => true);
-
+const config = useRuntimeConfig();
+const siteKey = config.public.turnstile.siteKey;
 const route = useRoute();
 
 const ability = useAbility();
@@ -73,7 +74,6 @@ async function login() {
     });
   } catch (error: any) {
     if (error.data.statusCode == 400) {
-      console.log(error.data.data.id);
       navigateTo({
         path: "/verifikasi-user",
         query: {
@@ -83,7 +83,19 @@ async function login() {
       });
       return;
     }
-    useSnackbar().sendSnackbar("username atau password salah", "error");
+    if (error.data.data.code === 400000) {
+      console.log(error.data.data);
+      if (error.data.data.errors.list_error[0] == "kata sandi tidak sesuai") {
+        errors.value.password = "Kata sandi tidak tepat!";
+      }
+      if (error.data.data.errors.list_error[0] == "email tidak ditemukan") {
+        errors.value.email = "Alamat Email tidak ditemukan!";
+      }
+    }
+    useSnackbar().sendSnackbar(
+      "Gagal masuk, mohon periksa kembali kelengkapan data!",
+      "error"
+    );
     buttonClicked.value = false;
   }
 
@@ -99,6 +111,7 @@ const onSubmit = async () => {
   refVForm.value?.validate().then(({ valid: isValid }) => {
     if (isValid) login();
   });
+  buttonClicked.value = false;
 };
 
 const redirectToForgotPass = () => {
@@ -144,9 +157,10 @@ const redirectToForgotPass = () => {
                   label="Email"
                   placeholder="Masukkan Email"
                   type="email"
-                  autofocus
+                  :autofocus="false"
                   :rules="[requiredValidator, emailValidator]"
                   :error-messages="errors.email"
+                  @input="errors.email = undefined"
                 />
               </VCol>
 
@@ -159,6 +173,7 @@ const redirectToForgotPass = () => {
                   :rules="[requiredValidator]"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   :error-messages="errors.password"
+                  @input="errors.password = undefined"
                   :append-inner-icon="
                     isPasswordVisible
                       ? 'fa-eye-slash fa-reguler'
@@ -177,7 +192,12 @@ const redirectToForgotPass = () => {
                 </VCol>
 
                 <div class="my-6 gap-x-2">
-                  <NuxtTurnstile v-model="turnstile" class="text-center" />
+                  <NuxtTurnstile
+                    :siteKey="siteKey"
+                    v-model="turnstile"
+                    :debug="false"
+                    class="text-center"
+                  />
                 </div>
 
                 <VBtn

@@ -1,10 +1,19 @@
+<script setup lang="ts">
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true,
+  },
+});
+</script>
+
 <template>
   <VRow>
     <VCol cols="8" style="max-height: 60svh; overflow-y: auto">
-      <ShlnSubmDetLeftCard></ShlnSubmDetLeftCard>
+      <ShlnSubmDetLeftCard :data="props?.data" />
     </VCol>
     <VCol cols="4" style="max-height: 60svh; overflow-y: auto">
-      <ShlnSubmDetRightCard></ShlnSubmDetRightCard>
+      <ShlnSubmDetRightCard />
     </VCol>
   </VRow>
 </template>

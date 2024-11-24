@@ -73,6 +73,17 @@
       "reference": "Reference"
     }
   },
+  "sidang_fatwa": {
+    "title": "Sidang Fatwa",
+    "proses_sidang": "Proses Sidang"
+  },
+  "sidang_self_declare": {
+    "title": "Sidang Self Declare",
+    "proses_sidang": "Proses Sidang",
+    "entry_ketetapan_halal": "Entri Ketetapan Halal",
+    "inquiry": "Inquiry - Komite Fatwa",
+    "rekapitulasi": "Rekapitulasi"
+  },
   "shln_submission": "Submission",
   "shln_invoice": "Invoice",
   "shln_verification": "Verifikasi",
