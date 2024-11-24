@@ -6,10 +6,10 @@ const productHeader: any = [
   { title: "No", value: "index" },
   { title: "Nama Produk", value: "name" },
   { title: "Merek", value: "brand" },
-  { title: "Foto", value: "image", noWrap: true },
+  { title: "Foto", value: "image", nowrap: true },
   { title: "Jumlah Bahan Digunakan", value: "ingredientCount" },
   { title: "Input Bahan", value: "ingredientInput" },
-  { title: "Verif oleh Pendamping", value: "isVerified", fixed: true },
+  { title: "Verif oleh Pendamping", value: "isVerified" },
   { title: "Action", value: "actions", align: "center" },
 ];
 const productData = ref([

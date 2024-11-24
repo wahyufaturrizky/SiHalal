@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const deleteDialogVisible = ref(false);
 const dialogVisible = ref(false);
 const dialogUse = ref("CREATE");
 const dialogType = ref("Pabrik");
@@ -31,12 +32,24 @@ const outletData = ref([
   },
 ]);
 
-const handleDeleteFactory = (index: number) => {
-  const exist = factoryData.value.findIndex((i, idx) => idx === index);
+const deleteType = ref("");
+const selectedDelete = ref();
+const openDeleteModal = (type: string, index: number) => {
+  deleteType.value = type;
+  selectedDelete.value = index;
+  deleteDialogVisible.value = !deleteDialogVisible.value;
+};
+
+const handleDeleteFactory = () => {
+  const exist = factoryData.value.findIndex(
+    (i, idx) => idx === selectedDelete.value
+  );
   factoryData.value.splice(exist, 1);
 };
-const handleDeleteOutlet = (index: number) => {
-  const exist = outletData.value.findIndex((i, idx) => idx === index);
+const handleDeleteOutlet = () => {
+  const exist = outletData.value.findIndex(
+    (i, idx) => idx === selectedDelete.value
+  );
   outletData.value.splice(exist, 1);
 };
 
@@ -70,7 +83,7 @@ const handleOpenDialog = (type: string) => {
               icon="mdi-delete"
               color="error"
               class="cursor-pointer"
-              @click="handleDeleteFactory(index)"
+              @click="openDeleteModal('FACTORY', index)"
             />
           </div>
         </template>
@@ -100,13 +113,26 @@ const handleOpenDialog = (type: string) => {
               icon="mdi-delete"
               color="error"
               class="cursor-pointer"
-              @click="handleDeleteOutlet(index)"
+              @click="openDeleteModal('OUTLET', index)"
             />
           </div>
         </template>
       </VDataTable>
     </VCardText>
   </VCard>
+  <ShSubmissionDetailFormModal
+    dialog-title="Menghapus Data"
+    :dialog-visible="deleteDialogVisible"
+    dialog-use="DELETE"
+    @update:dialog-visible="deleteDialogVisible = $event"
+    @submit:commit-action="
+      deleteType === 'FACTORY' ? handleDeleteFactory() : handleDeleteOutlet()
+    "
+  >
+    <VCardText>
+      <div>Apakah yakin ingin menghapus data ini</div>
+    </VCardText>
+  </ShSubmissionDetailFormModal>
   <ShSubmissionDetailFormModal
     :dialog-title="`Tambah Data ${dialogType}`"
     :dialog-visible="dialogVisible"

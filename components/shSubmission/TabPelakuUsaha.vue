@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const isPanelOpen = ref(0);
+const deleteDialogVisible = ref(false);
 
 const legalAspectHeader = [
   { title: "No", value: "index" },
@@ -68,14 +69,24 @@ const documentData = ref([
   { name: "Izin Masuk", document: "" },
 ]);
 
-const handleDelete = (index: number) => {
-  const exist = legalAspectData.value.findIndex((i, idx) => idx === index);
+const deleteType = ref("");
+const selectedDelete = ref();
+const openDeleteModal = (type: string, index: number) => {
+  deleteType.value = type;
+  selectedDelete.value = index;
+  deleteDialogVisible.value = !deleteDialogVisible.value;
+};
+const confirmDelete = () => {
+  const exist = legalAspectData.value.findIndex(
+    (i, idx) => idx === selectedDelete.value
+  );
   legalAspectData.value.splice(exist, 1);
+  selectedDelete.value = null;
 };
 
-const removeDoc = (index: number) => {
+const removeDoc = () => {
   documentData.value.map((i, idx) => {
-    if (idx === index) {
+    if (idx === selectedDelete.value) {
       i.document = "";
     }
   });
@@ -172,7 +183,7 @@ const onFileChange = (event: any, index: number) => {
               icon="mdi-delete"
               color="error"
               class="cursor-pointer"
-              @click="handleDelete(index)"
+              @click="openDeleteModal('LEGAL', index)"
             />
           </div>
         </template>
@@ -242,7 +253,7 @@ const onFileChange = (event: any, index: number) => {
                 icon="fa-trash"
                 color="error"
                 class="cursor-pointer"
-                @click="removeDoc(index)"
+                @click="openDeleteModal('DOC', index)"
               />
             </template>
           </VTextField>
@@ -273,6 +284,19 @@ const onFileChange = (event: any, index: number) => {
       </VDataTable>
     </VCardText>
   </VCard>
+  <ShSubmissionDetailFormModal
+    dialog-title="Menghapus Data"
+    :dialog-visible="deleteDialogVisible"
+    dialog-use="DELETE"
+    @update:dialog-visible="deleteDialogVisible = $event"
+    @submit:commit-action="
+      deleteType === 'LEGAL' ? confirmDelete() : removeDoc()
+    "
+  >
+    <VCardText>
+      <div>Apakah yakin ingin menghapus data ini</div>
+    </VCardText>
+  </ShSubmissionDetailFormModal>
 </template>
 
 <style lang="scss">
