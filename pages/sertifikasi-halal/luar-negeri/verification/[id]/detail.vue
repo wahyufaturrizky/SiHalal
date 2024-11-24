@@ -6,10 +6,12 @@ const data = ref();
 const dataDocumentLOA = ref();
 const dataDocumentFHC = ref();
 const dataDocumentMRA = ref();
+const dataTracking = ref();
 const loading = ref(false);
 const loadingDocumentLOA = ref(false);
 const loadingDocumentFHC = ref(false);
 const loadingDocumentMRA = ref(false);
+const loadingTracking = ref(false);
 
 const loadItemById = async () => {
   try {
@@ -26,6 +28,24 @@ const loadItemById = async () => {
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loading.value = false;
+  }
+};
+
+const loadItemTrackingById = async () => {
+  try {
+    loadingTracking.value = true;
+
+    const response = await $api(`/shln/verificator/tracking/${shlnId}`, {
+      method: "get",
+    });
+
+    if (response.code === 2000) dataTracking.value = response.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
+    loadingTracking.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingTracking.value = false;
   }
 };
 
@@ -86,6 +106,7 @@ const loadDocumentMRAById = async () => {
 onMounted(async () => {
   await loadItemById();
   await loadDocumentLOAById();
+  await loadItemTrackingById();
   await loadDocumentFHCById();
   await loadDocumentMRAById();
 });
@@ -112,12 +133,20 @@ onMounted(async () => {
       </VTabs>
     </VCol>
   </VRow>
-  <VRow v-if="!loading && !loadingDocumentLOA">
+  <VRow
+    v-if="
+      !loading &&
+      !loadingDocumentLOA &&
+      !loadingDocumentFHC &&
+      !loadingDocumentMRA &&
+      !loadingTracking
+    "
+  >
     <VCol>
       <VTabsWindow v-model="tabs">
         <br />
         <VTabsWindowItem value="1">
-          <ShlnSubmissionDetail :data="data" />
+          <ShlnSubmissionDetail :datatracking="dataTracking" :data="data" />
         </VTabsWindowItem>
         <VTabsWindowItem value="2">
           <ShlnDocumentDetail
