@@ -4,6 +4,10 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  datatracking: {
+    type: Object,
+    required: true,
+  },
 });
 </script>
 
@@ -13,7 +17,7 @@ const props = defineProps({
       <ShlnSubmDetLeftCard :data="props?.data" />
     </VCol>
     <VCol cols="4" style="max-height: 60svh; overflow-y: auto">
-      <ShlnSubmDetRightCard />
+      <ShlnSubmDetRightCard :data="props.datatracking" />
     </VCol>
   </VRow>
 </template>

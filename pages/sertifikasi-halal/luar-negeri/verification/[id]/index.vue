@@ -5,7 +5,9 @@ const panelOpenImporter = ref(0);
 const panelOpenImporterContract = ref(0);
 const openPanelRegisterData = ref(0);
 const loading = ref(false);
+const loadingTracking = ref(false);
 const data = ref();
+const dataTracking = ref();
 
 const route = useRoute();
 const shlnId = route.params.id;
@@ -28,8 +30,27 @@ const loadItemById = async () => {
   }
 };
 
+const loadItemTrackingById = async () => {
+  try {
+    loadingTracking.value = true;
+
+    const response = await $api(`/shln/verificator/tracking/${shlnId}`, {
+      method: "get",
+    });
+
+    if (response.code === 2000) dataTracking.value = response.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
+    loadingTracking.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingTracking.value = false;
+  }
+};
+
 onMounted(async () => {
   await loadItemById();
+  await loadItemTrackingById();
 });
 
 const navigateAction = () => {
@@ -38,7 +59,7 @@ const navigateAction = () => {
 </script>
 
 <template>
-  <SHLNVerfikasiLayout v-if="!loading">
+  <SHLNVerfikasiLayout v-if="!loading && !loadingTracking">
     <template #pageTitle>
       <VRow>
         <VCol><h3>Foreign Halal Certificate Requirements Details</h3></VCol>
@@ -121,7 +142,7 @@ const navigateAction = () => {
           <VCard>
             <VCardTitle><h2>Tracking</h2></VCardTitle>
             <VCardText>
-              <TrackingShln />
+              <TrackingShln :data="dataTracking" />
             </VCardText>
           </VCard>
         </VCol>
