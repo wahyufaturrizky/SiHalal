@@ -76,14 +76,15 @@ const deleteSubmission = async () => {
       },
     });
 
-    if (!response.data.code == 2000) {
+    if (!response.code == 2000) {
       useSnackbar().sendSnackbar("gagal menghapus data", "error");
 
       return;
     }
-    navigateTo("/sertifikasi-halal/luar-negeri/submission");
     useSnackbar().sendSnackbar("Berhasil menghapus data", "success");
+    navigateTo("/sertifikasi-halal/luar-negeri/submission");
   } catch (error) {
+    console.log(error);
     useSnackbar().sendSnackbar("Ada Kecsalahan", "error");
   }
 };
@@ -124,9 +125,15 @@ const loadItem = async () => {
         id: shlnId,
       },
     });
-
+    console.log("ini data item ", response);
+    if (response.code == 500) {
+      navigateTo("/sertifikasi-halal/luar-negeri/submission");
+      return;
+    }
     item.value = response.data;
   } catch (error) {
+    console.log("ini data item ", error.data);
+
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
@@ -163,7 +170,6 @@ const loadRegistration = async () => {
 
 onMounted(() => {
   Promise.allSettled([loadItem(), loadTracking(), loadRegistration()]);
-  console.log(tracking.value);
 });
 
 const productItems = [
@@ -219,7 +225,7 @@ const timelineEvents = ref([
       <VCol cols="4">
         <VRow justify="end" class="gap-1">
           <VCol cols="auto">
-            <VBtn variant="outlined" color="error" @click="deleteSubmission">
+            <VBtn variant="outlined" color="error" @click="deleteItem">
               <VIcon icon="ri-delete-bin-6-line" />
             </VBtn>
           </VCol>
@@ -325,7 +331,10 @@ const timelineEvents = ref([
         </ExpandCard>
 
         <ExpandCard title="Products" class="mb-6">
-          <VDataTable :headers="headersProduct" :items="item?.products">
+          <VDataTable
+            :headers="headersProduct"
+            :items="item?.products != null ? item.products : []"
+          >
             <template #item.index="{ index }">
               {{ index + 1 }}
             </template>

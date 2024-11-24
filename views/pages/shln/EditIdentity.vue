@@ -4,35 +4,72 @@ import type {
   ShlnTracking,
 } from "@/pages/sertifikasi-halal/luar-negeri/submission/[id]/index.vue";
 import type { MasterCountry } from "@/server/interface/master.iface";
+export interface IdentityRequest {
+  profile: Profile;
+  hcb: Hcb;
+  hcn: Hcn;
+  importer: Importer;
+}
+
+interface Profile {
+  api_type: string | null;
+}
+
+interface Hcb {
+  hcb_id: string;
+  address: string;
+  company_name: string;
+  corporate_id_number: string;
+  country: string;
+}
+
+interface Hcn {
+  expired_date: string;
+  hcn_number: string;
+  issued_date: string;
+  scope: string | null;
+}
+
+interface Importer {
+  address: string;
+  email: string;
+  name: string;
+  phone_number: string;
+  position: string;
+}
 
 const props = defineProps<{
   event: ShlnDetail;
-  tracking: ShlnTracking;
 }>();
 
 const country = ref();
-
-const form = ref({
-  name: "",
-  nib: "",
-  nibType: "",
-  npwp: "",
-  address: "",
-  province: "",
-  regency: "",
-  subDistrict: "",
-  halalBody: "",
-  country: "",
-  companyName: "",
-  companyId: "",
-  companyCountry: null,
-  companyAddress: "",
-  halalCertNumber: "",
-  issuedDate: null,
-  expiredDate: null,
-  scope: "",
+const formIdentity = ref<IdentityRequest>({
+  profile: {
+    api_type: null,
+  },
+  hcb: {
+    hcb_id: props.event.hcb.hcb_id == "" ? null : props.event.hcb.hcb_id,
+    address: props.event.hcb.address,
+    company_name: props.event.hcb.company_name,
+    corporate_id_number: props.event.hcb.corporate_id_number,
+    country: props.event.hcb.country,
+  },
+  hcn: {
+    expired_date: "",
+    hcn_number: "",
+    issued_date: "",
+    scope: null,
+  },
+  importer: {
+    address: "",
+    email: "",
+    name: "",
+    phone_number: "",
+    position: "",
+  },
 });
-
+const route = useRoute();
+const shlnId = route.params.id;
 const getCountry = async () => {
   const response: MasterCountry[] = await $api("/master/country", {
     method: "get",
@@ -40,21 +77,46 @@ const getCountry = async () => {
 
   country.value = response.map((item) => item.name);
 };
+const tracking = ref<ShlnTracking[]>();
+const hcb = ref<{ country: string; id: string; name: string }[]>();
 
-const formImporter = ref({
-  name: "",
-  position: "",
-  email: "",
-  phoneNumber: "",
-  address: "",
-});
+const loadTracking = async () => {
+  try {
+    const response = await $api("/shln/submission/tracking", {
+      method: "post",
+      body: {
+        id: shlnId,
+      },
+    });
+
+    tracking.value = response.data;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+const getHcb = async () => {
+  try {
+    const response = await $api("/shln/submission/identity/hcb", {
+      method: "get",
+    });
+
+    hcb.value = response;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+const changeHcb = (item: string) => {
+  const country = hcb.value?.find((body) => (body.id = item))?.country;
+  console.log(country);
+  formIdentity.value.hcb.country = country;
+};
 
 onMounted(async () => {
-  await getCountry();
+  await Promise.allSettled([getCountry(), loadTracking(), getHcb()]);
 });
 
 const saveForm = () => {
-  console.log("Form saved", form.value);
+  // console.log("Form saved", form.value);
 };
 </script>
 
@@ -62,24 +124,24 @@ const saveForm = () => {
   <VRow>
     <VCol cols="8">
       <ExpandCard title="Importer" class="mb-6">
-        <VForm>
+        <VForm class="mt-6">
           <VRow>
             <!-- Nama -->
             <VCol cols="12">
-              <VTextField v-model="form.name" label="Name" disabled />
+              <VTextField v-model="event.profile.name" label="Name" disabled />
             </VCol>
 
             <!-- NIB and Type -->
             <VCol cols="8">
               <VTextField
-                v-model="form.nib"
+                v-model="event.profile.nib"
                 label="NIB / Business ID No."
                 disabled
               />
             </VCol>
             <VCol cols="4">
               <VSelect
-                v-model="form.nibType"
+                v-model="formIdentity.profile.api_type"
                 :items="['API-U', 'API-P']"
                 label="Type"
               />
@@ -88,7 +150,7 @@ const saveForm = () => {
             <!-- NPWP -->
             <VCol cols="12">
               <VTextField
-                v-model="form.npwp"
+                v-model="event.profile.npwp"
                 label="NPWP / Taxpayer ID No."
                 disabled
               />
@@ -96,33 +158,40 @@ const saveForm = () => {
 
             <!-- Address -->
             <VCol cols="12">
-              <VTextField v-model="form.address" label="Address" disabled />
+              <VTextField
+                v-model="event.profile.address"
+                label="Address"
+                disabled
+              />
             </VCol>
 
             <!-- Province -->
             <VCol cols="12">
               <VSelect
-                v-model="form.province"
-                :items="['Province 1', 'Province 2']"
+                v-model="event.profile.province"
+                :items="[event.profile.province]"
                 label="Province"
+                disabled
               />
             </VCol>
 
             <!-- Regency -->
             <VCol cols="12">
               <VSelect
-                v-model="form.regency"
-                :items="['Regency 1', 'Regency 2']"
+                v-model="event.profile.regency"
+                :items="[event.profile.regency]"
                 label="Regency"
+                disabled
               />
             </VCol>
 
             <!-- Sub District -->
             <VCol cols="12">
               <VSelect
-                v-model="form.subDistrict"
-                :items="['Sub District 1', 'Sub District 2']"
+                v-model="event.profile.sub_district"
+                :items="[event.profile.sub_district]"
                 label="Sub District"
+                disabled
               />
             </VCol>
             <VDivider class="my-5" />
@@ -130,27 +199,38 @@ const saveForm = () => {
             <!-- Halal Certification Body -->
             <VCol cols="12">
               <VSelect
-                v-model="form.halalBody"
-                :items="['Body 1', 'Body 2']"
+                v-model="formIdentity.hcb.hcb_id"
+                :items="hcb"
+                item-title="name"
+                item-value="id"
                 label="Halal Certification Body"
+                @update:model-value="changeHcb"
+                placeholder="Halal Certification Body"
               />
             </VCol>
 
             <!-- Country -->
             <VCol cols="12">
-              <VTextField v-model="form.country" label="Country" disabled />
+              <VTextField
+                v-model="formIdentity.hcb.country"
+                label="Country"
+                disabled
+              />
             </VCol>
             <VDivider class="my-5" />
 
             <!-- Company Name -->
             <VCol cols="12">
-              <VTextField v-model="form.companyName" label="Company Name" />
+              <VTextField
+                v-model="formIdentity.hcb.company_name"
+                label="Company Name"
+              />
             </VCol>
 
             <!-- Company ID No -->
             <VCol cols="12">
               <VTextField
-                v-model="form.companyId"
+                v-model="formIdentity.hcb.corporate_id_number"
                 label="Company / Corporate ID No."
               />
             </VCol>
@@ -158,7 +238,7 @@ const saveForm = () => {
             <!-- Company Country -->
             <VCol cols="12">
               <VSelect
-                v-model="form.companyCountry"
+                v-model="formIdentity.hcb.country"
                 :items="country"
                 :rules="[requiredValidator]"
                 require
@@ -168,14 +248,14 @@ const saveForm = () => {
 
             <!-- Company Address -->
             <VCol cols="12">
-              <VTextField v-model="form.companyAddress" label="Address" />
+              <VTextField v-model="formIdentity.hcb.address" label="Address" />
             </VCol>
             <VDivider class="my-5" />
 
             <!-- Halal Certification Number -->
             <VCol cols="12">
               <VTextField
-                v-model="form.halalCertNumber"
+                v-model="formIdentity.hcn.hcn_number"
                 label="Halal Certification Number"
               />
             </VCol>
@@ -183,7 +263,7 @@ const saveForm = () => {
             <!-- Issued Date -->
             <VCol cols="12">
               <VTextField
-                v-model="form.issuedDate"
+                v-model="formIdentity.hcn.issued_date"
                 label="Issued Date"
                 outlined
                 dense
@@ -196,7 +276,7 @@ const saveForm = () => {
             <!-- Expired Date -->
             <VCol cols="12">
               <VTextField
-                v-model="form.expiredDate"
+                v-model="formIdentity.hcn.expired_date"
                 label="Expired Date"
                 outlined
                 dense
@@ -209,7 +289,7 @@ const saveForm = () => {
             <!-- Scope -->
             <VCol cols="12">
               <VSelect
-                v-model="form.scope"
+                v-model="formIdentity.hcn.scope"
                 :items="['Scope 1', 'Scope 2']"
                 label="Scope"
               />
@@ -227,22 +307,28 @@ const saveForm = () => {
         <VForm>
           <VRow>
             <VCol cols="12">
-              <VTextField v-model="formImporter.name" label="Name" />
-            </VCol>
-            <VCol cols="12">
-              <VTextField v-model="formImporter.position" label="position" />
-            </VCol>
-            <VCol cols="12">
-              <VTextField v-model="formImporter.email" label="email" />
+              <VTextField v-model="formIdentity.importer.name" label="Name" />
             </VCol>
             <VCol cols="12">
               <VTextField
-                v-model="formImporter.phoneNumber"
+                v-model="formIdentity.importer.position"
+                label="position"
+              />
+            </VCol>
+            <VCol cols="12">
+              <VTextField v-model="formIdentity.importer.email" label="email" />
+            </VCol>
+            <VCol cols="12">
+              <VTextField
+                v-model="formIdentity.importer.phone_number"
                 label="Phone Number"
               />
             </VCol>
             <VCol cols="12">
-              <VTextField v-model="formImporter.address" label="Address" />
+              <VTextField
+                v-model="formIdentity.importer.address"
+                label="Address"
+              />
             </VCol>
 
             <!-- Save Button -->
