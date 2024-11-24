@@ -61,11 +61,11 @@ const formIdentity = ref<IdentityRequest>({
     scope: null,
   },
   importer: {
-    address: "",
-    email: "",
-    name: "",
-    phone_number: "",
-    position: "",
+    address: props.event.importer.address,
+    email: props.event.importer.email,
+    name: props.event.importer.name,
+    phone_number: props.event.importer.phone_number,
+    position: props.event.importer.position,
   },
 });
 const route = useRoute();
