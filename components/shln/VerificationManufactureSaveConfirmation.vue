@@ -2,13 +2,11 @@
 import { computed, ref } from "vue";
 import { useDisplay } from "vuetify";
 
-const router = useRouter();
-const route = useRoute();
-
-const inputValue = ref("");
+const loading = ref(false);
 
 const isVisible = ref(false);
-const loading = ref(false);
+
+const route = useRoute();
 
 const openDialog = () => {
   isVisible.value = true;
@@ -18,37 +16,41 @@ const closeDialog = () => {
   isVisible.value = false;
 };
 
-const putVerificatorReject = async (comment: string[]) => {
+const postVerificatorReturn = async () => {
   try {
     loading.value = true;
 
-    const res = await $api(`/shln/verificator/reject/${route.params.id}`, {
-      method: "put",
+    const res = await $api("/shln/verificator/manufacture/tracking", {
+      method: "post",
       body: {
-        comment,
+        shln_id: route.params.id,
+        type: "approve",
+        comment: "",
       },
     });
 
-    if (res?.code === 2000) router.go(-1);
-    else useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+    if (res?.code === 2000) {
+      closeDialog();
+      loading.value = false;
+    } else {
+      closeDialog();
+      loading.value = false;
 
-    inputValue.value = "";
-    closeDialog();
-    loading.value = false;
+      useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    inputValue.value = "";
+
     closeDialog();
     loading.value = false;
   }
 };
 
 const confirm = () => {
-  putVerificatorReject(inputValue.value);
+  postVerificatorReturn();
 };
 
 const cancel = () => {
-  inputValue.value = "";
   closeDialog();
 };
 
@@ -61,13 +63,8 @@ const dialogMaxWidth = computed(() => {
 
 <template>
   <div class="ma-1">
-    <VBtn
-      variant="outlined"
-      color="error"
-      append-icon="ri-close-line"
-      @click="openDialog"
-    >
-      Reject
+    <VBtn variant="outlined" color="success" @click="openDialog">
+      Approve
     </VBtn>
 
     <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
@@ -75,7 +72,7 @@ const dialogMaxWidth = computed(() => {
         <VCardTitle
           class="text-h5 font-weight-bold d-flex justify-space-between align-center"
         >
-          <span>Return Confirmation </span>
+          <span>Approve Confirmation </span>
           <VBtn
             icon
             color="transparent"
@@ -87,26 +84,17 @@ const dialogMaxWidth = computed(() => {
           </VBtn>
         </VCardTitle>
         <VCardText>
-          <p class="mb-2">Are you sure you want to Return this submission?</p>
-          <VTextarea
-            v-model="inputValue"
-            placeholder="Input Return Note (Opsional) "
-            clearable
-            auto-grow
-            dense
-            outlined
-            :style="{ maxWidth: '100%' }"
-          />
+          <p class="mb-2">Are you sure you want to approve this submission?</p>
         </VCardText>
         <VCardActions>
           <VBtn variant="outlined" text @click="cancel"> Cancel </VBtn>
           <VBtn
             :disabled="loading"
-            color="error"
+            color="success"
             variant="flat"
             @click="confirm"
           >
-            {{ loading ? "Loading..." : "Yes, Reject" }}
+            {{ loading ? "Loading..." : "Approve" }}
           </VBtn>
         </VCardActions>
       </VCard>

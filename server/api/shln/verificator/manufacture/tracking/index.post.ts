@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   const body: NewAccountGovernment = await readBody(event);
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/assign-certificate-halal-foreign`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/certificate-halal-foreign/manufacture/tracking`,
     {
       method: "post",
       body,

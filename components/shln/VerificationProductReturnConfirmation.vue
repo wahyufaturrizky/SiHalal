@@ -2,13 +2,12 @@
 import { computed, ref } from "vue";
 import { useDisplay } from "vuetify";
 
-const router = useRouter();
 const route = useRoute();
 
 const inputValue = ref("");
+const loading = ref(false);
 
 const isVisible = ref(false);
-const loading = ref(false);
 
 const openDialog = () => {
   isVisible.value = true;
@@ -18,22 +17,28 @@ const closeDialog = () => {
   isVisible.value = false;
 };
 
-const putVerificatorReject = async (comment: string[]) => {
+const postVerificatorReturn = async (comment: string[]) => {
   try {
     loading.value = true;
 
-    const res = await $api(`/shln/verificator/reject/${route.params.id}`, {
-      method: "put",
+    const res = await $api("/shln/verificator/product/tracking", {
+      method: "post",
       body: {
+        shln_id: route.params.id,
+        type: "reject",
         comment,
       },
     });
 
-    if (res?.code === 2000) router.go(-1);
-    else useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+    if (res?.code === 2000) {
+      inputValue.value = "";
+      closeDialog();
+    } else {
+      inputValue.value = "";
+      closeDialog();
+      useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+    }
 
-    inputValue.value = "";
-    closeDialog();
     loading.value = false;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -44,7 +49,7 @@ const putVerificatorReject = async (comment: string[]) => {
 };
 
 const confirm = () => {
-  putVerificatorReject(inputValue.value);
+  postVerificatorReturn(inputValue.value);
 };
 
 const cancel = () => {
@@ -63,11 +68,11 @@ const dialogMaxWidth = computed(() => {
   <div class="ma-1">
     <VBtn
       variant="outlined"
-      color="error"
-      append-icon="ri-close-line"
+      color="primary"
+      append-icon="ri-reset-left-line"
       @click="openDialog"
     >
-      Reject
+      Return
     </VBtn>
 
     <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
@@ -102,11 +107,11 @@ const dialogMaxWidth = computed(() => {
           <VBtn variant="outlined" text @click="cancel"> Cancel </VBtn>
           <VBtn
             :disabled="loading"
-            color="error"
+            color="primary"
             variant="flat"
             @click="confirm"
           >
-            {{ loading ? "Loading..." : "Yes, Reject" }}
+            {{ loading ? "Loading..." : "Yes, Return" }}
           </VBtn>
         </VCardActions>
       </VCard>

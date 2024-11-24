@@ -104,6 +104,7 @@ const verifikatorTableHeader = [
 const handleAddProductConfirm = formData => {
   console.log('Add confirmed:', formData)
 }
+
 </script>
 
 <template>
@@ -111,7 +112,7 @@ const handleAddProductConfirm = formData => {
     <!-- Title and Buttons Row -->
     <VRow>
       <VCol>
-        <p class="text-h3">Detail Pengajuan</p>
+        <p class="text-h4">Detail Pengajuan</p>
       </VCol>
       <VCol class="d-flex justify-end align-center" cols="4" md="5">
         <v-btn variant="outlined" class="mx-2">Lihat Laporan</v-btn>
@@ -134,6 +135,7 @@ const handleAddProductConfirm = formData => {
         </v-tabs>
       </VCol>
     </VRow>
+
     <!-- Tab Content -->
     <VRow v-if="tab === 'produk'">
       <VCol>
@@ -233,7 +235,6 @@ const handleAddProductConfirm = formData => {
     </VRow>
   </VContainer>
 </template>
-
 
 <style scoped>
 .v-card {

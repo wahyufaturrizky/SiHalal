@@ -1,6 +1,6 @@
 <template>
   <VContainer>
-    <div style="max-block-size: 50svh; overflow-y: auto;">
+    <div style="max-block-size: 50svh; overflow-y: auto">
       <VRow>
         <VCol :cols="12">
           <VCard title="Data Pelaku Usaha">
@@ -25,17 +25,8 @@
                 <VCol cols="5">
                   <p>Aspek Legal</p>
                 </VCol>
-                <VCol
-                  cols="7"
-                  style="display: flex; justify-content: end;"
-                >
-                  <VBtn
-                    density="compact"
-                    variant="outlined"
-                    append-icon="fa-plus"
-                  >
-                    Tambah
-                  </VBtn>
+                <VCol cols="7" style="display: flex; justify-content: end">
+                  <TambahAspekLegalByTable></TambahAspekLegalByTable>
                 </VCol>
               </VRow>
             </VCardTitle>
@@ -51,17 +42,8 @@
                 <VCol cols="5">
                   <p>Penyelia Halal</p>
                 </VCol>
-                <VCol
-                  cols="7"
-                  style="display: flex; justify-content: end;"
-                >
-                  <VBtn
-                    density="compact"
-                    variant="outlined"
-                    append-icon="fa-plus"
-                  >
-                    Tambah
-                  </VBtn>
+                <VCol cols="7" style="display: flex; justify-content: end">
+                  <TambahPenyeliaByTable></TambahPenyeliaByTable>
                 </VCol>
               </VRow>
             </VCardTitle>
@@ -71,7 +53,27 @@
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <VCard title="Dokumen Persyaratan" />
+          <VCard>
+            <VCardTitle><h3>Dokumen Persyaratan</h3></VCardTitle>
+            <VCardItem>
+              <VRow>
+                <VCol cols="1">1.</VCol>
+                <VCol cols="7"
+                  ><b
+                    >Izin Edar (PIRT/MD/ML/ULOT/UKOT) atau Izin Industri lainnya
+                    atas produk yang dihasilkan dari dinas/ instansi terkait.</b
+                  ></VCol
+                >
+                <VCol cols="4">
+                  <VFileInput prepend-icon="" density="compact" hide-details>
+                    <template #append>
+                      <VBtn>Upload</VBtn>
+                    </template>
+                  </VFileInput>
+                </VCol>
+              </VRow>
+            </VCardItem>
+          </VCard>
         </VCol>
       </VRow>
     </div>
