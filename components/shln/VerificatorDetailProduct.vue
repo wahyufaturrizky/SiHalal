@@ -1,21 +1,58 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+const props = defineProps({
+  datalistproducttracking: {
+    type: Object,
+    required: true,
+  },
+});
+
+const route = useRoute();
+const shlnId = route.params.id;
+
+const loadingListProduct = ref(false);
+const dataListProduct = ref();
+const totalItems = ref(0);
+const itemPerPage = ref(10);
+const page = ref(1);
+
+const loadItemListProductById = async (page: number, size: number) => {
+  try {
+    loadingListProduct.value = true;
+
+    const response = await $api(`/shln/verificator/product/list/${shlnId}`, {
+      method: "get",
+      params: {
+        page,
+        size,
+      },
+    });
+
+    if (response.code === 2000) {
+      dataListProduct.value = response.data;
+      totalItems.value = response?.total_item;
+      loadingListProduct.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingListProduct.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingListProduct.value = false;
+  }
+};
+
+onMounted(async () => {
+  await loadItemListProductById(1, itemPerPage.value);
+});
+
 const headers = [
   { title: "No", key: "no" },
-  { title: "Manufacture", key: "manufacture" },
-  { title: "Product Name", key: "product_name" },
+  { title: "Manufacture", key: "name" },
+  { title: "Product Name", key: "name" },
   { title: "HS Code", key: "hs_code" },
 ];
-
-const items = ref([
-  {
-    no: "1",
-    manufacture: "Allyn Group",
-    product_name: "Product A",
-    hs_code: "O2O1.3030|Boneless",
-  },
-]);
 </script>
 
 <template>
@@ -37,22 +74,28 @@ const items = ref([
             </VRow>
           </VCol>
         </VRow>
-        <VDataTable :headers="headers" :items="items" />
+        <VDataTableServer
+          v-model:items-per-page="itemPerPage"
+          v-model:page="page"
+          :headers="headers"
+          :items="dataListProduct"
+          :loading="loadingListProduct"
+          :items-length="totalItems"
+          loading-text="Loading..."
+          @update:options="loadItemListProductById(page, itemPerPage)"
+        >
+          <template #item.no="{ index }">
+            {{ index + 1 + (page - 1) * itemPerPage }}
+          </template>
+        </VDataTableServer>
       </VCard>
     </VCol>
 
     <VCol cols="4">
       <VCard class="pa-4">
         <p class="text-h3">Tracking</p>
-        <HalalTimeLine
-          :timeline-data="[
-            {
-              title: 'Verification',
-              date: '2024/11/01',
-              description: 'John Doe',
-            },
-            { title: 'Submitted', date: '2024/11/10', description: 'Jane Doe' },
-          ]"
+        <VerificatorTrackingProductTimeLine
+          :datalistproducttracking="props.datalistproducttracking"
         />
       </VCard>
     </VCol>

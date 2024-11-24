@@ -6,11 +6,34 @@ const panelOpenImporterContract = ref(0);
 const openPanelRegisterData = ref(0);
 const loading = ref(false);
 const loadingTracking = ref(false);
+const loadingDetailRegistration = ref(false);
 const data = ref();
+const dataDetailRegistration = ref();
 const dataTracking = ref();
 
 const route = useRoute();
 const shlnId = route.params.id;
+
+const loadItemDetailRegistrationById = async () => {
+  try {
+    loadingDetailRegistration.value = true;
+
+    const response = await $api(
+      `/shln/verificator/detail/registration/${shlnId}`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) dataDetailRegistration.value = response.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
+    loadingDetailRegistration.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingDetailRegistration.value = false;
+  }
+};
 
 const loadItemById = async () => {
   try {
@@ -51,6 +74,7 @@ const loadItemTrackingById = async () => {
 onMounted(async () => {
   await loadItemById();
   await loadItemTrackingById();
+  await loadItemDetailRegistrationById();
 });
 
 const navigateAction = () => {
@@ -59,7 +83,9 @@ const navigateAction = () => {
 </script>
 
 <template>
-  <SHLNVerfikasiLayout v-if="!loading && !loadingTracking">
+  <SHLNVerfikasiLayout
+    v-if="!loading && !loadingTracking && !loadingDetailRegistration"
+  >
     <template #pageTitle>
       <VRow>
         <VCol><h3>Foreign Halal Certificate Requirements Details</h3></VCol>
@@ -130,7 +156,7 @@ const navigateAction = () => {
                 <h2>Registration Data</h2>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <RegisterDataShln />
+                <RegisterDataShln :data="dataDetailRegistration" />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
