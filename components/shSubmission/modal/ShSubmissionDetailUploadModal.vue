@@ -301,9 +301,7 @@ const ingredientData = [
                   :placeholder="`Cari ${ingredientFieldName}`"
                   density="compact"
                   append-inner-icon="fa-search"
-                  @click="
-                    [(isNotFound = !isNotFound), handleOpenSearchDialog()]
-                  "
+                  @click="[(isNotFound = false), handleOpenSearchDialog()]"
                 />
               </VItemGroup>
             </VExpandTransition>
@@ -324,7 +322,7 @@ const ingredientData = [
                   :model-value="selectedIngredient.name"
                   placeholder="Nama Bahan otomatis teisi setelah memilih bahan"
                   density="compact"
-                  readonly
+                  disabled
                 />
               </VItemGroup>
               <VExpandTransition>
@@ -337,7 +335,7 @@ const ingredientData = [
                     :model-value="selectedIngredient.category"
                     placeholder="Kelompok otomatis terisi setelah memilih bahan"
                     density="compact"
-                    readonly
+                    disabled
                   />
                 </VItemGroup>
               </VExpandTransition>
@@ -366,22 +364,8 @@ const ingredientData = [
                 </div>
               </VExpandTransition>
             </div>
-            <VExpandTransition v-if="!isNotFound && !isPropose">
-              <br />
-              <div class="d-flex align-center justify-end">
-                <div class="me-5">
-                  Bahan yang dicari tidak ditemukan? Ajukan bahan disini
-                </div>
-                <VBtn
-                  text="Ajukan"
-                  variant="flat"
-                  color="primary"
-                  @click="isPropose = true"
-                />
-              </div>
-            </VExpandTransition>
             <VExpandTransition>
-              <div v-if="isPropose">
+              <div v-if="isNotFound && isPropose">
                 <br />
                 <VCard>
                   <VCardTitle class="text-h5 font-weight-bold my-2">
@@ -424,7 +408,21 @@ const ingredientData = [
               </div>
             </VExpandTransition>
           </VCardText>
-          <VCardActions class="px-4">
+          <VCardActions class="px-5" v-if="isNotFound && !isPropose">
+            <VSpacer />
+            <div class="d-flex align-center justify-end">
+              <div class="me-5">
+                Bahan yang dicari tidak ditemukan? Ajukan bahan disini
+              </div>
+              <VBtn
+                text="Ajukan"
+                variant="flat"
+                color="primary"
+                @click="isPropose = true"
+              />
+            </div>
+          </VCardActions>
+          <VCardActions class="px-5" v-if="!isNotFound && !isPropose">
             <VSpacer />
             <div>
               <VBtn
@@ -491,41 +489,35 @@ const ingredientData = [
       </VBtn>
     </VCardActions>
   </ShSubmissionDetailFormModal>
-  <ShSubmissionDetailFormModal
-    dialog-title="Cari Bahan"
-    :dialog-visible="searchDialogVisible"
-    :hide-button="true"
-    @update:dialog-visible="
-      [(searchDialogVisible = $event), (isNotFound = !isNotFound)]
-    "
-  >
-    <VCardText>
-      <VDataTable
-        :headers="ingredientHeader"
-        :items="ingredientData"
-        hide-default-footer
-      >
-        <template #item.index="{ index }">
-          {{ index + 1 }}
-        </template>
-        <template #item.actions="{ item }">
-          <VIcon
-            @click="
-              [
-                handleOpenSearchDialog(),
-                (selectedIngredient = item),
-                (isNotFound = false),
-                (isPropose = false),
-              ]
-            "
-            icon="mdi-arrow-right-thick"
-            color="primary"
-            class="cursor-pointer"
-          />
-        </template>
-      </VDataTable>
-    </VCardText>
-  </ShSubmissionDetailFormModal>
+  <VDialog v-model="searchDialogVisible" max-width="840px" persistent>
+    <VCard class="pa-4">
+      <VCardTitle class="d-flex justify-space-between align-center">
+        <div class="text-h3 font-weight-bold">Cari Bahan</div>
+        <VIcon @click="(searchDialogVisible = false), (isNotFound = true)">
+          fa-times
+        </VIcon>
+      </VCardTitle>
+      <VCardText>
+        <VDataTable
+          :headers="ingredientHeader"
+          :items="ingredientData"
+          hide-default-footer
+        >
+          <template #item.index="{ index }">
+            {{ index + 1 }}
+          </template>
+          <template #item.actions="{ item }">
+            <VIcon
+              @click="[handleOpenSearchDialog(), (selectedIngredient = item)]"
+              icon="mdi-arrow-right-thick"
+              color="primary"
+              class="cursor-pointer"
+            />
+          </template>
+        </VDataTable>
+      </VCardText>
+    </VCard>
+  </VDialog>
 </template>
 
 <style scoped></style>
