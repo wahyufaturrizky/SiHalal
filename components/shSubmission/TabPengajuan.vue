@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const searchFasilitator = ref("");
+const searchFasilitator = ref(null);
 </script>
 
 <template>
@@ -42,6 +42,7 @@ const searchFasilitator = ref("");
                   :items="[{ title: 'BPJH SEHATI', value: 'BPJH SEHATI' }]"
                   placeholder="Pilih Fasilitator"
                   @update:model-value="(v) => (searchFasilitator = v)"
+                  clearable
                 />
               </VItemGroup>
             </VCol>
@@ -55,17 +56,21 @@ const searchFasilitator = ref("");
               </VTextField>
             </VCol>
           </VRow>
-          <VRow v-if="searchFasilitator.length">
-            <VCol class="text-center">
-              <div>Fasilitator</div>
-              <div class="font-weight-bold text-h3">
-                {{ searchFasilitator }}
-              </div>
-            </VCol>
-          </VRow>
+          <VExpandTransition>
+            <VItemGroup v-if="searchFasilitator">
+              <VRow>
+                <VCol class="text-center">
+                  <div>Fasilitator</div>
+                  <div class="font-weight-bold text-h3">
+                    {{ searchFasilitator }}
+                  </div>
+                </VCol>
+              </VRow>
+            </VItemGroup>
+          </VExpandTransition>
         </VCardText>
       </VCard>
-      <VItemGroup v-if="searchFasilitator.length">
+      <VItemGroup v-if="searchFasilitator">
         <br />
         <VLabel>Asal Pelaku Usaha</VLabel>
         <VSelect
