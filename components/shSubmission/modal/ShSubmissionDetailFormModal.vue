@@ -1,22 +1,27 @@
 <script setup lang="ts">
-const props = defineProps({
-  dialogVisible: {
-    type: Boolean,
-    required: true,
-  },
-  dialogUse: {
-    type: String,
-  },
-  dialogTitle: {
-    type: String,
-    required: true,
-  },
+const props = defineProps<{
+  dialogVisible: boolean;
+  dialogTitle: string;
+  dialogUse?: string;
+  hideButton?: boolean;
+}>();
+
+const emit = defineEmits(["update:dialogVisible", "submit:commitAction"]);
+
+const localDialogVisible = ref(props.dialogVisible);
+const localDialogUse = ref(props.dialogUse || "CREATE");
+
+const textSubmitButton = computed(() => {
+  switch (localDialogUse.value) {
+    case "CREATE":
+      return "Tambah";
+    case "EDIT":
+      return "Simpan";
+    default:
+      return "Ya, Hapus";
+  }
 });
 
-const emit = defineEmits(["update:dialogVisible"]);
-
-const localDialogUse = computed(() => props.dialogUse || "CREATE");
-const localDialogVisible = ref(props.dialogVisible);
 const closeDialog = () => {
   localDialogVisible.value = false;
 };
@@ -33,7 +38,7 @@ watch(localDialogVisible, (newVal) => {
 </script>
 
 <template>
-  <VDialog v-model="localDialogVisible" max-width="840px">
+  <VDialog v-model="localDialogVisible" max-width="840px" persistent>
     <VCard class="pa-4">
       <VCardTitle class="d-flex justify-space-between align-center">
         <div class="text-h3 font-weight-bold">
@@ -42,10 +47,17 @@ watch(localDialogVisible, (newVal) => {
         <VIcon @click="closeDialog"> fa-times </VIcon>
       </VCardTitle>
       <slot />
-      <VCardActions class="px-4">
-        <VBtn variant="outlined" class="px-4 me-3">Batal</VBtn>
-        <VBtn variant="flat" class="px-4">
-          {{ localDialogUse == "CREATE" ? "Tambah" : "Simpan" }}
+      <VCardActions class="px-4" v-if="!hideButton">
+        <VBtn variant="outlined" class="px-4 me-3" @click="closeDialog"
+          >Batal</VBtn
+        >
+        <VBtn
+          variant="flat"
+          class="px-4"
+          :color="localDialogUse === 'DELETE' ? 'error' : 'primary'"
+          @click="[emit('submit:commitAction'), closeDialog()]"
+        >
+          {{ textSubmitButton }}
         </VBtn>
       </VCardActions>
     </VCard>
