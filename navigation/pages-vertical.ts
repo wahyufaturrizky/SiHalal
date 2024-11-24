@@ -9,6 +9,18 @@ export default [
     roles: ["Pelaku Usaha", "Admin", "Pendamping"],
   },
   {
+    title: "sh-submission.title",
+    icon: { icon: "fa-id-card" },
+    roles: ["Pendamping"],
+    children: [
+      {
+        title: "sh-submission.detail",
+        to: "sh-submission-detail",
+        roles: ["Pendamping"],
+      },
+    ],
+  },
+  {
     title: "Pelaku Usaha",
     icon: { icon: "mdi-account-tie" },
     to: "pelaku-usaha",
@@ -365,18 +377,6 @@ export default [
         title: "sidang_self_declare.rekapitulasi",
         to: "sidang-self-declare-rekapitulasi",
         roles: ["Pelaku Usaha", "Admin"],
-      },
-    ],
-  },
-  {
-    title: "sh-submission.title",
-    icon: { icon: "fa-id-card" },
-    roles: ["Pendamping"],
-    children: [
-      {
-        title: "sh-submission.detail",
-        to: "sh-submission-detail",
-        roles: ["Pendamping"],
       },
     ],
   },
