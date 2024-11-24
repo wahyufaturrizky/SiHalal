@@ -1,30 +1,37 @@
-<script setup>
-const importer = {
-  name: 'SAMSUL',
-  nib: '9162739732837',
-  api: 'API-U',
-  npwp: '87623981523478641234',
-  address: 'Sumbang RT/RW - Sumbang, Curio',
-  province: 'Sulawesi Selatan',
-  regence: 'Kab. Enrekang',
-  subDistrict: 'Curio',
-  hcb: 'Halal Transaction, Inc / Halal Transaction of Omaha',
-  companyName: 'Marvin Rocio',
-  companyId: '87623819512853',
-  country: 'United States of America',
-  companyAddress: '1518 Stellar Dr, Kenai, Alaska 99611 USA',
-  halalCertNumber: 'IDP-HC-REG10025',
-  issuedDate: '05/07/2024',
-  expiredDate: '07/07/2025',
-  scope: 'Food',
-}
+<script lang="ts" setup>
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true,
+  },
+});
+
+const { data } = props || {};
+const { importer, hcb, hcn, profile } = data || {};
+
+const dataDetail = {
+  name: importer?.name,
+  nib: profile?.nib,
+  api: profile?.api_type,
+  npwp: profile?.npwp,
+  address: importer?.address,
+  province: profile?.province,
+  regence: profile?.regency,
+  subDistrict: profile?.sub_district,
+  hcb: hcb?.hcb_id,
+  companyName: hcb?.company_name,
+  companyId: hcb?.corporate_id_number,
+  country: hcb?.country,
+  companyAddress: hcb?.address,
+  halalCertNumber: hcn?.hcn_number,
+  issuedDate: hcn?.issued_date,
+  expiredDate: hcn?.expired_date,
+  scope: hcn?.scope,
+};
 </script>
 
 <template>
-  <div
-    class="mx-auto"
-    max-width="800"
-  >
+  <div class="mx-auto" max-width="800">
     <VRow>
       <VCol cols="12">
         <VList>
@@ -34,11 +41,11 @@ const importer = {
           </VListSubheader>
           <VListItem>
             <template #prepend>
-              <VListItemTitle class="font-weight-medium">
-                Name
-              </VListItemTitle>
+              <VListItemTitle class="font-weight-medium"> Name </VListItemTitle>
             </template>
-            <VListItemSubtitle>{{ importer.name }}</VListItemSubtitle>
+            <VListItemSubtitle>
+              {{ dataDetail?.name }}
+            </VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -47,7 +54,7 @@ const importer = {
                 NIB/Business No.
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>{{ importer.nib }}</VListItemSubtitle>
+            <VListItemSubtitle>{{ dataDetail?.nib }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -56,7 +63,7 @@ const importer = {
                 API-P/API-U
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>{{ importer.api }}</VListItemSubtitle>
+            <VListItemSubtitle>{{ dataDetail?.api }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -65,7 +72,7 @@ const importer = {
                 NPWP/Taxpayer No.
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>{{ importer.npwp }}</VListItemSubtitle>
+            <VListItemSubtitle>{{ dataDetail?.npwp }}</VListItemSubtitle>
           </VListItem>
 
           <!-- Address Information -->
@@ -80,7 +87,7 @@ const importer = {
                 Address
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>{{ importer.address }}</VListItemSubtitle>
+            <VListItemSubtitle>{{ dataDetail?.address }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -89,7 +96,7 @@ const importer = {
                 Province
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>{{ importer.province }}</VListItemSubtitle>
+            <VListItemSubtitle>{{ dataDetail?.province }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -98,7 +105,7 @@ const importer = {
                 Regence
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>{{ importer.regence }}</VListItemSubtitle>
+            <VListItemSubtitle>{{ dataDetail?.regence }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -107,7 +114,7 @@ const importer = {
                 Sub-District
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>{{ importer.subDistrict }}</VListItemSubtitle>
+            <VListItemSubtitle>{{ dataDetail?.subDistrict }}</VListItemSubtitle>
           </VListItem>
 
           <!-- Company Information -->
@@ -122,7 +129,7 @@ const importer = {
                 Halal Certification Body (HCB)
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>{{ importer.hcb }}</VListItemSubtitle>
+            <VListItemSubtitle>{{ dataDetail?.hcb }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -131,7 +138,7 @@ const importer = {
                 Company Name
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>{{ importer.companyName }}</VListItemSubtitle>
+            <VListItemSubtitle>{{ dataDetail?.companyName }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -140,7 +147,7 @@ const importer = {
                 Company/Corporate Id No.
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>{{ importer.companyId }}</VListItemSubtitle>
+            <VListItemSubtitle>{{ dataDetail?.companyId }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -149,7 +156,7 @@ const importer = {
                 Country
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>{{ importer.country }}</VListItemSubtitle>
+            <VListItemSubtitle>{{ dataDetail?.country }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -159,9 +166,7 @@ const importer = {
               </VListItemTitle>
             </template>
             <VListItemSubtitle>
-              {{
-                importer.companyAddress
-              }}
+              {{ dataDetail?.companyAddress }}
             </VListItemSubtitle>
           </VListItem>
 
@@ -178,9 +183,7 @@ const importer = {
               </VListItemTitle>
             </template>
             <VListItemSubtitle>
-              {{
-                importer.halalCertNumber
-              }}
+              {{ dataDetail?.halalCertNumber }}
             </VListItemSubtitle>
           </VListItem>
 
@@ -190,7 +193,7 @@ const importer = {
                 Issued Date
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>{{ importer.issuedDate }}</VListItemSubtitle>
+            <VListItemSubtitle>{{ dataDetail?.issuedDate }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -199,7 +202,7 @@ const importer = {
                 Expired Date
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>{{ importer.expiredDate }}</VListItemSubtitle>
+            <VListItemSubtitle>{{ dataDetail?.expiredDate }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -208,7 +211,7 @@ const importer = {
                 Scope
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>{{ importer.scope }}</VListItemSubtitle>
+            <VListItemSubtitle>{{ dataDetail?.scope }}</VListItemSubtitle>
           </VListItem>
         </VList>
       </VCol>

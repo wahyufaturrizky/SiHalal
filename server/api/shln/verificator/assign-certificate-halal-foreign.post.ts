@@ -13,8 +13,6 @@ export default defineEventHandler(async (event) => {
   }
   const body: NewAccountGovernment = await readBody(event);
 
-  console.log(body);
-
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/verificator/assign-certificate-halal-foreign`,
     {

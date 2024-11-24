@@ -8,6 +8,18 @@ const tableHeader = [
   { title: "Nama Fasilitasi", value: "fac_name" },
   { title: "Sumber Pembiayaan", value: "fac_sof" },
   { title: "Jenis", value: "fac_kind" },
+  { title: "Action", value: "action", align: "center" }, // Kolom Action
+];
+
+const tableItems = [
+  {
+    no: 1,
+    fac_code: "TC32400",
+    fac_year: 2028,
+    fac_name: "Aisyah",
+    fac_sof: "JSPOO",
+    fac_kind: "Self Declare",
+  },
 ];
 </script>
 
@@ -23,12 +35,22 @@ const tableHeader = [
             density="compact"
             append-inner-icon="mdi-magnify"
             placeholder="Cari data"
-          >
-          </VTextField> </VCol
-      ></VRow>
+          />
+        </VCol>
+      </VRow>
       <VRow>
         <VCol :cols="12">
-          <VDataTable :headers="tableHeader"></VDataTable>
+          <VDataTable
+            :headers="tableHeader"
+            :items="tableItems"
+            item-value="no"
+          >
+            <template #[`item.action`]="{ item }">
+              <VBtn variant="text" icon @click="console.log('Klik:', item)">
+                <VIcon>mdi-chevron-right</VIcon>
+              </VBtn>
+            </template>
+          </VDataTable>
         </VCol>
       </VRow>
     </VCardItem>

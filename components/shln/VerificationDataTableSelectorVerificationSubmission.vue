@@ -1,50 +1,86 @@
 <script setup lang="ts">
-import { computed, defineEmits, defineProps, ref } from "vue";
+import { computed, defineEmits, ref } from "vue";
 import { useDisplay } from "vuetify";
-
-const props = defineProps({
-  headers: {
-    type: Array,
-    required: true,
-  },
-  items: {
-    type: Array,
-    required: true,
-  },
-  itemperpagesubmission: {
-    type: Number,
-    required: true,
-  },
-  loadingsubmission: {
-    type: Boolean,
-    required: true,
-  },
-  pagesubmission: {
-    type: Number,
-    required: true,
-  },
-  totalitemssubmission: {
-    type: Number,
-    required: true,
-  },
-});
 
 const emit = defineEmits<{
   (event: "cancel", message: string): void;
-  (event: "handle-input-submission", searchQuerySubmission: string): void;
   (event: "update"): void;
-  (event: "refresh"): void;
 }>();
 
 const searchQuerySubmission = ref("");
 const loadingAddSubmission = ref(false);
 
 const dialogVisible = ref(false);
+const loadingSubmission = ref(false);
+
+const itemsSubmission = ref<
+  {
+    date: string;
+    hcb: string;
+    id: string;
+    importir_name: string;
+    nib: string;
+    register_number: string;
+    status: string;
+  }[]
+>([]);
+
+const itemPerPageSubmission = ref(10);
+const totalItemsSubmission = ref(0);
+const pageSubmission = ref(1);
 
 const checkedItems = ref<{ [key: string]: boolean }>({});
 
+const loadItemSubmission = async (
+  pageParams: number,
+  sizeParams: number,
+  keywordParams: string = ""
+) => {
+  try {
+    loadingSubmission.value = true;
+
+    const response = await $api("/shln/verificator/submission", {
+      method: "get",
+      params: {
+        page: pageParams,
+        size: sizeParams,
+        keyword: keywordParams,
+      },
+    });
+
+    itemsSubmission.value = response.data || [];
+    totalItemsSubmission.value = response.total_item;
+    loadingSubmission.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingSubmission.value = false;
+  }
+};
+
+const debouncedFetch = debounce(loadItemSubmission, 500);
+
+const handleInputSubmission = () => {
+  debouncedFetch(
+    pageSubmission.value,
+    itemPerPageSubmission.value,
+    searchQuerySubmission.value
+  );
+};
+
+const verifikatorTablePopUpHeader = [
+  { title: "No", key: "id" },
+  { title: "Registration Number", key: "register_number" },
+  { title: "NIB / Business ID No", key: "nib" },
+  { title: "HCB", key: "hcb" },
+  { title: "Registration Date", key: "date" },
+  { title: "Submit Date", key: "date" },
+  { title: "Verifikator", key: "importir_name" },
+  { title: "Status", key: "status" },
+  { title: "Action", key: "check" },
+];
+
 const itemsWithCheckbox = computed(() => {
-  return props.items.map((item) => ({
+  return itemsSubmission.value.map((item) => ({
     ...item,
     isChecked: checkedItems.value[item.id] || false,
   }));
@@ -76,7 +112,7 @@ const postSubmission = async (selectedItems: string[]) => {
       }
     );
 
-    if (res?.code === 200)
+    if (res?.code === 2000)
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
     else useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
 
@@ -94,7 +130,7 @@ const addSelection = () => {
   const selectedItems = Object.keys(checkedItems.value)
     .filter((key) => checkedItems.value[key])
     .map((key) => {
-      return props.items.find((item) => item.id === key);
+      return itemsSubmission.value.find((item) => item.id === key);
     });
 
   postSubmission(selectedItems.map((item) => item.id));
@@ -109,10 +145,6 @@ const dialogMaxWidth = computed(() => {
 // Function to open the dialog
 const openDialog = () => {
   dialogVisible.value = true;
-};
-
-const handleInput = () => {
-  emit("handle-input-submission", searchQuerySubmission.value);
 };
 </script>
 
@@ -132,26 +164,29 @@ const handleInput = () => {
           placeholder="Search Data"
           append-inner-icon="ri-search-line"
           style="max-width: 100%"
-          @input="handleInput"
+          @input="handleInputSubmission"
         />
       </VCol>
       <VRow>
         <VCol>
           <VDataTableServer
-            v-model:items-per-page="props.itemperpagesubmission"
-            v-model:page="props.pagesubmission"
-            :loading="props.loadingsubmission"
-            :items-length="props.totalitemssubmission"
-            :headers="props.headers"
-            :items="items"
-            @update:options="emit('update')"
+            v-model:items-per-page="itemPerPageSubmission"
+            v-model:page="pageSubmission"
+            :loading="loadingSubmission"
+            :items-length="totalItemsSubmission"
+            :headers="verifikatorTablePopUpHeader"
+            :items="itemsSubmission"
+            loading-text="Loading..."
+            @update:options="
+              loadItemSubmission(
+                pageSubmission,
+                itemPerPageSubmission,
+                searchQuerySubmission
+              )
+            "
           >
             <template #item.id="{ index }">
-              {{
-                index +
-                1 +
-                (props.pagesubmission - 1) * props.itemperpagesubmission
-              }}
+              {{ index + 1 + (pageSubmission - 1) * itemPerPageSubmission }}
             </template>
             <template #item.register_number="{ item }">
               {{ item.register_number || "NA" }}
@@ -185,7 +220,7 @@ const handleInput = () => {
             Cancel
           </VBtn>
           <VBtn
-            :disabled="loadingaddsubmission"
+            :disabled="loadingaddsubmission || checkedItemsCount === 0"
             color="primary"
             @click="addSelection"
           >

@@ -9,6 +9,7 @@ const items = ref<
     nama_lph: string;
     nib: string;
     no_daftar: string;
+    npwp: string;
     status_reg: string;
     tgl_daftar: string;
   }[]
@@ -18,23 +19,6 @@ const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
-
-const itemsSubmission = ref<
-  {
-    date: string;
-    hcb: string;
-    id: string;
-    importir_name: string;
-    nib: string;
-    register_number: string;
-    status: string;
-  }[]
->([]);
-
-const itemPerPageSubmission = ref(10);
-const totalItemsSubmission = ref(0);
-const loadingSubmission = ref(false);
-const pageSubmission = ref(1);
 
 const loadItem = async (page: number, size: number, keyword: string = "") => {
   try {
@@ -52,44 +36,17 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
     items.value = response.data;
     totalItems.value = response.total_item;
     loading.value = false;
+    useSnackbar().sendSnackbar("Sukses update data", "success");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loading.value = false;
   }
 };
 
-const loadItemSubmission = async (
-  pageParams: number,
-  sizeParams: number,
-  keywordParams: string = ""
-) => {
-  try {
-    loadingSubmission.value = true;
-
-    const response = await $api("/shln/verificator/submission", {
-      method: "get",
-      params: {
-        page: pageParams,
-        size: sizeParams,
-        keyword: keywordParams,
-      },
-    });
-
-    itemsSubmission.value = response.data;
-    totalItemsSubmission.value = response.total_item;
-    loadingSubmission.value = false;
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingSubmission.value = false;
-  }
-};
-
 const debouncedFetch = debounce(loadItem, 500);
-const debouncedFetchLoadItemSubmission = debounce(loadItemSubmission, 500);
 
 onMounted(async () => {
   await loadItem(1, itemPerPage.value, "");
-  await loadItemSubmission(1, itemPerPageSubmission.value, "");
 });
 
 const refresh = async () => {
@@ -98,42 +55,26 @@ const refresh = async () => {
 
 const verifikatorTableHeader = [
   { title: "No", key: "id" },
-  { title: "Registration Number", key: "21354453435543131" },
+  { title: "Registration Number", key: "no_daftar" },
   { title: "Importer's Name", key: "nama_importir" },
   { title: "NIB / Business ID No", key: "nib" },
-  { title: "NPWP / Taxpayer ID No", key: "no_daftar" },
+  { title: "NPWP / Taxpayer ID No", key: "npwp" },
   { title: "Date", key: "tgl_daftar" },
-];
-
-const verifikatorTablePopUpHeader = [
-  { title: "No", key: "id" },
-  { title: "Registration Number", key: "register_number" },
-  { title: "NIB / Business ID No", key: "nib" },
-  { title: "HCB", key: "hcb" },
-  { title: "Registration Date", key: "date" },
-  { title: "Submit Date", key: "date" },
-  { title: "Verifikator", key: "importir_name" },
-  { title: "Status", key: "status" },
-  { title: "Action", key: "check" },
+  { title: "Action", key: "action" },
 ];
 
 const searchQuery = ref("");
-const searchQuerySubmission = ref("");
 
 const handleInput = () => {
   debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
 };
 
-const handleInputSubmission = (searchQuerySubmissionParams: string) => {
-  debouncedFetchLoadItemSubmission(
-    pageSubmission.value,
-    itemPerPageSubmission.value,
-    searchQuerySubmissionParams
-  );
-};
-
 const handleCancel = (message: string) => {
   console.log("Cancel message:", message);
+};
+
+const navigateAction = (id: string) => {
+  navigateTo(`/sertifikasi-halal/luar-negeri/verification/${id}`);
 };
 </script>
 
@@ -147,23 +88,8 @@ const handleCancel = (message: string) => {
         </VCol>
         <VCol class="d-flex justify-end align-center" cols="6" md="2">
           <VerificationDataTableSelectorVerificationSubmission
-            :headers="verifikatorTablePopUpHeader"
-            :items="itemsSubmission"
-            :searchquerysubmission="searchQuerySubmission"
-            :itemperpagesubmission="itemPerPageSubmission"
-            :loading-submission="loadingSubmission"
-            :pagesubmission="pageSubmission"
-            :totalitemssubmission="totalItemsSubmission"
-            @handle-input-submission="handleInputSubmission"
             @cancel="handleCancel"
             @refresh="refresh"
-            @update:options="
-              loadItemSubmission(
-                pageSubmission,
-                itemPerPageSubmission,
-                searchQuerySubmission
-              )
-            "
           />
         </VCol>
       </VRow>
@@ -188,6 +114,7 @@ const handleCancel = (message: string) => {
             :items="items"
             :loading="loading"
             :items-length="totalItems"
+            loading-text="Loading..."
             @update:options="loadItem(page, itemPerPage, searchQuery)"
           >
             <template #item.id="{ index }">
@@ -195,6 +122,17 @@ const handleCancel = (message: string) => {
             </template>
             <template #item.tgl_daftar="{ item }">
               {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+            </template>
+            <template #item.action="{ item }">
+              <div class="d-flex gap-1">
+                <IconBtn size="small">
+                  <VIcon
+                    icon="ri-arrow-right-line"
+                    color="primary"
+                    @click="navigateAction(item.id)"
+                  />
+                </IconBtn>
+              </div>
             </template>
           </VDataTableServer>
         </VCol>

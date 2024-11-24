@@ -43,6 +43,9 @@ export default defineNuxtConfig({
     public: {
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || "",
       appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || "",
+      turnstile: {
+        siteKey: process.env.NUXT_TURNSTILE_SECRET_KEY || "",
+      },
     },
     turnstile: {
       secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY || "",
@@ -84,7 +87,7 @@ export default defineNuxtConfig({
         type: "bearer",
         cookieName: "accessToken",
         headerName: "Authorization",
-        maxAgeInSeconds: 3600,
+        maxAgeInSeconds: 18000,
         sameSiteAttribute: "lax",
         secureCookieAttribute: false,
       },
@@ -216,6 +219,7 @@ export default defineNuxtConfig({
     "@sidebase/nuxt-auth",
     "@pinia/nuxt",
     "@nuxtjs/turnstile",
+    "@nuxt/scripts",
     (_options, nuxt) => {
       nuxt.hooks.hook("vite:extendConfig", (config) => {
         // @ts-expect-error

@@ -190,6 +190,9 @@ importers:
       '@mdi/js':
         specifier: ^7.4.47
         version: 7.4.47
+      '@nuxt/scripts':
+        specifier: ^0.9.5
+        version: 0.9.5(@nuxt/devtools@1.6.0(rollup@4.24.1)(vite@5.3.5(@types/node@22.1.0)(sass@1.76.0)(terser@5.36.0))(vue@3.3.13(typescript@5.5.4))(webpack-sources@3.2.3))(@unocss/webpack@0.62.4(rollup@4.24.1)(webpack@5.95.0(esbuild@0.23.1)))(@vue/compiler-core@3.5.12)(axios@1.7.7)(ioredis@5.4.1)(jwt-decode@4.0.0)(magicast@0.3.5)(nuxt@3.12.2(@parcel/watcher@2.4.1)(@types/node@22.1.0)(eslint@8.57.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.24.1)(sass@1.76.0)(stylelint@16.8.0(typescript@5.5.4))(terser@5.36.0)(typescript@5.5.4)(vite@5.3.5(@types/node@22.1.0)(sass@1.76.0)(terser@5.36.0))(webpack-sources@3.2.3))(postcss@8.4.47)(rollup@4.24.1)(typescript@5.5.4)(vite@5.3.5(@types/node@22.1.0)(sass@1.76.0)(terser@5.36.0))(vue@3.3.13(typescript@5.5.4))(webpack-sources@3.2.3)(webpack@5.95.0(esbuild@0.23.1))
       '@nuxtjs/device':
         specifier: 3.1.1
         version: 3.1.1(magicast@0.3.5)(rollup@4.24.1)(webpack-sources@3.2.3)
