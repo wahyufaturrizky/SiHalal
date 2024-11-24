@@ -1,11 +1,21 @@
+<script setup>
+const props = defineProps({
+  icon: { type: String, default: 'fa-pencil' }, // Default to existing icon
+  showLabel: { type: Boolean, default: true }, // Control label visibility
+});
+
+const emit = defineEmits(['confirm-edit', 'cancel']);
+</script>
+
 <template>
   <VDialog max-width="60svw">
-    <template #activator="{ props: openModal }">
-      <VListItem v-bind="openModal"
-        ><VListItemTitle class="text-red">
-          <VIcon class="mr-2"> fa-pencil </VIcon>
-          Ubah
-        </VListItemTitle></VListItem
+    <template #activator="{ props }">
+      <VListItem v-bind="props"
+        ><VListItemTitle class="text-red" >
+          <VIcon class="mr-2"> {{ icon }} </VIcon>
+          <VListItem v-if="showLabel">Ubah</VListItem>
+        </VListItemTitle>
+        </VListItem
       >
     </template>
     <template #default="{ isActive }">
@@ -20,9 +30,9 @@
                 ><VIcon
                   size="small"
                   icon="fa-times"
-                  @click="isActive.value = false"
-                ></VIcon
-              ></VCol>
+                  @click="isActive.value = false">
+              </VIcon>
+              </VCol>
             </VCol>
           </VRow>
         </VCardTitle>

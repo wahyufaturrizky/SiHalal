@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { VDataTableServer } from "vuetify/components";
 
 interface TimelineItem {
   title: string;
@@ -11,6 +12,7 @@ interface TimelineItem {
 const tabs = ref([
   { text: 'Pelaku Usaha', value: 'pelaku_usaha' },
   { text: 'Pengajuan', value: 'pengajuan' },
+  { text: 'Produk', value: 'produk' },
   { text: 'Melacak', value: 'melacak' },
 ]);
 
@@ -40,6 +42,69 @@ const formatDate = (date: string): string => {
 };
 
 const showTimeline = ref(false);
+
+const items = ref<
+  {
+    id: string;
+    jenis_bahan: string;
+    nama_bahan: string;
+    produsen: string;
+    no_sertifikat_halal: string;
+    keterangan: string;
+  }[]
+>([]);
+
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const loading = ref(false);
+const page = ref(1);
+
+const loadItem = async (page: number, size: number, keyword: string = "") => {
+  try {
+    loading.value = true;
+
+    const response = await $api("/shln/verificator", {
+      method: "get",
+      params: {
+        page,
+        size,
+        keyword,
+      },
+    });
+
+    items.value = response.data;
+    totalItems.value = response.total_item;
+    loading.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
+  }
+};
+
+const debouncedFetch = debounce(loadItem, 500);
+
+onMounted(async () => {
+  await loadItem(1, itemPerPage.value, "");
+});
+
+const refresh = async () => {
+  await loadItem(1, itemPerPage.value, "");
+};
+
+const verifikatorTableHeader = [
+  { title: "No", key: "id" },
+  { title: "Jenis Bahan", key: "jenis_bahan" },
+  { title: "Nama Bahan", key: "nama_bahan" },
+  { title: "Produsen", key: "produsen" },
+  { title: "Nomor Sertifikat Halal", key: "nomor_sertifikat_halal" },
+  { title: "Keterangan", key: "keterangan" },
+  { title: "Action", key: "action" },
+];
+
+const handleAddProductConfirm = formData => {
+  console.log('Add confirmed:', formData)
+}
+
 </script>
 
 <template>
@@ -71,6 +136,66 @@ const showTimeline = ref(false);
       </VCol>
     </VRow>
 
+    <!-- Tab Content -->
+    <VRow v-if="tab === 'produk'">
+      <VCol>
+        <VCard variant="flat" class="pa-4">
+      <VRow>
+        <VCol>
+          <p class="text-h3">Daftar Nama Bahan dan Kemasan</p>
+          <ol>
+            <li>Termasuk  isikan bahan dengan kategori cleaning agent seperti: Air, Sabun Pencuci, Detergent, dll</li>
+            <li>Isikan nama kemasan produk, contoh: Alumunium foil, standing pouch, plastik, dll</li>
+          </ol>
+        </VCol>
+        <VCol class="d-flex justify-end align-center" cols="6" md="2">
+          <TambahProduk
+            mode="add"
+            @confirm-add="handleAddProductConfirm"
+            @cancel="() => console.log('Add cancelled')"
+          />
+        </VCol>
+      </VRow>
+      <VRow>
+        <VCol>
+          <VDataTableServer
+            v-model:items-per-page="itemPerPage"
+            v-model:page="page"
+            :headers="verifikatorTableHeader"
+            :items="items"
+            :loading="loading"
+            :items-length="totalItems"
+            loading-text="Loading..."
+            @update:options="loadItem(page, itemPerPage, searchQuery)"
+          >
+            <template #item.id="{ index }">
+              {{ index + 1 + (page - 1) * itemPerPage }}
+            </template>
+            <template #item.tgl_daftar="{ item }">
+              {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+            </template>
+            <template #item.action="{ item }">
+              <div class="d-flex gap-1">
+                <UbahProduk
+                    mode="edit"
+                    :initialData="selectedProduct"
+                    icon="ri-pencil-fill"
+                    :show-label="false"
+                    color="#652672"
+                    @confirm-edit="handleEditProductConfirm"
+                    @cancel="() => console.log('Add cancelled')"
+                  />
+              </div>
+            </template>
+          </VDataTableServer>
+        </VCol>
+      </VRow>
+      
+        </VCard>
+    </VCol>
+   
+    </VRow>
+    
     <!-- Tab Content -->
     <VRow v-if="tab === 'melacak'">
       <VCol>
