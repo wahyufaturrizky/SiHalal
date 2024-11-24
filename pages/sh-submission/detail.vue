@@ -39,10 +39,10 @@ const userRoles = sessionData.value?.roles.map((role) => role.name);
         <VTab value="identity">Pelaku Usaha</VTab>
         <VTab value="document">Pengajuan</VTab>
         <VTab value="manufacture">Pabrik & Outlet</VTab>
-        <VTab value="material">Bahan</VTab>
+        <VTab value="ingredient">Bahan</VTab>
         <VTab value="product">Produk</VTab>
         <VTab value="process">Proses Produk Halal</VTab>
-        <VTab value="declare">Pernyataan</VTab>
+        <VTab value="statement">Pernyataan</VTab>
       </VTabs>
 
       <VTabsWindow v-model="tab">
@@ -55,14 +55,16 @@ const userRoles = sessionData.value?.roles.map((role) => role.name);
         <VTabsWindowItem value="manufacture">
           <TabPabrikDanOutlet />
         </VTabsWindowItem>
-        <VTabsWindowItem value="material"> </VTabsWindowItem>
+        <VTabsWindowItem value="ingredient">
+          <TabBahan />
+        </VTabsWindowItem>
         <VTabsWindowItem value="product">
           <TabProduk />
         </VTabsWindowItem>
         <VTabsWindowItem value="process">
           <TabProsesProdukHalal :user-roles="userRoles" />
         </VTabsWindowItem>
-        <VTabsWindowItem value="declare">
+        <VTabsWindowItem value="statement">
           <TabPernyataan />
         </VTabsWindowItem>
       </VTabsWindow>
