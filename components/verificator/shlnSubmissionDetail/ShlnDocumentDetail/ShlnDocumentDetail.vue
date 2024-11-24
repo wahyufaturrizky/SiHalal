@@ -4,6 +4,14 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  datadocumentfhc: {
+    type: Object,
+    required: true,
+  },
+  datadocumentmra: {
+    type: Object,
+    required: true,
+  },
 });
 
 const {
@@ -15,11 +23,17 @@ const {
   loa_document,
 } = props.datadocumentloa || {};
 
+const { country, expired_date, halal_institution_name, issued_date } =
+  props.datadocumentmra || {};
+
+const { document, document_no, verification_link, file } =
+  props.datadocumentfhc || {};
+
 const MRA = [
-  { id: 1, key: "Halal Institution Name", value: "Halal Transaction Inc." },
-  { id: 2, key: "Issued Date", value: "20/02/2024" },
-  { id: 3, key: "Expired Date", value: "20/02/2028" },
-  { id: 4, key: "Country", value: "USA" },
+  { id: 1, key: "Halal Institution Name", value: halal_institution_name },
+  { id: 2, key: "Issued Date", value: issued_date },
+  { id: 3, key: "Expired Date", value: expired_date },
+  { id: 4, key: "Country", value: country },
 ];
 
 const tracking = [
@@ -113,8 +127,8 @@ const downloadLOA = (file) => {
         </VCardText>
         <VCardActions style="justify-content: end">
           <div>
-            <ReturnConfirmationModal :id="id" />
-            <ApproveConfirmationModal />
+            <ReturnConfirmationModal :id="id" documenttype="loa" />
+            <ApproveConfirmationModal :id="id" documenttype="loa" />
           </div>
         </VCardActions>
       </VCard>
@@ -153,42 +167,39 @@ const downloadLOA = (file) => {
             <VCol cols="3"> Document </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <p>MACDONALD MEAT COMPANY</p>
+              <p>{{ document }}</p>
             </VCol>
           </VRow>
           <VRow>
             <VCol cols="3"> Document No. </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <p>PT.Pangan Lestari</p>
+              <p>{{ document_no }}</p>
             </VCol>
           </VRow>
           <VRow>
             <VCol cols="3"> Verification Link (Optional) </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <p>03/09/2024</p>
+              <p>{{ verification_link }}</p>
             </VCol>
           </VRow>
           <VRow style="display: flex; align-items: center">
             <VCol cols="3"> File </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <VBtn>
-                <VFileInput
-                  prepend-icon="fa-download"
-                  density="compact"
-                  hide-input
-                  style="color: white"
-                />
-              </VBtn>
+              <VBtn
+                icon="fa-download"
+                density="compact"
+                @click="downloadLOA(file)"
+              />
             </VCol>
           </VRow>
         </VCardText>
         <VCardActions style="justify-content: end">
           <div>
-            <ReturnConfirmationModal />
-            <ApproveConfirmationModal />
+            <ReturnConfirmationModal :id="id" documenttype="fhc" />
+            <ApproveConfirmationModal :id="id" documenttype="fhc" />
           </div>
         </VCardActions>
       </VCard>

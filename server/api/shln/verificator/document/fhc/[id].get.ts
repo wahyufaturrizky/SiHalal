@@ -13,15 +13,10 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const body = await readBody(event);
-
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/certificate-halal-foreign/${id}/document/loa/${body.docid}/return`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/certificate-halal-foreign/${id}/document/get-fhc`,
     {
-      method: "put",
-      body: {
-        comment: body.comment,
-      },
+      method: "get",
       headers: { Authorization: authorizationHeader },
     }
   ).catch((err: NuxtError) => {
