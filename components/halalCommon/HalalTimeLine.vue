@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ShlnTracking } from "@/pages/sertifikasi-halal/shln-detail/[id].vue";
+import type { ShlnTracking } from "@/pages/sertifikasi-halal/luar-negeri/submission/[id]/index.vue";
 
 const props = defineProps<{
   event: ShlnTracking[];
