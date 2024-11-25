@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { Manufacture } from "@/pages/sertifikasi-halal/luar-negeri/submission/[id]/edit.vue";
 import { useDisplay } from "vuetify";
+import type { VForm } from "vuetify/components";
 const props = defineProps<{
-  manufacture: Manufacture[];
+  manufacture: Manufacture[] | null;
   hcnCountry: string;
 }>();
 const headers = [
@@ -246,7 +247,6 @@ const { mdAndDown } = useDisplay();
               </div>
               <v-text-field
                 placeholder="Input Country of Origin"
-                :rules="[requiredValidator]"
                 v-model="form.country"
                 variant="outlined"
                 disabled

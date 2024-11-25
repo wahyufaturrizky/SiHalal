@@ -42,8 +42,11 @@ const getManufacture = async () => {
 
     manufacture.value = response.data;
     if (manufacture.value == null) {
+      manufacture.value = [];
       disabledTab("product", true);
+      return;
     }
+    disabledTab("product", false);
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -66,6 +69,9 @@ watch(
     }
     if (newValue == "manufacture") {
       getManufacture();
+    }
+    if (newValue == "identity") {
+      getidentity();
     }
     updateData.setData("");
   }
@@ -109,9 +115,9 @@ const disabledTab = (
 
       <VTabsWindowItem value="manufacture">
         <EditManufacture
-          v-if="manufacture && identity"
+          v-if="manufacture != undefined && identity != undefined"
           :manufacture="manufacture"
-          :hcn-country="identity?.hcb.country"
+          :hcn-country="identity.hcb.country"
         />
       </VTabsWindowItem>
       <VTabsWindowItem value="product">
