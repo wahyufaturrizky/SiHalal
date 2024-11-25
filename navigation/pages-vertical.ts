@@ -368,4 +368,32 @@ export default [
       },
     ],
   },
+  { heading: "Menu" },
+  {
+    title: "Pengajuan Sertifikat Halal",
+    icon: { icon: "mdi-scale-balance" },
+    roles: ["Pelaku Usaha", "Admin"],
+    children: [
+      {
+        title: "Cek Data Pengajuan - Pendamping",
+        to: "dummy-empty-page",
+        roles: ["Pelaku Usaha", "Admin"],
+      },
+      {
+        title: "Proses Verval - Pendamping",
+        to: "pengajuan-verval-pendamping",
+        roles: ["Pelaku Usaha", "Admin"],
+      },
+      {
+        title: "Info Sertifikat Self Declare - Pendamping",
+        to: "dummy-empty-page",
+        roles: ["Pelaku Usaha", "Admin"],
+      },
+      {
+        title: "Update Foto Produk - Pendamping",
+        to: "dummy-empty-page",
+        roles: ["Pelaku Usaha", "Admin"],
+      },
+    ],
+  },
 ];
