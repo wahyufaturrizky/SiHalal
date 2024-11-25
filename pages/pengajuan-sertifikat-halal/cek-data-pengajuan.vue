@@ -16,9 +16,9 @@ const tabs = ref([
   { text: 'Bahan', value: 'bahan' },
   { text: 'Produk', value: 'produk' },
   { text: 'Melacak', value: 'melacak' },
-]);
+])
 
-const tab = ref('pelaku_usaha'); // Default selected tab
+const tab = ref('pelaku_usaha') // Default selected tab
 
 const timelineItems = ref<TimelineItem[]>([
   {
@@ -33,17 +33,18 @@ const timelineItems = ref<TimelineItem[]>([
     date: '2024-09-09',
     color: 'purple-lighten-2',
   },
-]);
+])
 
 const formatDate = (date: string): string => {
   return new Date(date).toLocaleDateString('en-GB', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
-  });
-};
+  })
+}
 
-const showTimeline = ref(false);
+const showTimeline = ref(false)
+const showPengajuan = ref(false)
 
 // const items = ref<
 //   {
@@ -85,11 +86,11 @@ const page = ref(1)
 
 const loadItem = async (page, size) => {
   // Temporarily skip API call for dummy data testing
-  items.value = items.value.slice((page - 1) * size, page * size); // Paginate dummy data
-  totalItems.value = items.value.length;
-};
+  items.value = items.value.slice((page - 1) * size, page * size) // Paginate dummy data
+  totalItems.value = items.value.length
+}
 
-const debouncedFetch = debounce(loadItem, 500);
+const debouncedFetch = debounce(loadItem, 500)
 
 onMounted(() => {
   // Assign dummy data to items instead of fetching from API
@@ -134,10 +135,10 @@ onMounted(() => {
       nomor_sertifikat_halal: '901234',
       keterangan: 'Membersihkan bahan',
     },
-  ];
+  ]
 
-  totalItems.value = items.value.length; // Set totalItems for pagination
-});
+  totalItems.value = items.value.length // Set totalItems for pagination
+})
 
 // onMounted(async () => {
 //   await loadItem(1, itemPerPage.value, "");
@@ -263,8 +264,6 @@ const outletTableData = ref([
   },
 ])
 
-
-
 const handleAddProductConfirm = formData => {
   console.log('Add confirmed:', formData)
 }
@@ -296,6 +295,34 @@ const handleFileUpload = (event: Event) => {
 const triggerFileInputClick = () => {
   fileInputRef.value?.click()
 }
+
+const formData = ref({
+  tanggalSuratPemohon: '',
+})
+
+const data = {
+  sertifikasi_date: ref([]),
+}
+
+const selectedFasilitator = ref('')
+const searchFasilitator = ref('')
+
+const fasilitators = ref([
+  { id: 1, name: "Fasilitator A" },
+  { id: 2, name: "Fasilitator B" },
+  { id: 3, name: "Fasilitator C" },
+])
+
+const filteredFasilitators = computed(() => {
+  return fasilitators.value.filter(fasilitator =>
+    fasilitator.name.toLowerCase().includes(searchFasilitator.value.toLowerCase()),
+  )
+})
+
+const onFasilitatorSearchInput = debounce((input) => {
+  console.log(input,"ini input")
+  searchFasilitator.value = input
+}, 500)
 </script>
 
 <template>
@@ -327,7 +354,186 @@ const triggerFileInputClick = () => {
       </VCol>
     </VRow>
 
-    <!-- Tab Content -->
+    <!-- Tab Content Pengajuan -->
+    <VRow v-if="tab === 'pengajuan'">
+      <VCol>
+        <VCard variant="flat" class="pa-4">
+          <div class="d-flex justify-space-between align-center" @click="showPengajuan = !showPengajuan">
+            <p class="text-h4" style="font-weight: bold;">Data Pengajuan</p>
+            <VIcon :icon="showPengajuan ? 'mdi-chevron-up' : 'mdi-chevron-down'" />
+          </div>
+          <VExpandTransition>
+            <div v-if="showPengajuan">
+              <VCardText>
+                <div class="d-flex flex-column">
+                  <!-- Static Details -->
+                  <VRow>
+                    <VCol cols="12">
+                      <div class="info-row">
+                        <span class="label">No. ID</span>
+                        <span class="colon">:</span>
+                        <span class="value">39886986</span>
+                      </div>
+                    </VCol>
+                    <VCol cols="12">
+                      <div class="info-row">
+                        <span class="label">Tanggal</span>
+                        <span class="colon">:</span>
+                        <span class="value">10/10/2024</span>
+                      </div>
+                    </VCol>
+                    <VCol cols="12">
+                      <div class="info-row">
+                        <span class="label">Jenis Pengajuan</span>
+                        <span class="colon">:</span>
+                        <span class="value">Baru</span>
+                      </div>
+                    </VCol>
+                  </VRow>
+
+                  <!-- Form Fields -->
+                  <VRow>
+                    <!-- Jenis Pendaftaran -->
+                    <VCol cols="12">
+                      <VLabel class="required">Jenis Pendaftaran</VLabel>
+                      <VSelect
+                        density="compact"
+                        :items="['Self Declare', 'Lainnya']"
+                        required
+                      />
+                    </VCol>
+
+                    <!-- Kode Daftar / Fasilitasi -->
+                    <VCol cols="12">
+                      <VLabel class="required">Kode Daftar / Fasilitasi</VLabel>
+                      <VRow align="center" class="mb-2">
+                        <VCol cols="5.5">
+                          <VSelect
+                            v-model="selectedFasilitator"
+                            :items="filteredFasilitators"
+                            item-title="name"
+                            item-value="id"
+                            :search-input="searchFasilitator"
+                            clearable
+                            required
+                            @update:search-input="onFasilitatorSearchInput"
+                          />
+                        </VCol>
+                        <span>Atau</span>
+                        <VCol cols="5.5">
+                          <VTextField v-model="searchFasilitator" append-inner-icon="mdi-magnify" required />
+                        </VCol>
+                      </VRow>
+                      <VAlert
+                        type="warning"
+                        variant="tonal"
+                        color="#652672"
+                        class="mt-3"
+                      >
+                        Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada fasilitator sebagai kode untuk mendaftarkan sertifikasi halal gratis
+                      </VAlert>
+                    </VCol>
+                    <VDivider class="mt-2" />
+                    <!-- Nomor Surat Permohonan & Tanggal Surat Pemohon -->
+                    <VCol cols="6">
+                      <VLabel class="required">Nomor Surat Permohonan</VLabel>
+                      <VTextField required placeholder="Isi Nomor Surat Permohonan"/>
+                    </VCol>
+                    <VCol cols="6">
+                      <VItemGroup>
+                        <!-- Date TextField -->
+                        <Vuepicdatepicker>
+                          <template #trigger>
+                            <Vuepicdatepicker
+                              v-model:model-value="data.sertifikasi_date.value"
+                              auto-apply
+                              model-type="dd/MM/yyyy"
+                              :enable-time-picker="false"
+                              teleport
+                              clearable
+                            >
+                              <template #trigger>
+                                <VLabel class="required">Tanggal Surat Pemohon</VLabel>
+                                <VTextField
+                                  placeholder="Pilih Tanggal Surat Pemohon"
+                                  disabled
+                                  append-inner-icon="fa-calendar"
+                                  :model-value="data.sertifikasi_date.value"
+                                  color="#757575"
+                                />
+                              </template>
+                            </Vuepicdatepicker>
+                          </template>
+                        </Vuepicdatepicker>
+                      </VItemGroup>
+                    </VCol>
+
+                    <!-- Jenis Layanan -->
+                    <VCol cols="12">
+                      <VLabel class="required">Jenis Layanan</VLabel>
+                      <VSelect :items="['Layanan A', 'Layanan B']" required placeholder="Pilih Jenis Layanan"></VSelect>
+                    </VCol>
+
+                    <!-- Jenis Produk -->
+                    <VCol cols="12">
+                      <VLabel class="required">Jenis Produk</VLabel>
+                      <VSelect :items="['Produk A', 'Produk B']" required placeholder="Pilih Jenis Produk"/>
+                    </VCol>
+
+                    <!-- Nama Usaha -->
+                    <VCol cols="12">
+                      <VLabel class="required">Jenis Usaha</VLabel>
+                      <VTextField required placeholder="Pilih Jenis Usaha"/>
+                    </VCol>
+
+                    <!-- Area Pemasaran -->
+                    <VCol cols="12">
+                      <VLabel class="required">Area Pemasaran</VLabel>
+                      <VSelect
+                        placeholder="Pilih Area Pemasaran"
+                        :items="['Nasional', 'Internasional']"
+                        required
+                      />
+                    </VCol>
+
+                    <!-- Lokasi Pendamping -->
+                    <VCol cols="12">
+                      <VLabel class="required">Lokasi Pendamping</VLabel>
+                      <VSelect placeholder="Pilih Area Pendamping" :items="['Lokasi A', 'Lokasi B']" required />
+                    </VCol>
+
+                    <!-- Lembaga Pendamping -->
+                    <VCol cols="12">
+                      <VLabel class="required">Lembaga Pendamping</VLabel>
+                      <VSelect
+                        placeholder="Pilih Lembaga Pendamping"
+                        :items="['Lembaga A', 'Lembaga B']"
+                        required
+                      />
+                    </VCol>
+
+                    <!-- Pendamping -->
+                    <VCol cols="12">
+                      <VLabel class="required">Pendamping</VLabel>
+                      <VSelect placeholder="Pilih Pendamping" :items="['Pendamping A', 'Pendamping B']" required />
+                    </VCol>
+                  </VRow>
+                </div>
+              </VCardText>
+
+              <!-- Action Buttons -->
+              <VCardActions>
+                <VSpacer />
+                <Permohonan />
+                <Pernyataan />
+              </VCardActions>
+            </div>
+          </VExpandtransition>
+        </VCard>
+      </VCol>
+    </VRow>
+
+    <!-- Tab Content Pabrik dan Outlet -->
     <VRow v-if="tab === 'pabrik'">
       <VRow>
         <VCol>
@@ -365,9 +571,9 @@ const triggerFileInputClick = () => {
                   <template #item.action="{ item }">
                     <div class="d-flex gap-1">
                       <VBtn
-                      variant="text"
-                      elevation="0"
-                      @click="handleDeletePabrikConfirm"
+                        variant="text"
+                        elevation="0"
+                        @click="handleDeletePabrikConfirm"
                       >
                         <VIcon
                           mode="edit"
@@ -391,7 +597,7 @@ const triggerFileInputClick = () => {
                 <p class="text-h3">Outlet</p>
               </VCol>
               <VCol class="d-flex justify-end align-center" cols="6" md="2">
-                <TambahPabrikOutlet
+                <TambahOutlet
                   mode="add"
                   @confirm-add="handleAddProductConfirm"
                   @cancel="() => console.log('Add cancelled')"
@@ -419,9 +625,9 @@ const triggerFileInputClick = () => {
                   <template #item.action="{ item }">
                     <div class="d-flex gap-1">
                       <VBtn
-                      variant="text"
-                      elevation="0"
-                      @click="handleDeleteOutletConfirm"
+                        variant="text"
+                        elevation="0"
+                        @click="handleDeleteOutletConfirm"
                       >
                         <VIcon
                           mode="edit"
@@ -439,7 +645,7 @@ const triggerFileInputClick = () => {
       </VRow>
     </VRow>
 
-    <!-- Tab Content -->
+    <!-- Tab Content Bahan -->
     <VRow v-if="tab === 'bahan'">
       <VCol>
         <VCard variant="flat" class="pa-4">
@@ -454,18 +660,18 @@ const triggerFileInputClick = () => {
                 @cancel="() => console.log('Add cancelled')"
               />
               <VContainer>
-                <VBtn @click="triggerFileInputClick" color="primary" variant="outlined" class="d-flex align-center">
+                <VBtn color="primary" @click="triggerFileInputClick" variant="outlined" class="d-flex align-center">
                   <VIcon size="20">ri-upload-line</VIcon>
                   <span class="ml-2">Upload File</span>
                 </VBtn>
                 <!-- Hidden File Input -->
                 <input
-                    ref="fileInputRef"
-                    type="file"
-                    style="display: none;"
-                    accept=".pdf,.doc,.docx"
-                    @change="handleFileUpload"
-                  />
+                  ref="fileInputRef"
+                  type="file"
+                  style="display: none;"
+                  accept=".pdf,.doc,.docx"
+                  @change="handleFileUpload"
+                >
               </VContainer>
             </VCol>
           </VRow>
@@ -476,10 +682,10 @@ const triggerFileInputClick = () => {
                 variant="tonal"
                 color="#652672"
               >
-              <ol>
-                <li>1. Termasuk  isikan bahan dengan kategori cleaning agent seperti: Air, Sabun Pencuci, Detergent, dll</li>
-                <li>2. Isikan nama kemasan produk, contoh: Alumunium foil, standing pouch, plastik, dll</li>
-              </ol>
+                <ol>
+                  <li>1. Termasuk  isikan bahan dengan kategori cleaning agent seperti: Air, Sabun Pencuci, Detergent, dll</li>
+                  <li>2. Isikan nama kemasan produk, contoh: Alumunium foil, standing pouch, plastik, dll</li>
+                </ol>
               </VAlert>
             </VCol>
           </VRow>
@@ -504,19 +710,19 @@ const triggerFileInputClick = () => {
                 <template #item.action="{ item }">
                   <div class="d-flex gap-1">
                     <UbahBahanModalHalal
-                        @confirm-edit="handleEditProductConfirm"
-                        @cancel="() => console.log('Add cancelled')"
-                      />
+                      @confirm-edit="handleEditProductConfirm"
+                      @cancel="() => console.log('Add cancelled')"
+                    />
                   </div>
                 </template>
               </VDataTableServer>
             </VCol>
           </VRow>
         </VCard>
-      </VCol> 
+      </VCol>
     </VRow>
 
-    <!-- Tab Content -->
+    <!-- Tab Content Produk -->
     <VRow v-if="tab === 'produk'">
       <VCol>
         <VCard variant="flat" class="pa-4">
@@ -557,14 +763,14 @@ const triggerFileInputClick = () => {
                 <template #item.action="{ item }">
                   <div class="d-flex gap-1">
                     <UbahProduk
-                        mode="edit"
-                        :initialData="selectedProduct"
-                        icon="ri-pencil-fill"
-                        :show-label="false"
-                        color="#652672"
-                        @confirm-edit="handleEditProductConfirm"
-                        @cancel="() => console.log('Add cancelled')"
-                      />
+                      mode="edit"
+                      :initialData="selectedProduct"
+                      icon="ri-pencil-fill"
+                      :show-label="false"
+                      color="#652672"
+                      @confirm-edit="handleEditProductConfirm"
+                      @cancel="() => console.log('Add cancelled')"
+                    />
                   </div>
                 </template>
               </VDataTableServer>
@@ -574,7 +780,7 @@ const triggerFileInputClick = () => {
       </VCol>
     </VRow>
 
-    <!-- Tab Content -->
+    <!-- Tab Content Melacak -->
     <VRow v-if="tab === 'melacak'">
       <VCol>
         <VCard variant="flat" class="pa-4">
@@ -631,5 +837,29 @@ const triggerFileInputClick = () => {
 
 :deep(.v-timeline-item__dot) {
   margin-inline-end: 16px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+}
+
+.label {
+  min-width: 300px; /* Adjust this value based on the longest label */
+  font-weight: 500;
+}
+
+.colon {
+  margin: 0 8px; /* Space between colon and value */
+}
+
+.value {
+  flex: 1;
+  text-align: left;
+}
+
+.required::after {
+  color: red;
+  content: "*";
 }
 </style>
