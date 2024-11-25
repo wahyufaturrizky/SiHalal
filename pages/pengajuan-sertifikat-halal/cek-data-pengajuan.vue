@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { VDataTableServer } from 'vuetify/components';
+import { ref } from 'vue'
+import { VDataTableServer } from 'vuetify/components'
 
 interface TimelineItem {
   title: string
@@ -45,6 +45,7 @@ const formatDate = (date: string): string => {
 
 const showTimeline = ref(false)
 const showPengajuan = ref(false)
+const showDetail = ref(false)
 
 // const items = ref<
 //   {
@@ -175,6 +176,25 @@ const outletTableHeader = [
   { title: 'Action', key: 'action' },
 ]
 
+const legalTableHeader = [
+  { title: 'No', key: 'id' },
+  { title: 'Jenis', key: 'jenis' },
+  { title: 'No. Dokumen', key: 'no_dokumen' },
+  { title: 'Tanggal', key: 'tanggal' },
+  { title: 'Masa Berlaku', key: 'masa_berlaku' },
+  { title: 'Instansi Penerbit', key: 'instansi_penerbit' },
+]
+
+const penyeliaTableHeader = [
+  { title: 'No', key: 'id' },
+  { title: 'Nama', key: 'nama' },
+  { title: 'No. KTP', key: 'no_ktp' },
+  { title: 'No. Kontak', key: 'no_kontak' },
+  { title: 'No/Tgl Sertif Penyelia Halal', key: 'sertif_penyelia_halal' },
+  { title: 'No/Tgl SK', key: 'sk' },
+  { title: 'Action', key: 'action' },
+]
+
 // Dummy data
 const items = ref([
   {
@@ -264,6 +284,49 @@ const outletTableData = ref([
   },
 ])
 
+const penyeliaTableData = ref([
+  {
+    id: 1,
+    nama: 'Ahmad Fauzi',
+    no_ktp: '3201012001010001',
+    no_kontak: '081234567890',
+    sertif_penyelia_halal: 'SH12345 / 01-01-2024',
+    sk: 'SK001 / 15-02-2024',
+  },
+  {
+    id: 2,
+    nama: 'Nurul Aini',
+    no_ktp: '3202011995010002',
+    no_kontak: '081298765432',
+    sertif_penyelia_halal: 'SH67890 / 10-03-2024',
+    sk: 'SK002 / 20-03-2024',
+  },
+  {
+    id: 3,
+    nama: 'Rahmat Hidayat',
+    no_ktp: '3203011987020003',
+    no_kontak: '081345678901',
+    sertif_penyelia_halal: 'SH11223 / 05-04-2024',
+    sk: 'SK003 / 25-04-2024',
+  },
+  {
+    id: 4,
+    nama: 'Sri Rahayu',
+    no_ktp: '3204011988010004',
+    no_kontak: '081456789012',
+    sertif_penyelia_halal: 'SH33456 / 15-05-2024',
+    sk: 'SK004 / 30-05-2024',
+  },
+  {
+    id: 5,
+    nama: 'Budi Santoso',
+    no_ktp: '3205011985010005',
+    no_kontak: '081567890123',
+    sertif_penyelia_halal: 'SH55678 / 20-06-2024',
+    sk: 'SK005 / 05-07-2024',
+  },
+])
+
 const handleAddProductConfirm = formData => {
   console.log('Add confirmed:', formData)
 }
@@ -276,8 +339,31 @@ const handleDeletePabrikConfirm = pabrik => {
   console.log('Delete pabrik confirmed:', pabrik)
 }
 
-const file = ref<File | null>(null);
-const fileInputRef = ref<HTMLInputElement | null>(null);
+const file = ref<File | null>(null)
+const fileInputRef = ref<HTMLInputElement | null>(null)
+
+// Mock data for document list
+const documentList = ref([
+  { nama: 'Izin Edar', fileName: 'Surat Izin Usaha.pdf', file: null },
+  { nama: 'Izin Masuk', fileName: '', file: null },
+])
+
+// Handle file upload
+const handleFileInput = (event: Event, index: number) => {
+  const input = event.target as HTMLInputElement
+  if (input.files && input.files[0]) {
+    const file2 = input.files[0]
+
+    documentList.value[index].fileName = file2.name
+    documentList.value[index].file = file2 // Store the file object if needed
+  }
+}
+
+// Handle file removal
+const removeFile = (index: number) => {
+  documentList.value[index].fileName = ''
+  documentList.value[index].file = null
+};
 
 // Handle file upload
 const handleFileUpload = (event: Event) => {
@@ -308,9 +394,9 @@ const selectedFasilitator = ref('')
 const searchFasilitator = ref('')
 
 const fasilitators = ref([
-  { id: 1, name: "Fasilitator A" },
-  { id: 2, name: "Fasilitator B" },
-  { id: 3, name: "Fasilitator C" },
+  { id: 1, name: 'Fasilitator A' },
+  { id: 2, name: 'Fasilitator B' },
+  { id: 3, name: 'Fasilitator C' },
 ])
 
 const filteredFasilitators = computed(() => {
@@ -319,8 +405,8 @@ const filteredFasilitators = computed(() => {
   )
 })
 
-const onFasilitatorSearchInput = debounce((input) => {
-  console.log(input,"ini input")
+const onFasilitatorSearchInput = debounce(input => {
+  console.log(input, 'ini input')
   searchFasilitator.value = input
 }, 500)
 </script>
@@ -353,6 +439,260 @@ const onFasilitatorSearchInput = debounce((input) => {
         </VTabs>
       </VCol>
     </VRow>
+
+    <!-- Tab Content Pelaku Usaha -->
+    <VContainer v-if="tab === 'pelaku_usaha'">
+      <VRow>
+        <VCol>
+          <VCard variant="flat" class="pa-4">
+            <div class="d-flex justify-space-between align-center" @click="showDetail = !showDetail">
+              <p class="text-h4" style="font-weight: bold;">Pengajuan Sertifikasi Halal</p>
+              <VIcon :icon="showDetail ? 'mdi-chevron-up' : 'mdi-chevron-down'" />
+            </div>
+            <VExpandTransition>
+              <div v-if="showDetail">
+                <VCardText>
+                  <div class="d-flex flex-column">
+                    <!-- Static Details -->
+                    <VRow>
+                      <VCol cols="12">
+                        <div class="info-row">
+                          <span class="label">Nama</span>
+                          <span class="colon">:</span>
+                          <span class="value">Sartika/Industri Makanan Ringan</span>
+                        </div>
+                      </VCol>
+                      <VCol cols="12">
+                        <div class="info-row">
+                          <span class="label">Alamat</span>
+                          <span class="colon">:</span>
+                          <span class="value">Sumbawa Banget, RT002/RW002, Sumbang, Curio, Jawa Barat</span>
+                        </div>
+                      </VCol>
+                      <VCol cols="12">
+                        <div class="info-row">
+                          <span class="label">Jenis Badan Usaha</span>
+                          <span class="colon">:</span>
+                          <span class="value">Lainnya</span>
+                        </div>
+                      </VCol>
+                      <VCol cols="12">
+                        <div class="info-row">
+                          <span class="label">Skala Usaha</span>
+                          <span class="colon">:</span>
+                          <span class="value">Mikro</span>
+                        </div>
+                      </VCol>
+                      <VDivider />
+                      <VCol cols="12">
+                        <div class="info-row">
+                          <span class="label">Penanggung Jawab</span>
+                          <span class="colon">:</span>
+                          <span class="value">Sumayah</span>
+                        </div>
+                      </VCol>
+                    </VRow>
+                  </div>
+                </VCardText>
+              </div>
+            </VExpandtransition>
+          </VCard>
+        </VCol>
+      </VRow>
+      <VRow>
+        <VCol>
+          <VCard variant="flat" class="pa-4">
+            <p class="text-h4" style="font-weight: bold;">Penanggung Jawab</p>
+            <!-- Nama Usaha -->
+            <VCol cols="12">
+              <VLabel class="required">Jenis Badan Usaha</VLabel>
+              <VTextField required placeholder="Jenis Badan Usaha"/>
+            </VCol>
+            <VCol cols="12">
+              <VLabel class="required">Nomor Kontak</VLabel>
+              <VTextField required placeholder="Nomor Kontak"/>
+            </VCol>
+            <VCol cols="12">
+              <VLabel class="required">Email</VLabel>
+              <VTextField required placeholder="Email"/>
+            </VCol>
+          </VCard>
+        </VCol>
+      </VRow>
+      <VRow>
+        <VCol>
+          <VCard variant="flat" class="pa-4">
+            <VRow>
+              <VCol>
+                <p class="text-h3">Aspek Legal</p>
+              </VCol>
+              <VCol class="d-flex justify-end align-center" cols="6" md="2">
+                <TambahProduk
+                  mode="add"
+                  @confirm-add="handleAddProductConfirm"
+                  @cancel="() => console.log('Add cancelled')"
+                />
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol>
+                <VDataTableServer
+                  v-model:items-per-page="itemPerPage"
+                  v-model:page="page"
+                  :headers="legalTableHeader"
+                  :items="pabrikTableData"
+                  :loading="loading"
+                  :items-length="totalItems"
+                  loading-text="Loading..."
+                  @update:options="loadItem(page, itemPerPage)"
+                >
+                  <template #item.id="{ index }">
+                    {{ index + 1 + (page - 1) * itemPerPage }}
+                  </template>
+                  <template #item.tgl_daftar="{ item }">
+                    {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+                  </template>
+                </VDataTableServer>
+              </VCol>
+            </VRow>
+          </VCard>
+        </VCol>
+      </VRow>
+      <VRow>
+        <VCol>
+          <VCard variant="flat" class="pa-4">
+            <VRow>
+              <VCol>
+                <p class="text-h3">Penyelia Halal</p>
+              </VCol>
+              <VCol class="d-flex justify-end align-center" cols="6" md="2">
+                <TambahPabrikOutlet
+                  mode="add"
+                  @confirm-add="handleAddProductConfirm"
+                  @cancel="() => console.log('Add cancelled')"
+                />
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol>
+                <VDataTableServer
+                  v-model:items-per-page="itemPerPage"
+                  v-model:page="page"
+                  :headers="penyeliaTableHeader"
+                  :items="penyeliaTableData"
+                  :loading="loading"
+                  :items-length="totalItems"
+                  loading-text="Loading..."
+                  @update:options="loadItem(page, itemPerPage)"
+                >
+                  <template #item.id="{ index }">
+                    {{ index + 1 + (page - 1) * itemPerPage }}
+                  </template>
+                  <template #item.tgl_daftar="{ item }">
+                    {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+                  </template>
+                  <template #item.action="{ item }">
+                    <div class="d-flex gap-1">
+                      <VBtn
+                        variant="text"
+                        elevation="0"
+                        @click="handleDeletePabrikConfirm"
+                      >
+                        <VIcon
+                          mode="edit"
+                          icon="ri-delete-bin-fill"
+                          color="#E1442E"
+                        />
+                      </VBtn>
+                    </div>
+                  </template>
+                </VDataTableServer>
+              </VCol>
+            </VRow>
+          </VCard>
+        </VCol>
+      </VRow>
+      <VRow>
+        <VCol>
+          <VCard variant="flat" class="pa-4">
+            <VRow>
+              <VCol>
+                <h3 class="text-h4 font-weight-bold">Dokumen Persyaratan Fasilitas</h3>
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol>
+                <VRow>
+                  <VCol>
+                    <VAlert
+                      type="warning"
+                      variant="tonal"
+                      color="#652672"
+                      density="compact"
+                    >
+                      <p>File yang digunakan dengan extention XLSX, PDF, PNG dan Maksimal 50mb</p>
+                    </VAlert>
+                  </VCol>
+                </VRow>
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol>
+                <VTable>
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Nama</th>
+                      <th>Dokumen</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(doc, index) in documentList" :key="index">
+                      <td>{{ index + 1 }}</td>
+                      <td>{{ doc.nama }}</td>
+                      <td>
+                        <div v-if="doc.fileName">
+                          <!-- Display file name with remove button -->
+                          <VTextField
+                            v-model="doc.fileName"
+                            dense
+                            outlined
+                            readonly
+                            style="max-inline-size: 300px;"
+                          >
+                            <template #append-inner>
+                              <VBtn variant="text">
+                                <VIcon color="error">ri-delete-bin-fill</VIcon>
+                              </VBtn>
+                            </template>
+                          </VTextField>
+                        </div>
+                        <div v-else>
+                          <!-- File upload input -->
+                          <VFileInput
+                            v-model="file"
+                            prepend-icon=""
+                            density="compact"
+                            hide-details
+                            style="inline-size: 200px;"
+                          >
+                            <template #append-inner>
+                              <VBtn icon color="primary" variant="flat">
+                                Upload
+                              </VBtn>
+                            </template>
+                          </VFileInput>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </VTable>
+              </VCol>
+            </VRow>
+          </VCard>
+        </VCol>
+      </VRow>
+    </VContainer>
 
     <!-- Tab Content Pengajuan -->
     <VRow v-if="tab === 'pengajuan'">
@@ -471,7 +811,7 @@ const onFasilitatorSearchInput = debounce((input) => {
                     <!-- Jenis Layanan -->
                     <VCol cols="12">
                       <VLabel class="required">Jenis Layanan</VLabel>
-                      <VSelect :items="['Layanan A', 'Layanan B']" required placeholder="Pilih Jenis Layanan"></VSelect>
+                      <VSelect :items="['Layanan A', 'Layanan B']" required placeholder="Pilih Jenis Layanan"/>
                     </VCol>
 
                     <!-- Jenis Produk -->
