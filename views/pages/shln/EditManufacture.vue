@@ -4,7 +4,7 @@ import { useDisplay } from "vuetify";
 import type { VForm } from "vuetify/components";
 const props = defineProps<{
   manufacture: Manufacture[] | null;
-  hcnCountry: string;
+  hcbCountry: string;
 }>();
 const headers = [
   { title: "No", key: "index" },
@@ -52,7 +52,7 @@ const form = ref({
   shlnId: shlnId,
   name: "",
   address: "",
-  country: "",
+  country: props.hcbCountry != "" ? props.hcbCountry : "",
 });
 const tracking = ref<
   {
