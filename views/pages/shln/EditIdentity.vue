@@ -61,7 +61,8 @@ const country = ref();
 const hcbCountry = ref("");
 const formIdentity = ref<IdentityRequest>({
   profile: {
-    api_type: null,
+    api_type:
+      props.event.profile.api_type == "" ? null : props.event.profile.api_type,
   },
   hcb: {
     hcb_id: props.event.hcb.hcb_id == "" ? null : props.event.hcb.hcb_id,

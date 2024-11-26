@@ -53,11 +53,11 @@ const getManufacture = async () => {
 };
 onMounted(async () => {
   await Promise.allSettled([getidentity(), getManufacture()]);
-  if (
-    identity.value?.profile.api_type == "" &&
-    Object.values(identity.value?.importer).some((value) => value === "")
-  ) {
-    disabledTab("document", true);
+  if (identity.value?.hcb.hcb_id == "" || identity.value?.hcb.country == "") {
+    // disabledTab("document", true);
+  }
+  if (identity.value?.hcb.country == "") {
+    disabledTab("manufacture", true);
   }
 });
 const updateData = useMyUpdateSubmissionEditStore();
