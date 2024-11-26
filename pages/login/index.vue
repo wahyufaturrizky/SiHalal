@@ -84,13 +84,8 @@ async function login() {
       return;
     }
     if (error.data.data.code === 400000) {
-      console.log(error.data.data);
-      if (error.data.data.errors.list_error[0] == "kata sandi tidak sesuai") {
-        errors.value.password = "Kata sandi tidak tepat!";
-      }
-      if (error.data.data.errors.list_error[0] == "email tidak ditemukan") {
-        errors.value.email = "Alamat Email tidak ditemukan!";
-      }
+      errors.value.password = "Kata sandi tidak tepat!";
+      errors.value.email = "Alamat Email tidak ditemukan!";
     }
     useSnackbar().sendSnackbar(
       "Gagal masuk, mohon periksa kembali kelengkapan data!",
