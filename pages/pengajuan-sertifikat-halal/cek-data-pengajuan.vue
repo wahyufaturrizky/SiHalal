@@ -750,7 +750,10 @@ const onFasilitatorSearchInput = debounce(input => {
                       <td>{{ index + 1 }}</td>
                       <td>{{ doc.nama }}</td>
                       <td>
-                        <div v-if="documentList[0].fileName">
+                        <VCols
+                          v-if="documentList[0].fileName"
+                          cols="6"
+                        >
                           <!-- Display file name with remove button -->
                           <VTextField
                             v-model="documentList[0].fileName"
@@ -770,8 +773,11 @@ const onFasilitatorSearchInput = debounce(input => {
                               </VBtn>
                             </template>
                           </VTextField>
-                        </div>
-                        <div v-else>
+                        </VCols>
+                        <VCols
+                          v-else
+                          cols="6"
+                        >
                           <!-- File upload input -->
                           <VFileInput
                             v-model="file"
@@ -780,7 +786,7 @@ const onFasilitatorSearchInput = debounce(input => {
                             hide-details
                             label="No File Chosen"
                             style="max-inline-size: 400px;"
-                            class="input-file-izin"
+                            class="custom-file-input"
                             @change="uploadFile"
                           >
                             <!-- Button upload input -->
@@ -795,7 +801,7 @@ const onFasilitatorSearchInput = debounce(input => {
                               </VBtn>
                             </template>
                           </VFileInput>
-                        </div>
+                        </VCols>
                       </td>
                     </tr>
                   </tbody>
@@ -1396,6 +1402,14 @@ const onFasilitatorSearchInput = debounce(input => {
   </VContainer>
 </template>
 
+<style lang="scss">
+.custom-file-input {
+  .v-field--append {
+    padding-inline-end: 0 !important;
+  }
+}
+</style>
+
 <style scoped>
 .v-card {
   border: none !important;
@@ -1444,12 +1458,5 @@ const onFasilitatorSearchInput = debounce(input => {
   border-bottom-left-radius: 0;
   margin-right: 0;
   scroll-margin-inline-end: 0;
-}
-
-:deep(.file-input) {
-    padding-right: 0;
-    margin-right: 0;
-    padding-inline-end: 0;
-    margin-inline-end: 0;
 }
 </style>

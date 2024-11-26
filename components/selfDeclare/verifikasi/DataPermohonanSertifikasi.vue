@@ -11,8 +11,8 @@ const emit = defineEmits(['confirm-add', 'cancel']);
 const isModalOpen = ref(false)
 interface DataItem {
   id: number
-  d_daftar: string
-  TanggalDaftar: number
+  id_daftar: string
+  TanggalDaftar: string
   Nama: string
   Alamat: string
   JenisProduk: string
@@ -131,33 +131,43 @@ const debouncedFetch = debounce(loadItem, 500)
 const showFilterMenu = ref(false);
 
 const selectedFilters = ref({
-  jenisLayanan: 'Semua',
+  fasilitas: 'Semua',
   jenisProduk: 'Semua',
   provinsi: 'Semua',
-  lph: 'Semua',
+  lembaga: 'Semua',
+  pendamping: 'Semua',
+  kabupaten: 'Semua',
 })
 
 const applyFilters = () => {
   loadItem(page.value, itemPerPage.value, searchQuery.value, selectedFilters.value);
 }
 
-// Checkbox selection logic
-const isAllSelected = computed(() => {
-  return selectedItems.value.length === tableData.value.length
-})
+// Check if all items are selected
+const isAllSelected = computed(() => selectedItems.value.length === tableData.value.length)
 
+// Toggle select all
 const toggleSelectAll = () => {
   selectedItems.value = isAllSelected.value ? [] : tableData.value.slice()
 }
 
-const handleCheckboxChange = (item: DataItem, checked: boolean) => {
+// Adaptive button text
+const buttonText = computed(() =>
+  selectedItems.value.length > 0
+    ? `Pilih Data (${selectedItems.value.length})`
+    : 'Pilih Data',
+)
+
+// Handle checkbox change
+const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaftar: string; Nama: string; Alamat: string; JenisProduk: string; MerkDagang: string; Status: string }, checked: any) => {
   if (checked) {
-    selectedItems.value.push(item)
+    // Add item if not already selected
+    if (!selectedItems.value.includes(item))
+      selectedItems.value.push(item)
   }
   else {
-    const index = selectedItems.value.findIndex(selectedItem => selectedItem.id === item.id)
-    if (index > -1)
-      selectedItems.value.splice(index, 1)
+    // Remove item by filtering out the current item
+    selectedItems.value = selectedItems.value.filter(selectedItem => selectedItem.id !== item.id)
   }
 }
 </script>
@@ -166,16 +176,19 @@ const handleCheckboxChange = (item: DataItem, checked: boolean) => {
   <VDialog width="1200">
     <template #activator="{ props: openModal }">
       <VBtn
-        variant="outlined"
-        prepend-icon="fa-plus"
+        variant="flat"
+        append-icon="fa-plus"
         style="margin: 1svw"
         v-bind="openModal"
       >
-        Tambah
+        Ambil Data
       </VBtn>
     </template>
     <template #default="{ isActive }">
-      <VCard>
+      <VCard
+        variant="flat"
+        class="pa-4"
+      >
         <VCardTitle>
           <VRow>
             <VCol cols="10"><h3>Data Permohonan Sertifikasi</h3></VCol>
@@ -191,14 +204,18 @@ const handleCheckboxChange = (item: DataItem, checked: boolean) => {
         <VCardText>
           <VRow>
             <VCol>
-              <VBtn disabled>
-                Pilih Data
-              </VBtn>
+              <VBtn
+                :disabled="selectedItems.length === 0"
+                :text="buttonText"
+                @click="() => console.log(selectedItems)"
+              />
             </VCol>
           </VRow>
           <VRow>
             <VCol cols="1">
-              <VCheckbox v-model="isAllSelected" @click="toggleSelectAll" />
+              <div class="checkbox-container">
+                <VCheckbox v-model="isAllSelected" class="custom-checkbox" @click="toggleSelectAll" />
+              </div>
             </VCol>
             <VCol class="d-flex justify-start align-center" cols="2">
               <VMenu v-model="showFilterMenu" :close-on-content-click="false" offset-y>
@@ -209,26 +226,39 @@ const handleCheckboxChange = (item: DataItem, checked: boolean) => {
                 </template>
                 <VCard class="pa-3" width="300">
                   <VSelect
-                    v-model="selectedFilters.jenisLayanan"
-                    label="Jenis Layanan"
-                    :items="['Semua', 'Layanan B', 'Layanan C']"
-                  />
-                  <VSelect
                     v-model="selectedFilters.jenisProduk"
                     label="Jenis Produk"
                     :items="['Semua', 'Produk Y', 'Produk Z']"
                     class="mt-3"
                   />
                   <VSelect
-                    v-model="selectedFilters.provinsi"
-                    label="Provinsi"
-                    :items="['Semua', 'Jakarta', 'Jawa Barat']"
+                    v-model="selectedFilters.fasilitas"
+                    label="Fasilitas"
+                    :items="['Semua', 'Fasilitas A', 'Fasilitas AB']"
                     class="mt-3"
                   />
                   <VSelect
-                    v-model="selectedFilters.lph"
-                    label="LPH"
-                    :items="['Semua', 'Approved', 'Rejected']"
+                    v-model="selectedFilters.lembaga"
+                    label="Lembaga"
+                    :items="['Semua', 'Lembaga A', 'Lembaga B']"
+                    class="mt-3"
+                  />
+                  <VSelect
+                    v-model="selectedFilters.pendamping"
+                    label="Pendamping"
+                    :items="['Semua', 'Pendamping A', 'Pendamping B']"
+                    class="mt-3"
+                  />
+                  <VSelect
+                    v-model="selectedFilters.provinsi"
+                    label="Provinsi"
+                    :items="['Semua', 'Provinsi A', 'Provinsi B']"
+                    class="mt-3"
+                  />
+                  <VSelect
+                    v-model="selectedFilters.kabupaten"
+                    label="Kabupaten"
+                    :items="['Semua', 'Kabupaten A', 'Kabupaten B']"
                     class="mt-3"
                   />
                   <VBtn block color="primary" class="mt-3" @click="applyFilters">
@@ -277,7 +307,10 @@ const handleCheckboxChange = (item: DataItem, checked: boolean) => {
                 </div>
               </template>
               <template #item.pilih="{ item }">
-                <VCheckbox v-model="selectedItems" :value="item" />
+                <VCheckbox
+                  v-model="selectedItems"
+                  :value="item"
+                />
               </template>
               <template #item.Status="{ item }">
                 <div>
@@ -310,16 +343,35 @@ const handleCheckboxChange = (item: DataItem, checked: boolean) => {
 .text-center {
   text-align: center;
 }
+
 .text-success {
   color: #4caf50;
 }
+
 .text-error {
   color: #e53935;
 }
+
 .text-primary {
   color: #1976d2;
 }
+
 .text-decoration-underline {
   text-decoration: underline;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccc; /* Thin border */
+  border-radius: 4px; /* Rounded corners */
+  block-size: 32px; /* Container size */
+  inline-size: 32px; /* Container size */
+  padding-inline-end: 35px; /* Smaller padding */
+}
+
+.custom-checkbox {
+  --v-checkbox-size: 16px; /* Smaller checkbox size */
 }
 </style>
