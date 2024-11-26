@@ -198,7 +198,12 @@ const redirectToForgotPass = () => {
                 <VBtn
                   block
                   type="submit"
-                  :disabled="!turnstile || buttonClicked"
+                  :disabled="
+                    !turnstile ||
+                    buttonClicked ||
+                    credentials.email == '' ||
+                    credentials.password == ''
+                  "
                 >
                   Login
                 </VBtn>
