@@ -298,10 +298,10 @@ export default [
     roles: ["Fasilitator", "Admin"],
   },
   {
-    title: "Invoice - Fasilitator Finance",
+    title: "Invoice - Fasilitasi",
     to: "finance-invoice",
     icon: { icon: "mdi-invoice-text-outline" },
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Keuangan", "Admin"],
   },
   {
     title: "Invoice - Fasilitator Fasilitasi",

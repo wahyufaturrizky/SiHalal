@@ -280,13 +280,19 @@ export default [
   {
     title: "facilitate.heading-invoice",
     icon: { icon: "ri-more-line" },
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Fasilitator", "Finance", "Admin"],
     children: [
       {
         title: "facilitate.invoice",
         to: "infoice-facilitate",
         icon: { icon: "mdi-invoice-text-outline" },
         roles: ["Fasilitator", "Admin"],
+      },
+      {
+        title: "facilitate.invoice",
+        to: "finance-invoice",
+        icon: { icon: "mdi-invoice-text-outline" },
+        roles: ["Keuangan", "Admin"],
       },
     ],
   },
