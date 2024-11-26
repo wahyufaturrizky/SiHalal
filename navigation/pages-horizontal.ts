@@ -6,7 +6,7 @@ export default [
     to: "index",
     action: "manage",
     roles: ["Pelaku Usaha", "Admin"],
-    subject: ["Pelaku Usaha"],
+    subject: ["Pelaku Usaha", "Fasilitator", "Admin"],
   },
   {
     title: "Pelaku Usaha",
@@ -229,13 +229,13 @@ export default [
   {
     title: "registrar",
     icon: { icon: "ri-more-line" },
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Pelaku Usaha", , "Fasilitator", "Admin"],
     children: [
       {
-        title: "Profile",
-        to: "facilitator-profile",
+        title: "facilitator_Profile",
+        to: "applicant-profile",
         icon: { icon: "mdi-account" },
-        roles: ["Pelaku Usaha", "Admin"],
+        roles: ["Fasilitator", "Admin"],
       },
     ],
   },
@@ -248,13 +248,13 @@ export default [
         title: "facilitate.entry",
         to: "facilitation-entry",
         icon: { icon: "mdi-card-account-details-outline" },
-        roles: ["Pelaku Usaha", "Admin"],
+        roles: ["Fasilitator", "Admin"],
       },
       {
         title: "facilitate.list",
-        to: "facilitation-register",
+        to: "facilitation-list",
         icon: { icon: "mdi-list-box-outline" },
-        roles: ["Pelaku Usaha", "Admin"],
+        roles: ["Fasilitator", "Admin"],
       },
     ],
   },
@@ -265,15 +265,15 @@ export default [
     children: [
       {
         title: "pelaku_usaha.inquery",
-        to: "facilitator-list-inquiry-facilitation",
+        to: "bussiness-actor-list-inquiry",
         icon: { icon: "mdi-help-circle-outline" },
-        roles: ["Pelaku Usaha", "Admin"],
+        roles: ["Fasilitator", "Admin"],
       },
       {
         title: "pelaku_usaha.cancel",
-        to: "facilitator-list-canceled-facilitation",
+        to: "bussiness-actor-list-cancelation",
         icon: { icon: "mdi-calendar-remove-outline" },
-        roles: ["Pelaku Usaha", "Admin"],
+        roles: ["Fasilitator", "Admin"],
       },
     ],
   },
@@ -284,9 +284,9 @@ export default [
     children: [
       {
         title: "facilitate.invoice",
-        to: "facilitator-list-invoice",
+        to: "infoice-facilitate",
         icon: { icon: "mdi-invoice-text-outline" },
-        roles: ["Pelaku Usaha", "Admin"],
+        roles: ["Fasilitator", "Admin"],
       },
     ],
   },
