@@ -348,22 +348,21 @@ const documentList = ref([
   { nama: 'Izin Masuk', fileName: '', file: null },
 ])
 
-// Handle file upload
-const handleFileInput = (event: Event, index: number) => {
-  const input = event.target as HTMLInputElement
-  if (input.files && input.files[0]) {
-    const file2 = input.files[0]
-
-    documentList.value[index].fileName = file2.name
-    documentList.value[index].file = file2 // Store the file object if needed
-  }
-}
-
 // Handle file removal
 const removeFile = (index: number) => {
-  documentList.value[index].fileName = ''
-  documentList.value[index].file = null
-};
+  documentList.value[0].fileName = ''
+  documentList.value[0].file = null
+
+  file.value = null
+}
+
+const uploadFile = (event: Event, index: string | number) => {
+  const fileUpload = event.target.files[0]
+  if (fileUpload) {
+    documentList.value[0].fileName = fileUpload.name
+    documentList.value[0].file = fileUpload
+  }
+}
 
 // Handle file upload
 const handleFileUpload = (event: Event) => {
@@ -381,10 +380,6 @@ const handleFileUpload = (event: Event) => {
 const triggerFileInputClick = () => {
   fileInputRef.value?.click()
 }
-
-const formData = ref({
-  tanggalSuratPemohon: '',
-})
 
 const data = {
   sertifikasi_date: ref([]),
@@ -416,24 +411,62 @@ const onFasilitatorSearchInput = debounce(input => {
     <!-- Title and Buttons Row -->
     <VRow>
       <VCol>
-        <p class="text-h4">Detail Pengajuan</p>
+        <p class="text-h4">
+          Detail Pengajuan
+        </p>
       </VCol>
-      <VCol class="d-flex justify-end align-center" cols="4" md="5">
-        <VBtn variant="outlined" class="mx-2">Lihat Laporan</VBtn>
-        <VBtn color="#49A84C" class="mx-2">Tandai OK</VBtn>
-        <VBtn variant="outlined" color="error" class="mx-2">
+      <VCol
+        class="d-flex justify-end align-center"
+        cols="4"
+        md="5"
+      >
+        <VBtn
+          variant="outlined"
+          class="mx-2"
+        >
+          Lihat Laporan
+        </VBtn>
+        <VBtn
+          color="#49A84C"
+          class="mx-2"
+        >
+          Tandai OK
+        </VBtn>
+        <VBtn
+          variant="outlined"
+          color="error"
+          class="mx-2"
+        >
           Batalkan Status Hijau
         </VBtn>
-        <VBtn variant="outlined" class="mx-2">Pengembalian</VBtn>
-        <VBtn color="#E1442E" class="mx-2">Dibatalkan</VBtn>
+        <VBtn
+          variant="outlined"
+          class="mx-2"
+        >
+          Pengembalian
+        </VBtn>
+        <VBtn
+          color="#E1442E"
+          class="mx-2"
+        >
+          Dibatalkan
+        </VBtn>
       </VCol>
     </VRow>
 
     <!-- Tabs -->
     <VRow>
       <VCol>
-        <VTabs v-model="tab" align-tabs="start" height="60">
-          <VTab v-for="item in tabs" :key="item.value" :value="item.value">
+        <VTabs
+          v-model="tab"
+          align-tabs="start"
+          height="60"
+        >
+          <VTab
+            v-for="item in tabs"
+            :key="item.value"
+            :value="item.value"
+          >
             {{ item.text }}
           </VTab>
         </VTabs>
@@ -444,9 +477,20 @@ const onFasilitatorSearchInput = debounce(input => {
     <VContainer v-if="tab === 'pelaku_usaha'">
       <VRow>
         <VCol>
-          <VCard variant="flat" class="pa-4">
-            <div class="d-flex justify-space-between align-center" @click="showDetail = !showDetail">
-              <p class="text-h4" style="font-weight: bold;">Pengajuan Sertifikasi Halal</p>
+          <VCard
+            variant="flat"
+            class="pa-4"
+          >
+            <div
+              class="d-flex justify-space-between align-center"
+              @click="showDetail = !showDetail"
+            >
+              <p
+                class="text-h4"
+                style="font-weight: bold;"
+              >
+                Pengajuan Sertifikasi Halal
+              </p>
               <VIcon :icon="showDetail ? 'mdi-chevron-up' : 'mdi-chevron-down'" />
             </div>
             <VExpandTransition>
@@ -501,33 +545,65 @@ const onFasilitatorSearchInput = debounce(input => {
       </VRow>
       <VRow>
         <VCol>
-          <VCard variant="flat" class="pa-4">
-            <p class="text-h4" style="font-weight: bold;">Penanggung Jawab</p>
+          <VCard
+            variant="flat"
+            class="pa-4"
+          >
+            <p
+              class="text-h4"
+              style="font-weight: bold;"
+            >
+              Penanggung Jawab
+            </p>
             <!-- Nama Usaha -->
             <VCol cols="12">
-              <VLabel class="required">Jenis Badan Usaha</VLabel>
-              <VTextField required placeholder="Jenis Badan Usaha"/>
+              <VLabel class="required">
+                Jenis Badan Usaha
+              </VLabel>
+              <VTextField
+                required
+                placeholder="Jenis Badan Usaha"
+              />
             </VCol>
             <VCol cols="12">
-              <VLabel class="required">Nomor Kontak</VLabel>
-              <VTextField required placeholder="Nomor Kontak"/>
+              <VLabel class="required">
+                Nomor Kontak
+              </VLabel>
+              <VTextField
+                required
+                placeholder="Nomor Kontak"
+              />
             </VCol>
             <VCol cols="12">
-              <VLabel class="required">Email</VLabel>
-              <VTextField required placeholder="Email"/>
+              <VLabel class="required">
+                Email
+              </VLabel>
+              <VTextField
+                required
+                placeholder="Email"
+              />
             </VCol>
           </VCard>
         </VCol>
       </VRow>
       <VRow>
         <VCol>
-          <VCard variant="flat" class="pa-4">
+          <VCard
+            variant="flat"
+            class="pa-4"
+          >
             <VRow>
               <VCol>
-                <p class="text-h3">Aspek Legal</p>
+                <p class="text-h3">
+                  Aspek Legal
+                </p>
               </VCol>
-              <VCol class="d-flex justify-end align-center" cols="6" md="2">
-                <TambahProduk
+              <VCol
+                class="d-flex justify-end align-center"
+                cols="6"
+                md="2"
+              >
+                <TambahDataAspekLegal
                   mode="add"
                   @confirm-add="handleAddProductConfirm"
                   @cancel="() => console.log('Add cancelled')"
@@ -560,13 +636,22 @@ const onFasilitatorSearchInput = debounce(input => {
       </VRow>
       <VRow>
         <VCol>
-          <VCard variant="flat" class="pa-4">
+          <VCard
+            variant="flat"
+            class="pa-4"
+          >
             <VRow>
               <VCol>
-                <p class="text-h3">Penyelia Halal</p>
+                <p class="text-h3">
+                  Penyelia Halal
+                </p>
               </VCol>
-              <VCol class="d-flex justify-end align-center" cols="6" md="2">
-                <TambahPabrikOutlet
+              <VCol
+                class="d-flex justify-end align-center"
+                cols="6"
+                md="2"
+              >
+                <TambahDataPenyeliaHalal
                   mode="add"
                   @confirm-add="handleAddProductConfirm"
                   @cancel="() => console.log('Add cancelled')"
@@ -614,10 +699,15 @@ const onFasilitatorSearchInput = debounce(input => {
       </VRow>
       <VRow>
         <VCol>
-          <VCard variant="flat" class="pa-4">
+          <VCard
+            variant="flat"
+            class="pa-4"
+          >
             <VRow>
               <VCol>
-                <h3 class="text-h4 font-weight-bold">Dokumen Persyaratan Fasilitas</h3>
+                <h3 class="text-h4 font-weight-bold">
+                  Dokumen Persyaratan Fasilitas
+                </h3>
               </VCol>
             </VRow>
             <VRow>
@@ -638,31 +728,45 @@ const onFasilitatorSearchInput = debounce(input => {
             </VRow>
             <VRow>
               <VCol>
-                <VTable>
+                <VTable class="fixed-table">
                   <thead>
                     <tr>
-                      <th>No</th>
-                      <th>Nama</th>
-                      <th>Dokumen</th>
+                      <th style="inline-size: 50px;">
+                        No
+                      </th>
+                      <th style="inline-size: 150px;">
+                        Nama
+                      </th>
+                      <th style="inline-size: 400px;">
+                        Dokumen
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(doc, index) in documentList" :key="index">
+                    <tr
+                      v-for="(doc, index) in documentList"
+                      :key="index"
+                    >
                       <td>{{ index + 1 }}</td>
                       <td>{{ doc.nama }}</td>
                       <td>
-                        <div v-if="doc.fileName">
+                        <div v-if="documentList[0].fileName">
                           <!-- Display file name with remove button -->
                           <VTextField
-                            v-model="doc.fileName"
+                            v-model="documentList[0].fileName"
                             dense
                             outlined
                             readonly
-                            style="max-inline-size: 300px;"
+                            style="max-inline-size: 300px; padding-inline-end: 0;"
                           >
                             <template #append-inner>
-                              <VBtn variant="text">
-                                <VIcon color="error">ri-delete-bin-fill</VIcon>
+                              <VBtn
+                                variant="text"
+                                @click="removeFile"
+                              >
+                                <VIcon color="error">
+                                  ri-delete-bin-fill
+                                </VIcon>
                               </VBtn>
                             </template>
                           </VTextField>
@@ -671,14 +775,23 @@ const onFasilitatorSearchInput = debounce(input => {
                           <!-- File upload input -->
                           <VFileInput
                             v-model="file"
+                            dense
                             prepend-icon=""
-                            density="compact"
                             hide-details
-                            style="inline-size: 200px;"
+                            label="No File Chosen"
+                            style="max-inline-size: 400px;"
+                            class="input-file-izin"
+                            @change="uploadFile"
                           >
+                            <!-- Button upload input -->
                             <template #append-inner>
-                              <VBtn icon color="primary" variant="flat">
-                                Upload
+                              <VBtn
+                                color="primary"
+                                variant="flat"
+                                class="choose-file"
+                                style="block-size: 100%; inline-size: 150px;"
+                              >
+                                Choose File
                               </VBtn>
                             </template>
                           </VFileInput>
@@ -697,9 +810,20 @@ const onFasilitatorSearchInput = debounce(input => {
     <!-- Tab Content Pengajuan -->
     <VRow v-if="tab === 'pengajuan'">
       <VCol>
-        <VCard variant="flat" class="pa-4">
-          <div class="d-flex justify-space-between align-center" @click="showPengajuan = !showPengajuan">
-            <p class="text-h4" style="font-weight: bold;">Data Pengajuan</p>
+        <VCard
+          variant="flat"
+          class="pa-4"
+        >
+          <div
+            class="d-flex justify-space-between align-center"
+            @click="showPengajuan = !showPengajuan"
+          >
+            <p
+              class="text-h4"
+              style="font-weight: bold;"
+            >
+              Data Pengajuan
+            </p>
             <VIcon :icon="showPengajuan ? 'mdi-chevron-up' : 'mdi-chevron-down'" />
           </div>
           <VExpandTransition>
@@ -735,7 +859,9 @@ const onFasilitatorSearchInput = debounce(input => {
                   <VRow>
                     <!-- Jenis Pendaftaran -->
                     <VCol cols="12">
-                      <VLabel class="required">Jenis Pendaftaran</VLabel>
+                      <VLabel class="required">
+                        Jenis Pendaftaran
+                      </VLabel>
                       <VSelect
                         density="compact"
                         :items="['Self Declare', 'Lainnya']"
@@ -745,8 +871,13 @@ const onFasilitatorSearchInput = debounce(input => {
 
                     <!-- Kode Daftar / Fasilitasi -->
                     <VCol cols="12">
-                      <VLabel class="required">Kode Daftar / Fasilitasi</VLabel>
-                      <VRow align="center" class="mb-2">
+                      <VLabel class="required">
+                        Kode Daftar / Fasilitasi
+                      </VLabel>
+                      <VRow
+                        align="center"
+                        class="mb-2"
+                      >
                         <VCol cols="5.5">
                           <VSelect
                             v-model="selectedFasilitator"
@@ -761,7 +892,11 @@ const onFasilitatorSearchInput = debounce(input => {
                         </VCol>
                         <span>Atau</span>
                         <VCol cols="5.5">
-                          <VTextField v-model="searchFasilitator" append-inner-icon="mdi-magnify" required />
+                          <VTextField
+                            v-model="searchFasilitator"
+                            append-inner-icon="mdi-magnify"
+                            required
+                          />
                         </VCol>
                       </VRow>
                       <VAlert
@@ -776,8 +911,13 @@ const onFasilitatorSearchInput = debounce(input => {
                     <VDivider class="mt-2" />
                     <!-- Nomor Surat Permohonan & Tanggal Surat Pemohon -->
                     <VCol cols="6">
-                      <VLabel class="required">Nomor Surat Permohonan</VLabel>
-                      <VTextField required placeholder="Isi Nomor Surat Permohonan"/>
+                      <VLabel class="required">
+                        Nomor Surat Permohonan
+                      </VLabel>
+                      <VTextField
+                        required
+                        placeholder="Isi Nomor Surat Permohonan"
+                      />
                     </VCol>
                     <VCol cols="6">
                       <VItemGroup>
@@ -793,7 +933,9 @@ const onFasilitatorSearchInput = debounce(input => {
                               clearable
                             >
                               <template #trigger>
-                                <VLabel class="required">Tanggal Surat Pemohon</VLabel>
+                                <VLabel class="required">
+                                  Tanggal Surat Pemohon
+                                </VLabel>
                                 <VTextField
                                   placeholder="Pilih Tanggal Surat Pemohon"
                                   disabled
@@ -810,25 +952,44 @@ const onFasilitatorSearchInput = debounce(input => {
 
                     <!-- Jenis Layanan -->
                     <VCol cols="12">
-                      <VLabel class="required">Jenis Layanan</VLabel>
-                      <VSelect :items="['Layanan A', 'Layanan B']" required placeholder="Pilih Jenis Layanan"/>
+                      <VLabel class="required">
+                        Jenis Layanan
+                      </VLabel>
+                      <VSelect
+                        :items="['Layanan A', 'Layanan B']"
+                        required
+                        placeholder="Pilih Jenis Layanan"
+                      />
                     </VCol>
 
                     <!-- Jenis Produk -->
                     <VCol cols="12">
-                      <VLabel class="required">Jenis Produk</VLabel>
-                      <VSelect :items="['Produk A', 'Produk B']" required placeholder="Pilih Jenis Produk"/>
+                      <VLabel class="required">
+                        Jenis Produk
+                      </VLabel>
+                      <VSelect
+                        :items="['Produk A', 'Produk B']"
+                        required
+                        placeholder="Pilih Jenis Produk"
+                      />
                     </VCol>
 
                     <!-- Nama Usaha -->
                     <VCol cols="12">
-                      <VLabel class="required">Jenis Usaha</VLabel>
-                      <VTextField required placeholder="Pilih Jenis Usaha"/>
+                      <VLabel class="required">
+                        Jenis Usaha
+                      </VLabel>
+                      <VTextField
+                        required
+                        placeholder="Pilih Jenis Usaha"
+                      />
                     </VCol>
 
                     <!-- Area Pemasaran -->
                     <VCol cols="12">
-                      <VLabel class="required">Area Pemasaran</VLabel>
+                      <VLabel class="required">
+                        Area Pemasaran
+                      </VLabel>
                       <VSelect
                         placeholder="Pilih Area Pemasaran"
                         :items="['Nasional', 'Internasional']"
@@ -838,13 +999,21 @@ const onFasilitatorSearchInput = debounce(input => {
 
                     <!-- Lokasi Pendamping -->
                     <VCol cols="12">
-                      <VLabel class="required">Lokasi Pendamping</VLabel>
-                      <VSelect placeholder="Pilih Area Pendamping" :items="['Lokasi A', 'Lokasi B']" required />
+                      <VLabel class="required">
+                        Lokasi Pendamping
+                      </VLabel>
+                      <VSelect
+                        placeholder="Pilih Area Pendamping"
+                        :items="['Lokasi A', 'Lokasi B']"
+                        required
+                      />
                     </VCol>
 
                     <!-- Lembaga Pendamping -->
                     <VCol cols="12">
-                      <VLabel class="required">Lembaga Pendamping</VLabel>
+                      <VLabel class="required">
+                        Lembaga Pendamping
+                      </VLabel>
                       <VSelect
                         placeholder="Pilih Lembaga Pendamping"
                         :items="['Lembaga A', 'Lembaga B']"
@@ -854,8 +1023,14 @@ const onFasilitatorSearchInput = debounce(input => {
 
                     <!-- Pendamping -->
                     <VCol cols="12">
-                      <VLabel class="required">Pendamping</VLabel>
-                      <VSelect placeholder="Pilih Pendamping" :items="['Pendamping A', 'Pendamping B']" required />
+                      <VLabel class="required">
+                        Pendamping
+                      </VLabel>
+                      <VSelect
+                        placeholder="Pilih Pendamping"
+                        :items="['Pendamping A', 'Pendamping B']"
+                        required
+                      />
                     </VCol>
                   </VRow>
                 </div>
@@ -877,12 +1052,21 @@ const onFasilitatorSearchInput = debounce(input => {
     <VRow v-if="tab === 'pabrik'">
       <VRow>
         <VCol>
-          <VCard variant="flat" class="pa-4">
+          <VCard
+            variant="flat"
+            class="pa-4"
+          >
             <VRow>
               <VCol>
-                <p class="text-h3">Pabrik</p>
+                <p class="text-h3">
+                  Pabrik
+                </p>
               </VCol>
-              <VCol class="d-flex justify-end align-center" cols="6" md="2">
+              <VCol
+                class="d-flex justify-end align-center"
+                cols="6"
+                md="2"
+              >
                 <TambahPabrikOutlet
                   mode="add"
                   @confirm-add="handleAddProductConfirm"
@@ -931,12 +1115,21 @@ const onFasilitatorSearchInput = debounce(input => {
       </VRow>
       <VRow>
         <VCol>
-          <VCard variant="flat" class="pa-4">
+          <VCard
+            variant="flat"
+            class="pa-4"
+          >
             <VRow>
               <VCol>
-                <p class="text-h3">Outlet</p>
+                <p class="text-h3">
+                  Outlet
+                </p>
               </VCol>
-              <VCol class="d-flex justify-end align-center" cols="6" md="2">
+              <VCol
+                class="d-flex justify-end align-center"
+                cols="6"
+                md="2"
+              >
                 <TambahOutlet
                   mode="add"
                   @confirm-add="handleAddProductConfirm"
@@ -988,20 +1181,36 @@ const onFasilitatorSearchInput = debounce(input => {
     <!-- Tab Content Bahan -->
     <VRow v-if="tab === 'bahan'">
       <VCol>
-        <VCard variant="flat" class="pa-4">
+        <VCard
+          variant="flat"
+          class="pa-4"
+        >
           <VRow>
             <VCol>
-              <p class="text-h3">Daftar Nama Bahan dan Kemasan</p>
+              <p class="text-h3">
+                Daftar Nama Bahan dan Kemasan
+              </p>
             </VCol>
-            <VCol class="d-flex justify-end align-center" cols="0" md="2">
+            <VCol
+              class="d-flex justify-end align-center"
+              cols="0"
+              md="2"
+            >
               <TambahBahanModalHalal
                 mode="add"
                 @confirm-add="handleAddProductConfirm"
                 @cancel="() => console.log('Add cancelled')"
               />
               <VContainer>
-                <VBtn color="primary" @click="triggerFileInputClick" variant="outlined" class="d-flex align-center">
-                  <VIcon size="20">ri-upload-line</VIcon>
+                <VBtn
+                  color="primary"
+                  variant="outlined"
+                  class="d-flex align-center"
+                  @click="triggerFileInputClick"
+                >
+                  <VIcon size="20">
+                    ri-upload-line
+                  </VIcon>
                   <span class="ml-2">Upload File</span>
                 </VBtn>
                 <!-- Hidden File Input -->
@@ -1065,16 +1274,25 @@ const onFasilitatorSearchInput = debounce(input => {
     <!-- Tab Content Produk -->
     <VRow v-if="tab === 'produk'">
       <VCol>
-        <VCard variant="flat" class="pa-4">
+        <VCard
+          variant="flat"
+          class="pa-4"
+        >
           <VRow>
             <VCol>
-              <p class="text-h3">Daftar Nama Bahan dan Kemasan</p>
+              <p class="text-h3">
+                Daftar Nama Bahan dan Kemasan
+              </p>
               <ol>
                 <li>Termasuk  isikan bahan dengan kategori cleaning agent seperti: Air, Sabun Pencuci, Detergent, dll</li>
                 <li>Isikan nama kemasan produk, contoh: Alumunium foil, standing pouch, plastik, dll</li>
               </ol>
             </VCol>
-            <VCol class="d-flex justify-end align-center" cols="6" md="2">
+            <VCol
+              class="d-flex justify-end align-center"
+              cols="6"
+              md="2"
+            >
               <TambahProduk
                 mode="add"
                 @confirm-add="handleAddProductConfirm"
@@ -1104,7 +1322,7 @@ const onFasilitatorSearchInput = debounce(input => {
                   <div class="d-flex gap-1">
                     <UbahProduk
                       mode="edit"
-                      :initialData="selectedProduct"
+                      :initial-data="selectedProduct"
                       icon="ri-pencil-fill"
                       :show-label="false"
                       color="#652672"
@@ -1123,28 +1341,46 @@ const onFasilitatorSearchInput = debounce(input => {
     <!-- Tab Content Melacak -->
     <VRow v-if="tab === 'melacak'">
       <VCol>
-        <VCard variant="flat" class="pa-4">
-          <div class="d-flex justify-space-between align-center" @click="showTimeline = !showTimeline">
-            <p class="text-h4">Pengajuan Sertifikasi Halal</p>
+        <VCard
+          variant="flat"
+          class="pa-4"
+        >
+          <div
+            class="d-flex justify-space-between align-center"
+            @click="showTimeline = !showTimeline"
+          >
+            <p class="text-h4">
+              Pengajuan Sertifikasi Halal
+            </p>
             <VIcon :icon="showTimeline ? 'mdi-chevron-up' : 'mdi-chevron-down'" />
           </div>
           <VExpandTransition>
             <div v-if="showTimeline">
-              <VTimeline align="start" density="compact" truncate-line="both">
+              <VTimeline
+                align="start"
+                density="compact"
+                truncate-line="both"
+              >
                 <VTimelineItem
                   v-for="(item, i) in timelineItems"
                   :key="i"
                   dot-color="#FFFFFF"
                 >
                   <template #icon>
-                    <VIcon icon="ri-circle-line" color="primary" size="35" />
+                    <VIcon
+                      icon="ri-circle-line"
+                      color="primary"
+                      size="35"
+                    />
                   </template>
                   <div class="d-flex justify-space-between align-start">
                     <div>
                       <div class="text-subtitle-2 font-weight-bold">
                         {{ item.title }}
                       </div>
-                      <div class="text-caption text-grey">{{ item.user }}</div>
+                      <div class="text-caption text-grey">
+                        {{ item.user }}
+                      </div>
                     </div>
                     <div class="text-caption text-grey">
                       {{ formatDate(item.date) }}
@@ -1201,5 +1437,19 @@ const onFasilitatorSearchInput = debounce(input => {
 .required::after {
   color: red;
   content: "*";
+}
+
+:deep .choose-file {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  margin-right: 0;
+  scroll-margin-inline-end: 0;
+}
+
+:deep(.file-input) {
+    padding-right: 0;
+    margin-right: 0;
+    padding-inline-end: 0;
+    margin-inline-end: 0;
 }
 </style>

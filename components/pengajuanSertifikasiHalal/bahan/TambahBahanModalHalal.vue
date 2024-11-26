@@ -145,7 +145,7 @@ const handleSearch = () => {
               <VItemGroup>
                 <VLabel>Nama Bahan</VLabel>
                 <VTextField
-                  disabled
+                  readonly
                   placeholder="Nama Bahan otomatis terisi setelah memilih bahan"
                   density="compact"
                 />
@@ -158,7 +158,7 @@ const handleSearch = () => {
               <VItemGroup>
                 <VLabel>Kelompok</VLabel>
                 <VTextField
-                  disabled
+                  readonly
                   placeholder="Kelompok otomatis terisi setelah memilih bahan"
                   density="compact"
                 />
@@ -171,7 +171,7 @@ const handleSearch = () => {
               <VItemGroup>
                 <VLabel>Merk Produk</VLabel>
                 <VTextField
-                  disabled
+                  readonly
                   placeholder="Merk Produk otomatis terisi setelah memilih bahan"
                   density="compact"
                 />
@@ -184,7 +184,7 @@ const handleSearch = () => {
               <VItemGroup>
                 <VLabel>Produsen</VLabel>
                 <VTextField
-                  disabled
+                  readonly
                   placeholder="Produsen otomatis terisi setelah memilih bahan"
                   density="compact"
                 />
@@ -197,7 +197,7 @@ const handleSearch = () => {
               <VItemGroup>
                 <VLabel>Nomor Sertifikat Halal</VLabel>
                 <VTextField
-                  disabled
+                  readonly
                   placeholder="Nomor Sertifikat Halal otomatis terisi setelah memilih bahan"
                   density="compact"
                 />
@@ -223,7 +223,7 @@ const handleSearch = () => {
                         <VTextField
                           placeholder="Masa Berlaku Sertifikat Halal"
                           density="compact"
-                          disabled
+                          readonly
                           append-inner-icon="fa-calendar"
                           :model-value="data.sertifikasi_date.value"
                         />
