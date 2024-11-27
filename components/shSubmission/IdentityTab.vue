@@ -105,7 +105,7 @@ const confirmDeleteItem = () => {
   );
   legalAspectData.value.splice(itemIndex, 1);
   selectedItem.value = null;
-  useSnackbar().sendSnackbar("Berhasil manghapus data", "success");
+  useSnackbar().sendSnackbar("Berhasil menghapus data", "success");
 };
 
 const handleUploadFile = (event: any, index: number) => {
@@ -127,7 +127,7 @@ const confirmDeleteDoc = () => {
     if (idx === selectedItem.value) {
       i.filename = null;
       i.document = null;
-      useSnackbar().sendSnackbar("Berhasil manghapus data", "success");
+      useSnackbar().sendSnackbar("Berhasil menghapus data", "success");
     }
   });
 };

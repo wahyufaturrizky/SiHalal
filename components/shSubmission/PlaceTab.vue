@@ -61,14 +61,14 @@ const handleDeleteFactory = () => {
     (_, idx) => idx === selectedDelete.value
   );
   factoryData.value.splice(exist, 1);
-  useSnackbar().sendSnackbar("Berhasil manghapus data", "success");
+  useSnackbar().sendSnackbar("Berhasil menghapus data", "success");
 };
 const handleDeleteOutlet = () => {
   const exist = outletData.value.findIndex(
     (_, idx) => idx === selectedDelete.value
   );
   outletData.value.splice(exist, 1);
-  useSnackbar().sendSnackbar("Berhasil manghapus data", "success");
+  useSnackbar().sendSnackbar("Berhasil menghapus data", "success");
 };
 </script>
 
