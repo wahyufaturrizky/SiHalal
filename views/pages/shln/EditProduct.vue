@@ -69,7 +69,6 @@ function onFileSelected(file: File | null) {
                   @click="addProduct"
                   >Tambah <v-icon end icon="fa-plus" />
                 </v-btn>
-                <v-btn class="ma-1" color="primary" block>Save</v-btn>
               </VCol>
             </VRow>
             <VRow>
