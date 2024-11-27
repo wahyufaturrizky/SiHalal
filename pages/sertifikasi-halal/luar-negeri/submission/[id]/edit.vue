@@ -10,6 +10,7 @@ export interface Manufacture {
   id: string;
   name: string;
 }
+
 const tab = ref("identity");
 const route = useRoute();
 const shlnId = route.params.id;
@@ -110,7 +111,7 @@ const disabledTab = (
       </VTabsWindowItem>
 
       <VTabsWindowItem value="document">
-        <EditDocument />
+        <EditDocument :mra="mra" />
       </VTabsWindowItem>
 
       <VTabsWindowItem value="manufacture">
