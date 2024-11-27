@@ -1,12 +1,12 @@
 <template>
   <VRow no-gutters class="my-2 text-body-1">
-    <VCol cols="4" >
+    <VCol :cols="colsName">
       {{ name }}
     </VCol>
-    <VCol cols="1" class="text-right px-2">
+    <VCol :cols="colsSeparator" class="text-right px-2">
       {{ separator }}
     </VCol>
-    <VCol cols="7">
+    <VCol :cols="colsValue">
       <slot></slot>
     </VCol>
   </VRow>
@@ -23,6 +23,18 @@ const props = defineProps({
   separator: {
     type: String,
     default: ':',
+  },
+  colsName: {
+    type: String,
+    default: '4'
+  },
+  colsSeparator: {
+    type: String,
+    default: '1'
+  },
+  colsValue: {
+    type: String,
+    default: '7'
   },
 });
 </script>
