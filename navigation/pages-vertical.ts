@@ -6,7 +6,7 @@ export default [
     icon: { icon: "fa-home" },
     to: "index",
     action: "read",
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Pelaku Usaha", "Fasilitator", "Admin"],
   },
   {
     title: "Pelaku Usaha",
@@ -112,8 +112,8 @@ export default [
       },
       {
         title: "pendaftaran_online.verifikasi_ol",
-        to: "online-registration-online-verification",
-        roles: ["Pelaku Usaha", "Admin"],
+        to: "online-registration-regular-verification",
+        roles: ["Verifikator Reguler", "Admin"],
       },
       {
         title: "pendaftaran_online.status_komite",
@@ -128,7 +128,7 @@ export default [
       {
         title: "pendaftaran_online.verifikasi_sd",
         to: "online-registration-self-declare-verification",
-        roles: ["Pelaku Usaha", "Admin"],
+        roles: ["Verifikator Self-Declare", "Admin"],
       },
       {
         title: "pendaftaran_online.laporan_verifikasi",
@@ -143,7 +143,7 @@ export default [
       {
         title: "pendaftaran_online.verifikasi_fasilitator",
         to: "online-registration-facilitator-verification",
-        roles: ["Pelaku Usaha", "Admin"],
+        roles: ["Verifikator Fasilitator", "Admin"],
       },
       {
         title: "pendaftaran_online.entri_data_sert_penyelia",
@@ -236,14 +236,9 @@ export default [
         roles: ["Pelaku Usaha", "Admin"],
       },
       {
-        title: "Invoice - Pelaku Usaha",
-        to: "finance-invoice-pelaku-usaha",
-        roles: ["Pelaku Usaha", "Admin"],
-      },
-      {
         title: "shln_verification",
         to: "sertifikasi-halal-luar-negeri-verification",
-        roles: ["Pelaku Usaha", "Verifikator HLN", "Admin"],
+        roles: ["Verifikator HLN", "Admin"],
       },
       {
         title: "shln_payment",
@@ -260,54 +255,60 @@ export default [
   { heading: "registrar" },
   {
     title: "facilitator_profile",
-    to: "facilitator-profile",
+    to: "applicant-profile",
     icon: { icon: "mdi-account" },
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Fasilitator", "Admin"],
   },
   { heading: "facilitate.heading" },
   {
     title: "facilitate.entry",
     to: "facilitation-entry",
     icon: { icon: "mdi-card-account-details-outline" },
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Fasilitator", "Admin"],
   },
   {
     title: "facilitate.list",
-    to: "facilitation-register",
+    to: "facilitation-list",
     icon: { icon: "mdi-list-box-outline" },
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Fasilitator", "Admin"],
   },
   { heading: "pelaku_usaha.heading" },
   {
     title: "pelaku_usaha.inquery",
-    to: "facilitator-list-inquiry-facilitation",
+    to: "bussiness-actor-list-inquiry",
     icon: { icon: "mdi-help-circle-outline" },
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Fasilitator", "Admin"],
   },
   {
     title: "pelaku_usaha.cancel",
-    to: "facilitator-list-canceled-facilitation",
+    to: "bussiness-actor-list-cancelation",
     icon: { icon: "mdi-calendar-remove-outline" },
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Fasilitator", "Admin"],
   },
   { heading: "facilitate.heading-invoice" },
   {
     title: "facilitate.invoice",
-    to: "facilitator-list-invoice",
+    to: "invoice-facilitate",
     icon: { icon: "mdi-invoice-text-outline" },
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Fasilitator", "Admin"],
   },
   {
-    title: "Invoice - Fasilitator Finance",
+    title: "Invoice - SHLN",
+    to: "finance-invoice-pelaku-usaha",
+    icon: { icon: "mdi-invoice-text-outline" },
+    roles: ["Keuangan", "Admin"],
+  },
+  {
+    title: "Invoice - Fasilitasi",
     to: "finance-invoice",
     icon: { icon: "mdi-invoice-text-outline" },
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Keuangan", "Admin"],
   },
   {
     title: "Invoice - Fasilitator Fasilitasi",
-    to: "facilitation-invoice",
+    to: "invoice-facilitate",
     icon: { icon: "mdi-invoice-text-outline" },
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Fasilitator", "Admin"],
   },
   { heading: "information.heading" },
   {
@@ -332,38 +333,60 @@ export default [
     title: "sidang_fatwa.title",
     icon: { icon: "mdi-scale-balance" },
     roles: ["Komisi", "Komite Fatwa", "Pelaku Usaha", "Admin"],
-    children: [
-      {
-        title: "sidang_fatwa.proses_sidang",
-        to: "sidang-fatwa-proses-sidang",
-        roles: ["Komisi", "Komite Fatwa", "Pelaku Usaha", "Admin"],
-      },
-    ],
+    children: [],
   },
   { heading: "sidang_self_declare.title" },
   {
     title: "sidang_self_declare.title",
     icon: { icon: "mdi-scale-balance" },
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Komite Fatwa", "Admin"],
     children: [
       {
         title: "sidang_self_declare.proses_sidang",
-        to: "sidang-self-declare-proses-sidang",
-        roles: ["Pelaku Usaha", "Admin"],
+        to: "sidang-fatwa-proses-sidang",
+        roles: ["Komite Fatwa", "Admin"],
       },
       {
         title: "sidang_self_declare.entry_ketetapan_halal",
         to: "sidang-self-declare-entry-ketetapan-halal",
-        roles: ["Pelaku Usaha", "Admin"],
+        roles: ["Komite Fatwa", "Admin"],
       },
       {
         title: "sidang_self_declare.inquiry",
         to: "sidang-self-declare-inquiry",
-        roles: ["Pelaku Usaha", "Admin"],
+        roles: ["Komite Fatwa", "Admin"],
       },
       {
         title: "sidang_self_declare.rekapitulasi",
         to: "sidang-self-declare-rekapitulasi",
+        roles: ["Komite Fatwa", "Admin"],
+      },
+    ],
+  },
+  { heading: "Menu" },
+  {
+    title: "Pengajuan Sertifikat Halal",
+    icon: { icon: "mdi-scale-balance" },
+    roles: ["Pendamping", "Admin"],
+    children: [
+      {
+        title: "Cek Data Pengajuan",
+        to: "sh-domestic-submission-self-declare-list-pengajuan-pu-pendamping",
+        roles: ["Pendamping", "Admin"],
+      },
+      {
+        title: "Proses Verval - Pendamping",
+        to: "pengajuan-verval-pendamping",
+        roles: ["Pendamping", "Admin"],
+      },
+      {
+        title: "Info Sertifikat Self Declare - Pendamping",
+        to: "dummy-empty-page",
+        roles: ["Pelaku Usaha", "Admin"],
+      },
+      {
+        title: "Update Foto Produk - Pendamping",
+        to: "dummy-empty-page",
         roles: ["Pelaku Usaha", "Admin"],
       },
     ],

@@ -1,33 +1,27 @@
 <script setup lang="ts">
-interface Props {
-  status?: string
-  registrationNumber?: string
-}
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true,
+  },
+});
 
-const props = withDefaults(defineProps<Props>(), {
-  status: 'Verification',
-  registrationNumber: '-',
-})
+const { status, registration_number } = props.data || {};
 
 const getStatusColor = (status: string): string => {
   const statusColors: Record<string, string> = {
-    Verification: 'success',
-    Pending: 'warning',
-    Rejected: 'error',
-  }
+    Verification: "success",
+    Pending: "warning",
+    Rejected: "error",
+  };
 
-  return statusColors[status] || 'grey'
-}
+  return statusColors[status] || "grey";
+};
 </script>
 
 <template>
   <VCardText class="pa-0">
-    <VRow
-      no-gutters
-      align="center"
-      justify="space-between"
-      class="mb-2"
-    >
+    <VRow no-gutters align="center" justify="space-between" class="mb-2">
       <VCol cols="auto">
         <span class="text-grey-darken-1">Status</span>
       </VCol>
@@ -45,16 +39,12 @@ const getStatusColor = (status: string): string => {
 
     <VDivider class="my-3" />
 
-    <VRow
-      no-gutters
-      align="center"
-      justify="space-between"
-    >
+    <VRow no-gutters align="center" justify="space-between">
       <VCol cols="auto">
         <span class="text-grey-darken-1">Halal Registration Number</span>
       </VCol>
       <VCol cols="auto">
-        <span>{{ registrationNumber }}</span>
+        <span>{{ registration_number }}</span>
       </VCol>
     </VRow>
   </VCardText>

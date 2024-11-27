@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { formatDateIntl } from "#imports";
+import { onMounted, ref } from "vue";
 import { VDataTableServer } from "vuetify/components";
 
 const items = ref<
@@ -11,8 +12,8 @@ const items = ref<
     alamat: string;
     skala_usaha: string;
     jenis_produk: string;
-    merek_dagang: string;  // New column for "Merek Dagang"
-    laporan_sph: string;   // New column for "Lihat Laporan SPH"
+    merek_dagang: string; // New column for "Merek Dagang"
+    laporan_sph: string; // New column for "Lihat Laporan SPH"
   }[]
 >([]);
 
@@ -21,7 +22,12 @@ const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
 
-const loadItem = async (page: number, size: number, keyword: string = "", filters: Record<string, string> = {}) => {
+const loadItem = async (
+  page: number,
+  size: number,
+  keyword: string = "",
+  filters: Record<string, string> = {}
+) => {
   try {
     loading.value = true;
 
@@ -70,7 +76,12 @@ const verifikatorTableHeader = [
 const searchQuery = ref("");
 
 const handleInput = () => {
-  debouncedFetch(page.value, itemPerPage.value, searchQuery.value, selectedFilters.value);
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    selectedFilters.value
+  );
 };
 
 const navigateAction = (id: string) => {
@@ -87,7 +98,12 @@ const selectedFilters = ref({
 });
 
 const applyFilters = () => {
-  loadItem(page.value, itemPerPage.value, searchQuery.value, selectedFilters.value);
+  loadItem(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    selectedFilters.value
+  );
 };
 </script>
 
@@ -102,9 +118,18 @@ const applyFilters = () => {
       </VRow>
       <VRow>
         <VCol class="d-flex justify-start align-center" cols="2">
-          <VMenu v-model="showFilterMenu" :close-on-content-click="false" offset-y>
+          <VMenu
+            v-model="showFilterMenu"
+            :close-on-content-click="false"
+            offset-y
+          >
             <template #activator="{ props }">
-              <VBtn color="primary" variant="outlined" v-bind="props" append-icon="ri-filter-fill">
+              <VBtn
+                color="primary"
+                variant="outlined"
+                v-bind="props"
+                append-icon="ri-filter-fill"
+              >
                 Filter
               </VBtn>
             </template>
@@ -168,12 +193,14 @@ const applyFilters = () => {
               {{ formatDateIntl(new Date(item.tanggal_daftar)) }}
             </template>
             <template #item.merek_dagang="{ item }">
-              {{ item.merek_dagang || 'N/A' }} <!-- Display Merek Dagang value or N/A if not available -->
+              {{ item.merek_dagang || "N/A" }}
+              <!-- Display Merek Dagang value or N/A if not available -->
             </template>
             <template #item.laporan_sph="{ item }">
               <VBtn color="secondary" @click="navigateAction(item.id)">
                 Lihat Dokumen
-              </VBtn> <!-- Button changed to "Lihat Dokumen" -->
+              </VBtn>
+              <!-- Button changed to "Lihat Dokumen" -->
             </template>
             <template #item.action="{ item }">
               <div class="d-flex gap-1">
@@ -183,7 +210,8 @@ const applyFilters = () => {
                     color="primary"
                     @click="navigateAction(item.id)"
                   />
-                </IconBtn> <!-- Right arrow icon for action -->
+                </IconBtn>
+                <!-- Right arrow icon for action -->
               </div>
             </template>
           </VDataTableServer>
