@@ -16,7 +16,7 @@ const items = ref<
 
 const itemPerPage = ref(10);
 const totalItems = ref(0);
-const loading = ref(false);
+const loading = ref(true);
 const page = ref(1);
 
 const headers = [
@@ -69,7 +69,7 @@ const handleInput = () => {
 const searchQuery = ref("");
 
 onMounted(async () => {
-  await loadItem(1, itemPerPage.value, "");
+  // await loadItem(1, itemPerPage.value, "");
 });
 // const filteredItems = computed(() => {
 //   if (!searchQuery.value)
@@ -86,10 +86,10 @@ const requestDialogVisible = ref(false);
 
 const router = useRouter();
 
-const hanleSubmitRequest = (shln_id: string | null) => {
+const handleSubmitRequest = (shln_id: string | null) => {
   if (shln_id != null) {
     // console.log(`/sertifikasi-halal/shln-detail/${shln_id}`);
-    navigateTo(`/sertifikasi-halal/shln-detail/${shln_id}`);
+    navigateTo(`/sertifikasi-halal/luar-negeri/submission/${shln_id}`);
   }
 };
 
@@ -136,6 +136,7 @@ const openModalsRequest = () => {
             :headers="headers"
             :items-length="totalItems"
             :loading="loading"
+            loading-text="Loading..."
             :items="items"
             @update:options="loadItem(page, itemPerPage, searchQuery)"
           >
@@ -162,7 +163,7 @@ const openModalsRequest = () => {
     </VCard>
     <ShlnRegisterDialog
       :dialog-visible="requestDialogVisible"
-      :submit="hanleSubmitRequest"
+      :submit="handleSubmitRequest"
       :total-item="totalItems"
       @update:dialog-visible="requestDialogVisible = $event"
     />
