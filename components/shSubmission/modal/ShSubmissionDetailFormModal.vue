@@ -9,7 +9,7 @@ const props = defineProps<{
 const emit = defineEmits(["update:dialogVisible", "submit:commitAction"]);
 
 const localDialogVisible = ref(props.dialogVisible);
-const localDialogUse = ref(props.dialogUse || "CREATE");
+const localDialogUse = ref(props.dialogUse);
 
 const textSubmitButton = computed(() => {
   switch (localDialogUse.value) {
@@ -26,6 +26,12 @@ const closeDialog = () => {
   localDialogVisible.value = false;
 };
 
+watch(
+  () => props.dialogUse,
+  (newVal) => {
+    localDialogUse.value = newVal;
+  }
+);
 watch(
   () => props.dialogVisible,
   (newVal) => {
