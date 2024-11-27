@@ -1,30 +1,28 @@
 <script setup lang="ts">
 const isPanelOpen = ref(0);
-const deleteDialogVisible = ref(false);
 
-const legalAspectHeader = [
+const submissionData = ref({
+  name: "Sartiika/Industri Minuman Ringan",
+  address: "Sumbawa Banget, RT002/RW002, Sumbang, Curio, Jawa Barat",
+  businessEntity: "Lainnya",
+  businessScale: "Mikro",
+  guarantor: "Sumayah",
+});
+const guarantorData = ref({
+  name: "Sumayah",
+  phoneNumber: "081234567899",
+  email: "rasarasaa@gmail.com",
+});
+
+const legalAspectHeader: any[] = [
   { title: "No", value: "index" },
   { title: "Jenis", value: "type" },
   { title: "No. Dokumen", value: "docNumber" },
   { title: "Tanggal", value: "date" },
   { title: "Masa Berlaku", value: "validPeriod" },
   { title: "Instansi Penerbit", value: "publisher" },
-  { title: "Action", value: "actions" },
+  { title: "Action", value: "actions", align: "center" },
 ];
-const halalSupervisorHeader = [
-  { title: "No", value: "index" },
-  { title: "Nama", value: "name" },
-  { title: "No. KTP", value: "ktpNumber" },
-  { title: "No. Kontak", value: "contactNumber" },
-  { title: "No/Tgl Sertif Penyelia Halal ", value: "certificateNumber" },
-  { title: "No/Tgl SK", value: "skDate" },
-];
-const documentHeader = [
-  { title: "No", value: "index" },
-  { title: "Nama", value: "name" },
-  { title: "Dokumen", value: "document" },
-];
-
 const legalAspectData = ref([
   {
     type: "SIUP",
@@ -48,6 +46,15 @@ const legalAspectData = ref([
     publisher: "BKPM",
   },
 ]);
+
+const halalSupervisorHeader = [
+  { title: "No", value: "index" },
+  { title: "Nama", value: "name" },
+  { title: "No. KTP", value: "ktpNumber" },
+  { title: "No. Kontak", value: "contactNumber" },
+  { title: "No/Tgl Sertif Penyelia Halal ", value: "certificateNumber" },
+  { title: "No/Tgl SK", value: "skDate" },
+];
 const halalSupervisorData = [
   {
     name: "Maya",
@@ -64,99 +71,125 @@ const halalSupervisorData = [
     skDate: "001/SKP/127/13/10/2024",
   },
 ];
+
+const documentHeader = [
+  { title: "No", value: "index" },
+  { title: "Nama", value: "name" },
+  { title: "Dokumen", value: "document" },
+];
 const documentData = ref([
-  { name: "Izin Edar", document: "Surat Izin Usaha.pdf" },
-  { name: "Izin Masuk", document: "" },
+  {
+    name: "Izin Edar",
+    filename: "Surat Izin Usaha.pdf",
+    document: new File(["Surat Izin Usaha"], "Surat Izin Usaha.pdf"),
+  },
+  {
+    name: "Izin Masuk",
+    filename: null,
+    document: null,
+  },
 ]);
 
 const deleteType = ref("");
-const selectedDelete = ref();
-const openDeleteModal = (type: string, index: number) => {
+const selectedItem = ref();
+const isModalOpen = ref(false);
+
+const handleOpenModal = (type: string, index: number) => {
   deleteType.value = type;
-  selectedDelete.value = index;
-  deleteDialogVisible.value = !deleteDialogVisible.value;
+  selectedItem.value = index;
+  isModalOpen.value = !isModalOpen.value;
 };
-const confirmDelete = () => {
-  const exist = legalAspectData.value.findIndex(
-    (i, idx) => idx === selectedDelete.value
+const confirmDeleteItem = () => {
+  const itemIndex = legalAspectData.value.findIndex(
+    (_, idx) => idx === selectedItem.value
   );
-  legalAspectData.value.splice(exist, 1);
-  selectedDelete.value = null;
+  legalAspectData.value.splice(itemIndex, 1);
+  selectedItem.value = null;
 };
 
-const removeDoc = () => {
-  documentData.value.map((i, idx) => {
-    if (idx === selectedDelete.value) {
-      i.document = "";
+const handleUploadFile = (event: any, index: number) => {
+  if (event?.target?.files.length) {
+    const file = event.target.files[0];
+    if (file) {
+      return documentData.value.map((i: any, idx: number) => {
+        if (idx === index) {
+          i.filename = file.name;
+          i.document = file;
+          return i;
+        }
+      });
+    }
+  }
+};
+const confirmDeleteDoc = () => {
+  documentData.value.map((i: any, idx: number) => {
+    if (idx === selectedItem.value) {
+      i.filename = null;
+      i.document = null;
     }
   });
-};
-
-const fileInput = ref();
-const triggerFileInput = () => {
-  fileInput.value.click();
-};
-const onFileChange = (event: any, index: number) => {
-  const file = event.target.files[0];
-  if (file) {
-    return documentData.value.map((i, idx) => {
-      if (idx === index) {
-        return (i.document = file.name);
-      }
-    });
-  }
 };
 </script>
 
 <template>
   <VExpansionPanels v-model="isPanelOpen">
-    <VExpansionPanel class="mb-10">
+    <VExpansionPanel class="mb-10 pt-3">
       <VExpansionPanelTitle class="font-weight-bold text-h4">
         Pengajuan Sertifikasi Halal
       </VExpansionPanelTitle>
       <VExpansionPanelText class="mt-5">
         <VRow>
-          <VCol cols="3">Nama</VCol>
-          <VCol cols="9">: Sartiika/Industri Minuman Ringan</VCol>
+          <VCol cols="3" class="font-weight-bold">Nama</VCol>
+          <VCol cols="9">: {{ submissionData.name }}</VCol>
         </VRow>
         <VRow>
-          <VCol cols="3">Alamat</VCol>
-          <VCol cols="9"
-            >: Sumbawa Banget, RT002/RW002, Sumbang, Curio, Jawa Barat</VCol
-          >
+          <VCol cols="3" class="font-weight-bold">Alamat</VCol>
+          <VCol cols="9">: {{ submissionData.address }}</VCol>
         </VRow>
         <VRow>
-          <VCol cols="3"> Jenis Badan Usaha </VCol>
-          <VCol cols="9">: Lainnya</VCol>
+          <VCol cols="3" class="font-weight-bold"> Jenis Badan Usaha </VCol>
+          <VCol cols="9">: {{ submissionData.businessEntity }}</VCol>
         </VRow>
         <VRow>
-          <VCol cols="3">Sekala Usaha</VCol>
-          <VCol cols="9">: Mikro</VCol>
+          <VCol cols="3" class="font-weight-bold">Sekala Usaha</VCol>
+          <VCol cols="9">: {{ submissionData.businessScale }}</VCol>
         </VRow>
         <VDivider class="my-5" />
         <VRow>
-          <VCol cols="3">Penanggung Jawab</VCol>
-          <VCol cols="9">: Sumayah</VCol>
+          <VCol cols="3" class="font-weight-bold">Penanggung Jawab</VCol>
+          <VCol cols="9">: {{ submissionData.guarantor }}</VCol>
         </VRow>
       </VExpansionPanelText>
     </VExpansionPanel>
   </VExpansionPanels>
-  <VCard class="mb-10">
+  <VCard class="mb-10 pt-3">
     <VCardTitle class="mb-5">
       <div class="font-weight-bold text-h4">Penanggung Jawab</div>
     </VCardTitle>
     <VCardText>
       <div class="mb-3">
-        <div>Jenis Badan Usaha</div>
-        <VTextField model-value="Sumayah" density="compact" />
+        <div class="font-weight-bold mb-1">Jenis Badan Usaha</div>
+        <VTextField
+          v-model="guarantorData.name"
+          density="compact"
+          rounded="xl"
+        />
       </div>
       <div class="mb-3">
-        <div>Nomor Kontak</div>
-        <VTextField model-value="081234567899" density="compact" />
+        <div class="font-weight-bold mb-1">Nomor Kontak</div>
+        <VTextField
+          v-model="guarantorData.phoneNumber"
+          density="compact"
+          rounded="xl"
+        />
       </div>
-      <div class="">
-        <div>Email</div>
-        <VTextField model-value="rasarasaa@gmail.com" density="compact" />
+      <div>
+        <div class="font-weight-bold mb-1">Email</div>
+        <VTextField
+          v-model="guarantorData.email"
+          density="compact"
+          rounded="xl"
+        />
       </div>
     </VCardText>
   </VCard>
@@ -170,6 +203,7 @@ const onFileChange = (event: any, index: number) => {
     </VCardTitle>
     <VCardText>
       <VDataTable
+        class="legal-aspect-table"
         :headers="legalAspectHeader"
         :items="legalAspectData"
         hide-default-footer
@@ -183,7 +217,7 @@ const onFileChange = (event: any, index: number) => {
               icon="mdi-delete"
               color="error"
               class="cursor-pointer"
-              @click="openDeleteModal('LEGAL', index)"
+              @click="handleOpenModal('LEGAL', index)"
             />
           </div>
         </template>
@@ -211,24 +245,22 @@ const onFileChange = (event: any, index: number) => {
     </VCardText>
   </VCard>
   <VCard>
-    <VCardTitle class="my-5 d-flex justify-space-between align-center">
+    <VCardTitle class="my-3 d-flex justify-space-between align-center">
       <div class="font-weight-bold text-h4">Dokumen Persyaratan Fasilitas</div>
-      <VBtn variant="outlined">
-        <div class="pe-3">Tambah</div>
-        <VIcon icon="fa-plus" />
-      </VBtn>
     </VCardTitle>
     <VCardText>
       <VAlert
         class="mb-5"
         color="primary"
         variant="tonal"
-        text="File yang digunakan dengan extension XLSX, PDF, PNG dan Maksimal
-        50mb"
+        density="compact"
         prominent
       >
+        <div>
+          File yang digunakan dengan extension XLSX, PDF, PNG dan Maksimal 50mb
+        </div>
         <template #prepend>
-          <VIcon>fa-exclamation-circle</VIcon>
+          <VIcon icon="fa-exclamation-circle" />
         </template>
       </VAlert>
       <VDataTable
@@ -241,9 +273,9 @@ const onFileChange = (event: any, index: number) => {
         </template>
         <template #item.document="{ item, index }">
           <VTextField
-            v-if="item.document.length"
+            v-if="item.document"
             density="compact"
-            :model-value="item.document"
+            :model-value="item.filename"
             placeholder="No file choosen"
             rounded="xl"
             max-width="400"
@@ -253,44 +285,36 @@ const onFileChange = (event: any, index: number) => {
                 icon="fa-trash"
                 color="error"
                 class="cursor-pointer"
-                @click="openDeleteModal('DOC', index)"
+                @click="handleOpenModal('DOC', index)"
               />
             </template>
           </VTextField>
-          <VTextField
+          <VFileInput
             v-else
+            :model-value="item.document"
             class="custom-file-input"
             density="compact"
             rounded="xl"
-            placeholder="No file choosen"
+            label="No file choosen"
             max-width="400"
+            prepend-icon=""
+            @change="(e: Event) => handleUploadFile(e, index)"
           >
             <template #append-inner>
-              <VBtn
-                rounded="s-0 e-xl"
-                @click.prevent="triggerFileInput"
-                text="Choose"
-              />
+              <VBtn rounded="s-0 e-xl" text="Choose" />
             </template>
-          </VTextField>
-          <input
-            type="file"
-            ref="fileInput"
-            @change="(e) => onFileChange(e, index)"
-            accept="application/vnd.ms-excel, application/pdf ,image/png"
-            style="display: none"
-          />
+          </VFileInput>
         </template>
       </VDataTable>
     </VCardText>
   </VCard>
   <ShSubmissionDetailFormModal
     dialog-title="Menghapus Data"
-    :dialog-visible="deleteDialogVisible"
+    :dialog-visible="isModalOpen"
     dialog-use="DELETE"
-    @update:dialog-visible="deleteDialogVisible = $event"
+    @update:dialog-visible="isModalOpen = $event"
     @submit:commit-action="
-      deleteType === 'LEGAL' ? confirmDelete() : removeDoc()
+      deleteType === 'LEGAL' ? confirmDeleteItem() : confirmDeleteDoc()
     "
   >
     <VCardText>
@@ -303,6 +327,24 @@ const onFileChange = (event: any, index: number) => {
 .custom-file-input {
   .v-field--appended {
     padding-inline-end: 0 !important;
+  }
+}
+</style>
+
+<style scoped lang="scss">
+:deep(.v-data-table.legal-aspect-table > .v-table__wrapper) {
+  table {
+    thead > tr > th:last-of-type {
+      right: 0;
+      position: sticky;
+      border-left: 1px solid rgba(#000000, 0.12);
+    }
+    tbody > tr > td:last-of-type {
+      right: 0;
+      position: sticky;
+      border-left: 1px solid rgba(#000000, 0.12);
+      background: white;
+    }
   }
 }
 </style>
