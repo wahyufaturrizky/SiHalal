@@ -1,38 +1,28 @@
-const runtimeConfig = useRuntimeConfig();
-export default defineEventHandler(async (event) => {
-  const payload = await readBody(event);
+const runtimeConfig = useRuntimeConfig()
 
-  // console.log("EVENT ", event);
+export default defineEventHandler(async event => {
+  try {
+    // Membaca payload dari body permintaan
+    const payload = await readBody(event)
 
-  const { data, error } = await $fetch<any>(
-    `${runtimeConfig.authBaseUrl}/api/v1/users`,
-    {
-      method: "POST",
+    // Memanggil API eksternal menggunakan $fetch
+    // Mengembalikan data dari API eksternal
+    return await $fetch(`${runtimeConfig.authBaseUrl}/api/v1/users`, {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
-    }
-  );
+    })
+  }
+  catch (error) {
+    // Menangani error dengan memberikan detail ke client
+    console.error('Error API call:', error)
 
-  // .catch((err: NuxtError) => {
-  //   // console.error("error reset passwd => ", err.data);
-
-  //   // const response = JSON.parse(JSON.stringify(err.data));
-
-  //   const msgDefault = "Password is wrong x";
-
-  //   // if (err.statusCode == 4001) {
-  //   //   if (response?.code == 4001) msgDefault = response?.message;
-  //   // }
-
-  //   throw createError({
-  //     statusCode: 400,
-  //     statusMessage: msgDefault,
-  //   });
-  // });
-
-  // console.log(data, "ini data");
-
-  return data || error || null;
-});
+    throw createError({
+      statusCode: error?.response?.status || 500,
+      statusMessage: error?.response?.statusText || 'Internal Server Error',
+      data: error?.response?.data || 'Terjadi kesalahan pada server',
+    })
+  }
+})
