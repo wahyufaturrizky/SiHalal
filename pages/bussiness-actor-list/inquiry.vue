@@ -75,19 +75,6 @@ onMounted(async () => {
   });
 });
 
-const handleUpdateTable = async () => {
-  loadItem({
-    page: page.value,
-    size: size.value,
-    no_daftar: no_daftar.value,
-    nama_pu: nama_pu.value,
-    merek_dagang: merek_dagang.value,
-    status: status.value,
-    jenis: jenis.value,
-    kode_fac: kode_fac.value,
-  });
-};
-
 const debouncedFetch = debounce(loadItem, 500);
 </script>
 
@@ -117,7 +104,18 @@ const debouncedFetch = debounce(loadItem, 500);
       :items="items"
       :size="size"
       class="mt-12"
-      @updatetable="handleUpdateTable"
+      @updatetable="
+        loadItem({
+          page,
+          size,
+          no_daftar,
+          nama_pu,
+          merek_dagang,
+          status,
+          jenis,
+          kode_fac,
+        })
+      "
     />
   </div>
 </template>

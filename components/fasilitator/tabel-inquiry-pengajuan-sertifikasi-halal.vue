@@ -36,10 +36,6 @@ const headers = [
   { title: "Sumber Pembiayaan", key: "merek_dagang" },
   { title: "Jenis", key: "jenis_produk" },
 ];
-
-const updateTable = async () => {
-  emit("updatetable");
-};
 </script>
 
 <template>
@@ -57,7 +53,7 @@ const updateTable = async () => {
               :loading="loading"
               :items-length="totalitems"
               loading-text="Loading..."
-              @update:options="updateTable"
+              @update:options="emit('updatetable')"
             >
               <template #item.no="{ index }">
                 {{ index + 1 + (page - 1) * size }}
