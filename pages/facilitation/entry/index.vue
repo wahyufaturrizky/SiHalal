@@ -49,7 +49,9 @@ const tableHeader = [
   { title: "Action", key: "action" },
 ];
 
-const navigateAction = (id: string) => {};
+const navigateAction = (id: string) => {
+  navigateTo(`/facilitation/entry/${id}`);
+};
 </script>
 
 <template>
