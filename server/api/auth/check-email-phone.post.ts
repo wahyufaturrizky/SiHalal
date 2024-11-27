@@ -6,8 +6,8 @@ export default defineEventHandler(async event => {
     const payload = await readBody(event)
 
     // Memanggil API eksternal menggunakan $fetch
-    // Mengembalikan data dari API eksternal
-    return await $fetch(`${runtimeConfig.authBaseUrl}/api/v1/users`, {
+    // Mengembalikan data dari API
+    return await $fetch(`${runtimeConfig.authBaseUrl}/api/user/check`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -16,7 +16,7 @@ export default defineEventHandler(async event => {
     })
   }
   catch (error) {
-    // Menangani error dengan memberikan detail ke client
+    // Menangani error secara eksplisit
     console.error('Error API call:', error)
 
     throw createError({
