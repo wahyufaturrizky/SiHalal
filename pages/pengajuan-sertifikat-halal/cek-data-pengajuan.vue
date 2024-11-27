@@ -1,51 +1,51 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { VDataTableServer } from 'vuetify/components'
+import { ref } from "vue";
+import { VDataTableServer } from "vuetify/components";
 
 interface TimelineItem {
-  title: string
-  user: string
-  date: string
-  color: string
+  title: string;
+  user: string;
+  date: string;
+  color: string;
 }
 
 const tabs = ref([
-  { text: 'Pelaku Usaha', value: 'pelaku_usaha' },
-  { text: 'Pengajuan', value: 'pengajuan' },
-  { text: 'Pabrik & Outlet', value: 'pabrik' },
-  { text: 'Bahan', value: 'bahan' },
-  { text: 'Produk', value: 'produk' },
-  { text: 'Melacak', value: 'melacak' },
-])
+  { text: "Pelaku Usaha", value: "pelaku_usaha" },
+  { text: "Pengajuan", value: "pengajuan" },
+  { text: "Pabrik & Outlet", value: "pabrik" },
+  { text: "Bahan", value: "bahan" },
+  { text: "Produk", value: "produk" },
+  { text: "Melacak", value: "melacak" },
+]);
 
-const tab = ref('pelaku_usaha') // Default selected tab
+const tab = ref("pelaku_usaha"); // Default selected tab
 
 const timelineItems = ref<TimelineItem[]>([
   {
-    title: 'Submitted',
-    user: 'Samsul',
-    date: '2024-09-09',
-    color: 'deep-orange-lighten-4',
+    title: "Submitted",
+    user: "Samsul",
+    date: "2024-09-09",
+    color: "deep-orange-lighten-4",
   },
   {
-    title: 'Draft',
-    user: 'Samsul',
-    date: '2024-09-09',
-    color: 'purple-lighten-2',
+    title: "Draft",
+    user: "Samsul",
+    date: "2024-09-09",
+    color: "purple-lighten-2",
   },
-])
+]);
 
 const formatDate = (date: string): string => {
-  return new Date(date).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  })
-}
+  return new Date(date).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
 
-const showTimeline = ref(false)
-const showPengajuan = ref(false)
-const showDetail = ref(false)
+const showTimeline = ref(false);
+const showPengajuan = ref(false);
+const showDetail = ref(false);
 
 // const items = ref<
 //   {
@@ -58,10 +58,10 @@ const showDetail = ref(false)
 //   }[]
 // >([]);
 
-const itemPerPage = ref(10)
-const totalItems = ref(0)
-const loading = ref(false)
-const page = ref(1)
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const loading = ref(false);
+const page = ref(1);
 
 // const loadItem = async (page: number, size: number, keyword: string = "") => {
 //   try {
@@ -87,59 +87,59 @@ const page = ref(1)
 
 const loadItem = async (page, size) => {
   // Temporarily skip API call for dummy data testing
-  items.value = items.value.slice((page - 1) * size, page * size) // Paginate dummy data
-  totalItems.value = items.value.length
-}
+  items.value = items.value.slice((page - 1) * size, page * size); // Paginate dummy data
+  totalItems.value = items.value.length;
+};
 
-const debouncedFetch = debounce(loadItem, 500)
+const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(() => {
   // Assign dummy data to items instead of fetching from API
   items.value = [
     {
       id: 1,
-      jenis_bahan: 'Cleaning Agent',
-      nama_bahan: 'Air',
-      produsen: 'Produsen A',
-      nomor_sertifikat_halal: '123456',
-      keterangan: 'Digunakan untuk mencuci',
+      jenis_bahan: "Cleaning Agent",
+      nama_bahan: "Air",
+      produsen: "Produsen A",
+      nomor_sertifikat_halal: "123456",
+      keterangan: "Digunakan untuk mencuci",
     },
     {
       id: 2,
-      jenis_bahan: 'Kemasan',
-      nama_bahan: 'Alumunium Foil',
-      produsen: 'Produsen B',
-      nomor_sertifikat_halal: '789012',
-      keterangan: 'Kemasan tahan panas',
+      jenis_bahan: "Kemasan",
+      nama_bahan: "Alumunium Foil",
+      produsen: "Produsen B",
+      nomor_sertifikat_halal: "789012",
+      keterangan: "Kemasan tahan panas",
     },
     {
       id: 3,
-      jenis_bahan: 'Cleaning Agent',
-      nama_bahan: 'Sabun Pencuci',
-      produsen: 'Produsen C',
-      nomor_sertifikat_halal: '345678',
-      keterangan: 'Menghilangkan noda',
+      jenis_bahan: "Cleaning Agent",
+      nama_bahan: "Sabun Pencuci",
+      produsen: "Produsen C",
+      nomor_sertifikat_halal: "345678",
+      keterangan: "Menghilangkan noda",
     },
     {
       id: 4,
-      jenis_bahan: 'Kemasan',
-      nama_bahan: 'Plastik',
-      produsen: 'Produsen D',
-      nomor_sertifikat_halal: '-',
-      keterangan: 'Kemasan fleksibel',
+      jenis_bahan: "Kemasan",
+      nama_bahan: "Plastik",
+      produsen: "Produsen D",
+      nomor_sertifikat_halal: "-",
+      keterangan: "Kemasan fleksibel",
     },
     {
       id: 5,
-      jenis_bahan: 'Cleaning Agent',
-      nama_bahan: 'Detergent',
-      produsen: 'Produsen E',
-      nomor_sertifikat_halal: '901234',
-      keterangan: 'Membersihkan bahan',
+      jenis_bahan: "Cleaning Agent",
+      nama_bahan: "Detergent",
+      produsen: "Produsen E",
+      nomor_sertifikat_halal: "901234",
+      keterangan: "Membersihkan bahan",
     },
-  ]
+  ];
 
-  totalItems.value = items.value.length // Set totalItems for pagination
-})
+  totalItems.value = items.value.length; // Set totalItems for pagination
+});
 
 // onMounted(async () => {
 //   await loadItem(1, itemPerPage.value, "");
@@ -150,182 +150,50 @@ onMounted(() => {
 // };
 
 const verifikatorTableHeader = [
-  { title: 'No', key: 'id' },
-  { title: 'Jenis Bahan', key: 'jenis_bahan' },
-  { title: 'Nama Bahan', key: 'nama_bahan' },
-  { title: 'Produsen', key: 'produsen' },
-  { title: 'Nomor Sertifikat Halal', key: 'nomor_sertifikat_halal' },
-  { title: 'Keterangan', key: 'keterangan' },
-  { title: 'Action', key: 'action' },
-]
+  { title: "No", key: "id" },
+  { title: "Jenis Bahan", key: "jenis_bahan" },
+  { title: "Nama Bahan", key: "nama_bahan" },
+  { title: "Produsen", key: "produsen" },
+  { title: "Nomor Sertifikat Halal", key: "nomor_sertifikat_halal" },
+  { title: "Keterangan", key: "keterangan" },
+  { title: "Action", key: "action" },
+];
 
 const pabrikTableHeader = [
-  { title: 'No', key: 'id' },
-  { title: 'Jenis', key: 'jenis' },
-  { title: 'No. Dokumen', key: 'no_dokumen' },
-  { title: 'Tanggal', key: 'tanggal' },
-  { title: 'Masa Berlaku', key: 'masa_berlaku' },
-  { title: 'Instansi Penerbit', key: 'instansi_penerbit' },
-  { title: 'Action', key: 'action' },
-]
+  { title: "No", key: "id" },
+  { title: "Jenis", key: "jenis" },
+  { title: "No. Dokumen", key: "no_dokumen" },
+  { title: "Tanggal", key: "tanggal" },
+  { title: "Masa Berlaku", key: "masa_berlaku" },
+  { title: "Instansi Penerbit", key: "instansi_penerbit" },
+  { title: "Action", key: "action" },
+];
 
 const outletTableHeader = [
-  { title: 'No', key: 'id' },
-  { title: 'Nama', key: 'nama' },
-  { title: 'Alamat', key: 'alamat' },
-  { title: 'Action', key: 'action' },
-]
+  { title: "No", key: "id" },
+  { title: "Nama", key: "nama" },
+  { title: "Alamat", key: "alamat" },
+  { title: "Action", key: "action" },
+];
 
 const legalTableHeader = [
-  { title: 'No', key: 'id' },
-  { title: 'Jenis', key: 'jenis' },
-  { title: 'No. Dokumen', key: 'no_dokumen' },
-  { title: 'Tanggal', key: 'tanggal' },
-  { title: 'Masa Berlaku', key: 'masa_berlaku' },
-  { title: 'Instansi Penerbit', key: 'instansi_penerbit' },
-]
+  { title: "No", key: "id" },
+  { title: "Jenis", key: "jenis" },
+  { title: "No. Dokumen", key: "no_dokumen" },
+  { title: "Tanggal", key: "tanggal" },
+  { title: "Masa Berlaku", key: "masa_berlaku" },
+  { title: "Instansi Penerbit", key: "instansi_penerbit" },
+];
 
 const penyeliaTableHeader = [
-  { title: 'No', key: 'id' },
-  { title: 'Nama', key: 'nama' },
-  { title: 'No. KTP', key: 'no_ktp' },
-  { title: 'No. Kontak', key: 'no_kontak' },
-  { title: 'No/Tgl Sertif Penyelia Halal', key: 'sertif_penyelia_halal' },
-  { title: 'No/Tgl SK', key: 'sk' },
-  { title: 'Action', key: 'action' },
-]
-
-// Dummy data
-const items = ref([
-  {
-    id: 1,
-    jenis_bahan: 'Cleaning Agent',
-    nama_bahan: 'Air',
-    produsen: 'Produsen A',
-    nomor_sertifikat_halal: '123456',
-    keterangan: 'Digunakan untuk mencuci',
-  },
-  {
-    id: 2,
-    jenis_bahan: 'Kemasan',
-    nama_bahan: 'Alumunium Foil',
-    produsen: 'Produsen B',
-    nomor_sertifikat_halal: '789012',
-    keterangan: 'Kemasan tahan panas',
-  },
-  {
-    id: 3,
-    jenis_bahan: 'Cleaning Agent',
-    nama_bahan: 'Sabun Pencuci',
-    produsen: 'Produsen C',
-    nomor_sertifikat_halal: '345678',
-    keterangan: 'Menghilangkan noda',
-  },
-  {
-    id: 4,
-    jenis_bahan: 'Kemasan',
-    nama_bahan: 'Plastik',
-    produsen: 'Produsen D',
-    nomor_sertifikat_halal: '-',
-    keterangan: 'Kemasan fleksibel',
-  },
-  {
-    id: 5,
-    jenis_bahan: 'Cleaning Agent',
-    nama_bahan: 'Detergent',
-    produsen: 'Produsen E',
-    nomor_sertifikat_halal: '901234',
-    keterangan: 'Membersihkan bahan',
-  },
-])
-
-const pabrikTableData = ref([
-  {
-    id: 1,
-    jenis: 'Sertifikat ISO',
-    no_dokumen: 'ISO-123456',
-    tanggal: '01/01/2024',
-    masa_berlaku: '01/01/2027',
-    instansi_penerbit: 'ISO Certification Body',
-  },
-  {
-    id: 2,
-    jenis: 'Surat Izin Usaha',
-    no_dokumen: 'SIU-987654',
-    tanggal: '15/02/2024',
-    masa_berlaku: '12/03/2027',
-    instansi_penerbit: 'Dinas Perizinan',
-  },
-  {
-    id: 3,
-    jenis: 'HACCP Certificate',
-    no_dokumen: 'HACCP-345678',
-    tanggal: '11/02/2024',
-    masa_berlaku: '21/03/2025',
-    instansi_penerbit: 'HACCP Authority',
-  },
-])
-
-const outletTableData = ref([
-  {
-    id: 1,
-    nama: 'Outlet A',
-    alamat: 'Jl. Sudirman No. 10, Jakarta',
-  },
-  {
-    id: 2,
-    nama: 'Outlet B',
-    alamat: 'Jl. Merdeka Raya No. 5, Bandung',
-  },
-  {
-    id: 3,
-    nama: 'Outlet C',
-    alamat: 'Jl. Ahmad Yani No. 8, Surabaya',
-  },
-])
-
-const penyeliaTableData = ref([
-  {
-    id: 1,
-    nama: 'Ahmad Fauzi',
-    no_ktp: '3201012001010001',
-    no_kontak: '081234567890',
-    sertif_penyelia_halal: 'SH12345 / 01-01-2024',
-    sk: 'SK001 / 15-02-2024',
-  },
-  {
-    id: 2,
-    nama: 'Nurul Aini',
-    no_ktp: '3202011995010002',
-    no_kontak: '081298765432',
-    sertif_penyelia_halal: 'SH67890 / 10-03-2024',
-    sk: 'SK002 / 20-03-2024',
-  },
-  {
-    id: 3,
-    nama: 'Rahmat Hidayat',
-    no_ktp: '3203011987020003',
-    no_kontak: '081345678901',
-    sertif_penyelia_halal: 'SH11223 / 05-04-2024',
-    sk: 'SK003 / 25-04-2024',
-  },
-  {
-    id: 4,
-    nama: 'Sri Rahayu',
-    no_ktp: '3204011988010004',
-    no_kontak: '081456789012',
-    sertif_penyelia_halal: 'SH33456 / 15-05-2024',
-    sk: 'SK004 / 30-05-2024',
-  },
-  {
-    id: 5,
-    nama: 'Budi Santoso',
-    no_ktp: '3205011985010005',
-    no_kontak: '081567890123',
-    sertif_penyelia_halal: 'SH55678 / 20-06-2024',
-    sk: 'SK005 / 05-07-2024',
-  },
-])
+  { title: "No", key: "id" },
+  { title: "Nama", key: "nama" },
+  { title: "No. KTP", key: "no_ktp" },
+  { title: "No. Kontak", key: "no_kontak" },
+  { title: "No/Tgl Sertif Penyelia Halal", key: "sertif_penyelia_halal" },
+  { title: "No/Tgl SK", key: "sk" },
+  { title: "Action", key: "action" },
+];
 
 // Dummy data
 const items = ref([
@@ -371,83 +239,172 @@ const items = ref([
   },
 ]);
 
-const handleAddProductConfirm = formData => {
-  console.log('Add confirmed:', formData)
-}
+const pabrikTableData = ref([
+  {
+    id: 1,
+    jenis: "Sertifikat ISO",
+    no_dokumen: "ISO-123456",
+    tanggal: "01/01/2024",
+    masa_berlaku: "01/01/2027",
+    instansi_penerbit: "ISO Certification Body",
+  },
+  {
+    id: 2,
+    jenis: "Surat Izin Usaha",
+    no_dokumen: "SIU-987654",
+    tanggal: "15/02/2024",
+    masa_berlaku: "12/03/2027",
+    instansi_penerbit: "Dinas Perizinan",
+  },
+  {
+    id: 3,
+    jenis: "HACCP Certificate",
+    no_dokumen: "HACCP-345678",
+    tanggal: "11/02/2024",
+    masa_berlaku: "21/03/2025",
+    instansi_penerbit: "HACCP Authority",
+  },
+]);
 
-const handleDeleteOutletConfirm = oulet => {
-  console.log('Delete outlet confirmed:', oulet)
-}
+const outletTableData = ref([
+  {
+    id: 1,
+    nama: "Outlet A",
+    alamat: "Jl. Sudirman No. 10, Jakarta",
+  },
+  {
+    id: 2,
+    nama: "Outlet B",
+    alamat: "Jl. Merdeka Raya No. 5, Bandung",
+  },
+  {
+    id: 3,
+    nama: "Outlet C",
+    alamat: "Jl. Ahmad Yani No. 8, Surabaya",
+  },
+]);
 
-const handleDeletePabrikConfirm = pabrik => {
-  console.log('Delete pabrik confirmed:', pabrik)
-}
+const penyeliaTableData = ref([
+  {
+    id: 1,
+    nama: "Ahmad Fauzi",
+    no_ktp: "3201012001010001",
+    no_kontak: "081234567890",
+    sertif_penyelia_halal: "SH12345 / 01-01-2024",
+    sk: "SK001 / 15-02-2024",
+  },
+  {
+    id: 2,
+    nama: "Nurul Aini",
+    no_ktp: "3202011995010002",
+    no_kontak: "081298765432",
+    sertif_penyelia_halal: "SH67890 / 10-03-2024",
+    sk: "SK002 / 20-03-2024",
+  },
+  {
+    id: 3,
+    nama: "Rahmat Hidayat",
+    no_ktp: "3203011987020003",
+    no_kontak: "081345678901",
+    sertif_penyelia_halal: "SH11223 / 05-04-2024",
+    sk: "SK003 / 25-04-2024",
+  },
+  {
+    id: 4,
+    nama: "Sri Rahayu",
+    no_ktp: "3204011988010004",
+    no_kontak: "081456789012",
+    sertif_penyelia_halal: "SH33456 / 15-05-2024",
+    sk: "SK004 / 30-05-2024",
+  },
+  {
+    id: 5,
+    nama: "Budi Santoso",
+    no_ktp: "3205011985010005",
+    no_kontak: "081567890123",
+    sertif_penyelia_halal: "SH55678 / 20-06-2024",
+    sk: "SK005 / 05-07-2024",
+  },
+]);
 
-const file = ref<File | null>(null)
-const fileInputRef = ref<HTMLInputElement | null>(null)
+const handleAddProductConfirm = (formData) => {
+  console.log("Add confirmed:", formData);
+};
+
+const handleDeleteOutletConfirm = (oulet) => {
+  console.log("Delete outlet confirmed:", oulet);
+};
+
+const handleDeletePabrikConfirm = (pabrik) => {
+  console.log("Delete pabrik confirmed:", pabrik);
+};
+
+const file = ref<File | null>(null);
+const fileInputRef = ref<HTMLInputElement | null>(null);
 
 // Mock data for document list
 const documentList = ref([
-  { nama: 'Izin Edar', fileName: 'Surat Izin Usaha.pdf', file: null },
-  { nama: 'Izin Masuk', fileName: '', file: null },
-])
+  { nama: "Izin Edar", fileName: "Surat Izin Usaha.pdf", file: null },
+  { nama: "Izin Masuk", fileName: "", file: null },
+]);
 
 // Handle file removal
 const removeFile = (index: number) => {
-  documentList.value[0].fileName = ''
-  documentList.value[0].file = null
+  documentList.value[0].fileName = "";
+  documentList.value[0].file = null;
 
-  file.value = null
-}
+  file.value = null;
+};
 
 const uploadFile = (event: Event, index: string | number) => {
-  const fileUpload = event.target.files[0]
+  const fileUpload = event.target.files[0];
   if (fileUpload) {
-    documentList.value[0].fileName = fileUpload.name
-    documentList.value[0].file = fileUpload
+    documentList.value[0].fileName = fileUpload.name;
+    documentList.value[0].file = fileUpload;
   }
-}
+};
 
 // Handle file upload
 const handleFileUpload = (event: Event) => {
-  const input = event.target as HTMLInputElement
+  const input = event.target as HTMLInputElement;
   if (input.files && input.files.length > 0) {
-    file.value = input.files[0]
-    console.log('File uploaded:', file.value.name)
+    file.value = input.files[0];
+    console.log("File uploaded:", file.value.name);
+  } else {
+    console.log("No file selected");
   }
-  else {
-    console.log('No file selected')
-  }
-}
+};
 
 // Trigger file input click
 const triggerFileInputClick = () => {
-  fileInputRef.value?.click()
-}
+  fileInputRef.value?.click();
+};
 
 const data = {
   sertifikasi_date: ref([]),
-}
+};
 
-const selectedFasilitator = ref('')
-const searchFasilitator = ref('')
+const selectedFasilitator = ref("");
+const searchFasilitator = ref("");
 
 const fasilitators = ref([
-  { id: 1, name: 'Fasilitator A' },
-  { id: 2, name: 'Fasilitator B' },
-  { id: 3, name: 'Fasilitator C' },
-])
+  { id: 1, name: "Fasilitator A" },
+  { id: 2, name: "Fasilitator B" },
+  { id: 3, name: "Fasilitator C" },
+]);
 
 const filteredFasilitators = computed(() => {
-  return fasilitators.value.filter(fasilitator =>
-    fasilitator.name.toLowerCase().includes(searchFasilitator.value.toLowerCase()),
-  )
-})
+  return fasilitators.value.filter((fasilitator) =>
+    fasilitator.name
+      .toLowerCase()
+      .includes(searchFasilitator.value.toLowerCase())
+  );
+});
 
-const onFasilitatorSearchInput = debounce(input => {
-  console.log(input, 'ini input')
-  searchFasilitator.value = input
-}, 500)
+const onFasilitatorSearchInput = debounce((input) => {
+  console.log(input, "ini input");
+  searchFasilitator.value = input;
+}, 500);
 </script>
 
 <template>
@@ -455,62 +412,24 @@ const onFasilitatorSearchInput = debounce(input => {
     <!-- Title and Buttons Row -->
     <VRow>
       <VCol>
-        <p class="text-h4">
-          Detail Pengajuan
-        </p>
+        <p class="text-h4">Detail Pengajuan</p>
       </VCol>
-      <VCol
-        class="d-flex justify-end align-center"
-        cols="4"
-        md="5"
-      >
-        <VBtn
-          variant="outlined"
-          class="mx-2"
-        >
-          Lihat Laporan
-        </VBtn>
-        <VBtn
-          color="#49A84C"
-          class="mx-2"
-        >
-          Tandai OK
-        </VBtn>
-        <VBtn
-          variant="outlined"
-          color="error"
-          class="mx-2"
-        >
+      <VCol class="d-flex justify-end align-center" cols="4" md="5">
+        <VBtn variant="outlined" class="mx-2"> Lihat Laporan </VBtn>
+        <VBtn color="#49A84C" class="mx-2"> Tandai OK </VBtn>
+        <VBtn variant="outlined" color="error" class="mx-2">
           Batalkan Status Hijau
         </VBtn>
-        <VBtn
-          variant="outlined"
-          class="mx-2"
-        >
-          Pengembalian
-        </VBtn>
-        <VBtn
-          color="#E1442E"
-          class="mx-2"
-        >
-          Dibatalkan
-        </VBtn>
+        <VBtn variant="outlined" class="mx-2"> Pengembalian </VBtn>
+        <VBtn color="#E1442E" class="mx-2"> Dibatalkan </VBtn>
       </VCol>
     </VRow>
 
     <!-- Tabs -->
     <VRow>
       <VCol>
-        <VTabs
-          v-model="tab"
-          align-tabs="start"
-          height="60"
-        >
-          <VTab
-            v-for="item in tabs"
-            :key="item.value"
-            :value="item.value"
-          >
+        <VTabs v-model="tab" align-tabs="start" height="60">
+          <VTab v-for="item in tabs" :key="item.value" :value="item.value">
             {{ item.text }}
           </VTab>
         </VTabs>
@@ -521,21 +440,17 @@ const onFasilitatorSearchInput = debounce(input => {
     <VContainer v-if="tab === 'pelaku_usaha'">
       <VRow>
         <VCol>
-          <VCard
-            variant="flat"
-            class="pa-4"
-          >
+          <VCard variant="flat" class="pa-4">
             <div
               class="d-flex justify-space-between align-center"
               @click="showDetail = !showDetail"
             >
-              <p
-                class="text-h4"
-                style="font-weight: bold;"
-              >
+              <p class="text-h4" style="font-weight: bold">
                 Pengajuan Sertifikasi Halal
               </p>
-              <VIcon :icon="showDetail ? 'mdi-chevron-up' : 'mdi-chevron-down'" />
+              <VIcon
+                :icon="showDetail ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+              />
             </div>
             <VExpandTransition>
               <div v-if="showDetail">
@@ -547,14 +462,19 @@ const onFasilitatorSearchInput = debounce(input => {
                         <div class="info-row">
                           <span class="label">Nama</span>
                           <span class="colon">:</span>
-                          <span class="value">Sartika/Industri Makanan Ringan</span>
+                          <span class="value"
+                            >Sartika/Industri Makanan Ringan</span
+                          >
                         </div>
                       </VCol>
                       <VCol cols="12">
                         <div class="info-row">
                           <span class="label">Alamat</span>
                           <span class="colon">:</span>
-                          <span class="value">Sumbawa Banget, RT002/RW002, Sumbang, Curio, Jawa Barat</span>
+                          <span class="value"
+                            >Sumbawa Banget, RT002/RW002, Sumbang, Curio, Jawa
+                            Barat</span
+                          >
                         </div>
                       </VCol>
                       <VCol cols="12">
@@ -583,70 +503,38 @@ const onFasilitatorSearchInput = debounce(input => {
                   </div>
                 </VCardText>
               </div>
-            </VExpandtransition>
+            </VExpandTransition>
           </VCard>
         </VCol>
       </VRow>
       <VRow>
         <VCol>
-          <VCard
-            variant="flat"
-            class="pa-4"
-          >
-            <p
-              class="text-h4"
-              style="font-weight: bold;"
-            >
-              Penanggung Jawab
-            </p>
+          <VCard variant="flat" class="pa-4">
+            <p class="text-h4" style="font-weight: bold">Penanggung Jawab</p>
             <!-- Nama Usaha -->
             <VCol cols="12">
-              <VLabel class="required">
-                Jenis Badan Usaha
-              </VLabel>
-              <VTextField
-                required
-                placeholder="Jenis Badan Usaha"
-              />
+              <VLabel class="required"> Jenis Badan Usaha </VLabel>
+              <VTextField required placeholder="Jenis Badan Usaha" />
             </VCol>
             <VCol cols="12">
-              <VLabel class="required">
-                Nomor Kontak
-              </VLabel>
-              <VTextField
-                required
-                placeholder="Nomor Kontak"
-              />
+              <VLabel class="required"> Nomor Kontak </VLabel>
+              <VTextField required placeholder="Nomor Kontak" />
             </VCol>
             <VCol cols="12">
-              <VLabel class="required">
-                Email
-              </VLabel>
-              <VTextField
-                required
-                placeholder="Email"
-              />
+              <VLabel class="required"> Email </VLabel>
+              <VTextField required placeholder="Email" />
             </VCol>
           </VCard>
         </VCol>
       </VRow>
       <VRow>
         <VCol>
-          <VCard
-            variant="flat"
-            class="pa-4"
-          >
+          <VCard variant="flat" class="pa-4">
             <VRow>
               <VCol>
-                <p class="text-h3">
-                  Aspek Legal
-                </p>
+                <p class="text-h3">Aspek Legal</p>
               </VCol>
-              <VCol
-                class="d-flex justify-end align-center"
-                cols="6"
-                md="2"
-              >
+              <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahDataAspekLegal
                   mode="add"
                   @confirm-add="handleAddProductConfirm"
@@ -680,21 +568,12 @@ const onFasilitatorSearchInput = debounce(input => {
       </VRow>
       <VRow>
         <VCol>
-          <VCard
-            variant="flat"
-            class="pa-4"
-          >
+          <VCard variant="flat" class="pa-4">
             <VRow>
               <VCol>
-                <p class="text-h3">
-                  Penyelia Halal
-                </p>
+                <p class="text-h3">Penyelia Halal</p>
               </VCol>
-              <VCol
-                class="d-flex justify-end align-center"
-                cols="6"
-                md="2"
-              >
+              <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahDataPenyeliaHalal
                   mode="add"
                   @confirm-add="handleAddProductConfirm"
@@ -743,10 +622,7 @@ const onFasilitatorSearchInput = debounce(input => {
       </VRow>
       <VRow>
         <VCol>
-          <VCard
-            variant="flat"
-            class="pa-4"
-          >
+          <VCard variant="flat" class="pa-4">
             <VRow>
               <VCol>
                 <h3 class="text-h4 font-weight-bold">
@@ -764,7 +640,10 @@ const onFasilitatorSearchInput = debounce(input => {
                       color="#652672"
                       density="compact"
                     >
-                      <p>File yang digunakan dengan extention XLSX, PDF, PNG dan Maksimal 50mb</p>
+                      <p>
+                        File yang digunakan dengan extention XLSX, PDF, PNG dan
+                        Maksimal 50mb
+                      </p>
                     </VAlert>
                   </VCol>
                 </VRow>
@@ -775,42 +654,30 @@ const onFasilitatorSearchInput = debounce(input => {
                 <VTable class="fixed-table">
                   <thead>
                     <tr>
-                      <th style="inline-size: 50px;">
-                        No
-                      </th>
-                      <th style="inline-size: 150px;">
-                        Nama
-                      </th>
-                      <th style="inline-size: 400px;">
-                        Dokumen
-                      </th>
+                      <th style="inline-size: 50px">No</th>
+                      <th style="inline-size: 150px">Nama</th>
+                      <th style="inline-size: 400px">Dokumen</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr
-                      v-for="(doc, index) in documentList"
-                      :key="index"
-                    >
+                    <tr v-for="(doc, index) in documentList" :key="index">
                       <td>{{ index + 1 }}</td>
                       <td>{{ doc.nama }}</td>
                       <td>
-                        <VCols
-                          v-if="documentList[0].fileName"
-                          cols="6"
-                        >
+                        <VCols v-if="documentList[0].fileName" cols="6">
                           <!-- Display file name with remove button -->
                           <VTextField
                             v-model="documentList[0].fileName"
                             dense
                             outlined
                             readonly
-                            style="max-inline-size: 300px; padding-inline-end: 0;"
+                            style="
+                              max-inline-size: 300px;
+                              padding-inline-end: 0;
+                            "
                           >
                             <template #append-inner>
-                              <VBtn
-                                variant="text"
-                                @click="removeFile"
-                              >
+                              <VBtn variant="text" @click="removeFile">
                                 <VIcon color="error">
                                   ri-delete-bin-fill
                                 </VIcon>
@@ -818,10 +685,7 @@ const onFasilitatorSearchInput = debounce(input => {
                             </template>
                           </VTextField>
                         </VCols>
-                        <VCols
-                          v-else
-                          cols="6"
-                        >
+                        <VCols v-else cols="6">
                           <!-- File upload input -->
                           <VFileInput
                             v-model="file"
@@ -829,7 +693,7 @@ const onFasilitatorSearchInput = debounce(input => {
                             prepend-icon=""
                             hide-details
                             label="No File Chosen"
-                            style="max-inline-size: 400px;"
+                            style="max-inline-size: 400px"
                             class="custom-file-input"
                             @change="uploadFile"
                           >
@@ -839,7 +703,7 @@ const onFasilitatorSearchInput = debounce(input => {
                                 color="primary"
                                 variant="flat"
                                 class="choose-file"
-                                style="block-size: 100%; inline-size: 150px;"
+                                style="block-size: 100%; inline-size: 150px"
                               >
                                 Choose File
                               </VBtn>
@@ -860,21 +724,15 @@ const onFasilitatorSearchInput = debounce(input => {
     <!-- Tab Content Pengajuan -->
     <VRow v-if="tab === 'pengajuan'">
       <VCol>
-        <VCard
-          variant="flat"
-          class="pa-4"
-        >
+        <VCard variant="flat" class="pa-4">
           <div
             class="d-flex justify-space-between align-center"
             @click="showPengajuan = !showPengajuan"
           >
-            <p
-              class="text-h4"
-              style="font-weight: bold;"
-            >
-              Data Pengajuan
-            </p>
-            <VIcon :icon="showPengajuan ? 'mdi-chevron-up' : 'mdi-chevron-down'" />
+            <p class="text-h4" style="font-weight: bold">Data Pengajuan</p>
+            <VIcon
+              :icon="showPengajuan ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+            />
           </div>
           <VExpandTransition>
             <div v-if="showPengajuan">
@@ -909,9 +767,7 @@ const onFasilitatorSearchInput = debounce(input => {
                   <VRow>
                     <!-- Jenis Pendaftaran -->
                     <VCol cols="12">
-                      <VLabel class="required">
-                        Jenis Pendaftaran
-                      </VLabel>
+                      <VLabel class="required"> Jenis Pendaftaran </VLabel>
                       <VSelect
                         density="compact"
                         :items="['Self Declare', 'Lainnya']"
@@ -924,10 +780,7 @@ const onFasilitatorSearchInput = debounce(input => {
                       <VLabel class="required">
                         Kode Daftar / Fasilitasi
                       </VLabel>
-                      <VRow
-                        align="center"
-                        class="mb-2"
-                      >
+                      <VRow align="center" class="mb-2">
                         <VCol cols="5.5">
                           <VSelect
                             v-model="selectedFasilitator"
@@ -955,15 +808,15 @@ const onFasilitatorSearchInput = debounce(input => {
                         color="#652672"
                         class="mt-3"
                       >
-                        Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada fasilitator sebagai kode untuk mendaftarkan sertifikasi halal gratis
+                        Kode unik yang diterbitkan oleh BPJPH yang diberikan
+                        kepada fasilitator sebagai kode untuk mendaftarkan
+                        sertifikasi halal gratis
                       </VAlert>
                     </VCol>
                     <VDivider class="mt-2" />
                     <!-- Nomor Surat Permohonan & Tanggal Surat Pemohon -->
                     <VCol cols="6">
-                      <VLabel class="required">
-                        Nomor Surat Permohonan
-                      </VLabel>
+                      <VLabel class="required"> Nomor Surat Permohonan </VLabel>
                       <VTextField
                         required
                         placeholder="Isi Nomor Surat Permohonan"
@@ -1002,9 +855,7 @@ const onFasilitatorSearchInput = debounce(input => {
 
                     <!-- Jenis Layanan -->
                     <VCol cols="12">
-                      <VLabel class="required">
-                        Jenis Layanan
-                      </VLabel>
+                      <VLabel class="required"> Jenis Layanan </VLabel>
                       <VSelect
                         :items="['Layanan A', 'Layanan B']"
                         required
@@ -1014,9 +865,7 @@ const onFasilitatorSearchInput = debounce(input => {
 
                     <!-- Jenis Produk -->
                     <VCol cols="12">
-                      <VLabel class="required">
-                        Jenis Produk
-                      </VLabel>
+                      <VLabel class="required"> Jenis Produk </VLabel>
                       <VSelect
                         :items="['Produk A', 'Produk B']"
                         required
@@ -1026,20 +875,13 @@ const onFasilitatorSearchInput = debounce(input => {
 
                     <!-- Nama Usaha -->
                     <VCol cols="12">
-                      <VLabel class="required">
-                        Jenis Usaha
-                      </VLabel>
-                      <VTextField
-                        required
-                        placeholder="Pilih Jenis Usaha"
-                      />
+                      <VLabel class="required"> Jenis Usaha </VLabel>
+                      <VTextField required placeholder="Pilih Jenis Usaha" />
                     </VCol>
 
                     <!-- Area Pemasaran -->
                     <VCol cols="12">
-                      <VLabel class="required">
-                        Area Pemasaran
-                      </VLabel>
+                      <VLabel class="required"> Area Pemasaran </VLabel>
                       <VSelect
                         placeholder="Pilih Area Pemasaran"
                         :items="['Nasional', 'Internasional']"
@@ -1049,9 +891,7 @@ const onFasilitatorSearchInput = debounce(input => {
 
                     <!-- Lokasi Pendamping -->
                     <VCol cols="12">
-                      <VLabel class="required">
-                        Lokasi Pendamping
-                      </VLabel>
+                      <VLabel class="required"> Lokasi Pendamping </VLabel>
                       <VSelect
                         placeholder="Pilih Area Pendamping"
                         :items="['Lokasi A', 'Lokasi B']"
@@ -1061,9 +901,7 @@ const onFasilitatorSearchInput = debounce(input => {
 
                     <!-- Lembaga Pendamping -->
                     <VCol cols="12">
-                      <VLabel class="required">
-                        Lembaga Pendamping
-                      </VLabel>
+                      <VLabel class="required"> Lembaga Pendamping </VLabel>
                       <VSelect
                         placeholder="Pilih Lembaga Pendamping"
                         :items="['Lembaga A', 'Lembaga B']"
@@ -1073,9 +911,7 @@ const onFasilitatorSearchInput = debounce(input => {
 
                     <!-- Pendamping -->
                     <VCol cols="12">
-                      <VLabel class="required">
-                        Pendamping
-                      </VLabel>
+                      <VLabel class="required"> Pendamping </VLabel>
                       <VSelect
                         placeholder="Pilih Pendamping"
                         :items="['Pendamping A', 'Pendamping B']"
@@ -1093,7 +929,7 @@ const onFasilitatorSearchInput = debounce(input => {
                 <Pernyataan />
               </VCardActions>
             </div>
-          </VExpandtransition>
+          </VExpandTransition>
         </VCard>
       </VCol>
     </VRow>
@@ -1102,21 +938,12 @@ const onFasilitatorSearchInput = debounce(input => {
     <VRow v-if="tab === 'pabrik'">
       <VRow>
         <VCol>
-          <VCard
-            variant="flat"
-            class="pa-4"
-          >
+          <VCard variant="flat" class="pa-4">
             <VRow>
               <VCol>
-                <p class="text-h3">
-                  Pabrik
-                </p>
+                <p class="text-h3">Pabrik</p>
               </VCol>
-              <VCol
-                class="d-flex justify-end align-center"
-                cols="6"
-                md="2"
-              >
+              <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahPabrikOutlet
                   mode="add"
                   @confirm-add="handleAddProductConfirm"
@@ -1165,21 +992,12 @@ const onFasilitatorSearchInput = debounce(input => {
       </VRow>
       <VRow>
         <VCol>
-          <VCard
-            variant="flat"
-            class="pa-4"
-          >
+          <VCard variant="flat" class="pa-4">
             <VRow>
               <VCol>
-                <p class="text-h3">
-                  Outlet
-                </p>
+                <p class="text-h3">Outlet</p>
               </VCol>
-              <VCol
-                class="d-flex justify-end align-center"
-                cols="6"
-                md="2"
-              >
+              <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahOutlet
                   mode="add"
                   @confirm-add="handleAddProductConfirm"
@@ -1231,21 +1049,12 @@ const onFasilitatorSearchInput = debounce(input => {
     <!-- Tab Content Bahan -->
     <VRow v-if="tab === 'bahan'">
       <VCol>
-        <VCard
-          variant="flat"
-          class="pa-4"
-        >
+        <VCard variant="flat" class="pa-4">
           <VRow>
             <VCol>
-              <p class="text-h3">
-                Daftar Nama Bahan dan Kemasan
-              </p>
+              <p class="text-h3">Daftar Nama Bahan dan Kemasan</p>
             </VCol>
-            <VCol
-              class="d-flex justify-end align-center"
-              cols="0"
-              md="2"
-            >
+            <VCol class="d-flex justify-end align-center" cols="0" md="2">
               <TambahBahanModalHalal
                 mode="add"
                 @confirm-add="handleAddProductConfirm"
@@ -1258,32 +1067,32 @@ const onFasilitatorSearchInput = debounce(input => {
                   class="d-flex align-center"
                   @click="triggerFileInputClick"
                 >
-                  <VIcon size="20">
-                    ri-upload-line
-                  </VIcon>
+                  <VIcon size="20"> ri-upload-line </VIcon>
                   <span class="ml-2">Upload File</span>
                 </VBtn>
                 <!-- Hidden File Input -->
                 <input
                   ref="fileInputRef"
                   type="file"
-                  style="display: none;"
+                  style="display: none"
                   accept=".pdf,.doc,.docx"
                   @change="handleFileUpload"
-                >
+                />
               </VContainer>
             </VCol>
           </VRow>
           <VRow>
             <VCol>
-              <VAlert
-                type="warning"
-                variant="tonal"
-                color="#652672"
-              >
+              <VAlert type="warning" variant="tonal" color="#652672">
                 <ol>
-                  <li>1. Termasuk  isikan bahan dengan kategori cleaning agent seperti: Air, Sabun Pencuci, Detergent, dll</li>
-                  <li>2. Isikan nama kemasan produk, contoh: Alumunium foil, standing pouch, plastik, dll</li>
+                  <li>
+                    1. Termasuk isikan bahan dengan kategori cleaning agent
+                    seperti: Air, Sabun Pencuci, Detergent, dll
+                  </li>
+                  <li>
+                    2. Isikan nama kemasan produk, contoh: Alumunium foil,
+                    standing pouch, plastik, dll
+                  </li>
                 </ol>
               </VAlert>
             </VCol>
@@ -1324,25 +1133,22 @@ const onFasilitatorSearchInput = debounce(input => {
     <!-- Tab Content Produk -->
     <VRow v-if="tab === 'produk'">
       <VCol>
-        <VCard
-          variant="flat"
-          class="pa-4"
-        >
+        <VCard variant="flat" class="pa-4">
           <VRow>
             <VCol>
-              <p class="text-h3">
-                Daftar Nama Bahan dan Kemasan
-              </p>
+              <p class="text-h3">Daftar Nama Bahan dan Kemasan</p>
               <ol>
-                <li>Termasuk  isikan bahan dengan kategori cleaning agent seperti: Air, Sabun Pencuci, Detergent, dll</li>
-                <li>Isikan nama kemasan produk, contoh: Alumunium foil, standing pouch, plastik, dll</li>
+                <li>
+                  Termasuk isikan bahan dengan kategori cleaning agent seperti:
+                  Air, Sabun Pencuci, Detergent, dll
+                </li>
+                <li>
+                  Isikan nama kemasan produk, contoh: Alumunium foil, standing
+                  pouch, plastik, dll
+                </li>
               </ol>
             </VCol>
-            <VCol
-              class="d-flex justify-end align-center"
-              cols="6"
-              md="2"
-            >
+            <VCol class="d-flex justify-end align-center" cols="6" md="2">
               <TambahProduk
                 mode="add"
                 @confirm-add="handleAddProductConfirm"
@@ -1391,37 +1197,26 @@ const onFasilitatorSearchInput = debounce(input => {
     <!-- Tab Content Melacak -->
     <VRow v-if="tab === 'melacak'">
       <VCol>
-        <VCard
-          variant="flat"
-          class="pa-4"
-        >
+        <VCard variant="flat" class="pa-4">
           <div
             class="d-flex justify-space-between align-center"
             @click="showTimeline = !showTimeline"
           >
-            <p class="text-h4">
-              Pengajuan Sertifikasi Halal
-            </p>
-            <VIcon :icon="showTimeline ? 'mdi-chevron-up' : 'mdi-chevron-down'" />
+            <p class="text-h4">Pengajuan Sertifikasi Halal</p>
+            <VIcon
+              :icon="showTimeline ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+            />
           </div>
           <VExpandTransition>
             <div v-if="showTimeline">
-              <VTimeline
-                align="start"
-                density="compact"
-                truncate-line="both"
-              >
+              <VTimeline align="start" density="compact" truncate-line="both">
                 <VTimelineItem
                   v-for="(item, i) in timelineItems"
                   :key="i"
                   dot-color="#FFFFFF"
                 >
                   <template #icon>
-                    <VIcon
-                      icon="ri-circle-line"
-                      color="primary"
-                      size="35"
-                    />
+                    <VIcon icon="ri-circle-line" color="primary" size="35" />
                   </template>
                   <div class="d-flex justify-space-between align-start">
                     <div>
