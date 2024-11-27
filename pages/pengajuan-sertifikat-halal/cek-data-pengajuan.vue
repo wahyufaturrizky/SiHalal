@@ -327,6 +327,50 @@ const penyeliaTableData = ref([
   },
 ])
 
+// Dummy data
+const items = ref([
+  {
+    id: 1,
+    jenis_bahan: "Cleaning Agent",
+    nama_bahan: "Air",
+    produsen: "Produsen A",
+    nomor_sertifikat_halal: "123456",
+    keterangan: "Digunakan untuk mencuci",
+  },
+  {
+    id: 2,
+    jenis_bahan: "Kemasan",
+    nama_bahan: "Alumunium Foil",
+    produsen: "Produsen B",
+    nomor_sertifikat_halal: "789012",
+    keterangan: "Kemasan tahan panas",
+  },
+  {
+    id: 3,
+    jenis_bahan: "Cleaning Agent",
+    nama_bahan: "Sabun Pencuci",
+    produsen: "Produsen C",
+    nomor_sertifikat_halal: "345678",
+    keterangan: "Menghilangkan noda",
+  },
+  {
+    id: 4,
+    jenis_bahan: "Kemasan",
+    nama_bahan: "Plastik",
+    produsen: "Produsen D",
+    nomor_sertifikat_halal: "-",
+    keterangan: "Kemasan fleksibel",
+  },
+  {
+    id: 5,
+    jenis_bahan: "Cleaning Agent",
+    nama_bahan: "Detergent",
+    produsen: "Produsen E",
+    nomor_sertifikat_halal: "901234",
+    keterangan: "Membersihkan bahan",
+  },
+]);
+
 const handleAddProductConfirm = formData => {
   console.log('Add confirmed:', formData)
 }
