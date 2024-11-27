@@ -1,18 +1,17 @@
 <script setup lang="ts">
-import { ref } from "vue";
-const tab = ref("identity");
-
+const router = useRouter();
 const sessionData = await useMyAuthUserStore().getSession();
 const userRoles = sessionData.value?.roles.map((role) => role.name);
+
+const currentTab = ref("IDENTITY");
 </script>
 
 <template>
-  <VRow>
-    <VCol cols="12">
-      <KembaliButton />
-    </VCol>
-  </VRow>
-  <VRow>
+  <div class="d-flex align-center cursor-pointer" @click="router.go(-1)">
+    <VIcon icon="mdi-chevron-left" size="40px" color="primary" />
+    <div class="text-primary">Kembali</div>
+  </div>
+  <VRow no-gutters>
     <VCol>
       <h1>Detail Pengajuan</h1>
     </VCol>
@@ -35,41 +34,39 @@ const userRoles = sessionData.value?.roles.map((role) => role.name);
   </VRow>
   <VRow>
     <VCol>
-      <VTabs v-model="tab" class="mb-10">
-        <VTab value="identity">Pelaku Usaha</VTab>
-        <VTab value="document">Pengajuan</VTab>
-        <VTab value="manufacture">Pabrik & Outlet</VTab>
-        <VTab value="ingredient">Bahan</VTab>
-        <VTab value="product">Produk</VTab>
-        <VTab value="process">Proses Produk Halal</VTab>
-        <VTab value="statement">Pernyataan</VTab>
+      <VTabs v-model="currentTab" class="mb-10">
+        <VTab value="IDENTITY">Pelaku Usaha</VTab>
+        <VTab value="SUBMISSION">Pengajuan</VTab>
+        <VTab value="PLACE">Pabrik & Outlet</VTab>
+        <VTab value="INGREDIENT">Bahan</VTab>
+        <VTab value="PRODUCT">Produk</VTab>
+        <VTab value="PROCESS">Proses Produk Halal</VTab>
+        <VTab value="STATEMENT">Pernyataan</VTab>
       </VTabs>
 
-      <VTabsWindow v-model="tab">
-        <VTabsWindowItem value="identity">
-          <TabPelakuUsaha />
+      <VTabsWindow v-model="currentTab">
+        <VTabsWindowItem value="IDENTITY">
+          <IdentityTab />
         </VTabsWindowItem>
-        <VTabsWindowItem value="document">
-          <TabPengajuan />
+        <VTabsWindowItem value="SUBMISSION">
+          <SubmissionTab />
         </VTabsWindowItem>
-        <VTabsWindowItem value="manufacture">
-          <TabPabrikDanOutlet />
+        <VTabsWindowItem value="PLACE">
+          <ManufactureTab />
         </VTabsWindowItem>
-        <VTabsWindowItem value="ingredient">
-          <TabBahan />
+        <VTabsWindowItem value="INGREDIENT">
+          <IngredientTab />
         </VTabsWindowItem>
-        <VTabsWindowItem value="product">
-          <TabProduk />
+        <VTabsWindowItem value="PRODUCT">
+          <ProductTab />
         </VTabsWindowItem>
-        <VTabsWindowItem value="process">
-          <TabProsesProdukHalal :user-roles="userRoles" />
+        <VTabsWindowItem value="PROCESS">
+          <ProcessTab :user-roles="userRoles" />
         </VTabsWindowItem>
-        <VTabsWindowItem value="statement">
-          <TabPernyataan />
+        <VTabsWindowItem value="STATEMENT">
+          <StatementTab />
         </VTabsWindowItem>
       </VTabsWindow>
     </VCol>
   </VRow>
 </template>
-
-<style scoped lang="scss"></style>
