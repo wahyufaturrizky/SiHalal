@@ -27,7 +27,7 @@ const deleteDialog = ref(false);
 
 // Data untuk form tambah lembaga
 const formData = ref({
-  institutionName: "",
+  institutionName: "Universitas Islam Negeri Sunan Gunung Djati Bandung",
   picName: "",
   picPhoneNumber: "",
 });
@@ -38,19 +38,19 @@ const loadItemById = async (page: number, size: number) => {
 
     const response = await $api(`/facilitate/lembaga/list/${facilitateId}`, {
       method: "get",
+      params: {
+        page,
+        size,
+      },
     });
 
     if (response.code === 2000) {
-      const { fasilitator } = response.data || {};
-
-      const { lembaga } = fasilitator || {};
-
-      items.value = lembaga?.map((item) => {
-        const { id, nama_pic_lembaga, nomor_pic_lembaga, created_by } = item;
+      items.value = response.data?.map((item) => {
+        const { id, nama_pic_lembaga, nomor_pic_lembaga, nama_lph_lp3h } = item;
 
         return {
           no: id,
-          institutionName: created_by,
+          institutionName: nama_lph_lp3h,
           picName: nama_pic_lembaga,
           picPhoneNumber: nomor_pic_lembaga,
         };
@@ -103,15 +103,31 @@ const addFacilitateLembaga = async () => {
   try {
     loadingAdd.value = true;
 
-    const { picName, picPhoneNumber } = formData.value;
+    const { picName, picPhoneNumber, institutionName } = formData.value;
+
+    let tempBody = {
+      fac_id: facilitateId,
+      nama_pic_lembaga: picName,
+      nomor_pic_lembaga: picPhoneNumber,
+    };
+
+    if (
+      institutionName === "Universitas Islam Negeri Sunan Gunung Djati Bandung"
+    ) {
+      tempBody = {
+        ...tempBody,
+        lp_id: "0000df86-2b61-4778-8f70-30b8166286cb",
+      };
+    } else {
+      tempBody = {
+        ...tempBody,
+        lph_id: "01e3d771-2d0b-0bd4-30a8-f294a6871d24",
+      };
+    }
 
     const res = await $api("/facilitate/lembaga/add", {
       method: "post",
-      body: {
-        fac_id: facilitateId,
-        nama_pic_lembaga: picName,
-        nomor_pic_lembaga: picPhoneNumber,
-      },
+      body: tempBody,
     });
 
     if (res?.code === 2000) {
@@ -272,7 +288,10 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               id="institutionName"
               v-model="formData.institutionName"
               placeholder="Pilih Lembaga Pendamping"
-              :items="['lembaga 1', 'lembaga 2', 'lembaga 3']"
+              :items="[
+                'Universitas Islam Negeri Sunan Gunung Djati Bandung',
+                'LPH LPPOM MUI Sulawesi Utara',
+              ]"
               required
               class="mb-4"
             />

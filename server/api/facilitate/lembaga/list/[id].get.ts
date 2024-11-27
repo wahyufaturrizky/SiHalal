@@ -13,20 +13,15 @@ export default defineEventHandler(async (event) => {
 
   const id = getRouterParam(event, "id");
 
-  const { page, size, keyword } = (await getQuery(event)) as {
+  const { page, size } = (await getQuery(event)) as {
     page: string;
     size: string;
-    keyword: string;
   };
 
   const params = {
     page: isNaN(Number.parseInt(page, 10)) ? 1 : Number.parseInt(page, 10),
     size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
   };
-
-  if (keyword != "") {
-  }
-  params["keyword"] = keyword;
 
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/fasilitator/lembaga/${id}/list`,
