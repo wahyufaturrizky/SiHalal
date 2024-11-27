@@ -25,10 +25,13 @@ const loadItemDetailRegistrationById = async () => {
       }
     );
 
-    if (response.code === 2000) dataDetailRegistration.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-
-    loadingDetailRegistration.value = false;
+    if (response.code === 2000) {
+      dataDetailRegistration.value = response.data;
+      loadingDetailRegistration.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingDetailRegistration.value = false;
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loadingDetailRegistration.value = false;
@@ -43,10 +46,13 @@ const loadItemById = async () => {
       method: "get",
     });
 
-    if (response.code === 2000) data.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-
-    loading.value = false;
+    if (response.code === 2000) {
+      data.value = response.data;
+      loading.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loading.value = false;
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loading.value = false;
@@ -61,10 +67,13 @@ const loadItemTrackingById = async () => {
       method: "get",
     });
 
-    if (response.code === 2000) dataTracking.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-
-    loadingTracking.value = false;
+    if (response.code === 2000) {
+      dataTracking.value = response.data;
+      loadingTracking.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingTracking.value = false;
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loadingTracking.value = false;

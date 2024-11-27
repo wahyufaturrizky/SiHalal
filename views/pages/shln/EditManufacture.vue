@@ -1,43 +1,115 @@
 <script setup lang="ts">
+import type { Manufacture } from "@/pages/sertifikasi-halal/luar-negeri/submission/[id]/edit.vue";
 import { useDisplay } from "vuetify";
-
+import type { VForm } from "vuetify/components";
+const props = defineProps<{
+  manufacture: Manufacture[] | null;
+  hcbCountry: string;
+}>();
 const headers = [
   { title: "No", key: "index" },
-  { title: "Manufacture Name", key: "manufacture_name" },
+  { title: "Manufacture Name", key: "name" },
   { title: "Address", key: "address" },
   { title: "Country", key: "country" },
   { title: "Action", key: "action" },
 ];
-const items: DataManufacture[] = [
-  {
-    id: 1,
-    manufacturer_name: "Allyn Group",
-    address: "Jalan Mangga Besar Raya",
-    country: "Thailand",
-  },
-];
+const { setData } = useMyUpdateSubmissionEditStore();
+
 const manufactureDialog = ref(false);
 const addManufacuter = () => {
   manufactureDialog.value = true;
 };
+const refVForm = ref<VForm>();
+
+const onSubmit = async () => {
+  // sendSnackbar("error bang", "success");
+  refVForm.value?.validate().then(({ valid: isValid }) => {
+    if (isValid) insertManufacturer();
+  });
+};
+const insertManufacturer = async () => {
+  try {
+    const response = await $api("/shln/submission/manufacture/add", {
+      method: "post",
+      body: form.value,
+    });
+    if (response.code == 500) {
+      useSnackbar().sendSnackbar("Gagal menambahkan manufacture", "error");
+      manufactureDialog.value = false;
+      return;
+    }
+    setData("manufacture");
+    useSnackbar().sendSnackbar("Berhasil menambahkan manufacture", "success");
+    manufactureDialog.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Gagal menambahkan manufacture", "error");
+    manufactureDialog.value = false;
+  }
+};
+const route = useRoute();
+const shlnId = route.params.id;
+const form = ref({
+  shlnId: shlnId,
+  name: "",
+  address: "",
+  country: props.hcbCountry != "" ? props.hcbCountry : "",
+});
+const tracking = ref<
+  {
+    comment: string;
+    created_at: string;
+    id: string;
+    status: string;
+    username: string;
+  }[]
+>();
 
 const deleteDialog = ref(false);
-const deletedId = ref(-1);
-const deleteItem = (item: DataManufacture) => {
+const deletedId = ref();
+const deleteItem = async (item: Manufacture) => {
   deletedId.value = item.id;
   deleteDialog.value = true;
 };
 const closeDelete = () => {
-  deletedId.value = -1;
+  deletedId.value = null;
   deleteDialog.value = false;
 };
+
+const loadTracking = async () => {
+  try {
+    const response = await $api("/shln/submission/manufacture/tracking", {
+      method: "post",
+      body: {
+        id: shlnId,
+      },
+    });
+
+    tracking.value = response.data;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+const deleteManufacture = async () => {
+  try {
+    await $api("/shln/submission/manufacture/delete", {
+      method: "post",
+      body: {
+        shlnId: shlnId,
+        manufactureId: deletedId.value,
+      },
+    });
+    deleteDialog.value = false;
+    setData("manufacture");
+    useSnackbar().sendSnackbar("Berhasil Menghapus manufacture", "success");
+  } catch (error) {
+    deleteDialog.value = false;
+    useSnackbar().sendSnackbar("Gagal Menghapus manufacture", "error");
+  }
+};
+onMounted(async () => {
+  await Promise.allSettled([loadTracking()]);
+});
 const { mdAndDown } = useDisplay();
-interface DataManufacture {
-  id: number;
-  manufacturer_name: string;
-  address: string;
-  country: string;
-}
 </script>
 
 <template>
@@ -63,21 +135,19 @@ interface DataManufacture {
                   @click="addManufacuter"
                   >Tambah <v-icon end icon="fa-plus" />
                 </v-btn>
-                <v-btn class="ma-1" color="primary" block>Save</v-btn>
               </VCol>
             </VRow>
             <VRow>
               <v-data-table
                 :headers="headers"
-                :items="items"
-                :items-per-page="5"
+                :items="manufacture"
                 class="text-no-wrap"
               >
                 <template #item.index="{ index }">
                   {{ index + 1 }}
                 </template>
                 <template #item.manufacture_name="{ item }">
-                  {{ item.manufacturer_name }}
+                  {{ item.name }}
                 </template>
                 <template #item.address="{ item }">
                   {{ item.address }}
@@ -100,7 +170,20 @@ interface DataManufacture {
       <VCol cols="12" md="4">
         <v-card>
           <v-card-text>
-            <h3 class="text-h4">Manufacture</h3>
+            <h3 class="text-h4">Tracking</h3>
+            <VSkeletonLoader
+              v-if="tracking == undefined"
+              :loading="true"
+              type="list-item-two-line"
+            >
+              <VListItem
+                lines="two"
+                subtitle="Subtitle"
+                title="Title"
+                rounded
+              />
+            </VSkeletonLoader>
+            <HalalTimeLine v-if="tracking != undefined" :event="tracking" />
           </v-card-text>
         </v-card>
       </VCol>
@@ -112,7 +195,7 @@ interface DataManufacture {
             <VBtn color="primary" variant="outlined" @click="closeDelete">
               Cancel
             </VBtn>
-            <VBtn color="primary" variant="elevated" @click="closeDelete">
+            <VBtn color="primary" variant="elevated" @click="deleteManufacture">
               OK
             </VBtn>
           </div>
@@ -126,7 +209,7 @@ interface DataManufacture {
         @click="manufactureDialog = false"
       />
       <VCard title="Add Manufacture">
-        <v-form>
+        <v-form ref="refVForm" @submit.prevent="onSubmit">
           <v-card-text>
             <VCol>
               <div
@@ -136,6 +219,7 @@ interface DataManufacture {
               </div>
               <v-text-field
                 placeholder="Input Name"
+                v-model="form.name"
                 :rules="[requiredValidator]"
                 variant="outlined"
                 density="compact"
@@ -148,6 +232,7 @@ interface DataManufacture {
                 Address
               </div>
               <v-text-field
+                v-model="form.address"
                 placeholder="Input Address"
                 :rules="[requiredValidator]"
                 variant="outlined"
@@ -162,8 +247,9 @@ interface DataManufacture {
               </div>
               <v-text-field
                 placeholder="Input Country of Origin"
-                :rules="[requiredValidator]"
+                v-model="form.country"
                 variant="outlined"
+                disabled
                 density="compact"
               ></v-text-field>
             </VCol>
@@ -178,12 +264,7 @@ interface DataManufacture {
                 >
                   Cancel
                 </VBtn>
-                <VBtn
-                  type="submit"
-                  color="primary"
-                  variant="elevated"
-                  @click="manufactureDialog = false"
-                >
+                <VBtn type="submit" color="primary" variant="elevated">
                   Add
                 </VBtn>
               </div>
