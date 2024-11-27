@@ -6,6 +6,7 @@ const dataFasilitasi = ref();
 const dataDetailRegistration = ref();
 const timelineEvents = ref();
 const openPanelRegisterData = ref(0);
+const openPanelFacilitate = ref(0);
 const openPanelTracking = ref(0);
 
 const route = useRoute();
@@ -119,6 +120,10 @@ const loadItemById = async () => {
 onMounted(async () => {
   await loadItemById();
 });
+
+const navigateAction = () => {
+  navigateTo(`/facilitation/entry/${facilitateId}/edit`);
+};
 </script>
 
 <template>
@@ -135,6 +140,7 @@ onMounted(async () => {
           style="margin: 0.5svw"
           variant="outlined"
           append-icon="fa-pencil"
+          @click="navigateAction"
         >
           Ubah
         </VBtn>
@@ -144,7 +150,7 @@ onMounted(async () => {
   </VRow>
   <VRow v-if="!loading">
     <VCol cols="8">
-      <VExpansionPanels>
+      <VExpansionPanels v-model="openPanelFacilitate">
         <VExpansionPanel>
           <VExpansionPanelTitle>
             <h3>Informasi Data Fasilitasi</h3>
