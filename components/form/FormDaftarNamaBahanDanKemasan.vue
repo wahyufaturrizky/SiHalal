@@ -35,7 +35,7 @@ const update = form => {
   console.log('EDIT  : ', form)
 }
 
-// TODO -> LOGIC TAMBAH DATA
+// TODO -> LOGIC TAMBAH DATA -> PERLU INTEGRASI
 const save = form => {
   console.log("TAMBAH DATA ", form)
 }

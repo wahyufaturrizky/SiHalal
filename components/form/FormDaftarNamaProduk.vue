@@ -1,20 +1,26 @@
 <script setup lang="ts">
 
+const snackBar = useSnackbar()
+
 const headers = [
   { title: 'No', key: 'no' },
-  { title: 'Nama Produk', key: 'name' },
-  { title: 'Foto Produk', key: 'pics', value: 'pics', sortable: false, nowrap: true },
+  { title: 'Nama Produk', key: 'namaProduk' },
+  { title: 'Foto Produk', key: 'foto', value: 'foto', sortable: false, nowrap: true },
   { title: 'Action', value: 'action', sortable: false, nowrap: true },
 ]
 
 const items = ref([
   { no: 1,
-    name: 'Kopi Luak Ciater',
-    pics: 'Biji Kopi'
+    namaProduk: 'Kopi Luak Ciater',
+    kualitasProduk: null,
+    rincianProduk: null,
+    foto: null,
   },
   { no: 2,
-    name: 'Kopi Luak Ciater',
-    pics: 'Biji Kopi'
+    namaProduk: 'Kopi Luak Ciater',
+    kualitasProduk: null,
+    rincianProduk: null,
+    foto: null,
   },
 ])
 
@@ -32,9 +38,10 @@ const update = form => {
 // TODO -> LOGIC TAMBAH DATA
 const save = form => {
   console.log("TAMBAH DATA ", form)
+  snackBar.sendSnackbar('Berhasil menambahkan data', 'success')
 }
 
-// TODO -> LOGIC TAMBAH DATA
+// TODO -> LOGIc DOWNLOAD
 const download = item => {
   console.log("DOWNLOAD ", item)
 }
@@ -45,27 +52,20 @@ const download = item => {
   <VCard class="pa-4 mb-8">
     <VCardTitle class="d-flex justify-space-between align-center">
       <span class="text-h3">Daftar Nama Produk</span>
-      <FormTambahPabrik @confirm="save"/>
+      <FormTambahNamaProduk @confirm="save"/>
     </VCardTitle>
     <VCardItem>
       <VDataTable
         :headers="headers"
         :items="items"
       >
-        <template #item.pics="{ item }">
+        <template #item.foto="{ item }">
           <v-btn
             color="primary"
             variant="plain"
+            @click="download(item)"
           >
-            <VIcon>mdi-dots-vertical</VIcon>
-            <VMenu activator="parent" :close-on-content-click="false">
-              <VCard>
-                <VBtn variant="text" color="primary" prepend-icon="mdi-download"
-                      @click="download(item)" block >
-                  File
-                </VBtn>
-              </VCard>
-            </VMenu>
+            <VIcon>mdi-download</VIcon> File
           </v-btn>
         </template>
 
@@ -77,7 +77,7 @@ const download = item => {
             <VIcon>mdi-dots-vertical</VIcon>
             <VMenu activator="parent" :close-on-content-click="false">
               <VCard>
-                <FormEditPabrik :initial-data="item" @confirm="update"/>
+                <FormEditNamaProduk :initial-data="item" @confirm="update"/>
                 <VBtn variant="text" color="error" prepend-icon="ri-delete-bin-6-line"
                       @click="remove(item.no)" block >
                   Hapus

@@ -1,28 +1,33 @@
 <script setup lang="ts">
 
+import FormEditCatatan from "@/components/form/FormEditCatatan.vue"
+
+const snackBar = useSnackbar()
+
+
 const headers = [
   { title: 'No', key: 'no' },
-  { title: 'Nama', key: 'name' },
+  { title: 'Nama', key: 'nama' },
   { title: 'Tipe Penambahan', key: 'type' },
-  { title: 'Jumlah', key: 'total' },
-  { title: 'Tanggal Pembelian', key: 'date' },
+  { title: 'Jumlah', key: 'jumlah' },
+  { title: 'Tanggal Pembelian', key: 'tanggal' },
   { title: 'File Dokumen', key: 'file', value: 'file', sortable: false, nowrap: true },
   { title: 'Action', value: 'action', sortable: false, nowrap: true },
 ]
 
 const items = ref([
   { no: 1,
-    name: 'Kopi Luak Ciater',
+    nama: 'Kopi Luak Ciater',
     type: 'Unggah Photo',
-    total: 20,
-    date: '20/09/2024',
+    jumlah: 20,
+    tanggal: '20/09/2024',
     file: null
   },
   { no: 2,
-    name: 'Kopi Luak Ciater',
+    nama: 'Kopi Luak Ciater',
     type: 'Unggah Photo',
-    total: 20,
-    date: '20/09/2024',
+    jumlah: 20,
+    tanggal: '20/09/2024',
     file: null
   },
 ])
@@ -36,11 +41,15 @@ const remove = no => {
 // TODO -> LOGIC EDIT BY ID
 const update = form => {
   console.log('EDIT  : ', form)
+  snackBar.sendSnackbar('Berhasil menambahkan data', 'success')
+
 }
 
 // TODO -> LOGIC TAMBAH DATA
 const save = form => {
   console.log("TAMBAH DATA ", form)
+  snackBar.sendSnackbar('Berhasil menambahkan data', 'success')
+
 }
 
 // TODO -> LOGIC TAMBAH DATA
@@ -54,27 +63,21 @@ const download = item => {
   <VCard class="pa-4 mb-8">
     <VCardTitle class="d-flex justify-space-between align-center">
       <span class="text-h3">Catatan Pembelian Bahan</span>
-      <FormTambahPabrik @confirm="save"/>
+      <FormTambahCatatan @confirm="save"/>
     </VCardTitle>
     <VCardItem>
       <VDataTable
         :headers="headers"
         :items="items"
       >
-        <template #item.pics="{ item }">
+        <template #item.file="{ item }">
           <v-btn
             color="primary"
             variant="plain"
+            @click="download(item)"
           >
-            <VIcon>mdi-dots-vertical</VIcon>
-            <VMenu activator="parent" :close-on-content-click="false">
-              <VCard>
-                <VBtn variant="text" color="primary" prepend-icon="mdi-download"
-                      @click="download(item)" block >
-                  File
-                </VBtn>
-              </VCard>
-            </VMenu>
+            <VIcon>mdi-download</VIcon>
+            File
           </v-btn>
         </template>
 
@@ -86,7 +89,7 @@ const download = item => {
             <VIcon>mdi-dots-vertical</VIcon>
             <VMenu activator="parent" :close-on-content-click="false">
               <VCard>
-                <FormEditPabrik :initial-data="item" @confirm="update"/>
+                <FormEditCatatan :initial-data="item" @confirm="update"/>
                 <VBtn variant="text" color="error" prepend-icon="ri-delete-bin-6-line"
                       @click="remove(item.no)" block >
                   Hapus
