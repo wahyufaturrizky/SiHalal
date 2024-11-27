@@ -52,7 +52,7 @@ const currentTab = ref("IDENTITY");
           <SubmissionTab />
         </VTabsWindowItem>
         <VTabsWindowItem value="PLACE">
-          <ManufactureTab />
+          <PlaceTab />
         </VTabsWindowItem>
         <VTabsWindowItem value="INGREDIENT">
           <IngredientTab />
