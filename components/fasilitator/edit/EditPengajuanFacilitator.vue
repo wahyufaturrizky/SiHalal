@@ -1,60 +1,116 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import SaveChangeConfirmation from '@/components/fasilitator/edit/SaveChangeConfirmation.vue'
+import SaveChangeConfirmation from "@/components/fasilitator/edit/SaveChangeConfirmation.vue";
+import { ref } from "vue";
+
+const route = useRoute();
+
+const facilitateId = route.params.id;
+const loading = ref(false);
+
+const dataDetailRegistration = ref();
+const openPanelRegisterData = ref(0);
 
 const form = ref({
-  facilitatorName: 'Sir Crocodile',
-  facilitationProgramName: 'Dummy Program Name',
-  explanationOfFacilitation: 'Dummy Penjelasan Fasilitasi',
-  year: 2008,
-  regionalScope: 'Jakarta',
-  startDate: '2024-10-01',
-  endDate: '2024-12-12',
-  type: 'Fasilitas 1',
-  sourceOfFund: 'Pembiayaan 1',
-  kuota: 100,
-  picName: 'Mr. White',
-  picPhoneNumber: '08999999999',
+  facilitatorName: "",
+  facilitationProgramName: "",
+  explanationOfFacilitation: "",
+  year: "",
+  regionalScope: "",
+  startDate: "",
+  endDate: "",
+  type: "",
+  sourceOfFund: "",
+  kuota: "",
+  picName: "",
+  picPhoneNumber: "",
   facilityCode: "",
-  status: "Draft"
-})
+  status: "",
+});
 
-const snakeBar = useSnackbar()
+const loadItemById = async () => {
+  try {
+    loading.value = true;
 
-const saveForm = () => {
-  console.log('INPUT APPROVE NYA DISINI YA : ')
-  snakeBar.sendSnackbar('Submission Successfully Approved ', 'success')
-}
+    const response = await $api(`/facilitate/entry/${facilitateId}`, {
+      method: "get",
+    });
+
+    if (response.code === 2000) {
+      const { fasilitator } = response.data || {};
+
+      const { fasilitasi, status_registrasi } = fasilitator || {};
+
+      const {
+        nama,
+        sumber_pembiayaan,
+        kuota,
+        penanggung_jawab,
+        nama_program,
+        phone_penanggung_jawab,
+        tahun,
+        lingkup_wilayah_fasilitas,
+        tgl_mulai,
+        tgl_selesai,
+        jenis_fasilitasi,
+      } = fasilitasi || {};
+
+      dataDetailRegistration.value = status_registrasi;
+
+      form.value = {
+        facilitatorName: nama,
+        facilitationProgramName: nama_program,
+        explanationOfFacilitation: "Dummy Penjelasan Fasilitasi",
+        year: tahun,
+        regionalScope: lingkup_wilayah_fasilitas,
+        startDate: formatToISOString(tgl_mulai),
+        endDate: formatToISOString(tgl_selesai),
+        type: jenis_fasilitasi,
+        sourceOfFund: sumber_pembiayaan,
+        kuota,
+        picName: penanggung_jawab,
+        picPhoneNumber: phone_penanggung_jawab,
+        facilityCode: "",
+        status: "Draft",
+      };
+
+      loading.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loading.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
+  }
+};
+
+onMounted(async () => {
+  await loadItemById();
+});
 </script>
 
 <template>
-  <VRow>
+  <VRow v-if="!loading">
     <VCol cols="8">
-      <ExpandCard
-        title="Data Fasilitasi"
-        class="mb-6 pa-8"
-      >
+      <ExpandCard title="Data Fasilitasi" class="mb-6 pa-8">
         <VForm>
           <VRow>
             <VCol cols="12">
-              <label
-                class="text-h6"
-                for="facilitatorName"
-              >Nama Facilitator </label>
+              <label class="text-h6" for="facilitatorName"
+                >Nama Facilitator
+              </label>
               <VTextField
                 id="facilitatorName"
                 v-model="form.facilitatorName"
                 outlined
-                disabled
               />
             </VCol>
           </VRow>
           <VRow>
             <VCol cols="12">
-              <label
-                class="text-h6"
-                for="facilitationProgramName"
-              > Nama Program Fasilitasi </label>
+              <label class="text-h6" for="facilitationProgramName">
+                Nama Program Fasilitasi
+              </label>
               <VTextField
                 id="facilitationProgramName"
                 v-model="form.facilitationProgramName"
@@ -65,10 +121,9 @@ const saveForm = () => {
           </VRow>
           <VRow>
             <VCol cols="12">
-              <label
-                class="text-h6"
-                for="explanationOfFacilitation"
-              > Penjelasan Fasilitasi </label>
+              <label class="text-h6" for="explanationOfFacilitation">
+                Penjelasan Fasilitasi
+              </label>
               <VTextField
                 id="explanationOfFacilitation"
                 v-model="form.explanationOfFacilitation"
@@ -79,23 +134,24 @@ const saveForm = () => {
           </VRow>
           <VRow>
             <VCol cols="12">
-              <label
-                class="text-h6"
-                for="year"
-              > Tahun </label>
+              <label class="text-h6" for="year"> Tahun </label>
               <VAutocomplete
                 id="year"
                 v-model="form.year"
-                :items="Array.from({ length: 50 }, (_, i) => ({ year: new Date().getFullYear() - i }).year)"
+                :items="
+                  Array.from(
+                    { length: 50 },
+                    (_, i) => ({ year: new Date().getFullYear() - i }.year)
+                  )
+                "
               />
             </VCol>
           </VRow>
           <VRow>
             <VCol cols="12">
-              <label
-                class="text-h6"
-                for="year"
-              > Lingkup Wilayah Fasilitasi </label>
+              <label class="text-h6" for="year">
+                Lingkup Wilayah Fasilitasi
+              </label>
               <VAutocomplete
                 id="year"
                 v-model="form.regionalScope"
@@ -108,10 +164,7 @@ const saveForm = () => {
           </VRow>
           <VRow>
             <VCol cols="12">
-              <label
-                class="text-h6"
-                for="startDate"
-              > Tanggal Mulai </label>
+              <label class="text-h6" for="startDate"> Tanggal Mulai </label>
               <VTextField
                 id="startDate"
                 v-model="form.startDate"
@@ -123,10 +176,7 @@ const saveForm = () => {
           </VRow>
           <VRow>
             <VCol cols="12">
-              <label
-                class="text-h6"
-                for="endDate"
-              > Tanggal Selesai </label>
+              <label class="text-h6" for="endDate"> Tanggal Selesai </label>
               <VTextField
                 id="endDate"
                 v-model="form.endDate"
@@ -138,14 +188,16 @@ const saveForm = () => {
           </VRow>
           <VRow>
             <VCol cols="12">
-              <label
-                class="text-h6"
-                for="type"
-              > Jenis Fasilitasi </label>
+              <label class="text-h6" for="type"> Jenis Fasilitasi </label>
               <VAutocomplete
                 id="type"
                 v-model="form.type"
-                :items="['Fasilitas 1', 'Fasilitas 2', 'Fasilitas 3', 'Fasilitas 4']"
+                :items="[
+                  'Fasilitas 1',
+                  'Fasilitas 2',
+                  'Fasilitas 3',
+                  'Fasilitas 4',
+                ]"
                 placeholder="Pilih jenis fasilitasi"
                 solo
                 clearable
@@ -154,14 +206,18 @@ const saveForm = () => {
           </VRow>
           <VRow>
             <VCol cols="12">
-              <label
-                class="text-h6"
-                for="sourceOfFund"
-              > Sumber Pembiayaan </label>
+              <label class="text-h6" for="sourceOfFund">
+                Sumber Pembiayaan
+              </label>
               <VAutocomplete
                 id="sourceOfFund"
                 v-model="form.sourceOfFund"
-                :items="['Pembiayaan 1', 'Pembiayaan 2', 'Pembiayaan 3', 'Pembiayaan 4']"
+                :items="[
+                  'Pembiayaan 1',
+                  'Pembiayaan 2',
+                  'Pembiayaan 3',
+                  'Pembiayaan 4',
+                ]"
                 placeholder="Pilih sumber pembiayaan"
                 solo
                 clearable
@@ -171,10 +227,7 @@ const saveForm = () => {
 
           <VRow>
             <VCol cols="12">
-              <label
-                class="text-h6"
-                for="kuota"
-              > Kuota </label>
+              <label class="text-h6" for="kuota"> Kuota </label>
               <VTextField
                 id="kuota"
                 v-model="form.kuota"
@@ -186,10 +239,9 @@ const saveForm = () => {
 
           <VRow>
             <VCol cols="12">
-              <label
-                class="text-h6"
-                for="picName"
-              > Nama penanggungjawab program </label>
+              <label class="text-h6" for="picName">
+                Nama penanggungjawab program
+              </label>
               <VTextField
                 id="picName"
                 v-model="form.picName"
@@ -201,10 +253,9 @@ const saveForm = () => {
 
           <VRow>
             <VCol cols="12">
-              <label
-                class="text-h6"
-                for="picPhoneNumber"
-              > Nomor Kontak Penanggungjawab program </label>
+              <label class="text-h6" for="picPhoneNumber">
+                Nomor Kontak Penanggungjawab program
+              </label>
               <VTextField
                 id="picPhoneNumber"
                 v-model="form.picPhoneNumber"
@@ -214,11 +265,9 @@ const saveForm = () => {
             </VCol>
           </VRow>
           <VRow>
-            <VCol
-              cols="12"
-              class="text-right"
-            >
-              <SaveChangeConfirmation @confirm="saveForm" />
+            <VCol cols="12" class="text-right">
+              <SaveChangeConfirmation :form="form" />
+              />
             </VCol>
           </VRow>
         </VForm>
@@ -226,21 +275,16 @@ const saveForm = () => {
     </VCol>
 
     <VCol cols="4">
-      <ExpandCard title="Status Registrasi">
-        <VRow no-gutters class="d-flex justify-center align-center">
-          <VCol cols="6">
-            <span class="text-h6">Status</span>
-          </VCol>
-          <VCol cols="6">
-            <VChip label outlined color="primary" text-color="white">{{form.status}}</VChip>
-          </VCol>
-        </VRow>
-        <VRow>
-          <VCol cols="6">
-            <span class="text-h6">Kode Fasilitas</span>
-          </VCol>
-        </VRow>
-      </ExpandCard>
+      <VExpansionPanels v-model="openPanelRegisterData">
+        <VExpansionPanel>
+          <VExpansionPanelTitle>
+            <h2>Status Registration</h2>
+          </VExpansionPanelTitle>
+          <VExpansionPanelText>
+            <RegisterDataFacilitate :data="dataDetailRegistration" />
+          </VExpansionPanelText>
+        </VExpansionPanel>
+      </VExpansionPanels>
     </VCol>
   </VRow>
 </template>
