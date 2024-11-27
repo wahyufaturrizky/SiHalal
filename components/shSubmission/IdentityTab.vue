@@ -134,7 +134,11 @@ const confirmDeleteDoc = () => {
 </script>
 
 <template>
-  <VExpansionPanels v-model="isPanelOpen">
+  <VExpansionPanels
+    v-model="isPanelOpen"
+    expand-icon="fa-chevron-down"
+    collapse-icon="fa-chevron-up"
+  >
     <VExpansionPanel class="mb-10 pt-3">
       <VExpansionPanelTitle class="font-weight-bold text-h4">
         Pengajuan Sertifikasi Halal

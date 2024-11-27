@@ -61,6 +61,7 @@ const downloadFile = () => {
           :items="fasilitatorData"
           placeholder="Pilih Jenis Pendaftaran"
           rounded="xl"
+          menu-icon="fa-chevron-down"
         />
       </VItemGroup>
       <br />
@@ -82,6 +83,7 @@ const downloadFile = () => {
                   "
                   :disabled="searchFasilitator.length > 0"
                   clearable
+                  menu-icon="fa-chevron-down"
                 />
               </VItemGroup>
             </VCol>
@@ -128,6 +130,7 @@ const downloadFile = () => {
           density="compact"
           placeholder="Pilih Asal Pelaku Usaha"
           rounded="xl"
+          menu-icon="fa-chevron-down"
         />
       </VItemGroup>
     </VCardText>
@@ -194,6 +197,7 @@ const downloadFile = () => {
           placeholder="Pilih Jenis Layanan"
           density="compact"
           rounded="xl"
+          menu-icon="fa-chevron-down"
         />
       </VItemGroup>
       <br />
@@ -203,6 +207,7 @@ const downloadFile = () => {
           placeholder="Pilih Jenis Produk"
           density="compact"
           rounded="xl"
+          menu-icon="fa-chevron-down"
         />
       </VItemGroup>
       <br />
@@ -223,6 +228,7 @@ const downloadFile = () => {
               placeholder="Pilih Asal Pemasaran"
               density="compact"
               rounded="xl"
+              menu-icon="fa-chevron-down"
             />
           </VItemGroup>
         </VCol>
@@ -233,6 +239,7 @@ const downloadFile = () => {
               placeholder="Pilih Area Pemasaran"
               density="compact"
               rounded="xl"
+              menu-icon="fa-chevron-down"
             />
           </VItemGroup>
         </VCol>
@@ -246,6 +253,7 @@ const downloadFile = () => {
               placeholder="Pilih Area Pemasaran"
               density="compact"
               rounded="xl"
+              menu-icon="fa-chevron-down"
             />
           </VItemGroup>
         </VCol>
@@ -256,6 +264,7 @@ const downloadFile = () => {
               placeholder="Pilih Pendamping"
               density="compact"
               rounded="xl"
+              menu-icon="fa-chevron-down"
             />
           </VItemGroup>
         </VCol>
