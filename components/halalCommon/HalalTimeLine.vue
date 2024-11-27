@@ -4,7 +4,6 @@ import type { ShlnTracking } from "@/pages/sertifikasi-halal/shln-detail/[id].vu
 const props = defineProps<{
   event: ShlnTracking[];
 }>();
-console.log(props.event);
 </script>
 
 <template>
