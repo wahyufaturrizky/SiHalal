@@ -10,6 +10,7 @@ const openPanelFacilitate = ref(0);
 const openPanelTracking = ref(0);
 
 const route = useRoute();
+
 const facilitateId = route.params.id;
 
 const loadItemById = async () => {
