@@ -58,14 +58,25 @@ const validateName = () => {
 }
 
 const validateEmail = () => {
-  if (!form.value.email)
+  const email = form.value.email
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+
+  if (!email)
     errors.email = 'Wajib diisi'
+  else if (email.includes('-'))
+    errors.email = 'Format email tidak bisa menggunakan dash (-)'
+  else if (!emailRegex.test(email))
+    errors.email = 'Format email tidak valid'
   else
     errors.email = ''
 }
 
 // validateNomorhandphone
-const validateNomorHandphone = () => {
+const validateNomorHandphone = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+
+  target.value = target.value.replace(/\D/g, '')
+
   if (!form.value.noHandphone)
     errors.noHandphone = 'Wajib diisi'
   else
@@ -73,16 +84,42 @@ const validateNomorHandphone = () => {
 }
 
 const validatePassword = () => {
-  if (!form.value.password)
+  const password = form.value.password
+
+  if (!password)
     errors.password = 'Wajib diisi'
+  else if (password.length < 8)
+    errors.password = 'Password harus minimal 8 karakter'
+
+  // else if (!/[A-Z]/.test(password))
+  //   errors.password = 'Password harus mengandung minimal satu huruf kapital'
+  // else if (!/[a-z]/.test(password))
+  //   errors.password = 'Password harus mengandung minimal satu huruf kecil'
+  // else if (!/[0-9]/.test(password))
+  //   errors.password = 'Password harus mengandung minimal satu angka'
+  // else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password))
+  //   errors.password = 'Password harus mengandung minimal satu karakter spesial (!@#$%^&*)'
   else
     errors.password = ''
 }
 
 // validateConfrimPassword
 const validateConfrimPassword = () => {
-  if (!form.value.passwordConfirm)
+  const password = form.value.password
+
+  if (!password)
     errors.passwordConfirm = 'Wajib diisi'
+  else if (password.length < 8)
+    errors.passwordConfirm = 'Pastikan kata sandi minimal 8 karakter!'
+
+  // else if (!/[A-Z]/.test(password))
+  //   errors.passwordConfirm = 'Password harus mengandung minimal satu huruf kapital'
+  // else if (!/[a-z]/.test(password))
+  //   errors.passwordConfirm = 'Password harus mengandung minimal satu huruf kecil'
+  // else if (!/[0-9]/.test(password))
+  //   errors.passwordConfirm = 'Password harus mengandung minimal satu angka'
+  // else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password))
+  //   errors.passwordConfirm = 'Password harus mengandung minimal satu karakter spesial (!@#$%^&*)'
   else
     errors.passwordConfirm = ''
 }
@@ -129,10 +166,45 @@ const onSubmit = async () => {
       const id = payload.role_id
       const email = payload.email
 
-      navigateTo({
-        path: '/verifikasi-user',
-        query: { id, email, payload: JSON.stringify(payload) },
-      })
+      // navigateTo({
+      //   path: '/verifikasi-user',
+      //   query: { id, email, payload: JSON.stringify(payload) },
+      // })
+      const payloadcheck = {
+        email: form.value.email,
+        phone_number: form.value.noHandphone,
+
+      }
+
+      try {
+        const response = await $api('/auth/check-email-phone', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payloadcheck),
+        })
+
+        if (response.data) {
+          if (response.data.phone_number_is_exist)
+            errors.noHandphone = 'Nomor handphone sudah terdaftar, silahkan gunakan nomor lain!'
+          if (response.data.email_is_exist)
+            errors.email = 'Email sudah terdaftar, silahkan gunakan email lain!'
+          if (!response.data.phone_number_is_exist && !response.data.email_is_exist) {
+            navigateTo({
+              path: '/verifikasi-user',
+              query: { id, email, payload: JSON.stringify(payload) },
+            })
+          }
+        }
+        else {
+          errors.noHandphone = '',
+          errors.email = ''
+        }
+      }
+      catch (error) {
+        console.log(error, 'sini erorrr')
+      }
 
       // try {
       //   const response = await $api("/auth/register", {
@@ -381,7 +453,7 @@ const fetchType = ref([])
                   <VTextField
                     v-model="form.noHandphone"
                     type="tel"
-                    maxlength="13"
+                    maxlength="16"
                     placeholder="Masukan Nomor Handphone"
                     @input="validateNomorHandphone"
                   />
