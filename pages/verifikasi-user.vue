@@ -175,6 +175,7 @@ const onSubmitKodeEmail = async () => {
     // console.log(kodeOtpEmail, "otp email");
     if (response?.code === 2000) {
       isSucess.value = true
+      localStorage.removeItem('formData')
     }
 
     // const { data: userData, signOut } = useAuth()
@@ -188,10 +189,14 @@ const onSubmitKodeEmail = async () => {
     // }
     else if (response?.code === 500) {
       isSucess.value = true
-      sendSnackbar(
-        'Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!',
-        'error',
-      )
+
+      localStorage.removeItem('formData')
+      console.log('error 500')
+
+      // sendSnackbar(
+      //   'Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!',
+      //   'error',
+      // )
     }
 
     else {
@@ -339,6 +344,7 @@ const onSubmitKodeNomerHandphone = async () => {
 
     // console.log(kodeOtpEmail, "otp email");
     if (response?.code === 2000) {
+      localStorage.removeItem('formData')
       isSucess.value = true
     }
 
@@ -353,10 +359,13 @@ const onSubmitKodeNomerHandphone = async () => {
     // }
     else if (response?.code === 500) {
       isSucess.value = true
-      sendSnackbar(
-        'Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!',
-        'error',
-      )
+      localStorage.removeItem('formData')
+      console.log('error 500')
+
+      // sendSnackbar(
+      //   'Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!',
+      //   'error',
+      // )
     }
 
     else {
@@ -519,7 +528,7 @@ const onSubmitKodeNomerHandphone = async () => {
                         outlined
                         style="inline-size: 100%;"
                         class="text-none text-body-1 font-weight-medium custom-btn"
-                        href="/register"
+                        href="/"
                       >
                         Pergi ke Halaman Login
                         <VIcon end>
@@ -595,7 +604,7 @@ const onSubmitKodeNomerHandphone = async () => {
                 </VBtn>
                 <div class="back-link">
                   <a
-                    href="/register"
+                    href="/"
                     class="back-icon"
                   >
                     ← Kembali ke Halaman Buat Akun

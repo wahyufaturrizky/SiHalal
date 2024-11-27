@@ -83,13 +83,20 @@ const validateNomorHandphone = async (event: Event) => {
     errors.noHandphone = ''
 }
 
-const validatePassword = () => {
-  const password = form.value.password
+const validatePassword = (value: string) => {
+  // const password = form.value.password
 
-  if (!password)
+  console.log(value.srcElement._value, 'ini value')
+  console.log(form.value.passwordConfirm, 'ini value confirmasi')
+  console.log(value.srcElement._value === form.value.passwordConfirm)
+
+  if (!value.srcElement._value)
     errors.password = 'Wajib diisi'
-  else if (password.length < 8)
+
+  else if (value.srcElement._value.length < 8)
     errors.password = 'Password harus minimal 8 karakter'
+  else if (value.srcElement._value !== form.value.passwordConfirm)
+    errors.password = 'Kata sandi tidak sama!'
 
   // else if (!/[A-Z]/.test(password))
   //   errors.password = 'Password harus mengandung minimal satu huruf kapital'
@@ -104,13 +111,16 @@ const validatePassword = () => {
 }
 
 // validateConfrimPassword
-const validateConfrimPassword = () => {
-  const password = form.value.password
+const validateConfrimPassword = (value: string) => {
+  // const password = form.value.password
 
-  if (!password)
+  if (!value.srcElement._value)
     errors.passwordConfirm = 'Wajib diisi'
-  else if (password.length < 8)
+
+  else if (value.srcElement._value.length < 8)
     errors.passwordConfirm = 'Pastikan kata sandi minimal 8 karakter!'
+  else if (value.srcElement._value !== form.value.password)
+    errors.passwordConfirm = 'Kata sandi tidak sama!'
 
   // else if (!/[A-Z]/.test(password))
   //   errors.passwordConfirm = 'Password harus mengandung minimal satu huruf kapital'
@@ -256,13 +266,23 @@ const typeUserItem = ['Pelaku Usaha', 'Buisness Actor', 'Impoter']
 
 // check  disableSubmit
 const isDisabledSubmit = computed(() => {
+  const email = form.value.email
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+
   return !(
     form.value.typeUser
     && form.value.name
     && form.value.email
+
+    // && email.includes('-')
+    // && !emailRegex.test(email)
     && form.value.noHandphone
     && form.value.password
     && form.value.passwordConfirm
+
+  // && form.value.passwordConfirm === form.value.password
+  // && form.value.passwordConfirm.length < 8
+  // && form.value.password.length < 8
   )
 })
 
