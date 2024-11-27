@@ -26,11 +26,6 @@ export default [
         roles: ["Pelaku Usaha", "Admin"],
       },
       {
-        title: "Cek Data Pengajuan",
-        to: "sh-domestic-submission-self-declare-list-pengajuan-pu-pendamping",
-        roles: ["Pendamping", "Admin"],
-      },
-      {
         title: "sh_domestic.self_declare",
         to: "sh-domestic-submission-self-declare",
         roles: ["Pelaku Usaha", "Admin"],
@@ -372,17 +367,17 @@ export default [
   {
     title: "Pengajuan Sertifikat Halal",
     icon: { icon: "mdi-scale-balance" },
-    roles: ["Pelaku Usaha", "Admin"],
+    roles: ["Pendamping", "Admin"],
     children: [
       {
-        title: "Cek Data Pengajuan - Pendamping",
-        to: "dummy-empty-page",
-        roles: ["Pelaku Usaha", "Admin"],
+        title: "Cek Data Pengajuan",
+        to: "sh-domestic-submission-self-declare-list-pengajuan-pu-pendamping",
+        roles: ["Pendamping", "Admin"],
       },
       {
         title: "Proses Verval - Pendamping",
         to: "pengajuan-verval-pendamping",
-        roles: ["Pelaku Usaha", "Admin"],
+        roles: ["Pendamping", "Admin"],
       },
       {
         title: "Info Sertifikat Self Declare - Pendamping",
