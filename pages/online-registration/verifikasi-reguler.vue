@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DataPermohonanSertifikasiBpjph from '@/components/verificator/bpjph/DataPermohonanSertifikasiBpjph.vue';
 import { ref, computed, defineProps, defineEmits } from 'vue'
 import { VDataTableServer } from 'vuetify/components'
 
@@ -202,7 +203,7 @@ const bahanType = ref(null)
         </p>
       </VCol>
       <VCol cols="2" style="display: flex; justify-content: end">
-        <DataPermohonanSertifikasi />
+        <DataPermohonanSertifikasiBpjph />
       </VCol>
     </VRow>
     <VRow>
