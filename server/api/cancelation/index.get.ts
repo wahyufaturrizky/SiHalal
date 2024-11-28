@@ -11,12 +11,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const {
-    page,
-    size,
-    keyword,
-    nama_pu,,
-  } = (await getQuery(event)) as {
+  const { page, size, keyword, nama_pu } = (await getQuery(event)) as {
     page: string;
     size: string;
     keyword: string;
