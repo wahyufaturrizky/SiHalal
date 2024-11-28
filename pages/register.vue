@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { themeConfig } from '@themeConfig'
 import { useDisplay } from 'vuetify'
 import { VForm } from 'vuetify/components/VForm'
+import { themeConfig } from '@themeConfig'
 
 import { requiredValidator } from '#imports'
 import { VNodeRenderer } from '@/@layouts/components/VNodeRenderer'
@@ -13,6 +13,9 @@ import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-il
 import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
 import authV2LoginMaskDark from '@images/pages/auth-v2-login-mask-dark.png'
 import authV2LoginMaskLight from '@images/pages/auth-v2-login-mask-light.png'
+
+const { sendSnackbar } = useSnackbar()
+const userVerificationStore = useUserVerificationStore()
 
 const { mdAndUp } = useDisplay()
 
@@ -83,43 +86,28 @@ const validateNomorHandphone = async (event: Event) => {
     errors.noHandphone = ''
 }
 
-const validatePassword = (value: string) => {
-  // const password = form.value.password
-
-  console.log(value.srcElement._value, 'ini value')
-  console.log(form.value.passwordConfirm, 'ini value confirmasi')
-  console.log(value.srcElement._value === form.value.passwordConfirm)
-
-  if (!value.srcElement._value)
-    errors.password = 'Wajib diisi'
-
-  else if (value.srcElement._value.length < 8)
-    errors.password = 'Password harus minimal 8 karakter'
-  else if (value.srcElement._value !== form.value.passwordConfirm)
-    errors.password = 'Kata sandi tidak sama!'
-
-  // else if (!/[A-Z]/.test(password))
-  //   errors.password = 'Password harus mengandung minimal satu huruf kapital'
-  // else if (!/[a-z]/.test(password))
-  //   errors.password = 'Password harus mengandung minimal satu huruf kecil'
-  // else if (!/[0-9]/.test(password))
-  //   errors.password = 'Password harus mengandung minimal satu angka'
-  // else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password))
-  //   errors.password = 'Password harus mengandung minimal satu karakter spesial (!@#$%^&*)'
-  else
-    errors.password = ''
-}
-
 // validateConfrimPassword
-const validateConfrimPassword = (value: string) => {
+
+// const turnstile = ref();
+const refVForm = ref<VForm>()
+
+const form = ref({
+  typeUser: null,
+  name: null,
+  email: null,
+  noHandphone: null,
+  password: '',
+  passwordConfirm: '',
+})
+
+const validateConfrimPassword = () => {
   // const password = form.value.password
 
-  if (!value.srcElement._value)
+  if (form.value.passwordConfirm.length === 0)
     errors.passwordConfirm = 'Wajib diisi'
-
-  else if (value.srcElement._value.length < 8)
+  else if (form.value.passwordConfirm < 8)
     errors.passwordConfirm = 'Pastikan kata sandi minimal 8 karakter!'
-  else if (value.srcElement._value !== form.value.password)
+  else if (form.value.passwordConfirm !== form.value.password)
     errors.passwordConfirm = 'Kata sandi tidak sama!'
 
   // else if (!/[A-Z]/.test(password))
@@ -130,26 +118,39 @@ const validateConfrimPassword = (value: string) => {
   //   errors.passwordConfirm = 'Password harus mengandung minimal satu angka'
   // else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password))
   //   errors.passwordConfirm = 'Password harus mengandung minimal satu karakter spesial (!@#$%^&*)'
-  else
-    errors.passwordConfirm = ''
+  else errors.passwordConfirm = ''
 }
 
-// const turnstile = ref();
-const refVForm = ref<VForm>()
+const validatePassword = () => {
+  if (form.value.password.length === 0)
+    errors.password = 'Wajib diisi'
 
-const form = ref({
-  typeUser: null,
-  name: null,
-  email: null,
-  noHandphone: null,
-  password: null,
-  passwordConfirm: null,
+  else if (form.value.password.length < 8)
+    errors.password = 'Password harus minimal 8 karakter'
+  else if (form.value.password !== form.value.passwordConfirm)
+    errors.password = 'Kata sandi tidak sama!'
+
+  // else if (!/[A-Z]/.test(password))
+  //   errors.password = 'Password harus mengandung minimal satu huruf kapital'
+  // else if (!/[a-z]/.test(password))
+  //   errors.password = 'Password harus mengandung minimal satu huruf kecil'
+  // else if (!/[0-9]/.test(password))
+  //   errors.password = 'Password harus mengandung minimal satu angka'
+  // else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password))
+  //   errors.password = 'Password harus mengandung minimal satu karakter spesial (!@#$%^&*)'
+  else errors.password = ''
+}
+
+watch([() => form.value.password, () => form.value.passwordConfirm], () => {
+  console.log('TRIGGER WATCH ')
+  validatePassword()
+  validateConfrimPassword()
 })
 
 const router = useRouter()
 
 const onSubmit = async () => {
-  localStorage.setItem('formData', JSON.stringify(form.value))
+  // localStorage.setItem('formData', JSON.stringify(form.value))
 
   refVForm.value?.validate().then(async ({ valid: isValid }) => {
     if (isValid) {
@@ -173,8 +174,6 @@ const onSubmit = async () => {
         confirm_password: form.value.passwordConfirm,
       }
 
-      const id = payload.role_id
-      const email = payload.email
 
       // navigateTo({
       //   path: '/verifikasi-user',
@@ -195,22 +194,46 @@ const onSubmit = async () => {
           body: JSON.stringify(payloadcheck),
         })
 
-        if (response.data) {
-          if (response.data.phone_number_is_exist)
-            errors.noHandphone = 'Nomor handphone sudah terdaftar, silahkan gunakan nomor lain!'
-          if (response.data.email_is_exist)
-            errors.email = 'Email sudah terdaftar, silahkan gunakan email lain!'
-          if (!response.data.phone_number_is_exist && !response.data.email_is_exist) {
-            navigateTo({
-              path: '/verifikasi-user',
-              query: { id, email, payload: JSON.stringify(payload) },
-            })
-          }
-        }
-        else {
+        console.log('RESPONSE CHECK EMAIL PHONE : ', response)
+
+        if (!response.data) {
           errors.noHandphone = '',
           errors.email = ''
+          return
         }
+
+        if (response.data.phone_number_is_exist) {
+          errors.noHandphone = 'Nomor handphone sudah terdaftar, silahkan gunakan nomor lain!'
+
+          return
+        }
+        if (response.data.email_is_exist) {
+          errors.email = 'Email sudah terdaftar, silahkan gunakan email lain!'
+
+          return
+        }
+
+        const responseRegister = await $api('/auth/register', {
+          method: 'POST', // Mengatur metode menjadi POST
+          headers: {
+            'Content-Type': 'application/json', // Mengatur tipe konten
+          },
+          body: payload,
+        })
+
+        console.log('RESPONSE REGISTER : ', responseRegister)
+
+        if (responseRegister.code !== 2000) {
+          sendSnackbar('Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data! ', 'error')
+
+          return
+        }
+
+        userVerificationStore.setUserData(responseRegister.data.user)
+
+        navigateTo({
+          path: '/verifikasi-user',
+        })
       }
       catch (error) {
         console.log(error, 'sini erorrr')
@@ -324,7 +347,6 @@ const requiredValidasiEmail = (value: string) =>
 
 // Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!
 // jika error pas di input maka tapil diatas
-const { sendSnackbar } = useSnackbar()
 
 onMounted(async () => {
   try {
@@ -505,8 +527,8 @@ const fetchType = ref([])
                     "
                     placeholder="Masukan kata sandi"
                     @click:append-inner="isPasswordVisible = !isPasswordVisible"
-                    @input="validatePassword"
                   />
+
                   <!-- :error-messages="errors.password" -->
                   <!-- :rules="[requiredValidator, requiredMinLength]" -->
                   <span
@@ -536,7 +558,6 @@ const fetchType = ref([])
                     @click:append-inner="
                       isPasswordVisibleConfrim = !isPasswordVisibleConfrim
                     "
-                    @input="validateConfrimPassword"
                   />
                   <!-- :error-messages="errors.password" -->
                   <!--
