@@ -27,6 +27,21 @@ const getidentity = async () => {
     });
 
     identity.value = response.data;
+    if (
+      identity.value?.hcb.hcb_id == "" ||
+      identity.value?.hcb.hcb_id == null ||
+      identity.value?.hcb.hcb_id == undefined
+    ) {
+      disabledTab("document", true);
+      // return;
+    }
+    if (
+      identity.value?.hcb.country == "" ||
+      identity.value?.hcb.country == null ||
+      identity.value?.hcb.country == undefined
+    ) {
+      disabledTab("manufacture", true);
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -73,6 +88,9 @@ watch(
     }
     if (newValue == "identity") {
       getidentity();
+    }
+    if (newValue == "document") {
+      getmra();
     }
     updateData.setData("");
   }
@@ -122,7 +140,10 @@ const disabledTab = (
         />
       </VTabsWindowItem>
       <VTabsWindowItem value="product">
-        <EditProduct />
+        <EditProduct
+          v-if="manufacture != undefined"
+          :manufacture="manufacture"
+        />
       </VTabsWindowItem>
     </VTabsWindow>
     <!-- </v-card-text> -->

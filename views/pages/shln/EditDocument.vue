@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { FHC } from "@/server/api/shln/submission/document/add-fhc.post";
 import type { LOA } from "@/server/api/shln/submission/document/add-loa.post";
 import { ref } from "vue";
 import { VForm } from "vuetify/components";
@@ -22,6 +23,7 @@ const shlnId = route.params.id;
 const mra = ref<MRA>();
 const loa = ref<LOAData>();
 const loadDialog = ref(false);
+const loadFhcDialog = ref(false);
 const getLoa = async () => {
   try {
     const response = await $api("/shln/submission/document/loa", {
@@ -52,16 +54,22 @@ const getMra = async () => {
   }
 };
 const refLoaForm = ref<VForm>();
+const refFhcForm = ref<VForm>();
 const openLoaDialog = () => {
   refLoaForm.value?.validate().then(({ valid: isValid }) => {
     if (isValid) loadDialog.value = true;
   });
 };
-const uploadDocument = async () => {
+const openFhcDialog = () => {
+  refFhcForm.value?.validate().then(({ valid: isValid }) => {
+    if (isValid) loadFhcDialog.value = true;
+  });
+};
+const uploadDocument = async (type: "loa" | "fhc") => {
   try {
     const formData = new FormData();
     formData.append("id", shlnId);
-    formData.append("file", loaFile.value);
+    formData.append("file", type == "loa" ? loaFile.value : fhcFile.value);
     formData.append("type", "sample");
     const response = await $api("/shln/submission/document/upload", {
       method: "post",
@@ -78,7 +86,7 @@ const uploadDocument = async () => {
 
 const saveLoa = async () => {
   try {
-    const file = await uploadDocument();
+    const file = await uploadDocument("loa");
     if (file.code != 2000) {
       return;
     }
@@ -99,7 +107,31 @@ const saveLoa = async () => {
     useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
   }
 };
+const saveFhc = async () => {
+  try {
+    const file = await uploadDocument("fhc");
+    if (file.code != 2000) {
+      return;
+    }
+    fhcForm.value.file_url = file.data.file_url;
+    const response = await $api("/shln/submission/document/add-fhc", {
+      method: "post",
+      body: fhcForm.value,
+    });
+    loadFhcDialog.value = false;
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
+      return;
+    }
+    useMyUpdateSubmissionEditStore().setData("document");
+    useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
+  } catch (error) {
+    loadFhcDialog.value = false;
+    useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
+  }
+};
 const loaFile = ref();
+const fhcFile = ref();
 const loaForm = ref<LOA>({
   id: shlnId,
   authorizer_name: "",
@@ -108,8 +140,56 @@ const loaForm = ref<LOA>({
   date: "",
   file_url: "",
 });
+const fhcForm = ref<FHC>({
+  id: shlnId,
+  file_url: "",
+});
+interface Tracking {
+  comment: string;
+  created_at: string;
+  id: string;
+  status: string;
+  username: string;
+}
+const loaTracking = ref<Tracking[]>();
+const fhcTracking = ref<Tracking[]>();
+
+const getLoaTracking = async () => {
+  try {
+    const response = await $api("/shln/submission/document/tracking/loa", {
+      method: "post",
+      body: {
+        id: shlnId,
+      },
+    });
+
+    loaTracking.value = response.data;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+const getFhcTracking = async () => {
+  try {
+    const response = await $api("/shln/submission/document/tracking/fhc", {
+      method: "post",
+      body: {
+        id: shlnId,
+      },
+    });
+
+    fhcTracking.value = response.data;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
 onMounted(async () => {
-  await Promise.allSettled([getMra(), getLoa()]);
+  await Promise.allSettled([
+    getMra(),
+    getLoa(),
+    getFhcTracking(),
+    getLoaTracking(),
+  ]);
   loaForm.value.authorized_name = loa.value?.authorized_company;
   loaForm.value.authorizer_name = loa.value?.authorizer_company;
   loaForm.value.letter_number = loa.value?.letter_no;
@@ -246,45 +326,62 @@ function dateddmmyyy(date: Date) {
       </ExpandCard>
 
       <ExpandCard title="Original of the Foreign Halal Certificate ">
-        <VCol cols="12">
-          <VFileInput
-            v-model="loaForm.loaDocument"
-            label="File"
-            outlined
-            dense
-            accept=".pdf,.jpg,.png"
-            class="mb-2"
-          />
-        </VCol>
+        <v-form ref="refFhcForm" @submit.prevent="openFhcDialog">
+          <VCol cols="12">
+            <VFileInput
+              v-model="fhcFile"
+              label="Unggah Foreign Halal Certificate"
+              outlined
+              dense
+              accept=".pdf,.jpg,.png"
+              class="mb-2"
+              :rules="[requiredValidator]"
+            />
+          </VCol>
 
-        <VCol cols="12">
-          <!-- Note Title -->
-          <p class="text-h5 font-weight-bold">Note</p>
+          <VCol cols="12">
+            <!-- Note Title -->
+            <p class="text-h5 font-weight-bold">Note</p>
 
-          <!-- Note Box -->
-          <VCard outlined>
-            <VCardText>
-              <p>
-                This is the paragraph inside the box. You can put any content
-                here, such as additional instructions, important information, or
-                any other text you want to highlight in a box.
-              </p>
-            </VCardText>
-          </VCard>
-        </VCol>
+            <!-- Note Box -->
+            <VCard outlined>
+              <VCardText>
+                <p>
+                  This is the paragraph inside the box. You can put any content
+                  here, such as additional instructions, important information,
+                  or any other text you want to highlight in a box.
+                </p>
+              </VCardText>
+            </VCard>
+          </VCol>
 
-        <VCol cols="12" class="text-right">
-          <VBtn color="primary" @click="saveForm">Save</VBtn>
-        </VCol>
+          <VCol cols="12" class="text-right">
+            <VBtn color="primary" type="submit">Save</VBtn>
+          </VCol>
+        </v-form>
       </ExpandCard>
     </VCol>
     <VCol cols="4">
       <ExpandCard title="Tracking of LOA" class="mb-4">
-        <HalalTimeLine :events="timelineEvents" />
+        <VSkeletonLoader
+          v-if="loaTracking == undefined"
+          :loading="true"
+          type="list-item-two-line"
+        >
+          <VListItem lines="two" subtitle="Subtitle" title="Title" rounded />
+        </VSkeletonLoader>
+        <HalalTimeLine v-if="loaTracking != undefined" :events="loaTracking" />
       </ExpandCard>
 
       <ExpandCard title="Tracking of Certificate and Legalization">
-        <HalalTimeLine :events="timelineEvents" />
+        <VSkeletonLoader
+          v-if="fhcTracking == undefined"
+          :loading="true"
+          type="list-item-two-line"
+        >
+          <VListItem lines="two" subtitle="Subtitle" title="Title" rounded />
+        </VSkeletonLoader>
+        <HalalTimeLine v-if="fhcTracking != undefined" :events="fhcTracking" />
       </ExpandCard>
     </VCol>
   </VRow>
@@ -325,6 +422,32 @@ function dateddmmyyy(date: Date) {
           </VCol>
           <VCol cols="12" md="auto">
             <VBtn block variant="outlined" @click="loadDialog = false">
+              Cancel
+            </VBtn>
+          </VCol>
+        </VRow>
+      </VCardText>
+    </VCard>
+  </VDialog>
+
+  <!-- FHC DIALOG -->
+  <VDialog v-model="loadFhcDialog" width="auto">
+    <VCard>
+      <VCardText>
+        <p class="text-h5 font-weight-bold">Save</p>
+        <VRow>
+          <VCol cols="12">
+            <div class="text-subtitle-1 text-high-emphasis mb-1">
+              Are you sure you want to save this updated data?
+            </div>
+          </VCol>
+        </VRow>
+        <VRow class="flex-row-reverse">
+          <VCol cols="12" md="auto">
+            <VBtn block color="primary" @click="saveFhc()"> Yes, Save </VBtn>
+          </VCol>
+          <VCol cols="12" md="auto">
+            <VBtn block variant="outlined" @click="loadFhcDialog = false">
               Cancel
             </VBtn>
           </VCol>
