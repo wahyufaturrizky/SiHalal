@@ -4,6 +4,8 @@ const size = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
+const keyword = ref();
+const nama_pu = ref();
 
 const loadItem = async ({
   page,
@@ -54,6 +56,18 @@ onMounted(async () => {
 });
 
 const debouncedFetch = debounce(loadItem, 500);
+
+const handleSearch = (event) => {
+  debouncedFetch({
+    page: page.value,
+    size: size.value,
+    keyword: event.keyword,
+    nama_pu: event.nama_pu,
+  });
+
+  keyword.value = event.keyword;
+  nama_pu.value = event.nama_pu;
+};
 </script>
 
 <template>
@@ -72,13 +86,6 @@ const debouncedFetch = debounce(loadItem, 500);
         nama_pu,
       })
     "
-    @formvalue="
-      debouncedFetch({
-        page,
-        size,
-        keyword: $event.keyword,
-        nama_pu: $event.nama_pu,
-      })
-    "
+    @formvalue="handleSearch($event)"
   />
 </template>
