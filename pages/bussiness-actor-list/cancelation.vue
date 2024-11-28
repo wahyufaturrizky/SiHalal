@@ -10,8 +10,8 @@ const query_by = ref();
 const loadItem = async ({
   page,
   size,
-  keyword,
-  query_by,
+  keyword = "",
+  query_by = "",
 }: {
   page: number;
   size: number;
