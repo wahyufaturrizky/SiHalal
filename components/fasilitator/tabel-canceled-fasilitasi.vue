@@ -31,7 +31,7 @@ const { items, size, page, totalitems, loading } = props || {};
 
 const form = ref({
   keyword: null,
-  nama_pu: null,
+  query_by: null,
 });
 
 const filterOptions = ["Semua", "Perusahaan", "Individu", "UMKM"];
@@ -63,7 +63,7 @@ const headers = [
   },
   {
     title: "No Sertifikat",
-    key: "no_sertifikat",
+    key: "no_sert",
   },
   {
     title: "Status",
@@ -82,7 +82,7 @@ const handleSearch = () => {
 
     <div class="d-flex gap-4 mb-4">
       <VSelect
-        v-model="form.nama_pu"
+        v-model="form.query_by"
         :items="filterOptions"
         placeholder="Nama Pelaku Usaha"
         class="max-w-[200px]"
