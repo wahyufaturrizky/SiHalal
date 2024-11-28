@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useDisplay } from 'vuetify'
 import type { VForm } from 'vuetify/components/VForm'
-import { useUserInfoStore } from '@/stores/user-info'
 import { themeConfig } from '@themeConfig'
 
 import NoImage from '@images/no-image.png'
@@ -11,7 +10,8 @@ import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustratio
 
 const { sendSnackbar } = useSnackbar()
 
-const userInfoStore = useUserInfoStore()
+const userVerificationStore = useUserVerificationStore()
+
 
 const { signIn, data: sessionData } = useAuth()
 const { mdAndUp } = useDisplay()
@@ -58,8 +58,8 @@ const refVForm = ref<VForm>()
 // })
 
 const form = ref({
-  email: userInfoStore.email,
-  noHandphone: userInfoStore.phone_number,
+  email: userVerificationStore.email,
+  noHandphone: userVerificationStore.phone_number,
 })
 
 // validasi
@@ -89,7 +89,7 @@ const onSubmitEmail = async () => {
 
   const payload = {
     channel: 'email',
-    destination: userInfoStore.email,
+    destination: userVerificationStore.email,
   }
 
   console.log('ON SUBMIT EMAIL PAYLOAD : ', payload)
@@ -164,7 +164,7 @@ const onSubmitKodeEmail = async () => {
   console.log('SUBMIT KODE EMAIL ')
 
   const payload = {
-    user_id: userInfoStore.id,
+    user_id: userVerificationStore.id,
     otp: kodeOtpEmail.value,
   }
 
@@ -297,7 +297,7 @@ const onSubmitNomerHandphone = async () => {
 
   const payload = {
     channel: 'phone_number',
-    destination: userInfoStore.phone_number,
+    destination: userVerificationStore.phone_number,
   }
 
   console.log('ON SUBMIT NOMOR HP PAYLOAD : ', payload)
@@ -346,7 +346,7 @@ const onSubmitKodeNomerHandphone = async () => {
   // isSucess.value = true
 
   const payload = {
-    user_id: userInfoStore.id,
+    user_id: userVerificationStore.id,
     otp: kodeOtpNoHandphone.value,
   }
 

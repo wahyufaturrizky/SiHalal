@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useUserInfoStore } from "@/stores/user-info"
 import { useDisplay } from 'vuetify'
 import { VForm } from 'vuetify/components/VForm'
 import { themeConfig } from '@themeConfig'
@@ -16,7 +15,7 @@ import authV2LoginMaskDark from '@images/pages/auth-v2-login-mask-dark.png'
 import authV2LoginMaskLight from '@images/pages/auth-v2-login-mask-light.png'
 
 const { sendSnackbar } = useSnackbar()
-const userInfoStore = useUserInfoStore()
+const userVerificationStore = useUserVerificationStore()
 
 const { mdAndUp } = useDisplay()
 
@@ -230,7 +229,7 @@ const onSubmit = async () => {
           return
         }
 
-        userInfoStore.setUserData(responseRegister.data.user)
+        userVerificationStore.setUserData(responseRegister.data.user)
 
         navigateTo({
           path: '/verifikasi-user',
