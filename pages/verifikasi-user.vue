@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { themeConfig } from '@themeConfig'
 import { useDisplay } from 'vuetify'
 import type { VForm } from 'vuetify/components/VForm'
+import { useUserInfoStore } from '@/stores/user-info'
+import { themeConfig } from '@themeConfig'
 
 import NoImage from '@images/no-image.png'
 import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
 import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
 import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
+
+const { sendSnackbar } = useSnackbar()
+
+const userInfoStore = useUserInfoStore()
 
 const { signIn, data: sessionData } = useAuth()
 const { mdAndUp } = useDisplay()
@@ -53,10 +58,8 @@ const refVForm = ref<VForm>()
 // })
 
 const form = ref({
-  email: route.query?.payload ? JSON.parse(route.query.payload).email : '',
-  noHandphone: route.query?.payload
-    ? JSON.parse(route.query.payload).phone_number
-    : '',
+  email: userInfoStore.email,
+  noHandphone: userInfoStore.phone_number,
 })
 
 // validasi
@@ -84,21 +87,24 @@ const isSucess = ref(false)
 const onSubmitEmail = async () => {
   isDisabledNoHp.value = true
 
-  const payloadsubmitEmail = route.query?.payload
+  const payload = {
+    channel: 'email',
+    destination: userInfoStore.email,
+  }
 
-  console.log(payloadsubmitEmail, 'Submit Email')
+  console.log('ON SUBMIT EMAIL PAYLOAD : ', payload)
 
   // create user
   try {
-    const response = await $api('/auth/register', {
-      method: 'POST', // Mengatur metode menjadi POST
+    const response = await $api('/auth/send-otp', {
+      method: 'POST',
       headers: {
-        'Content-Type': 'application/json', // Mengatur tipe konten
+        'Content-Type': 'application/json',
       },
-      body: payloadsubmitEmail,
+      body: JSON.stringify(payload),
     })
 
-    // console.log("log", response);
+    console.log('RESPONSE SEND OTP EMAIL : ', response)
 
     if (response.code === 2000) {
       // Cek apakah response berhasil
@@ -113,6 +119,9 @@ const onSubmitEmail = async () => {
     else if (response.code === 4001) {
       sendSnackbar(`${response.errors.list_error}`, 'error')
     }
+    else if (response.code === 4000) {
+      sendSnackbar('Terdapat kesalahan memasukkan OTP, silahkan coba lagi kembali', 'error')
+    }
     else {
       sendSnackbar(
         'Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!',
@@ -121,7 +130,7 @@ const onSubmitEmail = async () => {
     }
   }
   catch (error) {
-    console.error('Error saat membuat akun:', error)
+    sendSnackbar('Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!', 'error')
   }
 
   // send otp
@@ -152,10 +161,14 @@ const kodeOtpEmail = ref('')
 const kodeOtpNoHandphone = ref('')
 
 const onSubmitKodeEmail = async () => {
+  console.log('SUBMIT KODE EMAIL ')
+
   const payload = {
-    user_id: JSON.parse(route.query.payload).role_id,
+    user_id: userInfoStore.id,
     otp: kodeOtpEmail.value,
   }
+
+  console.log('PAYLOAD SUBMIT OTP ', payload)
 
   try {
     const response: any = await $api('/auth/verify-otp', {
@@ -166,16 +179,11 @@ const onSubmitKodeEmail = async () => {
       body: JSON.stringify(payload),
     })
 
-    const payloadsubmitEmail = route.query?.payload
-
-    console.log(payloadsubmitEmail, 'payload email')
-
-    // console.log('RESPONSE VERIF OTP : ', response)
+    console.log('RESPONSE VERIFY OTP EMAIL : ', response)
 
     // console.log(kodeOtpEmail, "otp email");
     if (response?.code === 2000) {
       isSucess.value = true
-      localStorage.removeItem('formData')
     }
 
     // const { data: userData, signOut } = useAuth()
@@ -187,21 +195,32 @@ const onSubmitKodeEmail = async () => {
     // else {
     //   navigateTo('/login/new-account')
     // }
+
+    else if (response?.code === 4000) {
+      // isSucess.value = true
+
+      localStorage.removeItem('formData')
+      sendSnackbar(
+        'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali',
+        'error',
+      )
+    }
+
     else if (response?.code === 500) {
-      isSucess.value = true
+      // isSucess.value = true
 
       localStorage.removeItem('formData')
       console.log('error 500')
 
-      // sendSnackbar(
-      //   'Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!',
-      //   'error',
-      // )
+      sendSnackbar(
+        'Gagal melakukan verifikasi OTP!',
+        'error',
+      )
     }
 
     else {
       sendSnackbar(
-        'Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!',
+        'Gagal melakukan verifikasi OTP!',
         'error',
       )
       isSucess.value = false
@@ -209,7 +228,7 @@ const onSubmitKodeEmail = async () => {
   }
   catch (error) {
     sendSnackbar(
-      'Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!',
+      'Gagal melakukan verifikasi OTP!',
       'error',
     )
     console.log('ADA ERROR NIH BANG ', error)
@@ -236,28 +255,28 @@ const startCooldown = () => {
   }, 1000)
 }
 
-const { sendSnackbar } = useSnackbar()
-
 const resendCode = async () => {
   sendSnackbar('Kode Verifikasi Berhasil Dikirim Ulang', 'success')
 
   const payload = {
-    channel: 'email',
-    destination: form.value.email,
+    channel: currentTab.value === 0 ? 'email' : 'phone_number',
+    destination: currentTab.value === 0 ? form.value.email : form.value.noHandphone,
   }
+
+  console.log('RESEND CODE  PAYLOAD : ', payload)
 
   startCooldown()
 
   try {
-    // const response = await $api('/auth/send-otp', {
-    //   method: 'POST', // Mengatur metode menjadi POST
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(payload),
-    // })
+    const response = await $api('/auth/send-otp', {
+      method: 'POST', // Mengatur metode menjadi POST
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
 
-    // console.log('RESPONSE SEND OTP dari RESEND : ', response)
+    console.log('RESPONSE SEND OTP dari RESEND : ', response)
   }
   catch (error) {
     console.log(error, 'ini error')
@@ -276,21 +295,23 @@ const onSubmitNomerHandphone = async () => {
   isOtpNoHandphone.value = true
   isDisabledEmail.value = true
 
-  const payloadsubmitNomerHandphone = route.query?.payload
+  const payload = {
+    channel: 'phone_number',
+    destination: userInfoStore.phone_number,
+  }
 
-  console.log(payloadsubmitNomerHandphone, 'nomer handphone')
+  console.log('ON SUBMIT NOMOR HP PAYLOAD : ', payload)
 
-  // create user
   try {
-    const response = await $api('/auth/register', {
-      method: 'POST', // Mengatur metode menjadi POST
+    const response = await $api('/auth/send-otp', {
+      method: 'POST',
       headers: {
-        'Content-Type': 'application/json', // Mengatur tipe konten
+        'Content-Type': 'application/json',
       },
-      body: payloadsubmitNomerHandphone,
+      body: JSON.stringify(payload),
     })
 
-    // console.log("log", response);
+    console.log('RESPONSE SEND OTP PHONE NUMBER : ', response)
 
     if (response.code === 2000) {
       // Cek apakah response berhasil
@@ -320,12 +341,16 @@ const onSubmitNomerHandphone = async () => {
 }
 
 const onSubmitKodeNomerHandphone = async () => {
+  console.log('VERIFY OTP PHONE NUMBER')
+
   // isSucess.value = true
 
   const payload = {
-    user_id: JSON.parse(route.query.payload).role_id,
+    user_id: userInfoStore.id,
     otp: kodeOtpNoHandphone.value,
   }
+
+  console.log('ON SUBMIT KODE NOMOR HP PAYLOAD : ', payload)
 
   try {
     const response: any = await $api('/auth/verify-otp', {
@@ -335,6 +360,8 @@ const onSubmitKodeNomerHandphone = async () => {
       },
       body: JSON.stringify(payload),
     })
+
+    console.log('RESPONSE VERIFY OTP PHONE NUMBER : ', response)
 
     const payloadsubmitEmail = route.query?.payload
 
