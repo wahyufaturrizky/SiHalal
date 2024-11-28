@@ -5,18 +5,18 @@ const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
 const keyword = ref();
-const nama_pu = ref();
+const query_by = ref();
 
 const loadItem = async ({
   page,
   size,
   keyword,
-  nama_pu,
+  query_by,
 }: {
   page: number;
   size: number;
   keyword?: string;
-  nama_pu?: string;
+  query_by?: string;
 }) => {
   try {
     loading.value = true;
@@ -27,7 +27,7 @@ const loadItem = async ({
         page,
         size,
         keyword,
-        nama_pu,
+        query_by,
       },
     });
 
@@ -51,7 +51,7 @@ onMounted(async () => {
     page: 1,
     size: size.value,
     keyword: "",
-    nama_pu: "",
+    query_by: "",
   });
 });
 
@@ -62,11 +62,11 @@ const handleSearch = (event) => {
     page: page.value,
     size: size.value,
     keyword: event.keyword,
-    nama_pu: event.nama_pu,
+    query_by: event.query_by,
   });
 
   keyword.value = event.keyword;
-  nama_pu.value = event.nama_pu;
+  query_by.value = event.query_by;
 };
 </script>
 
@@ -83,7 +83,7 @@ const handleSearch = (event) => {
         page: 1,
         size,
         keyword,
-        nama_pu,
+        query_by,
       })
     "
     @formvalue="handleSearch($event)"

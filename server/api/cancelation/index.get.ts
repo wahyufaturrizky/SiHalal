@@ -11,18 +11,18 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { page, size, keyword, nama_pu } = (await getQuery(event)) as {
+  const { page, size, keyword, query_by } = (await getQuery(event)) as {
     page: string;
     size: string;
     keyword: string;
-    nama_pu: string;
+    query_by: string;
   };
 
   const params = {
     page: isNaN(Number.parseInt(page, 10)) ? 1 : Number.parseInt(page, 10),
     size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
     keyword,
-    nama_pu,
+    query_by,
   };
 
   const data = await $fetch<any>(
