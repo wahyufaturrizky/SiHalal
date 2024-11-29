@@ -5,6 +5,7 @@ import { useDisplay } from "vuetify";
 const emit = defineEmits<{
   (event: "cancel", message: string): void;
   (event: "update"): void;
+  (event: "refresh"): void;
 }>();
 
 const searchQuerySubmission = ref("");

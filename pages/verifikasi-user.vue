@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { themeConfig } from '@themeConfig'
 import { useDisplay } from 'vuetify'
 import type { VForm } from 'vuetify/components/VForm'
-import { themeConfig } from '@themeConfig'
 
 import NoImage from '@images/no-image.png'
 import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
@@ -72,6 +72,15 @@ const currentTab = ref(0)
 const isDisabledSubmitEmail = computed(() => {
   return !form.value.email || emailValidator(form.value.email) !== true
 })
+
+const phoneValidator = (value: string) => {
+  const isValid = /^08\d{8,15}$/.test(value);
+
+  return (
+    isValid ||
+    'Nomor Handphone harus dimulai dengan "08" dan berjumlah 10-13 digit angka'
+  );
+};
 
 const isDisabledSubmitNoHandphone = computed(() => {
   return (
@@ -334,6 +343,10 @@ const onSubmitNomerHandphone = async () => {
     }
   }
   catch (error) {
+    sendSnackbar(
+        'Gagal melakukan pengiriman kode OTP!',
+        'error',
+      )
     console.error('Error saat membuat akun:', error)
   }
 

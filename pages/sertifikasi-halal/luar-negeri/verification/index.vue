@@ -36,7 +36,6 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
     items.value = response.data;
     totalItems.value = response.total_item;
     loading.value = false;
-    useSnackbar().sendSnackbar("Sukses update data", "success");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loading.value = false;

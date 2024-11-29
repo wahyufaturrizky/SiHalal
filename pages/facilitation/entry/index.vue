@@ -22,7 +22,6 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
     items.value = response.data;
     totalItems.value = response.total_item;
     loading.value = false;
-    useSnackbar().sendSnackbar("Sukses update data", "success");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loading.value = false;
@@ -52,6 +51,10 @@ const tableHeader = [
 const navigateAction = (id: string) => {
   navigateTo(`/facilitation/entry/${id}`);
 };
+
+const refresh = async () => {
+  await loadItem(1, itemPerPage.value, "");
+};
 </script>
 
 <template>
@@ -73,7 +76,7 @@ const navigateAction = (id: string) => {
               />
             </VCol>
             <VCol cols="6" style="display: flex; justify-content: end">
-              <EntryFacilitateModal />
+              <EntryFacilitateModal @refresh="refresh" />
             </VCol>
           </VRow>
           <VRow>
