@@ -4,6 +4,7 @@ import { ref } from "vue";
 const password = ref("");
 const newPass = ref("");
 const showPassword = ref(false);
+const isLoading = ref(false);
 
 function togglePasswordVisibility() {
   // console.log(showPassword.value);
@@ -25,6 +26,7 @@ async function apiCallNewPasswd() {
     if (routeQuery == undefined || routeQuery == "") {
       navigateTo("/forgot-password");
     }
+    isLoading.value = true;
 
     if (
       password.value !== "" &&
@@ -40,12 +42,18 @@ async function apiCallNewPasswd() {
       if (error.value) {
         throw error.value;
       }
+      isLoading.value = false;
       emit("submitNewPass", true);
       data.value = data.value ? "Request succeeded!" : "Request failed";
+    } else {
+      isLoading.value = false;
+      result.value = "Password can't be reset";
+      emit("newPassFailed", true);
     }
   } catch (err) {
     // console.log(err);
-    result.value = "Password can't be resetted";
+    isLoading.value = false;
+    result.value = "Password can't be reset";
     emit("newPassFailed", true);
   }
 }
@@ -126,7 +134,13 @@ const passRules = [
     <br />
     <VRow>
       <VCol>
-        <VBtn @click="submitNewPassword" width="500">Ubah Kata Sandi</VBtn>
+        <VBtn
+          :loading="isLoading"
+          :disabled="isLoading"
+          @click="submitNewPassword"
+          width="500"
+          >Ubah Kata Sandi</VBtn
+        >
       </VCol>
     </VRow>
   </VForm>

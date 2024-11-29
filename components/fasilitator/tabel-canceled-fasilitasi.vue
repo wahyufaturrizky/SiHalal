@@ -1,14 +1,78 @@
-<script setup>
-const selectedFilter = ref(null);
-const searchQuery = ref(null);
-const items = ref([]);
+<script setup lang="ts">
+const props = defineProps({
+  items: {
+    type: Array,
+    required: true,
+  },
+  size: {
+    type: Number,
+    required: true,
+  },
+  page: {
+    type: Number,
+    required: true,
+  },
+  totalitems: {
+    type: Number,
+    required: true,
+  },
+  loading: {
+    type: Boolean,
+    required: true,
+  },
+});
+
+const emit = defineEmits<{
+  (event: "updatetable"): void;
+  (event: "formvalue", value: any): void;
+}>();
+
+const { items, size, page, totalitems, loading } = props || {};
+
+const form = ref({
+  keyword: null,
+  query_by: null,
+});
 
 const filterOptions = ["Semua", "Perusahaan", "Individu", "UMKM"];
 
+const headers = [
+  {
+    title: "No",
+    key: "id",
+  },
+  {
+    title: "No Daftar",
+    key: "no_daftar",
+  },
+  {
+    title: "Tanggal",
+    key: "tgl_daftar",
+  },
+  {
+    title: "Nama PU",
+    key: "nama_pu",
+  },
+  {
+    title: "Jenis Daftar",
+    key: "jenis_daftar",
+  },
+  {
+    title: "Jenis Produk",
+    key: "jenis_produk",
+  },
+  {
+    title: "No Sertifikat",
+    key: "no_sert",
+  },
+  {
+    title: "Status",
+    key: "status",
+  },
+];
+
 const handleSearch = () => {
-  // Here you would typically make an API call with the filter and search parameters
-  // For now we'll just simulate an empty result
-  items.value = [];
+  emit("formvalue", form.value);
 };
 </script>
 
@@ -18,14 +82,14 @@ const handleSearch = () => {
 
     <div class="d-flex gap-4 mb-4">
       <VSelect
-        v-model="selectedFilter"
+        v-model="form.query_by"
         :items="filterOptions"
         placeholder="Nama Pelaku Usaha"
         class="max-w-[200px]"
       />
 
       <VTextField
-        v-model="searchQuery"
+        v-model="form.keyword"
         placeholder="Isian pencarian data"
         class="max-w-[300px]"
       />
@@ -41,37 +105,23 @@ const handleSearch = () => {
     </div>
 
     <VCard>
-      <VTable>
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>No Daftar</th>
-            <th>Tanggal</th>
-            <th>Nama PU</th>
-            <th>Jenis Daftar</th>
-            <th>Jenis Produk</th>
-            <th>No Sertifikat</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-if="!items.length">
-            <td colspan="8" class="text-center py-4">
-              Tidak ada data ditemukan
-            </td>
-          </tr>
-          <tr v-for="(item, index) in items" :key="index">
-            <td>{{ item.no }}</td>
-            <td>{{ item.noDaftar }}</td>
-            <td>{{ item.tanggal }}</td>
-            <td>{{ item.namaPU }}</td>
-            <td>{{ item.jenisDaftar }}</td>
-            <td>{{ item.jenisProduk }}</td>
-            <td>{{ item.noSertifikat }}</td>
-            <td>{{ item.status }}</td>
-          </tr>
-        </tbody>
-      </VTable>
+      <VDataTableServer
+        v-model:items-per-page="size"
+        v-model:page="page"
+        :headers="headers"
+        :items="items"
+        :loading="loading"
+        :items-length="totalitems"
+        loading-text="Loading..."
+        @update:options="emit('updatetable')"
+      >
+        <template #item.no="{ index }">
+          {{ index + 1 + (page - 1) * size }}
+        </template>
+        <template #item.tgl_daftar="{ item }">
+          {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+        </template>
+      </VDataTableServer>
     </VCard>
   </VCard>
 </template>
