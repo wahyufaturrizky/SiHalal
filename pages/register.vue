@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { themeConfig } from '@themeConfig'
 import { useDisplay } from 'vuetify'
 import { VForm } from 'vuetify/components/VForm'
-import { themeConfig } from '@themeConfig'
 
 import { requiredValidator } from '#imports'
 import { VNodeRenderer } from '@/@layouts/components/VNodeRenderer'
@@ -62,16 +62,15 @@ const validateName = () => {
 
 const validateEmail = () => {
   const email = form.value.email
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  // const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
-  if (!email)
-    errors.email = 'Wajib diisi'
-  else if (email.includes('-'))
-    errors.email = 'Format email tidak bisa menggunakan dash (-)'
-  else if (!emailRegex.test(email))
-    errors.email = 'Format email tidak valid'
-  else
-    errors.email = ''
+  //  regex pattern RFC 5322 standard.
+  const emailRegexV2 = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+
+  if (!email) errors.email = 'Wajib diisi'
+  // else if (email.includes('-')) errors.email = 'Format email tidak bisa menggunakan dash (-)'
+  else if (!emailRegexV2.test(email)) errors.email = 'Format email tidak valid'
+  else errors.email = ''
 }
 
 // validateNomorhandphone
