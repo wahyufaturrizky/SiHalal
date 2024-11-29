@@ -1,6 +1,7 @@
 <script setup lang="ts">
-const expanded = [0];
+const expanded = ref(0)
 </script>
+
 <template>
   <VExpansionPanels v-model="expanded">
     <VExpansionPanel>

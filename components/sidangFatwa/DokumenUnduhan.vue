@@ -4,7 +4,11 @@
 <script setup lang="ts">
 const panelOpen = ref(0) // Menentukan panel yang terbuka
 
-const downloadReport = () => {
+const downloadKH = () => {
+  console.log('Mengunduh laporan...')
+}
+
+const downloadLPH = () => {
   console.log('Mengunduh laporan...')
 }
 </script>
@@ -14,14 +18,14 @@ const downloadReport = () => {
     <VExpansionPanel>
       <!-- Header Panel -->
       <VExpansionPanelTitle>
-        <h3>Hasil Audit</h3>
+        <h3>Dokumen Unduhan</h3>
       </VExpansionPanelTitle>
 
       <!-- Konten Panel -->
       <VExpansionPanelText>
         <VRow class="report-info">
           <VCol cols="7">
-            <span class="label">Laporan</span>
+            <span class="label">File KH</span>
           </VCol>
           <VCol cols="1">
             :
@@ -35,7 +39,28 @@ const downloadReport = () => {
               color="primary"
               variant="flat"
               icon="mdi-download"
-              @click="downloadReport"
+              @click="downloadKH"
+            />
+          </VCol>
+        </VRow>
+
+        <VRow class="report-info">
+          <VCol cols="7">
+            <span class="label">File Laporan LPH</span>
+          </VCol>
+          <VCol cols="1">
+            :
+          </VCol>
+          <VCol
+            cols="2"
+            class="download-btn"
+          >
+            <VBtn
+              class="square-btn"
+              color="primary"
+              variant="flat"
+              icon="mdi-download"
+              @click="downloadLPH"
             />
           </VCol>
         </VRow>

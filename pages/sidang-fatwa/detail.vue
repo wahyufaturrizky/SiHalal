@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import BiayaPemeriksaan from '@/components/sidangFatwa/BiayaPemeriksaan.vue';
 import SubPelakuUsahaLayout from '@/layouts/subPelakuUsahaLayout.vue';
 </script>
 
@@ -19,27 +20,33 @@ import SubPelakuUsahaLayout from '@/layouts/subPelakuUsahaLayout.vue';
       </VRow>
       <VRow>
         <VCol cols="12">
-          <PenanggungJawabCardEdit />
+          <PengajuanSertifikat />
+        </VCol>
+      </VRow>
+
+      <VRow>
+        <VCol cols="12">
+          <DaftarNamaProduk />
         </VCol>
       </VRow>
       <VRow>
         <VCol cols="12">
-          <AspekLegalCardEdit />
+          <BiayaPemeriksaan />
         </VCol>
       </VRow>
       <VRow>
         <VCol cols="12">
-          <PabrikCardEdit />
+          <JadwalAudit />
         </VCol>
       </VRow>
       <VRow>
         <VCol cols="12">
-          <OutletEdit />
+          <AuditorList />
         </VCol>
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <PenyeliaHallalEdit />
+          <HasilPemeriksaan />
         </VCol>
       </VRow>
     </template>
@@ -53,13 +60,15 @@ import SubPelakuUsahaLayout from '@/layouts/subPelakuUsahaLayout.vue';
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <KBLICard />
+          <BiayaPemeriksaanDetail />
         </VCol>
       </VRow>
       <VRow>
-        ;
         <VCol :cols="12">
-          <DivisiUnitUsaha />
+          <DokumenUnduhan />
+        </VCol>
+        <VCol :cols="12">
+          <MelacakDetaikFatwa />
         </VCol>
       </VRow>
     </template>
