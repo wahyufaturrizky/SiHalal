@@ -152,13 +152,16 @@ const submitForm = async () => {
     method: "post",
     body: form.value,
   });
+
+  console.log("SUBMIT BUSSINESS ACTOR : FOREIGN COUNTRY ", res)
+
   if (res) {
-    useAuth().signOut();
-    useSnackbar().sendSnackbar(
-      "Bussiness Actor data save successfully. Please relogin",
-      "success"
-    );
-    navigateTo("/login");
+    // useAuth().signOut();
+    // useSnackbar().sendSnackbar(
+    //   "Bussiness Actor data save successfully. Please relogin",
+    //   "success"
+    // );
+    window.location.href = "/";
   } else {
     useSnackbar().sendSnackbar(
       "Bussiness Actor data save unsuccessfully",
