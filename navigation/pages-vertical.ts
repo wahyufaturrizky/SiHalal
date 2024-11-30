@@ -402,6 +402,11 @@ export default [
         to: "reguler-payment-info",
         roles: ["LPH", "Admin"],
       },
+      {
+        title: "Update Pemeriksaan",
+        to: "reguler-examination-update",
+        roles: ["LPH", "Admin"],
+      },
     ],
   },
 ];
