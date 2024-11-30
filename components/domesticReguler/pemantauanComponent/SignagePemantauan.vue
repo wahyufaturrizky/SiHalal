@@ -1,4 +1,11 @@
 <script setup lang="ts">
+const props = defineProps({
+  isEditable: {
+    type: Boolean,
+    default: true,
+  },
+});
+
 const tableHeader = [
   { title: "No", value: "no" },
   { title: "Tanda Tangan Penanggung Jawab", value: "signage_responsible" },
@@ -22,7 +29,7 @@ const items = [
       <VRow>
         <VCol cols="6"><h3>Tanda Tangan</h3></VCol>
         <VCol cols="6" style="display: flex; justify-content: end"
-          ><ModalTambahTtd></ModalTambahTtd
+          ><ModalTambahTtd :is-editable="props.isEditable"></ModalTambahTtd
         ></VCol>
       </VRow>
     </VCardTitle>
@@ -59,7 +66,9 @@ const items = [
         </template>
         <template #item.action>
           <div class="text-center">
-            <ModalHapusProduk></ModalHapusProduk>
+            <ModalHapusProduk
+              :is-editable="props.isEditable"
+            ></ModalHapusProduk>
           </div>
         </template>
       </VDataTable>

@@ -1,19 +1,26 @@
 <script setup lang="ts">
-import { useDisplay } from 'vuetify'
-import VueDatePicker from '@vuepic/vue-datepicker'
-import '@vuepic/vue-datepicker/dist/main.css'
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+import { useDisplay } from "vuetify";
 
-const emit = defineEmits(['confirm'])
+const emit = defineEmits(["confirm"]);
 
-const isVisible = ref(false)
+const props = defineProps({
+  isEditable: {
+    type: Boolean,
+    default: true,
+  },
+});
+
+const isVisible = ref(false);
 
 const openDialog = () => {
-  isVisible.value = true
-}
+  isVisible.value = true;
+};
 
 const closeDialog = () => {
-  isVisible.value = false
-}
+  isVisible.value = false;
+};
 
 const form = ref({
   type: null,
@@ -21,7 +28,7 @@ const form = ref({
   date: new Date(),
   validDate: new Date(),
   issuer: null,
-})
+});
 
 const resetForm = () => {
   form.value = {
@@ -30,55 +37,52 @@ const resetForm = () => {
     date: new Date(),
     validDate: new Date(),
     issuer: null,
-  }
-}
+  };
+};
 
 const confirm = () => {
-  emit('confirm', form.value)
-  resetForm()
-  closeDialog()
-}
+  emit("confirm", form.value);
+  resetForm();
+  closeDialog();
+};
 
 const cancel = () => {
-  closeDialog()
-}
+  closeDialog();
+};
 
-const { mdAndUp } = useDisplay()
+const { mdAndUp } = useDisplay();
 
 const dialogMaxWidth = computed(() => {
-  return mdAndUp.value ? 700 : '90%'
-})
+  return mdAndUp.value ? 700 : "90%";
+});
 
-const documentTypes = ['SIUP', 'ANOTHER']
-
+const documentTypes = ["SIUP", "ANOTHER"];
 </script>
 
 <template>
   <div class="mb-2">
     <VBtn
+      v-if="props.isEditable"
       variant="outlined"
       append-icon="ri-add-line"
       @click="openDialog"
     >
       Tambah
     </VBtn>
-    <VDialog
-      v-model="isVisible"
-      :max-width="dialogMaxWidth"
-    >
+    <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
-        <VCardTitle class="text-h5 font-weight-bold d-flex justify-space-between align-center">
+        <VCardTitle
+          class="text-h5 font-weight-bold d-flex justify-space-between align-center"
+        >
           <span>Tambah Data Aspek Legal</span>
           <VBtn
             icon
             color="transparent"
-            style="border: none;"
+            style="border: none"
             elevation="0"
             @click="closeDialog"
           >
-            <VIcon color="black">
-              ri-close-line
-            </VIcon>
+            <VIcon color="black"> ri-close-line </VIcon>
           </VBtn>
         </VCardTitle>
 
@@ -114,14 +118,24 @@ const documentTypes = ['SIUP', 'ANOTHER']
           <VRow class="mb-1">
             <VCol cols="12">
               <VLabel for="tanggalDocument">Tanggal Document</VLabel>
-              <VueDatePicker teleport-center id="tanggalDocument" v-model="form.date" :enable-time-picker="false" />
+              <VueDatePicker
+                teleport-center
+                id="tanggalDocument"
+                v-model="form.date"
+                :enable-time-picker="false"
+              />
             </VCol>
           </VRow>
 
           <VRow class="mb-1">
             <VCol cols="12">
               <VLabel for="masaBerlaku">Masa Berlaku</VLabel>
-              <VueDatePicker teleport-center id="masaBerlaku" v-model="form.validDate" :enable-time-picker="false" />
+              <VueDatePicker
+                teleport-center
+                id="masaBerlaku"
+                v-model="form.validDate"
+                :enable-time-picker="false"
+              />
             </VCol>
           </VRow>
 
@@ -141,22 +155,12 @@ const documentTypes = ['SIUP', 'ANOTHER']
         </VCardText>
 
         <div class="d-flex justify-end ga-2">
-          <VBtn
-            variant="outlined"
-            @click="cancel"
-          >
-            Batal
-          </VBtn>
-          <VBtn
-            @click="confirm"
-          >
-            Simpan
-          </VBtn>
+          <VBtn variant="outlined" @click="cancel"> Batal </VBtn>
+          <VBtn @click="confirm"> Simpan </VBtn>
         </div>
       </VCard>
     </VDialog>
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

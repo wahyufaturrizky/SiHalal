@@ -1,11 +1,3 @@
-<script setup lang="ts">
-const props = defineProps({
-  isEditable: {
-    type: Boolean,
-    default: true,
-  },
-});
-</script>
 <template>
   <VDialog max-width="60svw">
     <template #activator="{ props: openModal }">
@@ -14,7 +6,6 @@ const props = defineProps({
         variant="outlined"
         append-icon="fa-plus"
         density="compact"
-        v-if="props.isEditable"
         >Tambah</VBtn
       >
     </template>

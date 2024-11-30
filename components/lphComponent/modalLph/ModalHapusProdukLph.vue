@@ -1,20 +1,7 @@
-<script setup lang="ts">
-const props = defineProps({
-  isEditable: {
-    type: Boolean,
-    default: true,
-  },
-});
-</script>
 <template>
   <VDialog max-width="60svw">
     <template #activator="{ props: openModal }">
-      <VIcon
-        :disabled="!props.isEditable"
-        v-bind="openModal"
-        icon="fa-trash"
-        style="color: red"
-      ></VIcon>
+      <VIcon v-bind="openModal" icon="fa-trash" style="color: red"></VIcon>
     </template>
     <template #default="{ isActive }">
       <VCard>

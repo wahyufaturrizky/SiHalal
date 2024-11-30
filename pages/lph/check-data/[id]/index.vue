@@ -1,48 +1,50 @@
 <script setup lang="ts">
+import EditKomitmenDanTanggungJawabLph from "@/components/lphComponent/EditKomitmenDanTanggungJawabLph.vue";
+import EditProsesLph from "@/components/lphComponent/EditProsesLph.vue";
+
 const tabs = ref(0);
 onMounted(() => {
   tabs.value = 0;
 });
 
-const props = defineProps({
+const props = {
   tabPengajuanEditable: {
     type: Boolean,
-    default: true,
+    value: false,
   },
   tabKomitmenEditable: {
     type: Boolean,
-    default: true,
+    value: false,
   },
   tabBahanEditable: {
     type: Boolean,
-    default: true,
+    value: false,
   },
   tabProsesEditable: {
     type: Boolean,
-    default: true,
+    value: false,
   },
   tabProdukEditable: {
     type: Boolean,
-    default: true,
+    value: false,
   },
   tabPemantauanEditable: {
     type: Boolean,
-    default: true,
+    value: false,
   },
   tabDokumenEditable: {
     type: Boolean,
-    default: true,
+    value: true,
   },
   headingEditPage: {
     type: String,
-    required: true,
-    default: "Ubah Pengajuan Reguler",
+    value: "Cek Data",
   },
-});
+};
 </script>
 <template>
   <KembaliButton />
-  <p class="text-h2 font-weight-bold mb-4">{{ props.headingEditPage }}</p>
+  <p class="text-h2 font-weight-bold mb-4">{{ props.headingEditPage.value }}</p>
   <VTabs v-model="tabs" align-tabs="start" class="mb-4">
     <VTab value="1">Data Pengajuan</VTab>
     <VTab value="2">Komitmen dan Tanggung Jawab </VTab>
@@ -55,31 +57,41 @@ const props = defineProps({
   <VTabsWindow v-model="tabs">
     <br />
     <VTabsWindowItem value="1">
-      <EditDataPengajuanReguler :is-editable="props.tabPengajuanEditable" />
+      <!-- <EditDataPengajuanLph :is-editable="props.tabPengajuanEditable" /> -->
+      <LazyEditDataPengajuanLph
+        :is-editable="props.tabPengajuanEditable.value"
+      ></LazyEditDataPengajuanLph>
     </VTabsWindowItem>
 
     <VTabsWindowItem value="2">
-      <EditKomitmenDanTanggungJawabReguler />
+      <!-- TODO: need to know about the logic, how it can be disabled -->
+      <EditKomitmenDanTanggungJawabLph />
     </VTabsWindowItem>
 
     <VTabsWindowItem value="3">
-      <EditBahanReguler />
+      <LazyEditBahanLph
+        :is-editable="props.tabBahanEditable.value"
+      ></LazyEditBahanLph>
     </VTabsWindowItem>
 
     <VTabsWindowItem value="4">
-      <EditProsesReguler />
+      <EditProsesLph />
     </VTabsWindowItem>
 
     <VTabsWindowItem value="5">
-      <EditProdukReguler />
+      <LazyEditProdukLph
+        :is-editable="props.tabProdukEditable.value"
+      ></LazyEditProdukLph>
     </VTabsWindowItem>
 
     <VTabsWindowItem value="6">
-      <EditPemantauanDanEvaluasiReguler />
+      <LazyEditPemantauanDanEvaluasiLph
+        :is-editable="props.tabPemantauanEditable.value"
+      ></LazyEditPemantauanDanEvaluasiLph>
     </VTabsWindowItem>
 
     <VTabsWindowItem value="7">
-      <EditDokumenReguler />
+      <LazyEditDokumenLph></LazyEditDokumenLph>
     </VTabsWindowItem>
   </VTabsWindow>
 </template>

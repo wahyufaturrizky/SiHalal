@@ -14,13 +14,6 @@ const items = [
     supp_docs: "xx",
   },
 ];
-
-const props = defineProps({
-  isEditable: {
-    type: Boolean,
-    default: true,
-  },
-});
 </script>
 
 <template>
@@ -29,9 +22,7 @@ const props = defineProps({
       <VRow>
         <VCol cols="6"><h3>Upload Dokumen Lainnya</h3></VCol>
         <VCol cols="6" style="display: flex; justify-content: end"
-          ><ModalUploadDocument
-            :is-editable="props.isEditable"
-          ></ModalUploadDocument
+          ><ModalUploadDocument></ModalUploadDocument
         ></VCol>
       </VRow>
     </VCardTitle>
@@ -74,9 +65,7 @@ const props = defineProps({
         </template>
         <template #item.action>
           <div class="text-center">
-            <ModalHapusProduk
-              :is-editable="props.isEditable"
-            ></ModalHapusProduk>
+            <ModalHapusProduk></ModalHapusProduk>
           </div>
         </template>
       </VDataTable>

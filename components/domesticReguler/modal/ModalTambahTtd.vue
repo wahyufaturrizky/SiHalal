@@ -1,4 +1,11 @@
 <script setup lang="ts">
+const props = defineProps({
+  isEditable: {
+    type: Boolean,
+    default: true,
+  },
+});
+
 const uploadFile = (event: Event, index: string | number) => {
   const fileUpload = event.target.files[0];
   if (fileUpload) {
@@ -22,6 +29,7 @@ const documentList = ref([
         variant="outlined"
         append-icon="fa-plus"
         density="compact"
+        v-if="props.isEditable"
         >Tambah</VBtn
       >
     </template>

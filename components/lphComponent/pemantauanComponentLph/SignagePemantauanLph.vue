@@ -1,61 +1,46 @@
 <script setup lang="ts">
 const tableHeader = [
   { title: "No", value: "no" },
-  { title: "Nama Dokumen", value: "docs_name" },
-  { title: "File Dokumen", value: "file_docs" },
-  { title: "Dokumen Pendukung", value: "supp_docs" },
+  { title: "Tanda Tangan Penanggung Jawab", value: "signage_responsible" },
+  { title: "Nama Penyelia Halal", value: "penyelia_name" },
+  { title: "Tanda Tangan Penyelia Halal", value: "signage_penyelia" },
   { title: "Action", value: "action" },
 ];
 
 const items = [
   {
-    docs_name: "xx",
-    file_docs: "xx",
-    supp_docs: "xx",
+    signage_responsible: "",
+    penyelia_name: "",
+    signage_penyelia: "",
   },
 ];
-
-const props = defineProps({
-  isEditable: {
-    type: Boolean,
-    default: true,
-  },
-});
 </script>
 
 <template>
   <VCard>
     <VCardTitle>
       <VRow>
-        <VCol cols="6"><h3>Upload Dokumen Lainnya</h3></VCol>
+        <VCol cols="6"><h3>Tanda Tangan</h3></VCol>
         <VCol cols="6" style="display: flex; justify-content: end"
-          ><ModalUploadDocument
-            :is-editable="props.isEditable"
-          ></ModalUploadDocument
+          ><ModalTambahTtd></ModalTambahTtd
         ></VCol>
       </VRow>
     </VCardTitle>
     <VCardItem>
-      <VAlert style="background-color: #f0e9f1">
-        <VRow>
+      <VAlert style="background-color: #f0e9f1" density="compact">
+        <VRow style="display: flex; align-items: center">
           <VCol cols="1">
             <VIcon color="primary" icon="fa-exclamation-circle"></VIcon>
           </VCol>
-          <VCol cols="11">
-            <ol type="1">
-              <li>
-                Dokumen yang diupload hanya untuk sekala usaha menengah dan
-                besar
-              </li>
-              <li>Format dokumen berupa PDF</li>
-            </ol>
+          <VCol cols="11" style="display: flex; align-items: center">
+            <p>Format file tanda tangan berupa foto (jpeg,jpg,png)</p>
           </VCol>
         </VRow>
       </VAlert>
       <br />
       <VDataTable :headers="tableHeader" :items="items">
         <template
-          #item.file_docs
+          #item.signage_responsible
           style="display: flex; align-items: center; align-content: center"
         >
           <p>
@@ -64,7 +49,7 @@ const props = defineProps({
           </p>
         </template>
         <template
-          #item.supp_docs
+          #item.signage_penyelia
           style="display: flex; align-items: center; align-content: center"
         >
           <p>
@@ -74,9 +59,7 @@ const props = defineProps({
         </template>
         <template #item.action>
           <div class="text-center">
-            <ModalHapusProduk
-              :is-editable="props.isEditable"
-            ></ModalHapusProduk>
+            <ModalHapusProduk></ModalHapusProduk>
           </div>
         </template>
       </VDataTable>

@@ -1,11 +1,4 @@
 <script setup lang="ts">
-const props = defineProps({
-  isEditable: {
-    type: Boolean,
-    default: true,
-  },
-});
-
 const tableHeader = [
   { title: "No", value: "no" },
   { title: "Nama Produk", value: "product_name" },
@@ -25,11 +18,7 @@ const selected = ref([]);
 <template>
   <VDialog max-width="60svw">
     <template #activator="{ props: openModal }">
-      <VBtn
-        v-if="props.isEditable"
-        v-bind="openModal"
-        prepend-icon="fa-plus"
-        variant="outlined"
+      <VBtn v-bind="openModal" prepend-icon="fa-plus" variant="outlined"
         >Tambah</VBtn
       >
     </template>
