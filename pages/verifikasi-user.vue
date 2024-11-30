@@ -229,7 +229,7 @@ const onSubmitKodeEmail = async () => {
 
     else {
       sendSnackbar(
-        'Gagal melakukan verifikasi OTP!',
+        'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
         'error',
       )
       isSucess.value = false
@@ -237,7 +237,7 @@ const onSubmitKodeEmail = async () => {
   }
   catch (error) {
     sendSnackbar(
-      'Gagal melakukan verifikasi OTP!',
+      'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
       'error',
     )
     console.log('ADA ERROR NIH BANG ', error)
@@ -410,7 +410,7 @@ const onSubmitKodeNomerHandphone = async () => {
 
     else {
       sendSnackbar(
-        'Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!',
+        'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
         'error',
       )
       isSucess.value = false
@@ -418,7 +418,7 @@ const onSubmitKodeNomerHandphone = async () => {
   }
   catch (error) {
     sendSnackbar(
-      'Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!',
+      'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
       'error',
     )
     console.log('ADA ERROR NIH BANG ', error)

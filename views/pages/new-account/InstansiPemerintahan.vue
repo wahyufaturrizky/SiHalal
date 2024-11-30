@@ -226,6 +226,9 @@ import { NewAccountGovernment } from "@/server/interface/new-account.iface";
 import onlyAcceptNumber from "@/utils/onlyAcceptNumber";
 import { VForm } from "vuetify/components";
 const stepStore = useMyNewAccountStepStore();
+
+const authUserStore = useMyAuthUserStore()
+
 const backToForm = () => {
   stepStore.goToStep(1);
   formSubmit.value = {
@@ -330,14 +333,17 @@ const submitGovernor = async () => {
     method: "post",
     body: formSubmit.value,
   });
+  console.log("RESPONSE : ", res)
   if (res.code != 2000) {
     useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
     buttonClicked.value = false;
     return;
   }
-  useAuth().signOut();
+  // useAuth().signOut();
+  authUserStore.resetUser()
   useSnackbar().sendSnackbar("Data Pelaku Usaha Berhasil Disimpan", "success");
-  navigateTo("/login");
+  navigateTo("/");
+  // window.location.href = "/login";
 };
 </script>
 
