@@ -295,7 +295,7 @@ export default [
       },
       {
         title: "facilitate.invoice",
-        to: "finance-invoice",
+        to: "finance-invoice-facilitate",
         icon: { icon: "mdi-invoice-text-outline" },
         roles: ["Keuangan", "Admin"],
       },
