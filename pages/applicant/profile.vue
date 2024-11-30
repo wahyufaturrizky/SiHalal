@@ -133,6 +133,7 @@ const submitProfile = async () => {
       buttonClicked.value = false;
       return;
     }
+    buttonClicked.value = false;
     await getProfile();
     useSnackbar().sendSnackbar(
       "Data Pelaku Usaha Berhasil Disimpan",
@@ -153,7 +154,9 @@ onMounted(async () => {
   <VRow>
     <VCol :cols="6"><h2>Profile Pendaftar</h2></VCol>
     <VCol :cols="6" style="display: flex; justify-content: flex-end"
-      ><VBtn @click="onSubmit">Simpan Perubahan</VBtn></VCol
+      ><VBtn @click="onSubmit" :disabled="buttonClicked"
+        >Simpan Perubahan</VBtn
+      ></VCol
     >
   </VRow>
   <VRow>
