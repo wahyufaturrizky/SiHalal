@@ -151,6 +151,8 @@ const statusNib = ref("");
 
 const nibError = ref("");
 
+const authUserStore = useMyAuthUserStore()
+
 const resetForm2 = () => {
   nibData.value = undefined;
   nibAlamat.value = undefined;
@@ -182,9 +184,10 @@ const submitDalamNegeri = async () => {
     statusNib.value = res.errors.list_error.join(", ");
     return;
   }
-  useAuth().signOut();
+  // useAuth().signOut();
+  authUserStore.resetUser()
   useSnackbar().sendSnackbar("Data Pelaku Usaha Berhasil Disimpan", "success");
-  navigateTo("/login");
+  navigateTo("/");
 };
 const daftarUsaha = ref();
 

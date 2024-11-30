@@ -132,6 +132,9 @@ const buttonClicked = ref(false);
 const refVForm = ref<VForm>();
 const stepStore = useMyNewAccountStepStore();
 const country = ref();
+
+const authUserStore = useMyAuthUserStore()
+
 onMounted(async () => {
   const response: MasterCountry[] = await $api("/master/country", {
     method: "get",
@@ -157,11 +160,12 @@ const submitForm = async () => {
 
   if (res) {
     // useAuth().signOut();
-    // useSnackbar().sendSnackbar(
-    //   "Bussiness Actor data save successfully. Please relogin",
-    //   "success"
-    // );
-    window.location.href = "/";
+    authUserStore.resetUser()
+    useSnackbar().sendSnackbar(
+      "Bussiness Actor data save successfully. Please relogin",
+      "success"
+    );
+    navigateTo("/")
   } else {
     useSnackbar().sendSnackbar(
       "Bussiness Actor data save unsuccessfully",
