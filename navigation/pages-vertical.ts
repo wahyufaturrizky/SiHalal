@@ -391,4 +391,17 @@ export default [
       },
     ],
   },
+  { heading: "Menu" },
+  {
+    title: "Proses di LPH",
+    icon: { icon: "fa-database" },
+    roles: ["LPH", "Admin"],
+    children: [
+      {
+        title: "Info Pembayaran",
+        to: "reguler-payment-info",
+        roles: ["LPH", "Admin"],
+      },
+    ],
+  },
 ];
