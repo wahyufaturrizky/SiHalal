@@ -1,80 +1,94 @@
 <script setup lang="ts">
-import { useDisplay } from 'vuetify'
+import { useDisplay } from "vuetify";
+const props = defineProps({
+  isEditable: {
+    type: Boolean,
+    default: true,
+  },
+});
 
-const emit = defineEmits(['confirm'])
+const emit = defineEmits(["confirm"]);
 
-const isVisible = ref(false)
+const isVisible = ref(false);
 
 const openDialog = () => {
-  isVisible.value = true
-}
+  isVisible.value = true;
+};
 
 const closeDialog = () => {
-  isVisible.value = false
-}
+  isVisible.value = false;
+};
 
 const form = ref({
   location: null,
-  name: '',
-  address: '',
-  regency: '',
-  provinsi: '',
-  country: '',
-  zipCode: '',
+  name: "",
+  address: "",
+  regency: "",
+  provinsi: "",
+  country: "",
+  zipCode: "",
   status: null,
-})
+});
 
 const resetForm = () => {
   form.value = {
     location: null,
-    name: '',
-    address: '',
-    regency: '',
-    provinsi: '',
-    country: '',
-    zipCode: '',
+    name: "",
+    address: "",
+    regency: "",
+    provinsi: "",
+    country: "",
+    zipCode: "",
     status: null,
-  }
-}
+  };
+};
 
-const status = [{title : 'Milik Sendiri', value: '1'}, {title: 'Publik', value: '2'} ]
-const location = [{title : 'Lokasi 1', value : '1'} , {title : 'Lokasi 2', value: '2' }]
-
+const status = [
+  { title: "Milik Sendiri", value: "1" },
+  { title: "Publik", value: "2" },
+];
+const location = [
+  { title: "Lokasi 1", value: "1" },
+  { title: "Lokasi 2", value: "2" },
+];
 
 const confirm = () => {
-  emit('confirm', form.value)
-  resetForm()
-  closeDialog()
-}
+  emit("confirm", form.value);
+  resetForm();
+  closeDialog();
+};
 
 const cancel = () => {
-  closeDialog()
-}
+  closeDialog();
+};
 
-const { mdAndUp } = useDisplay()
+const { mdAndUp } = useDisplay();
 
 const dialogMaxWidth = computed(() => {
-  return mdAndUp.value ? 700 : '90%'
-})
-
+  return mdAndUp.value ? 700 : "90%";
+});
 </script>
 
 <template>
   <div class="mb-2">
-    <VBtn @click="openDialog" variant="outlined" prepend-icon="ri-add-line">
+    <VBtn
+      v-if="props.isEditable"
+      @click="openDialog"
+      variant="outlined"
+      prepend-icon="ri-add-line"
+    >
       Tambah
     </VBtn>
-    <VDialog
-      v-model="isVisible"
-      :max-width="dialogMaxWidth"
-    >
+    <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
-        <VCardTitle class="text-h5 font-weight-bold d-flex justify-space-between align-center">
+        <VCardTitle
+          class="text-h5 font-weight-bold d-flex justify-space-between align-center"
+        >
           <span>Tambah Data Pabrik</span>
           <VBtn
             icon
             color="transparent"
-            style="border: none;"
+            style="border: none"
             elevation="0"
             @click="closeDialog"
           >
@@ -196,17 +210,12 @@ const dialogMaxWidth = computed(() => {
         </VCardText>
 
         <div class="d-flex justify-end ga-2">
-          <VBtn @click="cancel" variant="outlined">
-            Batal
-          </VBtn>
-          <VBtn @click="confirm" >
-            Tambah
-          </VBtn>
+          <VBtn @click="cancel" variant="outlined"> Batal </VBtn>
+          <VBtn @click="confirm"> Tambah </VBtn>
         </div>
       </VCard>
     </VDialog>
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

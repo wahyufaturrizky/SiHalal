@@ -1,14 +1,18 @@
 <script setup lang="ts">
-import SaveChangeConfirmation from "@/components/fasilitator/edit/SaveChangeConfirmation.vue";
 import { ref } from "vue";
 
-const route = useRoute();
+const props = defineProps({
+  dataform: {
+    type: Object,
+    required: true,
+  },
+  datadetailregistration: {
+    type: Object,
+    required: true,
+  },
+});
 
-const facilitateId = route.params.id;
-const loading = ref(false);
-
-const dataDetailRegistration = ref();
-const openPanelRegisterData = ref(0);
+const { dataform } = props || {};
 
 const form = ref({
   facilitatorName: "",
@@ -27,70 +31,21 @@ const form = ref({
   status: "",
 });
 
-const loadItemById = async () => {
-  try {
-    loading.value = true;
+const openPanelRegisterData = ref(0);
 
-    const response = await $api(`/facilitate/entry/${facilitateId}`, {
-      method: "get",
-    });
+const onInitData = () => {
+  console.log("@onInitData");
 
-    if (response.code === 2000) {
-      const { fasilitator } = response.data || {};
-
-      const { fasilitasi, status_registrasi } = fasilitator || {};
-
-      const {
-        nama,
-        sumber_pembiayaan,
-        kuota,
-        penanggung_jawab,
-        nama_program,
-        phone_penanggung_jawab,
-        tahun,
-        lingkup_wilayah_fasilitas,
-        tgl_mulai,
-        tgl_selesai,
-        jenis_fasilitasi,
-      } = fasilitasi || {};
-
-      dataDetailRegistration.value = status_registrasi;
-
-      form.value = {
-        facilitatorName: nama,
-        facilitationProgramName: nama_program,
-        explanationOfFacilitation: "Dummy Penjelasan Fasilitasi",
-        year: tahun,
-        regionalScope: lingkup_wilayah_fasilitas,
-        startDate: formatToISOString(tgl_mulai),
-        endDate: formatToISOString(tgl_selesai),
-        type: jenis_fasilitasi,
-        sourceOfFund: sumber_pembiayaan,
-        kuota,
-        picName: penanggung_jawab,
-        picPhoneNumber: phone_penanggung_jawab,
-        facilityCode: "",
-        status: "Draft",
-      };
-
-      loading.value = false;
-    } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-      loading.value = false;
-    }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loading.value = false;
-  }
+  form.value = { ...dataform };
 };
 
-onMounted(async () => {
-  await loadItemById();
+onMounted(() => {
+  onInitData();
 });
 </script>
 
 <template>
-  <VRow v-if="!loading">
+  <VRow>
     <VCol cols="8">
       <ExpandCard title="Data Fasilitasi" class="mb-6 pa-8">
         <VForm>
@@ -281,7 +236,7 @@ onMounted(async () => {
             <h2>Status Registration</h2>
           </VExpansionPanelTitle>
           <VExpansionPanelText>
-            <RegisterDataFacilitate :data="dataDetailRegistration" />
+            <RegisterDataFacilitate :data="datadetailregistration" />
           </VExpansionPanelText>
         </VExpansionPanel>
       </VExpansionPanels>
