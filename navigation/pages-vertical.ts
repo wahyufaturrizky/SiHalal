@@ -454,6 +454,11 @@ export default [
         to: "reguler-examination-update",
         roles: ["LPH", "Admin"],
       },
+      {
+        title: "Penyelesaian Data Post Audit",
+        to: "reguler-post-audit",
+        roles: ["LPH", "Admin"],
+      },
     ],
   },
 ];
