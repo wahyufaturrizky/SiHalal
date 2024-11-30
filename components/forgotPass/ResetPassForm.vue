@@ -5,6 +5,7 @@ const password = ref("");
 const newPass = ref("");
 const showPassword = ref(false);
 const isLoading = ref(false);
+const isDisable = ref(false)
 
 function togglePasswordVisibility() {
   // console.log(showPassword.value);
@@ -65,15 +66,19 @@ const submitNewPassword = (event: any) => {
   apiCallNewPasswd();
 };
 
+
 const confPassRules = [
   (val: string): boolean | string => {
+
     if (
       val === password.value &&
       password.value !== "" &&
       newPass.value !== ""
     ) {
+      isDisable.value = false
       return true;
     }
+    isDisable.value = true
     return "Konfirmasi Kata Sandi Baru tidak sama";
   },
 ];
@@ -136,7 +141,7 @@ const passRules = [
       <VCol>
         <VBtn
           :loading="isLoading"
-          :disabled="isLoading"
+          :disabled="isDisable"
           @click="submitNewPassword"
           width="500"
           >Ubah Kata Sandi</VBtn

@@ -300,7 +300,7 @@ export default [
   },
   {
     title: "Invoice - Fasilitasi",
-    to: "finance-invoice",
+    to: "finance-invoice-facilitate",
     icon: { icon: "mdi-invoice-text-outline" },
     roles: ["Keuangan", "Admin"],
   },
