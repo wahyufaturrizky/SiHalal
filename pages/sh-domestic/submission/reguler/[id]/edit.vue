@@ -3,10 +3,46 @@ const tabs = ref(0);
 onMounted(() => {
   tabs.value = 0;
 });
+
+const props = defineProps({
+  tabPengajuanEditable: {
+    type: Boolean,
+    default: true,
+  },
+  tabKomitmenEditable: {
+    type: Boolean,
+    default: true,
+  },
+  tabBahanEditable: {
+    type: Boolean,
+    default: true,
+  },
+  tabProsesEditable: {
+    type: Boolean,
+    default: true,
+  },
+  tabProdukEditable: {
+    type: Boolean,
+    default: true,
+  },
+  tabPemantauanEditable: {
+    type: Boolean,
+    default: true,
+  },
+  tabDokumenEditable: {
+    type: Boolean,
+    default: true,
+  },
+  headingEditPage: {
+    type: String,
+    required: true,
+    default: "Ubah Pengajuan Reguler",
+  },
+});
 </script>
 <template>
   <KembaliButton />
-  <p class="text-h2 font-weight-bold mb-4">Ubah Pengajuan Reguler</p>
+  <p class="text-h2 font-weight-bold mb-4">{{ props.headingEditPage }}</p>
   <VTabs v-model="tabs" align-tabs="start" class="mb-4">
     <VTab value="1">Data Pengajuan</VTab>
     <VTab value="2">Komitmen dan Tanggung Jawab </VTab>
@@ -19,7 +55,7 @@ onMounted(() => {
   <VTabsWindow v-model="tabs">
     <br />
     <VTabsWindowItem value="1">
-      <EditDataPengajuanReguler />
+      <EditDataPengajuanReguler :is-editable="props.tabPengajuanEditable" />
     </VTabsWindowItem>
 
     <VTabsWindowItem value="2">
