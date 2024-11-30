@@ -9,6 +9,7 @@ const { data: userData, signOut } = useAuth();
 async function logout() {
   try {
     await signOut({ redirect: false });
+    useMyAuthUserStore().resetUser();
 
     navigateTo({ name: "login" });
   } catch (error) {

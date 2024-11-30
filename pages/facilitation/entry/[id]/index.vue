@@ -24,88 +24,94 @@ const loadItemById = async () => {
     if (response.code === 2000) {
       const { fasilitator } = response.data || {};
 
-      const { fasilitasi, tracking, status_registrasi } = fasilitator || {};
+      if (
+        fasilitator?.fasilitasi &&
+        fasilitator?.status_registrasi &&
+        fasilitator?.tracking
+      ) {
+        const { fasilitasi, tracking, status_registrasi } = fasilitator || {};
 
-      const {
-        nama,
-        sumber_pembiayaan,
-        kuota,
-        penanggung_jawab,
-        nama_program,
-        phone_penanggung_jawab,
-        tahun,
-        lingkup_wilayah_fasilitas,
-        tgl_mulai,
-        tgl_selesai,
-        jenis_fasilitasi,
-      } = fasilitasi || {};
+        const {
+          nama,
+          sumber_pembiayaan,
+          kuota,
+          penanggung_jawab,
+          nama_program,
+          phone_penanggung_jawab,
+          tahun,
+          lingkup_wilayah_fasilitas,
+          tgl_mulai,
+          tgl_selesai,
+          jenis_fasilitasi,
+        } = fasilitasi || {};
 
-      dataFasilitasi.value = [
-        {
-          id: 1,
-          key: "Nama Fasilitator",
-          value: nama,
-        },
-        {
-          id: 2,
-          key: "Nama Program Fasilitasi",
-          value: nama_program,
-        },
-        {
-          id: 3,
-          key: "Nama Penanggung Jawab Program",
-          value: penanggung_jawab,
-        },
-        {
-          id: 4,
-          key: "Nomor Kontak Penanggung Jawab Program",
-          value: phone_penanggung_jawab,
-        },
-        { id: 5, key: "Tahun", value: tahun },
-        {
-          id: 6,
-          key: "Lingkup Wilayah Fasilitasi",
-          value: lingkup_wilayah_fasilitas,
-        },
-        {
-          id: 7,
-          key: "Tanggal Mulai",
-          value: formatDateIntl(new Date(tgl_mulai)),
-        },
-        {
-          id: 8,
-          key: "Tanggal Selesai",
-          value: formatDateIntl(new Date(tgl_selesai)),
-        },
-        {
-          id: 9,
-          key: "Jenis Fasilitasi",
-          value: jenis_fasilitasi,
-        },
-        {
-          id: 10,
-          key: "Sumber Pembiayaan",
-          value: sumber_pembiayaan,
-        },
-        {
-          id: 11,
-          key: "Kuota",
-          value: kuota,
-        },
-      ];
+        dataFasilitasi.value = [
+          {
+            id: 1,
+            key: "Nama Fasilitator",
+            value: nama,
+          },
+          {
+            id: 2,
+            key: "Nama Program Fasilitasi",
+            value: nama_program,
+          },
+          {
+            id: 3,
+            key: "Nama Penanggung Jawab Program",
+            value: penanggung_jawab,
+          },
+          {
+            id: 4,
+            key: "Nomor Kontak Penanggung Jawab Program",
+            value: phone_penanggung_jawab,
+          },
+          { id: 5, key: "Tahun", value: tahun },
+          {
+            id: 6,
+            key: "Lingkup Wilayah Fasilitasi",
+            value: lingkup_wilayah_fasilitas,
+          },
+          {
+            id: 7,
+            key: "Tanggal Mulai",
+            value: formatDateIntl(new Date(tgl_mulai)),
+          },
+          {
+            id: 8,
+            key: "Tanggal Selesai",
+            value: formatDateIntl(new Date(tgl_selesai)),
+          },
+          {
+            id: 9,
+            key: "Jenis Fasilitasi",
+            value: jenis_fasilitasi,
+          },
+          {
+            id: 10,
+            key: "Sumber Pembiayaan",
+            value: sumber_pembiayaan,
+          },
+          {
+            id: 11,
+            key: "Kuota",
+            value: kuota,
+          },
+        ];
 
-      dataDetailRegistration.value = status_registrasi;
+        dataDetailRegistration.value = status_registrasi;
 
-      timelineEvents.value = tracking?.map((itemLembaga) => {
-        const { date, status, comment } = itemLembaga;
+        timelineEvents.value = tracking?.map((itemLembaga) => {
+          const { date, status, comment } = itemLembaga;
 
-        return {
-          time: formatDateIntl(new Date(date)),
-          title: status,
-          description: comment,
-          dotColor: "grey",
-        };
-      });
+          return {
+            time: formatDateIntl(new Date(date)),
+            title: status,
+            description: comment,
+            dotColor: "grey",
+          };
+        });
+      }
 
       loading.value = false;
     } else {
