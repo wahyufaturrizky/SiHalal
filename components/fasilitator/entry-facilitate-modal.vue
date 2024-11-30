@@ -12,17 +12,6 @@ const addItem = async () => {
 
     const response = await $api("/facilitate/entry/add", {
       method: "post",
-      body: {
-        kode: "F123",
-        tahun: 2004,
-        nama_fasilitasi: "Fasilitasi Pendidikan",
-        sumber_biaya: "APBN",
-        jenis_fasilitasi: "Beasiswa",
-        tgl_aktif: "2023-01-01",
-        tgl_selesai: "2023-12-31",
-        kuota: 10,
-        status: "Aktif",
-      },
     });
 
     if (response.code === 2000) {
@@ -30,6 +19,9 @@ const addItem = async () => {
       dialogVisible.value = false;
       emit("refresh");
       useSnackbar().sendSnackbar("Sukses add data", "success");
+
+      if (response?.data?.id)
+        navigateTo(`/facilitation/entry/${response?.data?.id}`);
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
       loadingAdd.value = false;
