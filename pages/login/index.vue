@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import InformationLoginPopUp from "@/components/halalCommon/InformationLoginPopUp.vue"
 import { themeConfig } from "@themeConfig";
 import { useDisplay } from "vuetify";
 import { VForm } from "vuetify/components/VForm";
@@ -261,6 +262,7 @@ const redirectToForgotPass = () => {
       <VImg :src="NoImage" height="100dvh" cover />
     </VCol>
   </VRow>
+  <InformationLoginPopUp />
 </template>
 
 <style lang="scss">
