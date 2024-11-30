@@ -145,7 +145,7 @@ const invoiceData = [
                 icon="mdi-arrow-right"
                 color="primary"
                 size="x-large"
-                @click="router.push('/reguler/examination-update/detail')"
+                @click="router.push('/reguler/post-audit')"
               />
             </template>
             <template #bottom>
