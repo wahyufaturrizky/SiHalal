@@ -19,9 +19,7 @@ const addItem = async () => {
       dialogVisible.value = false;
       emit("refresh");
       useSnackbar().sendSnackbar("Sukses add data", "success");
-
-      if (response?.data?.id)
-        navigateTo(`/facilitation/entry/${response?.data?.id}`);
+      navigateTo(`/facilitation/entry/${response?.data?.fasilitasi_id}`);
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
       loadingAdd.value = false;
