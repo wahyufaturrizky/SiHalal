@@ -1,8 +1,8 @@
+<!-- eslint-disable vue/no-mutating-props -->
 <script setup>
 import { ref } from 'vue'
 
-// Props untuk menerima data dari parent
-defineProps({
+const props = defineProps({
   title: {
     type: String,
     default: 'Default Title',
@@ -15,53 +15,56 @@ defineProps({
     type: String,
     default: 'Open Dialog',
   },
+  isOpen: {
+    type: Boolean,
+    default: false,
+  },
+  toggle: {
+    type: Function,
+    default: () => { },
+    required: false,
+  },
+  onSave: {
+    type: Function,
+    default: () => { },
+    required: false,
+  },
 })
 
-const dialog = ref(false)
+const emit = defineEmits(['update:isOpen'])
 
-const confirmAction = () => {
-  dialog.value = false
-  alert('Confirmed!')
-}
+const dialogOpen = computed({
+  get: () => props.isOpen,
+  set: value => emit('update:isOpen', value),
+})
 </script>
 
 <template>
   <VDialog
-    v-model="dialog"
+    v-model="dialogOpen"
     max-width="60svw"
   >
-    <template #activator="{ props }">
-      <VBtn
-        v-bind="props"
-        variant="outlined"
-        append-icon="ri-add-line"
-      >
-        {{ buttonText }}
-      </VBtn>
-    </template>
-
-    <!-- Konten di dalam dialog -->
     <VCard>
       <VCardTitle class="font-weight-bold">
         {{ title }}
       </VCardTitle>
       <VCardText>
-        <slot name="content" />
+        <p>Apakah yakin ingi menyimpan perubahan data ini?</p>
       </VCardText>
       <VCardActions>
         <VBtn
           color="primary"
           variant="outlined"
-          @click="dialog = false"
+          @click="props.toggle"
         >
           Batal
         </VBtn>
         <VBtn
           text
           variant="elevated"
-          @click="confirmAction"
+          @click="props.onSave"
         >
-          Tambah
+          Ya, Simpan
         </VBtn>
       </VCardActions>
     </VCard>
