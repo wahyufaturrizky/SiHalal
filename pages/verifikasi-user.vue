@@ -222,7 +222,7 @@ const onSubmitKodeEmail = async () => {
       console.log('error 500')
 
       sendSnackbar(
-        'Gagal melakukan verifikasi OTP!',
+        'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
         'error',
       )
     }
