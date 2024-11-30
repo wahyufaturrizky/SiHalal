@@ -9,6 +9,11 @@ export const useMyAuthUserStore = defineStore("myAuthUserStore", () => {
     }
     return user;
   }
+
+  function resetUser() {
+    user.value = null
+  }
+
   // id: "myAuthUserStore",
   // state: () => ({
   //   user: null as void | SessionData | null,
@@ -25,5 +30,5 @@ export const useMyAuthUserStore = defineStore("myAuthUserStore", () => {
   //     this.user = data;
   //   },
   // },
-  return { user, getSession };
+  return { user, getSession , resetUser};
 });
