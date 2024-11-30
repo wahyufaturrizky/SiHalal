@@ -53,7 +53,7 @@ const putFacilitate = async () => {
         tgl_selesai: endDate,
         jenis: type,
         sumber_biaya: sourceOfFund,
-        kuota,
+        kuota: Number(kuota),
         nama_pic_program: picName,
         no_hp_pic_program: picPhoneNumber,
       },
@@ -94,6 +94,7 @@ const dialogMaxWidth = computed(() => {
 </script>
 
 <template>
+  {{ form.facilitatorName }}
   <div class="ma-1">
     <VBtn variant="flat" color="primary" @click="openDialog">
       Simpan Perubahan

@@ -163,7 +163,6 @@ const updateLockFacilitateLembaga = async () => {
 
     if (res?.code === 2000) {
       loadingLock.value = false;
-      router.go(-1);
     } else {
       useSnackbar().sendSnackbar("Gagal update data", "error");
       loadingLock.value = false;
@@ -223,6 +222,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               id="kunciLembaga"
               v-model="kunciLembaga"
               label="Kunci (LPH/LP3H)"
+              :disabled="loadingLock"
               @change="updateLockFacilitateLembaga"
             />
             <span
