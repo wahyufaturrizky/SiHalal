@@ -138,5 +138,9 @@
         "item": "item"
       }
     }
+  },
+  "sh-submission": {
+    "title": "Halal Certificate Submission",
+    "detail": "Check Submission Data"
   }
 }

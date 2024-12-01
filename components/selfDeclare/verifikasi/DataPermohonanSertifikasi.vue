@@ -33,7 +33,7 @@ const tableData = ref([
     Alamat: '1234 Elm Street, Springfield',
     JenisProduk: 'Electronics',
     MerkDagang: 'TechBrand',
-    Status: 'OF7',
+    Status: 'OF74',
   },
   {
     id: 2,
@@ -43,7 +43,7 @@ const tableData = ref([
     Alamat: '5678 Oak Avenue, Riverdale',
     JenisProduk: 'Food & Beverages',
     MerkDagang: 'Tasty Treats',
-    Status: 'OF7',
+    Status: 'OF74',
   },
   {
     id: 3,
@@ -53,7 +53,7 @@ const tableData = ref([
     Alamat: '9102 Pine Lane, Metropolis',
     JenisProduk: 'Apparel',
     MerkDagang: 'FashionWear',
-    Status: 'OF7',
+    Status: 'OF74',
   },
   {
     id: 4,
@@ -63,7 +63,7 @@ const tableData = ref([
     Alamat: '1122 Maple Drive, Gotham',
     JenisProduk: 'Home Appliances',
     MerkDagang: 'HomeEase',
-    Status: 'OF7',
+    Status: 'OF74',
   },
   {
     id: 5,
@@ -73,7 +73,7 @@ const tableData = ref([
     Alamat: '3344 Birch Road, Star City',
     JenisProduk: 'Cosmetics',
     MerkDagang: 'BeautyGlow',
-    Status: 'OF7',
+    Status: 'OF74',
   },
 ])
 
@@ -287,6 +287,7 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
               :loading="loading"
               :items-length="totalItems"
               loading-text="Loading..."
+              style="white-space: nowrap;"
               @update:options="loadItem(page, itemPerPage)"
             >
               <template #item.id="{ index }">
@@ -313,16 +314,28 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
                 />
               </template>
               <template #item.Status="{ item }">
-                <div>
+                <div v-if="item.Status === 'OF74'">
                   <div class="status-container">
-                    <VBtn
+                    <VChip
                       variant="outlined"
-                      style="border-color: #49a84c; background-color: #edf6ed;"
+                      style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
                     >
                       <span style="color: #49a84c;">
                         {{ item.Status }}
                       </span>
-                    </VBtn>
+                    </VChip>
+                  </div>
+                </div>
+                <div v-else>
+                  <div class="status-container">
+                    <VChip
+                      variant="outlined"
+                      style="border-color: #652672; border-radius: 8px; background-color: #f0e9f1;"
+                    >
+                      <span style="color: #652672;">
+                        {{ item.Status }}
+                      </span>
+                    </VChip>
                   </div>
                 </div>
               </template>

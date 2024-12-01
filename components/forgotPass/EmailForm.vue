@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import type { VForm, VTextField } from "vuetify/components"
+
 const isVerified = ref(false);
 const inputDisabled = ref(false);
 const submitDisabled = ref(true);
 const sendAgainDisabled = ref(true);
 const countdownMount = ref(false);
 const emailSubmittedBtn = ref(false);
+const emailRef = ref<VTextField>();
+const emailError = ref(null);
 
 const handleCountdownDone = () => {
   // console.log("countdown done");
@@ -44,7 +48,7 @@ const emailRule = [
       submitDisabled.value = false;
       return true;
     }
-    return "Harap masukkan email yang valid!";
+    return "Format email tidak sesuai";
   },
   (v: string) => !!v || "This field is required",
 ];
@@ -52,15 +56,17 @@ const emailRule = [
 const emailAddr = ref("");
 const result = ref<string | null>(null);
 const submitEmail = async () => {
+  emailError.value = null
   try {
     if (emailAddr.value !== "") {
       const { data, error } = await useFetch("/api/auth/forgotinq", {
         method: "POST",
         body: { email: emailAddr.value }, // Payload for POST
       });
-
       emailSubmittedBtn.value = true;
       if (error.value) {
+        console.log("Masuk sini ga ?")
+        emailError.value = "Email tidak ditemukan"
         throw error.value;
       }
       emit("emailSentSuccess", true);
@@ -87,9 +93,10 @@ const submitEmail = async () => {
             type="email"
             placeholder="Masukkan email"
             base-color="#746D76"
-            :disabled="inputDisabled"
             :rules="emailRule"
             v-model="emailAddr"
+            :error="!!emailError"
+            :error-messages="emailError"
           ></VTextField>
         </VItemGroup>
       </VCol>

@@ -132,6 +132,9 @@ const buttonClicked = ref(false);
 const refVForm = ref<VForm>();
 const stepStore = useMyNewAccountStepStore();
 const country = ref();
+
+const authUserStore = useMyAuthUserStore()
+
 onMounted(async () => {
   const response: MasterCountry[] = await $api("/master/country", {
     method: "get",
@@ -152,13 +155,17 @@ const submitForm = async () => {
     method: "post",
     body: form.value,
   });
+
+  console.log("SUBMIT BUSSINESS ACTOR : FOREIGN COUNTRY ", res)
+
   if (res) {
-    useAuth().signOut();
+    // useAuth().signOut();
+    authUserStore.resetUser()
     useSnackbar().sendSnackbar(
       "Bussiness Actor data save successfully. Please relogin",
       "success"
     );
-    navigateTo("/login");
+    navigateTo("/")
   } else {
     useSnackbar().sendSnackbar(
       "Bussiness Actor data save unsuccessfully",

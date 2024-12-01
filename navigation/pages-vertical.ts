@@ -9,10 +9,22 @@ export default [
     roles: ['Pelaku Usaha', 'Fasilitator', 'Admin'],
   },
   {
-    title: 'Pelaku Usaha',
-    icon: { icon: 'mdi-account-tie' },
-    to: 'pelaku-usaha',
-    roles: ['Pelaku Usaha', 'Admin'],
+    title: "sh-submission.title",
+    icon: { icon: "fa-id-card" },
+    roles: ["Pendamping"],
+    children: [
+      {
+        title: "sh-submission.detail",
+        to: "sh-submission-detail",
+        roles: ["Pendamping"],
+      },
+    ],
+  },
+  {
+    title: "Pelaku Usaha",
+    icon: { icon: "mdi-account-tie" },
+    to: "pelaku-usaha",
+    roles: ["Pelaku Usaha", "Admin"],
   },
   { heading: 'registrasi_sh' },
   {
@@ -31,9 +43,9 @@ export default [
         roles: ['Pelaku Usaha', 'Admin'],
       },
       {
-        title: 'sh_domestic.status_request',
-        to: 'sh-domestic-submission-status',
-        roles: ['Pelaku Usaha', 'Admin'],
+        title: "sh_domestic.status_request",
+        to: "sh-domestic-status",
+        roles: ["Pelaku Usaha", "Admin"],
       },
       {
         title: 'sh_domestic.revision',
@@ -203,9 +215,56 @@ export default [
     ],
   },
   {
-    title: 'internal_audit.title',
-    icon: { icon: 'mdi-list-box-outline' },
-    roles: ['Pelaku Usaha', 'Admin'],
+    title: "Proses di LPH",
+    icon: { icon: "mdi-card-account-details-outline" },
+    roles: ["LPH", "Admin"],
+    children: [
+      {
+        title: "Daftar Ajuan",
+        to: "lph-list-register",
+        roles: ["LPH", "Admin"],
+      },
+      {
+        title: "Daftar Ajuan Diterima",
+        to: "lph-list-accepted",
+        roles: ["LPH", "Admin"],
+      },
+      {
+        title: "Info Pembayaran",
+        to: "lph-payment-info",
+        roles: ["LPH", "Admin"],
+      },
+      {
+        title: "Update Pemeriksaan",
+        to: "lph-update-investigation",
+        roles: ["LPH", "Admin"],
+      },
+      {
+        title: "Penyelesaian Data Post Audit",
+        to: "lph-post-audit-finish",
+        roles: ["LPH", "Admin"],
+      },
+      {
+        title: "Inquiry",
+        to: "lph-inquiry",
+        roles: ["LPH", "Admin"],
+      },
+      {
+        title: "Buat Tagihan ke BPJPH",
+        to: "lph-create-bill",
+        roles: ["LPH", "Admin"],
+      },
+      {
+        title: "Daftar Tagihan ke BPJPH",
+        to: "lph-list-bill",
+        roles: ["LPH", "Admin"],
+      },
+    ],
+  },
+  {
+    title: "internal_audit.title",
+    icon: { icon: "mdi-list-box-outline" },
+    roles: ["Pelaku Usaha", "Admin"],
     children: [
       {
         title: 'internal_audit.entry',
@@ -299,10 +358,10 @@ export default [
     roles: ['Keuangan', 'Admin'],
   },
   {
-    title: 'Invoice - Fasilitasi',
-    to: 'finance-invoice',
-    icon: { icon: 'mdi-invoice-text-outline' },
-    roles: ['Keuangan', 'Admin'],
+    title: "Invoice - Fasilitasi",
+    to: "finance-invoice-facilitate",
+    icon: { icon: "mdi-invoice-text-outline" },
+    roles: ["Keuangan", "Admin"],
   },
   {
     title: 'Invoice - Fasilitator Fasilitasi',

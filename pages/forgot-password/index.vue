@@ -30,11 +30,11 @@ const emailAddrEmitted = (val: string) => {
             type="success"
             :text="'Verifikasi berhasil dikirim ke ' + newEmailAddr"
           ></VAlert>
-          <VAlert
-            v-if="newEmailFail"
-            type="error"
-            text="Email gagal dikirim"
-          ></VAlert>
+<!--          <VAlert-->
+<!--            v-if="newEmailFail"-->
+<!--            type="error"-->
+<!--            text="Email gagal dikirim"-->
+<!--          ></VAlert>-->
         </VCol>
       </VRow>
       <br />

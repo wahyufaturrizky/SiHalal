@@ -9,6 +9,16 @@ export const useMyAuthUserStore = defineStore("myAuthUserStore", () => {
     }
     return user;
   }
+
+  function resetUser() {
+    user.value = null;
+  }
+
+  function canAccess(roles: string | string[]) {
+    const roleArray = Array.isArray(roles) ? roles : [roles];
+    return user.value?.roles.some((data) => roleArray.includes(data.name));
+  }
+
   // id: "myAuthUserStore",
   // state: () => ({
   //   user: null as void | SessionData | null,
@@ -25,5 +35,5 @@ export const useMyAuthUserStore = defineStore("myAuthUserStore", () => {
   //     this.user = data;
   //   },
   // },
-  return { user, getSession };
+  return { user, getSession, resetUser, canAccess };
 });

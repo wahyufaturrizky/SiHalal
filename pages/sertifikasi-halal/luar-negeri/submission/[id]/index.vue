@@ -67,6 +67,12 @@ const deleteItem = () => {
   deleteDialog.value = true;
 };
 
+const submitDialog = ref(false);
+
+const submitItem = () => {
+  submitDialog.value = true;
+};
+
 const deleteSubmission = async () => {
   try {
     const response = await $api("/shln/submission/delete", {
@@ -76,25 +82,45 @@ const deleteSubmission = async () => {
       },
     });
 
-    if (!response.code == 2000) {
+    if (!response.code != 2000) {
+      deleteDialog.value = false;
       useSnackbar().sendSnackbar("gagal menghapus data", "error");
-
       return;
     }
+    deleteDialog.value = false;
     useSnackbar().sendSnackbar("Berhasil menghapus data", "success");
     navigateTo("/sertifikasi-halal/luar-negeri/submission");
   } catch (error) {
-    console.log(error);
+    deleteDialog.value = false;
+    useSnackbar().sendSnackbar("Ada Kecsalahan", "error");
+  }
+};
+const submitShln = async () => {
+  try {
+    const response = await $api("/shln/submission/submit", {
+      method: "post",
+      body: {
+        id: shlnId,
+      },
+    });
+    if (response.code != 2000) {
+      submitDialog.value = false;
+      useSnackbar().sendSnackbar("gagal submit data", "error");
+
+      return;
+    }
+    submitDialog.value = false;
+
+    useSnackbar().sendSnackbar("Berhasil submit data", "success");
+    navigateTo("/sertifikasi-halal/luar-negeri/submission");
+  } catch (error) {
+    submitDialog.value = false;
     useSnackbar().sendSnackbar("Ada Kecsalahan", "error");
   }
 };
 
 const editItem = () => {
   navigateTo(`/sertifikasi-halal/luar-negeri/submission/${shlnId}/edit`);
-};
-
-const submitItem = () => {
-  console.log("Submit item");
 };
 
 const headersProduct = [
@@ -413,6 +439,31 @@ const timelineEvents = ref([
             </VCol>
             <VCol cols="12" md="auto">
               <VBtn block variant="outlined" @click="deleteDialog = false">
+                Cancel
+              </VBtn>
+            </VCol>
+          </VRow>
+        </VCardText>
+      </VCard>
+    </VDialog>
+
+    <VDialog v-model="submitDialog" width="auto">
+      <VCard>
+        <VCardText>
+          <p class="text-h5 font-weight-bold">Delete Submission</p>
+          <VRow>
+            <VCol cols="12">
+              <div class="text-subtitle-1 text-high-emphasis mb-1">
+                Are you sure you want to submit this requirement submission?
+              </div>
+            </VCol>
+          </VRow>
+          <VRow class="flex-row-reverse">
+            <VCol cols="12" md="auto">
+              <VBtn block color="primary" @click="submitShln"> Submit </VBtn>
+            </VCol>
+            <VCol cols="12" md="auto">
+              <VBtn block variant="outlined" @click="submitDialog = false">
                 Cancel
               </VBtn>
             </VCol>

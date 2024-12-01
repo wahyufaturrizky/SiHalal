@@ -186,9 +186,9 @@ export default [
             roles: ['Pelaku Usaha', 'Admin'],
           },
           {
-            title: 'sh_domestic.status_request',
-            to: 'sh-domestic-submission-status',
-            roles: ['Pelaku Usaha', 'Admin'],
+            title: "sh_domestic.status_request",
+            to: "sh-domestic-status",
+            roles: ["Pelaku Usaha", "Admin"],
           },
           {
             title: 'sh_domestic.revision',
@@ -213,9 +213,56 @@ export default [
         ],
       },
       {
-        title: 'internal_audit.title',
-        icon: { icon: 'mdi-list-box-outline' },
-        roles: ['Pelaku Usaha', 'Admin'],
+        title: "Proses di LPH",
+        icon: { icon: "mdi-card-account-details-outline" },
+        roles: ["LPH", "Admin"],
+        children: [
+          {
+            title: "Daftar Ajuan",
+            to: "sh-domestic-submission-reguler",
+            roles: ["LPH", "Admin"],
+          },
+          {
+            title: "Daftar Ajuan Diterima",
+            to: "sh-domestic-submission-self-declare",
+            roles: ["LPH", "Admin"],
+          },
+          {
+            title: "Info Pembayaran",
+            to: "sh-domestic-status",
+            roles: ["LPH", "Admin"],
+          },
+          {
+            title: "Update Pemeriksaan",
+            to: "sh-domestic-certificate-revision",
+            roles: ["LPH", "Admin"],
+          },
+          {
+            title: "Penyelesaian Data Post Audit",
+            to: "sh-domestic-bill",
+            roles: ["LPH", "Admin"],
+          },
+          {
+            title: "Inquiry",
+            to: "sh-domestic-due-bill",
+            roles: ["LPH", "Admin"],
+          },
+          {
+            title: "Buat Tagihan ke BPJPH",
+            to: "sh-domestic-guide-halal-label",
+            roles: ["LPH", "Admin"],
+          },
+          {
+            title: "Daftar Tagihan ke BPJPH",
+            to: "sh-domestic-guide-halal-label",
+            roles: ["LPH", "Admin"],
+          },
+        ],
+      },
+      {
+        title: "internal_audit.title",
+        icon: { icon: "mdi-list-box-outline" },
+        roles: ["Pelaku Usaha", "Admin"],
         children: [
           {
             title: 'internal_audit.entry',
@@ -294,10 +341,10 @@ export default [
         roles: ['Fasilitator', 'Admin'],
       },
       {
-        title: 'facilitate.invoice',
-        to: 'finance-invoice',
-        icon: { icon: 'mdi-invoice-text-outline' },
-        roles: ['Keuangan', 'Admin'],
+        title: "facilitate.invoice",
+        to: "finance-invoice-facilitate",
+        icon: { icon: "mdi-invoice-text-outline" },
+        roles: ["Keuangan", "Admin"],
       },
       {
         title: 'Invoice - SHLN',

@@ -1,13 +1,39 @@
 <script setup lang="ts">
+const tableHeader = [
+  { title: "No", value: "no" },
+  { title: "Nama Produk", value: "product_name" },
+  { title: "Nama Pabrik", value: "factory_name" },
+  { title: "Action", value: "action" },
+];
 
+const items = [
+  {
+    product_name: "xx",
+    factory_name: "xx",
+  },
+];
 </script>
 
 <template>
-  <div>
-    Pemetaan produk dan pabrik
-  </div>
+  <VCard>
+    <VCardTitle>
+      <VRow>
+        <VCol cols="6"><h3>Pemetaan Produk dan Pabrik</h3></VCol>
+        <VCol cols="6" style="display: flex; justify-content: end"
+          ><ModalTambahProduk></ModalTambahProduk
+        ></VCol>
+      </VRow>
+    </VCardTitle>
+    <VCardItem>
+      <VDataTable :headers="tableHeader" :items="items">
+        <template #item.action>
+          <div class="text-center">
+            <ModalHapusProduk></ModalHapusProduk>
+          </div>
+        </template>
+      </VDataTable>
+    </VCardItem>
+  </VCard>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

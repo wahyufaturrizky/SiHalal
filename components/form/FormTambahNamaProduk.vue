@@ -1,118 +1,120 @@
 <script setup lang="ts">
-import { useDisplay } from 'vuetify'
+import { useDisplay } from "vuetify";
 
-const emit = defineEmits(['confirm'])
+const props = defineProps({
+  isEditable: {
+    type: Boolean,
+    default: true,
+  },
+});
 
-const isVisible = ref(false)
+const emit = defineEmits(["confirm"]);
+
+const isVisible = ref(false);
 
 const openDialog = () => {
-  isVisible.value = true
-}
+  isVisible.value = true;
+};
 
 const closeDialog = () => {
-  isVisible.value = false
-}
+  isVisible.value = false;
+};
 
 const form = ref({
   kualitasProduk: null,
   rincianProduk: null,
   namaProduk: null,
-  foto: null
-})
-
+  foto: null,
+});
 
 const resetForm = () => {
   form.value = {
     kualitasProduk: null,
     rincianProduk: null,
     namaProduk: null,
-    foto: null
-  }
-}
+    foto: null,
+  };
+};
 
 const confirm = () => {
-  emit('confirm', form.value)
-  resetForm()
-  closeDialog()
-}
+  emit("confirm", form.value);
+  resetForm();
+  closeDialog();
+};
 
 const cancel = () => {
-  closeDialog()
-}
+  closeDialog();
+};
 
-const { mdAndUp } = useDisplay()
+const { mdAndUp } = useDisplay();
 
 const dialogMaxWidth = computed(() => {
-  return mdAndUp.value ? 700 : '90%'
-})
+  return mdAndUp.value ? 700 : "90%";
+});
 
 const kualitasProduk = [
-  { title: 'Kualitas Produk 1' , value: '1'},
-  { title: 'Kualitas Produk 2' , value : '2'}
-]
+  { title: "Kualitas Produk 1", value: "1" },
+  { title: "Kualitas Produk 2", value: "2" },
+];
 
 const rincialProduk = [
-  { title: 'Rincian Produk 1' , value: '1'},
-  { title: 'Rincian Produk 2' , value : '2'}
-]
-
-
+  { title: "Rincian Produk 1", value: "1" },
+  { title: "Rincian Produk 2", value: "2" },
+];
 </script>
 
 <template>
   <div class="mb-2">
-    <VBtn @click="openDialog" variant="outlined" append-icon="ri-add-line">
+    <VBtn
+      @click="openDialog"
+      variant="outlined"
+      append-icon="ri-add-line"
+      v-if="props.isEditable"
+    >
       Tambah
     </VBtn>
-    <VDialog
-        v-model="isVisible"
-        :max-width="dialogMaxWidth"
-    >
+    <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
-        <VCardTitle class="text-h5 font-weight-bold d-flex justify-space-between align-center">
+        <VCardTitle
+          class="text-h5 font-weight-bold d-flex justify-space-between align-center"
+        >
           <span>Tambah Nama Produk</span>
           <VBtn
-              icon
-              color="transparent"
-              style="border: none;"
-              elevation="0"
-              @click="closeDialog"
+            icon
+            color="transparent"
+            style="border: none"
+            elevation="0"
+            @click="closeDialog"
           >
             <VIcon color="black">ri-close-line</VIcon>
           </VBtn>
         </VCardTitle>
 
         <VCardText>
-          <VLabel for="kualitasProduk">
-            Kualitas Produk
-          </VLabel>
+          <VLabel for="kualitasProduk"> Kualitas Produk </VLabel>
           <VSelect
-              id="kualitasProduk"
-              v-model="form.kualitasProduk"
-              placeholder="Pilih Kualitas Produk"
-              outlined
-              dense
-              required
-              class="mb-2"
-              :items="kualitasProduk"
+            id="kualitasProduk"
+            v-model="form.kualitasProduk"
+            placeholder="Pilih Kualitas Produk"
+            outlined
+            dense
+            required
+            class="mb-2"
+            :items="kualitasProduk"
           />
 
-          <VLabel for="rincianProduk">
-            Rincian Produk
-          </VLabel>
+          <VLabel for="rincianProduk"> Rincian Produk </VLabel>
           <VSelect
-              id="rincianProduk"
-              v-model="form.rincianProduk"
-              placeholder="Isi Rincian Produk"
-              outlined
-              dense
-              required
-              class="mb-2"
-              :items="rincialProduk"
+            id="rincianProduk"
+            v-model="form.rincianProduk"
+            placeholder="Isi Rincian Produk"
+            outlined
+            dense
+            required
+            class="mb-2"
+            :items="rincialProduk"
           />
-          <VLabel for="namaProduk">
-          Nama Produk
-          </VLabel>
+          <VLabel for="namaProduk"> Nama Produk </VLabel>
           <VTextField
             id="namaProduk"
             v-model="form.namaProduk"
@@ -127,23 +129,18 @@ const rincialProduk = [
               <VLabel for="uploadProduk">Upload Produk</VLabel>
             </VCol>
             <VCol cols="6">
-              <VFileInput v-model="form.foto"  ></VFileInput>
+              <VFileInput v-model="form.foto"></VFileInput>
             </VCol>
           </VRow>
         </VCardText>
 
         <div class="d-flex justify-end ga-2">
-          <VBtn @click="cancel" variant="outlined">
-            Batal
-          </VBtn>
-          <VBtn @click="confirm">
-            Tambah
-          </VBtn>
+          <VBtn @click="cancel" variant="outlined"> Batal </VBtn>
+          <VBtn @click="confirm"> Tambah </VBtn>
         </div>
       </VCard>
     </VDialog>
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
