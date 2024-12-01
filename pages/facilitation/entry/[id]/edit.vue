@@ -152,6 +152,7 @@ onMounted(async () => {
             :dataform="form"
             :datadetailregistration="dataDetailRegistration"
             :datasof="dataSOF"
+            @refresh="loadItemById"
           />
         </VTabsWindowItem>
         <VTabsWindowItem value="2">

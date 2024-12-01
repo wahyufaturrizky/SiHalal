@@ -17,6 +17,10 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits<{
+  (event: "refresh"): void;
+}>();
+
 const { dataform, datasof, datadetailregistration } = props || {};
 
 console.log("@datasof", datasof);
@@ -106,6 +110,7 @@ const putFacilitate = async () => {
     if (res?.code === 2000) {
       closeDialog();
       useSnackbar().sendSnackbar("Success update data", "success");
+      emit("refresh");
       loadingUpdate.value = false;
     } else {
       useSnackbar().sendSnackbar("Gagal update data", "error");
