@@ -18,7 +18,7 @@ const tableOutletHeader = [
   { title: "Nama", key: "name" },
   { title: "Alamat", key: "address" },
 ];
-
+const { canAccess } = useMyAuthUserStore();
 const panelOpenPabrik = ref(0);
 const panelOpenOutlet = ref(0);
 const panelOpenPenyeliaHallal = ref(0);
@@ -106,7 +106,7 @@ const onEdit = () => {
     <template #rightContent>
       <VRow>
         <VCol :cols="12">
-          <PerizinanCard />
+          <PerizinanCard v-if="canAccess(['Pelaku Usaha'])" />
         </VCol>
       </VRow>
       <VRow>

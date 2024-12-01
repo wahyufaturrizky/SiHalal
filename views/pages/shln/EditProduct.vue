@@ -32,6 +32,7 @@ const onSubmit = async () => {
   });
 };
 const insertProduct = async () => {
+  productAddButton.value = true;
   try {
     const response = await $api("/shln/submission/product/add", {
       method: "post",
@@ -40,14 +41,17 @@ const insertProduct = async () => {
     if (response.code == 500) {
       useSnackbar().sendSnackbar("Gagal menambahkan Product", "error");
       productDialog.value = false;
+      productAddButton.value = false;
       return;
     }
     await loadItem(page.value, itemPerPage.value);
     useSnackbar().sendSnackbar("Berhasil menambahkan manufacture", "success");
     productDialog.value = false;
+    productAddButton.value = false;
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal menambahkan manufacture", "error");
     productDialog.value = false;
+    productAddButton.value = false;
   }
 };
 const form = ref({
@@ -59,6 +63,7 @@ const form = ref({
 
 const deleteDialog = ref(false);
 const deletedId = ref();
+const productAddButton = ref(false);
 const deleteItem = (item: DataProduct) => {
   deletedId.value = item.id;
   deleteDialog.value = true;
@@ -92,6 +97,13 @@ interface DataProduct {
   hc_code: string;
 }
 
+const selectLevels = ref([
+  {
+    options: [], // Initial empty options for the first level
+    parentId: null, // No parent for the root level
+  },
+]);
+
 const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(true);
@@ -118,6 +130,52 @@ const loadTracking = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+const selectedValues = ref([]);
+const loadInitialHsCode = async () => {
+  try {
+    const response = await $api("/shln/submission/product/hscode", {
+      method: "get",
+    });
+
+    selectLevels.value[0].options = response.data;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+const handleSelect = async (levelIndex) => {
+  console.log(levelIndex, selectedValues.value);
+  const selectedId = selectedValues.value[levelIndex];
+
+  // Remove levels after the current one
+  selectLevels.value.splice(levelIndex + 1);
+  selectedValues.value.splice(levelIndex + 1);
+
+  try {
+    // Fetch subdata for the selected value
+    const response = await $api(
+      `/shln/submission/product/hscode?sub=${selectedId}`,
+      {
+        method: "get",
+      }
+    );
+    const subdata = response.data;
+
+    // Add a new level if subdata exists
+    if (subdata.length > 0) {
+      selectLevels.value.push({
+        options: subdata,
+        parentId: selectedId,
+      });
+    }
+  } catch (error) {
+    console.error("Failed to fetch subdata:", error);
+  }
+};
+const lastSelectedId = computed(() => {
+  return selectedValues.value.length
+    ? selectedValues.value[selectedValues.value.length - 1]
+    : null;
+});
 const loadHsCode = async () => {
   try {
     const response = await $api("/shln/submission/product/hscode", {
@@ -129,6 +187,17 @@ const loadHsCode = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+// const getSubHsCode = async () => {
+//   try {
+//     const response = await $api("/shln/submission/product/hscode", {
+//       method: "get",
+//     });
+
+//     hsCode.value = response.data;
+//   } catch (error) {
+//     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+//   }
+// };
 const loadItem = async (page: number, size: number) => {
   try {
     loading.value = true;
@@ -153,7 +222,7 @@ const loadItem = async (page: number, size: number) => {
   }
 };
 onMounted(async () => {
-  await Promise.allSettled([loadTracking(), loadHsCode()]);
+  await Promise.allSettled([loadTracking(), loadHsCode(), loadInitialHsCode()]);
 });
 
 const selectedFile = ref<File | null>(null);
@@ -161,6 +230,9 @@ const selectedFile = ref<File | null>(null);
 function onFileSelected(file: File | null) {
   selectedFile.value = file;
 }
+const formatItemTitle = (item) => {
+  return `${item.hscode} - ${item.description}`;
+};
 </script>
 
 <template>
@@ -292,7 +364,17 @@ function onFileSelected(file: File | null) {
               >
                 HS Code
               </div>
-              <VSelect
+              <div v-for="(level, index) in selectLevels" :key="index">
+                <v-select
+                  v-model="selectedValues[index]"
+                  :items="level.options"
+                  item-value="hscode"
+                  :item-title="formatItemTitle"
+                  label="Select an option"
+                  v-on:update:model-value="handleSelect(index)"
+                />
+              </div>
+              <!-- <VSelect
                 v-model="form.hs_code_id"
                 :items="hsCode"
                 item-value="hscode"
@@ -302,7 +384,7 @@ function onFileSelected(file: File | null) {
                 eager
                 variant="outlined"
                 density="compact"
-              />
+              /> -->
             </VCol>
             <VCol>
               <div
@@ -335,7 +417,12 @@ function onFileSelected(file: File | null) {
                 >
                   Cancel
                 </VBtn>
-                <VBtn type="submit" color="primary" variant="elevated">
+                <VBtn
+                  type="submit"
+                  color="primary"
+                  :disabled="productAddButton"
+                  variant="elevated"
+                >
                   Add
                 </VBtn>
               </div>
