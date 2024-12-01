@@ -28,7 +28,6 @@ const router = useRouter();
 <style scoped lang="scss">
 .content-col {
   overflow-y: auto;
-  // max-height: 65svh;
   z-index: 0 !important;
 }
 </style>
