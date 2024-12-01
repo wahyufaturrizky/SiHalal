@@ -109,7 +109,18 @@ const navigateAction = () => {
   >
     <template #pageTitle>
       <VRow>
-        <VCol><h2>Verifikasi Dokumen Pengajuan: Detail</h2></VCol>
+        <VCol style="display: flex; justify-content: start;"><h2>Verifikasi Dokumen Pengajuan: Detail</h2></VCol>
+        <VCol style="display: flex; justify-content: end;">
+          <VBtn 
+            text="Pengembalian"
+            color="#e1442e"
+            class="ma-1" 
+          />
+          <VBtn 
+            text="Verifikasi"
+            class="ma-1"
+          />
+        </VCol>
       </VRow>
 
       <!-- <VRow>
@@ -250,9 +261,17 @@ const navigateAction = () => {
           <VExpansionPanels v-model="panelOpenProduk">
             <VExpansionPanel>
               <VExpansionPanelTitle>
+                <VCol cols="9">
                 <h2>
                   Daftar Nama Produk
                 </h2>
+              </VCol>
+              <VCol cols="3">
+                <VBtn
+                  variant="outlined"
+                  text="Unduh"
+                />
+              </VCol>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <DaftarNamaProduk :data="data" />
@@ -270,7 +289,7 @@ const navigateAction = () => {
           <VExpansionPanels v-model="openPanelRegisterData">
             <VExpansionPanel>
               <VExpansionPanelTitle>
-                <h2>Registration Data</h2>
+                <h2>Formulir Unduhan</h2>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <RegisterDataShln :data="dataDetailRegistration" />
