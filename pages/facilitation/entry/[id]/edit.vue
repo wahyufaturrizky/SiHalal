@@ -55,6 +55,7 @@ const loadItemById = async () => {
         tgl_selesai,
         jenis_fasilitasi,
         is_locked_lembaga,
+        fac_description,
       } = fasilitasi || {};
 
       dataDetailRegistration.value = status_registrasi;
@@ -64,7 +65,7 @@ const loadItemById = async () => {
       form.value = {
         facilitatorName: nama,
         facilitationProgramName: nama_program,
-        explanationOfFacilitation: "Dummy Penjelasan Fasilitasi",
+        explanationOfFacilitation: fac_description,
         year: tahun,
         regionalScope: lingkup_wilayah_fasilitas,
         startDate: formatToISOString(tgl_mulai),
