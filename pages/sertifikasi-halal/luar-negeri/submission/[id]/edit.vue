@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import EditDocument from "@/views/pages/shln/EditDocument.vue";
+import EditDocument, { MRA } from "@/views/pages/shln/EditDocument.vue";
 import EditIdentity from "@/views/pages/shln/EditIdentity.vue";
 import EditManufacture from "@/views/pages/shln/EditManufacture.vue";
 import EditProduct from "@/views/pages/shln/EditProduct.vue";
@@ -16,9 +16,11 @@ const route = useRoute();
 const shlnId = route.params.id;
 const identity = ref<ShlnDetail>();
 const manufacture = ref<Manufacture[] | null>();
+const mra = ref<MRA>();
 
 const getidentity = async () => {
   try {
+    await getHcb();
     const response = await $api("/shln/submission/identity", {
       method: "post",
       body: {
@@ -42,6 +44,12 @@ const getidentity = async () => {
     ) {
       disabledTab("manufacture", true);
     }
+    mra.value = {
+      country: identity.value?.hcb.country ?? "",
+      expired_date: identity.value?.hcn.expired_date ?? "",
+      halal_institution_name: changeHcb(identity.value?.hcb.hcb_id),
+      issued_date: identity.value?.hcn.issued_date ?? "",
+    };
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -67,14 +75,24 @@ const getManufacture = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+const hcb = ref<{ country: string; id: string; name: string }[]>();
+
+const getHcb = async () => {
+  try {
+    const response = await $api("/shln/submission/identity/hcb", {
+      method: "get",
+    });
+
+    hcb.value = response;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+const changeHcb = (item: string) => {
+  return hcb.value?.find((body) => body.id == item)?.name;
+};
 onMounted(async () => {
   await Promise.allSettled([getidentity(), getManufacture()]);
-  if (identity.value?.hcb.hcb_id == "" || identity.value?.hcb.country == "") {
-    // disabledTab("document", true);
-  }
-  if (identity.value?.hcb.country == "") {
-    disabledTab("manufacture", true);
-  }
 });
 const updateData = useMyUpdateSubmissionEditStore();
 watch(
@@ -88,10 +106,11 @@ watch(
     }
     if (newValue == "identity") {
       getidentity();
+      getHcb();
     }
-    if (newValue == "document") {
-      getmra();
-    }
+    // if (newValue == "document") {
+    //   getmra();
+    // }
     updateData.setData("");
   }
 );
@@ -125,11 +144,11 @@ const disabledTab = (
     <!-- <v-card-text> -->
     <VTabsWindow v-model="tab">
       <VTabsWindowItem value="identity">
-        <EditIdentity v-if="identity" :event="identity" />
+        <EditIdentity v-if="identity" :hcb="hcb" :event="identity" />
       </VTabsWindowItem>
 
       <VTabsWindowItem value="document">
-        <EditDocument :mra="mra" />
+        <EditDocument v-if="mra" :mra="mra" />
       </VTabsWindowItem>
 
       <VTabsWindowItem value="manufacture">
