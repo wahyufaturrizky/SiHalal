@@ -51,11 +51,25 @@ const insertProduct = async () => {
       return;
     }
     await loadItem(page.value, itemPerPage.value);
-    useSnackbar().sendSnackbar("Berhasil menambahkan manufacture", "success");
+    form.value = {
+      shlnId: shlnId,
+      manufactur_id: null,
+      name: "",
+      hs_code_id: null,
+    };
+
+    useSnackbar().sendSnackbar("Berhasil menambahkan product", "success");
     productDialog.value = false;
     productAddButton.value = false;
+    selectLevels.value = [
+      {
+        options: [], // Initial empty options for the first level
+        parentId: null, // No parent for the root level
+      },
+    ];
+    selectedValues.value = [];
   } catch (error) {
-    useSnackbar().sendSnackbar("Gagal menambahkan manufacture", "error");
+    useSnackbar().sendSnackbar("Gagal menambahkan product", "error");
     productDialog.value = false;
     productAddButton.value = false;
   }
@@ -353,7 +367,7 @@ const formatItemTitle = (item) => {
               <div
                 class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1"
               >
-                Manufacture
+                Product
               </div>
               <VSelect
                 v-model="form.manufactur_id"
@@ -373,13 +387,20 @@ const formatItemTitle = (item) => {
               >
                 HS Code
               </div>
-              <div v-for="(level, index) in selectLevels" :key="index">
+              <div
+                class="mb-5"
+                v-for="(level, index) in selectLevels"
+                :key="index"
+              >
                 <v-select
                   v-model="selectedValues[index]"
                   :items="level.options"
                   item-value="id"
+                  variant="outlined"
+                  :rules="[requiredValidator]"
+                  density="compact"
                   :item-title="formatItemTitle"
-                  label="Select an option"
+                  placholder="Select HS Code"
                   v-on:update:model-value="handleSelect(index)"
                 />
               </div>
