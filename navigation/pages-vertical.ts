@@ -9,6 +9,18 @@ export default [
     roles: ["Pelaku Usaha", "Fasilitator", "Admin"],
   },
   {
+    title: "sh-submission.title",
+    icon: { icon: "fa-id-card" },
+    roles: ["Pendamping"],
+    children: [
+      {
+        title: "sh-submission.detail",
+        to: "sh-submission-detail",
+        roles: ["Pendamping"],
+      },
+    ],
+  },
+  {
     title: "Pelaku Usaha",
     icon: { icon: "mdi-account-tie" },
     to: "pelaku-usaha",
