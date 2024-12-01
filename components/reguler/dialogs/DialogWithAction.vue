@@ -1,53 +1,53 @@
+<!-- eslint-disable vue/no-mutating-props -->
 <script setup>
 import { ref } from 'vue'
 
-// Props untuk menerima data dari parent
 const props = defineProps({
   title: {
     type: String,
     default: 'Default Title',
   },
-  content: {
-    type: String,
-    default: 'Default Content',
+  isOpen: {
+    type: Boolean,
+    default: false,
   },
-  buttonText: {
+  toggle: {
+    type: Function,
+    default: () => { },
+    required: false,
+  },
+  onSave: {
+    type: Function,
+    default: () => { },
+    required: false,
+  },
+  labelSaveBtn: {
     type: String,
-    default: 'Open Dialog',
+    default: 'Tambah',
   },
   labelBackBtn: {
     type: String,
     default: 'Batal',
   },
-  labelSaveBtn: {
-    type: String,
-    default: 'Ubah',
-  },
 })
 
-const dialog = ref(false)
+const emit = defineEmits(['update:isOpen'])
 
-const confirmAction = () => {
-  dialog.value = false
-}
+const dialogOpen = computed({
+  get: () => props.isOpen,
+  set: value => emit('update:isOpen', value),
+})
 </script>
 
 <template>
   <VDialog
-    v-model="dialog"
+    v-model="dialogOpen"
     max-width="60svw"
   >
-    <template #activator="{ props }">
-      <VBtn
-        v-bind="props"
-        append-icon="ri-more-2-line"
-        variant="plain"
-      />
-    </template>
-
-    <!-- Konten di dalam dialog -->
     <VCard>
-      <VCardTitle>{{ title }}</VCardTitle>
+      <VCardTitle class="text-h5 font-weight-bold">
+        {{ title }}
+      </VCardTitle>
       <VCardText>
         <slot name="content" />
       </VCardText>
@@ -55,14 +55,14 @@ const confirmAction = () => {
         <VBtn
           color="primary"
           variant="outlined"
-          @click="dialog = false"
+          @click="props.toggle"
         >
           {{ props.labelBackBtn }}
         </VBtn>
         <VBtn
           text
           variant="elevated"
-          @click="confirmAction"
+          @click="props.onSave"
         >
           {{ props.labelSaveBtn }}
         </VBtn>
