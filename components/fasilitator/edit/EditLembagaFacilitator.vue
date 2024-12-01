@@ -6,14 +6,16 @@ const props = defineProps({
   type: {
     type: String,
   },
+  islockedlembaga: {
+    type: Boolean,
+  },
 });
 
-const { type } = props || {};
+const { type, islockedlembaga } = props || {};
 
 // State untuk checkbox
 const kunciLembaga = ref(false);
 const route = useRoute();
-const router = useRouter();
 const loadingDelete = ref(false);
 const loadingLock = ref(false);
 const loadingAdd = ref(false);
@@ -41,6 +43,8 @@ const formData = ref({
   picName: "",
   picPhoneNumber: "",
 });
+
+kunciLembaga.value = islockedlembaga;
 
 const loadItemById = async (page: number, size: number) => {
   try {
@@ -81,28 +85,28 @@ const loadItemById = async (page: number, size: number) => {
 
 const loadItemLembagaPendamping = async () => {
   try {
-    loading.value = true;
+    loadingItemsInstitutionName.value = true;
 
     const response = await $api(
       `/master/${
-        type === "Reguler" ? "llembaga-pemeriksa-halal" : "lembaga-pendamping"
+        type === "Reguler" ? "lembaga-pemeriksa-halal" : "lembaga-pendamping"
       }`,
       {
         method: "get",
       }
     );
 
-    if (response.code === 2000) {
-      itemsInstitutionName.value = response.data;
+    if (response) {
+      itemsInstitutionName.value = response;
 
-      loading.value = false;
+      loadingItemsInstitutionName.value = false;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-      loading.value = false;
+      loadingItemsInstitutionName.value = false;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loading.value = false;
+    loadingItemsInstitutionName.value = false;
   }
 };
 
@@ -116,10 +120,12 @@ const deleteFacilitateLembaga = async (id: string) => {
 
     if (res?.code === 2000) {
       loadingDelete.value = false;
-      router.go(-1);
+      addDialog.value = false;
+      await loadItemById(1, itemPerPage.value);
     } else {
       useSnackbar().sendSnackbar("Gagal update data", "error");
       loadingDelete.value = false;
+      addDialog.value = false;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -148,17 +154,15 @@ const addFacilitateLembaga = async () => {
       nomor_pic_lembaga: picPhoneNumber,
     };
 
-    if (
-      institutionName === "Universitas Islam Negeri Sunan Gunung Djati Bandung"
-    ) {
+    if (type === "Reguler") {
       tempBody = {
         ...tempBody,
-        lp_id: "0000df86-2b61-4778-8f70-30b8166286cb",
+        lph_id: institutionName,
       };
     } else {
       tempBody = {
         ...tempBody,
-        lph_id: "01e3d771-2d0b-0bd4-30a8-f294a6871d24",
+        lp_id: institutionName,
       };
     }
 
@@ -171,7 +175,7 @@ const addFacilitateLembaga = async () => {
       loadingAdd.value = false;
       resetForm();
       addDialog.value = false;
-      router.go(-1);
+      await loadItemById(1, itemPerPage.value);
     } else {
       useSnackbar().sendSnackbar("Gagal update data", "error");
       loadingAdd.value = false;
@@ -206,7 +210,7 @@ const updateLockFacilitateLembaga = async () => {
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingAdd.value = false;
+    loadingLock.value = false;
   }
 };
 
@@ -327,7 +331,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               v-model="formData.institutionName"
               placeholder="Pilih Lembaga Pendamping"
               :items="itemsInstitutionName"
-              item-text="name"
+              item-title="name"
               item-value="id"
               required
               class="mb-4"

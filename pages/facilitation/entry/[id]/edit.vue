@@ -22,7 +22,7 @@ const form = ref({
   status: "",
 });
 
-const { jenis_fasilitasi, type } = form.value;
+const isLockedLembaga = ref(false);
 
 const dataDetailRegistration = ref();
 
@@ -51,9 +51,12 @@ const loadItemById = async () => {
         tgl_mulai,
         tgl_selesai,
         jenis_fasilitasi,
+        is_locked_lembaga,
       } = fasilitasi || {};
 
       dataDetailRegistration.value = status_registrasi;
+
+      isLockedLembaga.value = is_locked_lembaga;
 
       form.value = {
         facilitatorName: nama,
@@ -109,7 +112,8 @@ onMounted(async () => {
     <VCol cols="10">
       <VTabs v-model="tabs" align-tabs="start">
         <VTab value="1"> Pengajuan </VTab>
-        <VTab :disabled="!jenis_fasilitasi" value="2"> Lembaga </VTab>
+
+        <VTab :disabled="!form.type" value="2"> Lembaga </VTab>
       </VTabs>
     </VCol>
   </VRow>
@@ -123,7 +127,10 @@ onMounted(async () => {
           />
         </VTabsWindowItem>
         <VTabsWindowItem value="2">
-          <EditLembagaFacilitator :type="type" />
+          <EditLembagaFacilitator
+            :islockedlembaga="isLockedLembaga"
+            :type="form.type"
+          />
         </VTabsWindowItem>
       </VTabsWindow>
     </VCol>
