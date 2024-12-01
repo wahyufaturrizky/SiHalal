@@ -15,6 +15,7 @@ const hsCode = ref<
   {
     description: string;
     hscode: string;
+    id: string;
   }[]
 >();
 const route = useRoute();
@@ -36,7 +37,12 @@ const insertProduct = async () => {
   try {
     const response = await $api("/shln/submission/product/add", {
       method: "post",
-      body: form.value,
+      body: {
+        shln_id: form.value.shlnId,
+        manufactur_id: form.value.manufactur_id,
+        name: form.value.name,
+        hs_code_id: lastSelectedId.value,
+      },
     });
     if (response.code == 500) {
       useSnackbar().sendSnackbar("Gagal menambahkan Product", "error");
@@ -56,7 +62,7 @@ const insertProduct = async () => {
 };
 const form = ref({
   shlnId: shlnId,
-  manufactur_id: "",
+  manufactur_id: null,
   name: "",
   hs_code_id: null,
 });
@@ -145,6 +151,9 @@ const loadInitialHsCode = async () => {
 const handleSelect = async (levelIndex) => {
   console.log(levelIndex, selectedValues.value);
   const selectedId = selectedValues.value[levelIndex];
+  const findHsCode = selectLevels.value[levelIndex].options.find(
+    (data) => selectedId == data.id
+  );
 
   // Remove levels after the current one
   selectLevels.value.splice(levelIndex + 1);
@@ -153,7 +162,7 @@ const handleSelect = async (levelIndex) => {
   try {
     // Fetch subdata for the selected value
     const response = await $api(
-      `/shln/submission/product/hscode?sub=${selectedId}`,
+      `/shln/submission/product/hscode?sub=${findHsCode.hscode}`,
       {
         method: "get",
       }
@@ -368,7 +377,7 @@ const formatItemTitle = (item) => {
                 <v-select
                   v-model="selectedValues[index]"
                   :items="level.options"
-                  item-value="hscode"
+                  item-value="id"
                   :item-title="formatItemTitle"
                   label="Select an option"
                   v-on:update:model-value="handleSelect(index)"
@@ -398,6 +407,7 @@ const formatItemTitle = (item) => {
                   :rules="[requiredValidator]"
                   variant="outlined"
                   density="compact"
+                  v-model="form.name"
                 ></v-text-field>
                 <FileInputButton
                   buttonText="Choose File"

@@ -106,10 +106,11 @@ watch(
     }
     if (newValue == "identity") {
       getidentity();
+      getHcb();
     }
-    if (newValue == "document") {
-      getmra();
-    }
+    // if (newValue == "document") {
+    //   getmra();
+    // }
     updateData.setData("");
   }
 );
