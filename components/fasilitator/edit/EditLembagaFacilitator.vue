@@ -2,6 +2,14 @@
 import { computed, ref } from "vue";
 import { useDisplay } from "vuetify";
 
+const props = defineProps({
+  type: {
+    type: String,
+  },
+});
+
+const { type } = props || {};
+
 // State untuk checkbox
 const kunciLembaga = ref(false);
 const route = useRoute();
@@ -9,6 +17,7 @@ const router = useRouter();
 const loadingDelete = ref(false);
 const loadingLock = ref(false);
 const loadingAdd = ref(false);
+const loadingItemsInstitutionName = ref(false);
 const itemPerPage = ref(10);
 const totalItems = ref(0);
 
@@ -18,6 +27,7 @@ const page = ref(1);
 
 // Data tabel
 const items = ref([]);
+const itemsInstitutionName = ref([]);
 
 // Form data dan dialog
 const formRef = ref(null);
@@ -27,7 +37,7 @@ const deleteDialog = ref(false);
 
 // Data untuk form tambah lembaga
 const formData = ref({
-  institutionName: "Universitas Islam Negeri Sunan Gunung Djati Bandung",
+  institutionName: "",
   picName: "",
   picPhoneNumber: "",
 });
@@ -57,6 +67,33 @@ const loadItemById = async (page: number, size: number) => {
       });
 
       totalItems.value = response?.total_item;
+
+      loading.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loading.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
+  }
+};
+
+const loadItemLembagaPendamping = async () => {
+  try {
+    loading.value = true;
+
+    const response = await $api(
+      `/master/${
+        type === "Reguler" ? "llembaga-pemeriksa-halal" : "lembaga-pendamping"
+      }`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) {
+      itemsInstitutionName.value = response.data;
 
       loading.value = false;
     } else {
@@ -175,6 +212,7 @@ const updateLockFacilitateLembaga = async () => {
 
 onMounted(async () => {
   await loadItemById(1, itemPerPage.value);
+  await loadItemLembagaPendamping();
 });
 
 // Header tabel
@@ -288,12 +326,13 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               id="institutionName"
               v-model="formData.institutionName"
               placeholder="Pilih Lembaga Pendamping"
-              :items="[
-                'Universitas Islam Negeri Sunan Gunung Djati Bandung',
-                'LPH LPPOM MUI Sulawesi Utara',
-              ]"
+              :items="itemsInstitutionName"
+              item-text="name"
+              item-value="id"
               required
               class="mb-4"
+              :disabled="loadingItemsInstitutionName"
+              :loading="loadingItemsInstitutionName"
             />
             <label class="text-h6" for="picName">
               Nama Penanggung Jawab Program LPH / LP3H

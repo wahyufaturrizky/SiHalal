@@ -22,7 +22,7 @@ const form = ref({
   status: "",
 });
 
-const { jenis_fasilitasi } = form.value;
+const { jenis_fasilitasi, type } = form.value;
 
 const dataDetailRegistration = ref();
 
@@ -123,7 +123,7 @@ onMounted(async () => {
           />
         </VTabsWindowItem>
         <VTabsWindowItem value="2">
-          <EditLembagaFacilitator />
+          <EditLembagaFacilitator :type="type" />
         </VTabsWindowItem>
       </VTabsWindow>
     </VCol>
