@@ -1,7 +1,9 @@
 <script setup lang="ts">
-const tabs = ref(0);
+const route = useRoute();
+
+const tabs = ref("1");
 onMounted(() => {
-  tabs.value = 0;
+  tabs.value = route.query?.tab ? String(route.query.tab) : "1";
 });
 </script>
 <template>

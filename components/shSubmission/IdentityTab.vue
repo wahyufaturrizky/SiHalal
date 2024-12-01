@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const router = useRouter();
 const isPanelOpen = ref(0);
 
 const submissionData = ref({
@@ -202,7 +203,10 @@ const confirmDeleteDoc = () => {
   <VCard class="mb-10">
     <VCardTitle class="my-5 d-flex justify-space-between align-center">
       <div class="font-weight-bold text-h4">Aspek Legal</div>
-      <VBtn variant="outlined">
+      <VBtn
+        variant="outlined"
+        @click="router.push('/sh-domestic/submission/self-declare/edit?tab=1')"
+      >
         <div class="pe-3">Tambah</div>
         <VIcon icon="fa-plus" />
       </VBtn>
@@ -233,7 +237,10 @@ const confirmDeleteDoc = () => {
   <VCard class="mb-10">
     <VCardTitle class="my-5 d-flex justify-space-between align-center">
       <div class="font-weight-bold text-h4">Penyelia Halal</div>
-      <VBtn variant="outlined">
+      <VBtn
+        variant="outlined"
+        @click="router.push('/sh-domestic/submission/self-declare/edit?tab=1')"
+      >
         <div class="pe-3">Tambah</div>
         <VIcon icon="fa-plus" />
       </VBtn>
