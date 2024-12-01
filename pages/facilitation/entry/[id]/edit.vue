@@ -37,42 +37,40 @@ const loadItemById = async () => {
     if (response.code === 2000) {
       const { fasilitator } = response.data || {};
 
-      if (fasilitator?.fasilitasi && fasilitator?.status_registrasi) {
-        const { fasilitasi, status_registrasi } = fasilitator || {};
+      const { fasilitasi, status_registrasi } = fasilitator || {};
 
-        const {
-          nama,
-          sumber_pembiayaan,
-          kuota,
-          penanggung_jawab,
-          nama_program,
-          phone_penanggung_jawab,
-          tahun,
-          lingkup_wilayah_fasilitas,
-          tgl_mulai,
-          tgl_selesai,
-          jenis_fasilitasi,
-        } = fasilitasi || {};
+      const {
+        nama,
+        sumber_pembiayaan,
+        kuota,
+        penanggung_jawab,
+        nama_program,
+        phone_penanggung_jawab,
+        tahun,
+        lingkup_wilayah_fasilitas,
+        tgl_mulai,
+        tgl_selesai,
+        jenis_fasilitasi,
+      } = fasilitasi || {};
 
-        dataDetailRegistration.value = status_registrasi;
+      dataDetailRegistration.value = status_registrasi;
 
-        form.value = {
-          facilitatorName: nama,
-          facilitationProgramName: nama_program,
-          explanationOfFacilitation: "Dummy Penjelasan Fasilitasi",
-          year: tahun,
-          regionalScope: lingkup_wilayah_fasilitas,
-          startDate: formatToISOString(tgl_mulai),
-          endDate: formatToISOString(tgl_selesai),
-          type: jenis_fasilitasi,
-          sourceOfFund: sumber_pembiayaan,
-          kuota,
-          picName: penanggung_jawab,
-          picPhoneNumber: phone_penanggung_jawab,
-          facilityCode: "",
-          status: "Draft",
-        };
-      }
+      form.value = {
+        facilitatorName: nama,
+        facilitationProgramName: nama_program,
+        explanationOfFacilitation: "Dummy Penjelasan Fasilitasi",
+        year: tahun,
+        regionalScope: lingkup_wilayah_fasilitas,
+        startDate: formatToISOString(tgl_mulai),
+        endDate: formatToISOString(tgl_selesai),
+        type: jenis_fasilitasi,
+        sourceOfFund: sumber_pembiayaan,
+        kuota,
+        picName: penanggung_jawab,
+        picPhoneNumber: phone_penanggung_jawab,
+        facilityCode: "",
+        status: "Draft",
+      };
 
       loading.value = false;
     } else {

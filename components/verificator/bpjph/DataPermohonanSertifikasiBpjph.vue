@@ -27,53 +27,68 @@ const selectedItems = ref<DataItem[]>([])
 const tableData = ref([
   {
     id: 1,
-    id_daftar: 'D001',
+    nomor_daftar: 'SH2024-225-29480',
     TanggalDaftar: '2024-11-01',
-    Nama: 'John Doe',
-    Alamat: '1234 Elm Street, Springfield',
-    JenisProduk: 'Electronics',
-    MerkDagang: 'TechBrand',
-    Status: 'OF74',
+    TanggalSubmit: '2024-11-01 11:42:52',
+    Nama: 'Dapoer Boenda',
+    provinsi: 'Jawa Barat',
+    JenisDaftar: 'Baru',
+    JenisProduk: 'Produk Bakteri',
+    JenisUsaha: 'Micro',
+    Jumlah: 32,
+    Status: 'Verifikasi',
   },
   {
     id: 2,
-    id_daftar: 'D002',
+    nomor_daftar: 'SH2024-225-29480',
     TanggalDaftar: '2024-11-02',
-    Nama: 'Jane Smith',
-    Alamat: '5678 Oak Avenue, Riverdale',
-    JenisProduk: 'Food & Beverages',
-    MerkDagang: 'Tasty Treats',
-    Status: 'OF74',
+    TanggalSubmit: '2024-11-01 11:42:52',
+    Nama: 'Dapoer Boenda',
+    provinsi: 'Jawa Barat',
+    JenisDaftar: 'SIUP',
+    JenisProduk: 'Produk Bakteri',
+    JenisUsaha: 'Besar',
+    Jumlah: 32,
+    Status: 'Verifikasi',
   },
   {
     id: 3,
-    id_daftar: 'D003',
+    nomor_daftar: 'SH2024-225-29480',
     TanggalDaftar: '2024-11-03',
-    Nama: 'Alice Johnson',
-    Alamat: '9102 Pine Lane, Metropolis',
-    JenisProduk: 'Apparel',
-    MerkDagang: 'FashionWear',
-    Status: 'OF74',
+    TanggalSubmit: '2024-11-01 11:42:52',
+    Nama: 'Dapoer Boenda',
+    provinsi: 'Jawa Barat',
+    JenisDaftar: 'Baru',
+    JenisProduk: 'Produk Bakteri',
+    JenisUsaha: 'Micro',
+    Jumlah: 32,
+    Status: 'Verifikasi',
   },
   {
     id: 4,
-    id_daftar: 'D004',
+    nomor_daftar: 'SH2024-225-29480',
     TanggalDaftar: '2024-11-04',
-    Nama: 'Bob Brown',
-    Alamat: '1122 Maple Drive, Gotham',
-    JenisProduk: 'Home Appliances',
-    MerkDagang: 'HomeEase',
-    Status: 'OF74',
+    TanggalSubmit: '2024-11-01 11:42:52',
+    Nama: 'Dapoer Boenda',
+    provinsi: 'Jawa Barat',
+    JenisDaftar: 'SIUP',
+    JenisProduk: 'Produk Bakteri',
+    JenisUsaha: 'Besar',
+    Jumlah: 32,
+    Status: 'Verifikasi',
   },
   {
     id: 5,
-    id_daftar: 'D005',
+    nomor_daftar: 'SH2024-225-29480',
     TanggalDaftar: '2024-11-05',
-    Nama: 'Emily Davis',
-    Alamat: '3344 Birch Road, Star City',
-    JenisProduk: 'Cosmetics',
-    MerkDagang: 'BeautyGlow',
-    Status: 'OF74',
+    TanggalSubmit: '2024-11-01 11:42:52',
+    Nama: 'Dapoer Boenda',
+    provinsi: 'Jawa Barat',
+    JenisDaftar: 'Baru',
+    JenisProduk: 'Produk Bakteri',
+    JenisUsaha: 'Micro',
+    Jumlah: 32,
+    Status: 'Verifikasi',
   },
 ])
 
@@ -85,13 +100,15 @@ const page = ref(1)
 // Table headers
 const permohonanHeaders = [
   { title: 'No', key: 'id', align: 'center' },
-  { title: 'ID Daftar', key: 'id_daftar' },
   { title: 'Pilih', key: 'pilih' },
+  { title: 'Nomor Daftar', key: 'nomor_daftar' },
   { title: 'Tanggal Daftar', key: 'TanggalDaftar' },
-  { title: 'Nama', key: 'Nama' },
-  { title: 'Alamat', key: 'Alamat' },
+  { title: 'Tanggal Submit', key: 'TanggalSubmit' },
+  { title: 'Nama PU', key: 'Nama' },
+  { title: 'Provinsi', key: 'provinsi' },
+  { title: 'Jenis Daftar', key: 'JenisDaftar' },
   { title: 'Jenis Produk', key: 'JenisProduk' },
-  { title: 'Merk Dagang', key: 'MerkDagang' },
+  { title: 'Jenis Usaha dan Jumlah', key: 'jenis_usaha_jumlah' },
   { title: 'Status', key: 'Status' },
   { title: 'Action', key: 'action' },
 ]
@@ -137,6 +154,9 @@ const selectedFilters = ref({
   lembaga: 'Semua',
   pendamping: 'Semua',
   kabupaten: 'Semua',
+  skalaUsaha: 'Semua',
+  jenisPengajuan: 'Semua',
+  fac: 'Semua'
 })
 
 const applyFilters = () => {
@@ -181,7 +201,7 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
         style="margin: 1svw"
         v-bind="openModal"
       >
-        Ambil Data
+        Terima Data
       </VBtn>
     </template>
     <template #default="{ isActive }">
@@ -226,39 +246,27 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
                 </template>
                 <VCard class="pa-3" width="300">
                   <VSelect
-                    v-model="selectedFilters.jenisProduk"
-                    label="Jenis Produk"
+                    v-model="selectedFilters.jenisPengajuan"
+                    label="Jenis Pengajuan"
                     :items="['Semua', 'Produk Y', 'Produk Z']"
                     class="mt-3"
                   />
                   <VSelect
-                    v-model="selectedFilters.fasilitas"
-                    label="Fasilitas"
+                    v-model="selectedFilters.skalaUsaha"
+                    label="Skala Usaha"
                     :items="['Semua', 'Fasilitas A', 'Fasilitas AB']"
-                    class="mt-3"
-                  />
-                  <VSelect
-                    v-model="selectedFilters.lembaga"
-                    label="Lembaga"
-                    :items="['Semua', 'Lembaga A', 'Lembaga B']"
-                    class="mt-3"
-                  />
-                  <VSelect
-                    v-model="selectedFilters.pendamping"
-                    label="Pendamping"
-                    :items="['Semua', 'Pendamping A', 'Pendamping B']"
                     class="mt-3"
                   />
                   <VSelect
                     v-model="selectedFilters.provinsi"
                     label="Provinsi"
-                    :items="['Semua', 'Provinsi A', 'Provinsi B']"
+                    :items="['Semua', 'Lembaga A', 'Lembaga B']"
                     class="mt-3"
                   />
                   <VSelect
-                    v-model="selectedFilters.kabupaten"
-                    label="Kabupaten"
-                    :items="['Semua', 'Kabupaten A', 'Kabupaten B']"
+                    v-model="selectedFilters.fac"
+                    label="Kode Fac"
+                    :items="['Semua', 'Pendamping A', 'Pendamping B']"
                     class="mt-3"
                   />
                   <VBtn block color="primary" class="mt-3" @click="applyFilters">
@@ -271,7 +279,7 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
               <VTextField
                 v-model="searchQuery"
                 density="compact"
-                placeholder="Search Data"
+                placeholder="Cari Nama Pengajuan"
                 append-inner-icon="ri-search-line"
                 style="max-width: 100%"
                 @input="handleInput"
@@ -283,11 +291,11 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
               :headers="permohonanHeaders"
+              style="white-space: nowrap;"
               :items="tableData"
               :loading="loading"
               :items-length="totalItems"
               loading-text="Loading..."
-              style="white-space: nowrap;"
               @update:options="loadItem(page, itemPerPage)"
             >
               <template #item.id="{ index }">
@@ -338,6 +346,26 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
                     </VChip>
                   </div>
                 </div>
+              </template>
+              <template #item.jenis_usaha_jumlah="{ item }">
+                  <VContainer style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                    <VChip
+                      variant="outlined"
+                      style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
+                    >
+                      <span style="color: #49a84c;">
+                        {{ item.JenisUsaha }}
+                      </span>
+                    </VChip>
+                    <VChip
+                      variant="outlined"
+                      style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
+                    >
+                      <span style="color: #49a84c;">
+                        {{ item.Jumlah }}
+                      </span>
+                    </VChip>
+                  </VContainer>
               </template>
             </VDataTableServer>
           </VRow>

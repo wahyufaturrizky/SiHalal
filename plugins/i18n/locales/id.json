@@ -138,5 +138,9 @@
                 "item": "item"
             }
         }
+    },
+    "sh-submission": {
+        "title": "Pengajuan Sertifikat Halal",
+        "detail": "Cek Data Pengajuan"
     }
 }
