@@ -11,9 +11,16 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  datasof: {
+    type: Array,
+    required: true,
+  },
 });
 
-const { dataform } = props || {};
+const { dataform, datasof, datadetailregistration } = props || {};
+
+console.log("@datasof", datasof);
+
 const isVisible = ref(false);
 const loadingUpdate = ref(false);
 const route = useRoute();
@@ -235,15 +242,12 @@ const cancel = () => {
               <VAutocomplete
                 id="sourceOfFund"
                 v-model="form.sourceOfFund"
-                :items="[
-                  'Pembiayaan 1',
-                  'Pembiayaan 2',
-                  'Pembiayaan 3',
-                  'Pembiayaan 4',
-                ]"
+                :items="datasof"
                 placeholder="Pilih sumber pembiayaan"
                 solo
                 clearable
+                item-title="name"
+                item-value="code"
               />
             </VCol>
           </VRow>

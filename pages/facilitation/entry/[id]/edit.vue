@@ -4,6 +4,7 @@ const route = useRoute();
 
 const facilitateId = route.params.id;
 const loading = ref(false);
+const loadingSOF = ref(false);
 
 const form = ref({
   facilitatorName: "",
@@ -21,6 +22,8 @@ const form = ref({
   facilityCode: "",
   status: "",
 });
+
+const dataSOF = ref([]);
 
 const isLockedLembaga = ref(false);
 
@@ -86,8 +89,31 @@ const loadItemById = async () => {
   }
 };
 
+const loadSOF = async () => {
+  try {
+    loadingSOF.value = true;
+
+    const response = await $api("/master/source-of-fund", {
+      method: "get",
+    });
+
+    if (response) {
+      dataSOF.value = response;
+
+      loadingSOF.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan asd", "error");
+      loadingSOF.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingSOF.value = false;
+  }
+};
+
 onMounted(async () => {
   await loadItemById();
+  await loadSOF();
 });
 </script>
 
@@ -108,7 +134,7 @@ onMounted(async () => {
       </VBtn>
     </VCol>
   </VRow>
-  <VRow v-if="!loading">
+  <VRow v-if="!loading && !loadingSOF">
     <VCol cols="10">
       <VTabs v-model="tabs" align-tabs="start">
         <VTab value="1"> Pengajuan </VTab>
@@ -117,13 +143,14 @@ onMounted(async () => {
       </VTabs>
     </VCol>
   </VRow>
-  <VRow v-if="!loading">
+  <VRow v-if="!loading && !loadingSOF">
     <VCol cols="12">
       <VTabsWindow v-model="tabs">
         <VTabsWindowItem value="1">
           <EditPengajuanFacilitator
             :dataform="form"
             :datadetailregistration="dataDetailRegistration"
+            :datasof="dataSOF"
           />
         </VTabsWindowItem>
         <VTabsWindowItem value="2">
