@@ -61,54 +61,7 @@ const handleOpenInfoModal = () => {
         <VCardText>
           <VRow class="mb-4">
             <VCol cols="2">
-              <VMenu :close-on-content-click="false">
-                <template #activator="{ props }">
-                  <VTextField
-                    placeholder="Filter"
-                    density="compact"
-                    rounded="xl"
-                    append-inner-icon="mdi-filter"
-                    v-bind="props"
-                  />
-                </template>
-                <VCard min-width="360px" class="mt-2">
-                  <VCardText>
-                    <VRow no-gutters class="mb-3">
-                      <VCol>
-                        <div class="text-h6 mb-1">Channel</div>
-                        <VSelect
-                          density="compact"
-                          model-value="Samua"
-                          menu-icon="fa-chevron-down"
-                          rounded="xl"
-                        />
-                      </VCol>
-                    </VRow>
-                    <VRow no-gutters class="mb-3">
-                      <VCol>
-                        <div class="text-h6 mb-1">Skala Usaha</div>
-                        <VSelect
-                          density="compact"
-                          model-value="Samua"
-                          menu-icon="fa-chevron-down"
-                          rounded="xl"
-                        />
-                      </VCol>
-                    </VRow>
-                    <VRow no-gutters class="mb-3">
-                      <VCol>
-                        <div class="text-h6 mb-1">Pusat</div>
-                        <VSelect
-                          density="compact"
-                          model-value="Samua"
-                          menu-icon="fa-chevron-down"
-                          rounded="xl"
-                        />
-                      </VCol>
-                    </VRow>
-                  </VCardText>
-                </VCard>
-              </VMenu>
+              <TableFilterInputMenu />
             </VCol>
             <VSpacer />
             <VCol cols="9">
@@ -120,51 +73,10 @@ const handleOpenInfoModal = () => {
               />
             </VCol>
           </VRow>
-          <VDataTable
-            class="examination-table"
-            :headers="invoiceHeader"
-            :items="invoiceData"
-            :page="1"
-            hover
-          >
-            <template #item.index="{ index }">
-              {{ index + 1 }}
-            </template>
-            <template #item.businessType="{ item }">
-              <div class="d-flex">
-                <div
-                  v-for="el in item.businessType"
-                  class="green-box py-1 px-3 me-3"
-                >
-                  {{ el }}
-                </div>
-              </div>
-            </template>
-            <template #item.status="{ item }">
-              <div
-                class="status-box py-1 px-3 cursor-pointer"
-                @click="handleOpenInfoModal"
-              >
-                {{ item.status }}
-              </div>
-            </template>
-            <template #item.actions>
-              <VIcon
-                icon="mdi-arrow-right"
-                color="primary"
-                size="x-large"
-                @click="router.push('/reguler/examination-update/detail')"
-              />
-            </template>
-            <template #bottom>
-              <VDataTableFooter
-                v-if="invoiceData.length > 10"
-                first-icon="mdi-chevron-double-left"
-                last-icon="mdi-chevron-double-right"
-                show-current-page
-              />
-            </template>
-          </VDataTable>
+          <TablePemeriksaanProduk
+            @show:modal-info="handleOpenInfoModal"
+            detail-path="/reguler/examination-update/detail"
+          />
         </VCardText>
       </VCard>
     </VCol>
