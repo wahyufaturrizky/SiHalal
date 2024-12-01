@@ -27,10 +27,8 @@ const form = ref({
 
 const resetForm = () => {
   form.value = {
-    kualitasProduk: null,
-    rincianProduk: null,
-    namaProduk: null,
-    foto: null,
+    pabrik: null,
+    file: null,
   };
 };
 
@@ -72,7 +70,7 @@ const pabrik = [
         <VCardTitle
           class="text-h5 font-weight-bold d-flex justify-space-between align-center"
         >
-          <span>Tambah Nama Produk</span>
+          <span>Tambah Layout</span>
           <VBtn
             icon
             color="transparent"
@@ -85,45 +83,23 @@ const pabrik = [
         </VCardTitle>
 
         <VCardText>
-          <VLabel for="kualitasProduk"> Kualitas Produk </VLabel>
+          <VLabel for="pabrik"> Pabrik </VLabel>
           <VSelect
-            id="kualitasProduk"
-            v-model="form.kualitasProduk"
-            placeholder="Pilih Kualitas Produk"
-            outlined
-            dense
-            required
-            class="mb-2"
-            :items="kualitasProduk"
-          />
-
-          <VLabel for="rincianProduk"> Rincian Produk </VLabel>
-          <VSelect
-            id="rincianProduk"
-            v-model="form.rincianProduk"
-            placeholder="Isi Rincian Produk"
-            outlined
-            dense
-            required
-            class="mb-2"
-            :items="rincialProduk"
-          />
-          <VLabel for="namaProduk"> Nama Produk </VLabel>
-          <VTextField
-            id="namaProduk"
-            v-model="form.namaProduk"
-            placeholder="Isi Nama Produk"
+            id="pabrik"
+            v-model="form.pabrik"
+            placeholder="Pilih Pabrik"
             outlined
             dense
             required
             class="mb-4"
+            :items="pabrik"
           />
           <VRow no-gutters class="d-flex justify-space-between align-center">
             <VCol cols="6">
-              <VLabel for="uploadProduk">Upload Produk</VLabel>
+              <VLabel for="uploadLayout">Upload Layout</VLabel>
             </VCol>
             <VCol cols="6">
-              <VFileInput v-model="form.foto"></VFileInput>
+              <HalalFileInput id="uploadLayout" v-model="form.file"></HalalFileInput>
             </VCol>
           </VRow>
         </VCardText>
