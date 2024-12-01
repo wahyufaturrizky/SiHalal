@@ -147,12 +147,7 @@ onMounted(() => {
               <VAutocomplete
                 id="type"
                 v-model="form.type"
-                :items="[
-                  'Fasilitas 1',
-                  'Fasilitas 2',
-                  'Fasilitas 3',
-                  'Fasilitas 4',
-                ]"
+                :items="['Self Declare', 'Reguler']"
                 placeholder="Pilih jenis fasilitasi"
                 solo
                 clearable
