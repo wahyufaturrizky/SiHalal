@@ -73,7 +73,7 @@ const putFacilitate = async () => {
     loadingUpdate.value = true;
 
     const {
-      facilitatorName,
+      facilitationProgramName,
       explanationOfFacilitation,
       year,
       regionalScope,
@@ -89,7 +89,7 @@ const putFacilitate = async () => {
     const res = await $api(`/facilitate/update/${facilitateId}`, {
       method: "put",
       body: {
-        fac_name: facilitatorName,
+        fac_name: facilitationProgramName,
         fac_description: explanationOfFacilitation,
         tahun: year,
         lingkup_wilayah: regionalScope,
@@ -105,8 +105,8 @@ const putFacilitate = async () => {
 
     if (res?.code === 2000) {
       closeDialog();
+      useSnackbar().sendSnackbar("Success update data", "success");
       loadingUpdate.value = false;
-      router.go(-1);
     } else {
       useSnackbar().sendSnackbar("Gagal update data", "error");
       loadingUpdate.value = false;
@@ -141,6 +141,7 @@ const cancel = () => {
                 id="facilitatorName"
                 v-model="form.facilitatorName"
                 outlined
+                disabled
               />
             </VCol>
           </VRow>
