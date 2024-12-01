@@ -14,7 +14,8 @@ interface DataItem {
   id_daftar: string
   TanggalDaftar: string
   Nama: string
-  Alamat: string
+  Provinsi: string
+  JenisDaftar: string
   JenisProduk: string
   MerkDagang: string
   Status: string
@@ -24,55 +25,66 @@ const selectedItems = ref<DataItem[]>([])
 
 // Dummy data for table
 // Dummy data for the table
-const tableData = ref([
+const items = ref([
   {
     id: 1,
-    id_daftar: 'D001',
-    TanggalDaftar: '2024-11-01',
-    Nama: 'John Doe',
-    Alamat: '1234 Elm Street, Springfield',
-    JenisProduk: 'Electronics',
-    MerkDagang: 'TechBrand',
+    nomor_daftar: 'SH2024-225-29480',
+    TanggalDaftar: '22/08/2024',
+    Nama: 'Dapoer Boenda',
+    provinsi: 'Jawa Barat',
+    JenisDaftar: 'Baru',
+    JenisProduk: 'Produk Bakteri',
+    JenisUsaha: 'Micro',
+    Jumlah: 32,
     Status: 'OF74',
   },
   {
     id: 2,
-    id_daftar: 'D002',
-    TanggalDaftar: '2024-11-02',
-    Nama: 'Jane Smith',
-    Alamat: '5678 Oak Avenue, Riverdale',
-    JenisProduk: 'Food & Beverages',
-    MerkDagang: 'Tasty Treats',
-    Status: 'OF74',
+    nomor_daftar: 'SH2024-225-29480',
+    TanggalDaftar: '22/08/2024',
+    Nama: 'Dapoer Boenda',
+    provinsi: 'Jawa Barat',
+    JenisDaftar: 'SIUP',
+    JenisProduk: 'Produk Bakteri',
+    JenisUsaha: 'Besar',
+    Jumlah: 32,
+    Status: 'Verifikasi',
   },
   {
     id: 3,
-    id_daftar: 'D003',
-    TanggalDaftar: '2024-11-03',
-    Nama: 'Alice Johnson',
-    Alamat: '9102 Pine Lane, Metropolis',
-    JenisProduk: 'Apparel',
-    MerkDagang: 'FashionWear',
-    Status: 'OF74',
+    nomor_daftar: 'SH2024-225-29480',
+    TanggalDaftar: '22/08/2024',
+    Nama: 'Dapoer Boenda',
+    provinsi: 'Jawa Barat',
+    JenisDaftar: 'Baru',
+    JenisProduk: 'Produk Bakteri',
+    JenisUsaha: 'Micro',
+    Jumlah: 32,
+    Status: 'Verifikasi',
   },
   {
     id: 4,
-    id_daftar: 'D004',
-    TanggalDaftar: '2024-11-04',
-    Nama: 'Bob Brown',
-    Alamat: '1122 Maple Drive, Gotham',
-    JenisProduk: 'Home Appliances',
-    MerkDagang: 'HomeEase',
-    Status: 'OF74',
+    id_registrasi: 'D004',
+    nomor_daftar: 'SH2024-225-29480',
+    TanggalDaftar: '22/08/2024',
+    Nama: 'Dapoer Boenda',
+    provinsi: 'Jawa Barat',
+    JenisDaftar: 'SIUP',
+    JenisProduk: 'Produk Bakteri',
+    JenisUsaha: 'Besar',
+    Jumlah: 32,
+    Status: 'Verifikasi',
   },
   {
     id: 5,
-    id_daftar: 'D005',
-    TanggalDaftar: '2024-11-05',
-    Nama: 'Emily Davis',
-    Alamat: '3344 Birch Road, Star City',
-    JenisProduk: 'Cosmetics',
-    MerkDagang: 'BeautyGlow',
+    nomor_daftar: 'SH2024-225-29480',
+    TanggalDaftar: '22/08/2024',
+    Nama: 'Dapoer Boenda',
+    provinsi: 'Jawa Barat',
+    JenisDaftar: 'Baru',
+    JenisProduk: 'Produk Bakteri',
+    JenisUsaha: 'Micro',
+    Jumlah: 32,
     Status: 'OF74',
   },
 ])
@@ -85,13 +97,13 @@ const page = ref(1)
 // Table headers
 const permohonanHeaders = [
   { title: 'No', key: 'id', align: 'center' },
-  { title: 'ID Daftar', key: 'id_daftar' },
-  { title: 'Pilih', key: 'pilih' },
+  { title: 'Nomor Daftar', key: 'nomor_daftar' },
   { title: 'Tanggal Daftar', key: 'TanggalDaftar' },
-  { title: 'Nama', key: 'Nama' },
-  { title: 'Alamat', key: 'Alamat' },
+  { title: 'Nama PU', key: 'Nama' },
+  { title: 'Provinsi', key: 'provinsi' },
+  { title: 'Jenis Daftar', key: 'JenisDaftar' },
   { title: 'Jenis Produk', key: 'JenisProduk' },
-  { title: 'Merk Dagang', key: 'MerkDagang' },
+  { title: 'Jenis Usaha dan Jumlah', key: 'jenis_usaha_jumlah' },
   { title: 'Status', key: 'Status' },
   { title: 'Action', key: 'action' },
 ]
@@ -170,108 +182,49 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
     selectedItems.value = selectedItems.value.filter(selectedItem => selectedItem.id !== item.id)
   }
 }
+
+// Sample data for "Bahan Bersertifikat" and "Tidak Bersertifikat"
+const StatusOptions = [
+  { name: 'OF74', value: 'of74' },
+  { name: 'Verifikasi', value: 'verifikasi' },
+]
+
+const bahanType = ref(null)
 </script>
 
 <template>
-  <VDialog width="1200">
-    <template #activator="{ props: openModal }">
-      <VBtn
-        variant="flat"
-        append-icon="fa-plus"
-        style="margin: 1svw"
-        v-bind="openModal"
-      >
-        Ambil Data
-      </VBtn>
-    </template>
-    <template #default="{ isActive }">
+  <VContainer class="pa-0">
+    <!-- Title and Buttons Row -->
+    <VRow>
+      <VCol>
+        <p class="text-h2">
+          <b>Verifikasi Dokumen Reguler</b>
+        </p>
+      </VCol>
+      <VCol cols="2" style="display: flex; justify-content: end">
+        <DataPermohonanSertifikasi />
+      </VCol>
+    </VRow>
+    <VRow>
       <VCard
         variant="flat"
         class="pa-4"
       >
         <VCardTitle>
           <VRow>
-            <VCol cols="10"><h3>Data Permohonan Sertifikasi</h3></VCol>
-            <VCol cols="2" style="display: flex; justify-content: end">
-              <VIcon
-                size="small"
-                icon="fa-times"
-                @click="isActive.value = false"
-              />
-            </VCol>
+            <VCol cols="10"><h2>Data Pengajuan</h2></VCol>
           </VRow>
         </VCardTitle>
         <VCardText>
           <VRow>
-            <VCol>
-              <VBtn
-                :disabled="selectedItems.length === 0"
-                :text="buttonText"
-                @click="() => console.log(selectedItems)"
-              />
-            </VCol>
+            <VCol />
           </VRow>
           <VRow>
-            <VCol cols="1">
-              <div class="checkbox-container">
-                <VCheckbox v-model="isAllSelected" class="custom-checkbox" @click="toggleSelectAll" />
-              </div>
-            </VCol>
-            <VCol class="d-flex justify-start align-center" cols="2">
-              <VMenu v-model="showFilterMenu" :close-on-content-click="false" offset-y>
-                <template #activator="{ props }">
-                  <VBtn color="primary" variant="outlined" v-bind="props" append-icon="ri-filter-fill">
-                    Filter
-                  </VBtn>
-                </template>
-                <VCard class="pa-3" width="300">
-                  <VSelect
-                    v-model="selectedFilters.jenisProduk"
-                    label="Jenis Produk"
-                    :items="['Semua', 'Produk Y', 'Produk Z']"
-                    class="mt-3"
-                  />
-                  <VSelect
-                    v-model="selectedFilters.fasilitas"
-                    label="Fasilitas"
-                    :items="['Semua', 'Fasilitas A', 'Fasilitas AB']"
-                    class="mt-3"
-                  />
-                  <VSelect
-                    v-model="selectedFilters.lembaga"
-                    label="Lembaga"
-                    :items="['Semua', 'Lembaga A', 'Lembaga B']"
-                    class="mt-3"
-                  />
-                  <VSelect
-                    v-model="selectedFilters.pendamping"
-                    label="Pendamping"
-                    :items="['Semua', 'Pendamping A', 'Pendamping B']"
-                    class="mt-3"
-                  />
-                  <VSelect
-                    v-model="selectedFilters.provinsi"
-                    label="Provinsi"
-                    :items="['Semua', 'Provinsi A', 'Provinsi B']"
-                    class="mt-3"
-                  />
-                  <VSelect
-                    v-model="selectedFilters.kabupaten"
-                    label="Kabupaten"
-                    :items="['Semua', 'Kabupaten A', 'Kabupaten B']"
-                    class="mt-3"
-                  />
-                  <VBtn block color="primary" class="mt-3" @click="applyFilters">
-                    Apply Filters
-                  </VBtn>
-                </VCard>
-              </VMenu>
-            </VCol>
-            <VCol class="d-flex justify-sm-space-between align-center" cols="9">
+            <VCol class="d-flex justify-sm-space-between align-center" cols="12">
               <VTextField
                 v-model="searchQuery"
                 density="compact"
-                placeholder="Search Data"
+                placeholder="Cari Nama Pengajuan"
                 append-inner-icon="ri-search-line"
                 style="max-width: 100%"
                 @input="handleInput"
@@ -280,12 +233,13 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
           </VRow>
           <VRow>
             <VDataTableServer
+              :headers="permohonanHeaders"
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
-              :headers="permohonanHeaders"
-              :items="tableData"
+              :items="items"
               :loading="loading"
               :items-length="totalItems"
+              style="white-space: nowrap;"
               loading-text="Loading..."
               @update:options="loadItem(page, itemPerPage)"
             >
@@ -338,6 +292,26 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
                   </div>
                 </div>
               </template>
+              <template #item.jenis_usaha_jumlah="{ item }">
+                  <VContainer style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                    <VChip
+                      variant="outlined"
+                      style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
+                    >
+                      <span style="color: #49a84c;">
+                        {{ item.JenisUsaha }}
+                      </span>
+                    </VChip>
+                    <VChip
+                      variant="outlined"
+                      style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
+                    >
+                      <span style="color: #49a84c;">
+                        {{ item.Jumlah }}
+                      </span>
+                    </VChip>
+                  </VContainer>
+              </template>
             </VDataTableServer>
           </VRow>
           <VPagination
@@ -347,43 +321,46 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
           />
         </VCardText>
       </VCard>
-    </template>
-  </VDialog>
+    </VRow>
+  </VContainer>
 </template>
 
 <style scoped>
 .text-center {
   text-align: center;
 }
-
 .text-success {
   color: #4caf50;
 }
-
 .text-error {
   color: #e53935;
 }
-
 .text-primary {
   color: #1976d2;
 }
-
 .text-decoration-underline {
   text-decoration: underline;
 }
 
-.checkbox-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #ccc; /* Thin border */
-  border-radius: 4px; /* Rounded corners */
-  block-size: 32px; /* Container size */
-  inline-size: 32px; /* Container size */
-  padding-inline-end: 35px; /* Smaller padding */
+custom-v-checkbox {
+  --v-checkbox-size: 24px; /* Set size for outer box */
 }
 
-.custom-checkbox {
-  --v-checkbox-size: 16px; /* Smaller checkbox size */
+.custom-v-checkbox .v-checkbox__input {
+  border: 2px solid #ccc !important; /* Outline border */
+  border-radius: 6px; /* Rounded corners */
+}
+
+.custom-v-checkbox .v-checkbox__input::before {
+  width: 16px !important; /* Inner box size */
+  height: 16px !important;
+  background: transparent !important;
+  border: 2px solid transparent !important; /* Inner box border */
+}
+
+.custom-v-checkbox .v-checkbox__input--indeterminate::before,
+.custom-v-checkbox .v-checkbox__input--checked::before {
+  border-color: #000 !important; /* Inner box color */
+  background: #ccc !important;
 }
 </style>
