@@ -41,6 +41,7 @@ interface Importer {
 
 const props = defineProps<{
   event: ShlnDetail;
+  hcb: { country: string; id: string; name: string }[];
 }>();
 
 const parseISO = (date: Date) => {
@@ -89,7 +90,8 @@ const route = useRoute();
 const shlnId = route.params.id;
 const importerPocDialog = ref(false);
 const importerDialog = ref(false);
-
+const importerPOCButton = ref(false);
+const importerButton = ref(false);
 const getCountry = async () => {
   const response: MasterCountry[] = await $api("/master/country", {
     method: "get",
@@ -104,12 +106,14 @@ const openImporterPOCDialog = () => {
   });
 };
 const saveImporterPOC = async () => {
+  importerPOCButton.value = true;
   try {
     const response = await $api("/shln/submission/identity/importer-poc", {
       method: "put",
       body: { ...formIdentity.value.importer, id: shlnId },
     });
     importerPocDialog.value = false;
+    importerPOCButton.value = false;
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
       return;
@@ -130,6 +134,7 @@ const openImporterDialog = () => {
   });
 };
 const saveImporter = async () => {
+  importerPOCButton.value = true;
   try {
     const response = await $api("/shln/submission/identity/importer", {
       method: "put",
@@ -146,6 +151,8 @@ const saveImporter = async () => {
       },
     });
     importerDialog.value = false;
+    importerPOCButton.value = false;
+
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
       return;
@@ -159,7 +166,7 @@ const saveImporter = async () => {
 };
 
 const tracking = ref<ShlnTracking[]>();
-const hcb = ref<{ country: string; id: string; name: string }[]>();
+// const hcb = ref<{ country: string; id: string; name: string }[]>();
 
 const loadTracking = async () => {
   try {
@@ -175,24 +182,24 @@ const loadTracking = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
-const getHcb = async () => {
-  try {
-    const response = await $api("/shln/submission/identity/hcb", {
-      method: "get",
-    });
+// const getHcb = async () => {
+//   try {
+//     const response = await $api("/shln/submission/identity/hcb", {
+//       method: "get",
+//     });
 
-    hcb.value = response;
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
+//     hcb.value = response;
+//   } catch (error) {
+//     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+//   }
+// };
 const changeHcb = (item: string) => {
-  const country = hcb.value?.find((body) => body.id == item)?.country;
+  const country = props.hcb.find((body) => body.id == item).country;
   hcbCountry.value = country;
 };
 
 onMounted(async () => {
-  await Promise.allSettled([getCountry(), loadTracking(), getHcb()]);
+  await Promise.allSettled([getCountry(), loadTracking()]);
   changeHcb(formIdentity.value.hcb.hcb_id);
   console.log(parseISO(new Date(props.event.hcn.expired_date)));
 });
@@ -505,7 +512,14 @@ const saveForm = () => {
         </VRow>
         <VRow class="flex-row-reverse">
           <VCol cols="12" md="auto">
-            <VBtn block color="primary" @click="saveImporter"> Yes, Save </VBtn>
+            <VBtn
+              block
+              color="primary"
+              :disabled="importerButton"
+              @click="saveImporter"
+            >
+              Yes, Save
+            </VBtn>
           </VCol>
           <VCol cols="12" md="auto">
             <VBtn block variant="outlined" @click="importerDialog = false">
@@ -531,7 +545,12 @@ const saveForm = () => {
         </VRow>
         <VRow class="flex-row-reverse">
           <VCol cols="12" md="auto">
-            <VBtn block color="primary" @click="saveImporterPOC">
+            <VBtn
+              block
+              color="primary"
+              :disabled="importerPOCButton"
+              @click="saveImporterPOC"
+            >
               Yes, Save
             </VBtn>
           </VCol>
