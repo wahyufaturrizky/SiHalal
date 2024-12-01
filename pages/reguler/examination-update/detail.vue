@@ -40,22 +40,6 @@ const productNameData = ref([
   },
 ]);
 
-const auditorHeader: any[] = [
-  { title: "No", key: "index" },
-  { title: "Nama", key: "name", nowrap: true },
-  { title: "Tanggal Lahir", key: "birthDate", nowrap: true },
-  { title: "JK", key: "jk" },
-  { title: "No. Pendaftaran", key: "regisNumber", nowrap: true },
-];
-const auditorData = ref([
-  {
-    name: "Bambang",
-    birthDate: "20/10/2000",
-    jk: "-",
-    regisNumber: "REG RI AHA 10102134",
-  },
-]);
-
 const trackingData = ref([
   {
     title: "Draft PU",
@@ -160,71 +144,7 @@ const handleUpdateStatus = () => {
             Daftar Pengajuan
           </VExpansionPanelTitle>
           <VExpansionPanelText class="mt-5">
-            <VRow>
-              <VCol cols="5" class="font-weight-bold">No. ID</VCol>
-              <VCol cols="7">: 39886986</VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="5" class="font-weight-bold">Status</VCol>
-              <VCol cols="7">: Pembayaran</VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="5" class="font-weight-bold">Tanggal Buat</VCol>
-              <VCol cols="7">: 10/10/2024</VCol>
-            </VRow>
-            <VDivider class="my-5" />
-            <VRow>
-              <VCol cols="5" class="font-weight-bold">Nama Perusahaan</VCol>
-              <VCol cols="7">: Kopi Susu Samsul</VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="5" class="font-weight-bold">Alamat</VCol>
-              <VCol cols="7"
-                >: Sumbawa Banget, RT002/RW002, Sumbang, Curio</VCol
-              >
-            </VRow>
-            <VRow>
-              <VCol cols="5" class="font-weight-bold">Kota/Kab</VCol>
-              <VCol cols="7">: Kab. Enrekang</VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="5" class="font-weight-bold">Provinsi</VCol>
-              <VCol cols="7">: Sulawesi Selatan</VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="5" class="font-weight-bold">Kode Pos</VCol>
-              <VCol cols="7">: -</VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="5" class="font-weight-bold">Negara</VCol>
-              <VCol cols="7">: Indonesia</VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="5" class="font-weight-bold">Telepon</VCol>
-              <VCol cols="7">: 081234567890</VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="5" class="font-weight-bold">Email</VCol>
-              <VCol cols="7">: kopisususamsul@gmail.com</VCol>
-            </VRow>
-            <VDivider class="my-5" />
-            <VRow>
-              <VCol cols="5" class="font-weight-bold">Jenis Badan Usaha</VCol>
-              <VCol cols="7">: Lainnya</VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="5" class="font-weight-bold d-flex align-center"
-                >Skala Usaha</VCol
-              >
-              <VCol cols="7" class="d-flex align-center">
-                <div class="pe-1">:</div>
-                <VSelect density="compact" model-value="Mikro" rounded="xl">
-                  <template #append>
-                    <VBtn text="Update" variant="outlined" disabled />
-                  </template>
-                </VSelect>
-              </VCol>
-            </VRow>
+            <PanelDaftarPengajuan type="EDIT" />
           </VExpansionPanelText>
         </VExpansionPanel>
         <VExpansionPanel :value="1" class="pt-3">
@@ -232,32 +152,7 @@ const handleUpdateStatus = () => {
             Pengajuan Sertifikasi
           </VExpansionPanelTitle>
           <VExpansionPanelText class="mt-5">
-            <VRow>
-              <VCol cols="5" class="font-weight-bold"
-                >No / Tanggal Permohonan</VCol
-              >
-              <VCol cols="7">: 1213 / 10/11/2023</VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="5" class="font-weight-bold">Jenis Layanan</VCol>
-              <VCol cols="7">: Minuman</VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="5" class="font-weight-bold">Jenis Pengajuan</VCol>
-              <VCol cols="7">: Baru</VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="5" class="font-weight-bold">Jenis Produk</VCol>
-              <VCol cols="7">: Minuman Bahagia</VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="5" class="font-weight-bold">Merek Dagang</VCol>
-              <VCol cols="7">: PT. Sukarasa</VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="5" class="font-weight-bold">Area Pemasaran</VCol>
-              <VCol cols="7">: Provinsi</VCol>
-            </VRow>
+            <PanelPengajuanSertifikasi />
           </VExpansionPanelText>
         </VExpansionPanel>
         <VExpansionPanel :value="2" class="pt-3">
@@ -293,14 +188,7 @@ const handleUpdateStatus = () => {
             Jadwal Audit
           </VExpansionPanelTitle>
           <VExpansionPanelText class="mt-5">
-            <VRow>
-              <VCol cols="6" class="font-weight-bold">Tanggal Mulai</VCol>
-              <VCol cols="6">: 10/12/2023</VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="6" class="font-weight-bold">Tanggal Selesai</VCol>
-              <VCol cols="6">: 10/12/2023</VCol>
-            </VRow>
+            <PanelJadwalAudit />
           </VExpansionPanelText>
         </VExpansionPanel>
         <VExpansionPanel :value="4" class="pt-3">
@@ -308,15 +196,7 @@ const handleUpdateStatus = () => {
             Auditor
           </VExpansionPanelTitle>
           <VExpansionPanelText class="mt-5">
-            <VDataTable
-              :headers="auditorHeader"
-              :items="auditorData"
-              hide-default-footer
-            >
-              <template #item.index="{ index }">
-                {{ index + 1 }}
-              </template>
-            </VDataTable>
+            <PanelAuditorTable />
           </VExpansionPanelText>
         </VExpansionPanel>
         <VExpansionPanel :value="5" class="pt-3">
@@ -324,18 +204,7 @@ const handleUpdateStatus = () => {
             Hasil Pemeriksaan
           </VExpansionPanelTitle>
           <VExpansionPanelText class="mt-5">
-            <VRow>
-              <VCol cols="6" class="font-weight-bold">Tanggal Selesai LPH</VCol>
-              <VCol cols="6">: 10/12/2023</VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="6" class="font-weight-bold">Hasil</VCol>
-              <VCol cols="6">: Lulus</VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="6" class="font-weight-bold">Dokumen </VCol>
-              <VCol cols="6">: -</VCol>
-            </VRow>
+            <PanelHasilPemeriksaan type="EDIT" />
           </VExpansionPanelText>
         </VExpansionPanel>
       </VExpansionPanels>
@@ -392,11 +261,7 @@ const handleUpdateStatus = () => {
             No. Pendaftaran
           </VExpansionPanelTitle>
           <VExpansionPanelText class="mt-5">
-            <div class="d-flex flex-column ga-2">
-              <div class="text-h5">SH2023-1-582897</div>
-              <div class="text-h6">13/10/2024</div>
-              <div class="text-h6">Jawa Tengah</div>
-            </div>
+            <PanelNoPendafaran />
           </VExpansionPanelText>
         </VExpansionPanel>
         <VExpansionPanel :value="2" class="pt-3">
@@ -410,24 +275,9 @@ const handleUpdateStatus = () => {
           </VExpansionPanelText>
         </VExpansionPanel>
       </VExpansionPanels>
-      <VCard class="mt-10 pa-5">
-        <VCardlTitle class="font-weight-bold text-h4"> Melacak </VCardlTitle>
-        <VCardText class="px-0">
-          <VTimeline side="end" align="start" hide-opposite>
-            <VTimelineItem dot-color="#FFFFFF" v-for="item in trackingData">
-              <VRow>
-                <VCol cols="7">
-                  <div class="text-h6">{{ item.title }}</div>
-                  <div>{{ item.desc }}</div>
-                </VCol>
-                <VCol cols="5">
-                  <div>{{ item.date }}</div>
-                </VCol>
-              </VRow>
-            </VTimelineItem>
-          </VTimeline>
-        </VCardText>
-      </VCard>
+      <div class="mt-10">
+        <PanelTracking />
+      </div>
     </template>
   </LPHDetailLayout>
   <VDialog v-model="isAssignModalOpen" max-width="840px" persistent>
@@ -530,24 +380,15 @@ const handleUpdateStatus = () => {
 
 <style scoped lang="scss">
 :deep(
-    .v-expansion-panel--active:not(:last-child),
+    .v-expansion-panel--active:not(:first-child),
     .v-expansion-panel--active + .v-expansion-panel
   ) {
-  margin-bottom: 40px !important;
+  margin-top: 40px !important;
 }
 
 :deep(.v-data-table.custom-table > .v-data-table-footer) {
   .v-data-table-footer__info {
     display: none;
-  }
-}
-
-:deep(.v-timeline.v-timeline--vertical) {
-  // .v-timeline-item:first-child .v-timeline-divider {
-  //   padding-block-start: 0px;
-  // }
-  .v-timeline-divider__dot .v-timeline-divider__inner-dot {
-    box-shadow: 0 0 0 2px #652672;
   }
 }
 
