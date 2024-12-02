@@ -1,6 +1,6 @@
 <template>
   <VRow no-gutters class="my-2 text-body-1">
-    <VCol :cols="colsName">
+    <VCol :cols="colsName" :style="nameStyle">
       {{ name }}
     </VCol>
     <VCol :cols="colsSeparator" class="text-right px-2">
@@ -36,6 +36,10 @@ const props = defineProps({
     type: String,
     default: '7'
   },
+  nameStyle: {
+    type: Object,
+    default: () => ({})
+  }
 });
 </script>
 
