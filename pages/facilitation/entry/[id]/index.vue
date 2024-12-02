@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import DetailFacilitateModalSend from "@/components/fasilitator/detail-facilitate-modal-send.vue";
-
 const loading = ref(false);
+const loadingSubmit = ref(false);
+const visibleModalKirim = ref(false);
 const dataFasilitasi = ref();
 const dataDetailRegistration = ref();
 const timelineEvents = ref();
@@ -10,6 +10,7 @@ const openPanelFacilitate = ref(0);
 const openPanelTracking = ref(0);
 
 const route = useRoute();
+const router = useRouter();
 
 const facilitateId = route.params.id;
 
@@ -124,6 +125,44 @@ const loadItemById = async () => {
   }
 };
 
+const submitFacilitate = async () => {
+  try {
+    loadingSubmit.value = true;
+
+    const res = await $api("/facilitate/entry/submit", {
+      method: "post",
+      body: {
+        nama: "joni",
+        alamat: "string",
+        jenis_fasilitator: "string",
+        provinsi_code: "string",
+        kota_code: "string",
+        kecamatan_code: "string",
+        kode_pos: "string",
+        email: "string",
+        kontak_person: "string",
+        no_hp: "string",
+      },
+    });
+
+    console.log(res);
+
+    if (res?.code === 2000) {
+      router.go(-1);
+      loadingSubmit.value = false;
+      visibleModalKirim.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingSubmit.value = false;
+      visibleModalKirim.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingSubmit.value = false;
+    visibleModalKirim.value = false;
+  }
+};
+
 onMounted(async () => {
   await loadItemById();
 });
@@ -151,7 +190,42 @@ const navigateAction = () => {
         >
           Ubah
         </VBtn>
-        <DetailFacilitateModalSend />
+
+        <VBtn
+          density="compact"
+          style="margin: 0.5svw"
+          variant="flat"
+          append-icon="fa-paper-plane"
+          @click="visibleModalKirim = true"
+        >
+          Kirim
+        </VBtn>
+
+        <VDialog v-model="visibleModalKirim" max-width="50svw">
+          <VCard>
+            <VCardTitle><h3>Kirim Pengajuan</h3></VCardTitle>
+            <VCardItem>
+              <p>Yakin ingin mengirim pengajuan fasilitasi?</p>
+            </VCardItem>
+            <VCardActions>
+              <VBtn
+                variant="outlined"
+                density="compact"
+                @click="visibleModalKirim = false"
+              >
+                Batal
+              </VBtn>
+              <VBtn
+                :disabled="loadingSubmit"
+                variant="flat"
+                density="compact"
+                @click="submitFacilitate"
+              >
+                {{ loadingSubmit ? "Loading..." : "Kirim" }}
+              </VBtn>
+            </VCardActions>
+          </VCard>
+        </VDialog>
       </div>
     </VCol>
   </VRow>
