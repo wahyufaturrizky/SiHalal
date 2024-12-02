@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits } from 'vue'
-import { VDataTableServer } from 'vuetify/components'
+import { computed, defineEmits, defineProps, ref } from 'vue';
+import { VDataTableServer } from 'vuetify/components';
 
 // Props and Emits
 defineProps({ mode: String })
 
-const emit = defineEmits(['confirm-add', 'cancel']);
+const emit = defineEmits(['confirm-add', 'cancel'])
 
 // State variables
 const isModalOpen = ref(false)
@@ -120,15 +120,15 @@ const closeModal = () => {
 const searchQuery = ref('')
 
 const handleInput = () => {
-  debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
+  debouncedFetch(page.value, itemPerPage.value, searchQuery.value)
 }
 
 const handleCancel = (message: string) => {
-  console.log('Cancel message:', message);
+  console.log('Cancel message:', message)
 }
 
 const navigateAction = (id: string) => {
-  navigateTo(`/sertifikasi-halal/luar-negeri/verification/${id}`);
+  navigateTo(`/sertifikasi-halal/luar-negeri/verification/${id}`)
 }
 
 const loadItem = async (page, size) => {
@@ -138,8 +138,9 @@ const loadItem = async (page, size) => {
 }
 
 const debouncedFetch = debounce(loadItem, 500)
+
 // Filter state
-const showFilterMenu = ref(false);
+const showFilterMenu = ref(false)
 
 const selectedFilters = ref({
   fasilitas: 'Semua',
@@ -151,7 +152,7 @@ const selectedFilters = ref({
 })
 
 const applyFilters = () => {
-  loadItem(page.value, itemPerPage.value, searchQuery.value, selectedFilters.value);
+  loadItem(page.value, itemPerPage.value, searchQuery.value, selectedFilters.value)
 }
 
 // Check if all items are selected
@@ -198,8 +199,13 @@ const bahanType = ref(null)
   >
     <VCardTitle>
       <VRow>
-        <VCol cols="10"><h3>Data Pengajuan</h3></VCol>
-        <VCol cols="2" style="display: flex; justify-content: end">
+        <VCol cols="10">
+          <h3>Data Pengajuan</h3>
+        </VCol>
+        <VCol
+          cols="2"
+          style="display: flex; justify-content: end;"
+        >
           <DataPermohonanSertifikasi />
         </VCol>
       </VRow>
@@ -219,22 +225,25 @@ const bahanType = ref(null)
             placeholder="Status"
           />
         </VCol>
-        <VCol class="d-flex justify-sm-space-between align-center" cols="9">
+        <VCol
+          class="d-flex justify-sm-space-between align-center"
+          cols="9"
+        >
           <VTextField
             v-model="searchQuery"
             density="compact"
             placeholder="Search Data"
             append-inner-icon="ri-search-line"
-            style="max-width: 100%"
+            style="max-inline-size: 100%;"
             @input="handleInput"
           />
         </VCol>
       </VRow>
       <VRow>
         <VDataTableServer
-          :headers="permohonanHeaders"
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
+          :headers="permohonanHeaders"
           :items="items"
           :loading="loading"
           :items-length="totalItems"
@@ -305,15 +314,19 @@ const bahanType = ref(null)
 .text-center {
   text-align: center;
 }
+
 .text-success {
   color: #4caf50;
 }
+
 .text-error {
   color: #e53935;
 }
+
 .text-primary {
   color: #1976d2;
 }
+
 .text-decoration-underline {
   text-decoration: underline;
 }
@@ -328,10 +341,10 @@ custom-v-checkbox {
 }
 
 .custom-v-checkbox .v-checkbox__input::before {
-  width: 16px !important; /* Inner box size */
-  height: 16px !important;
-  background: transparent !important;
   border: 2px solid transparent !important; /* Inner box border */
+  background: transparent !important;
+  block-size: 16px !important;
+  inline-size: 16px !important; /* Inner box size */
 }
 
 .custom-v-checkbox .v-checkbox__input--indeterminate::before,
