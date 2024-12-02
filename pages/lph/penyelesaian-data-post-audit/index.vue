@@ -1,13 +1,19 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+
 const route = useRoute()
 const id = route?.params?.id
+
+const dialogToggle = ref(false)
+const titleDialog = ref('')
+const labelSaveBtn = ref('')
+const inputValueReturn = ref('')
 
 const snackbar = useSnackbar()
 
 const panelSubmission = ref([0, 1])
 const panelPic = ref([0, 1])
 const panelAspectLegal = ref([0, 1])
-const panelFactory = ref([0, 1])
 const panelOutlet = ref([0, 1])
 const panelSupervisor = ref([0, 1])
 const panelDownloadFormulir = ref([0, 1])
@@ -72,32 +78,6 @@ const aspectLegalItems = ref([
   { no: 11, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
 ])
 
-const factoryHeader = [
-  { title: 'No.', key: 'no', nowrap: true },
-  { title: 'Keterangan Biaya', key: 'priceDetail', nowrap: true },
-  { title: 'Jumlah', key: 'total', nowrap: true },
-  { title: 'Harga', key: 'price', nowrap: true },
-  { title: 'Sub Total', key: 'subTotal', nowrap: true },
-]
-
-const factoryItems = ref([
-  { no: 1, priceDetail: 'Biaya Pemeriksaan', total: '1', price: 'Rp 6.000.000', subTotal: 'Rp 6.000.000' },
-  { no: 2, priceDetail: 'Biaya Audit', total: '1', price: 'Rp 6.000.000', subTotal: 'Rp 6.000.000' },
-],
-)
-
-const outletHeader = [
-  { title: 'No.', key: 'no', nowrap: true },
-  { title: 'Nama.', key: 'name', nowrap: true },
-  { title: 'Alamat.', key: 'address', nowrap: true },
-]
-
-const outletItems = ref([
-  { no: 1, name: 'Maya', address: 'Jakarta' },
-  { no: 2, name: 'Rahmi', address: 'Bandung' },
-],
-)
-
 const supervisorHeader = [
   { title: 'No.', key: 'no', nowrap: true },
   { title: 'Nama', key: 'name', nowrap: true },
@@ -115,12 +95,39 @@ const updateKbli = () => {
   snackbar.sendSnackbar('KBLI Successfully Updated', 'success')
 }
 
-const navigateTo = (url: string) => {
-  window.location.href = url
+const toggle = (type: string) => {
+  dialogToggle.value = true
+  titleDialog.value = type === 'add' ? 'Mengirim Pengajuan' : 'Pengembalian Dokumen'
+  labelSaveBtn.value = type === 'add' ? 'Ya, Kirim' : 'Kembalikan'
 }
 </script>
 
 <template>
+  <DialogWithAction
+    :title="titleDialog"
+    :is-open="dialogToggle"
+    :toggle="() => dialogToggle = false"
+    :on-save="() => dialogToggle = false"
+    :label-save-btn="labelSaveBtn"
+  >
+    <template #content>
+      <div v-if="titleDialog === 'Mengirim Pengajuan'">
+        <p>Pastikan dokumen persyaratan lengkap dan semua biaya pemeriksaan sudah dimasukkan</p>
+      </div>
+      <div v-else>
+        <label>Masukan Keterangan Pengembalian (Max. 1000 Karakter)</label>
+        <VTextarea
+          v-model="inputValueReturn"
+          placeholder="Masukkan keterangan pengembalian"
+          clearable
+          auto-grow
+          dense
+          outlined
+          :style="{ maxWidth: '100%' }"
+        />
+      </div>
+    </template>
+  </DialogWithAction>
   <VContainer>
     <VRow>
       <KembaliButton />
@@ -135,18 +142,19 @@ const navigateTo = (url: string) => {
         <VRow class="d-flex justify-end align-center ga-2">
           <VBtn
             variant="outlined"
-            append-icon="ri-edit-line"
+            color="#E1442E"
+            style="border-color: #E1442E;"
+            @click="() => toggle('return')"
           >
-            Ubah Data
+            Pengembalian
           </VBtn>
-          <VBtn
-            variant="outlined"
-            append-icon="ri-edit-line"
-            @click="navigateTo(`/audit-pengajuan/ubah-laporan/${id}`)"
-          >
-            Ubah Laporan
+          <VBtn variant="outlined">
+            Lihat Draft Sertif
           </VBtn>
-          <VBtn append-icon="fa-paper-plane">
+          <VBtn variant="outlined">
+            Cetak Data
+          </VBtn>
+          <VBtn @click="() => toggle('add')">
             Kirim
           </VBtn>
         </VRow>
