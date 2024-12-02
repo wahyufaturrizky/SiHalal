@@ -9,6 +9,7 @@ const countdownMount = ref(false);
 const emailSubmittedBtn = ref(false);
 const emailRef = ref<VTextField>();
 const emailError = ref(null);
+const disableButtonCountDown = 60000
 
 const handleCountdownDone = () => {
   // console.log("countdown done");
@@ -21,8 +22,9 @@ const onClickEmailSubmit = () => {
   inputDisabled.value = true;
   submitDisabled.value = true;
   sendAgainDisabled.value = true;
-  countdownMount.value = true;
+  // countdownMount.value = true;
   submitEmail();
+  setTimeout(()=> sendAgainDisabled.value = false, disableButtonCountDown);
   // emailSubmittedBtn.value = true;
 };
 
@@ -31,6 +33,7 @@ const onClickSendAgain = () => {
   inputDisabled.value = true;
   sendAgainDisabled.value = true;
   submitEmail();
+  setTimeout(() => sendAgainDisabled.value = false, disableButtonCountDown);
 };
 
 const emit = defineEmits([
@@ -61,11 +64,10 @@ const submitEmail = async () => {
     if (emailAddr.value !== "") {
       const { data, error } = await useFetch("/api/auth/forgotinq", {
         method: "POST",
-        body: { email: emailAddr.value }, // Payload for POST
+        body: { email: emailAddr.value },
       });
-      emailSubmittedBtn.value = true;
+
       if (error.value) {
-        console.log("Masuk sini ga ?")
         emailError.value = "Email tidak ditemukan"
         throw error.value;
       }
@@ -102,15 +104,15 @@ const submitEmail = async () => {
       </VCol>
     </VRow>
     <br />
-    <VRow>
-      <VCol>
-        <CountdownTimer
-          v-on:countdown-done="handleCountdownDone"
-          v-if="countdownMount"
-          :timer-start-in-second="60"
-        ></CountdownTimer>
-      </VCol>
-    </VRow>
+<!--    <VRow>-->
+<!--      <VCol>-->
+<!--        <CountdownTimer-->
+<!--          v-on:countdown-done="handleCountdownDone"-->
+<!--          v-if="countdownMount"-->
+<!--          :timer-start-in-second="60"-->
+<!--        ></CountdownTimer>-->
+<!--      </VCol>-->
+<!--    </VRow>-->
     <VRow>
       <VCol>
         <VBtn

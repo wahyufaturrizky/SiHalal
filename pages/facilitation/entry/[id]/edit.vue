@@ -4,6 +4,7 @@ const route = useRoute();
 
 const facilitateId = route.params.id;
 const loading = ref(false);
+const loadingSOF = ref(false);
 
 const form = ref({
   facilitatorName: "",
@@ -22,7 +23,9 @@ const form = ref({
   status: "",
 });
 
-const { jenis_fasilitasi } = form.value;
+const dataSOF = ref([]);
+
+const isLockedLembaga = ref(false);
 
 const dataDetailRegistration = ref();
 
@@ -37,42 +40,44 @@ const loadItemById = async () => {
     if (response.code === 2000) {
       const { fasilitator } = response.data || {};
 
-      if (fasilitator?.fasilitasi && fasilitator?.status_registrasi) {
-        const { fasilitasi, status_registrasi } = fasilitator || {};
+      const { fasilitasi, status_registrasi } = fasilitator || {};
 
-        const {
-          nama,
-          sumber_pembiayaan,
-          kuota,
-          penanggung_jawab,
-          nama_program,
-          phone_penanggung_jawab,
-          tahun,
-          lingkup_wilayah_fasilitas,
-          tgl_mulai,
-          tgl_selesai,
-          jenis_fasilitasi,
-        } = fasilitasi || {};
+      const {
+        nama,
+        sumber_pembiayaan,
+        kuota,
+        penanggung_jawab,
+        nama_program,
+        phone_penanggung_jawab,
+        tahun,
+        lingkup_wilayah_fasilitas,
+        tgl_mulai,
+        tgl_selesai,
+        jenis_fasilitasi,
+        is_locked_lembaga,
+        fac_description,
+      } = fasilitasi || {};
 
-        dataDetailRegistration.value = status_registrasi;
+      dataDetailRegistration.value = status_registrasi;
 
-        form.value = {
-          facilitatorName: nama,
-          facilitationProgramName: nama_program,
-          explanationOfFacilitation: "Dummy Penjelasan Fasilitasi",
-          year: tahun,
-          regionalScope: lingkup_wilayah_fasilitas,
-          startDate: formatToISOString(tgl_mulai),
-          endDate: formatToISOString(tgl_selesai),
-          type: jenis_fasilitasi,
-          sourceOfFund: sumber_pembiayaan,
-          kuota,
-          picName: penanggung_jawab,
-          picPhoneNumber: phone_penanggung_jawab,
-          facilityCode: "",
-          status: "Draft",
-        };
-      }
+      isLockedLembaga.value = is_locked_lembaga;
+
+      form.value = {
+        facilitatorName: nama,
+        facilitationProgramName: nama_program,
+        explanationOfFacilitation: fac_description,
+        year: tahun,
+        regionalScope: lingkup_wilayah_fasilitas,
+        startDate: formatToISOString(tgl_mulai),
+        endDate: formatToISOString(tgl_selesai),
+        type: jenis_fasilitasi,
+        sourceOfFund: sumber_pembiayaan,
+        kuota,
+        picName: penanggung_jawab,
+        picPhoneNumber: phone_penanggung_jawab,
+        facilityCode: "",
+        status: "Draft",
+      };
 
       loading.value = false;
     } else {
@@ -85,8 +90,31 @@ const loadItemById = async () => {
   }
 };
 
+const loadSOF = async () => {
+  try {
+    loadingSOF.value = true;
+
+    const response = await $api("/master/source-of-fund", {
+      method: "get",
+    });
+
+    if (response) {
+      dataSOF.value = response;
+
+      loadingSOF.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan asd", "error");
+      loadingSOF.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingSOF.value = false;
+  }
+};
+
 onMounted(async () => {
   await loadItemById();
+  await loadSOF();
 });
 </script>
 
@@ -107,25 +135,31 @@ onMounted(async () => {
       </VBtn>
     </VCol>
   </VRow>
-  <VRow v-if="!loading">
+  <VRow v-if="!loading && !loadingSOF">
     <VCol cols="10">
       <VTabs v-model="tabs" align-tabs="start">
         <VTab value="1"> Pengajuan </VTab>
-        <VTab :disabled="!jenis_fasilitasi" value="2"> Lembaga </VTab>
+
+        <VTab :disabled="!form.type" value="2"> Lembaga </VTab>
       </VTabs>
     </VCol>
   </VRow>
-  <VRow v-if="!loading">
+  <VRow v-if="!loading && !loadingSOF">
     <VCol cols="12">
       <VTabsWindow v-model="tabs">
         <VTabsWindowItem value="1">
           <EditPengajuanFacilitator
             :dataform="form"
             :datadetailregistration="dataDetailRegistration"
+            :datasof="dataSOF"
+            @refresh="loadItemById"
           />
         </VTabsWindowItem>
         <VTabsWindowItem value="2">
-          <EditLembagaFacilitator />
+          <EditLembagaFacilitator
+            :islockedlembaga="isLockedLembaga"
+            :type="form.type"
+          />
         </VTabsWindowItem>
       </VTabsWindow>
     </VCol>

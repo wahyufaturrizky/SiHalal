@@ -20,6 +20,7 @@ const addManufacuter = () => {
   manufactureDialog.value = true;
 };
 const refVForm = ref<VForm>();
+const manufactureAddButton = ref(false);
 
 const onSubmit = async () => {
   // sendSnackbar("error bang", "success");
@@ -28,6 +29,7 @@ const onSubmit = async () => {
   });
 };
 const insertManufacturer = async () => {
+  manufactureAddButton.value = true;
   try {
     const response = await $api("/shln/submission/manufacture/add", {
       method: "post",
@@ -36,14 +38,18 @@ const insertManufacturer = async () => {
     if (response.code == 500) {
       useSnackbar().sendSnackbar("Gagal menambahkan manufacture", "error");
       manufactureDialog.value = false;
+      manufactureAddButton.value = false;
+
       return;
     }
     setData("manufacture");
     useSnackbar().sendSnackbar("Berhasil menambahkan manufacture", "success");
     manufactureDialog.value = false;
+    manufactureAddButton.value = false;
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal menambahkan manufacture", "error");
     manufactureDialog.value = false;
+    manufactureAddButton.value = false;
   }
 };
 const route = useRoute();
@@ -264,7 +270,12 @@ const { mdAndDown } = useDisplay();
                 >
                   Cancel
                 </VBtn>
-                <VBtn type="submit" color="primary" variant="elevated">
+                <VBtn
+                  type="submit"
+                  color="primary"
+                  :disabled="manufactureAddButton"
+                  variant="elevated"
+                >
                   Add
                 </VBtn>
               </div>

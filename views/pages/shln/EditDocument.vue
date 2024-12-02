@@ -4,7 +4,7 @@ import type { LOA } from "@/server/api/shln/submission/document/add-loa.post";
 import { ref } from "vue";
 import { VForm } from "vuetify/components";
 
-interface MRA {
+export interface MRA {
   country: string;
   expired_date: string;
   halal_institution_name: string;
@@ -20,7 +20,9 @@ export interface LOAData {
 }
 const route = useRoute();
 const shlnId = route.params.id;
-const mra = ref<MRA>();
+const prop = defineProps<{
+  mra: MRA;
+}>();
 const loa = ref<LOAData>();
 const loadDialog = ref(false);
 const loadFhcDialog = ref(false);
@@ -39,20 +41,20 @@ const getLoa = async () => {
   }
 };
 
-const getMra = async () => {
-  try {
-    const response = await $api("/shln/submission/document/mra", {
-      method: "post",
-      body: {
-        id: shlnId,
-      },
-    });
+// const getMra = async () => {
+//   try {
+//     const response = await $api("/shln/submission/document/mra", {
+//       method: "post",
+//       body: {
+//         id: shlnId,
+//       },
+//     });
 
-    mra.value = response.data;
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
+//     mra.value = response.data;
+//   } catch (error) {
+//     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+//   }
+// };
 const refLoaForm = ref<VForm>();
 const refFhcForm = ref<VForm>();
 const openLoaDialog = () => {
@@ -184,12 +186,7 @@ const getFhcTracking = async () => {
 };
 
 onMounted(async () => {
-  await Promise.allSettled([
-    getMra(),
-    getLoa(),
-    getFhcTracking(),
-    getLoaTracking(),
-  ]);
+  await Promise.allSettled([getLoa(), getFhcTracking(), getLoaTracking()]);
   loaForm.value.authorized_name = loa.value?.authorized_company;
   loaForm.value.authorizer_name = loa.value?.authorizer_company;
   loaForm.value.letter_number = loa.value?.letter_no;
@@ -224,12 +221,12 @@ function dateddmmyyy(date: Date) {
       <ExpandCard title="Mutual Recognition Agreement / MRA Document ">
         <p>Document for Mutual Halal Certification Recognition</p>
         <InfoRow name="Halal Instituion Name">{{
-          mra?.halal_institution_name
+          mra.halal_institution_name
         }}</InfoRow>
         <InfoRow name="Validity Period">{{
-          dateddmmyyy(new Date(mra?.expired_date))
+          dateddmmyyy(new Date(mra.expired_date))
         }}</InfoRow>
-        <InfoRow name="Country">{{ mra?.country }}</InfoRow>
+        <InfoRow name="Country">{{ mra.country }}</InfoRow>
       </ExpandCard>
     </VCol>
   </VRow>

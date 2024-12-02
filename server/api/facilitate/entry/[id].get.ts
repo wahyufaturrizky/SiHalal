@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/fasilitator/1bddab31-c1c5-4643-9469-622d42ba3308/fasilitasi/${id}`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/fasilitator/${id}/detail`,
     {
       method: "get",
       headers: { Authorization: authorizationHeader },
