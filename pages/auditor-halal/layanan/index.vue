@@ -92,6 +92,9 @@ onMounted(() => {
         <div v-if="activeTab === 5">
           <Evaluasi />
         </div>
+        <div v-if="activeTab === 6">
+          <DokumenTab />
+        </div>
       </VTabItem>
     </VTabsItems>
   </VContainer>
