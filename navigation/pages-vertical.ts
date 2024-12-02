@@ -9,6 +9,18 @@ export default [
     roles: ["Pelaku Usaha", "Fasilitator", "Admin"],
   },
   {
+    title: "sh-submission.title",
+    icon: { icon: "fa-id-card" },
+    roles: ["Pendamping"],
+    children: [
+      {
+        title: "sh-submission.detail",
+        to: "sh-submission-detail",
+        roles: ["Pendamping"],
+      },
+    ],
+  },
+  {
     title: "Pelaku Usaha",
     icon: { icon: "mdi-account-tie" },
     to: "pelaku-usaha",
@@ -32,7 +44,7 @@ export default [
       },
       {
         title: "sh_domestic.status_request",
-        to: "sh-domestic-submission-status",
+        to: "sh-domestic-status",
         roles: ["Pelaku Usaha", "Admin"],
       },
       {
@@ -199,6 +211,53 @@ export default [
         title: "pendaftaran_online.permohonan_rev_sh",
         to: "online-registration-sh-revision-request",
         roles: ["Pelaku Usaha", "Admin"],
+      },
+    ],
+  },
+  {
+    title: "Proses di LPH",
+    icon: { icon: "mdi-card-account-details-outline" },
+    roles: ["LPH", "Admin"],
+    children: [
+      {
+        title: "Daftar Ajuan",
+        to: "lph-list-register",
+        roles: ["LPH", "Admin"],
+      },
+      {
+        title: "Daftar Ajuan Diterima",
+        to: "lph-list-accepted",
+        roles: ["LPH", "Admin"],
+      },
+      {
+        title: "Info Pembayaran",
+        to: "lph-payment-info",
+        roles: ["LPH", "Admin"],
+      },
+      {
+        title: "Update Pemeriksaan",
+        to: "lph-update-investigation",
+        roles: ["LPH", "Admin"],
+      },
+      {
+        title: "Penyelesaian Data Post Audit",
+        to: "lph-post-audit-finish",
+        roles: ["LPH", "Admin"],
+      },
+      {
+        title: "Inquiry",
+        to: "lph-inquiry",
+        roles: ["LPH", "Admin"],
+      },
+      {
+        title: "Buat Tagihan ke BPJPH",
+        to: "lph-create-bill",
+        roles: ["LPH", "Admin"],
+      },
+      {
+        title: "Daftar Tagihan ke BPJPH",
+        to: "lph-list-bill",
+        roles: ["LPH", "Admin"],
       },
     ],
   },
