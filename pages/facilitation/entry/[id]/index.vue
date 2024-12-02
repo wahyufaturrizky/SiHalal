@@ -38,6 +38,7 @@ const loadItemById = async () => {
         tgl_mulai,
         tgl_selesai,
         jenis_fasilitasi,
+        fac_description,
       } = fasilitasi || {};
 
       dataFasilitasi.value = [
@@ -58,37 +59,42 @@ const loadItemById = async () => {
         },
         {
           id: 4,
+          key: "Fasilitasi Deskripsi",
+          value: fac_description,
+        },
+        {
+          id: 5,
           key: "Nomor Kontak Penanggung Jawab Program",
           value: phone_penanggung_jawab,
         },
-        { id: 5, key: "Tahun", value: tahun },
+        { id: 6, key: "Tahun", value: tahun },
         {
-          id: 6,
+          id: 7,
           key: "Lingkup Wilayah Fasilitasi",
           value: lingkup_wilayah_fasilitas,
         },
         {
-          id: 7,
+          id: 8,
           key: "Tanggal Mulai",
           value: formatDateIntl(new Date(tgl_mulai)),
         },
         {
-          id: 8,
+          id: 9,
           key: "Tanggal Selesai",
           value: formatDateIntl(new Date(tgl_selesai)),
         },
         {
-          id: 9,
+          id: 10,
           key: "Jenis Fasilitasi",
           value: jenis_fasilitasi,
         },
         {
-          id: 10,
+          id: 11,
           key: "Sumber Pembiayaan",
           value: sumber_pembiayaan,
         },
         {
-          id: 11,
+          id: 12,
           key: "Kuota",
           value: kuota,
         },
