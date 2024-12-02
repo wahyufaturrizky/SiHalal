@@ -75,7 +75,7 @@ const props = {
     </VTabsWindowItem>
 
     <VTabsWindowItem value="4">
-      <EditProsesLph />
+      <LazyEditProsesLph :is-editable="props.tabProsesEditable.value" />
     </VTabsWindowItem>
 
     <VTabsWindowItem value="5">
