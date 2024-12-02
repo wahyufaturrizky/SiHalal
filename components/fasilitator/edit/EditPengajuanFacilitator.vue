@@ -183,7 +183,7 @@ const cancel = () => {
                 id="year"
                 v-model="form.year"
                 :items="
-                  Array.from({ length: 2008 - 1975 + 1 }, (_, i) => 2008 - i)
+                  Array.from({ length: 2028 - 2008 + 1 }, (_, i) => 2028 - i)
                 "
               />
             </VCol>
