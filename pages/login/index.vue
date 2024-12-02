@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import InformationLoginPopUp from "@/components/halalCommon/InformationLoginPopUp.vue"
+import InformationLoginPopUp from "@/components/halalCommon/InformationLoginPopUp.vue";
 import { themeConfig } from "@themeConfig";
 import { useDisplay } from "vuetify";
 import { VForm } from "vuetify/components/VForm";
@@ -75,6 +75,11 @@ async function login() {
     });
   } catch (error: any) {
     if (error.data.statusCode == 400) {
+      useUserVerificationStore().setUserData({
+        id: error.data.data.user.id,
+        email: error.data.data.user.email,
+        phone_number: error.data.data.user.phone_number,
+      });
       navigateTo({
         path: "/verifikasi-user",
         query: {

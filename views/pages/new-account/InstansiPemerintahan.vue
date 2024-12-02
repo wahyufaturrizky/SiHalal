@@ -227,7 +227,7 @@ import onlyAcceptNumber from "@/utils/onlyAcceptNumber";
 import { VForm } from "vuetify/components";
 const stepStore = useMyNewAccountStepStore();
 
-const authUserStore = useMyAuthUserStore()
+const authUserStore = useMyAuthUserStore();
 
 const backToForm = () => {
   stepStore.goToStep(1);
@@ -275,23 +275,23 @@ onMounted(async () => {
   kbli.value = response3;
   skalaUsaha.value = response4;
 });
-const getDistrict = async () => {
+const getDistrict = async (item: string) => {
   formSubmit.value.city_code = null;
   formSubmit.value.sub_district_code = null;
   const response: MasterDistrict[] = await $api("/master/district", {
     method: "post",
     body: {
-      province: formSubmit.value.province_code,
+      province: item,
     },
   });
   district.value = response;
 };
-const getSubDistrict = async () => {
+const getSubDistrict = async (item: string) => {
   formSubmit.value.sub_district_code = null;
   const response: MasterSubDistrict[] = await $api("/master/subdistrict", {
     method: "post",
     body: {
-      district: formSubmit.value.city_code,
+      district: item,
     },
   });
   subDistrict.value = response;
@@ -333,14 +333,14 @@ const submitGovernor = async () => {
     method: "post",
     body: formSubmit.value,
   });
-  console.log("RESPONSE : ", res)
+  console.log("RESPONSE : ", res);
   if (res.code != 2000) {
     useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
     buttonClicked.value = false;
     return;
   }
   // useAuth().signOut();
-  authUserStore.resetUser()
+  authUserStore.resetUser();
   useSnackbar().sendSnackbar("Data Pelaku Usaha Berhasil Disimpan", "success");
   navigateTo("/");
   // window.location.href = "/login";

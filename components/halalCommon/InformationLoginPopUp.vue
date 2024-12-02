@@ -1,21 +1,17 @@
 <script setup lang="ts">
+import { useDisplay } from 'vuetify'
+import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
+import { themeConfig } from '@themeConfig'
 
-import { VNodeRenderer } from "@layouts/components/VNodeRenderer"
-import { themeConfig } from "@themeConfig"
-
-
-import { useDisplay } from "vuetify"
-
-const dialog = ref(true);
+const dialog = ref(true)
 
 const openDialog = () => {
-  dialog.value = true;
-};
+  dialog.value = true
+}
 
 const closeDialog = () => {
-  dialog.value = false;
-};
-
+  dialog.value = false
+}
 
 const { mdAndUp } = useDisplay()
 
@@ -24,43 +20,50 @@ const dialogMaxWidth = computed(() => {
 })
 
 const items = ref([
-  { title: "Tanggal 2 Februari 2024", subtitle: `
+  {
+    title: 'Tanggal 2 Februari 2024', subtitle: `
     Sehubungan dengan kewajiban menggunakan dokumen SJPH bagi Pelaku Usaja, terhitung mulai
     tanggal 2 Februari 2024, seluruh Pelaku Usaha wajib melampirkan dokumen SJPH pada
     pendaftaran Sertifikat Halal jalur Mandiri.
-  ` },
-  { title: "Tanggal 3 Februari", subtitle: `
+  `,
+  },
+  {
+    title: 'Tanggal 3 Februari', subtitle: `
     Terhitung mulai tanggal 3 Februari 2023 pendaftaran Sertifikat Halal jalur Self Declare telah bisa
     dilakukan submit oleh PU dengan catatan telah dilakukan kurasi/verifikasi oleh Pendamping.
-  ` },
-  { title: "Tanggal 2 Februari 2023", subtitle: `
+  `,
+  },
+  {
+    title: 'Tanggal 2 Februari 2023', subtitle: `
     Sehubungan dengan kewajiban bersertifikat Penyelia Halal Untuk Pelaku Usaha Non UMK
     terhitung mulai tanggal 2 Februari 2023, seluruh pelaku Usaha Non UMK Wajib melampirkan
     Sertifikat Pelatihan Penyelia Halal dan Sertifikat Kompetensi Penyelia Halal pada pendaftaran
     Sertifikar Halal jalur Mandiri
-  ` },
-]);
+  `,
+  },
+])
 
 const signed = ref({
   date: 'Jakarta, 2 Februari 2023',
-  head: 'Muhammad Aqil Irham'
+  head: 'Muhammad Aqil Irham',
 })
 
 const clickDownload = () => {
-  console.log("DONWLOAD FILE ")
+  console.log('DONWLOAD FILE ')
 }
-
 </script>
 
-
 <template>
-  <VDialog v-model="dialog" :max-width="dialogMaxWidth">
+  <VDialog
+    v-model="dialog"
+    :max-width="dialogMaxWidth"
+  >
     <VCard class="pa-8">
       <VBtn
         icon
-        @click="closeDialog"
         class="ml-auto close-btn"
         style="position: absolute; top: 16px; right: 16px; z-index: 10;"
+        @click="closeDialog"
       >
         <VIcon>mdi-close</VIcon>
       </VBtn>
@@ -77,7 +80,10 @@ const clickDownload = () => {
 
       <VCardText class="px-8 mb-4">
         <ul>
-          <li v-for="(item, index) in items" :key="index">
+          <li
+            v-for="(item, index) in items"
+            :key="index"
+          >
             <div>
               <span class="font-weight-bold">{{ item.title }}</span>
             </div>
@@ -87,22 +93,22 @@ const clickDownload = () => {
           </li>
           <li>
             Informasi detail teknis tambahan pengajuan sertifikasi halal self declare dapat
-            <span
+            <a
               class="text-primary"
               style="cursor: pointer; text-decoration: underline;"
-              @click="clickDownload"
+              href="https://test.halal.go.id/selfdeclare.pdf"
             >
               download di sini
-            </span>
+            </a>
           </li>
         </ul>
       </VCardText>
       <VCardText class="text-right">
         <p class="font-weight-bold">
-          {{signed.date}} <br>
+          {{ signed.date }} <br>
           Kepala, <br>
           ttd <br>
-          {{signed.head}}
+          {{ signed.head }}
         </p>
       </VCardText>
     </VCard>

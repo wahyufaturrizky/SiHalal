@@ -2,13 +2,24 @@
 import { computed, ref } from "vue";
 import { useDisplay } from "vuetify";
 
+const props = defineProps({
+  type: {
+    type: String,
+  },
+  islockedlembaga: {
+    type: Boolean,
+  },
+});
+
+const { type, islockedlembaga } = props || {};
+
 // State untuk checkbox
 const kunciLembaga = ref(false);
 const route = useRoute();
-const router = useRouter();
 const loadingDelete = ref(false);
 const loadingLock = ref(false);
 const loadingAdd = ref(false);
+const loadingItemsInstitutionName = ref(false);
 const itemPerPage = ref(10);
 const totalItems = ref(0);
 
@@ -18,6 +29,7 @@ const page = ref(1);
 
 // Data tabel
 const items = ref([]);
+const itemsInstitutionName = ref([]);
 
 // Form data dan dialog
 const formRef = ref(null);
@@ -27,10 +39,12 @@ const deleteDialog = ref(false);
 
 // Data untuk form tambah lembaga
 const formData = ref({
-  institutionName: "Universitas Islam Negeri Sunan Gunung Djati Bandung",
+  institutionName: "",
   picName: "",
   picPhoneNumber: "",
 });
+
+kunciLembaga.value = islockedlembaga;
 
 const loadItemById = async (page: number, size: number) => {
   try {
@@ -69,6 +83,33 @@ const loadItemById = async (page: number, size: number) => {
   }
 };
 
+const loadItemLembagaPendamping = async () => {
+  try {
+    loadingItemsInstitutionName.value = true;
+
+    const response = await $api(
+      `/master/${
+        type === "Reguler" ? "lembaga-pemeriksa-halal" : "lembaga-pendamping"
+      }`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response) {
+      itemsInstitutionName.value = response;
+
+      loadingItemsInstitutionName.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingItemsInstitutionName.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingItemsInstitutionName.value = false;
+  }
+};
+
 const deleteFacilitateLembaga = async (id: string) => {
   try {
     loadingDelete.value = true;
@@ -79,10 +120,12 @@ const deleteFacilitateLembaga = async (id: string) => {
 
     if (res?.code === 2000) {
       loadingDelete.value = false;
-      router.go(-1);
+      addDialog.value = false;
+      await loadItemById(1, itemPerPage.value);
     } else {
       useSnackbar().sendSnackbar("Gagal update data", "error");
       loadingDelete.value = false;
+      addDialog.value = false;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -111,17 +154,15 @@ const addFacilitateLembaga = async () => {
       nomor_pic_lembaga: picPhoneNumber,
     };
 
-    if (
-      institutionName === "Universitas Islam Negeri Sunan Gunung Djati Bandung"
-    ) {
+    if (type === "Reguler") {
       tempBody = {
         ...tempBody,
-        lp_id: "0000df86-2b61-4778-8f70-30b8166286cb",
+        lph_id: institutionName,
       };
     } else {
       tempBody = {
         ...tempBody,
-        lph_id: "01e3d771-2d0b-0bd4-30a8-f294a6871d24",
+        lp_id: institutionName,
       };
     }
 
@@ -134,7 +175,7 @@ const addFacilitateLembaga = async () => {
       loadingAdd.value = false;
       resetForm();
       addDialog.value = false;
-      router.go(-1);
+      await loadItemById(1, itemPerPage.value);
     } else {
       useSnackbar().sendSnackbar("Gagal update data", "error");
       loadingAdd.value = false;
@@ -163,19 +204,19 @@ const updateLockFacilitateLembaga = async () => {
 
     if (res?.code === 2000) {
       loadingLock.value = false;
-      router.go(-1);
     } else {
       useSnackbar().sendSnackbar("Gagal update data", "error");
       loadingLock.value = false;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingAdd.value = false;
+    loadingLock.value = false;
   }
 };
 
 onMounted(async () => {
   await loadItemById(1, itemPerPage.value);
+  await loadItemLembagaPendamping();
 });
 
 // Header tabel
@@ -223,6 +264,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               id="kunciLembaga"
               v-model="kunciLembaga"
               label="Kunci (LPH/LP3H)"
+              :disabled="loadingLock"
               @change="updateLockFacilitateLembaga"
             />
             <span
@@ -288,12 +330,13 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               id="institutionName"
               v-model="formData.institutionName"
               placeholder="Pilih Lembaga Pendamping"
-              :items="[
-                'Universitas Islam Negeri Sunan Gunung Djati Bandung',
-                'LPH LPPOM MUI Sulawesi Utara',
-              ]"
+              :items="itemsInstitutionName"
+              item-title="name"
+              item-value="id"
               required
               class="mb-4"
+              :disabled="loadingItemsInstitutionName"
+              :loading="loadingItemsInstitutionName"
             />
             <label class="text-h6" for="picName">
               Nama Penanggung Jawab Program LPH / LP3H

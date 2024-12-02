@@ -24,7 +24,7 @@ const selectedItems = ref<DataItem[]>([])
 
 // Dummy data for table
 // Dummy data for the table
-const tableData = ref([
+const items = ref([
   {
     id: 1,
     id_registrasi: 'D001',
@@ -232,10 +232,10 @@ const bahanType = ref(null)
       </VRow>
       <VRow>
         <VDataTableServer
+          :headers="permohonanHeaders"
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
-          :headers="permohonanHeaders"
-          :items="tableData"
+          :items="items"
           :loading="loading"
           :items-length="totalItems"
           loading-text="Loading..."
@@ -267,27 +267,26 @@ const bahanType = ref(null)
           <template #item.Status="{ item }">
             <div v-if="item.Status === 'OF74'">
               <div class="status-container">
-                <VBtn
+                <VChip
                   variant="outlined"
-                  style="border-color: #49a84c; background-color: #edf6ed;"
+                  style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
                 >
                   <span style="color: #49a84c;">
                     {{ item.Status }}
                   </span>
-                </VBtn>
+                </VChip>
               </div>
             </div>
             <div v-else>
               <div class="status-container">
-                <VBtn
+                <VChip
                   variant="outlined"
-                  type="primary"
-                  style="background-color: #f0e9f1;"
+                  style="border-color: #652672; border-radius: 8px; background-color: #f0e9f1;"
                 >
-                  <span>
+                  <span style="color: #652672;">
                     {{ item.Status }}
                   </span>
-                </VBtn>
+                </VChip>
               </div>
             </div>
           </template>

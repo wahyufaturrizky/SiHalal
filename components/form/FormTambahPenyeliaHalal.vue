@@ -1,19 +1,26 @@
 <script setup lang="ts">
-import VueDatePicker from '@vuepic/vue-datepicker'
-import '@vuepic/vue-datepicker/dist/main.css'
-import { useDisplay } from 'vuetify'
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+import { useDisplay } from "vuetify";
 
-const emit = defineEmits(['confirm'])
+const props = defineProps({
+  isEditable: {
+    type: Boolean,
+    default: true,
+  },
+});
 
-const isVisible = ref(false)
+const emit = defineEmits(["confirm"]);
+
+const isVisible = ref(false);
 
 const openDialog = () => {
-  isVisible.value = true
-}
+  isVisible.value = true;
+};
 
 const closeDialog = () => {
-  isVisible.value = false
-}
+  isVisible.value = false;
+};
 
 const form = ref({
   name: null,
@@ -27,7 +34,7 @@ const form = ref({
   skph: null,
   spph: null,
   ktp: null,
-})
+});
 
 const resetForm = () => {
   form.value = {
@@ -42,24 +49,24 @@ const resetForm = () => {
     skph: null,
     spph: null,
     ktp: null,
-  }
-}
+  };
+};
 
 const confirm = () => {
-  emit('confirm', form.value)
-  resetForm()
-  closeDialog()
-}
+  emit("confirm", form.value);
+  resetForm();
+  closeDialog();
+};
 
 const cancel = () => {
-  closeDialog()
-}
+  closeDialog();
+};
 
-const { mdAndUp } = useDisplay()
+const { mdAndUp } = useDisplay();
 
 const dialogMaxWidth = computed(() => {
-  return mdAndUp.value ? 700 : '90%'
-})
+  return mdAndUp.value ? 700 : "90%";
+});
 </script>
 
 <template>
@@ -68,34 +75,30 @@ const dialogMaxWidth = computed(() => {
       variant="outlined"
       append-icon="ri-add-line"
       @click="openDialog"
+      v-if="props.isEditable"
     >
       Tambah
     </VBtn>
-    <VDialog
-      v-model="isVisible"
-      :max-width="dialogMaxWidth"
-    >
+    <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
-        <VCardTitle class="text-h5 font-weight-bold d-flex justify-space-between align-center">
+        <VCardTitle
+          class="text-h5 font-weight-bold d-flex justify-space-between align-center"
+        >
           <span>Tambah Data Penyelia Halal</span>
           <VBtn
             icon
             color="transparent"
-            style="border: none;"
+            style="border: none"
             elevation="0"
             @click="closeDialog"
           >
-            <VIcon color="black">
-              ri-close-line
-            </VIcon>
+            <VIcon color="black"> ri-close-line </VIcon>
           </VBtn>
         </VCardTitle>
         <VCardText>
           <VRow>
             <VCol cols="6">
-              <VLabel for="idNo">
-                No. KTP
-              </VLabel>
+              <VLabel for="idNo"> No. KTP </VLabel>
               <VTextField
                 id="idNo"
                 v-model="form.idNo"
@@ -106,9 +109,7 @@ const dialogMaxWidth = computed(() => {
               />
             </VCol>
             <VCol cols="6">
-              <VLabel for="phoneNumber">
-                No. Kontak
-              </VLabel>
+              <VLabel for="phoneNumber"> No. Kontak </VLabel>
               <VTextField
                 id="phoneNumber"
                 v-model="form.phoneNumber"
@@ -121,9 +122,7 @@ const dialogMaxWidth = computed(() => {
           </VRow>
           <VRow>
             <VCol cols="6">
-              <VLabel for="">
-                Nama Penyelia
-              </VLabel>
+              <VLabel for=""> Nama Penyelia </VLabel>
               <VTextField
                 v-model="form.name"
                 placeholder="Isi Nama Penyelia"
@@ -133,9 +132,7 @@ const dialogMaxWidth = computed(() => {
               />
             </VCol>
             <VCol cols="6">
-              <VLabel for="religion">
-                Agama Penyelia
-              </VLabel>
+              <VLabel for="religion"> Agama Penyelia </VLabel>
               <VSelect
                 id="religion"
                 v-model="form.religion"
@@ -149,9 +146,7 @@ const dialogMaxWidth = computed(() => {
           </VRow>
           <VRow>
             <VCol cols="6">
-              <VLabel for="cerificateNumber">
-                Nomor Sertifikat
-              </VLabel>
+              <VLabel for="cerificateNumber"> Nomor Sertifikat </VLabel>
               <VTextField
                 id="cerificateNumber"
                 v-model="form.cerificateNumber"
@@ -162,9 +157,7 @@ const dialogMaxWidth = computed(() => {
               />
             </VCol>
             <VCol cols="6">
-              <VLabel for="certificateDate">
-                Tanggal Sertifikat
-              </VLabel>
+              <VLabel for="certificateDate"> Tanggal Sertifikat </VLabel>
               <VueDatePicker
                 id="tanggalDocument"
                 v-model="form.certificateDate"
@@ -176,9 +169,7 @@ const dialogMaxWidth = computed(() => {
           </VRow>
           <VRow class="mb-2">
             <VCol cols="6">
-              <VLabel for="skNumber">
-                Nomor SK
-              </VLabel>
+              <VLabel for="skNumber"> Nomor SK </VLabel>
               <VTextField
                 id="skNumber"
                 v-model="form.skNumber"
@@ -189,9 +180,7 @@ const dialogMaxWidth = computed(() => {
               />
             </VCol>
             <VCol cols="6">
-              <VLabel for="skDate">
-                Tanggal SK
-              </VLabel>
+              <VLabel for="skDate"> Tanggal SK </VLabel>
               <VTextField
                 id="skDate"
                 v-model="form.skDate"
@@ -270,24 +259,12 @@ const dialogMaxWidth = computed(() => {
         </VCardText>
 
         <div class="d-flex justify-end gap-2">
-          <VBtn
-            variant="outlined"
-            @click="cancel"
-          >
-            Batal
-          </VBtn>
-          <VBtn
-            color="primary"
-            @click="confirm"
-          >
-            Tambah
-          </VBtn>
+          <VBtn variant="outlined" @click="cancel"> Batal </VBtn>
+          <VBtn color="primary" @click="confirm"> Tambah </VBtn>
         </div>
       </VCard>
     </VDialog>
   </div>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

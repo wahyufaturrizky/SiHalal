@@ -28,7 +28,7 @@ const confirmAction = () => {
 <template>
   <VDialog
     v-model="dialog"
-    max-width="400px"
+    max-width="60svw"
   >
     <template #activator="{ props }">
       <VBtn
