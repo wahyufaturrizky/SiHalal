@@ -32,7 +32,8 @@ async function apiCallNewPasswd() {
     if (
       password.value !== "" &&
       newPass.value !== "" &&
-      password.value === newPass.value
+      password.value === newPass.value &&
+      password.value.length >= 8
     ) {
       const { data, error } = await useFetch("/api/auth/forgot-new", {
         method: "POST",
