@@ -1,4 +1,3 @@
-import { TurnstileValidationResponse } from "@nuxtjs/turnstile/runtime/types.js";
 import { NuxtError } from "nuxt/app";
 
 const runtimeConfig = useRuntimeConfig();
@@ -13,12 +12,28 @@ export default defineEventHandler(async (event) => {
       },
     });
   }
-  const turnstile = await $fetch<TurnstileValidationResponse>(
-    `${runtimeConfig.public.apiBaseUrl}/validateTurnstile`,
-    { method: "POST", body: { token: token } }
-  );
-  console.log(turnstile);
-  if (!turnstile.success) {
+  console.log({
+    secret: runtimeConfig.recaptcha.secretKey,
+    response: token,
+  });
+  const recaptcha = await $fetch<any>(
+    `https://www.google.com/recaptcha/api/siteverify`,
+    {
+      method: "POST",
+      params: {
+        secret: runtimeConfig.recaptcha.secretKey,
+        response: token,
+      },
+    }
+  ).catch((err: NuxtError) => {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "captcha-failed",
+      data: err.data,
+    });
+  });
+  console.log(recaptcha);
+  if (!recaptcha.success) {
     throw createError({
       statusCode: 401,
       statusMessage: "captcha-failed",

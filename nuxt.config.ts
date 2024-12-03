@@ -44,11 +44,17 @@ export default defineNuxtConfig({
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || "",
       appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || "",
       turnstile: {
-        siteKey: process.env.NUXT_TURNSTILE_SECRET_KEY || "",
+        siteKey: process.env.NUXT_TURNSTILE_SITE_KEY || "",
+      },
+      recaptcha: {
+        siteKey: process.env.NUXT_RECAPTCHA_SITE_KEY || "",
       },
     },
     turnstile: {
       secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY || "",
+    },
+    recaptcha: {
+      secretKey: process.env.NUXT_RECAPTCHA_SECRET_KEY || "",
     },
   },
 
