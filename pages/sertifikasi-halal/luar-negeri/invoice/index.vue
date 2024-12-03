@@ -1,32 +1,57 @@
 <script setup lang="ts">
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const loading = ref(true);
+const page = ref(1);
 const tableHeader = [
-  { title: "No", value: "no" },
-  { title: "No Invoice", value: "invoice_no" },
-  { title: "Tanggal Invoice", value: "invoice_date" },
-  { title: "Register Number", value: "registration_no" },
-  { title: "Payment Code", value: "payment_code" },
+  { title: "No", value: "index" },
+  { title: "No Invoice", value: "no" },
+  { title: "Tanggal Invoice", value: "date" },
+  { title: "Register Number", value: "shln_no" },
+  { title: "Payment Code", value: "va" },
   { title: "Importer's Name", value: "importer_name" },
   { title: "Due Date", value: "due_date" },
   { title: "Amount", value: "amount" },
-  { title: "Note", value: "notes" },
+  { title: "Note", value: "note" },
   { title: "Status", value: "status" },
   { title: "Invoice File", value: "invoice" },
 ];
 
-const items = [
-  {
-    invoice_no: "xx",
-    invoice_date: "xx",
-    registration_no: "xx",
-    payment_code: "xx",
-    importer_name: "xx",
-    due_date: "xx",
-    amount: "xx",
-    notes: "xx",
-    status: "xx",
-    invoice: "xx",
-  },
-];
+// const items = [
+//   {
+//     invoice_no: "xx",
+//     invoice_date: "xx",
+//     registration_no: "xx",
+//     payment_code: "xx",
+//     importer_name: "xx",
+//     due_date: "xx",
+//     amount: "xx",
+//     notes: "xx",
+//     status: "xx",
+//     invoice: "xx",
+//   },
+// ];
+const items = ref([]);
+const loadItem = async (page: number, size: number) => {
+  try {
+    loading.value = true;
+
+    const response = await $api("/shln/invoice", {
+      method: "get",
+      params: {
+        page,
+        size,
+      },
+    });
+
+    items.value = response.data;
+    totalItems.value = response.total_item;
+    loading.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
+  }
+};
 </script>
 <template>
   <VRow>
@@ -58,7 +83,19 @@ const items = [
           </VRow>
           <VRow>
             <VCol cols="12">
-              <VDataTable :headers="tableHeader" :items="items">
+              <VDataTable
+                v-model:items-per-page="itemPerPage"
+                v-model:page="page"
+                :items-length="totalItems"
+                :loading="loading"
+                loading-text="Loading..."
+                @update:options="loadItem(page, itemPerPage)"
+                :headers="tableHeader"
+                :items="items"
+              >
+                <template #item.index="{ index }">
+                  {{ index + 1 + (page - 1) * itemPerPage }}
+                </template>
                 <template #item.invoice>
                   <VIcon icon="fa-file" color="primary"></VIcon>
                 </template>

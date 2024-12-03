@@ -3,7 +3,6 @@ export const $api = $fetch.create({
   async onRequest({ options }) {
     // Set baseUrl for all API calls
     options.baseURL = useRuntimeConfig().public.apiBaseUrl || "/api";
-    console.log(options.baseURL);
 
     const accessToken = useCookie("accessToken").value;
     if (accessToken) {
