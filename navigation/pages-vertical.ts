@@ -396,7 +396,7 @@ export default [
     children: [
       {
         title: "sidang_self_declare.proses_sidang",
-        to: "sidang-fatwa-proses-sidang",
+        to: "sidang-self-declare-proses-sidang",
         roles: ["Komite Fatwa", "Admin"],
       },
       {
