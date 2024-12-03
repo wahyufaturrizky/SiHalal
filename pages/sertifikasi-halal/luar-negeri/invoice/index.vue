@@ -52,6 +52,14 @@ const loadItem = async (page: number, size: number) => {
     loading.value = false;
   }
 };
+const statusInvoice = {
+  SB001: { color: "warning", desc: "Menunggu Pembayaran" },
+  SB002: { color: "warning", desc: "Kurang Bayar" },
+  SB003: { color: "warning", desc: "Lebih Bayar" },
+  SB004: { color: "success", desc: "Lunas" },
+  SB005: { color: "warning", desc: "Konfirmasi Pembayaran" },
+  default: { color: "error", desc: "No Status" },
+};
 </script>
 <template>
   <VRow>
@@ -101,26 +109,14 @@ const loadItem = async (page: number, size: number) => {
                 </template>
                 <template #item.status="{ item }">
                   <VChip
-                    v-if="item.status == 'xx'"
-                    color="danger"
+                    :color="statusInvoice[item.status].color"
                     style="
                       background-color: #fef8e6;
                       color: #f6bc03;
                       border-radius: 10px;
                       outline: auto;
                     "
-                    >{{ item.status }}</VChip
-                  >
-                  <VChip
-                    v-if="item.status == 'renew'"
-                    color="danger"
-                    style="
-                      background-color: #fef8e6;
-                      color: #f6bc03;
-                      border-radius: 10px;
-                      outline: auto;
-                    "
-                    >{{ item.status }}</VChip
+                    >{{ statusInvoice[item.status].desc }}</VChip
                   >
                 </template>
               </VDataTable>
