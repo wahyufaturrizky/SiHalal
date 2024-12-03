@@ -102,7 +102,7 @@ const getCountry = async () => {
 const scope = ref<{ id: string; name: string }[]>();
 const getScope = async () => {
   const response: { id: string; name: string }[] = await $api(
-    "shln//submission/identity/scope",
+    "shln/submission/identity/scope",
     {
       method: "get",
     }
