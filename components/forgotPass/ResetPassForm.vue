@@ -83,7 +83,7 @@ const confPassRules = [
 
 const passRules = [
   (val: string): boolean | string => {
-    if (password.value.length < 8) {
+    if (password.value.length >= 8) {
       return true;
     }
     return "Pastikan kata sandi minimal 8 karakter!";
