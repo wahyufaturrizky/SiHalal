@@ -175,6 +175,7 @@ const addFacilitateLembaga = async () => {
       loadingAdd.value = false;
       resetForm();
       addDialog.value = false;
+      useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
       await loadItemById(1, itemPerPage.value);
     } else {
       useSnackbar().sendSnackbar("Gagal update data", "error");
