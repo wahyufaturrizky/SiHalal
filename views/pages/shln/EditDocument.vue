@@ -18,6 +18,26 @@ export interface LOAData {
   letter_no: string;
   loa_document: string;
 }
+
+interface RequirementDocument {
+  loa: LoaReq;
+  nib: NibReq;
+}
+
+interface LoaReq {
+  comment: string;
+  file: string;
+  status: string;
+  tracking: any;
+}
+
+interface NibReq {
+  comment: string;
+  file: string;
+  status: string;
+  tracking: any;
+}
+
 const route = useRoute();
 const shlnId = route.params.id;
 const prop = defineProps<{
@@ -26,6 +46,7 @@ const prop = defineProps<{
 const loa = ref<LOAData>();
 const loadDialog = ref(false);
 const loadFhcDialog = ref(false);
+const loadReqDialog = ref(false);
 const getLoa = async () => {
   try {
     const response = await $api("/shln/submission/document/loa", {
@@ -40,26 +61,81 @@ const getLoa = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+const tableRequirementDocumentHeader = [
+  { title: "No", key: "index" },
+  { title: "Document Types", key: "documentTypes" },
+  { title: "Upload / Download ", key: "file" },
+  { title: "Notes", key: "notes" },
+  { title: "status", key: "status" },
+  { title: "Action", key: "action" },
+];
+const requirementDocument = ref<RequirementDocument>();
+const requirementDocArray = ref([
+  {
+    documentTypes: "Business License Number (NIB)",
+    file: "",
+    notes: "",
+    status: "",
+    tracking: "",
+  },
+  {
+    documentTypes: "Business License Number (NIB)",
+    file: "",
+    notes: "",
+    status: "",
+    tracking: "",
+  },
+]);
+const reqTracking = ref(null);
+const reqTrackingModal = ref(false);
+const reqFile = ref([]);
+const getRequirementDocument = async () => {
+  try {
+    const response = await $api(
+      "/shln/submission/document/requirement-document",
+      {
+        method: "post",
+        body: {
+          id: shlnId,
+        },
+      }
+    );
 
-// const getMra = async () => {
-//   try {
-//     const response = await $api("/shln/submission/document/mra", {
-//       method: "post",
-//       body: {
-//         id: shlnId,
-//       },
-//     });
+    requirementDocument.value = response.data.requirement_doc;
+    requirementDocArray.value[0] = {
+      documentTypes: "Letter Of Application",
+      file: requirementDocument.value?.loa.file,
+      notes: requirementDocument.value?.loa.comment,
+      status: requirementDocument.value?.loa.status,
+      tracking: requirementDocument.value?.loa.status,
+    };
+    requirementDocArray.value[1] = {
+      documentTypes: "Business License Number (NIB)",
+      file: requirementDocument.value?.nib.file,
+      notes: requirementDocument.value?.nib.comment,
+      status: requirementDocument.value?.nib.status,
+      tracking: requirementDocument.value?.nib.status,
+    };
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+const getReqTrackingModal = (data) => {
+  reqTracking.value = data;
+  reqTrackingModal.value = true;
+};
 
-//     mra.value = response.data;
-//   } catch (error) {
-//     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-//   }
-// };
 const refLoaForm = ref<VForm>();
 const refFhcForm = ref<VForm>();
+const refReqDocForm = ref<VForm>();
 const openLoaDialog = () => {
   refLoaForm.value?.validate().then(({ valid: isValid }) => {
     if (isValid) loadDialog.value = true;
+  });
+};
+const openReqDialog = () => {
+  refReqDocForm.value?.validate().then(({ valid: isValid }) => {
+    if (isValid) loadReqDialog.value = true;
   });
 };
 const openFhcDialog = () => {
@@ -67,11 +143,11 @@ const openFhcDialog = () => {
     if (isValid) loadFhcDialog.value = true;
   });
 };
-const uploadDocument = async (type: "loa" | "fhc") => {
+const uploadDocument = async (file) => {
   try {
     const formData = new FormData();
     formData.append("id", shlnId);
-    formData.append("file", type == "loa" ? loaFile.value : fhcFile.value);
+    formData.append("file", file);
     formData.append("type", "sample");
     const response = await $api("/shln/submission/document/upload", {
       method: "post",
@@ -88,7 +164,7 @@ const uploadDocument = async (type: "loa" | "fhc") => {
 
 const saveLoa = async () => {
   try {
-    const file = await uploadDocument("loa");
+    const file = await uploadDocument(loaFile.value);
     if (file.code != 2000) {
       return;
     }
@@ -111,7 +187,7 @@ const saveLoa = async () => {
 };
 const saveFhc = async () => {
   try {
-    const file = await uploadDocument("fhc");
+    const file = await uploadDocument(fhcFile.value);
     if (file.code != 2000) {
       return;
     }
@@ -129,6 +205,43 @@ const saveFhc = async () => {
     useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
   } catch (error) {
     loadFhcDialog.value = false;
+    useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
+  }
+};
+const saveReqDocument = async () => {
+  try {
+    const fileLoa = await uploadDocument(reqFile.value[0]);
+    if (fileLoa.code != 2000) {
+      return;
+    }
+    const fileNib = await uploadDocument(reqFile.value[1]);
+    if (fileNib.code != 2000) {
+      return;
+    }
+    const response = await $api("/shln/submission/document/add-requirement", {
+      method: "post",
+      body: {
+        id: shlnId,
+        id_loa: "",
+        id_nib: "",
+        file_url_loa: fileLoa.data.file_url,
+        file_url_nib: fileNib.data.file_url,
+        comment_loa: "",
+        comment_nib: "",
+        is_return: false,
+        is_accept: false,
+      },
+    });
+    loadReqDialog.value = false;
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
+      return;
+    }
+    await getRequirementDocument();
+    useMyUpdateSubmissionEditStore().setData("document");
+    useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
+  } catch (error) {
+    loadReqDialog.value = false;
     useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
   }
 };
@@ -185,27 +298,10 @@ const getFhcTracking = async () => {
   }
 };
 
-onMounted(async () => {
-  await Promise.allSettled([getLoa(), getFhcTracking(), getLoaTracking()]);
-  loaForm.value.authorized_name = loa.value?.authorized_company;
-  loaForm.value.authorizer_name = loa.value?.authorizer_company;
-  loaForm.value.letter_number = loa.value?.letter_no;
-  loaForm.value.date = loa.value?.date;
-  loaForm.value.file_url = loa.value?.loa_document;
-});
-
 const saveForm = () => {
+  console.log(reqFile);
   console.log("Form saved", form.value);
 };
-
-const tableRequirementDocumentHeader = [
-  { title: "No", key: "no" },
-  { title: "Document Types", key: "documentTypes" },
-  { title: "Upload / Download ", key: "option" },
-  { title: "Notes", key: "notes" },
-  { title: "status", key: "status" },
-  { title: "Record History", key: "recordHistory" },
-];
 
 function dateddmmyyy(date: Date) {
   const dd = String(date.getDate()).padStart(2, "0");
@@ -213,6 +309,33 @@ function dateddmmyyy(date: Date) {
   const yyyy = date.getFullYear();
   return `${dd}/${mm}/${yyyy}`;
 }
+const downloadDOcument = async (filename: string) => {
+  try {
+    const response = await $api("/shln/submission/document/download", {
+      method: "post",
+      body: {
+        filename,
+      },
+    });
+    window.open(response.url, "_blank", "noopener,noreferrer");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+onMounted(async () => {
+  await Promise.allSettled([
+    getLoa(),
+    getFhcTracking(),
+    getLoaTracking(),
+    getRequirementDocument(),
+  ]);
+  console.log(requirementDocArray.value);
+  loaForm.value.authorized_name = loa.value?.authorized_company;
+  loaForm.value.authorizer_name = loa.value?.authorizer_company;
+  loaForm.value.letter_number = loa.value?.letter_no;
+  loaForm.value.date = loa.value?.date;
+  loaForm.value.file_url = loa.value?.loa_document;
+});
 </script>
 
 <template>
@@ -385,18 +508,53 @@ function dateddmmyyy(date: Date) {
   <VRow>
     <VCol cols="12">
       <ExpandCard title="Requirement Document ">
-        <VDataTable :headers="tableRequirementDocumentHeader" />
-
-        <VCol cols="12" class="d-flex justify-end ga-2">
-          <VBtn
-            color="primary"
-            @click="saveForm"
-            variant="outlined"
-            append-icon="ri-download-line"
-            >Download FHCR Application Letter Document Format</VBtn
+        <v-form ref="refReqDocForm" @submit.prevent="openReqDialog">
+          <VDataTable
+            :items="requirementDocArray"
+            :headers="tableRequirementDocumentHeader"
           >
-          <VBtn color="primary" @click="saveForm">Save</VBtn>
-        </VCol>
+            <template #item.index="{ index }">
+              {{ index + 1 }}
+            </template>
+            <template #item.file="{ item, index }">
+              <HalalFileInput
+                v-if="item.file == ''"
+                v-model="reqFile[index]"
+                :rules="[requiredValidator]"
+                class="py-3"
+              />
+              <VBtn @click="downloadDOcument(item.file)" v-else color="primary">
+                <VIcon icon="fa-download" />
+              </VBtn>
+              <!-- {{ item.file != "" ? "asd" : "dsa" }} -->
+            </template>
+            <template #item.action="{ item }">
+              <div class="d-flex gap-1">
+                <IconBtn size="small" @click="reqTrackingModal = true">
+                  <VIcon icon="fa-history" color="primary" />
+                </IconBtn>
+              </div>
+            </template>
+          </VDataTable>
+
+          <VCol cols="12" class="d-flex justify-end ga-2">
+            <VBtn
+              color="primary"
+              variant="outlined"
+              append-icon="ri-download-line"
+              >Download FHCR Application Letter Document Format</VBtn
+            >
+            <VBtn
+              v-if="
+                requirementDocArray[0].file == '' &&
+                requirementDocArray[1].file == ''
+              "
+              color="primary"
+              type="submit"
+              >Save</VBtn
+            >
+          </VCol>
+        </v-form>
       </ExpandCard>
     </VCol>
   </VRow>
@@ -451,6 +609,41 @@ function dateddmmyyy(date: Date) {
         </VRow>
       </VCardText>
     </VCard>
+  </VDialog>
+  <VDialog v-model="loadReqDialog" width="auto">
+    <VCard>
+      <VCardText>
+        <p class="text-h5 font-weight-bold">Save</p>
+        <VRow>
+          <VCol cols="12">
+            <div class="text-subtitle-1 text-high-emphasis mb-1">
+              Are you sure you want to save this updated data?
+            </div>
+          </VCol>
+        </VRow>
+        <VRow class="flex-row-reverse">
+          <VCol cols="12" md="auto">
+            <VBtn block color="primary" @click="saveReqDocument()">
+              Yes, Save
+            </VBtn>
+          </VCol>
+          <VCol cols="12" md="auto">
+            <VBtn block variant="outlined" @click="loadReqDialog = false">
+              Cancel
+            </VBtn>
+          </VCol>
+        </VRow>
+      </VCardText>
+    </VCard>
+  </VDialog>
+
+  <VDialog v-model="reqTrackingModal" width="auto">
+    <v-card>
+      <v-card-text>
+        <p class="text-h5 font-weight-bold">Tracking</p>
+        <HalalTimeLine v-if="reqTracking" :event="reqTracking" />
+      </v-card-text>
+    </v-card>
   </VDialog>
 </template>
 

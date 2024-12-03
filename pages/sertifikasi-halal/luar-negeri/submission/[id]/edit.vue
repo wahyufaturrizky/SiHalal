@@ -105,6 +105,8 @@ watch(
       getManufacture();
     }
     if (newValue == "identity") {
+      disabledTab("manufacture", false);
+      disabledTab("document", false);
       getidentity();
       getHcb();
     }
@@ -129,6 +131,7 @@ const disabledTab = (
 </script>
 
 <template>
+  <KembaliButton />
   <div class="">
     <p class="text-h4">Edit Foreign Halal Certificate Requirements</p>
     <!-- <v-card class="pa-4"> -->

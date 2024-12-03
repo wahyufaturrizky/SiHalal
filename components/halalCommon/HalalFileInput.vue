@@ -1,5 +1,5 @@
 <script setup>
-import { useDisplay } from 'vuetify'
+import { useDisplay } from "vuetify";
 
 const props = defineProps({
   modelValue: {
@@ -8,38 +8,40 @@ const props = defineProps({
   },
   label: {
     type: String,
-    default: 'No File Chosen',
+    default: "No File Chosen",
   },
-})
+  rules: {
+    type: [Object, null],
+    default: [],
+  },
+});
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(["update:modelValue"]);
 
-const file = ref(props.modelValue)
-const fileInput = ref(null)
+const file = ref(props.modelValue);
+const fileInput = ref(null);
 
-const { mdAndUp } = useDisplay()
+const { mdAndUp } = useDisplay();
 
 const width = computed(() => {
-  return mdAndUp.value ? '360px' : '90%'
-})
+  return mdAndUp.value ? "360px" : "90%";
+});
 
-watch(file, newFile => {
-  emit('update:modelValue', newFile)
-})
+watch(file, (newFile) => {
+  emit("update:modelValue", newFile);
+});
 </script>
 
 <template>
-  <div
-    class="d-flex"
-    :style="{ maxWidth: width }"
-  >
+  <div class="d-flex" :style="{ maxWidth: width }">
     <VFileInput
       ref="fileInput"
       v-model="file"
       prepend-icon=""
       clearable
+      :rules="rules"
     >
-      <template #label="{ }">
+      <template #label="{}">
         <span v-if="file === null">
           {{ label }}
         </span>
