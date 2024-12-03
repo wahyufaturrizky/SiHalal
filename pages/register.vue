@@ -138,6 +138,10 @@ const validatePassword = () => {
   // else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password))
   //   errors.password = 'Password harus mengandung minimal satu karakter spesial (!@#$%^&*)'
   else errors.password = ''
+
+  if(errors.password != ''){
+
+  }
 }
 
 watch([() => form.value.password, () => form.value.passwordConfirm], () => {
@@ -301,6 +305,7 @@ const isDisabledSubmit = computed(() => {
     && form.value.noHandphone
     && form.value.password
     && form.value.passwordConfirm
+    && errors.password === ''
 
   // && form.value.passwordConfirm === form.value.password
   // && form.value.passwordConfirm.length < 8
