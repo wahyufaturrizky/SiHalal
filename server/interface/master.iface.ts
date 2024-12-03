@@ -38,3 +38,9 @@ export interface MasterKBLI {
   kode_jenis_produk: string;
   kode_layanan: string;
 }
+
+export interface MasterJenisFasilitator {
+  code: string;
+  name: string;
+  name_eng: string;
+}

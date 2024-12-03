@@ -380,7 +380,13 @@ export default [
     title: "sidang_fatwa.title",
     icon: { icon: "mdi-scale-balance" },
     roles: ["Komisi", "Komite Fatwa", "Pelaku Usaha", "Admin"],
-    children: [],
+    children: [
+      {
+        title: "Proses Sidang",
+        to: "sidang-fatwa-tabel-pengajuan",
+        roles: ["Komite Fatwa", "Admin"],
+      },
+    ],
   },
   { heading: "sidang_self_declare.title" },
   {
@@ -413,7 +419,7 @@ export default [
   { heading: "Menu" },
   {
     title: "Pengajuan Sertifikat Halal",
-    icon: { icon: "mdi-scale-balance" },
+    icon: { icon: "fa-id-card" },
     roles: ["Pendamping", "Admin"],
     children: [
       {
@@ -435,18 +441,6 @@ export default [
         title: "Update Foto Produk - Pendamping",
         to: "dummy-empty-page",
         roles: ["Pelaku Usaha", "Admin"],
-      },
-    ],
-  },
-  {
-    title: "sh-submission.title",
-    icon: { icon: "fa-id-card" },
-    roles: ["Pendamping", "Admin"],
-    children: [
-      {
-        title: "sh-submission.detail",
-        to: "sh-submission-detail",
-        roles: ["Pendamping", "Admin"],
       },
     ],
   },

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import DetailFacilitateModalSend from "@/components/fasilitator/detail-facilitate-modal-send.vue";
-
 const loading = ref(false);
+const loadingSubmit = ref(false);
+const visibleModalKirim = ref(false);
 const dataFasilitasi = ref();
 const dataDetailRegistration = ref();
 const timelineEvents = ref();
@@ -10,6 +10,7 @@ const openPanelFacilitate = ref(0);
 const openPanelTracking = ref(0);
 
 const route = useRoute();
+const router = useRouter();
 
 const facilitateId = route.params.id;
 
@@ -38,6 +39,7 @@ const loadItemById = async () => {
         tgl_mulai,
         tgl_selesai,
         jenis_fasilitasi,
+        fac_description,
       } = fasilitasi || {};
 
       dataFasilitasi.value = [
@@ -58,37 +60,42 @@ const loadItemById = async () => {
         },
         {
           id: 4,
+          key: "Fasilitasi Deskripsi",
+          value: fac_description,
+        },
+        {
+          id: 5,
           key: "Nomor Kontak Penanggung Jawab Program",
           value: phone_penanggung_jawab,
         },
-        { id: 5, key: "Tahun", value: tahun },
+        { id: 6, key: "Tahun", value: tahun },
         {
-          id: 6,
+          id: 7,
           key: "Lingkup Wilayah Fasilitasi",
           value: lingkup_wilayah_fasilitas,
         },
         {
-          id: 7,
+          id: 8,
           key: "Tanggal Mulai",
           value: formatDateIntl(new Date(tgl_mulai)),
         },
         {
-          id: 8,
+          id: 9,
           key: "Tanggal Selesai",
           value: formatDateIntl(new Date(tgl_selesai)),
         },
         {
-          id: 9,
+          id: 10,
           key: "Jenis Fasilitasi",
           value: jenis_fasilitasi,
         },
         {
-          id: 10,
+          id: 11,
           key: "Sumber Pembiayaan",
           value: sumber_pembiayaan,
         },
         {
-          id: 11,
+          id: 12,
           key: "Kuota",
           value: kuota,
         },
@@ -115,6 +122,44 @@ const loadItemById = async () => {
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loading.value = false;
+  }
+};
+
+const submitFacilitate = async () => {
+  try {
+    loadingSubmit.value = true;
+
+    const res = await $api("/facilitate/entry/submit", {
+      method: "post",
+      body: {
+        nama: "joni",
+        alamat: "string",
+        jenis_fasilitator: "string",
+        provinsi_code: "string",
+        kota_code: "string",
+        kecamatan_code: "string",
+        kode_pos: "string",
+        email: "string",
+        kontak_person: "string",
+        no_hp: "string",
+      },
+    });
+
+    console.log(res);
+
+    if (res?.code === 2000) {
+      router.go(-1);
+      loadingSubmit.value = false;
+      visibleModalKirim.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingSubmit.value = false;
+      visibleModalKirim.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingSubmit.value = false;
+    visibleModalKirim.value = false;
   }
 };
 
@@ -145,7 +190,42 @@ const navigateAction = () => {
         >
           Ubah
         </VBtn>
-        <DetailFacilitateModalSend />
+
+        <VBtn
+          density="compact"
+          style="margin: 0.5svw"
+          variant="flat"
+          append-icon="fa-paper-plane"
+          @click="visibleModalKirim = true"
+        >
+          Kirim
+        </VBtn>
+
+        <VDialog v-model="visibleModalKirim" max-width="50svw">
+          <VCard>
+            <VCardTitle><h3>Kirim Pengajuan</h3></VCardTitle>
+            <VCardItem>
+              <p>Yakin ingin mengirim pengajuan fasilitasi?</p>
+            </VCardItem>
+            <VCardActions>
+              <VBtn
+                variant="outlined"
+                density="compact"
+                @click="visibleModalKirim = false"
+              >
+                Batal
+              </VBtn>
+              <VBtn
+                :disabled="loadingSubmit"
+                variant="flat"
+                density="compact"
+                @click="submitFacilitate"
+              >
+                {{ loadingSubmit ? "Loading..." : "Kirim" }}
+              </VBtn>
+            </VCardActions>
+          </VCard>
+        </VDialog>
       </div>
     </VCol>
   </VRow>
