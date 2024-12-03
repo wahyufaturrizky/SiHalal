@@ -1,20 +1,35 @@
 <script setup lang="ts">
-const panelOpen = ref(0)
+import type { profileMain } from "@/stores/interface/pelakuUsahaProfileIntf";
+const panelOpen = ref(0);
+
+const props = defineProps({
+  profileData: {
+    type: Object as profileMain | any,
+    required: true,
+  },
+});
+// onMounted(() => {
+//   console.log("ini data props", props.profileData);
+// });
 
 const profilData = [
-  { id: 1, field: 'Nama Perusahaan', value: 'Kopi Susu Samsul' },
+  {
+    id: 1,
+    field: "Nama Perusahaan",
+    value: props.profileData?.company_name || "-",
+  },
   {
     id: 2,
-    field: 'Alamat',
-    value: 'Sumbawa Banget, RT002/RW002, Sumbang, Curio',
+    field: "Alamat",
+    value: props.profileData?.address || "-",
   },
-  { id: 3, field: 'Kota/Kab', value: 'Kab. Enrekang' },
-  { id: 4, field: 'Provinsi', value: 'Sulawesi Selatan' },
-  { id: 5, field: 'Kodepos', value: '-' },
-  { id: 6, field: 'Negara', value: 'Indonesia' },
-  { id: 7, field: 'Telepon', value: '08123467890' },
-  { id: 8, field: 'Email', value: 'kopisususamsul@gmail.com' },
-]
+  { id: 3, field: "Kota/Kab", value: props.profileData?.city_name || "-" },
+  { id: 4, field: "Provinsi", value: props.profileData?.province_name || "-" },
+  { id: 5, field: "Kodepos", value: props.profileData?.postal_code || "-" },
+  { id: 6, field: "Negara", value: props.profileData?.country_name || "-" },
+  { id: 7, field: "Telepon", value: props.profileData?.phone || "-" },
+  { id: 8, field: "Email", value: props.profileData?.email || "-" },
+];
 </script>
 
 <template>
@@ -22,10 +37,7 @@ const profilData = [
     <VExpansionPanel>
       <VExpansionPanelTitle><h2>Profil</h2></VExpansionPanelTitle>
       <VExpansionPanelText>
-        <VRow
-          v-for="data in profilData"
-          :key="data.id"
-        >
+        <VRow v-for="data in profilData" :key="data.id">
           <VCol cols="4">
             <p>{{ data.field }}</p>
           </VCol>
@@ -37,80 +49,44 @@ const profilData = [
           </VCol>
         </VRow>
         <VDivider />
-        <br>
+        <br />
         <VRow>
-          <VCol cols="4">
-            Jenis Badan Usaha
-          </VCol>
-          <VCol cols="1">
-            :
-          </VCol>
-          <VCol cols="7">
-            Lainnya
-          </VCol>
+          <VCol cols="4"> Jenis Badan Usaha </VCol>
+          <VCol cols="1"> : </VCol>
+          <VCol cols="7"> Lainnya </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4">
-            Tingkat Usaha
-          </VCol>
-          <VCol cols="1">
-            :
-          </VCol>
-          <VCol cols="7">
-            UMK
-          </VCol>
+          <VCol cols="4"> Tingkat Usaha </VCol>
+          <VCol cols="1"> : </VCol>
+          <VCol cols="7"> UMK </VCol>
         </VRow>
         <VRow>
-          <VCol
-            cols="4"
-            style="display: flex; align-items: center;"
-          >
+          <VCol cols="4" style="display: flex; align-items: center">
             Skala Usaha
           </VCol>
-          <VCol
-            cols="1"
-            style="display: flex; align-items: center;"
-          >
-            :
-          </VCol>
+          <VCol cols="1" style="display: flex; align-items: center"> : </VCol>
           <VCol cols="7">
-            <div style="display: flex; align-items: center; justify-content: end;">
-              <VSelect
-                density="compact"
-                :items="['Mikro']"
-              />
-              <VBtn
-                style="margin-inline-start: 1svw;"
-                variant="outlined"
-              >
+            <div
+              style="display: flex; align-items: center; justify-content: end"
+            >
+              <VSelect density="compact" :items="['Mikro']" />
+              <VBtn style="margin-inline-start: 1svw" variant="outlined">
                 Update
               </VBtn>
             </div>
           </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4">
-            Modal Dasar
-          </VCol>
-          <VCol cols="1">
-            :
-          </VCol>
-          <VCol cols="7">
-            Rp 0
-          </VCol>
+          <VCol cols="4"> Modal Dasar </VCol>
+          <VCol cols="1"> : </VCol>
+          <VCol cols="7"> Rp 0 </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4">
-            Asal Usaha
-          </VCol>
-          <VCol cols="1">
-            :
-          </VCol>
-          <VCol cols="7">
-            Domestik
-          </VCol>
+          <VCol cols="4"> Asal Usaha </VCol>
+          <VCol cols="1"> : </VCol>
+          <VCol cols="7"> Domestik </VCol>
         </VRow>
-        <br>
+        <br />
       </VExpansionPanelText>
     </VExpansionPanel>
   </VExpansionPanels>
