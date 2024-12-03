@@ -1,5 +1,8 @@
 <script setup lang="ts">
 
+import FormEditLayoutProduksi from "@/components/form/FormEditLayoutProduksi.vue"
+import FormTambahLayoutProduksi from "@/components/form/FormTambahLayoutProduksi.vue"
+
 const snackBar = useSnackbar()
 
 const props = defineProps({
@@ -51,7 +54,7 @@ const download = item => console.log("DOWNLOAD FILE ", item.file)
   <VCard class="pa-4 mb-8">
     <VCardTitle class="d-flex justify-space-between align-center">
       <span class="text-h3">Layout / Denah Ruang Produksi </span>
-      <FormTambahProses :is-editable="props.isEditable" @confirm="save" />
+      <FormTambahLayoutProduksi :is-editable="props.isEditable" @confirm="save" />
     </VCardTitle>
     <VCardItem>
       <VDataTable :headers="headers" :items="items">
@@ -60,7 +63,7 @@ const download = item => console.log("DOWNLOAD FILE ", item.file)
             <VIcon>mdi-dots-vertical</VIcon>
             <VMenu activator="parent" :close-on-content-click="false">
               <VCard>
-                <FormEditProses
+                <FormEditLayoutProduksi
                   :is-editable="props.isEditable"
                   :initial-data="item"
                   @confirm="update"

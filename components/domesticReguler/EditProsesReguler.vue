@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 const props = defineProps({
   isEditable: {
     type: Boolean,
@@ -15,7 +16,11 @@ const confirm = check => isAgree.value = check
 <template>
   <FormCheckPernyataanBebasBabi @confirm="confirm" v-if="!isAgree" />
   <div v-if="isAgree">
-    <FormProsesReguler :is-editable="props.isEditable"/>
+    <FormLayoutProduksi :is-editable="props.isEditable"/>
+    <FormCatatanPenyimpananBahanDanProduk :is-editable="props.isEditable"/>
+    <FormDiagramAlurProsesProduksi :is-editable="props.isEditable"/>
+    <FormCatatanHasilProduksi :is-editable="props.isEditable"/>
+    <FormCatatanDistribusi :is-editable="props.isEditable"/>
   </div>
 </template>
 
