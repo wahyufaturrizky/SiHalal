@@ -1,35 +1,107 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import type { factory } from "@/stores/interface/pelakuUsahaProfileIntf";
+import { ref } from "vue";
 
-const panelOpen = ref(0)
+const snackbar = useSnackbar();
+const panelOpen = ref(0);
 
 const tablePabrikHeader = [
-  { title: 'No', key: 'no' },
-  { title: 'Nama', key: 'name' },
-  { title: 'Alamat', key: 'address' },
-  { title: 'Action', key: 'action', align: 'end' },
-]
+  { title: "No", key: "no" },
+  { title: "Nama", key: "name" },
+  { title: "Alamat", key: "address" },
+  { title: "Action", key: "action", align: "end" },
+];
 
-const pabrikData = ref([
-  {
-    no: 1,
-    name: 'My Drink Oke',
-    address:
-      'Sumbawa Banget, RT002/RW002, Sumbang, Curio, Kab.Enrekang, Sulawesi Selatan',
+const props = defineProps({
+  pabrikData: {
+    type: Object as factory | any,
+    required: true,
   },
-])
+});
+
+const store = pelakuUsahaProfile();
 
 function handleEdit(item) {
-  console.log('Edit item:', item)
+  console.log("Edit item:", item);
+
+  const submitApi = $api(
+    `/pelaku-usaha-profile/${store.profileData?.id}/${item.id}/update-factory`,
+    {
+      method: "PUT",
+      body: {
+        name: item.namaPabrik,
+        address: item.alamatPabrik,
+        city: item.kabKota,
+        province: item.provinsi,
+        country: item.negara,
+        zip_code: item.kodePos,
+        status: item.statusPabrik,
+      },
+    }
+  ).then((val: any) => {
+    if (val.code == 2000) {
+      store.updateFactory(item.id, item);
+      snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+    } else {
+      snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
+    }
+  });
 }
 
 function handleDelete(item) {
-  console.log('Delete item:', item)
+  console.log("Delete item:", item);
+
+  const submitApi = $api(
+    `/pelaku-usaha-profile/${store.profileData?.id}/${item.id}/delete-factory`,
+    {
+      method: "DELETE",
+    }
+  )
+    .then((val: any) => {
+      if (val.code == 2000) {
+        store.fetchProfile();
+        snackbar.sendSnackbar("Berhasil Menghapus Data ", "success");
+      } else {
+        snackbar.sendSnackbar("Gagal Menghapus Data ", "error");
+      }
+    })
+    .catch((e) => {
+      snackbar.sendSnackbar("Gagal Menghapus Data ", "error");
+    });
 }
 
-const handleAddAspekLegalConfirm = formData => {
-  console.log('Add confirmed:', formData)
-}
+const handleAddAspekLegalConfirm = (formData) => {
+  console.log("Add confirmed:", formData);
+
+  const submitApi = $api(
+    `/pelaku-usaha-profile/${store.profileData?.id}/add-factory`,
+    {
+      method: "POST",
+      body: {
+        name: formData.namaPabrik,
+        address: formData.alamatPabrik,
+        city: formData.kabKota,
+        province: formData.provinsi,
+        country: formData.negara,
+        zip_code: formData.kodePos,
+        status: formData.statusPabrik,
+        // lokasiPabrik: '',
+      },
+    }
+  ).then((val: any) => {
+    if (val.code == 2000) {
+      store.fetchProfile();
+      snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+    } else {
+      snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
+    }
+  });
+};
+
+const initialDataForEdit = (item: any) => ({
+  id: item.id,
+  idPerson: store.profileData?.id,
+});
 </script>
 
 <template>
@@ -57,44 +129,33 @@ const handleAddAspekLegalConfirm = formData => {
         </div>
         <VDataTable
           :headers="tablePabrikHeader"
-          :items="pabrikData"
+          :items="props.pabrikData"
           item-value="no"
           class="elevation-1"
         >
           <template #[`item.action`]="{ item }">
-            <VMenu>
+            <VMenu :close-on-content-click="false">
               <template #activator="{ props }">
-                <VBtn
-                  icon
-                  variant="text"
-                  v-bind="props"
-                >
+                <VBtn icon variant="text" v-bind="props">
                   <VIcon>mdi-dots-vertical</VIcon>
                 </VBtn>
               </template>
               <VList>
                 <VListItem>
                   <VListItemTitle>
-                    <VIcon class="mr-2">
-                      mdi-pencil
-                    </VIcon>
-                    Ubah
+                    <!-- <VIcon class="mr-2"> mdi-pencil </VIcon>
+                    Ubah -->
                     <DataPabrikModal
                       mode="edit"
-                      :initial-data="initialDataForEdit"
-                      @confirm-edit="handleEditConfirm"
+                      :initial-data="initialDataForEdit(item)"
+                      @confirm-edit="handleEdit"
                       @cancel="() => console.log('Edit cancelled')"
                     />
                   </VListItemTitle>
                 </VListItem>
-                <VListItem>
+                <VListItem @click="handleDelete(item)">
                   <VListItemTitle class="text-red">
-                    <VIcon
-                      color="red"
-                      class="mr-2"
-                    >
-                      mdi-delete
-                    </VIcon>
+                    <VIcon color="red" class="mr-2"> mdi-delete </VIcon>
                     Hapus
                   </VListItemTitle>
                 </VListItem>
