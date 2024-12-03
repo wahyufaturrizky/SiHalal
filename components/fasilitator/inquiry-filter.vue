@@ -5,7 +5,13 @@ const props = defineProps({
   loadingstatus: {
     type: Boolean,
   },
+  loadingcodefaciiltate: {
+    type: Boolean,
+  },
   itemsstatus: {
+    type: Array,
+  },
+  itemscodefaciiltate: {
     type: Array,
   },
 });
@@ -14,7 +20,12 @@ const emit = defineEmits<{
   (event: "formvalue", value: any): void;
 }>();
 
-const { loadingstatus, itemsstatus } = props;
+const {
+  loadingstatus,
+  itemsstatus,
+  loadingcodefaciiltate,
+  itemscodefaciiltate,
+} = props;
 
 const form = ref({
   no_daftar: null,
@@ -26,7 +37,6 @@ const form = ref({
   status: null,
 });
 
-const kodeFasilitasiOptions = ["Kode 1", "Kode 2", "Kode 3"];
 const typePengajuanOptions = ["Reguler", "Self Declare"];
 const layarExcelOptions = ["1excel", "2layar"];
 
@@ -77,7 +87,10 @@ const viewResults = () => {
           <VSelect
             v-model="form.kode_fac"
             placeholder="Kode Fasilitasi"
-            :items="kodeFasilitasiOptions"
+            :items="itemscodefaciiltate"
+            :loading="loadingcodefaciiltate"
+            item-title="hscode"
+            item-value="id"
           />
         </VCol>
 
