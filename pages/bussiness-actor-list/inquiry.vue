@@ -3,6 +3,8 @@ const items = ref();
 const size = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
+const loadingStatus = ref(false);
+const itemsStatus = ref();
 const page = ref(1);
 const no_daftar = ref("");
 const nama_pu = ref("");
@@ -61,6 +63,27 @@ const loadItem = async ({
   }
 };
 
+const loadItemStatusApplication = async () => {
+  try {
+    loadingStatus.value = true;
+
+    const response = await $api("/master/application-status", {
+      method: "get",
+    });
+
+    if (response.length) {
+      itemsStatus.value = response;
+      loadingStatus.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingStatus.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingStatus.value = false;
+  }
+};
+
 onMounted(async () => {
   await loadItem({
     page: 1,
@@ -72,6 +95,7 @@ onMounted(async () => {
     jenis: jenis.value,
     kode_fac: kode_fac.value,
   });
+  await loadItemStatusApplication();
 });
 
 const debouncedFetch = debounce(loadItem, 500);
@@ -83,6 +107,9 @@ const debouncedFetch = debounce(loadItem, 500);
   </h1>
   <div>
     <InquiryFilter
+      v-if="!loadingStatus"
+      :itemsstatus="itemsStatus"
+      :loadingstatus="loadingStatus"
       @formvalue="
         debouncedFetch({
           page,
