@@ -1,8 +1,11 @@
 import type { NuxtError } from "nuxt/app";
+import type { NewAccountGovernment } from "~/server/interface/new-account.iface";
 
 const runtimeConfig = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
+  const id = getRouterParam(event, "id");
+
   if (typeof authorizationHeader === "undefined") {
     throw createError({
       statusCode: 403,
@@ -11,17 +14,19 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { data } = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/list/ref/JSP`,
+  const body: NewAccountGovernment = await readBody(event);
+
+  const data = await $fetch<any>(
+    `${runtimeConfig.coreBaseUrl}/api/v1/fasilitator/fasilitasi/${id}/delete`,
     {
-      method: "get",
+      method: "post",
       headers: { Authorization: authorizationHeader },
+      body,
     }
   ).catch((err: NuxtError) => {
-    throw createError({
-      statusCode: err.statusCode,
-      statusMessage: JSON.stringify(err.data),
-    });
+    setResponseStatus(event, 400);
+
+    return err.data;
   });
 
   return data || null;

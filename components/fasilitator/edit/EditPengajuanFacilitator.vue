@@ -28,7 +28,6 @@ console.log("@datasof", datasof);
 const isVisible = ref(false);
 const loadingUpdate = ref(false);
 const route = useRoute();
-const router = useRouter();
 
 const facilitateId = route.params.id;
 

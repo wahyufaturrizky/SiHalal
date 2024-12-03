@@ -1,5 +1,4 @@
-import type { NuxtError } from "nuxt/app";
-
+import { NuxtError } from "nuxt/app";
 const runtimeConfig = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
@@ -10,9 +9,8 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-
   const { data } = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/list/ref/JSP`,
+    `${runtimeConfig.coreBaseUrl}/api/list/ref/JNFAS`,
     {
       method: "get",
       headers: { Authorization: authorizationHeader },
@@ -23,6 +21,5 @@ export default defineEventHandler(async (event) => {
       statusMessage: JSON.stringify(err.data),
     });
   });
-
   return data || null;
 });

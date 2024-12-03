@@ -301,6 +301,7 @@ const isDisabledSubmit = computed(() => {
     && form.value.noHandphone
     && form.value.password
     && form.value.passwordConfirm
+    && errors.password === ''
 
   // && form.value.passwordConfirm === form.value.password
   // && form.value.passwordConfirm.length < 8

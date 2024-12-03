@@ -3,6 +3,7 @@ import RegistrasiFasilitatorTable from "@/components/fasilitator/registrasi-fasi
 import type { FacilitatorProfile } from "@/server/api/facilitate/profile/index.post";
 import type {
   MasterDistrict,
+  MasterJenisFasilitator,
   MasterSubDistrict,
 } from "@/server/interface/master.iface";
 import type { VForm } from "vuetify/components/VForm";
@@ -41,6 +42,17 @@ const getSubDistrict = async (kode: string) => {
     },
   });
   subDistrict.value = response;
+};
+const facilitatorType = ref();
+const getFacilitatorType = async (kode: string) => {
+  formProfile.value.kecamatan_code = null;
+  const response: MasterJenisFasilitator[] = await $api(
+    "/facilitate/profile/fasilitator-type",
+    {
+      method: "get",
+    }
+  );
+  facilitatorType.value = response.map((type) => type.name);
 };
 const fasilitator = ref<FasilitatorProfileData>();
 const formProfile = ref<FacilitatorProfile>({
@@ -146,7 +158,7 @@ const submitProfile = async () => {
   // window.location.href = "/login";
 };
 onMounted(async () => {
-  await Promise.allSettled([getProfile(), getProvince()]);
+  await Promise.allSettled([getProfile(), getProvince(), getFacilitatorType()]);
 });
 </script>
 
@@ -199,7 +211,7 @@ onMounted(async () => {
                       v-model="formProfile.jenis_fasilitator"
                       :rules="[requiredValidator]"
                       placeholder="Pilih Jenis Fasilitator"
-                      :items="['Nasional', 'Provinsi', 'Kabupaten / Kota']"
+                      :items="facilitatorType"
                     />
                   </VItemGroup>
                 </VCol>

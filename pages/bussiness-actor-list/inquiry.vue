@@ -3,6 +3,10 @@ const items = ref();
 const size = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
+const loadingStatus = ref(false);
+const loadingCodeFaciiltate = ref(false);
+const itemsStatus = ref();
+const itemsCodeFaciiltate = ref();
 const page = ref(1);
 const no_daftar = ref("");
 const nama_pu = ref("");
@@ -61,6 +65,48 @@ const loadItem = async ({
   }
 };
 
+const loadItemStatusApplication = async () => {
+  try {
+    loadingStatus.value = true;
+
+    const response = await $api("/master/application-status", {
+      method: "get",
+    });
+
+    if (response.length) {
+      itemsStatus.value = response;
+      loadingStatus.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingStatus.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingStatus.value = false;
+  }
+};
+
+const loadItemCodeFaciiltate = async () => {
+  try {
+    loadingCodeFaciiltate.value = true;
+
+    const response = await $api("/shln/submission/product/hscode", {
+      method: "get",
+    });
+
+    if (response.code === 2000) {
+      itemsCodeFaciiltate.value = response.data;
+      loadingCodeFaciiltate.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingCodeFaciiltate.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingCodeFaciiltate.value = false;
+  }
+};
+
 onMounted(async () => {
   await loadItem({
     page: 1,
@@ -72,6 +118,8 @@ onMounted(async () => {
     jenis: jenis.value,
     kode_fac: kode_fac.value,
   });
+  await loadItemStatusApplication();
+  await loadItemCodeFaciiltate();
 });
 
 const debouncedFetch = debounce(loadItem, 500);
@@ -83,6 +131,11 @@ const debouncedFetch = debounce(loadItem, 500);
   </h1>
   <div>
     <InquiryFilter
+      v-if="!loadingStatus && !loadingCodeFaciiltate"
+      :itemsstatus="itemsStatus"
+      :loadingstatus="loadingStatus"
+      :loadingcodefaciiltate="loadingCodeFaciiltate"
+      :itemscodefaciiltate="itemsCodeFaciiltate"
       @formvalue="
         debouncedFetch({
           page,

@@ -10,19 +10,30 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
+  const body: RequirementDocPost = await readBody(event);
 
-  const { data } = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/list/ref/JSP`,
+  const data = await $fetch<any>(
+    `${runtimeConfig.coreBaseUrl}/api/v1/certificate-halal-foreign/${body.id}/requirement-document`,
     {
-      method: "get",
+      method: "post",
       headers: { Authorization: authorizationHeader },
+      body,
     }
   ).catch((err: NuxtError) => {
-    throw createError({
-      statusCode: err.statusCode,
-      statusMessage: JSON.stringify(err.data),
-    });
+    setResponseStatus(event, 400);
+    return err.data;
   });
 
   return data || null;
 });
+interface RequirementDocPost {
+  id: string;
+  id_loa: string;
+  id_nib: string;
+  file_url_loa: string;
+  file_url_nib: string;
+  comment_loa: string;
+  comment_nib: string;
+  is_return: boolean;
+  is_accept: boolean;
+}

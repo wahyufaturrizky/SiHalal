@@ -5,7 +5,7 @@ const password = ref("");
 const newPass = ref("");
 const showPassword = ref(false);
 const isLoading = ref(false);
-const isDisable = ref(false)
+const isDisable = ref(false);
 
 function togglePasswordVisibility() {
   // console.log(showPassword.value);
@@ -32,7 +32,8 @@ async function apiCallNewPasswd() {
     if (
       password.value !== "" &&
       newPass.value !== "" &&
-      password.value === newPass.value
+      password.value === newPass.value &&
+      password.value.length >= 8
     ) {
       const { data, error } = await useFetch("/api/auth/forgot-new", {
         method: "POST",
@@ -66,33 +67,27 @@ const submitNewPassword = (event: any) => {
   apiCallNewPasswd();
 };
 
-
 const confPassRules = [
   (val: string): boolean | string => {
-
     if (
       val === password.value &&
       password.value !== "" &&
       newPass.value !== ""
     ) {
-      isDisable.value = false
+      isDisable.value = false;
       return true;
     }
-    isDisable.value = true
+    isDisable.value = true;
     return "Konfirmasi Kata Sandi Baru tidak sama";
   },
 ];
 
 const passRules = [
   (val: string): boolean | string => {
-    if (
-      val === newPass.value &&
-      password.value !== "" &&
-      newPass.value !== ""
-    ) {
+    if (password.value.length >= 8) {
       return true;
     }
-    return "Kata Sandi Baru tidak sama";
+    return "Pastikan kata sandi minimal 8 karakter!";
   },
 ];
 </script>
@@ -110,6 +105,7 @@ const passRules = [
             :append-inner-icon="
               showPassword ? 'mdi-eye' : 'mdi-eye-off-outline'
             "
+            :rules="passRules"
             @click:append-inner="togglePasswordVisibility"
           ></VTextField>
         </VItemGroup>

@@ -99,6 +99,17 @@ const getCountry = async () => {
 
   country.value = response.map((item) => item.name);
 };
+const scope = ref<{ id: string; name: string }[]>();
+const getScope = async () => {
+  const response: { id: string; name: string }[] = await $api(
+    "shln/submission/identity/scope",
+    {
+      method: "get",
+    }
+  );
+
+  scope.value = response;
+};
 const refImporterPocForm = ref<VForm>();
 const openImporterPOCDialog = () => {
   refImporterPocForm.value?.validate().then(({ valid: isValid }) => {
@@ -199,9 +210,8 @@ const changeHcb = (item: string) => {
 };
 
 onMounted(async () => {
-  await Promise.allSettled([getCountry(), loadTracking()]);
+  await Promise.allSettled([getCountry(), loadTracking(), getScope()]);
   changeHcb(formIdentity.value.hcb.hcb_id);
-  console.log(parseISO(new Date(props.event.hcn.expired_date)));
 });
 
 const saveForm = () => {
@@ -410,8 +420,11 @@ const saveForm = () => {
             <VCol cols="12">
               <VSelect
                 v-model="formIdentity.hcn.scope"
-                :items="['Scope 1', 'Scope 2']"
+                :items="scope"
+                item-value="id"
+                item-title="name"
                 label="Scope"
+                placeholder="Choose Scope"
                 :rules="[requiredValidator]"
                 required
               />
