@@ -138,10 +138,6 @@ const validatePassword = () => {
   // else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password))
   //   errors.password = 'Password harus mengandung minimal satu karakter spesial (!@#$%^&*)'
   else errors.password = ''
-
-  if(errors.password != ''){
-
-  }
 }
 
 watch([() => form.value.password, () => form.value.passwordConfirm], () => {
