@@ -93,6 +93,12 @@ async function login() {
       errors.value.password = "Kata sandi tidak tepat!";
       errors.value.email = "Alamat Email tidak ditemukan!";
     }
+    if (error.data.data.success == false) {
+      useSnackbar().sendSnackbar("Captcha Failed", "error");
+      buttonClicked.value = false;
+
+      return;
+    }
     useSnackbar().sendSnackbar(
       "Gagal masuk, mohon periksa kembali kelengkapan data!",
       "error"
@@ -206,7 +212,7 @@ const handleLoadCallback = (response: unknown) => {
                   </NuxtLink>
                 </VCol>
 
-                <div class="my-6 gap-x-2">
+                <div class="my-6 gap-x-2 d-flex justify-center">
                   <RecaptchaV2
                     @widget-id="handleWidgetId"
                     @error-callback="handleErrorCallback"
