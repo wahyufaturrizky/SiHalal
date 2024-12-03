@@ -3,6 +3,7 @@ const items = ref();
 const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
+
 const page = ref(1);
 const searchQuery = ref("");
 

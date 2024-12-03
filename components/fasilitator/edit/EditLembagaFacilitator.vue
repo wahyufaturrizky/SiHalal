@@ -324,7 +324,11 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
         <VCardText>
           <VForm ref="formRef">
             <label class="text-h6" for="institutionName">
-              Lembaga Pendamping
+              {{
+                type === "Reguler"
+                  ? "Lembaga Pemeriksa Halal"
+                  : "Lembaga Pendamping"
+              }}
             </label>
             <VSelect
               id="institutionName"
