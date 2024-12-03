@@ -58,6 +58,14 @@ onMounted(() => {
         <div v-if="activeTab === 2">
           <Bahan />
         </div>
+        <div v-if="activeTab === 3">
+          <div v-if="!approveRequirements">
+            <ProsesLayanan :on-complete="() => approveRequirements = true" />
+          </div>
+          <div v-else>
+            <ListProses />
+          </div>
+        </div>
       </VTabItem>
     </VTabsItems>
   </VContainer>
