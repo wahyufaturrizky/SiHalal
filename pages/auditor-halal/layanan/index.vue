@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Bahan, Produk } from '#components'
+import { Bahan, Evaluasi, Produk } from '#components'
 
 const activeTab = ref(-1)
 const approveRequirements = ref(false)
@@ -88,6 +88,9 @@ onMounted(() => {
         </div>
         <div v-if="activeTab === 4">
           <Produk />
+        </div>
+        <div v-if="activeTab === 5">
+          <Evaluasi />
         </div>
       </VTabItem>
     </VTabsItems>
