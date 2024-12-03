@@ -1,7 +1,9 @@
 <script setup lang="ts">
 const loading = ref(false);
 const loadingSubmit = ref(false);
+const loadingDelete = ref(false);
 const visibleModalKirim = ref(false);
+const visibleModalHapus = ref(false);
 const dataFasilitasi = ref();
 const dataDetailRegistration = ref();
 const timelineEvents = ref();
@@ -77,12 +79,12 @@ const loadItemById = async () => {
         {
           id: 8,
           key: "Tanggal Mulai",
-          value: formatDateIntl(new Date(tgl_mulai)),
+          value: tgl_mulai ? formatDateIntl(new Date(tgl_mulai)) : "",
         },
         {
           id: 9,
           key: "Tanggal Selesai",
-          value: formatDateIntl(new Date(tgl_selesai)),
+          value: tgl_selesai ? formatDateIntl(new Date(tgl_selesai)) : "",
         },
         {
           id: 10,
@@ -103,11 +105,11 @@ const loadItemById = async () => {
 
       dataDetailRegistration.value = status_registrasi;
 
-      timelineEvents.value = tracking?.map((itemLembaga) => {
-        const { date, status, comment } = itemLembaga;
+      timelineEvents.value = tracking?.map((itemLembaga: any) => {
+        const { date, status, comment } = itemLembaga || {};
 
         return {
-          time: formatDateIntl(new Date(date)),
+          time: date ? formatDateIntl(new Date(date)) : "",
           title: status,
           description: comment,
           dotColor: "grey",
@@ -120,6 +122,8 @@ const loadItemById = async () => {
       loading.value = false;
     }
   } catch (error) {
+    console.log("@error", error);
+
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loading.value = false;
   }
@@ -129,20 +133,8 @@ const submitFacilitate = async () => {
   try {
     loadingSubmit.value = true;
 
-    const res = await $api("/facilitate/entry/submit", {
+    const res = await $api(`/facilitate/entry/submit/${facilitateId}`, {
       method: "post",
-      body: {
-        nama: "joni",
-        alamat: "string",
-        jenis_fasilitator: "string",
-        provinsi_code: "string",
-        kota_code: "string",
-        kecamatan_code: "string",
-        kode_pos: "string",
-        email: "string",
-        kontak_person: "string",
-        no_hp: "string",
-      },
     });
 
     console.log(res);
@@ -163,6 +155,32 @@ const submitFacilitate = async () => {
   }
 };
 
+const deleteFacilitate = async () => {
+  try {
+    loadingDelete.value = true;
+
+    const res = await $api(`/facilitate/entry/delete/${facilitateId}`, {
+      method: "post",
+    });
+
+    console.log(res);
+
+    if (res?.code === 2000) {
+      router.go(-1);
+      loadingDelete.value = false;
+      visibleModalHapus.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingDelete.value = false;
+      visibleModalHapus.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingDelete.value = false;
+    visibleModalHapus.value = false;
+  }
+};
+
 onMounted(async () => {
   await loadItemById();
 });
@@ -180,7 +198,43 @@ const navigateAction = () => {
     </VCol>
     <VCol cols="6" style="display: flex; justify-content: end">
       <div>
-        <DetailFacilitateModalDelete />
+        <VBtn
+          density="compact"
+          style="margin: 0.5svw"
+          variant="outlined"
+          color="#E1442E"
+          @click="visibleModalHapus = true"
+        >
+          <VIcon style="color: #e1442e" icon="fa-trash" />
+        </VBtn>
+
+        <VDialog v-model="visibleModalHapus" max-width="50svw">
+          <VCard style="padding: 1svw">
+            <VCardTitle><h3>Hapus Pengajuan</h3></VCardTitle>
+            <VCardItem>
+              <p>Yakin ingin menghapus pengajuan fasilitasi?</p>
+            </VCardItem>
+            <VCardActions>
+              <VBtn
+                variant="outlined"
+                density="compact"
+                @click="visibleModalHapus = false"
+              >
+                Batal
+              </VBtn>
+              <VBtn
+                color="#E1442E"
+                variant="flat"
+                density="compact"
+                :disabled="loadingDelete"
+                @click="deleteFacilitate"
+              >
+                {{ loadingDelete ? "Loading..." : "Ya, Hapus" }}
+              </VBtn>
+            </VCardActions>
+          </VCard>
+        </VDialog>
+
         <VBtn
           density="compact"
           style="margin: 0.5svw"
