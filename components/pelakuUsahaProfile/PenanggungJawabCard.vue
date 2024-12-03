@@ -1,5 +1,28 @@
 <script setup lang="ts">
-const panelOpen = ref(0)
+import type { penanggungJawab } from "@/stores/interface/pelakuUsahaProfileIntf";
+
+const panelOpen = ref(0);
+
+const props = defineProps({
+  responsiblePersonData: {
+    type: Object as penanggungJawab | any,
+    required: true,
+  },
+});
+
+const profilData = [
+  {
+    id: 1,
+    field: "Nama",
+    value: props.responsiblePersonData?.name || "-",
+  },
+  {
+    id: 2,
+    field: "Nomor Kontak",
+    value: props.responsiblePersonData?.phone || "-",
+  },
+  { id: 3, field: "Email", value: props.responsiblePersonData?.email || "-" },
+];
 </script>
 
 <template>
@@ -7,37 +30,15 @@ const panelOpen = ref(0)
     <VExpansionPanel>
       <VExpansionPanelTitle><h2>Penanggung Jawab</h2></VExpansionPanelTitle>
       <VExpansionPanelText>
-        <VRow>
-          <VCol cols="3">
-            Nama
+        <VRow v-for="data in profilData" :key="data.id">
+          <VCol cols="4">
+            <p>{{ data.field }}</p>
           </VCol>
           <VCol cols="1">
-            :
+            <p>:</p>
           </VCol>
-          <VCol cols="8">
-            Sumayah
-          </VCol>
-        </VRow>
-        <VRow>
-          <VCol cols="3">
-            Nomor Kontak
-          </VCol>
-          <VCol cols="1">
-            :
-          </VCol>
-          <VCol cols="8">
-            08123456789
-          </VCol>
-        </VRow>
-        <VRow>
-          <VCol cols="3">
-            Email
-          </VCol>
-          <VCol cols="1">
-            :
-          </VCol>
-          <VCol cols="8">
-            raawdasdad@gmail.com
+          <VCol cols="7">
+            <p>{{ data.value }}</p>
           </VCol>
         </VRow>
       </VExpansionPanelText>

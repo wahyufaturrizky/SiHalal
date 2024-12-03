@@ -1,10 +1,19 @@
 <script setup lang="ts">
+import type { penanggungJawab } from "@/stores/interface/pelakuUsahaProfileIntf";
+
 const panelOpen = ref(0);
 
+const props = defineProps({
+  responsiblePerson: {
+    type: Object as penanggungJawab | any,
+    required: true,
+  },
+});
+
 const formData = ref({
-  jenisBadanUsaha: "Sumayah",
-  nomorKontak: "08123456789",
-  email: "rasarasa@gmail.com",
+  jenisBadanUsaha: props.responsiblePerson?.name,
+  nomorKontak: props.responsiblePerson?.phone,
+  email: props.responsiblePerson?.email,
 });
 </script>
 

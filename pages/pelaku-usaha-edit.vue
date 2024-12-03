@@ -7,23 +7,25 @@ import SubPelakuUsahaLayout from "@/layouts/subPelakuUsahaLayout.vue";
 // import SaveConfirmation from "@/views/pages/pelaku-usaha/SaveConfirmation.vue";
 
 const tablePabrikHeader = [
-  { title: 'No', key: 'no' },
-  { title: 'Jenis', key: 'kind' },
-  { title: 'No. Dokumen', key: 'no_docs' },
-  { title: 'Tanggal', key: 'date' },
-  { title: 'Masa Berlaku', key: 'exp_date' },
-  { title: 'Instansi Penerbit', key: 'publisher' },
-]
+  { title: "No", key: "no" },
+  { title: "Jenis", key: "kind" },
+  { title: "No. Dokumen", key: "no_docs" },
+  { title: "Tanggal", key: "date" },
+  { title: "Masa Berlaku", key: "exp_date" },
+  { title: "Instansi Penerbit", key: "publisher" },
+];
 
 const tableOutletHeader = [
-  { title: 'No', key: 'no' },
-  { title: 'Nama', key: 'name' },
-  { title: 'Alamat', key: 'address' },
-]
+  { title: "No", key: "no" },
+  { title: "Nama", key: "name" },
+  { title: "Alamat", key: "address" },
+];
 
 // const onEdit = () => {
 //   navigateTo("/pelaku-usaha-edit");
 // };
+
+const store = pelakuUsahaProfile();
 </script>
 
 <template>
@@ -31,7 +33,7 @@ const tableOutletHeader = [
     <template #pageTitle>
       <VRow>
         <VCol><h3>Ubah Pelaku Usaha</h3></VCol>
-        <VCol style="display: flex; justify-content: end;">
+        <VCol style="display: flex; justify-content: end">
           <DeleteConfirmation />
           <SaveConfirmation />
         </VCol>
@@ -42,27 +44,35 @@ const tableOutletHeader = [
     <template #leftContent>
       <VRow>
         <VCol cols="12">
-          <ProfileCard />
+          <ProfileCard
+            :profile-data="store.profileData ? store.profileData : {}"
+          />
         </VCol>
       </VRow>
       <VRow>
         <VCol cols="12">
-          <PenanggungJawabCardEdit />
+          <PenanggungJawabCardEdit
+            :responsible-person="
+              store.penanggungJawabHalal ? store.penanggungJawabHalal : {}
+            "
+          />
         </VCol>
       </VRow>
       <VRow>
         <VCol cols="12">
-          <AspekLegalCardEdit />
+          <AspekLegalCardEdit
+            :aspek-legal-data="store.legal ? store.legal : []"
+          />
         </VCol>
       </VRow>
       <VRow>
         <VCol cols="12">
-          <PabrikCardEdit />
+          <PabrikCardEdit :pabrik-data="store.factory ? store.factory : []" />
         </VCol>
       </VRow>
       <VRow>
         <VCol cols="12">
-          <OutletEdit />
+          <OutletEdit :outlet-data="store.outlet ? store.outlet : []" />
         </VCol>
       </VRow>
       <VRow>
@@ -74,17 +84,20 @@ const tableOutletHeader = [
 
     <!-- right content -->
     <template #rightContent>
-      <VRow>;
+      <VRow
+        >;
         <VCol :cols="12">
           <PerizinanCard />
         </VCol>
       </VRow>
-      <VRow>;
+      <VRow
+        >;
         <VCol :cols="12">
           <KBLICard />
         </VCol>
       </VRow>
-      <VRow>;
+      <VRow
+        >;
         <VCol :cols="12">
           <DivisiUnitUsaha />
         </VCol>

@@ -1,22 +1,33 @@
 <template>
   <div class="mb-2">
-    <VBtn v-if="props.mode === 'add'" @click="openDialog" variant="outlined" append-icon="ri-add-line">
+    <VBtn
+      v-if="props.mode === 'add'"
+      @click="openDialog"
+      variant="outlined"
+      append-icon="ri-add-line"
+    >
       Tambah
     </VBtn>
-    <VBtn v-else-if="props.mode === 'edit'" @click="openDialog" variant="outlined" prepend-icon="ri-edit-line">
+    <VBtn
+      v-else-if="props.mode === 'edit'"
+      @click="openDialog"
+      variant="outlined"
+      prepend-icon="ri-edit-line"
+    >
       Edit
     </VBtn>
-    <VDialog
-      v-model="isVisible"
-      :max-width="dialogMaxWidth"
-    >
+    <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
-        <VCardTitle class="text-h5 font-weight-bold d-flex justify-space-between align-center">
-          <span>{{ props.mode === 'add' ? 'Tambah Data Pabrik' : 'Edit Data Pabrik' }}</span>
+        <VCardTitle
+          class="text-h5 font-weight-bold d-flex justify-space-between align-center"
+        >
+          <span>{{
+            props.mode === "add" ? "Tambah Data Pabrik" : "Edit Data Pabrik"
+          }}</span>
           <VBtn
             icon
             color="transparent"
-            style="border: none;"
+            style="border: none"
             elevation="0"
             @click="closeDialog"
           >
@@ -138,11 +149,9 @@
         </VCardText>
 
         <div class="d-flex justify-end ga-2">
-          <VBtn @click="cancel" variant="outlined">
-            Batal
-          </VBtn>
+          <VBtn @click="cancel" variant="outlined"> Batal </VBtn>
           <VBtn @click="confirm" :color="props.confirmColor">
-            {{ props.mode === 'add' ? 'Tambah' : 'Simpan' }}
+            {{ props.mode === "add" ? "Tambah" : "Simpan" }}
           </VBtn>
         </div>
       </VCard>
@@ -151,68 +160,87 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineEmits, defineProps, ref, watch } from 'vue'
-import { useDisplay } from 'vuetify'
+import { computed, defineEmits, defineProps, ref, watch } from "vue";
+import { useDisplay } from "vuetify";
 
 const props = defineProps({
-  mode: { type: String, default: 'add' },
+  mode: { type: String, default: "add" },
   initialData: { type: Object, default: () => ({}) },
-})
+});
 
-const emit = defineEmits(['confirmAdd', 'confirmEdit', 'cancel'])
+const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
 
-const isVisible = ref(false)
+const isVisible = ref(false);
 
 const openDialog = () => {
-  isVisible.value = true
-}
+  isVisible.value = true;
+};
 
 const closeDialog = () => {
-  isVisible.value = false
-}
+  isVisible.value = false;
+};
 
 const confirm = () => {
-  if (props.mode === 'add') {
-    emit('confirmAdd', form.value)
+  if (props.mode === "add") {
+    emit("confirmAdd", form.value);
   } else {
-    emit('confirmEdit', form.value)
+    emit("confirmEdit", form.value);
   }
-  closeDialog()
-}
+  closeDialog();
+};
 
 const cancel = () => {
-  emit('cancel')
-  closeDialog()
-}
+  emit("cancel");
+  closeDialog();
+};
 
-const { mdAndUp } = useDisplay()
+const { mdAndUp } = useDisplay();
 const dialogMaxWidth = computed(() => {
-  return mdAndUp.value ? 700 : '90%'
-})
+  return mdAndUp.value ? 700 : "90%";
+});
 
 const form = ref({
-  lokasiPabrik: '',
-  namaPabrik: '',
-  alamatPabrik: '',
-  kabKota: '',
-  provinsi: '',
-  negara: '',
-  kodePos: '',
-  statusPabrik: '',
-})
+  lokasiPabrik: "",
+  namaPabrik: "",
+  alamatPabrik: "",
+  kabKota: "",
+  provinsi: "",
+  negara: "",
+  kodePos: "",
+  statusPabrik: "",
+});
 
-const statusOptions = ['Aktif', 'Non-Aktif']
-const lokasiPabrikOptions = ['Lokasi 1', 'Lokasi 2', 'Lokasi 3']
+const statusOptions = ["Aktif", "Non-Aktif"];
+const lokasiPabrikOptions = ["Lokasi 1", "Lokasi 2", "Lokasi 3"];
 
 watch(
   () => props.initialData,
-  newData => {
-    if (props.mode === 'edit' && newData) {
-      form.value = { ...newData }
+  (newData) => {
+    if (props.mode === "edit" && newData) {
+      const submitApi = $api(
+        `/pelaku-usaha-profile/${newData.idPerson}/${newData.id}/detail-factory`,
+        {
+          method: "GET",
+        }
+      ).then((val: any) => {
+        if (val.code == 2000) {
+          console.log("edited data", val.data);
+          // form.value = { ...val.data };
+          form.value.namaPabrik = val.data.name;
+          form.value.alamatPabrik = val.data.address;
+          form.value.kabKota = val.data.city;
+          form.value.provinsi = val.data.province;
+          form.value.negara = val.data.country;
+          form.value.kodePos = val.data.zip_code;
+        } else {
+          // snackbar.sendSnackbar("Gagal mendapatkan Data ", "error");
+          console.error("fetching data error");
+        }
+      });
     }
   },
   { immediate: true }
-)
+);
 </script>
 
 <style scoped>

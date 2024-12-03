@@ -3,6 +3,7 @@ import AspekLegalCard from "@/components/pelakuUsahaProfile/AspekLegalCard.vue";
 import DivisiUnitUsaha from "@/components/pelakuUsahaProfile/DivisiUnitUsaha.vue";
 import PerizinanCard from "@/components/pelakuUsahaProfile/PerizinanCard.vue";
 import SubPelakuUsahaLayout from "@/layouts/subPelakuUsahaLayout.vue";
+import { pelakuUsahaProfile } from "@/stores/pelaku-usaha-profile";
 
 const tablePabrikHeader = [
   { title: "No", key: "no" },
@@ -18,14 +19,32 @@ const tableOutletHeader = [
   { title: "Nama", key: "name" },
   { title: "Alamat", key: "address" },
 ];
+
+const penyeliaHeader = [
+  { title: "No", key: "no" },
+  { title: "Nama", key: "name" },
+  { title: "No. KTP", key: "no_idcard" },
+  { title: "No. Kontak", key: "no_contact" },
+  { title: "No/Tgl Sertif Penyelia Halal", key: "cert_date" },
+  { title: "No/Tanggal SK", key: "dec_letter_date" },
+  { title: "Action", key: "action" },
+];
 const { canAccess } = useMyAuthUserStore();
 const panelOpenPabrik = ref(0);
 const panelOpenOutlet = ref(0);
 const panelOpenPenyeliaHallal = ref(0);
 
+const tes = ref();
+
 const onEdit = () => {
   navigateTo("/pelaku-usaha-edit");
 };
+
+const store = pelakuUsahaProfile();
+
+onMounted(async () => {
+  await store.fetchProfile();
+});
 </script>
 
 <template>
@@ -50,17 +69,22 @@ const onEdit = () => {
     <template #leftContent>
       <VRow>
         <VCol cols="12">
-          <ProfileCard />
+          <ProfileCard
+            v-if="store.getProfileData"
+            :profile-data="store.profileData"
+          />
         </VCol>
       </VRow>
       <VRow>
         <VCol cols="12">
-          <PenanggungJawabCard />
+          <PenanggungJawabCard
+            :responsible-person-data="store.penanggungJawabHalal"
+          />
         </VCol>
       </VRow>
       <VRow>
         <VCol cols="12">
-          <AspekLegalCard />
+          <AspekLegalCard :aspek-legal-data="store.legal ? store.legal : []" />
         </VCol>
       </VRow>
       <VRow>
@@ -70,7 +94,10 @@ const onEdit = () => {
               <VExpansionPanelTitle><h2>Pabrik</h2></VExpansionPanelTitle>
 
               <VExpansionPanelText>
-                <VDataTable :headers="tablePabrikHeader" />
+                <VDataTable
+                  :headers="tablePabrikHeader"
+                  :items="store.factory ? store.factory : []"
+                />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -82,7 +109,10 @@ const onEdit = () => {
             <VExpansionPanel>
               <VExpansionPanelTitle><h2>Outlet</h2></VExpansionPanelTitle>
               <VExpansionPanelText>
-                <VDataTable :headers="tableOutletHeader" />
+                <VDataTable
+                  :headers="tableOutletHeader"
+                  :items="store.outlet ? store.outlet : []"
+                />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -95,7 +125,12 @@ const onEdit = () => {
               <VExpansionPanelTitle>
                 <h2>Penyelia Halal</h2>
               </VExpansionPanelTitle>
-              <VExpansionPanelText><AspekLegalTable /></VExpansionPanelText>
+              <VExpansionPanelText>
+                <VDataTable
+                  :headers="penyeliaHeader"
+                  :items="store.supervisorData"
+                ></VDataTable
+              ></VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
         </VCol>
