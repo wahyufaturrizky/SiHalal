@@ -31,8 +31,10 @@ const tableHeader = [
 //     invoice: "xx",
 //   },
 // ];
+
 const items = ref([]);
-const loadItem = async (page: number, size: number) => {
+const searchQuery = ref("");
+const loadItem = async (page: number, size: number, keyword: string = "") => {
   try {
     loading.value = true;
 
@@ -41,6 +43,7 @@ const loadItem = async (page: number, size: number) => {
       params: {
         page,
         size,
+        keyword,
       },
     });
 
@@ -51,6 +54,11 @@ const loadItem = async (page: number, size: number) => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loading.value = false;
   }
+};
+const debouncedFetch = debounce(loadItem, 500);
+
+const handleInput = () => {
+  debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
 };
 const statusInvoice = {
   SB001: { color: "warning", desc: "Menunggu Pembayaran" },
@@ -70,24 +78,26 @@ const statusInvoice = {
   <VRow>
     <VCol cols="12">
       <VCard>
-        <VCardTitle style="padding: 1.5svw">
+        <VCardTitle class="pa-5">
           <VRow>
             <VCol cols="6"><h3>Invoice List</h3></VCol>
-            <VCol cols="6" style="display: flex; justify-content: end"
+          </VRow>
+        </VCardTitle>
+        <VCardItem>
+          <VRow class="mt-5">
+            <VCol cols="8"
+              ><VTextField
+                v-model="searchQuery"
+                append-inner-icon="mdi-magnify"
+                label="Search Data"
+                @input="handleInput"
+              ></VTextField
+            ></VCol>
+            <VCol cols="4" style="display: flex; justify-content: end"
               ><VBtn append-icon="fa-download"
                 >Download Payment Instructions</VBtn
               ></VCol
             >
-          </VRow>
-        </VCardTitle>
-        <VCardItem>
-          <VRow>
-            <VCol cols="8"
-              ><VTextField
-                append-inner-icon="mdi-magnify"
-                label="Search Data"
-              ></VTextField
-            ></VCol>
           </VRow>
           <VRow>
             <VCol cols="12">
@@ -97,7 +107,7 @@ const statusInvoice = {
                 :items-length="totalItems"
                 :loading="loading"
                 loading-text="Loading..."
-                @update:options="loadItem(page, itemPerPage)"
+                @update:options="loadItem(page, itemPerPage, searchQuery)"
                 :headers="tableHeader"
                 :items="items"
               >
