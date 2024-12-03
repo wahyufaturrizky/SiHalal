@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const { data } = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/list/ref/JNFAS`,
+    `${runtimeConfig.coreBaseUrl}/api/list/ref/JSP`,
     {
       method: "get",
       headers: { Authorization: authorizationHeader },
