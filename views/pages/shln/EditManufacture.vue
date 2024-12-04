@@ -42,6 +42,12 @@ const insertManufacturer = async () => {
 
       return;
     }
+    form.value = {
+      shlnId: shlnId,
+      name: "",
+      address: "",
+      country: props.hcbCountry != "" ? props.hcbCountry : "",
+    };
     setData("manufacture");
     useSnackbar().sendSnackbar("Berhasil menambahkan manufacture", "success");
     manufactureDialog.value = false;

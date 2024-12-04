@@ -18,6 +18,13 @@ export interface LOAData {
   letter_no: string;
   loa_document: string;
 }
+export interface FHCData {
+  document: string;
+  document_no: string;
+  file: string;
+  id: string;
+  verification_link: string;
+}
 
 interface RequirementDocument {
   loa: LoaReq;
@@ -43,7 +50,20 @@ const shlnId = route.params.id;
 const prop = defineProps<{
   mra: MRA;
 }>();
-const loa = ref<LOAData>();
+const loa = ref<LOAData>({
+  authorized_company: "",
+  authorizer_company: "",
+  date: "",
+  id: "",
+  loa_document: "",
+});
+const fhc = ref<FHCData>({
+  document: "",
+  document_no: "",
+  file: "",
+  id: "",
+  verification_link: "",
+});
 const loadDialog = ref(false);
 const loadFhcDialog = ref(false);
 const loadReqDialog = ref(false);
@@ -61,10 +81,24 @@ const getLoa = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+const getFhc = async () => {
+  try {
+    const response = await $api("/shln/submission/document/fhc", {
+      method: "post",
+      body: {
+        id: shlnId,
+      },
+    });
+
+    fhc.value = response.data;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 const tableRequirementDocumentHeader = [
   { title: "No", key: "index" },
   { title: "Document Types", key: "documentTypes" },
-  { title: "Upload / Download ", key: "file" },
+  { title: "Upload / Download ", key: "file", align: "left" },
   { title: "Notes", key: "notes" },
   { title: "status", key: "status" },
   { title: "Action", key: "action" },
@@ -165,6 +199,7 @@ const uploadDocument = async (file) => {
 const saveLoa = async () => {
   try {
     const file = await uploadDocument(loaFile.value);
+    loaFile.value = null;
     if (file.code != 2000) {
       return;
     }
@@ -174,6 +209,7 @@ const saveLoa = async () => {
       body: loaForm.value,
     });
     loadDialog.value = false;
+    await getLoa();
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
       return;
@@ -188,6 +224,7 @@ const saveLoa = async () => {
 const saveFhc = async () => {
   try {
     const file = await uploadDocument(fhcFile.value);
+    fhcFile.value = null;
     if (file.code != 2000) {
       return;
     }
@@ -196,6 +233,7 @@ const saveFhc = async () => {
       method: "post",
       body: fhcForm.value,
     });
+    await getFhc();
     loadFhcDialog.value = false;
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
@@ -218,6 +256,7 @@ const saveReqDocument = async () => {
     if (fileNib.code != 2000) {
       return;
     }
+    reqFile.value = [];
     const response = await $api("/shln/submission/document/add-requirement", {
       method: "post",
       body: {
@@ -325,6 +364,7 @@ const downloadDOcument = async (filename: string) => {
 onMounted(async () => {
   await Promise.allSettled([
     getLoa(),
+    getFhc(),
     getFhcTracking(),
     getLoaTracking(),
     getRequirementDocument(),
@@ -407,13 +447,20 @@ onMounted(async () => {
               :rules="[requiredValidator]"
             /> -->
           </VCol>
-          <VCol cols="12">
+          <VCol cols="12" class="d-flex align-center gap-5 justify-center">
+            <VBtn
+              @click="downloadDOcument(loa.loa_document)"
+              v-if="loa.loa_document != ''"
+              color="primary"
+            >
+              <VIcon icon="fa-download" />
+            </VBtn>
             <VFileInput
               v-model="loaFile"
               label="Unggah Sertifikat Kompetensi Penyelia Halal"
               outlined
               dense
-              accept=".pdf,.jpg,.png"
+              accept=".pdf,.jpg,.png,.jpeg"
               class="mb-2"
               :rules="[requiredValidator]"
             />
@@ -447,13 +494,20 @@ onMounted(async () => {
 
       <ExpandCard title="Original of the Foreign Halal Certificate ">
         <v-form ref="refFhcForm" @submit.prevent="openFhcDialog">
-          <VCol cols="12">
+          <VCol cols="12" class="d-flex align-center gap-5 justify-center">
+            <VBtn
+              @click="downloadDOcument(fhc.file)"
+              v-if="fhc.file != ''"
+              color="primary"
+            >
+              <VIcon icon="fa-download" />
+            </VBtn>
             <VFileInput
               v-model="fhcFile"
               label="Unggah Foreign Halal Certificate"
               outlined
               dense
-              accept=".pdf,.jpg,.png"
+              accept=".pdf,.jpg,.png,.jpeg"
               class="mb-2"
               :rules="[requiredValidator]"
             />
@@ -517,15 +571,19 @@ onMounted(async () => {
               {{ index + 1 }}
             </template>
             <template #item.file="{ item, index }">
-              <HalalFileInput
-                v-if="item.file == ''"
-                v-model="reqFile[index]"
-                :rules="[requiredValidator]"
-                class="py-3"
-              />
-              <VBtn @click="downloadDOcument(item.file)" v-else color="primary">
-                <VIcon icon="fa-download" />
-              </VBtn>
+              <div class="d-flex align-center justify-center py-3 gap-2">
+                <VBtn
+                  @click="downloadDOcument(item.file)"
+                  v-if="item.file != ''"
+                  color="primary"
+                >
+                  <VIcon icon="fa-download" />
+                </VBtn>
+                <HalalFileInput
+                  v-model="reqFile[index]"
+                  :rules="[requiredValidator]"
+                />
+              </div>
               <!-- {{ item.file != "" ? "asd" : "dsa" }} -->
             </template>
             <template #item.action="{ item }">
@@ -544,15 +602,7 @@ onMounted(async () => {
               append-icon="ri-download-line"
               >Download FHCR Application Letter Document Format</VBtn
             >
-            <VBtn
-              v-if="
-                requirementDocArray[0].file == '' &&
-                requirementDocArray[1].file == ''
-              "
-              color="primary"
-              type="submit"
-              >Save</VBtn
-            >
+            <VBtn color="primary" type="submit">Save</VBtn>
           </VCol>
         </v-form>
       </ExpandCard>
