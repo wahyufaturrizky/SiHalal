@@ -14,7 +14,7 @@ import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-il
 import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
 import authV2LoginMaskDark from "@images/pages/auth-v2-login-mask-dark.png";
 import authV2LoginMaskLight from "@images/pages/auth-v2-login-mask-light.png";
-
+import { RecaptchaV2, useRecaptcha } from "vue3-recaptcha-v2";
 const { signIn, data: sessionData, status, signOut } = useAuth();
 const { mdAndUp } = useDisplay();
 
@@ -67,7 +67,7 @@ async function login() {
       redirect: false,
       email: credentials.value.email,
       password: credentials.value.password,
-      token: turnstile.value,
+      token: token.value,
     });
 
     navigateTo(route.query.to ? String(route.query.to) : "/", {
@@ -93,6 +93,12 @@ async function login() {
       errors.value.password = "Kata sandi tidak tepat!";
       errors.value.email = "Alamat Email tidak ditemukan!";
     }
+    if (error.data.data.success == false) {
+      useSnackbar().sendSnackbar("Captcha Failed", "error");
+      buttonClicked.value = false;
+
+      return;
+    }
     useSnackbar().sendSnackbar(
       "Gagal masuk, mohon periksa kembali kelengkapan data!",
       "error"
@@ -117,6 +123,20 @@ const onSubmit = async () => {
 
 const redirectToForgotPass = () => {
   navigateTo("/forgot-password");
+};
+const { handleReset, handleGetResponse } = useRecaptcha();
+const handleWidgetId = (widgetId: number) => {
+  handleGetResponse(widgetId);
+};
+const handleErrorCallback = () => {
+  token.value = "";
+};
+const handleExpiredCallback = () => {
+  token.value = "";
+};
+const token = ref("");
+const handleLoadCallback = (response: unknown) => {
+  token.value = response;
 };
 </script>
 
@@ -192,12 +212,12 @@ const redirectToForgotPass = () => {
                   </NuxtLink>
                 </VCol>
 
-                <div class="my-6 gap-x-2">
-                  <NuxtTurnstile
-                    :siteKey="siteKey"
-                    v-model="turnstile"
-                    :debug="false"
-                    class="text-center"
+                <div class="my-6 gap-x-2 d-flex justify-center">
+                  <RecaptchaV2
+                    @widget-id="handleWidgetId"
+                    @error-callback="handleErrorCallback"
+                    @expired-callback="handleExpiredCallback"
+                    @load-callback="handleLoadCallback"
                   />
                 </div>
 
@@ -205,7 +225,7 @@ const redirectToForgotPass = () => {
                   block
                   type="submit"
                   :disabled="
-                    !turnstile ||
+                    token == '' ||
                     buttonClicked ||
                     credentials.email == '' ||
                     credentials.password == ''
