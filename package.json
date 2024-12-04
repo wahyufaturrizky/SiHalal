@@ -21,6 +21,7 @@
     "@formkit/drag-and-drop": "0.1.6",
     "@iconify-json/bxl": "1.1.11",
     "@nuxtjs/i18n": "8.3.3",
+    "@nuxtjs/recaptcha": "^1.1.2",
     "@nuxtjs/turnstile": "^0.9.10",
     "@sindresorhus/is": "7.0.0",
     "@tiptap/extension-highlight": "^2.5.8",

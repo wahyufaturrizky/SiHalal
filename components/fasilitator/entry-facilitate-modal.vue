@@ -1,8 +1,4 @@
 <script setup lang="ts">
-const emit = defineEmits<{
-  (event: "refresh"): void;
-}>();
-
 const loadingAdd = ref(false);
 const dialogVisible = ref(false);
 
@@ -17,7 +13,6 @@ const addItem = async () => {
     if (response.code === 2000) {
       loadingAdd.value = false;
       dialogVisible.value = false;
-      emit("refresh");
       useSnackbar().sendSnackbar("Sukses add data", "success");
       navigateTo(`/facilitation/entry/${response?.data?.fasilitasi_id}`);
     } else {

@@ -35,6 +35,7 @@ definePageMeta({
   layout: "blank",
   unauthenticatedOnly: true,
 });
+const { handleReset, handleGetResponse } = useRecaptcha();
 
 const isPasswordVisible = useState("isPasswordVisible", () => false);
 const isDisabledSubmit = useState("isDisabledSubmit", () => true);
@@ -74,6 +75,7 @@ async function login() {
       replace: true,
     });
   } catch (error: any) {
+    handleReset(widgetCaptcha.value);
     if (error.data.statusCode == 400) {
       useUserVerificationStore().setUserData({
         id: error.data.data.user.id,
@@ -95,7 +97,6 @@ async function login() {
     }
     if (error.data.data.success == false) {
       useSnackbar().sendSnackbar("Captcha Failed", "error");
-      buttonClicked.value = false;
 
       return;
     }
@@ -124,8 +125,9 @@ const onSubmit = async () => {
 const redirectToForgotPass = () => {
   navigateTo("/forgot-password");
 };
-const { handleReset, handleGetResponse } = useRecaptcha();
+const widgetCaptcha = ref();
 const handleWidgetId = (widgetId: number) => {
+  widgetCaptcha.value = widgetId;
   handleGetResponse(widgetId);
 };
 const handleErrorCallback = () => {
@@ -214,11 +216,22 @@ const handleLoadCallback = (response: unknown) => {
 
                 <div class="my-6 gap-x-2 d-flex justify-center">
                   <RecaptchaV2
+                    :sitekey="config.public.recaptcha.siteKey"
                     @widget-id="handleWidgetId"
                     @error-callback="handleErrorCallback"
                     @expired-callback="handleExpiredCallback"
                     @load-callback="handleLoadCallback"
                   />
+                  <!-- <recaptcha
+                    @error="handleErrorCallback"
+                    @success="handleLoadCallback"
+                    @expired="handleExpiredCallback"
+                  /> -->
+                  <!-- <div
+                    class="g-recaptcha"
+                    :data-sitekey="siteKey"
+                    :data-callback="handleLoadCallback"
+                  ></div> -->
                 </div>
 
                 <VBtn

@@ -5,13 +5,13 @@ const props = defineProps({
   loadingstatus: {
     type: Boolean,
   },
-  loadingcodefaciiltate: {
+  loadingsof: {
     type: Boolean,
   },
   itemsstatus: {
     type: Array,
   },
-  itemscodefaciiltate: {
+  datsof: {
     type: Array,
   },
 });
@@ -20,12 +20,7 @@ const emit = defineEmits<{
   (event: "formvalue", value: any): void;
 }>();
 
-const {
-  loadingstatus,
-  itemsstatus,
-  loadingcodefaciiltate,
-  itemscodefaciiltate,
-} = props;
+const { loadingstatus, itemsstatus, loadingsof, datsof } = props;
 
 const form = ref({
   no_daftar: null,
@@ -86,11 +81,11 @@ const viewResults = () => {
         <VCol cols="12" sm="4">
           <VSelect
             v-model="form.kode_fac"
-            placeholder="Kode Fasilitasi"
-            :items="itemscodefaciiltate"
-            :loading="loadingcodefaciiltate"
-            item-title="hscode"
-            item-value="id"
+            placeholder="Pilih sumber pembiayaan"
+            :items="datsof"
+            :loading="loadingsof"
+            item-title="name"
+            item-value="code"
           />
         </VCol>
 
