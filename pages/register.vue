@@ -3,7 +3,6 @@ import { themeConfig } from '@themeConfig'
 import { useDisplay } from 'vuetify'
 import { VForm } from 'vuetify/components/VForm'
 
-import { requiredValidator } from '#imports'
 import { VNodeRenderer } from '@/@layouts/components/VNodeRenderer'
 import bseImage from '@images/bse.png'
 import NoImage from '@images/no-image.png'
@@ -62,14 +61,14 @@ const validateName = () => {
 
 const validateEmail = () => {
   const email = form.value.email
-  // const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
-  //  regex pattern RFC 5322 standard.
   const emailRegexV2 = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
-  if (!email) errors.email = 'Wajib diisi'
-  // else if (email.includes('-')) errors.email = 'Format email tidak bisa menggunakan dash (-)'
-  else if (!emailRegexV2.test(email)) errors.email = 'Format email tidak valid'
+  if (!email)
+    errors.email = 'Wajib diisi'
+
+  else if (!emailRegexV2.test(email))
+    errors.email = 'Format email tidak valid'
   else errors.email = ''
 }
 
@@ -87,7 +86,6 @@ const validateNomorHandphone = async (event: Event) => {
 
 // validateConfrimPassword
 
-// const turnstile = ref();
 const refVForm = ref<VForm>()
 
 const form = ref({
@@ -100,8 +98,6 @@ const form = ref({
 })
 
 const validateConfrimPassword = () => {
-  // const password = form.value.password
-
   if (form.value.passwordConfirm.length === 0)
     errors.passwordConfirm = 'Wajib diisi'
   else if (form.value.passwordConfirm < 8)
@@ -109,14 +105,6 @@ const validateConfrimPassword = () => {
   else if (form.value.passwordConfirm !== form.value.password)
     errors.passwordConfirm = 'Kata sandi tidak sama!'
 
-  // else if (!/[A-Z]/.test(password))
-  //   errors.passwordConfirm = 'Password harus mengandung minimal satu huruf kapital'
-  // else if (!/[a-z]/.test(password))
-  //   errors.passwordConfirm = 'Password harus mengandung minimal satu huruf kecil'
-  // else if (!/[0-9]/.test(password))
-  //   errors.passwordConfirm = 'Password harus mengandung minimal satu angka'
-  // else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password))
-  //   errors.passwordConfirm = 'Password harus mengandung minimal satu karakter spesial (!@#$%^&*)'
   else errors.passwordConfirm = ''
 }
 
@@ -129,14 +117,6 @@ const validatePassword = () => {
   else if (form.value.password !== form.value.passwordConfirm)
     errors.password = 'Kata sandi tidak sama!'
 
-  // else if (!/[A-Z]/.test(password))
-  //   errors.password = 'Password harus mengandung minimal satu huruf kapital'
-  // else if (!/[a-z]/.test(password))
-  //   errors.password = 'Password harus mengandung minimal satu huruf kecil'
-  // else if (!/[0-9]/.test(password))
-  //   errors.password = 'Password harus mengandung minimal satu angka'
-  // else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password))
-  //   errors.password = 'Password harus mengandung minimal satu karakter spesial (!@#$%^&*)'
   else errors.password = ''
 }
 
@@ -153,17 +133,6 @@ const onSubmit = async () => {
 
   refVForm.value?.validate().then(async ({ valid: isValid }) => {
     if (isValid) {
-      // Definisikan payload
-      // const payload = {
-
-      //   typeUser: form.value.typeUser,
-      //   name: form.value.name,
-      //   email: form.value.email,
-      //   noHandphone: form.value.noHandphone,
-      //   password: form.value.password,
-      //   passwordConfirm: form.value.passwordConfirm,
-      // }
-
       const payload = {
         role_id: form.value.typeUser.id,
         name: form.value.name,
@@ -173,11 +142,6 @@ const onSubmit = async () => {
         confirm_password: form.value.passwordConfirm,
       }
 
-
-      // navigateTo({
-      //   path: '/verifikasi-user',
-      //   query: { id, email, payload: JSON.stringify(payload) },
-      // })
       const payloadcheck = {
         email: form.value.email,
         phone_number: form.value.noHandphone,
@@ -198,6 +162,7 @@ const onSubmit = async () => {
         if (!response.data) {
           errors.noHandphone = '',
           errors.email = ''
+
           return
         }
 
@@ -237,49 +202,6 @@ const onSubmit = async () => {
       catch (error) {
         console.log(error, 'sini erorrr')
       }
-
-      // try {
-      //   const response = await $api("/auth/register", {
-      //     method: "POST", // Mengatur metode menjadi POST
-      //     headers: {
-      //       "Content-Type": "application/json", // Mengatur tipe konten
-      //     },
-      //     body: JSON.stringify(payload), // Mengubah payload menjadi format JSON
-      //   });
-
-      //   // console.log("log", response);
-
-      //   if (response.code === 2000) {
-      //     // Cek apakah response berhasil
-      //     const data = response.data;
-
-      //     console.log("Akun berhasil dibuat:", data);
-
-      //     // navigateTo({
-      //     //   path: "/verifikasi-user"
-      //     // });
-      //     const id = data.user.id;
-      //     const email = data.user.email;
-
-      //     console.log("id : ", id);
-
-      //     navigateTo({
-      //       path: "/verifikasi-user",
-      //       query: { id, email, payload },
-      //     });
-
-      //     // router.push({ name: 'verifikasi-user', params: { id: id } })
-      //   } else if (response.code === 4001) {
-      //     sendSnackbar(`${response.errors.list_error}`, "error");
-      //   } else {
-      //     sendSnackbar(
-      //       "Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!",
-      //       "error"
-      //     );
-      //   }
-      // } catch (error) {
-      //   console.error("Error saat membuat akun:", error);
-      // }
     }
   })
 }
@@ -295,58 +217,13 @@ const isDisabledSubmit = computed(() => {
     form.value.typeUser
     && form.value.name
     && form.value.email
-
-    // && email.includes('-')
-    // && !emailRegex.test(email)
+    && emailRegex.test(email)
     && form.value.noHandphone
     && form.value.password
     && form.value.passwordConfirm
     && errors.password === ''
-
-  // && form.value.passwordConfirm === form.value.password
-  // && form.value.passwordConfirm.length < 8
-  // && form.value.password.length < 8
   )
 })
-
-// validasi
-// const phoneValidator = (value: string) => {
-//   const isValid = /^08\d{8,11}$/.test(value);
-
-//   return (
-//     isValid ||
-//     'Nomor Handphone harus dimulai dengan "08" dan berjumlah 10-13 digit angka'
-//   );
-// };
-
-const emailValidator = (value: string) => {
-  if (value.includes('-'))
-    return 'Format email tidak bisa menggunakan dash (-)'
-
-  const isValid
-    = /^(?!.*[.]{2})[a-z0-9.]+@[a-z]+.(com|co.id|go.id|id|net)$/.test(value)
-
-  return isValid || ' Format Email digunakan salah'
-}
-
-const requiredValidator = (value: string) => !!value || 'Wajib diisi'
-
-const requiredSamePassword = (value: string) =>
-  value === form.value.password || 'Kata sandi tidak sama!'
-
-const requiredMinLength = (value: string) =>
-  value.length >= 8 || 'Pastikan kata sandi minimal 8 karakter!'
-
-const requiredValidasinoHP = (value: string) =>
-  value !== '08123456789'
-  || 'Nomor handphone sudah terdaftar, gunakan nomor lain!'
-
-const requiredValidasiEmail = (value: string) =>
-  value !== 'hallal@gmail.com'
-  || 'Email sudah terdaftar,silahkan gunakan email lain!'
-
-// Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!
-// jika error pas di input maka tapil diatas
 
 onMounted(async () => {
   try {
@@ -480,15 +357,6 @@ const fetchType = ref([])
                   </span>
                 </VCol>
 
-                <!-- :error-messages="errors.email" -->
-                <!--
-                  :rules="[
-                  requiredValidator,
-                  emailValidator,
-                  requiredValidasiEmail,
-                  ]"
-                -->
-
                 <!-- no Handphone -->
                 <VCol cols="12">
                   <b> Nomor Handphone</b>
@@ -510,11 +378,6 @@ const fetchType = ref([])
                     />  {{ errors.noHandphone }}
                   </span>
                 </VCol>
-                <!-- :rules="[requiredValidator, requiredValidasinoHP]" -->
-                <!--
-                  :error-messages="errors.noHandphone"
-                  @input="onlyAcceptNumber"
-                -->
 
                 <!-- password -->
                 <VCol cols="12">
@@ -529,8 +392,6 @@ const fetchType = ref([])
                     @click:append-inner="isPasswordVisible = !isPasswordVisible"
                   />
 
-                  <!-- :error-messages="errors.password" -->
-                  <!-- :rules="[requiredValidator, requiredMinLength]" -->
                   <span
                     v-if="errors.password"
                     class="error-text"
@@ -559,14 +420,7 @@ const fetchType = ref([])
                       isPasswordVisibleConfrim = !isPasswordVisibleConfrim
                     "
                   />
-                  <!-- :error-messages="errors.password" -->
-                  <!--
-                    :rules="[
-                    requiredValidator,
-                    requiredMinLength,
-                    requiredSamePassword,
-                    ]"
-                  -->
+
                   <span
                     v-if="errors.passwordConfirm"
                     class="error-text"
@@ -604,21 +458,6 @@ const fetchType = ref([])
                   Masuk di sini
                 </NuxtLink>
               </VCol>
-
-              <!--
-                <VCol cols="12" class="d-flex align-center">
-                <VDivider />
-                <span class="mx-4 text-high-emphasis">or</span>
-                <VDivider />
-                </VCol>
-              -->
-
-              <!-- auth providers -->
-              <!--
-                <VCol cols="12" class="text-center">
-                <AuthProvider />
-                </VCol>
-              -->
             </VRow>
           </VForm>
         </VCardText>

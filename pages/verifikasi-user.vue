@@ -12,7 +12,6 @@ const { sendSnackbar } = useSnackbar()
 
 const userVerificationStore = useUserVerificationStore()
 
-
 const { signIn, data: sessionData } = useAuth()
 const { mdAndUp } = useDisplay()
 
@@ -69,24 +68,24 @@ const isDisabledNoHp = ref(false)
 
 const currentTab = ref(0)
 
-const isDisabledSubmitEmail = computed(() => {
-  return !form.value.email || emailValidator(form.value.email) !== true
-})
+// const isDisabledSubmitEmail = computed(() => {
+//   return !form.value.email || emailValidator(form.value.email) !== true
+// })
 
 const phoneValidator = (value: string) => {
-  const isValid = /^08\d{8,15}$/.test(value);
+  const isValid = /^08\d{8,15}$/.test(value)
 
   return (
-    isValid ||
-    'Nomor Handphone harus dimulai dengan "08" dan berjumlah 10-13 digit angka'
-  );
-};
-
-const isDisabledSubmitNoHandphone = computed(() => {
-  return (
-    !form.value.noHandphone || phoneValidator(form.value.noHandphone) !== true
+    isValid
+    || 'Nomor Handphone harus dimulai dengan "08" dan berjumlah 10-13 digit angka'
   )
-})
+}
+
+// const isDisabledSubmitNoHandphone = computed(() => {
+//   return (
+//     !form.value.noHandphone || phoneValidator(form.value.noHandphone) !== true
+//   )
+// })
 
 const isOtpEmail = ref(false)
 const isOtpNoHandphone = ref(false)
@@ -103,7 +102,7 @@ const onSubmitEmail = async () => {
 
   console.log('ON SUBMIT EMAIL PAYLOAD : ', payload)
 
-  // create user
+  // create
   try {
     const response = await $api('/auth/send-otp', {
       method: 'POST',
@@ -194,16 +193,6 @@ const onSubmitKodeEmail = async () => {
     if (response?.code === 2000) {
       isSucess.value = true
     }
-
-    // const { data: userData, signOut } = useAuth()
-    // if (userData == null) {
-    //   await signOut({ redirect: false })
-
-    //   navigateTo({ name: 'login' })
-    // }
-    // else {
-    //   navigateTo('/login/new-account')
-    // }
 
     else if (response?.code === 4000) {
       // isSucess.value = true
@@ -344,9 +333,9 @@ const onSubmitNomerHandphone = async () => {
   }
   catch (error) {
     sendSnackbar(
-        'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
-        'error',
-      )
+      'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
+      'error',
+    )
     console.error('Error saat membuat akun:', error)
   }
 
@@ -376,36 +365,28 @@ const onSubmitKodeNomerHandphone = async () => {
 
     console.log('RESPONSE VERIFY OTP PHONE NUMBER : ', response)
 
-    const payloadsubmitEmail = route.query?.payload
-
-    console.log(payloadsubmitEmail, 'payload email')
-
-    // console.log('RESPONSE VERIF OTP : ', response)
-
     // console.log(kodeOtpEmail, "otp email");
     if (response?.code === 2000) {
       localStorage.removeItem('formData')
       isSucess.value = true
     }
 
-    // const { data: userData, signOut } = useAuth()
-    // if (userData == null) {
-    //   await signOut({ redirect: false })
+    else if (response?.code === 4000) {
+      localStorage.removeItem('formData')
+      sendSnackbar(
+        'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali',
+        'error',
+      )
+    }
 
-    //   navigateTo({ name: 'login' })
-    // }
-    // else {
-    //   navigateTo('/login/new-account')
-    // }
     else if (response?.code === 500) {
-      isSucess.value = true
       localStorage.removeItem('formData')
       console.log('error 500')
 
-      // sendSnackbar(
-      //   'Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!',
-      //   'error',
-      // )
+      sendSnackbar(
+        'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
+        'error',
+      )
     }
 
     else {
@@ -493,7 +474,7 @@ const onSubmitKodeNomerHandphone = async () => {
 
                   <VBtn
                     block
-                    :disabled="isDisabledSubmitEmail"
+
                     type="submit"
                     @click="onSubmitEmail"
                   >
@@ -601,7 +582,6 @@ const onSubmitKodeNomerHandphone = async () => {
                 <VBtn
                   v-model="kodeOtpNoHandphone"
                   block
-                  :disabled="isDisabledSubmitNoHandphone"
                   type="submit"
                   @click="onSubmitNomerHandphone"
                 >
