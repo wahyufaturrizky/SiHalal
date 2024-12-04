@@ -124,6 +124,7 @@ export default defineNuxtConfig({
     "@/plugins/casl/index.ts",
     "@/plugins/vuetify/index.ts",
     "@/plugins/iconify/index.ts",
+    "@/plugins/recaptcha.client.ts",
   ],
 
   imports: {
