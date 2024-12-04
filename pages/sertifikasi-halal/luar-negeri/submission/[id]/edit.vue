@@ -30,26 +30,12 @@ const getidentity = async () => {
 
     identity.value = response.data;
     if (
-      identity.value?.hcb.hcb_id == "" ||
-      identity.value?.hcb.hcb_id == null ||
-      identity.value?.hcb.hcb_id == undefined
-    ) {
-      disabledTab("document", true);
-      // return;
-    }
-    if (
       identity.value?.hcb.country == "" ||
       identity.value?.hcb.country == null ||
       identity.value?.hcb.country == undefined
     ) {
       disabledTab("manufacture", true);
     }
-    mra.value = {
-      country: identity.value?.hcb.country ?? "",
-      expired_date: identity.value?.hcn.expired_date ?? "",
-      halal_institution_name: changeHcb(identity.value?.hcb.hcb_id),
-      issued_date: identity.value?.hcn.issued_date ?? "",
-    };
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -75,6 +61,24 @@ const getManufacture = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+const getMra = async () => {
+  try {
+    const response = await $api("/shln/submission/document/mra", {
+      method: "post",
+      body: {
+        id: shlnId,
+      },
+    });
+    if (response.code == 500) {
+      disabledTab("document", true);
+      return;
+    }
+    mra.value = response.data;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
 const hcb = ref<{ country: string; id: string; name: string }[]>();
 
 const getHcb = async () => {
@@ -92,7 +96,7 @@ const changeHcb = (item: string) => {
   return hcb.value?.find((body) => body.id == item)?.name;
 };
 onMounted(async () => {
-  await Promise.allSettled([getidentity(), getManufacture()]);
+  await Promise.allSettled([getidentity(), getManufacture(), getMra()]);
 });
 const updateData = useMyUpdateSubmissionEditStore();
 watch(
@@ -109,6 +113,7 @@ watch(
       disabledTab("document", false);
       getidentity();
       getHcb();
+      getMra();
     }
     // if (newValue == "document") {
     //   getmra();
