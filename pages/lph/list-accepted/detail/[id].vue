@@ -5,41 +5,10 @@ const router = useRouter();
 const openedLeftPanels = ref([0, 1, 2, 3, 4, 5]);
 const openedRightPanels = ref([0, 1, 2]);
 
-const assignAuditorHeader: any[] = [
-  { title: "No", key: "index" },
-  { title: "Nama", key: "name" },
-  { title: "Tanggal Lahir", key: "birthDate" },
-  { title: "No Reg", key: "regisNumber" },
-  { title: "Action", key: "actions", align: "center", sortable: false },
-];
-const assignAuditorData = ref([
-  { name: "Idris", birthDate: "02/10/2000", regisNumber: "SK-896376-3028" },
-]);
-const newAuditorData = {
-  name: "Aliando Syakir",
-  birthDate: "02/10/2000",
-  regisNumber: "SK-896376-3028",
-};
-
-const assignedAuditor = ref(null);
-const isAssignModalOpen = ref(false);
 const isSendModalOpen = ref(false);
 
-const handleOpenAssignModal = () => {
-  isAssignModalOpen.value = !isAssignModalOpen.value;
-};
 const handleOpenSendModal = () => {
   isSendModalOpen.value = !isSendModalOpen.value;
-};
-
-const handleAddAuditor = () => {
-  assignAuditorData.value.push(newAuditorData);
-};
-const handleDeleteAuditor = (index: number) => {
-  assignAuditorData.value.splice(index, 1);
-};
-const handleSaveAuditor = () => {
-  useSnackbar().sendSnackbar("Berhasil mengirim pengajuan data", "success");
 };
 
 const handleUpdateStatus = () => {
@@ -183,73 +152,6 @@ const handleUpdateStatus = () => {
       </div>
     </template>
   </LPHDetailLayout>
-  <VDialog v-model="isAssignModalOpen" max-width="840px" persistent>
-    <VCard class="pa-4">
-      <VCardTitle class="d-flex justify-space-between align-center">
-        <div class="text-h3 font-weight-bold">Kirim Pengajuan</div>
-        <VIcon @click="handleOpenAssignModal"> fa-times </VIcon>
-      </VCardTitle>
-      <VCardText>
-        <VRow class="mb-1">
-          <VCol>
-            <div class="text-h6 mb-1">Auditor</div>
-            <VSelect
-              placeholder="Masukkan Auditor"
-              density="compact"
-              class="mb-3"
-              :items="[{ title: 'Aliando Syakir', value: 'Aliando Syakir' }]"
-              @update:model-value="(v) => (assignedAuditor = v)"
-              menu-icon="fa-chevron-down"
-            />
-            <div class="d-flex justify-end">
-              <VBtn
-                :disabled="!assignedAuditor"
-                text="Tambah"
-                @click="handleAddAuditor"
-              />
-            </div>
-          </VCol>
-        </VRow>
-        <VRow class="mb-5">
-          <VCol>
-            <VDataTable
-              class="auditor-table"
-              :headers="assignAuditorHeader"
-              :items="assignAuditorData"
-              hide-default-footer
-            >
-              <template #item.index="{ index }">
-                {{ index + 1 }}
-              </template>
-              <template #item.actions>
-                <VIcon
-                  icon="mdi-delete"
-                  color="error"
-                  @click="handleDeleteAuditor"
-                />
-              </template>
-            </VDataTable>
-          </VCol>
-        </VRow>
-      </VCardText>
-      <VCardActions class="px-4">
-        <VBtn
-          variant="outlined"
-          class="px-4 me-3"
-          @click="handleOpenAssignModal"
-          >Batal</VBtn
-        >
-        <VBtn
-          variant="flat"
-          class="px-4"
-          color="primary"
-          @click="[handleSaveAuditor(), handleOpenAssignModal()]"
-        >
-          Simpan
-        </VBtn>
-      </VCardActions>
-    </VCard>
-  </VDialog>
   <VDialog v-model="isSendModalOpen" max-width="840px" persistent>
     <VCard class="pa-4">
       <VCardTitle class="d-flex justify-space-between align-center">

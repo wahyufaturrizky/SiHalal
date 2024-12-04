@@ -81,6 +81,18 @@ const totalAuditData = ref([
     subTotal: "Rp 1.590.000",
   },
 ]);
+
+const isDomesticModalOpen = ref(false);
+const isOverseaModalOpen = ref(false);
+const handleOpenDomesticModal = () => {
+  isDomesticModalOpen.value = !isDomesticModalOpen.value;
+};
+const handleOpenOverseaModal = () => {
+  isOverseaModalOpen.value = !isOverseaModalOpen.value;
+};
+const handleSaveAuditor = () => {
+  useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+};
 </script>
 
 <template>
@@ -102,7 +114,11 @@ const totalAuditData = ref([
           <div class="font-weight-bold text-h4">
             Penetapan Biaya Audit untuk Fasilitas Produksi di Indonesia
           </div>
-          <VBtn variant="outlined" text="Tambah Biaya Pesawat" />
+          <VBtn
+            variant="outlined"
+            text="Tambah Biaya Pesawat"
+            @click="handleOpenDomesticModal"
+          />
         </VCardTitle>
         <VCardText>
           <VDataTable
@@ -148,7 +164,11 @@ const totalAuditData = ref([
           <div class="font-weight-bold text-h4">
             Penetapan Biaya Audit untuk Fasilitas Produksi di Luar Negeri
           </div>
-          <VBtn variant="outlined" text="Tambah Biaya" />
+          <VBtn
+            variant="outlined"
+            text="Tambah Biaya"
+            @click="handleOpenOverseaModal"
+          />
         </VCardTitle>
         <VCardText>
           <VDataTable
@@ -225,6 +245,58 @@ const totalAuditData = ref([
       </VCard>
     </VCol>
   </VRow>
+  <VDialog v-model="isDomesticModalOpen" max-width="840px" persistent>
+    <VCard class="pa-4">
+      <VCardTitle class="d-flex justify-space-between align-center">
+        <div class="text-h3 font-weight-bold">Tambah Biaya Audit</div>
+        <VIcon @click="handleOpenDomesticModal"> fa-times </VIcon>
+      </VCardTitle>
+      <VCardText> </VCardText>
+      <VCardActions class="px-4">
+        <VBtn
+          variant="outlined"
+          class="px-4 me-3"
+          @click="handleOpenDomesticModal"
+          >Batal</VBtn
+        >
+        <VBtn
+          variant="flat"
+          class="px-4"
+          color="primary"
+          @click="[handleOpenDomesticModal()]"
+        >
+          Tambah
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
+  <VDialog v-model="isOverseaModalOpen" max-width="840px" persistent>
+    <VCard class="pa-4">
+      <VCardTitle class="d-flex justify-space-between align-center">
+        <div class="text-h3 font-weight-bold">
+          Tambah Biaya Fasilitas Produksi di Luar Negeri
+        </div>
+        <VIcon @click="handleOpenOverseaModal"> fa-times </VIcon>
+      </VCardTitle>
+      <VCardText> </VCardText>
+      <VCardActions class="px-4">
+        <VBtn
+          variant="outlined"
+          class="px-4 me-3"
+          @click="handleOpenOverseaModal"
+          >Batal</VBtn
+        >
+        <VBtn
+          variant="flat"
+          class="px-4"
+          color="primary"
+          @click="[handleSaveAuditor(), handleOpenOverseaModal()]"
+        >
+          Tambah
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
 
 <style scoped lang="scss">
