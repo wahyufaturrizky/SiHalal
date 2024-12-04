@@ -82,7 +82,7 @@ const deleteSubmission = async () => {
       },
     });
 
-    if (!response.code != 2000) {
+    if (response.code != 2000) {
       deleteDialog.value = false;
       useSnackbar().sendSnackbar("gagal menghapus data", "error");
       return;
@@ -105,6 +105,13 @@ const submitShln = async () => {
     });
     if (response.code != 2000) {
       submitDialog.value = false;
+      if (response.code == 500) {
+        useSnackbar().sendSnackbar(
+          response.errors.list_error.join(", "),
+          "error"
+        );
+        return;
+      }
       useSnackbar().sendSnackbar("gagal submit data", "error");
 
       return;
