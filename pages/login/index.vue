@@ -213,12 +213,14 @@ const handleLoadCallback = (response: unknown) => {
                 </VCol>
 
                 <div class="my-6 gap-x-2 d-flex justify-center">
-                  <RecaptchaV2
-                    @widget-id="handleWidgetId"
-                    @error-callback="handleErrorCallback"
-                    @expired-callback="handleExpiredCallback"
-                    @load-callback="handleLoadCallback"
-                  />
+                  <ClientOnly>
+                    <RecaptchaV2
+                      @widget-id="handleWidgetId"
+                      @error-callback="handleErrorCallback"
+                      @expired-callback="handleExpiredCallback"
+                      @load-callback="handleLoadCallback"
+                    />
+                  </ClientOnly>
                 </div>
 
                 <VBtn
