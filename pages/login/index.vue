@@ -211,7 +211,7 @@ const handleLoadCallback = (response: unknown) => {
                   </NuxtLink>
                 </VCol>
 
-                <div class="my-6 gap-x-2 d-flex justify-content">
+                <div class="my-6 gap-x-2 d-flex justify-center">
                   <RecaptchaV2
                     :sitekey="config.public.recaptcha.siteKey"
                     @widget-id="handleWidgetId"
