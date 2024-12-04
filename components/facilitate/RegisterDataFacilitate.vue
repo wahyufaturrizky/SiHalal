@@ -41,7 +41,7 @@ const getStatusColor = (status: string): string => {
 
     <VRow no-gutters align="center" justify="space-between">
       <VCol cols="auto">
-        <span class="text-grey-darken-1">Halal Registration Number</span>
+        <span class="text-grey-darken-1">Kode Fasilitasi</span>
       </VCol>
       <VCol cols="auto">
         <span>{{ kode_fasilitasi }}</span>
