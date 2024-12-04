@@ -120,7 +120,6 @@ const handleDeleteIngredient = () => {
           <VCheckboxBtn v-model="item.isVerified" />
         </template>
         <template #item.actions="props">
-          <div>{{ props.column.lastFixed }}</div>
           <VMenu>
             <template #activator="{ props }">
               <VIcon

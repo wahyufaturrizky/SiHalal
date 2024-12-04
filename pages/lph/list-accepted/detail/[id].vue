@@ -29,7 +29,7 @@ const handleUpdateStatus = () => {
             text="Update Biaya"
             variant="outlined"
             class="me-4"
-            @click="router.push('/lph/list-accepted/list-price')"
+            @click="router.push('/lph/list-accepted/update-cost')"
           />
           <VBtn text="Kirim" @click="handleOpenSendModal" />
         </VCol>
