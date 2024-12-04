@@ -60,7 +60,7 @@ const tableHeader = [
   { title: "Sumber Pembiayaan", key: "sumber_biaya" },
   { title: "Jenis", key: "jenis" },
   { title: "Tanggal Aktif", key: "tgl_selesai" },
-  { title: "Tanggal Selesai", key: "tgl_selesai" },
+  { title: "Tanggal Selesai", key: "tgl_aktif" },
   { title: "Kuota", key: "kuota" },
   { title: "Sisa", key: "sisa" },
   { title: "Status", key: "status" },
@@ -111,6 +111,9 @@ const refresh = async () => {
             >
               <template #item.id="{ index }">
                 {{ index + 1 + (page - 1) * itemPerPage }}
+              </template>
+              <template #item.tgl_aktif="{ item }">
+                {{ formatDateIntl(new Date(item.tgl_aktif)) }}
               </template>
               <template #item.tgl_selesai="{ item }">
                 {{ formatDateIntl(new Date(item.tgl_selesai)) }}
