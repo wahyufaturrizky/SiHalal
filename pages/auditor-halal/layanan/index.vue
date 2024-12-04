@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Bahan } from '#components'
+import { Bahan, Evaluasi, Produk } from '#components'
 
 const activeTab = ref(-1)
 const approveRequirements = ref(false)
@@ -16,15 +16,35 @@ onMounted(() => {
 
 <template>
   <VContainer>
-    <KembaliButton class="pl-0" />
-    <h3 class="text-h3 font-weight-bold">
-      Ubah Data
-    </h3>
+    <KembaliButton class="pl0" />
+    <div class="headerSection">
+      <h3 class="text-h3 font-weight-bold">
+        Ubah Data
+      </h3>
+      <div v-if="activeTab === 4 || activeTab === 5 || activeTab === 6">
+        <VRow>
+          <VCol>
+            <VBtn
+              color="#E1442E"
+              variant="outlined"
+              style="border-color: #E1442E !important;"
+            >
+              Batal
+            </VBtn>
+          </VCol>
+          <VCol>
+            <VBtn variant="elevated">
+              Simpan Perubahan
+            </VBtn>
+          </VCol>
+        </VRow>
+      </div>
+    </div>
     <br>
     <VRow>
       <VCol
         cols="12"
-        class="pl-0"
+        class="pl0"
       >
         <VTabs
           v-model="activeTab"
@@ -58,6 +78,23 @@ onMounted(() => {
         <div v-if="activeTab === 2">
           <Bahan />
         </div>
+        <div v-if="activeTab === 3">
+          <div v-if="!approveRequirements">
+            <ProsesLayanan :on-complete="() => approveRequirements = true" />
+          </div>
+          <div v-else>
+            <ListProses />
+          </div>
+        </div>
+        <div v-if="activeTab === 4">
+          <Produk />
+        </div>
+        <div v-if="activeTab === 5">
+          <Evaluasi />
+        </div>
+        <div v-if="activeTab === 6">
+          <DokumenTab />
+        </div>
       </VTabItem>
     </VTabsItems>
   </VContainer>
@@ -67,5 +104,12 @@ onMounted(() => {
 .required {
   color: red;
   font-size: 12px;
+}
+.pl0 {
+  padding-left: 0px !important;
+}
+.headerSection {
+  display: flex;
+  justify-content: space-between
 }
 </style>

@@ -1,90 +1,76 @@
 <script setup lang="ts">
 interface ProfileData {
-  namaPerusahaan: string
-  alamat: string
-  kotaKab: string
-  provinsi: string
-  kodePos: string
-  negara: string
-  telepon: string
-  email: string
-  jenisBadanUsaha: string
-  skalaUsaha: string
-  tingkatUsaha: string
-  modalDasar: string
-  asalUsaha: string
+  namaPerusahaan: string;
+  alamat: string;
+  kotaKab: string;
+  provinsi: string;
+  kodePos: string;
+  negara: string;
+  telepon: string;
+  email: string;
+  jenisBadanUsaha: string;
+  skalaUsaha: string;
+  tingkatUsaha: string;
+  modalDasar: string;
+  asalUsaha: string;
 }
 
-const isExpanded = ref(true)
+const isExpanded = ref(true);
 
 const formData = ref<ProfileData>({
-  namaPerusahaan: 'Kopi Susu Samsul',
-  alamat: 'Sumbawa Barat, RT002/RW002, Sumbang, Curio',
-  kotaKab: 'Kab Enrekang',
-  provinsi: 'Sulawesi Selatan',
-  kodePos: '-',
-  negara: 'Indonesia',
-  telepon: '081234567890',
-  email: 'kopisuusamsul@gmail.com',
-  jenisBadanUsaha: 'Lainnya',
-  skalaUsaha: 'Micro',
-  tingkatUsaha: 'UMK',
-  modalDasar: 'Rp.0',
-  asalUsaha: 'Domestik',
-})
+  namaPerusahaan: "Kopi Susu Samsul",
+  alamat: "Sumbawa Barat, RT002/RW002, Sumbang, Curio",
+  kotaKab: "Kab Enrekang",
+  provinsi: "Sulawesi Selatan",
+  kodePos: "-",
+  negara: "Indonesia",
+  telepon: "081234567890",
+  email: "kopisuusamsul@gmail.com",
+  jenisBadanUsaha: "Lainnya",
+  skalaUsaha: "Micro",
+  tingkatUsaha: "UMK",
+  modalDasar: "Rp.0",
+  asalUsaha: "Domestik",
+});
 
 const labels = {
-  namaPerusahaan: 'Nama Perusahaan',
-  alamat: 'Alamat',
-  kotaKab: 'Kota/Kab',
-  provinsi: 'Provinsi',
-  kodePos: 'Kode Pos',
-  negara: 'Negara',
-  telepon: 'Telepon',
-  email: 'Email',
-  jenisBadanUsaha: 'Jenis Badan Usaha',
-  skalaUsaha: 'Skala Usaha',
-  tingkatUsaha: 'Tingkat Usaha',
-  modalDasar: 'Modal Dasar',
-  asalUsaha: 'Asal Usaha',
-}
+  namaPerusahaan: "Nama Perusahaan",
+  alamat: "Alamat",
+  kotaKab: "Kota/Kab",
+  provinsi: "Provinsi",
+  kodePos: "Kode Pos",
+  negara: "Negara",
+  telepon: "Telepon",
+  email: "Email",
+  jenisBadanUsaha: "Jenis Badan Usaha",
+  skalaUsaha: "Skala Usaha",
+  tingkatUsaha: "Tingkat Usaha",
+  modalDasar: "Modal Dasar",
+  asalUsaha: "Asal Usaha",
+};
 </script>
 
 <template>
-  <VCard
-    elevation="0"
-    class="profile-card pa-4"
-  >
+  <VCard elevation="0" class="profile-card pa-4">
     <div class="d-flex justify-space-between align-center mb-4">
       <span class="text-h3"> <b>Profil </b></span>
 
-      <VBtn
-        icon
-        @click="isExpanded = !isExpanded"
-      >
-        <VIcon>{{ isExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</VIcon>
+      <VBtn icon @click="isExpanded = !isExpanded">
+        <VIcon>{{ isExpanded ? "mdi-chevron-up" : "mdi-chevron-down" }}</VIcon>
       </VBtn>
     </div>
 
     <VExpandTransition>
       <div v-show="isExpanded">
-        <div
-          v-for="(item, key) in formData"
-          :key="key"
-          class="mb-4"
-        >
+        <div v-for="(item, key) in formData" :key="key" class="mb-4">
           <div class="d-flex field-wrapper">
             <div class="field-label">
               {{ labels[key] }}
             </div>
-            <div
-              class="d-flex align-center gap-2"
-              style="flex: 1;"
-            >
-              <span
-                v-if="key !== 'skalaUsaha'"
-                class="field-value"
-              >: {{ item }}</span>
+            <div class="d-flex align-center gap-2" style="flex: 1">
+              <span v-if="key !== 'skalaUsaha'" class="field-value"
+                >: {{ item }}</span
+              >
               <template v-else>
                 <span class="field-value">:</span>
                 <VSelect
@@ -99,17 +85,14 @@ const labels = {
                   color="deep-purple"
                   size="small"
                   class="update-btn"
-                  style="text-transform: none;"
+                  style="text-transform: none"
                 >
                   Update
                 </VBtn>
               </template>
             </div>
           </div>
-          <VDivider
-            v-if="key === 'email'"
-            class="mt-2"
-          />
+          <VDivider v-if="key === 'email'" class="mt-2" />
         </div>
       </div>
     </VExpandTransition>

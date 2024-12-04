@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const router = useRouter();
+
 const ingredientHeader: any = [
   { title: "No", value: "index" },
   { title: "ID", value: "id", nowrap: true },
@@ -50,7 +52,6 @@ const verifiedProduct = computed(() => {
   return count;
 });
 
-const isFormModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 const selectedDelete = ref();
 
@@ -77,7 +78,13 @@ const handleDeleteIngredient = () => {
     <VCardTitle class="my-3 d-flex justify-space-between align-center">
       <div class="font-weight-bold text-h4">Daftar Nama Bahan dan Kemasan</div>
       <div>
-        <VBtn variant="outlined" class="me-3">
+        <VBtn
+          variant="outlined"
+          class="me-3"
+          @click="
+            router.push('/sh-domestic/submission/self-declare/edit?tab=4')
+          "
+        >
           <div class="pe-3">Tambah</div>
           <VIcon icon="fa-plus" />
         </VBtn>
@@ -124,7 +131,13 @@ const handleDeleteIngredient = () => {
               />
             </template>
             <VList>
-              <VListItem prepend-icon="mdi-pencil" title="Ubah" />
+              <VListItem
+                prepend-icon="mdi-pencil"
+                title="Ubah"
+                @click="
+                  router.push('/sh-domestic/submission/self-declare/edit?tab=4')
+                "
+              />
               <VListItem @click="handleOpenDeleteModal(props.index)">
                 <template #prepend>
                   <VIcon icon="mdi-delete" color="error" />
@@ -148,11 +161,6 @@ const handleDeleteIngredient = () => {
       <div>Apakah yakin ingin menghapus data ini</div>
     </VCardText>
   </ShSubmissionDetailFormModal>
-  <ShSubmissionDetailUploadModal
-    dialog-title="Tambah Data Bahan"
-    :dialog-visible="isFormModalOpen"
-    @update:dialog-visible="isFormModalOpen = $event"
-  />
 </template>
 
 <style scoped lang="scss">

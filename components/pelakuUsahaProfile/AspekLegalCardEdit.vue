@@ -1,62 +1,113 @@
 <script setup lang="ts">
-const panelOpen = ref(0)
+import type { legal } from "@/stores/interface/pelakuUsahaProfileIntf";
+
+const snackbar = useSnackbar();
+
+const panelOpen = ref(0);
+
+const props = defineProps({
+  aspekLegalData: {
+    type: Object as legal | any,
+    required: true,
+  },
+});
+
+const store = pelakuUsahaProfile();
 
 const legalHeader = [
-  { title: 'No', key: 'no', align: 'start' },
-  { title: 'Jenis', key: 'kind' },
-  { title: 'No. Dokumen', key: 'no_docs' },
-  { title: 'Tanggal', key: 'date' },
-  { title: 'Masa Berlaku', key: 'exp_date' },
-  { title: 'Action', key: 'action', align: 'end' },
-]
-
-const legalData = ref([
-  {
-    no: 1,
-    kind: 'SIUP',
-    no_docs: '0128749286836',
-    date: '01/10/2024',
-    exp_date: '09/10/2024',
-  },
-  {
-    no: 2,
-    kind: 'NPWP',
-    no_docs: '1231234989871345490',
-    date: '-',
-    exp_date: '-',
-  },
-  {
-    no: 3,
-    kind: 'NIB',
-    no_docs: '3947298572986',
-    date: '13/10/2019',
-    exp_date: '30/09/2023',
-  },
-])
-
-function handleEdit(item) {
-  console.log('Edit item:', item)
-}
+  { title: "No", key: "no" },
+  { title: "Jenis", key: "type" },
+  { title: "No. Dokumen", key: "doc_number" },
+  { title: "Tanggal", key: "date" },
+  { title: "Masa Berlaku", key: "expiration_date" },
+  { title: "Instansi Penerbit", key: "publishing_agency" },
+  { title: "Action", key: "action" },
+];
 
 function handleDelete(item) {
-  console.log('Delete item:', item)
+  console.log("Delete item:", item);
+
+  const submitApi = $api(
+    `/pelaku-usaha-profile/${store.profileData?.id}/${item.id}/delete-legal`,
+    {
+      method: "DELETE",
+    }
+  )
+    .then((val: any) => {
+      if (val.code == 2000) {
+        store.deleteLegal(item.id);
+        snackbar.sendSnackbar("Berhasil Menghapus Data ", "success");
+      } else {
+        snackbar.sendSnackbar("Gagal Menghapus Data ", "error");
+      }
+    })
+    .catch((e) => {
+      snackbar.sendSnackbar("Gagal Menghapus Data ", "error");
+    });
 }
 
-const handleAddAspekLegalConfirm = formData => {
-  console.log('Add confirmed:', formData)
-}
+const handleAddAspekLegalConfirm = (formData) => {
+  console.log("Add confirmed:", formData);
 
-const handleEditAspekLegalConfirm = formData => {
-  console.log('Edit confirmed:', formData)
-}
+  // store.setLegal(formData)
 
-const initialDataAspekLegal = {
-  jenisDocument: 'SIUP',
-  nomorDocument: '123456',
-  tanggalDocument: '2024-11-01',
-  masaBerlaku: '2025-11-01',
-  instansiPenerbit: 'Instansi XYZ',
-}
+  const submitApi = $api(
+    `/pelaku-usaha-profile/${store.profileData?.id}/add-legal`,
+    {
+      method: "POST",
+      body: {
+        document_type: formData.type,
+        document_number: formData.doc_number,
+        date: new Date(formData.date).toISOString(),
+        valid_date: new Date(formData.expiration_date).toISOString(),
+        publish_agency: formData.publishing_agency,
+      },
+    }
+  ).then((val: any) => {
+    if (val.code == 2000) {
+      store.fetchProfile();
+      snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+    } else {
+      snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
+    }
+  });
+};
+
+const handleEditAspekLegalConfirm = (formData) => {
+  console.log("Edit confirmed:", formData);
+
+  const submitApi = $api(
+    `/pelaku-usaha-profile/${store.profileData?.id}/${formData.id}/update-legal`,
+    {
+      method: "PUT",
+      body: {
+        document_type: formData.type,
+        document_number: formData.doc_number,
+        date: new Date(formData.date).toISOString(),
+        valid_date: new Date(formData.expiration_date).toISOString(),
+        publish_agency: formData.publishing_agency,
+      },
+    }
+  ).then((val: any) => {
+    if (val.code == 2000) {
+      store.updateLegal(formData.id, formData);
+      snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+    } else {
+      snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
+    }
+  });
+};
+
+const initialDataAspekLegal = (item: any) => ({
+  id: item.id,
+  doc_number: item.doc_number,
+  expiration_date: new Date(item.expiration_date)
+    .toISOString()
+    .substring(0, 10),
+  date: new Date(item.date).toISOString().substring(0, 10),
+  publishing_agency: item.publishing_agency,
+  type: item.type,
+});
 </script>
 
 <template>
@@ -76,44 +127,32 @@ const initialDataAspekLegal = {
         </div>
         <VDataTable
           :headers="legalHeader"
-          :items="legalData"
-          item-value="no"
+          :items="props.aspekLegalData"
           class="elevation-1"
         >
           <template #[`item.action`]="{ item }">
-            <VMenu>
+            <VMenu :close-on-content-click="false">
               <template #activator="{ props }">
-                <VBtn
-                  icon
-                  variant="text"
-                  v-bind="props"
-                >
+                <VBtn icon variant="text" v-bind="props">
                   <VIcon>mdi-dots-vertical</VIcon>
                 </VBtn>
               </template>
               <VList>
                 <VListItem>
-                  <VListItemTitle>
-                    <VIcon class="mr-2">
-                      mdi-pencil
-                    </VIcon>
+                  <!-- <VListItemTitle>
+                    <VIcon class="mr-2"> mdi-pencil </VIcon>
                     Ubah
-                  </VListItemTitle>
+                  </VListItemTitle> -->
                   <AspekLegalModal
                     mode="edit"
-                    :initial-data="initialDataAspekLegal"
+                    :initial-data="initialDataAspekLegal(item)"
                     @confirm-edit="handleEditAspekLegalConfirm"
                     @cancel="() => console.log('Edit cancelled')"
                   />
                 </VListItem>
-                <VListItem>
+                <VListItem @click="handleDelete(item)">
                   <VListItemTitle class="text-red">
-                    <VIcon
-                      color="red"
-                      class="mr-2"
-                    >
-                      mdi-delete
-                    </VIcon>
+                    <VIcon color="red" class="mr-2"> mdi-delete </VIcon>
                     Hapus
                   </VListItemTitle>
                 </VListItem>

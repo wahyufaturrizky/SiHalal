@@ -89,8 +89,12 @@ const props = defineProps({
           <template #item.action="{ item }">
             <DialogDeleteAuditPengajuan
               title="Hapus Bahan"
-              button-text="Hapus"
-            />
+              button-text="Ya, Hapus"
+            >
+              <template #contentDelete>
+                <p>Apakah anda yakin menghapus data ini?</p>
+              </template>
+            </DialogDeleteAuditPengajuan>
           </template>
           <template #item.actionEdit="{ item }">
             <Vbtn

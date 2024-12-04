@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 // Props untuk menerima data dari parent
-defineProps({
+const props = defineProps({
   title: {
     type: String,
     default: 'Default Title',
@@ -13,7 +13,8 @@ defineProps({
   },
   buttonText: {
     type: String,
-    default: 'Open Dialog',
+    default: 'Hapus',
+    required: false,
   },
 })
 
@@ -21,7 +22,6 @@ const dialog = ref(false)
 
 const confirmAction = () => {
   dialog.value = false
-  alert('Confirmed!')
 }
 </script>
 
@@ -42,7 +42,7 @@ const confirmAction = () => {
     <VCard>
       <VCardTitle>{{ title }}</VCardTitle>
       <VCardText>
-        <slot name="content" />
+        <slot name="contentDelete" />
       </VCardText>
       <VCardActions>
         <VBtn
@@ -55,9 +55,10 @@ const confirmAction = () => {
         <VBtn
           text
           variant="elevated"
+          color="#E1442E"
           @click="confirmAction"
         >
-          Hapus
+          {{ props.buttonText }}
         </VBtn>
       </VCardActions>
     </VCard>
