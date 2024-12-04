@@ -5,6 +5,7 @@ const totalItems = ref(0);
 const loading = ref(false);
 const loadingStatus = ref(false);
 const loadingCodeFaciiltate = ref(false);
+const loadingSOF = ref(false);
 const itemsStatus = ref();
 const itemsCodeFaciiltate = ref();
 const page = ref(1);
@@ -14,6 +15,7 @@ const merek_dagang = ref("");
 const status = ref("");
 const jenis = ref("");
 const kode_fac = ref("");
+const dataSOF = ref([]);
 
 const loadItem = async ({
   page,
@@ -86,24 +88,25 @@ const loadItemStatusApplication = async () => {
   }
 };
 
-const loadItemCodeFaciiltate = async () => {
+const loadSOF = async () => {
   try {
-    loadingCodeFaciiltate.value = true;
+    loadingSOF.value = true;
 
-    const response = await $api("/shln/submission/product/hscode", {
+    const response = await $api("/master/source-of-fund", {
       method: "get",
     });
 
-    if (response.code === 2000) {
-      itemsCodeFaciiltate.value = response.data;
-      loadingCodeFaciiltate.value = false;
+    if (response.length) {
+      dataSOF.value = response;
+
+      loadingSOF.value = false;
     } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-      loadingCodeFaciiltate.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan asd", "error");
+      loadingSOF.value = false;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingCodeFaciiltate.value = false;
+    loadingSOF.value = false;
   }
 };
 
@@ -119,7 +122,7 @@ onMounted(async () => {
     kode_fac: kode_fac.value,
   });
   await loadItemStatusApplication();
-  await loadItemCodeFaciiltate();
+  await loadSOF();
 });
 
 const debouncedFetch = debounce(loadItem, 500);
@@ -131,11 +134,11 @@ const debouncedFetch = debounce(loadItem, 500);
   </h1>
   <div>
     <InquiryFilter
-      v-if="!loadingStatus && !loadingCodeFaciiltate"
+      v-if="!loadingStatus && !loadingCodeFaciiltate && !loadingSOF"
       :itemsstatus="itemsStatus"
       :loadingstatus="loadingStatus"
-      :loadingcodefaciiltate="loadingCodeFaciiltate"
-      :itemscodefaciiltate="itemsCodeFaciiltate"
+      :loadingsof="loadingSOF"
+      :datsof="dataSOF"
       @formvalue="
         debouncedFetch({
           page,

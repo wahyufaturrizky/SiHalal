@@ -23,8 +23,6 @@ const emit = defineEmits<{
 
 const { dataform, datasof, datadetailregistration } = props || {};
 
-console.log("@datasof", datasof);
-
 const isVisible = ref(false);
 const loadingUpdate = ref(false);
 const route = useRoute();
