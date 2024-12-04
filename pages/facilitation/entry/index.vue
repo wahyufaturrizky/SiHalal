@@ -7,7 +7,12 @@ const loading = ref(false);
 const page = ref(1);
 const searchQuery = ref("");
 
-const loadItem = async (page: number, size: number, keyword: string = "") => {
+const loadItem = async (
+  page: number,
+  size: number,
+  keyword: string = "",
+  status: string = ""
+) => {
   try {
     loading.value = true;
 
@@ -17,6 +22,7 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
         page,
         size,
         keyword,
+        status,
       },
     });
 
@@ -45,7 +51,7 @@ const getStatusColor = (status) => {
 const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
-  await loadItem(1, itemPerPage.value, "");
+  await loadItem(1, itemPerPage.value, "", "");
 });
 
 const handleInput = () => {
