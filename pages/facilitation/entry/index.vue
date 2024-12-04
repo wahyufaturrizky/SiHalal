@@ -6,6 +6,7 @@ const loading = ref(false);
 
 const page = ref(1);
 const searchQuery = ref("");
+const status = ref("OF1");
 
 const loadItem = async (
   page: number,
@@ -109,7 +110,7 @@ const navigateAction = (id: string) => {
               :loading="loading"
               :items-length="totalItems"
               loading-text="Loading..."
-              @update:options="loadItem(page, itemPerPage, searchQuery)"
+              @update:options="loadItem(page, itemPerPage, searchQuery, status)"
             >
               <template #item.id="{ index }">
                 {{ index + 1 + (page - 1) * itemPerPage }}
