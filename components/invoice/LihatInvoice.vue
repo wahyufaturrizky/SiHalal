@@ -14,7 +14,7 @@ const closeDialog = () => {
 const { mdAndUp } = useDisplay();
 
 const dialogMaxWidth = computed(() => {
-  return mdAndUp.value ? 700 : "90%";
+  return mdAndUp.value ? 900 : "90%";
 });
 </script>
 

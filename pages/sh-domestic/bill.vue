@@ -71,9 +71,16 @@ const items = [
 ];
 
 // TODO -> LOGIC BUAT NGE UPDATE DATA BY FILTER
-const onUpdate = () => {
-  console.log("UPDATE FILTE ", filter.value)
+const submitKonfirmasiPembayaran = (form) => {
+  console.log("UPDATE FILTE ", form.value)
 }
+
+// TODO -> GET INVOICE INFO
+const invoiceInformation = ref({
+  noInvoice: '12321412',
+  tanggalPembayaran: '12/11/2024',
+  jumlahPembayaran: 'Rp 3.000.000'
+})
 
 
 const preview = (item) => {
@@ -173,7 +180,7 @@ const getChipColor = (status: string) => {
               <VMenu activator="parent" :close-on-content-click="false">
                 <VCard>
                   <TataCaraPembayaranDialog />
-                  <KonfirmasiPembayaran />
+                  <KonfirmasiPembayaran @confirm="submitKonfirmasiPembayaran" :invoice-information="invoiceInformation"/>
                   <LihatInvoice />
                 </VCard>
               </VMenu>
