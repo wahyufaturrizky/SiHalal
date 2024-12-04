@@ -4,17 +4,18 @@ import { useLayoutConfigStore } from "@layouts/stores/config";
 import type { NavSectionTitle } from "@layouts/types";
 import { getDynamicI18nProps } from "@layouts/utils";
 
-defineProps<{
+const props = defineProps<{
   item: NavSectionTitle;
   roles: string[];
 }>();
 
 const configStore = useLayoutConfigStore();
 const shallRenderIcon = configStore.isVerticalNavMini();
+const isShown = props.roles.some((item) => props.item.roles?.includes(item));
 </script>
 
 <template>
-  <li class="nav-section-title">
+  <li v-if="isShown" class="nav-section-title">
     <div class="title-wrapper">
       <Transition name="vertical-nav-section-title" mode="out-in">
         <Component
