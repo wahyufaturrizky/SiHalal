@@ -456,6 +456,11 @@ export default [
         roles: ["LPH", "Admin"],
       },
       {
+        title: "Daftar Ajuan Diterima",
+        to: "lph-list-accepted",
+        roles: ["LPH", "Admin"],
+      },
+      {
         title: "Update Pemeriksaan",
         to: "reguler-examination-update",
         roles: ["LPH", "Admin"],
