@@ -51,11 +51,11 @@ const getStatusColor = (status) => {
 const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
-  await loadItem(1, itemPerPage.value, "", "");
+  await loadItem(1, itemPerPage.value, "", "OF1");
 });
 
 const handleInput = () => {
-  debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
+  debouncedFetch(page.value, itemPerPage.value, searchQuery.value, "OF1");
 };
 
 const tableHeader = [
@@ -75,10 +75,6 @@ const tableHeader = [
 
 const navigateAction = (id: string) => {
   navigateTo(`/facilitation/entry/${id}`);
-};
-
-const refresh = async () => {
-  await loadItem(1, itemPerPage.value, "");
 };
 </script>
 
@@ -101,7 +97,7 @@ const refresh = async () => {
               />
             </VCol>
             <VCol cols="6" style="display: flex; justify-content: end">
-              <EntryFacilitateModal @refresh="refresh" />
+              <EntryFacilitateModal />
             </VCol>
           </VRow>
           <VRow>
