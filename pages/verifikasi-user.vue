@@ -12,7 +12,6 @@ const { sendSnackbar } = useSnackbar()
 
 const userVerificationStore = useUserVerificationStore()
 
-
 const { signIn, data: sessionData } = useAuth()
 const { mdAndUp } = useDisplay()
 
@@ -69,24 +68,24 @@ const isDisabledNoHp = ref(false)
 
 const currentTab = ref(0)
 
-const isDisabledSubmitEmail = computed(() => {
-  return !form.value.email || emailValidator(form.value.email) !== true
-})
+// const isDisabledSubmitEmail = computed(() => {
+//   return !form.value.email || emailValidator(form.value.email) !== true
+// })
 
 const phoneValidator = (value: string) => {
-  const isValid = /^08\d{8,15}$/.test(value);
+  const isValid = /^08\d{8,15}$/.test(value)
 
   return (
-    isValid ||
-    'Nomor Handphone harus dimulai dengan "08" dan berjumlah 10-13 digit angka'
-  );
-};
-
-const isDisabledSubmitNoHandphone = computed(() => {
-  return (
-    !form.value.noHandphone || phoneValidator(form.value.noHandphone) !== true
+    isValid
+    || 'Nomor Handphone harus dimulai dengan "08" dan berjumlah 10-13 digit angka'
   )
-})
+}
+
+// const isDisabledSubmitNoHandphone = computed(() => {
+//   return (
+//     !form.value.noHandphone || phoneValidator(form.value.noHandphone) !== true
+//   )
+// })
 
 const isOtpEmail = ref(false)
 const isOtpNoHandphone = ref(false)
@@ -344,9 +343,9 @@ const onSubmitNomerHandphone = async () => {
   }
   catch (error) {
     sendSnackbar(
-        'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
-        'error',
-      )
+      'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
+      'error',
+    )
     console.error('Error saat membuat akun:', error)
   }
 
@@ -493,7 +492,7 @@ const onSubmitKodeNomerHandphone = async () => {
 
                   <VBtn
                     block
-                    :disabled="isDisabledSubmitEmail"
+
                     type="submit"
                     @click="onSubmitEmail"
                   >
@@ -601,7 +600,6 @@ const onSubmitKodeNomerHandphone = async () => {
                 <VBtn
                   v-model="kodeOtpNoHandphone"
                   block
-                  :disabled="isDisabledSubmitNoHandphone"
                   type="submit"
                   @click="onSubmitNomerHandphone"
                 >
