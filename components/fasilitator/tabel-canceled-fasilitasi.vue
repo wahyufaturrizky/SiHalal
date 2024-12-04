@@ -34,7 +34,16 @@ const form = ref({
   query_by: null,
 });
 
-const filterOptions = ["Semua", "Perusahaan", "Individu", "UMKM"];
+const filterOptions = [
+  {
+    title: "No Daftar",
+    value: "no_daftar",
+  },
+  {
+    title: "Pelaku Usaha",
+    value: "pelaku_usaha",
+  },
+];
 
 const headers = [
   {
