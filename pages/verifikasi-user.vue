@@ -102,7 +102,7 @@ const onSubmitEmail = async () => {
 
   console.log('ON SUBMIT EMAIL PAYLOAD : ', payload)
 
-  // create user
+  // create
   try {
     const response = await $api('/auth/send-otp', {
       method: 'POST',
@@ -193,16 +193,6 @@ const onSubmitKodeEmail = async () => {
     if (response?.code === 2000) {
       isSucess.value = true
     }
-
-    // const { data: userData, signOut } = useAuth()
-    // if (userData == null) {
-    //   await signOut({ redirect: false })
-
-    //   navigateTo({ name: 'login' })
-    // }
-    // else {
-    //   navigateTo('/login/new-account')
-    // }
 
     else if (response?.code === 4000) {
       // isSucess.value = true
@@ -375,36 +365,28 @@ const onSubmitKodeNomerHandphone = async () => {
 
     console.log('RESPONSE VERIFY OTP PHONE NUMBER : ', response)
 
-    const payloadsubmitEmail = route.query?.payload
-
-    console.log(payloadsubmitEmail, 'payload email')
-
-    // console.log('RESPONSE VERIF OTP : ', response)
-
     // console.log(kodeOtpEmail, "otp email");
     if (response?.code === 2000) {
       localStorage.removeItem('formData')
       isSucess.value = true
     }
 
-    // const { data: userData, signOut } = useAuth()
-    // if (userData == null) {
-    //   await signOut({ redirect: false })
+    else if (response?.code === 4000) {
+      localStorage.removeItem('formData')
+      sendSnackbar(
+        'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali',
+        'error',
+      )
+    }
 
-    //   navigateTo({ name: 'login' })
-    // }
-    // else {
-    //   navigateTo('/login/new-account')
-    // }
     else if (response?.code === 500) {
-      isSucess.value = true
       localStorage.removeItem('formData')
       console.log('error 500')
 
-      // sendSnackbar(
-      //   'Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!',
-      //   'error',
-      // )
+      sendSnackbar(
+        'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
+        'error',
+      )
     }
 
     else {
