@@ -57,7 +57,7 @@ const checkingCostData = ref([
             Daftar Pengajuan
           </VExpansionPanelTitle>
           <VExpansionPanelText class="mt-5">
-            <PanelDaftarPengajuan />
+            <PanelDaftarPengajuan business-type="Lainnya" />
           </VExpansionPanelText>
         </VExpansionPanel>
         <VExpansionPanel :value="1" class="pt-3">
@@ -144,7 +144,7 @@ const checkingCostData = ref([
             No. Pendaftaran
           </VExpansionPanelTitle>
           <VExpansionPanelText class="mt-5">
-            <PanelNoPendafaran />
+            <PanelNoPendaftaran />
           </VExpansionPanelText>
         </VExpansionPanel>
         <VExpansionPanel :value="1" class="pt-3">

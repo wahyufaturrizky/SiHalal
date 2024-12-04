@@ -4,70 +4,6 @@ import LPHDetailLayout from "@/layouts/LPHDetailLayout.vue";
 const openedLeftPanels = ref([0, 1, 2, 3, 4, 5]);
 const openedRightPanels = ref([0, 1, 2]);
 
-const productNameHeader: any[] = [
-  { title: "No", key: "index" },
-  { title: "Layanan Produk", key: "service", nowrap: true },
-  { title: "Jenis Produk", key: "type", nowrap: true },
-  { title: "Kelas Produk", key: "class", nowrap: true },
-  { title: "Rincian Produk", key: "detail", nowrap: true },
-  { title: "Nama Produk", key: "name", nowrap: true },
-  { title: "Publikasi", key: "isPublished" },
-];
-const productNameData = ref([
-  {
-    service: "Makanan",
-    type: "Penyedia minuman dan makanan dengan pengolahan",
-    class: "Resto",
-    detail: "Makanan Mie",
-    name: "Ramen Double Spicy lvl 2",
-    isPublished: true,
-  },
-  {
-    service: "Makanan",
-    type: "Penyedia minuman dan makanan dengan pengolahan",
-    class: "Resto",
-    detail: "Makanan Mie",
-    name: "Ramen Double Spicy lvl 2",
-    isPublished: false,
-  },
-  {
-    service: "Makanan",
-    type: "Penyedia minuman dan makanan dengan pengolahan",
-    class: "Resto",
-    detail: "Makanan Mie",
-    name: "Ramen Double Spicy lvl 2",
-    isPublished: true,
-  },
-]);
-
-const trackingData = ref([
-  {
-    title: "Draft PU",
-    desc: "Ramen Gril Indonesia",
-    date: "09/09/2024",
-  },
-  {
-    title: "Submmited PU",
-    desc: "Ramen Gril Indonesia",
-    date: "09/09/2024",
-  },
-  {
-    title: "Verifikasi",
-    desc: "Oleh Yuan",
-    date: "09/09/2024",
-  },
-  {
-    title: "Dikirim ke LPH",
-    desc: "Yuan (selesai verif)",
-    date: "09/09/2024",
-  },
-  {
-    title: "Penetapan Biaya",
-    desc: "Global halal",
-    date: "09/09/2024",
-  },
-]);
-
 const assignAuditorHeader: any[] = [
   { title: "No", key: "index" },
   { title: "Nama", key: "name" },
@@ -144,7 +80,7 @@ const handleUpdateStatus = () => {
             Daftar Pengajuan
           </VExpansionPanelTitle>
           <VExpansionPanelText class="mt-5">
-            <PanelDaftarPengajuan type="EDIT" />
+            <PanelDaftarPengajuan type="EDIT" business-type="Lainnya" />
           </VExpansionPanelText>
         </VExpansionPanel>
         <VExpansionPanel :value="1" class="pt-3">
@@ -160,27 +96,7 @@ const handleUpdateStatus = () => {
             Daftar Nama Produk
           </VExpansionPanelTitle>
           <VExpansionPanelText class="mt-5">
-            <VDataTable
-              :headers="productNameHeader"
-              :items="productNameData"
-              hide-default-footer
-            >
-              <template #item.index="{ index }">
-                {{ index + 1 }}
-              </template>
-              <template #item.isPublished="{ item }">
-                <VCheckbox :model-value="item.isPublished" />
-              </template>
-              <template #bottom>
-                <VDataTableFooter
-                  v-if="productNameData.length > 5"
-                  class="custom-table"
-                  first-icon="mdi-chevron-double-left"
-                  last-icon="mdi-chevron-double-right"
-                  show-current-page
-                />
-              </template>
-            </VDataTable>
+            <PanelDaftarProduk />
           </VExpansionPanelText>
         </VExpansionPanel>
         <VExpansionPanel :value="3" class="pt-3">
@@ -261,7 +177,7 @@ const handleUpdateStatus = () => {
             No. Pendaftaran
           </VExpansionPanelTitle>
           <VExpansionPanelText class="mt-5">
-            <PanelNoPendafaran />
+            <PanelNoPendaftaran />
           </VExpansionPanelText>
         </VExpansionPanel>
         <VExpansionPanel :value="2" class="pt-3">
@@ -384,12 +300,6 @@ const handleUpdateStatus = () => {
     .v-expansion-panel--active + .v-expansion-panel
   ) {
   margin-top: 40px !important;
-}
-
-:deep(.v-data-table.custom-table > .v-data-table-footer) {
-  .v-data-table-footer__info {
-    display: none;
-  }
 }
 
 :deep(.v-data-table.auditor-table > .v-table__wrapper) {
