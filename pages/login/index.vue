@@ -35,6 +35,7 @@ definePageMeta({
   layout: "blank",
   unauthenticatedOnly: true,
 });
+const { handleReset, handleGetResponse } = useRecaptcha();
 
 const isPasswordVisible = useState("isPasswordVisible", () => false);
 const isDisabledSubmit = useState("isDisabledSubmit", () => true);
@@ -74,6 +75,7 @@ async function login() {
       replace: true,
     });
   } catch (error: any) {
+    handleReset(widgetCaptcha.value);
     if (error.data.statusCode == 400) {
       useUserVerificationStore().setUserData({
         id: error.data.data.user.id,
@@ -123,8 +125,9 @@ const onSubmit = async () => {
 const redirectToForgotPass = () => {
   navigateTo("/forgot-password");
 };
-const { handleReset, handleGetResponse } = useRecaptcha();
+const widgetCaptcha = ref();
 const handleWidgetId = (widgetId: number) => {
+  widgetCaptcha.value = widgetId;
   handleGetResponse(widgetId);
 };
 const handleErrorCallback = () => {

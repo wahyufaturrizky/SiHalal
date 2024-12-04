@@ -193,9 +193,88 @@ const loadRegistration = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+const requirementDocument = ref<RequirementDocument>();
+const requirementDocArray = ref([
+  {
+    documentTypes: "Business License Number (NIB)",
+    file: "",
+    notes: "",
+    status: "",
+    tracking: "",
+  },
+  {
+    documentTypes: "Business License Number (NIB)",
+    file: "",
+    notes: "",
+    status: "",
+    tracking: "",
+  },
+]);
+const tableRequirementDocumentHeader = [
+  { title: "No", key: "index" },
+  { title: "Document Types", key: "documentTypes" },
+  { title: "Download ", key: "file", align: "left" },
+  { title: "Notes", key: "notes" },
+  { title: "status", key: "status" },
+  { title: "Action", key: "action" },
+];
+const reqTracking = ref(null);
+const reqTrackingModal = ref(false);
+const getRequirementDocument = async () => {
+  try {
+    const response = await $api(
+      "/shln/submission/document/requirement-document",
+      {
+        method: "post",
+        body: {
+          id: shlnId,
+        },
+      }
+    );
 
+    requirementDocument.value = response.data.requirement_doc;
+    requirementDocArray.value[0] = {
+      documentTypes: "Letter Of Application",
+      file: requirementDocument.value?.loa.file,
+      notes: requirementDocument.value?.loa.comment,
+      status: requirementDocument.value?.loa.status,
+      tracking: requirementDocument.value?.loa.status,
+    };
+    requirementDocArray.value[1] = {
+      documentTypes: "Business License Number (NIB)",
+      file: requirementDocument.value?.nib.file,
+      notes: requirementDocument.value?.nib.comment,
+      status: requirementDocument.value?.nib.status,
+      tracking: requirementDocument.value?.nib.status,
+    };
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+const getReqTrackingModal = (data) => {
+  reqTracking.value = data;
+  reqTrackingModal.value = true;
+};
+const downloadDOcument = async (filename: string) => {
+  try {
+    const response = await $api("/shln/submission/document/download", {
+      method: "post",
+      body: {
+        filename,
+      },
+    });
+    window.open(response.url, "_blank", "noopener,noreferrer");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 onMounted(() => {
-  Promise.allSettled([loadItem(), loadTracking(), loadRegistration()]);
+  Promise.allSettled([
+    loadItem(),
+    loadTracking(),
+    loadRegistration(),
+    getRequirementDocument(),
+  ]);
 });
 
 const productItems = [
@@ -367,13 +446,31 @@ const timelineEvents = ref([
           </VDataTable>
         </ExpandCard>
         <ExpandCard title="Requirement Document" class="mb-6">
-          <VDataTable :headers="headersDocument" :items="documentItems">
+          <VDataTable
+            :items="requirementDocArray"
+            :headers="tableRequirementDocumentHeader"
+          >
             <template #item.index="{ index }">
               {{ index + 1 }}
             </template>
+            <template #item.file="{ item, index }">
+              <div class="d-flex align-center justify-center py-3 gap-2">
+                <VBtn
+                  @click="downloadDOcument(item.file)"
+                  v-if="item.file != ''"
+                  color="primary"
+                >
+                  <VIcon icon="fa-download" />
+                </VBtn>
+              </div>
+              <!-- {{ item.file != "" ? "asd" : "dsa" }} -->
+            </template>
             <template #item.action="{ item }">
               <div class="d-flex gap-1">
-                <IconBtn size="small" @click="">
+                <IconBtn
+                  size="small"
+                  @click="getReqTrackingModal(item.tracking)"
+                >
                   <VIcon icon="fa-history" color="primary" />
                 </IconBtn>
               </div>
@@ -470,6 +567,15 @@ const timelineEvents = ref([
           </VRow>
         </VCardText>
       </VCard>
+    </VDialog>
+
+    <VDialog v-model="reqTrackingModal" width="auto">
+      <v-card>
+        <v-card-text>
+          <p class="text-h5 font-weight-bold">Tracking</p>
+          <HalalTimeLine v-if="reqTracking" :event="reqTracking" />
+        </v-card-text>
+      </v-card>
     </VDialog>
   </div>
 </template>

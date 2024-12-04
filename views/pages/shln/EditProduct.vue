@@ -63,7 +63,7 @@ const insertProduct = async () => {
     productAddButton.value = false;
     selectLevels.value = [
       {
-        options: [], // Initial empty options for the first level
+        options: selectLevels.value[0].options, // Initial empty options for the first level
         parentId: null, // No parent for the root level
       },
     ];
@@ -367,7 +367,7 @@ const formatItemTitle = (item) => {
               <div
                 class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1"
               >
-                Product
+                Manufacture
               </div>
               <VSelect
                 v-model="form.manufactur_id"

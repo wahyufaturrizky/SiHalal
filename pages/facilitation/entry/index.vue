@@ -7,7 +7,12 @@ const loading = ref(false);
 const page = ref(1);
 const searchQuery = ref("");
 
-const loadItem = async (page: number, size: number, keyword: string = "") => {
+const loadItem = async (
+  page: number,
+  size: number,
+  keyword: string = "",
+  status: string = ""
+) => {
   try {
     loading.value = true;
 
@@ -17,6 +22,7 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
         page,
         size,
         keyword,
+        status,
       },
     });
 
@@ -45,11 +51,11 @@ const getStatusColor = (status) => {
 const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
-  await loadItem(1, itemPerPage.value, "");
+  await loadItem(1, itemPerPage.value, "", "OF1");
 });
 
 const handleInput = () => {
-  debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
+  debouncedFetch(page.value, itemPerPage.value, searchQuery.value, "OF1");
 };
 
 const tableHeader = [
@@ -60,7 +66,7 @@ const tableHeader = [
   { title: "Sumber Pembiayaan", key: "sumber_biaya" },
   { title: "Jenis", key: "jenis" },
   { title: "Tanggal Aktif", key: "tgl_selesai" },
-  { title: "Tanggal Selesai", key: "tgl_selesai" },
+  { title: "Tanggal Selesai", key: "tgl_aktif" },
   { title: "Kuota", key: "kuota" },
   { title: "Sisa", key: "sisa" },
   { title: "Status", key: "status" },
@@ -69,10 +75,6 @@ const tableHeader = [
 
 const navigateAction = (id: string) => {
   navigateTo(`/facilitation/entry/${id}`);
-};
-
-const refresh = async () => {
-  await loadItem(1, itemPerPage.value, "");
 };
 </script>
 
@@ -95,7 +97,7 @@ const refresh = async () => {
               />
             </VCol>
             <VCol cols="6" style="display: flex; justify-content: end">
-              <EntryFacilitateModal @refresh="refresh" />
+              <EntryFacilitateModal />
             </VCol>
           </VRow>
           <VRow>
@@ -111,6 +113,9 @@ const refresh = async () => {
             >
               <template #item.id="{ index }">
                 {{ index + 1 + (page - 1) * itemPerPage }}
+              </template>
+              <template #item.tgl_aktif="{ item }">
+                {{ formatDateIntl(new Date(item.tgl_aktif)) }}
               </template>
               <template #item.tgl_selesai="{ item }">
                 {{ formatDateIntl(new Date(item.tgl_selesai)) }}
