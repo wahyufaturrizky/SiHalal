@@ -16,6 +16,13 @@ export default defineNuxtConfig({
           href: `/favicon.ico`,
         },
       ],
+      script: [
+        {
+          src: "https://www.google.com/recaptcha/api.js",
+          async: true,
+          defer: true,
+        },
+      ],
     },
   },
 
