@@ -407,6 +407,26 @@ const onSubmitKodeNomerHandphone = async () => {
 
   // sendSnackbar('Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali', 'error')
 }
+
+const imageArray = [
+  '/images/login-register/1.png',
+  '/images/login-register/2.png',
+  '/images/login-register/3.png',
+]
+
+const currentImage = ref('')
+
+const getRandomImage = () => {
+  const randomIndex = Math.floor(Math.random() * imageArray.length)
+
+  console.log(currentImage, 'sini', randomIndex, '---', imageArray[randomIndex])
+
+  return imageArray[randomIndex]
+}
+
+onMounted(() => {
+  currentImage.value = getRandomImage()
+})
 </script>
 
 <template>
@@ -692,7 +712,11 @@ const onSubmitKodeNomerHandphone = async () => {
       md="6"
       class="auth-card-v2 d-flex align-center justify-center"
     >
-      <VImg :src="NoImage" />
+      <VImg
+        :src="currentImage"
+        height="100dvh"
+        cover
+      />
     </VCol>
   </VRow>
 </template>
