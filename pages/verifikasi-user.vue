@@ -714,8 +714,10 @@ onMounted(() => {
     >
       <VImg
         :src="currentImage"
-        height="100dvh"
-        cover
+        width="100%"
+        height="100%"
+
+        class="responsive-image"
       />
     </VCol>
   </VRow>
@@ -788,5 +790,11 @@ onMounted(() => {
 
 .v-btn {
   text-transform: none !important;
+}
+
+.responsive-image {
+  block-size: 100%;
+  inline-size: 100%;
+  object-fit: fill;
 }
 </style>

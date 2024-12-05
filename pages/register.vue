@@ -548,8 +548,7 @@ onMounted(() => {
     >
       <VImg
         :src="currentImage"
-        height="100dvh"
-        cover
+        class="responsive-image"
       />
     </VCol>
   </VRow>
@@ -576,5 +575,11 @@ onMounted(() => {
   color: red;
   font-size: 0.875rem;
   margin-block-start: 4px;
+}
+
+.responsive-image {
+  block-size: 100%;
+  inline-size: 100%;
+  object-fit: fill;
 }
 </style>
