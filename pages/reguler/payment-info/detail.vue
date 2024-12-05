@@ -24,13 +24,11 @@ const checkingCostData = ref([
     price: "Rp 1.000.000",
     subTotal: "Rp 1.000.000",
   },
-  {
-    costName: "",
-    quantity: "",
-    price: "Total",
-    subTotal: "Rp 7.000.000",
-  },
 ]);
+const checkingTotal = ref({
+  title: "Total",
+  value: "Rp 7.000.000",
+});
 </script>
 
 <template>
@@ -78,7 +76,7 @@ const checkingCostData = ref([
               :items="checkingCostData"
               hide-default-footer
             >
-              <template #item.index="{ index }">
+              <!-- <template #item.index="{ index }">
                 {{ index !== checkingCostData.length - 1 ? index + 1 : "" }}
               </template>
               <template #item.price="{ index, item }">
@@ -102,6 +100,30 @@ const checkingCostData = ref([
                 >
                   {{ item.subTotal }}
                 </div>
+              </template> -->
+              <template #body>
+                <tr v-for="(item, idx) in checkingCostData">
+                  <td>{{ idx + 1 }}</td>
+                  <td>{{ item.costName }}</td>
+                  <td>{{ item.quantity }}</td>
+                  <td>{{ item.price }}</td>
+                  <td class="d-flex justify-center align-center" width="150px">
+                    {{ item.subTotal }}
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="3" />
+                  <td colspan="1" class="font-weight-bold">
+                    {{ checkingTotal.title }}
+                  </td>
+                  <td
+                    colspan="1"
+                    class="d-flex justify-center align-center font-weight-bold"
+                    width="150px"
+                  >
+                    {{ checkingTotal.value }}
+                  </td>
+                </tr>
               </template>
             </VDataTable>
           </VExpansionPanelText>
