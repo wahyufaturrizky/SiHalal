@@ -6,7 +6,7 @@ const loading = ref(false);
 
 const page = ref(1);
 const searchQuery = ref("");
-const status = ref("OF1");
+const status = ref("OF1,OF10,OF5,OF2,OF290");
 
 const loadItem = async (
   page: number,
@@ -52,11 +52,16 @@ const getStatusColor = (status) => {
 const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
-  await loadItem(1, itemPerPage.value, "", "OF1");
+  await loadItem(1, itemPerPage.value, "", "OF1,OF10,OF5,OF2,OF290");
 });
 
 const handleInput = () => {
-  debouncedFetch(page.value, itemPerPage.value, searchQuery.value, "OF1");
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    "OF1,OF10,OF5,OF2,OF290"
+  );
 };
 
 const tableHeader = [
