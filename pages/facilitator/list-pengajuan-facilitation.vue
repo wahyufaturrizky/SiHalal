@@ -1,31 +1,78 @@
 <script setup lang="ts">
+const tableHeader = [
+  { title: "No", value: "index" },
+  { title: "Tanggal Daftar", value: "tgl_daftar" },
+  { title: "Kode Fasilitasi", value: "id" },
+  { title: "Tahun", value: "tahun" },
+  { title: "Nama Fasilitasi", value: "fac_name" },
+  { title: "Sumber Pembiayaan", value: "sumber_biaya" },
+  { title: "Jenis", value: "jenis" },
+  { title: "Tanggal Aktif", value: "tgl_aktif" },
+  { title: "tanggal Selesai", value: "tgl_selesai" },
+  { title: "Kuota", value: "kuota" },
+  { title: "Status", value: "status" },
+  { title: "Action", value: "action", align: "center" }, // Kolom Action
+];
 
-const searchQuery = ref()
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+const statusItem = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+  },
+  {
+    get(target, prop) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
 
-const headers = [
-  {title: 'No', key: 'no', nowrap: true},
-  {title: 'Tgl. Daftar', key: 'registrationDate', nowrap: true},
-  {title: 'Kode Fasilitasi', key: 'facilitationCode', nowrap: true},
-  {title: 'Tahun', key: 'year', nowrap: true},
-  {title: 'Nama Fasilitasi', key: 'facilitationName', nowrap: true},
-  {title: 'Kode Program', key: 'programName', nowrap: true},
-  {title: 'Sumber Pembiayaan', key: 'sourceOfFund', nowrap: true},
-  {title: 'type', key: 'type', nowrap: true},
-  {title: 'Tgl. Aktif', key: 'startDate', nowrap: true},
-  {title: 'Tgl. Selesai', key: 'endDate', nowrap: true},
-  {title: 'Kuota', key: 'kuota', nowrap: true},
-  {title: 'Status Registrasi', key: 'status', nowrap: true},
-  {title: "Action", value: "action", sortable: false , nowrap: true},
-]
+const items = ref([]);
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const loading = ref(true);
+const page = ref(1);
+const loadItem = async (page: number, size: number, keyword: string = "") => {
+  try {
+    loading.value = true;
 
-const items = ref([
-  {no: 1, registrationDate: '01-11-2024', facilitationCode: '', year: '2025',facilitationName: 'WAWAN BRO',  programName: 'Dinas Koperasi Kab. Bogor', sourceOfFund: 'JSP01', type: 'Self Declare', startDate: '06-11-2024', endDate: '31-01-2025', kuota: 1000, status: 'PENGAJUAN'    }
-])
+    const response = await $api("/facilitate/list", {
+      method: "get",
+      params: {
+        page,
+        size,
+        keyword,
+        status: "OF10",
+      },
+    });
+
+    items.value = response.data;
+    totalItems.value = response.total_item;
+    loading.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
+  }
+};
+const searchQuery = ref("");
+
+const debouncedFetch = debounce(loadItem, 500);
+
+const handleInput = () => {
+  debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
+};
+const navigateAction = (id: string) => {
+  navigateTo(`/facilitator/verifikasi/${id}`);
+};
 
 import { useDisplay } from "vuetify";
 const { mdAndUp } = useDisplay();
 const maxWidthSearch = computed(() => (mdAndUp ? 700 : "90%"));
-
 </script>
 
 <template>
@@ -46,23 +93,31 @@ const maxWidthSearch = computed(() => (mdAndUp ? 700 : "90%"));
         </VCol>
       </VRow>
       <VRow>
-        <VDataTable :headers="headers" :items="items" class="elevation-1" fixed-header >
-          <template #item.action="{ item }">
-            <VIcon
-              color="success"
-              style="cursor: pointer;"
-              @click="navigateTo('/')"
-            >
-              ri-arrow-right-line
-            </VIcon>
+        <VDataTableServer
+          v-model:items-per-page="itemPerPage"
+          v-model:page="page"
+          :headers="tableHeader"
+          :items-length="totalItems"
+          :loading="loading"
+          loading-text="Loading..."
+          :items="items"
+          @update:options="loadItem(page, itemPerPage, searchQuery)"
+        >
+          <template #item.index="{ index }">
+            {{ index + 1 + (page - 1) * itemPerPage }}
           </template>
-        </VDataTable>
-
+          <template #item.status="{ item }">
+            <VChip label :color="statusItem[item.status].color">
+              {{ statusItem[item.status].desc }}
+            </VChip>
+          </template>
+          <template #item.action="{ item }">
+            <VBtn variant="text" icon @click="navigateAction(item.id)">
+              <VIcon>mdi-chevron-right</VIcon>
+            </VBtn>
+          </template>
+        </VDataTableServer>
       </VRow>
     </VCard>
   </div>
 </template>
-
-<style scoped lang="scss">
-
-</style>
