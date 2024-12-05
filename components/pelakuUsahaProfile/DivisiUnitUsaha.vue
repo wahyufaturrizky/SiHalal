@@ -30,12 +30,10 @@ const panelOpen = ref(0);
               </VCol>
             </VRow>
             <VRow>
-              <VCol cols="12"> Divisi / Unit Usaha: 10761 </VCol>
+              <VCol cols="12"> Divisi / Unit Usaha: - </VCol>
             </VRow>
             <VRow>
-              <VCol cols="12">
-                Alamat: Sumbawa Banget, RT002/RW002, Sumbang, Curio
-              </VCol>
+              <VCol cols="12"> Alamat: - </VCol>
             </VRow>
           </div>
         </div>

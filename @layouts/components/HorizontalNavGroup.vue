@@ -43,7 +43,6 @@ watch(
   },
   { immediate: true }
 );
-console.log(props.roles, props.item.roles);
 const isShown = props.roles.some((item) => props.item.roles?.includes(item));
 </script>
 

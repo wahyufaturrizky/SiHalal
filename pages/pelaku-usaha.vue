@@ -7,11 +7,9 @@ import { pelakuUsahaProfile } from "@/stores/pelaku-usaha-profile";
 
 const tablePabrikHeader = [
   { title: "No", key: "no" },
-  { title: "Jenis", key: "kind" },
-  { title: "No. Dokumen", key: "no_docs" },
-  { title: "Tanggal", key: "date" },
-  { title: "Masa Berlaku", key: "exp_date" },
-  { title: "Instansi Penerbit", key: "publisher" },
+  { title: "Nama", key: "name" },
+  { title: "Alamat", key: "address" },
+  { title: "Action", key: "action", align: "end" },
 ];
 
 const tableOutletHeader = [
@@ -23,18 +21,16 @@ const tableOutletHeader = [
 const penyeliaHeader = [
   { title: "No", key: "no" },
   { title: "Nama", key: "name" },
-  { title: "No. KTP", key: "no_idcard" },
+  { title: "No. KTP", key: "ktp_no" },
   { title: "No. Kontak", key: "no_contact" },
-  { title: "No/Tgl Sertif Penyelia Halal", key: "cert_date" },
-  { title: "No/Tanggal SK", key: "dec_letter_date" },
+  { title: "No/Tgl Sertif Penyelia Halal", key: "certification_no" },
+  { title: "No/Tanggal SK", key: "sk_no" },
   { title: "Action", key: "action" },
 ];
-const { canAccess } = useMyAuthUserStore();
+// const { canAccess } = useMyAuthUserStore();
 const panelOpenPabrik = ref(0);
 const panelOpenOutlet = ref(0);
 const panelOpenPenyeliaHallal = ref(0);
-
-const tes = ref();
 
 const onEdit = () => {
   navigateTo("/pelaku-usaha-edit");
@@ -42,9 +38,23 @@ const onEdit = () => {
 
 const store = pelakuUsahaProfile();
 
-onMounted(async () => {
-  await store.fetchProfile();
+onMounted(() => {
+  store.fetchProfile();
 });
+
+const downloadDOcument = async (filename: string) => {
+  try {
+    const response = await $api("/shln/submission/document/download", {
+      method: "post",
+      body: {
+        filename,
+      },
+    });
+    window.open(response.url, "_blank", "noopener,noreferrer");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 </script>
 
 <template>
@@ -129,7 +139,8 @@ onMounted(async () => {
                 <VDataTable
                   :headers="penyeliaHeader"
                   :items="store.supervisorData"
-                ></VDataTable
+                >
+                </VDataTable
               ></VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -141,7 +152,7 @@ onMounted(async () => {
     <template #rightContent>
       <VRow>
         <VCol :cols="12">
-          <PerizinanCard v-if="canAccess(['Pelaku Usaha'])" />
+          <PerizinanCard :aspek-legal-data="store.legal" />
         </VCol>
       </VRow>
       <VRow>

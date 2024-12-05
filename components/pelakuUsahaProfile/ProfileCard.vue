@@ -70,9 +70,9 @@ const profilData = [
               style="display: flex; align-items: center; justify-content: end"
             >
               <VSelect density="compact" :items="['Mikro']" />
-              <VBtn style="margin-inline-start: 1svw" variant="outlined">
+              <!-- <VBtn style="margin-inline-start: 1svw" variant="outlined">
                 Update
-              </VBtn>
+              </VBtn> -->
             </div>
           </VCol>
         </VRow>

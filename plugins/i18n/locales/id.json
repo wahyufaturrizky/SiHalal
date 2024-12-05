@@ -1,94 +1,108 @@
 {
-    "dashboard": "Dashboard",
-    "registrar": "Pendaftar",
-    "registrasi_sh": "Registrasi SH",
-    "facilitator_profile": "Profil",
-    "Sertifikasi": "Certification",
-    "pengajuan_reguler": "Pengajuan Reguler",
-    "tagihan_jatuh_tempo": "Due Date Invoice",
-    "tagihan_invoice": "Invoice",
-    "manajemen_pengguna": "User Management",
-    "pendaftaran_online": {
-        "title": "Pendaftaran Online",
-        "bahan_non_sertif": "Persetujuan Bahan Non Sertifikasi",
-        "distribusi_kf": "Distribusi ke Sekretariat KF",
-        "verifikasi_ol": "Verifikasi Reguler",
-        "status_komite": "Status Diterima Komite Fatwa",
-        "verifikasi_kf": "Laporan Verifikasi Sekretariat KF",
-        "verifikasi_sd": "Verifikasi Self Declare",
-        "laporan_verifikasi": "Laporan Verifikasi",
-        "verifikasi_auditor": "Verifikasi Auditor",
-        "verifikasi_fasilitator": "Verifikasi Fasilitator",
-        "entri_data_sert_penyelia": "Entri Data Sertifikasi Penyelia",
-        "info_bayar": "Informasi Pembayaran",
-        "update_sidang_fatwa": "Update Sidang Fatwa",
-        "penerbit_sertifikat": "Penerbitan Sertifikat",
-        "penerbit_sertifikat_sd": "Penerbitan Sertifikat Self Declare",
-        "lampiran_sertifikat": "Lampiran Sertifikat",
-        "proses_persetujuan": "Proses Persetujuan",
-        "perubahan_produk": "Perubahan Produk",
-        "daftar_fasilitasi": "Daftar Fasilitasi",
-        "duplikat_data": "Duplikat Data",
-        "permohonan_rev_sh": "Permohonan Revisi SH"
+    "navbar": {
+        "main_menu": "Menu Utama",
+        "dashboard": "Dashboard",
+        "applicant": {
+            "title": "Pendaftar",
+            "menu": {
+                "profile": "Profile"
+            }
+        },
+        "facilitate_registration": {
+            "title": "Facilitate Registration",
+            "menu": {
+                "entry": "Entri Fasilitas",
+                "list": "Daftar Fasilitas"
+            }
+        },
+        "list_ba": {
+            "title": "Daftar Pelaku Usaha",
+            "menu": {
+                "fa_inquiry": "Inquiry",
+                "fa_cancelation": "Pembatalan"
+            }
+        },
+        "invoice": {
+            "title": "Invoice",
+            "menu": {
+                "facilitate": "Invoice Fasilitasi",
+                "facilitator": "Invoice Fasilitator",
+                "shln": "Invoice SHLN",
+                "regular": "Invoice Reguler"
+            }
+        },
+        "shln": {
+            "title": "SH Luar Negeri",
+            "menu": {
+                "submission": "Submission",
+                "invoice": "Invoice",
+                "verification": "Verifikasi SHLN"
+            }
+        },
+        "sh_registration": {
+            "title": "Registrasi SH",
+            "menu": {
+                "self_declare_submission": "Pengajuan Self Declare",
+                "regular_submission": "Pengajuan Reguler"
+            }
+        },
+        "online_registration": {
+            "title": "Pendaftaran Online",
+            "menu": {
+                "fa_verification": "Verifikasi Fasilitator",
+                "sd_verification": "Verifikasi Self Declare",
+                "rg_verification": "Verifikasi Reguler"
+            }
+        },
+        "halal_cert_submission": {
+            "title": "Pengajuan Sertifikasi Halal",
+            "menu": {
+                "check_pu_submission": "Cek Data Pengajuan PU",
+                "verval": "Proses Verval"
+            }
+        },
+        "process_on_lph": {
+            "title": "Proses di LPH",
+            "menu": {
+                "list_submission": "Daftar Ajuan",
+                "list_acc_submission": "Daftar Ajuan Diterima",
+                "payment_info": "Informasi Pembayaran",
+                "update_check": "Update Pemeriksaan",
+                "settlement_data": "Penyelesaian Data Post Audit"
+            }
+        },
+        "data_pu_submission": {
+            "title": "Data Pengajuan Pelaku Usaha",
+            "menu": {
+                "audit_submission": "Audit Pengajuan"
+            }
+        },
+        "sidang_fatwa": {
+            "title": "Sidang Fatwa",
+            "menu": {
+                "proses_sidang_fatwa": "Proses Sidang Fatwa",
+                "entri_ketetapan_halal": "Entri Ketetapan Halal"
+            }
+        },
+        "bill": {
+            "title": "Tagihan",
+            "menu": {
+                "create_bill_bpjph": "Buat Tagihan Ke BPJPH",
+                "list_bill_bpjph": "Daftar Tagihan Ke BPJPH"
+            }
+        },
+        "self_declare": {
+            "title": "Self Declare",
+            "menu": {
+                "proses_sidang_fatwa": "Proses Sidang Fatwa",
+                "hasil_penetapan": "Hasil Penetapan",
+                "inquiry_1": "Inquiry 1",
+                "inquiry_2": "Inquiry 2",
+                "recapitulation": "Rekapitulasi"
+            }
+        },
+        "business_actor": "Pelaku Usaha"
     },
-    "fasilitator": {
-        "new_fasilitator": "New Fasilitator",
-        "inquiry": "Inquiry",
-        "cancellation_of_application": "Pembatalan Permohonan",
-        "invoice": "invoice"
-    },
-    "sh_domestic": {
-        "title": "SH Dalam Negeri",
-        "self_declare": "Pengajuan Self Declare",
-        "status_request": "Status Permohonan",
-        "revision": "Revisi Sertifikasi Halal",
-        "bill": "Tagihan",
-        "due_bill": "Jatuh Tempo",
-        "guide": "Pedoman & Label Halal"
-    },
-    "internal_audit": {
-        "title": "Audit Internal",
-        "entry": "Pengisian Audit Internal",
-        "status": "Status Pengawasan"
-    },
-    "facilitate": {
-        "heading": "Registrasi Fasilitasi",
-        "heading-invoice": "Invoice",
-        "entry": "Entri Fasilitasi",
-        "list": "Daftar Fasilitasi",
-        "invoice": "Invoice Fasilitasi"
-    },
-    "pelaku_usaha": {
-        "heading": "Daftar Pelaku Usaha",
-        "inquery": "Inquery",
-        "cancel": "Pembatalan"
-    },
-    "information": {
-        "heading": "Informasi",
-        "material": {
-            "title": "Materi",
-            "faq": "FAQ",
-            "reference": "Referensi"
-        }
-    },
-    "sidang_fatwa": {
-        "title": "Sidang Fatwa",
-        "proses_sidang": "Proses Sidang"
-    },
-    "sidang_self_declare": {
-        "title": "Sidang Self Declare",
-        "proses_sidang": "Proses Sidang",
-        "entry_ketetapan_halal": "Entri Ketetapan Halal",
-        "inquiry": "Inquiry - Komite Fatwa",
-        "rekapitulasi": "Rekapitulasi"
-    },
-    "registrasi_shln": "Registrasi SHLN",
-    "sh_luar_negeri": "SH Luar Negeri",
-    "shln_submission": "Submission",
-    "shln_invoice": "Invoice",
-    "shln_verification": "Verifikasi",
-    "shln_payment": "Pembayaran",
-    "shln_inquiry": "Inquiry",
     "uam_role": "Role",
     "uam_user": "User",
     "Error": "Error",
@@ -140,7 +154,7 @@
         }
     },
     "sh-submission": {
-        "title": "Pengajuan Sertifikat Halal",
-        "detail": "Cek Data Pengajuan"
+        "title": "Halal Certificate Submission",
+        "detail": "Check Submission Data"
     }
 }

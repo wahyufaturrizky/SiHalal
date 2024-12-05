@@ -52,10 +52,9 @@ export interface factory {
 }
 
 export interface kbli {
-  id: String;
-  kbli_no: String;
-  kbli_name: String;
-  business_name: String;
+  no: String;
+  name: String;
+  kbli: String;
   address: String;
   capital: String;
 }
@@ -76,10 +75,13 @@ export interface outlet {
 }
 
 export interface supervisorHalal {
-  id: String;
-  doc_number: String;
-  expiration_date: String;
-  date: String;
-  publishing_agency: String;
-  type: String;
+  id: string;
+  name: string;
+  file_skph: string;
+  file_spph: string;
+  file_ktp: string;
+  ktp_no: string;
+  religion: string;
+  certification_no: string;
+  sk_no: string;
 }

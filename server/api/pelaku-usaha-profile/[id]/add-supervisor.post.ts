@@ -1,5 +1,3 @@
-import type { NuxtError } from "nuxt/app";
-
 const runtimeConfig = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
@@ -10,31 +8,34 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
+  // const files = await readMultipartFormData(event);
+  // if (files == undefined) {
+  //   throw createError({
+  //     statusCode: 403,
+  //     statusMessage: "Need to pass file",
+  //   });
+  // }
+  //   if (files.length != 3) {
+  //     throw createError({
+  //       statusCode: 403,
+  //       statusMessage: "Need to pass file",
+  //     });
+  //   }
 
-  const { page, size, keyword, status } = (await getQuery(event)) as {
-    page: string;
-    size: string;
-    keyword: string;
-    status: string;
-  };
+  const { id } = event.context.params;
+  const body: any = await readBody(event);
 
-  const params = {
-    page: isNaN(Number.parseInt(page, 10)) ? 1 : Number.parseInt(page, 10),
-    size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
-    status,
-    keyword,
-  };
-
+  // return files;
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/fasilitator/search`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/business-actor/foreign/${id}/supervisor`,
     {
-      method: "get",
+      method: "post",
       headers: { Authorization: authorizationHeader },
-      params,
+      body,
     }
   ).catch((err: NuxtError) => {
+    console.log(err);
     setResponseStatus(event, 400);
-
     return err.data;
   });
 
