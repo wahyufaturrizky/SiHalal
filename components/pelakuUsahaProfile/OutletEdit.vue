@@ -1,50 +1,79 @@
 <script setup lang="ts">
-const panelOpen = ref(0)
+import type { outlet } from "@/stores/interface/pelakuUsahaProfileIntf";
+
+const panelOpen = ref(0);
 
 const tableOutletHeader = [
-  { title: 'No', key: 'no' },
-  { title: 'Nama', key: 'name' },
-  { title: 'Alamat', key: 'address' },
-]
+  { title: "No", key: "no" },
+  { title: "Nama", key: "name" },
+  { title: "Alamat", key: "address" },
+];
 
-const items = ref([])
+const props = defineProps({
+  outletData: {
+    type: Object as outlet | any,
+    required: true,
+  },
+});
 
-const handleAddAspekLegalConfirm = formData => {
-  console.log('Add confirmed:', formData)
-}
+const items = ref([]);
+
+const store = pelakuUsahaProfile();
+const snackbar = useSnackbar();
+
+const handleAddAspekLegalConfirm = (formData) => {
+  console.log("Add confirmed:", formData);
+
+  const submitApi = $api(
+    `/pelaku-usaha-profile/${store.profileData?.id}/add-outlet`,
+    {
+      method: "POST",
+      body: {
+        name: formData.namaOutlet,
+        address: formData.alamatOutlet,
+        city: formData.kabKota,
+        province: formData.provinsi,
+        country: formData.negara,
+        zip_code: formData.kodePos,
+      },
+    }
+  ).then((val: any) => {
+    if (val.code == 2000) {
+      store.fetchProfile();
+      snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+    } else {
+      snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
+    }
+  });
+};
 </script>
 
 <template>
-  <VExpansionPanels v-model="panelOpen">
-    <VExpansionPanel>
-      <VExpansionPanelTitle>
-        <div class="header">
-          <h2>Outlet</h2>
-          <div class="button-group">
-            <DataOuletModal
-              mode="add"
-              @confirm-add="handleAddAspekLegalConfirm"
-              @cancel="() => console.log('Add cancelled')"
-            />
-            <button class="btn-upload">
-              Upload ↓
-            </button>
-          </div>
-        </div>
-      </VExpansionPanelTitle>
-
-      <VExpansionPanelText>
-        <div class="empty-state-frame">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/3213/3213083.png"
-            alt="Empty mailbox"
-            class="mailbox-icon"
+  <VCard>
+    <VCardTitle>
+      <VRow>
+        <VCol cols="6"><h3>Outlet</h3></VCol>
+        <VCol
+          cols="6"
+          style="display: flex; justify-content: end; align-items: center"
+        >
+          <DataOuletModal
+            mode="add"
+            @confirm-add="handleAddAspekLegalConfirm"
+            @cancel="() => console.log('Add cancelled')"
+          />
+          <UploadOutlet></UploadOutlet>
           >
-          <span class="empty-text">Data Kosong</span>
-        </div>
-      </VExpansionPanelText>
-    </VExpansionPanel>
-  </VExpansionPanels>
+        </VCol>
+      </VRow>
+    </VCardTitle>
+    <VCardItem>
+      <VDataTable
+        :headers="tableOutletHeader"
+        :items="props.outletData ? props.outletData : []"
+      />
+    </VCardItem>
+  </VCard>
 </template>
 
 <style scoped>

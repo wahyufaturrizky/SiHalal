@@ -19,7 +19,7 @@ export const pelakuUsahaProfile = defineStore({
     penanggungJawabHalal: null as penanggungJawab | null,
     BU: [] as Array<businessUnit>,
     factory: [] as Array<factory>,
-    kbli: [] as Array<kbli>,
+    kbli: [] as Array<kbli> | null,
     legal: [] as Array<legal>,
     outlet: [] as Array<outlet>,
     supervisorData: [] as Array<supervisorHalal>,
@@ -38,30 +38,25 @@ export const pelakuUsahaProfile = defineStore({
   actions: {
     async fetchProfile() {
       this.isLoading = true;
-      try {
-        const response = await $api<apiProfileIntf | any>(
-          `/pelaku-usaha-profile`,
-          {
-            method: "get",
-          }
-        );
-
-        console.log("response profile = ", JSON.stringify(response));
-
-        if (response) {
-          this.profileData = response.data.business_actor.profile;
-          this.penanggungJawabHalal =
-            response.data.business_actor.responsible_person;
-          this.BU = response.data.business_actor.bussines_unit;
-          this.factory = response.data.business_actor.factory;
-          this.kbli = response.data.business_actor.kbli;
-          this.legal = response.data.business_actor.legal;
-          this.outlet = response.data.business_actor.outlet;
-          this.supervisorData = response.data.business_actor.supervisor_halal;
+      const response = await $api<apiProfileIntf | any>(
+        `/pelaku-usaha-profile`,
+        {
+          method: "get",
         }
-      } catch (error) {
-      } finally {
-        this.isLoading = false;
+      );
+
+      // console.log("response profile = ", JSON.stringify(response));
+
+      if (response) {
+        this.profileData = response.data.business_actor.profile;
+        this.penanggungJawabHalal =
+          response.data.business_actor.responsible_person;
+        this.BU = response.data.business_actor.bussines_unit;
+        this.factory = response.data.business_actor.factory;
+        this.kbli = response.data.business_actor.kbli;
+        this.legal = response.data.business_actor.legal;
+        this.outlet = response.data.business_actor.outlet;
+        this.supervisorData = response.data.business_actor.supervisor_halal;
       }
     },
     setProfileData(input: profileMain) {
