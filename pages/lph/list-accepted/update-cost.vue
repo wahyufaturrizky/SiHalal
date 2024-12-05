@@ -89,6 +89,10 @@ const domesticAuditData = ref([
     subTotal: "Rp 1.700.000",
   },
 ]);
+const domesticTotal = {
+  title: "Total",
+  value: "Rp 7.000.000",
+};
 
 const overseaAuditHeader: any[] = [
   { title: "No", key: "index" },
@@ -96,7 +100,12 @@ const overseaAuditHeader: any[] = [
   { title: "Jumlah", key: "quantity" },
   { title: "Harga", key: "price", nowrap: true },
   { title: "Sub Tot", key: "subTotal", nowrap: true },
-  { title: "Action", key: "actions", align: "center", nowrap: true },
+  {
+    title: "Action",
+    key: "actions",
+    align: "center",
+    nowrap: true,
+  },
 ];
 const overseaAuditData = ref([
   {
@@ -111,49 +120,45 @@ const overseaAuditData = ref([
     price: "Rp 1.000.000",
     subTotal: "Rp 1.000.000",
   },
-  {
-    costName: "",
-    quantity: "",
-    price: "Total",
-    subTotal: "Rp 1.700.000",
-  },
 ]);
-// const overseaTotal = {
-//   price: "Total",
-//   subTotal: "Rp 7.000.000",
-// };
+const overseaTotal = {
+  title: "Total",
+  value: "Rp 7.000.000",
+};
 
 const totalAuditHeader: any[] = [
   { title: "No", key: "index" },
   { title: "Keterangan", key: "description", nowrap: true },
-  { title: "", key: "price" },
-  { title: "Subtotal", key: "subTotal", nowrap: true, align: "center" },
+  {
+    title: "Subtotal",
+    key: "subTotal",
+    nowrap: true,
+    align: "center",
+    width: "150px",
+  },
 ];
 const totalAuditData = ref([
   {
     description: "Keterangan Apapun",
-    price: "",
     subTotal: "Rp 850.000",
   },
   {
     description: "Coba dulu",
-    price: "",
     subTotal: "Rp 740.000",
   },
-  {
-    description: "",
-    price: "Total",
-    subTotal: "Rp 1.590.000",
-  },
 ]);
+const auditTotal = {
+  title: "Total",
+  value: "Rp 1.590.000",
+};
 
-const isDomesticModalOpen = ref(false);
+// const isDomesticModalOpen = ref(false);
 const isOverseaModalOpen = ref(false);
 const isUpdateModalOpen = ref(false);
 
-const handleOpenDomesticModal = () => {
-  isDomesticModalOpen.value = !isDomesticModalOpen.value;
-};
+// const handleOpenDomesticModal = () => {
+//   isDomesticModalOpen.value = !isDomesticModalOpen.value;
+// };
 const handleOpenOverseaModal = (type: string) => {
   overseaModalType.value = type;
   isOverseaModalOpen.value = !isOverseaModalOpen.value;
@@ -287,44 +292,43 @@ const handleUpdateAuditCost = (type: string) => {
             :items="overseaAuditData"
             hide-default-footer
           >
-            <template #item.index="{ index }">
-              {{ index !== overseaAuditData.length - 1 ? index + 1 : "" }}
-            </template>
-            <template #item.price="{ index, item }">
-              <div v-if="index !== overseaAuditData.length - 1">
-                {{ item.price }}
-              </div>
-              <div v-else class="d-none" />
-            </template>
-            <template #item.subTotal="{ index, item }">
-              <div v-if="index !== overseaAuditData.length - 1">
-                {{ item.subTotal }}
-              </div>
-              <div v-else class="font-weight-bold">
-                {{ item.price }}
-              </div>
-            </template>
-            <template #item.actions="props">
-              <VMenu v-if="props.index !== overseaAuditData.length - 1">
-                <template #activator="{ props }">
-                  <VIcon
-                    icon="fa-ellipsis-v"
-                    color="primary"
-                    class="cursor-pointer"
-                    v-bind="props"
-                  />
-                </template>
-                <VList>
-                  <VListItem
-                    prepend-icon="mdi-pencil"
-                    title="Ubah"
-                    @click="() => handleOpenOverseaModal('EDIT')"
-                  />
-                </VList>
-              </VMenu>
-              <div v-else class="font-weight-bold">
-                {{ props.item.subTotal }}
-              </div>
+            <template #body>
+              <tr v-for="(item, idx) in overseaAuditData">
+                <td>{{ idx + 1 }}</td>
+                <td>{{ item.costName }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price }}</td>
+                <td>
+                  {{ item.subTotal }}
+                </td>
+                <td class="text-center">
+                  <VMenu>
+                    <template #activator="{ props }">
+                      <VIcon
+                        icon="fa-ellipsis-v"
+                        color="primary"
+                        class="cursor-pointer"
+                        v-bind="props"
+                      />
+                    </template>
+                    <VList>
+                      <VListItem
+                        prepend-icon="mdi-pencil"
+                        title="Ubah"
+                        @click="() => handleOpenOverseaModal('EDIT')"
+                      />
+                    </VList>
+                  </VMenu>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="4" class="text-right font-weight-bold">
+                  {{ overseaTotal.title }}
+                </td>
+                <td colspan="1" class="d-flex align-center font-weight-bold">
+                  {{ overseaTotal.value }}
+                </td>
+              </tr>
             </template>
           </VDataTable>
         </VCardText>
@@ -343,28 +347,26 @@ const handleUpdateAuditCost = (type: string) => {
             :items="totalAuditData"
             hide-default-footer
           >
-            <template #item.index="{ index }">
-              {{ index !== totalAuditData.length - 1 ? index + 1 : "" }}
-            </template>
-            <template #item.price="{ index, item }">
-              <div
-                :class="
-                  index !== totalAuditData.length - 1
-                    ? ''
-                    : 'd-flex justify-end font-weight-bold'
-                "
-              >
-                {{ item.price ? item.price : "" }}
-              </div>
-            </template>
-            <template #item.subTotal="{ index, item }">
-              <div
-                :class="
-                  index !== totalAuditData.length - 1 ? '' : 'font-weight-bold'
-                "
-              >
-                {{ item.subTotal }}
-              </div>
+            <template #body>
+              <tr v-for="(item, idx) in totalAuditData">
+                <td>{{ idx + 1 }}</td>
+                <td>{{ item.description }}</td>
+                <td class="d-flex justify-center align-center" width="150px">
+                  {{ item.subTotal }}
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2" class="text-right font-weight-bold">
+                  {{ auditTotal.title }}
+                </td>
+                <td
+                  colspan="1"
+                  class="d-flex justify-center align-center font-weight-bold"
+                  width="150px"
+                >
+                  {{ auditTotal.value }}
+                </td>
+              </tr>
             </template>
           </VDataTable>
         </VCardText>
@@ -722,7 +724,7 @@ const handleUpdateAuditCost = (type: string) => {
     thead {
       tr {
         th:nth-of-type(5) {
-          right: 137px;
+          right: 110px;
           position: sticky;
           border-left: 1px solid rgba(#000000, 0.12);
         }
@@ -736,7 +738,7 @@ const handleUpdateAuditCost = (type: string) => {
     tbody {
       tr:not(:last-of-type) {
         td:nth-of-type(5) {
-          right: 137px;
+          right: 110px;
           position: sticky;
           border-left: 1px solid rgba(#000000, 0.12);
           background: white;
