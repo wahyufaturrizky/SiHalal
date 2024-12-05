@@ -1,47 +1,47 @@
 <script setup lang="ts">
-import { themeConfig } from "@themeConfig";
-import { useDisplay } from "vuetify";
-import { VForm } from "vuetify/components/VForm";
+import { themeConfig } from '@themeConfig'
+import { useDisplay } from 'vuetify'
+import { VForm } from 'vuetify/components/VForm'
 
-import { VNodeRenderer } from "@/@layouts/components/VNodeRenderer";
-import bseImage from "@images/bse.png";
-import NoImage from "@images/no-image.png";
-import ossImage from "@images/oss.png";
-import authV2LoginIllustrationBorderedDark from "@images/pages/auth-v2-login-illustration-bordered-dark.png";
-import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-illustration-bordered-light.png";
-import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
-import authV2LoginMaskDark from "@images/pages/auth-v2-login-mask-dark.png";
-import authV2LoginMaskLight from "@images/pages/auth-v2-login-mask-light.png";
+import { VNodeRenderer } from '@/@layouts/components/VNodeRenderer'
+import bseImage from '@images/bse.png'
+import NoImage from '@images/no-image.png'
+import ossImage from '@images/oss.png'
+import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
+import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
+import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
+import authV2LoginMaskDark from '@images/pages/auth-v2-login-mask-dark.png'
+import authV2LoginMaskLight from '@images/pages/auth-v2-login-mask-light.png'
 
-const { sendSnackbar } = useSnackbar();
-const userVerificationStore = useUserVerificationStore();
+const { sendSnackbar } = useSnackbar()
+const userVerificationStore = useUserVerificationStore()
 
-const { mdAndUp } = useDisplay();
+const { mdAndUp } = useDisplay()
 
 const authThemeImg = useGenerateImageVariant(
   NoImage,
   authV2LoginIllustrationDark,
   authV2LoginIllustrationBorderedLight,
   authV2LoginIllustrationBorderedDark,
-  true
-);
+  true,
+)
 
 const authThemeMask = useGenerateImageVariant(
   authV2LoginMaskLight,
-  authV2LoginMaskDark
-);
+  authV2LoginMaskDark,
+)
 
 definePageMeta({
-  layout: "blank",
+  layout: 'blank',
   unauthenticatedOnly: true,
-});
+})
 
-const isPasswordVisible = ref(false);
-const isPasswordVisibleConfrim = ref(false);
+const isPasswordVisible = ref(false)
+const isPasswordVisibleConfrim = ref(false)
 
-const route = useRoute();
+const route = useRoute()
 
-const ability = useAbility();
+const ability = useAbility()
 
 const errors = reactive({
   email: undefined,
@@ -50,72 +50,77 @@ const errors = reactive({
   noHandphone: undefined,
   password: undefined,
   passwordConfirm: undefined,
-});
+})
 
 const validateName = () => {
-  if (!form.value.name) errors.name = "Wajib diisi";
-  else errors.name = "";
-};
+  if (!form.value.name)
+    errors.name = 'Wajib diisi'
+  else errors.name = ''
+}
 
 const validateEmail = () => {
-  const email = form.value.email;
+  const email = form.value.email
 
-  const emailRegexV2 = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const emailRegexV2 = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
-  if (!email) errors.email = "Wajib diisi";
-  else if (!emailRegexV2.test(email)) errors.email = "Format email tidak valid";
-  else errors.email = "";
-};
+  if (!email)
+    errors.email = 'Wajib diisi'
+  else if (!emailRegexV2.test(email))
+    errors.email = 'Format email tidak valid'
+  else errors.email = ''
+}
 
 // validateNomorhandphone
 const validateNomorHandphone = async (event: Event) => {
-  const target = event.target as HTMLInputElement;
+  const target = event.target as HTMLInputElement
 
-  target.value = target.value.replace(/\D/g, "");
+  target.value = target.value.replace(/\D/g, '')
 
-  if (!form.value.noHandphone) errors.noHandphone = "Wajib diisi";
-  else errors.noHandphone = "";
-};
+  if (!form.value.noHandphone)
+    errors.noHandphone = 'Wajib diisi'
+  else errors.noHandphone = ''
+}
 
 // validateConfrimPassword
 
-const refVForm = ref<VForm>();
+const refVForm = ref<VForm>()
 
 const form = ref({
   typeUser: null,
   name: null,
   email: null,
   noHandphone: null,
-  password: "",
-  passwordConfirm: "",
-});
+  password: '',
+  passwordConfirm: '',
+})
 
 const validateConfrimPassword = () => {
   if (form.value.passwordConfirm.length === 0)
-    errors.passwordConfirm = "Wajib diisi";
+    errors.passwordConfirm = 'Wajib diisi'
   else if (form.value.passwordConfirm < 8)
-    errors.passwordConfirm = "Pastikan kata sandi minimal 8 karakter!";
+    errors.passwordConfirm = 'Pastikan kata sandi minimal 8 karakter!'
   else if (form.value.passwordConfirm !== form.value.password)
-    errors.passwordConfirm = "Kata sandi tidak sama!";
-  else errors.passwordConfirm = "";
-};
+    errors.passwordConfirm = 'Kata sandi tidak sama!'
+  else errors.passwordConfirm = ''
+}
 
 const validatePassword = () => {
-  if (form.value.password.length === 0) errors.password = "Wajib diisi";
+  if (form.value.password.length === 0)
+    errors.password = 'Wajib diisi'
   else if (form.value.password.length < 8)
-    errors.password = "Password harus minimal 8 karakter";
+    errors.password = 'Password harus minimal 8 karakter'
   else if (form.value.password !== form.value.passwordConfirm)
-    errors.password = "Kata sandi tidak sama!";
-  else errors.password = "";
-};
+    errors.password = 'Kata sandi tidak sama!'
+  else errors.password = ''
+}
 
 watch([() => form.value.password, () => form.value.passwordConfirm], () => {
-  console.log("TRIGGER WATCH ");
-  validatePassword();
-  validateConfrimPassword();
-});
+  console.log('TRIGGER WATCH ')
+  validatePassword()
+  validateConfrimPassword()
+})
 
-const router = useRouter();
+const router = useRouter()
 
 const onSubmit = async () => {
   // localStorage.setItem('formData', JSON.stringify(form.value))
@@ -129,138 +134,166 @@ const onSubmit = async () => {
         phone_number: form.value.noHandphone,
         password: form.value.password,
         confirm_password: form.value.passwordConfirm,
-      };
+      }
 
       const payloadcheck = {
         email: form.value.email,
         phone_number: form.value.noHandphone,
-      };
+      }
 
       try {
-        const response = await $api("/auth/check-email-phone", {
-          method: "POST",
+        const response = await $api('/auth/check-email-phone', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(payloadcheck),
-        });
+        })
 
-        console.log("RESPONSE CHECK EMAIL PHONE : ", response);
+        console.log('RESPONSE CHECK EMAIL PHONE : ', response)
 
         if (!response.data) {
-          (errors.noHandphone = ""), (errors.email = "");
+          (errors.noHandphone = ''), (errors.email = '')
 
-          return;
+          return
         }
 
         if (response.data.phone_number_is_exist) {
-          errors.noHandphone =
-            "Nomor handphone sudah terdaftar, silahkan gunakan nomor lain!";
+          errors.noHandphone
+            = 'Nomor handphone sudah terdaftar, silahkan gunakan nomor lain!'
 
-          return;
+          return
         }
         if (response.data.email_is_exist) {
-          errors.email = "Email sudah terdaftar, silahkan gunakan email lain!";
+          errors.email = 'Email sudah terdaftar, silahkan gunakan email lain!'
 
-          return;
+          return
         }
 
-        const responseRegister = await $api("/auth/register", {
-          method: "POST", // Mengatur metode menjadi POST
+        const responseRegister = await $api('/auth/register', {
+          method: 'POST', // Mengatur metode menjadi POST
           headers: {
-            "Content-Type": "application/json", // Mengatur tipe konten
+            'Content-Type': 'application/json', // Mengatur tipe konten
           },
           body: payload,
-        });
+        })
 
-        console.log("RESPONSE REGISTER : ", responseRegister);
+        console.log('RESPONSE REGISTER : ', responseRegister)
 
         if (responseRegister.code !== 2000) {
           sendSnackbar(
-            "Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data! ",
-            "error"
-          );
+            'Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data! ',
+            'error',
+          )
 
-          return;
+          return
         }
 
-        userVerificationStore.setUserData(responseRegister.data.user);
+        userVerificationStore.setUserData(responseRegister.data.user)
 
         navigateTo({
-          path: "/verifikasi-user",
-        });
-      } catch (error) {
-        console.log(error, "sini erorrr");
+          path: '/verifikasi-user',
+        })
+      }
+      catch (error) {
+        console.log(error, 'sini erorrr')
       }
     }
-  });
-};
+  })
+}
 
-const typeUserItem = ["Pelaku Usaha", "Buisness Actor", "Impoter"];
+const typeUserItem = ['Pelaku Usaha', 'Buisness Actor', 'Impoter']
 
 // check  disableSubmit
 const isDisabledSubmit = computed(() => {
-  const email = form.value.email;
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const email = form.value.email
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
   return !(
-    form.value.typeUser &&
-    form.value.name &&
-    form.value.email &&
-    emailRegex.test(email) &&
-    form.value.noHandphone &&
-    form.value.password &&
-    form.value.passwordConfirm &&
-    errors.password === ""
-  );
-});
+    form.value.typeUser
+    && form.value.name
+    && form.value.email
+    && emailRegex.test(email)
+    && form.value.noHandphone
+    && form.value.password
+    && form.value.passwordConfirm
+    && errors.password === ''
+  )
+})
 
 onMounted(async () => {
   try {
-    const response: any = await $api("/auth/type-role", {
-      method: "GET",
+    const response: any = await $api('/auth/type-role', {
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     }).then((resp: any) => {
-      console.log("fetch type = ", resp);
-      fetchType.value = resp?.filter((val: any) => val.name !== ""); // Menyimpan data ke dalam ref
-    });
-  } catch (error) {
-    console.error("Gagal mengambil data:", error);
+      console.log('fetch type = ', resp)
+      fetchType.value = resp?.filter((val: any) => val.name !== '') // Menyimpan data ke dalam ref
+    })
   }
-});
+  catch (error) {
+    console.error('Gagal mengambil data:', error)
+  }
+})
 
 onMounted(() => {
-  const savedData = localStorage.getItem("formData");
-  if (savedData) form.value = JSON.parse(savedData);
-});
+  const savedData = localStorage.getItem('formData')
+  if (savedData)
+    form.value = JSON.parse(savedData)
+})
 
-const fetchType = ref([]);
+const fetchType = ref([])
 
 const getDate = (): string => {
   // Get the current date
-  const currentDate = new Date();
+  const currentDate = new Date()
 
   // Format the modified date to "id-ID" locale
-  const formattedDate = currentDate.toLocaleDateString("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  return currentDate.toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
 
-  return formattedDate;
-};
+const imageArray = [
+  '/images/login-register/1.png',
+  '/images/login-register/2.png',
+  '/images/login-register/3.png',
+]
+
+const currentImage = ref('')
+
+const getRandomImage = () => {
+  const randomIndex = Math.floor(Math.random() * imageArray.length)
+
+  console.log(currentImage, 'sini', randomIndex, '---', imageArray[randomIndex])
+
+  return imageArray[randomIndex]
+}
+
+onMounted(() => {
+  currentImage.value = getRandomImage()
+})
 </script>
 
 <template>
-  <VRow no-gutters class="auth-wrapper">
+  <VRow
+    no-gutters
+    class="auth-wrapper"
+  >
     <VCol
       cols="12"
       md="6"
       class="auth-card-v2 d-flex align-center justify-center bg-white"
     >
-      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
+      <VCard
+        flat
+        :max-width="500"
+        class="mt-12 mt-sm-0 pa-5 pa-lg-7"
+      >
         <VCardText>
           <NuxtLink to="/">
             <div class="auth-logo app-logo">
@@ -271,7 +304,10 @@ const getDate = (): string => {
         <VCardText>
           <h4 class="text-h4 mb-1">
             Buat Akun
-            <span class="text-capitalize" color="#652672">{{
+            <span
+              class="text-capitalize"
+              color="#652672"
+            >{{
               themeConfig.app.title
             }}</span>
           </h4>
@@ -281,9 +317,15 @@ const getDate = (): string => {
         </VCardText>
 
         <VCardText>
-          <VForm ref="refVForm" @submit.prevent="onSubmit">
+          <VForm
+            ref="refVForm"
+            @submit.prevent="onSubmit"
+          >
             <VRow>
-              <VCol cols="12" style="max-block-size: 45svh; overflow-y: auto">
+              <VCol
+                cols="12"
+                style="max-block-size: 45svh; overflow-y: auto;"
+              >
                 <!-- Tipe Pengguna -->
                 <VCol cols="12">
                   <b> Tipe Pengguna</b>
@@ -310,8 +352,15 @@ const getDate = (): string => {
                     @input="validateName"
                   />
 
-                  <span v-if="errors.name" class="error-text">
-                    <VIcon icon="mdi-alert-circle" color="error" size="small" />
+                  <span
+                    v-if="errors.name"
+                    class="error-text"
+                  >
+                    <VIcon
+                      icon="mdi-alert-circle"
+                      color="error"
+                      size="small"
+                    />
                     {{ errors.name }}
                   </span>
                 </VCol>
@@ -325,8 +374,15 @@ const getDate = (): string => {
                     placeholder="Masukan Email"
                     @input="validateEmail"
                   />
-                  <span v-if="errors.email" class="error-text">
-                    <VIcon icon="mdi-alert-circle" color="error" size="small" />
+                  <span
+                    v-if="errors.email"
+                    class="error-text"
+                  >
+                    <VIcon
+                      icon="mdi-alert-circle"
+                      color="error"
+                      size="small"
+                    />
                     {{ errors.email }}
                   </span>
                 </VCol>
@@ -341,8 +397,15 @@ const getDate = (): string => {
                     placeholder="Masukan Nomor Handphone"
                     @input="validateNomorHandphone"
                   />
-                  <span v-if="errors.noHandphone" class="error-text">
-                    <VIcon icon="mdi-alert-circle" color="error" size="small" />
+                  <span
+                    v-if="errors.noHandphone"
+                    class="error-text"
+                  >
+                    <VIcon
+                      icon="mdi-alert-circle"
+                      color="error"
+                      size="small"
+                    />
                     {{ errors.noHandphone }}
                   </span>
                 </VCol>
@@ -360,8 +423,15 @@ const getDate = (): string => {
                     @click:append-inner="isPasswordVisible = !isPasswordVisible"
                   />
 
-                  <span v-if="errors.password" class="error-text">
-                    <VIcon icon="mdi-alert-circle" color="error" size="small" />
+                  <span
+                    v-if="errors.password"
+                    class="error-text"
+                  >
+                    <VIcon
+                      icon="mdi-alert-circle"
+                      color="error"
+                      size="small"
+                    />
                     {{ errors.password }}
                   </span>
                 </VCol>
@@ -383,22 +453,36 @@ const getDate = (): string => {
                     "
                   />
 
-                  <span v-if="errors.passwordConfirm" class="error-text">
-                    <VIcon icon="mdi-alert-circle" color="error" size="small" />
+                  <span
+                    v-if="errors.passwordConfirm"
+                    class="error-text"
+                  >
+                    <VIcon
+                      icon="mdi-alert-circle"
+                      color="error"
+                      size="small"
+                    />
                     {{ errors.passwordConfirm }}
                   </span>
                 </VCol>
               </VCol>
 
               <VCol cols="12">
-                <VBtn block :disabled="isDisabledSubmit" type="submit">
+                <VBtn
+                  block
+                  :disabled="isDisabledSubmit"
+                  type="submit"
+                >
                   Buat Akun
                 </VBtn>
               </VCol>
               <!-- disabled -->
 
               <!-- create account -->
-              <VCol cols="12" class="text-body-1 text-center">
+              <VCol
+                cols="12"
+                class="text-body-1 text-center"
+              >
                 <span class="d-inline-block"> Sudah punya akun ?</span>
                 <NuxtLink
                   class="text-primary ms-1 d-inline-block text-body-1"
@@ -411,19 +495,45 @@ const getDate = (): string => {
           </VForm>
         </VCardText>
         <VCardText>
-          <VCol cols="12" class="text-body-1 text-center">
+          <VCol
+            cols="12"
+            class="text-body-1 text-center"
+          >
             <span class="d-inline-block">Terhubung Ke</span>
           </VCol>
-          <VRow align="center" justify="center">
-            <VCol cols="12" md="auto" class="d-flex align-center">
-              <VImg :src="ossImage" width="100" height="48" />
+          <VRow
+            align="center"
+            justify="center"
+          >
+            <VCol
+              cols="12"
+              md="auto"
+              class="d-flex align-center"
+            >
+              <VImg
+                :src="ossImage"
+                width="100"
+                height="48"
+              />
             </VCol>
-            <VCol cols="12" md="auto" class="d-flex align-center">
-              <VImg :src="bseImage" width="100" height="48" />
+            <VCol
+              cols="12"
+              md="auto"
+              class="d-flex align-center"
+            >
+              <VImg
+                :src="bseImage"
+                width="100"
+                height="48"
+              />
             </VCol>
           </VRow>
           <VRow>
-            <VCol cols="12" align="center" justify="center">
+            <VCol
+              cols="12"
+              align="center"
+              justify="center"
+            >
               Update: {{ getDate() }}
             </VCol>
           </VRow>
@@ -436,7 +546,10 @@ const getDate = (): string => {
       md="6"
       class="auth-card-v2 d-flex align-center justify-center"
     >
-      <VImg :src="NoImage" />
+      <VImg
+        :src="currentImage"
+        class="responsive-image"
+      />
     </VCol>
   </VRow>
 </template>
@@ -462,5 +575,11 @@ const getDate = (): string => {
   color: red;
   font-size: 0.875rem;
   margin-block-start: 4px;
+}
+
+.responsive-image {
+  block-size: 100%;
+  inline-size: 100%;
+  object-fit: fill;
 }
 </style>
