@@ -140,6 +140,20 @@ const token = ref("");
 const handleLoadCallback = (response: unknown) => {
   token.value = response;
 };
+
+const getDate = (): string => {
+  // Get the current date
+  const currentDate = new Date();
+
+  // Format the modified date to "id-ID" locale
+  const formattedDate = currentDate.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  return formattedDate;
+};
 </script>
 
 <template>
@@ -286,6 +300,12 @@ const handleLoadCallback = (response: unknown) => {
             </VCol>
             <VCol cols="12" md="auto" class="d-flex align-center">
               <VImg :src="bseImage" width="100" height="48" />
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol cols="12" align="center" justify="center">
+              Update:
+              {{ getDate() }}
             </VCol>
           </VRow>
         </VCardText>
