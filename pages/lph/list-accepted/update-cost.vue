@@ -4,7 +4,7 @@ const router = useRouter();
 const domesticAuditHeader: any[] = [
   { title: "No", key: "index" },
   { title: "Nama Fasilitas Produksi", key: "placeName", nowrap: true },
-  { title: "Man Day;s", key: "manDay" },
+  { title: "Man Day;s", key: "manDay", nowrap: true },
   { title: "Unit Cost Awal", key: "startCost", nowrap: true },
   { title: "Diskon (%)", key: "firstDiscount", nowrap: true },
   { title: "Unit Cost Akhir", key: "endCost", nowrap: true },
@@ -66,27 +66,6 @@ const domesticAuditData = ref([
     fifthDiscount: "-",
     lastFlight: "Rp 740.000",
     subTotal: "Rp 850.000",
-  },
-  {
-    placeName: "",
-    manDay: "",
-    startCost: "",
-    firstDiscount: "",
-    endCost: "",
-    startUhpd: "",
-    secondDiscount: "",
-    endUhpd: "",
-    operational: "",
-    startAccomodation: "",
-    thirdDiscount: "",
-    endAccomodation: "",
-    startTransport: "",
-    forthDiscount: "",
-    endTransport: "",
-    firstFlight: "",
-    fifthDiscount: "",
-    lastFlight: "Total",
-    subTotal: "Rp 1.700.000",
   },
 ]);
 const domesticTotal = {
@@ -228,44 +207,57 @@ const handleUpdateAuditCost = (type: string) => {
             :items="domesticAuditData"
             hide-default-footer
           >
-            <template #item.index="{ index }">
-              {{ index !== domesticAuditData.length - 1 ? index + 1 : "" }}
-            </template>
-            <template #item.lastFlight="{ index, item }">
-              <div v-if="index !== overseaAuditData.length - 1">
-                {{ item.lastFlight }}
-              </div>
-              <div v-else class="d-none" />
-            </template>
-            <template #item.subTotal="{ index, item }">
-              <div v-if="index !== overseaAuditData.length - 1">
-                {{ item.subTotal }}
-              </div>
-              <div v-else class="font-weight-bold">
-                {{ item.lastFlight }}
-              </div>
-            </template>
-            <template #item.actions="props">
-              <VMenu v-if="props.index !== overseaAuditData.length - 1">
-                <template #activator="{ props }">
-                  <VIcon
-                    icon="fa-ellipsis-v"
-                    color="primary"
-                    class="cursor-pointer"
-                    v-bind="props"
-                  />
-                </template>
-                <VList>
-                  <VListItem
-                    prepend-icon="mdi-pencil"
-                    title="Ubah"
-                    @click="() => handleOpenUpdateModal('EDIT')"
-                  />
-                </VList>
-              </VMenu>
-              <div v-else class="font-weight-bold">
-                {{ props.item.subTotal }}
-              </div>
+            <template #body>
+              <tr v-for="(item, idx) in domesticAuditData">
+                <td>{{ idx + 1 }}</td>
+                <td>{{ item.placeName }}</td>
+                <td>{{ item.manDay }}</td>
+                <td>{{ item.startCost }}</td>
+                <td>{{ item.firstDiscount }}</td>
+                <td>{{ item.endCost }}</td>
+                <td>{{ item.startUhpd }}</td>
+                <td>{{ item.secondDiscount }}</td>
+                <td>{{ item.endUhpd }}</td>
+                <td>{{ item.operational }}</td>
+                <td>{{ item.startAccomodation }}</td>
+                <td>{{ item.thirdDiscount }}</td>
+                <td>{{ item.endAccomodation }}</td>
+                <td>{{ item.startTransport }}</td>
+                <td>{{ item.forthDiscount }}</td>
+                <td>{{ item.endTransport }}</td>
+                <td>{{ item.firstFlight }}</td>
+                <td>{{ item.fifthDiscount }}</td>
+                <td>{{ item.lastFlight }}</td>
+                <td>{{ item.subTotal }}</td>
+                <td class="text-center">
+                  <VMenu>
+                    <template #activator="{ props }">
+                      <VIcon
+                        icon="fa-ellipsis-v"
+                        color="primary"
+                        class="cursor-pointer"
+                        v-bind="props"
+                      />
+                    </template>
+                    <VList>
+                      <VListItem
+                        prepend-icon="mdi-pencil"
+                        title="Ubah"
+                        @click="() => handleOpenUpdateModal('EDIT')"
+                      />
+                    </VList>
+                  </VMenu>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="18" />
+                <td colspan="1" class="text-right font-weight-bold">
+                  {{ domesticTotal.title }}
+                </td>
+                <td colspan="2" class="d-flex align-center font-weight-bold">
+                  {{ domesticTotal.value }}
+                </td>
+              </tr>
             </template>
           </VDataTable>
         </VCardText>
@@ -298,9 +290,7 @@ const handleUpdateAuditCost = (type: string) => {
                 <td>{{ item.costName }}</td>
                 <td>{{ item.quantity }}</td>
                 <td>{{ item.price }}</td>
-                <td>
-                  {{ item.subTotal }}
-                </td>
+                <td>{{ item.subTotal }}</td>
                 <td class="text-center">
                   <VMenu>
                     <template #activator="{ props }">
@@ -322,10 +312,11 @@ const handleUpdateAuditCost = (type: string) => {
                 </td>
               </tr>
               <tr>
-                <td colspan="4" class="text-right font-weight-bold">
+                <td colspan="3" />
+                <td colspan="1" class="text-right font-weight-bold">
                   {{ overseaTotal.title }}
                 </td>
-                <td colspan="1" class="d-flex align-center font-weight-bold">
+                <td colspan="2" class="d-flex align-center font-weight-bold">
                   {{ overseaTotal.value }}
                 </td>
               </tr>
@@ -373,65 +364,6 @@ const handleUpdateAuditCost = (type: string) => {
       </VCard>
     </VCol>
   </VRow>
-  <!-- <VDialog v-model="isDomesticModalOpen" max-width="840px" persistent>
-    <VCard class="pa-4">
-      <VCardTitle class="d-flex justify-space-between align-center">
-        <div class="text-h3 font-weight-bold">Tambah Biaya Pesawat</div>
-        <VIcon @click="handleOpenDomesticModal"> fa-times </VIcon>
-      </VCardTitle>
-      <VCardText>
-        <VRow>
-          <VCol>
-            <div class="text-h6">Pabrik</div>
-            <VSelect
-              v-model="selectedFactory"
-              :items="[{ name: 'Pertamini', cost: 'Rp 100.000.000' }]"
-              item-title="name"
-              item-value="cost"
-              @update:model-value=""
-              density="compact"
-              rounded="xl"
-              placeholder="Pilih Pabrik"
-            />
-          </VCol>
-        </VRow>
-        <VRow>
-          <VCol>
-            <div class="text-h6">Biaya</div>
-            <VTextField
-              :model-value="selectedFactory"
-              density="compact"
-              rounded="xl"
-              placeholder="-"
-              readonly
-            />
-            <div class="d-flex align-center mt-1">
-              <VIcon icon="mdi-alert-circle" color="#2C222E" size="small" />
-              <div class="text-subtitle-2 ms-1" style="color: #2c222e">
-                Biaya Perauditor
-              </div>
-            </div>
-          </VCol>
-        </VRow>
-      </VCardText>
-      <VCardActions class="px-4">
-        <VBtn
-          variant="outlined"
-          class="px-4 me-3"
-          @click="handleOpenDomesticModal"
-          >Batal</VBtn
-        >
-        <VBtn
-          variant="flat"
-          class="px-4"
-          color="primary"
-          @click="handleAddDomesticCost"
-        >
-          Tambah
-        </VBtn>
-      </VCardActions>
-    </VCard>
-  </VDialog> -->
   <VDialog v-model="isOverseaModalOpen" max-width="840px" persistent>
     <VCard class="pa-4">
       <VCardTitle class="d-flex justify-space-between align-center">
@@ -670,6 +602,65 @@ const handleUpdateAuditCost = (type: string) => {
       </VCardActions>
     </VCard>
   </VDialog>
+  <!-- <VDialog v-model="isDomesticModalOpen" max-width="840px" persistent>
+    <VCard class="pa-4">
+      <VCardTitle class="d-flex justify-space-between align-center">
+        <div class="text-h3 font-weight-bold">Tambah Biaya Pesawat</div>
+        <VIcon @click="handleOpenDomesticModal"> fa-times </VIcon>
+      </VCardTitle>
+      <VCardText>
+        <VRow>
+          <VCol>
+            <div class="text-h6">Pabrik</div>
+            <VSelect
+              v-model="selectedFactory"
+              :items="[{ name: 'Pertamini', cost: 'Rp 100.000.000' }]"
+              item-title="name"
+              item-value="cost"
+              @update:model-value=""
+              density="compact"
+              rounded="xl"
+              placeholder="Pilih Pabrik"
+            />
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol>
+            <div class="text-h6">Biaya</div>
+            <VTextField
+              :model-value="selectedFactory"
+              density="compact"
+              rounded="xl"
+              placeholder="-"
+              readonly
+            />
+            <div class="d-flex align-center mt-1">
+              <VIcon icon="mdi-alert-circle" color="#2C222E" size="small" />
+              <div class="text-subtitle-2 ms-1" style="color: #2c222e">
+                Biaya Perauditor
+              </div>
+            </div>
+          </VCol>
+        </VRow>
+      </VCardText>
+      <VCardActions class="px-4">
+        <VBtn
+          variant="outlined"
+          class="px-4 me-3"
+          @click="handleOpenDomesticModal"
+          >Batal</VBtn
+        >
+        <VBtn
+          variant="flat"
+          class="px-4"
+          color="primary"
+          @click="handleAddDomesticCost"
+        >
+          Tambah
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog> -->
 </template>
 
 <style scoped lang="scss">
@@ -678,7 +669,7 @@ const handleUpdateAuditCost = (type: string) => {
     thead {
       tr {
         th:nth-of-type(20) {
-          right: 137px;
+          right: 110px;
           position: sticky;
           border-left: 1px solid rgba(#000000, 0.12);
         }
@@ -692,7 +683,8 @@ const handleUpdateAuditCost = (type: string) => {
     tbody {
       tr:not(:last-of-type) {
         td:nth-of-type(20) {
-          right: 137px;
+          width: 150px;
+          right: 110px;
           position: sticky;
           border-left: 1px solid rgba(#000000, 0.12);
           background: white;
@@ -704,14 +696,16 @@ const handleUpdateAuditCost = (type: string) => {
         }
       }
 
-      tr {
-        td:nth-of-type(20) {
-          right: 137px;
+      tr:last-of-type {
+        td:nth-of-type(2) {
+          width: max-content;
+          right: 250px;
           position: sticky;
           background: white;
         }
         td:last-of-type {
-          right: 0;
+          width: max-content;
+          right: 110px;
           position: sticky;
           background: white;
         }
@@ -738,26 +732,30 @@ const handleUpdateAuditCost = (type: string) => {
     tbody {
       tr:not(:last-of-type) {
         td:nth-of-type(5) {
+          width: 150px;
           right: 110px;
           position: sticky;
           border-left: 1px solid rgba(#000000, 0.12);
           background: white;
         }
         td:last-of-type {
+          width: 50px;
           right: 0;
           position: sticky;
           background: white;
         }
       }
 
-      tr {
-        td:nth-of-type(5) {
-          right: 137px;
+      tr:last-of-type {
+        td:nth-of-type(2) {
+          width: max-content;
+          right: 250px;
           position: sticky;
           background: white;
         }
         td:last-of-type {
-          right: 0;
+          width: max-content;
+          right: 110px;
           position: sticky;
           background: white;
         }
