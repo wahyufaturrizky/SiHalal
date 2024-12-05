@@ -19,8 +19,6 @@ const form = ref({
   kuota: "",
   picName: "",
   picPhoneNumber: "",
-  facilityCode: "",
-  status: "",
 });
 
 const dataSOF = ref([]);
@@ -75,8 +73,6 @@ const loadItemById = async () => {
         kuota,
         picName: penanggung_jawab,
         picPhoneNumber: phone_penanggung_jawab,
-        facilityCode: "",
-        status: "Draft",
       };
 
       loading.value = false;
