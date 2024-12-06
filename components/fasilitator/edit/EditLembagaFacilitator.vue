@@ -249,6 +249,10 @@ const hapusData = () => {
 
 const { mdAndUp } = useDisplay();
 const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
+
+const checkIsFieldEMpty = (data: any) => {
+  return Object.keys(data)?.find((key: any) => !data[key]);
+};
 </script>
 
 <template>
@@ -342,6 +346,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               class="mb-4"
               :disabled="loadingItemsInstitutionName"
               :loading="loadingItemsInstitutionName"
+              :rules="[requiredValidator]"
             />
             <label class="text-h6" for="picName">
               Nama Penanggung Jawab Program LPH / LP3H
@@ -352,6 +357,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               placeholder="Isi Nama Penanggung Jawab Program LPH / LP3H "
               required
               class="mb-4"
+              :rules="[requiredValidator]"
             />
             <label class="text-h6" for="picName">
               Nomor Kontak Penanggung Jawab Program LPH / LP3H
@@ -361,6 +367,8 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               placeholder="Isi Nomor Kontak Penanggung Jawab Program LPH / LP3H "
               required
               class="mb-4"
+              :rules="[requiredValidator]"
+              type="number"
             />
           </VForm>
         </VCardText>
@@ -370,7 +378,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
             Batal
           </VBtn>
           <VBtn
-            :disabled="loadingAdd"
+            :disabled="loadingAdd || checkIsFieldEMpty(formData)"
             color="primary"
             text
             variant="flat"
