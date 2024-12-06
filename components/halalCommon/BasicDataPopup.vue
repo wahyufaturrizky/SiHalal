@@ -4,13 +4,11 @@ import { useDisplay } from "vuetify";
 
 const props = defineProps({
   parentBtnLabel: String,
-  cardItem: Object,
+  // cardItem: Object,
   variant: {
-    type: String,
     default: "outlined",
   },
   density: {
-    type: String,
     default: "default",
   },
   prependIcon: {
@@ -42,7 +40,7 @@ const buttonFontSize = computed(() => {
 
 const dialogMaxWidth = computed(() => {
   return typeof props.maxWidth === "number" ? props.maxWidth : props.maxWidth;
-})
+});
 </script>
 
 <template>
@@ -53,7 +51,6 @@ const dialogMaxWidth = computed(() => {
     :prepend-icon="prependIcon"
     :append-icon="appendIcon"
     :style="{ fontSize: buttonFontSize }"
-    @click="closePopUpHandler"
   >
     {{ parentBtnLabel }}
     <VDialog activator="parent" :max-width="dialogMaxWidth">
