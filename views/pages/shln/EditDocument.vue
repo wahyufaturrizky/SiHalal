@@ -55,6 +55,7 @@ const loa = ref<LOAData>({
   authorizer_company: "",
   date: "",
   id: "",
+  letter_no: "",
   loa_document: "",
 });
 const fhc = ref<FHCData>({
@@ -75,7 +76,9 @@ const getLoa = async () => {
         id: shlnId,
       },
     });
-
+    if (response.code != 2000) {
+      return;
+    }
     loa.value = response.data;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -89,7 +92,9 @@ const getFhc = async () => {
         id: shlnId,
       },
     });
-
+    if (response.code != 2000) {
+      return;
+    }
     fhc.value = response.data;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
