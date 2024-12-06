@@ -84,20 +84,17 @@ const store = pelakuUsahaProfile();
 
     <!-- right content -->
     <template #rightContent>
-      <VRow
-        >;
+      <VRow>
         <VCol :cols="12">
           <PerizinanCard />
         </VCol>
       </VRow>
-      <VRow
-        >;
+      <VRow>
         <VCol :cols="12">
           <KBLICard />
         </VCol>
       </VRow>
-      <VRow
-        >;
+      <VRow>
         <VCol :cols="12">
           <DivisiUnitUsaha />
         </VCol>
