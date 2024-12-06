@@ -2,19 +2,16 @@
 const props = defineProps({
   title: String,
   parentBtnLabel: String,
-  cardItem: Object,
+  // cardItem: Object,
   cardWidth: Number,
-})
+});
 </script>
 
 <template>
   <div>
     <VBtn>
       {{ props.parentBtnLabel }}
-      <VDialog
-        activator="parent"
-        :max-width="props.cardWidth"
-      >
+      <VDialog activator="parent" :max-width="props.cardWidth">
         <VCard :title="props.title">
           <VCardItem>
             <slot name="content" />
