@@ -111,58 +111,57 @@ const initialDataAspekLegal = (item: any) => ({
 </script>
 
 <template>
-  <VExpansionPanels v-model="panelOpen">
-    <VExpansionPanel>
-      <VExpansionPanelTitle>
-        <h2>Aspek Legal</h2>
-      </VExpansionPanelTitle>
-
-      <VExpansionPanelText>
-        <div class="d-flex justify-end mb-4">
+  <VCard>
+    <VCardTitle>
+      <VRow>
+        <VCol cols="6"><h3>Aspek Legal</h3></VCol>
+        <VCol cols="6" style="display: flex; justify-content: end">
           <AspekLegalModal
             mode="add"
             @confirm-add="handleAddAspekLegalConfirm"
             @cancel="() => console.log('Add cancelled')"
           />
-        </div>
-        <VDataTable
-          :headers="legalHeader"
-          :items="props.aspekLegalData"
-          class="elevation-1"
-        >
-          <template #[`item.action`]="{ item }">
-            <VMenu :close-on-content-click="false">
-              <template #activator="{ props }">
-                <VBtn icon variant="text" v-bind="props">
-                  <VIcon>mdi-dots-vertical</VIcon>
-                </VBtn>
-              </template>
-              <VList>
-                <VListItem>
-                  <!-- <VListItemTitle>
+        </VCol>
+      </VRow>
+    </VCardTitle>
+    <VCardItem>
+      <VDataTable
+        :headers="legalHeader"
+        :items="props.aspekLegalData"
+        class="elevation-1"
+      >
+        <template #[`item.action`]="{ item }">
+          <VMenu :close-on-content-click="false">
+            <template #activator="{ props }">
+              <VBtn icon variant="text" v-bind="props">
+                <VIcon>mdi-dots-vertical</VIcon>
+              </VBtn>
+            </template>
+            <VList>
+              <VListItem>
+                <!-- <VListItemTitle>
                     <VIcon class="mr-2"> mdi-pencil </VIcon>
                     Ubah
                   </VListItemTitle> -->
-                  <AspekLegalModal
-                    mode="edit"
-                    :initial-data="initialDataAspekLegal(item)"
-                    @confirm-edit="handleEditAspekLegalConfirm"
-                    @cancel="() => console.log('Edit cancelled')"
-                  />
-                </VListItem>
-                <VListItem @click="handleDelete(item)">
-                  <VListItemTitle class="text-red">
-                    <VIcon color="red" class="mr-2"> mdi-delete </VIcon>
-                    Hapus
-                  </VListItemTitle>
-                </VListItem>
-              </VList>
-            </VMenu>
-          </template>
-        </VDataTable>
-      </VExpansionPanelText>
-    </VExpansionPanel>
-  </VExpansionPanels>
+                <AspekLegalModal
+                  mode="edit"
+                  :initial-data="initialDataAspekLegal(item)"
+                  @confirm-edit="handleEditAspekLegalConfirm"
+                  @cancel="() => console.log('Edit cancelled')"
+                />
+              </VListItem>
+              <VListItem @click="handleDelete(item)">
+                <VListItemTitle class="text-red">
+                  <VIcon color="red" class="mr-2"> mdi-delete </VIcon>
+                  Hapus
+                </VListItemTitle>
+              </VListItem>
+            </VList>
+          </VMenu>
+        </template>
+      </VDataTable>
+    </VCardItem>
+  </VCard>
 </template>
 
 <style scoped>
