@@ -172,7 +172,16 @@ const form = ref({
   type: "",
 });
 
-const documentTypes = ["SIUP", "ANOTHER"];
+const documentTypes = [
+  "NIB",
+  "IUMK",
+  "IUI",
+  "SIUP",
+  "API",
+  "Lainnya",
+  "NIB Importir",
+  "NIK",
+];
 
 watch(
   () => props.initialData,
