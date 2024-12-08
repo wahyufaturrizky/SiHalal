@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   type?: "READ" | "EDIT";
+  businessType: string;
 }>();
 
 const panelType = computed(() => (props.type ? props.type : "READ"));
@@ -116,7 +117,7 @@ const panelType = computed(() => (props.type ? props.type : "READ"));
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">Lainnya</VCol>
+      <VCol cols="7">{{ props.businessType }}</VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5" class="d-flex align-center justify-space-between">

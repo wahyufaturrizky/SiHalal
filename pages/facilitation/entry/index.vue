@@ -7,6 +7,8 @@ const loading = ref(false);
 const page = ref(1);
 const searchQuery = ref("");
 const status = ref("OF1,OF10,OF5,OF2,OF290");
+const loadingSOF = ref(true);
+const dataSOF = ref([]);
 
 const loadItem = async (
   page: number,
@@ -36,6 +38,27 @@ const loadItem = async (
   }
 };
 
+const loadSOF = async () => {
+  try {
+    loadingSOF.value = true;
+
+    const response = await $api("/master/source-of-fund", {
+      method: "get",
+    });
+
+    if (response.length) {
+      dataSOF.value = response;
+      loadingSOF.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan asd", "error");
+      loadingSOF.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingSOF.value = false;
+  }
+};
+
 const getStatusColor = (status) => {
   switch (status.toLowerCase()) {
     case "lunas":
@@ -52,6 +75,7 @@ const getStatusColor = (status) => {
 const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
+  await loadSOF();
   await loadItem(1, itemPerPage.value, "", "OF1,OF10,OF5,OF2,OF290");
 });
 
@@ -82,13 +106,17 @@ const tableHeader = [
 const navigateAction = (id: string) => {
   navigateTo(`/facilitation/entry/${id}`);
 };
+
+const formatSof = (val: string) => {
+  return dataSOF.value.find((item: any) => item.code === val)?.name;
+};
 </script>
 
 <template>
   <VRow>
     <VCol><h3>Entri Fasilitasi</h3></VCol>
   </VRow>
-  <VRow>
+  <VRow v-if="!loadingSOF">
     <VCol>
       <VCard>
         <VCardTitle><h4>List Fasilitasi</h4></VCardTitle>
@@ -120,6 +148,10 @@ const navigateAction = (id: string) => {
               <template #item.id="{ index }">
                 {{ index + 1 + (page - 1) * itemPerPage }}
               </template>
+              <template #item.sumber_biaya="{ item }">
+                {{ formatSof(item.sumber_biaya) }}
+              </template>
+
               <template #item.tgl_aktif="{ item }">
                 {{ formatDateIntl(new Date(item.tgl_aktif)) }}
               </template>

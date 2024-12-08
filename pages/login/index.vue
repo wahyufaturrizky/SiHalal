@@ -212,12 +212,12 @@ const getDate = (): string => {
                   :rules="[requiredValidator]"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   :error-messages="errors.password"
-                  @input="errors.password = undefined"
                   :append-inner-icon="
                     isPasswordVisible
                       ? 'fa-eye-slash fa-reguler'
                       : 'fa-eye fa-reguler'
                   "
+                  @input="errors.password = undefined"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
 
@@ -238,16 +238,20 @@ const getDate = (): string => {
                     @expired-callback="handleExpiredCallback"
                     @load-callback="handleLoadCallback"
                   />
-                  <!-- <recaptcha
+                  <!--
+                    <recaptcha
                     @error="handleErrorCallback"
                     @success="handleLoadCallback"
                     @expired="handleExpiredCallback"
-                  /> -->
-                  <!-- <div
+                    />
+                  -->
+                  <!--
+                    <div
                     class="g-recaptcha"
                     :data-sitekey="siteKey"
                     :data-callback="handleLoadCallback"
-                  ></div> -->
+                    ></div>
+                  -->
                 </div>
 
                 <VBtn
@@ -319,7 +323,12 @@ const getDate = (): string => {
       md="6"
       class="auth-card-v2 d-flex align-center justify-center"
     >
-      <VImg :src="NoImage" height="100dvh" cover />
+      <VImg
+        :src="currentImage"
+        width="100%"
+        height="100%"
+        class="responsive-image"
+      />
     </VCol>
   </VRow>
   <InformationLoginPopUp />
@@ -339,5 +348,11 @@ const getDate = (): string => {
 
 .login-bg {
   background-color: rgb(var(--v-theme-surface));
+}
+
+.responsive-image {
+  block-size: 100%;
+  inline-size: 100%;
+  object-fit: fill;
 }
 </style>

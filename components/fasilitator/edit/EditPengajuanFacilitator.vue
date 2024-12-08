@@ -42,8 +42,6 @@ const form = ref({
   kuota: "",
   picName: "",
   picPhoneNumber: "",
-  facilityCode: "",
-  status: "",
 });
 
 const { mdAndUp } = useDisplay();
@@ -127,6 +125,12 @@ const confirm = () => {
 const cancel = () => {
   closeDialog();
 };
+
+const checkIsFieldEMpty = (data: any) => {
+  return Object.keys(data)?.find((key: any) => {
+    if (key !== "facilitatorName") return !data[key];
+  });
+};
 </script>
 
 <template>
@@ -143,6 +147,7 @@ const cancel = () => {
                 id="facilitatorName"
                 v-model="form.facilitatorName"
                 outlined
+                :rules="[requiredValidator]"
                 disabled
               />
             </VCol>
@@ -155,6 +160,7 @@ const cancel = () => {
               <VTextField
                 id="facilitationProgramName"
                 v-model="form.facilitationProgramName"
+                :rules="[requiredValidator]"
                 placeholder="isi nama program fasilitasi"
                 outlined
               />
@@ -168,6 +174,7 @@ const cancel = () => {
               <VTextField
                 id="explanationOfFacilitation"
                 v-model="form.explanationOfFacilitation"
+                :rules="[requiredValidator]"
                 placeholder="isi penjelasan fasilitasi"
                 outlined
               />
@@ -179,6 +186,7 @@ const cancel = () => {
               <VAutocomplete
                 id="year"
                 v-model="form.year"
+                :rules="[requiredValidator]"
                 :items="
                   Array.from({ length: 2028 - 2008 + 1 }, (_, i) => 2028 - i)
                 "
@@ -193,6 +201,7 @@ const cancel = () => {
               <VAutocomplete
                 id="year"
                 v-model="form.regionalScope"
+                :rules="[requiredValidator]"
                 :items="['Nasional', 'Provinsi', 'Kota/Kab.']"
                 placeholder="Pilih lingkup wilayah"
                 solo
@@ -206,6 +215,7 @@ const cancel = () => {
               <VTextField
                 id="startDate"
                 v-model="form.startDate"
+                :rules="[requiredValidator]"
                 type="date"
                 placeholder="Pilih tanggal mulai"
                 clearable
@@ -218,6 +228,7 @@ const cancel = () => {
               <VTextField
                 id="endDate"
                 v-model="form.endDate"
+                :rules="[requiredValidator]"
                 type="date"
                 placeholder="Pilih tanggal mulai"
                 clearable
@@ -230,6 +241,7 @@ const cancel = () => {
               <VAutocomplete
                 id="type"
                 v-model="form.type"
+                :rules="[requiredValidator]"
                 :items="['Self Declare', 'Reguler']"
                 placeholder="Pilih jenis fasilitasi"
                 solo
@@ -245,6 +257,7 @@ const cancel = () => {
               <VAutocomplete
                 id="sourceOfFund"
                 v-model="form.sourceOfFund"
+                :rules="[requiredValidator]"
                 :items="datasof"
                 placeholder="Pilih sumber pembiayaan"
                 solo
@@ -261,8 +274,10 @@ const cancel = () => {
               <VTextField
                 id="kuota"
                 v-model="form.kuota"
+                :rules="[requiredValidator]"
                 placeholder="isi kuota"
                 outlined
+                type="number"
               />
             </VCol>
           </VRow>
@@ -275,6 +290,7 @@ const cancel = () => {
               <VTextField
                 id="picName"
                 v-model="form.picName"
+                :rules="[requiredValidator]"
                 placeholder="isi nama penanggungjawab program"
                 outlined
               />
@@ -289,15 +305,22 @@ const cancel = () => {
               <VTextField
                 id="picPhoneNumber"
                 v-model="form.picPhoneNumber"
+                :rules="[requiredValidator]"
                 placeholder="isi nomor kontak penanggungjawab program"
                 outlined
+                type="number"
               />
             </VCol>
           </VRow>
           <VRow>
             <VCol cols="12" class="text-right">
               <div class="ma-1">
-                <VBtn variant="flat" color="primary" @click="openDialog">
+                <VBtn
+                  variant="flat"
+                  :disabled="checkIsFieldEMpty(form)"
+                  color="primary"
+                  @click="openDialog"
+                >
                   Simpan Perubahan
                 </VBtn>
 

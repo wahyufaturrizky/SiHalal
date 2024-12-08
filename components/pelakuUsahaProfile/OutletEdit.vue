@@ -63,7 +63,6 @@ const handleAddAspekLegalConfirm = (formData) => {
             @cancel="() => console.log('Add cancelled')"
           />
           <UploadOutlet></UploadOutlet>
-          >
         </VCol>
       </VRow>
     </VCardTitle>
