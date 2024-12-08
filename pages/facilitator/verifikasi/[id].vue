@@ -70,7 +70,7 @@ const detail = ref<FasilitatorData>({
 });
 const getDetail = async () => {
   try {
-    const response = await $api("/facilitate/detail", {
+    const response = await $api("/facilitate/verifikator/detail", {
       method: "post",
       body: {
         id: shlnId,
@@ -104,19 +104,64 @@ const statusItem = new Proxy(
   }
 );
 
-const returnHandler = (message: string) => {
-  console.log("RETURN ID ", route.params.id);
-  console.log(message);
+const returnHandler = async (message: string) => {
+  try {
+    const res = await $api("/facilitate/verifikator/return", {
+      method: "post",
+      body: {
+        id: route.params.id,
+        keterangan: message,
+      },
+    });
+    if (res.code != 2000) {
+      useSnackbar().sendSnackbar("Ada kesalahan!", "error");
+      return;
+    }
+    navigateTo("/facilitator/verifikasi");
+    useSnackbar().sendSnackbar("Data berhasil di return", "success");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada kesalahan!", "error");
+  }
+  // window.location.href = "/login";
 };
 
 const rejectHandler = (message: string) => {
-  console.log("REJECT ID ", route.params.id);
-  console.log(message);
+  try {
+    const res = await $api("/facilitate/verifikator/reject", {
+      method: "post",
+      body: {
+        id: route.params.id,
+        keterangan: message,
+      },
+    });
+    if (res.code != 2000) {
+      useSnackbar().sendSnackbar("Ada kesalahan!", "error");
+      return;
+    }
+    navigateTo("/facilitator/verifikasi");
+    useSnackbar().sendSnackbar("Data berhasil di return", "success");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada kesalahan!", "error");
+  }
 };
 
 const approveHandler = (message: string) => {
-  console.log("APPROVE ID ", route.params.id);
-  console.log(message);
+  try {
+    const res = await $api("/facilitate/verifikator/approve", {
+      method: "post",
+      body: {
+        id: route.params.id,
+      },
+    });
+    if (res.code != 2000) {
+      useSnackbar().sendSnackbar("Ada kesalahan!", "error");
+      return;
+    }
+    navigateTo("/facilitator/verifikasi");
+    useSnackbar().sendSnackbar("Data berhasil di return", "success");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada kesalahan!", "error");
+  }
 };
 onMounted(async () => {
   await Promise.allSettled([getDetail()]);
@@ -133,6 +178,9 @@ const institutionHeader = [
 <template>
   <VContainer>
     <KembaliButton />
+    <VRow class="d-flex justify-start align-center">
+      <h2 class="text-h2">Detail Pengajuan Verifikasi</h2>
+    </VRow>
     <VRow class="d-flex justify-end align-center">
       <VerifikatorFasilitatorReturnConfirm @confirm="returnHandler" />
       <VerifikatorFasilitatorRejectConfirm @confirm="rejectHandler" />
