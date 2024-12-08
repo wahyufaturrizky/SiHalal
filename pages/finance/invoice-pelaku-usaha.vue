@@ -4,32 +4,72 @@ const data = {
 };
 
 const tableHeader = [
-  { title: "No", value: "no" },
-  { title: "No Invoice", value: "invoice_no" },
-  { title: "Tanggal Invoice", value: "invoice_date" },
-  { title: "Register Number", value: "registration_no" },
+  { title: "No", value: "index" },
+  { title: "No Invoice", value: "no" },
+  { title: "Tanggal Invoice", value: "date" },
+  { title: "Register Number", value: "shln_no" },
   { title: "Payment Code", value: "payment_code" },
   { title: "Importer's Name", value: "importer_name" },
   { title: "Due Date", value: "due_date" },
-  { title: "Payment Date", value: "payment_date" },
+  { title: "Payment Date", value: "va" },
   { title: "Amount", value: "amount" },
   { title: "Status", value: "status" },
   { title: "Action", value: "action" },
 ];
 
-const items = [
+const items = ref<
   {
-    invoice_no: "xx",
-    invoice_date: "xx",
-    registration_no: "xx",
-    payment_code: "xx",
-    importer_name: "xx",
-    due_date: "xx",
-    payment_date: "xx",
-    amount: "xx",
-    status: "xx",
+    id: string;
+    nama_importir: string;
+    nib: string;
+    no_daftar: string;
+    npwp: string;
+    tgl_daftar: string;
+  }[]
+>([]);
+
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const loading = ref(true);
+const page = ref(1);
+
+const loadItem = async (page: number, size: number, keyword: string = "") => {
+  try {
+    loading.value = true;
+
+    const response = await $api("/shln/invoice", {
+      method: "get",
+      params: {
+        page,
+        size,
+        keyword,
+      },
+    });
+
+    items.value = response.data;
+    totalItems.value = response.total_item;
+    loading.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
+  }
+};
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+const statusItem = new Proxy(
+  {
+    SB001: { color: "warning", desc: "Menunggu Pembayaran" },
+    SB002: { color: "warning", desc: "Kurang Bayar" },
+    SB003: { color: "warning", desc: "Lebih Bayar" },
+    SB004: { color: "success", desc: "Lunas" },
+    SB005: { color: "warning", desc: "Konfirmasi Pembayaran" },
+    default: { color: "error", desc: "No Status" },
   },
-];
+  {
+    get(target, prop) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
 
 const selectedStatus = ref([]);
 
@@ -108,7 +148,28 @@ const selectedDate = ref([]);
             </VCol>
           </VRow>
           <VRow>
-            <VDataTable :headers="tableHeader" :items="items">
+            <VDataTableServer
+              v-model:items-per-page="itemPerPage"
+              v-model:page="page"
+              :items-length="totalItems"
+              :loading="loading"
+              loading-text="Loading..."
+              @update:options="loadItem(page, itemPerPage)"
+              :headers="tableHeader"
+              :items="items"
+            >
+              <template #item.index="{ index }">
+                {{ index + 1 + (page - 1) * itemPerPage }}
+              </template>
+              <template #item.status="{ item }">
+                <VChip
+                  :color="statusItem[item.status].color"
+                  text-color="white"
+                  small
+                >
+                  {{ statusItem[item.status].desc }}
+                </VChip>
+              </template>
               <template #item.action>
                 <VMenu :close-on-content-click="false">
                   <template #activator="{ props: openMenu }">
@@ -140,7 +201,7 @@ const selectedDate = ref([]);
                   </template>
                 </VMenu>
               </template>
-            </VDataTable>
+            </VDataTableServer>
           </VRow>
         </VCardItem>
       </VCard>
