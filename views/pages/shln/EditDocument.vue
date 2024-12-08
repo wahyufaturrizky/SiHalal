@@ -374,7 +374,6 @@ onMounted(async () => {
     getLoaTracking(),
     getRequirementDocument(),
   ]);
-  console.log(requirementDocArray.value);
   loaForm.value.authorized_name = loa.value?.authorized_company;
   loaForm.value.authorizer_name = loa.value?.authorizer_company;
   loaForm.value.letter_number = loa.value?.letter_no;
@@ -549,7 +548,7 @@ onMounted(async () => {
         >
           <VListItem lines="two" subtitle="Subtitle" title="Title" rounded />
         </VSkeletonLoader>
-        <HalalTimeLine v-if="loaTracking != undefined" :events="loaTracking" />
+        <HalalTimeLine v-if="loaTracking != undefined" :event="loaTracking" />
       </ExpandCard>
 
       <ExpandCard title="Tracking of Certificate and Legalization">
@@ -560,7 +559,7 @@ onMounted(async () => {
         >
           <VListItem lines="two" subtitle="Subtitle" title="Title" rounded />
         </VSkeletonLoader>
-        <HalalTimeLine v-if="fhcTracking != undefined" :events="fhcTracking" />
+        <HalalTimeLine v-if="fhcTracking" :event="fhcTracking" />
       </ExpandCard>
     </VCol>
   </VRow>

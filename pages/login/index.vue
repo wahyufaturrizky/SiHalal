@@ -62,6 +62,7 @@ const credentials = ref({
 const rememberMe = useState("rememberMe", () => false);
 
 async function login() {
+  buttonClicked.value = true;
   try {
     const response = await signIn({
       callbackUrl: "/",
@@ -75,6 +76,7 @@ async function login() {
       replace: true,
     });
   } catch (error: any) {
+    buttonClicked.value = true;
     handleReset(widgetCaptcha.value);
     if (error.data.statusCode == 400) {
       useUserVerificationStore().setUserData({

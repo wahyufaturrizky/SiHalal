@@ -1,148 +1,228 @@
 <script setup lang="ts">
+interface FasilitatorData {
+  fasilitasi: Fasilitasi;
+  lembaga: Lembaga[];
+  status_registrasi: StatusRegistrasi;
+  tracking: any[];
+}
 
-const route = useRoute()
+interface Fasilitasi {
+  nama: string;
+  nama_program: string;
+  fac_description: string;
+  penanggung_jawab: string;
+  phone_penanggung_jawab: string;
+  tahun: number;
+  lingkup_wilayah_fasilitas: string;
+  tgl_mulai: string;
+  tgl_selesai: string;
+  jenis_fasilitasi: string;
+  sumber_pembiayaan: string;
+  kuota: number;
+  is_locked_lembaga: boolean;
+}
 
-import { ref } from 'vue';
+interface Lembaga {
+  id: string;
+  fac_id: string;
+  nama_pic_lembaga: string;
+  nomor_pic_lembaga: string;
+  lp_id?: string;
+  lph_id?: string;
+  created_by: string;
+  created_on: string;
+}
+
+interface StatusRegistrasi {
+  status: string;
+  kode_fasilitasi: string;
+}
 
 const panelFasilitasi = ref([0, 1]);
 const panelInstitution = ref([0, 1]);
 const panelTracking = ref([0, 1]);
 const panelStatus = ref([0, 1]);
 
+const route = useRoute();
+const shlnId = route.params.id;
+const detail = ref<FasilitatorData>({
+  fasilitasi: {
+    nama: "",
+    nama_program: "",
+    fac_description: "",
+    penanggung_jawab: "",
+    phone_penanggung_jawab: "",
+    tahun: null,
+    lingkup_wilayah_fasilitas: "",
+    tgl_mulai: "",
+    tgl_selesai: "",
+    jenis_fasilitasi: "",
+    sumber_pembiayaan: "",
+    kuota: null,
+    is_locked_lembaga: null,
+  },
+  lembaga: [],
+  status_registrasi: {
+    status: "",
+    kode_fasilitasi: "",
+  },
+  tracking: [],
+});
+const getDetail = async () => {
+  try {
+    const response = await $api("/facilitate/detail", {
+      method: "post",
+      body: {
+        id: shlnId,
+      },
+    });
+
+    if (response.code != 2000) {
+      navigateTo("/facilitator/verifikasi");
+    }
+    detail.value = response.data.fasilitator;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+const statusItem = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+  },
+  {
+    get(target, prop) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
 
 const returnHandler = (message: string) => {
-  console.log('RETURN ID ', route.params.id)
-  console.log(message)
-}
+  console.log("RETURN ID ", route.params.id);
+  console.log(message);
+};
 
 const rejectHandler = (message: string) => {
-  console.log('REJECT ID ', route.params.id)
-  console.log(message)
-}
+  console.log("REJECT ID ", route.params.id);
+  console.log(message);
+};
 
 const approveHandler = (message: string) => {
-  console.log('APPROVE ID ', route.params.id)
-  console.log(message)
-}
-
-const fasilitation = ref({
-  no: 1,
-  registrationDate: '01-11-2024',
-  facilitationCode: '',
-  year: '2025',
-  facilitationName: 'WAWAN BRO',
-  programName: 'Dinas Koperasi Kab. Bogor',
-  sourceOfFund: 'JSP01',
-  type: 'Self Declare',
-  startDate: '06-11-2024',
-  endDate: '31-01-2025',
-  kuota: 1000,
-  status: 'PENGAJUAN',
-  picName: 'Koko',
-  picPhoneNumber: '089999999999',
-  scope: 'National',
-
-})
-
-
-const institutionHeader = [
-  {title : 'No', key:'no'},
-  {title: 'Nama LPH / LP3H', key: 'lphlp3hName'},
-  {title: 'Nama Penanggung Jawab', key: 'picName'},
-  {title: 'Nomor Penanggung Jawab', key: 'picPhoneNumber'},
-
-]
-
-
-const institutionItems = ref([{
-  no: 1,
-  lphlp3hName: "Edukasi Indonesia",
-  picName : "Fahmi",
-  picPhoneNumber: "0899999999"
-}])
-
-
-
+  console.log("APPROVE ID ", route.params.id);
+  console.log(message);
+};
+onMounted(async () => {
+  await Promise.allSettled([getDetail()]);
+});
 </script>
 
 <template>
   <VContainer>
     <KembaliButton />
     <VRow class="d-flex justify-end align-center">
-      <VerifikatorFasilitatorReturnConfirm @confirm="returnHandler"/>
-      <VerifikatorFasilitatorRejectConfirm @confirm="rejectHandler"/>
-      <VerifikatorFasilitatorApproveConfirm @confirm="approveHandler"/>
+      <VerifikatorFasilitatorReturnConfirm @confirm="returnHandler" />
+      <VerifikatorFasilitatorRejectConfirm @confirm="rejectHandler" />
+      <VerifikatorFasilitatorApproveConfirm @confirm="approveHandler" />
     </VRow>
     <VRow>
       <VCol cols="8">
-        <VExpansionPanels
-          v-model="panelFasilitasi"
-        >
+        <VExpansionPanels v-model="panelFasilitasi">
           <VExpansionPanel class="pa-4">
-            <VExpansionPanelTitle class="text-h4">Fasilitasi</VExpansionPanelTitle>
+            <VExpansionPanelTitle class="text-h4"
+              >Fasilitasi</VExpansionPanelTitle
+            >
             <VExpansionPanelText>
-              <InfoRow name="Nama Fasilitator">{{fasilitation.facilitationName}}</InfoRow>
-              <InfoRow name="Nama Program Fasilitasi">{{fasilitation.programName}}</InfoRow>
-              <InfoRow name="Nama Penanggung Jawab Program">{{fasilitation.picName}}</InfoRow>
-              <InfoRow name="Nama Penanggung Jawab Program">{{fasilitation.picPhoneNumber}}</InfoRow>
-              <InfoRow name="Tahun">{{fasilitation.year}}</InfoRow>
-              <InfoRow name="Lingkup Wilayah Fasilitasi">{{fasilitation.scope}}</InfoRow>
-              <InfoRow name="Tgl. Mulai ">{{fasilitation.startDate}}</InfoRow>
-              <InfoRow name="Tgl. Selesai">{{fasilitation.endDate}}</InfoRow>
-              <InfoRow name="Jenis Fasilitasi">{{fasilitation.type}}</InfoRow>
-              <InfoRow name="Sumber Pembiayaan">{{fasilitation.sourceOfFund}}</InfoRow>
-              <InfoRow name="Kuota">{{fasilitation.kuota}}</InfoRow>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-
-        </VExpansionPanels>
-
-        <br/>
-
-        <VExpansionPanels
-          v-model="panelInstitution"
-        >
-          <VExpansionPanel class="pa-4">
-            <VExpansionPanelTitle class="text-h4">Lembaga</VExpansionPanelTitle>
-            <VExpansionPanelText>
-              <VDataTable :headers="institutionHeader" :items="institutionItems"/>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-        </VExpansionPanels>
-      </VCol>
-      <VCol cols="4">
-        <VExpansionPanels
-          v-model="panelStatus"
-        >
-          <VExpansionPanel class="pa-4">
-            <VExpansionPanelTitle class="text-h4">Status Registrasi</VExpansionPanelTitle>
-            <VExpansionPanelText>
-              <InfoRow name="Status" separator="" class="d-flex align-center"><v-chip class="ma-2" label>{{fasilitation.status}}</v-chip></InfoRow>
-              <InfoRow name="Kode Fasilitasi" separator="">{{fasilitation.facilitationCode}}</InfoRow>
+              <InfoRow name="Nama Fasilitator">{{
+                detail.fasilitasi.nama
+              }}</InfoRow>
+              <InfoRow name="Nama Program Fasilitasi">{{
+                detail.fasilitasi.nama_program
+              }}</InfoRow>
+              <InfoRow name="Nama Penanggung Jawab Program">{{
+                detail.fasilitasi.penanggung_jawab
+              }}</InfoRow>
+              <InfoRow name="Nomor Penanggung Jawab Program">{{
+                detail.fasilitasi.phone_penanggung_jawab
+              }}</InfoRow>
+              <InfoRow name="Tahun">{{ detail.fasilitasi.tahun }}</InfoRow>
+              <InfoRow name="Lingkup Wilayah Fasilitasi">{{
+                detail.fasilitasi.lingkup_wilayah_fasilitas
+              }}</InfoRow>
+              <InfoRow name="Tgl. Mulai ">{{
+                detail.fasilitasi.tgl_mulai != ""
+                  ? new Date(detail.fasilitasi.tgl_mulai)
+                  : ""
+              }}</InfoRow>
+              <InfoRow name="Tgl. Selesai">{{
+                detail.fasilitasi.tgl_selesai != ""
+                  ? new Date(detail.fasilitasi.tgl_selesai)
+                  : ""
+              }}</InfoRow>
+              <InfoRow name="Jenis Fasilitasi">{{
+                detail.fasilitasi.jenis_fasilitasi
+              }}</InfoRow>
+              <InfoRow name="Sumber Pembiayaan">{{
+                detail.fasilitasi.sumber_pembiayaan
+              }}</InfoRow>
+              <InfoRow name="Kuota">{{ detail.fasilitasi.kuota }}</InfoRow>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
 
         <br />
-        <VExpansionPanels
-          v-model="panelTracking"
-        >
+
+        <VExpansionPanels v-model="panelInstitution">
           <VExpansionPanel class="pa-4">
-            <VExpansionPanelTitle class="text-h4">Tracking</VExpansionPanelTitle>
+            <VExpansionPanelTitle class="text-h4">Lembaga</VExpansionPanelTitle>
             <VExpansionPanelText>
-              <HalalTimeLine :timeline-data="[
-        { title: 'DRAFT', date: '2024/10/05', description: 'Dummy User 1' },
-        { title: 'PENGAJUAN', date: '2024/09/10', description: 'Dummy User 2' },
-    ]"/>
+              <VDataTable
+                :headers="institutionHeader"
+                :items="detail.lembaga"
+              />
+            </VExpansionPanelText>
+          </VExpansionPanel>
+        </VExpansionPanels>
+      </VCol>
+      <VCol cols="4">
+        <VExpansionPanels v-model="panelStatus">
+          <VExpansionPanel class="pa-4">
+            <VExpansionPanelTitle class="text-h4"
+              >Status Registrasi</VExpansionPanelTitle
+            >
+            <VExpansionPanelText>
+              <InfoRow name="Status" separator="" class="d-flex align-center"
+                ><v-chip class="ma-2" label>{{
+                  detail.status_registrasi.status
+                }}</v-chip></InfoRow
+              >
+              <InfoRow name="Kode Fasilitasi" separator="">{{
+                detail.status_registrasi.kode_fasilitasi
+              }}</InfoRow>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
 
+        <br />
+        <VExpansionPanels v-model="panelTracking">
+          <VExpansionPanel class="pa-4">
+            <VExpansionPanelTitle class="text-h4"
+              >Tracking</VExpansionPanelTitle
+            >
+            <VExpansionPanelText>
+              <HalalTimeLine :event="detail.tracking" />
+            </VExpansionPanelText>
+          </VExpansionPanel>
+        </VExpansionPanels>
       </VCol>
     </VRow>
   </VContainer>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

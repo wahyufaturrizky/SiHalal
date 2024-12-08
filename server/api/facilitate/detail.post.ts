@@ -9,23 +9,18 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-  const { page, size } = (await getQuery(event)) as {
-    page: string;
-    size: string;
-  };
-  let params = {
-    page: isNaN(parseInt(page, 10)) ? 1 : parseInt(page, 10),
-    size: isNaN(parseInt(size, 10)) ? 10 : parseInt(size, 10),
-  };
+  const { id } = await readBody(event);
+  console.log(id);
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/fasilitator/invoice/list`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/fasilitator/${id}/detail`,
     {
       method: "get",
       headers: { Authorization: authorizationHeader },
-      params,
     }
   ).catch((err: NuxtError) => {
+    console.log(err);
+    setResponseStatus(event, 400);
     return err.data;
   });
   return data || null;
