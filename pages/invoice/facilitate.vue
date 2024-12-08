@@ -1,28 +1,59 @@
 <script setup lang="ts">
 const tableHeader = [
-  { title: "No", key: "no" },
-  { title: "No. Invoice", key: "invoice_no" },
-  { title: "Tanggal Invoice", key: "invoice_date" },
-  { title: "Nomor Pendaftaran", key: "registration_no" },
-  { title: "Kode Pembayaran", key: "payment_code" },
-  { title: "Nama Importir", key: "importer_name" },
-  { title: "Batas Waktu", key: "exp_date" },
-  { title: "Jumlah Biaya", key: "total_amount" },
-  { title: "Catatan", key: "notes" },
-  { title: "Status", key: "status" },
+  { title: "No", value: "index" },
+  { title: "No Tagihan", value: "code_fasilitasi" },
+  { title: "Tanggal Tagihan", value: "tanggal_tagihan" },
+  { title: "Nama Fasilitasi", value: "code_fasilitasi" },
+  { title: "Jatuh Tempo", value: "tanggal_jatuh_tempo" },
+  { title: "Jumlah Tagihan", value: "jumlah_tagihan" },
+  { title: "Status", value: "code_fasilitasi" },
+  { title: "File Invoice", value: "file" },
 ];
 
-const getStatusColor = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "lunas":
-      return "success";
-    case "pending":
-      return "warning";
-    case "telat":
-      return "error";
-    default:
-      return "grey";
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+const statusItem = new Proxy(
+  {
+    SB001: { color: "warning", desc: "Menunggu Pembayaran" },
+    SB002: { color: "warning", desc: "Kurang Bayar" },
+    SB003: { color: "warning", desc: "Lebih Bayar" },
+    SB004: { color: "success", desc: "Lunas" },
+    SB005: { color: "warning", desc: "Konfirmasi Pembayaran" },
+    default: { color: "error", desc: "No Status" },
+  },
+  {
+    get(target, prop) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
   }
+);
+
+const items = ref([]);
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const loading = ref(true);
+const page = ref(1);
+const loadItem = async (page: number, size: number) => {
+  try {
+    loading.value = true;
+
+    const response = await $api("/facilitate/invoice", {
+      method: "get",
+      params: {
+        page,
+        size,
+      },
+    });
+
+    items.value = response.data;
+    totalItems.value = response.total_item;
+    loading.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
+  }
+};
+const navigateAction = (id: string) => {
+  navigateTo(`/facilitator/verifikasi/${id}`);
 };
 </script>
 <template>
@@ -45,15 +76,32 @@ const getStatusColor = (status: string) => {
           </VRow>
         </VCardTitle>
         <VCardItem>
-          <VDataTable :headers="tableHeader">
+          <VDataTable
+            v-model:items-per-page="itemPerPage"
+            v-model:page="page"
+            :headers="tableHeader"
+            :items-length="totalItems"
+            :loading="loading"
+            loading-text="Loading..."
+            :items="items"
+            @update:options="loadItem(page, itemPerPage)"
+          >
+            <template #item.index="{ index }">
+              {{ index + 1 + (page - 1) * itemPerPage }}
+            </template>
             <template #item.status="{ item }">
               <VChip
-                :color="getStatusColor(item.status)"
+                :color="statusItem[item.status].color"
                 text-color="white"
                 small
               >
-                {{ item.status }}
+                {{ statusItem[item.status].desc }}
               </VChip>
+            </template>
+            <template #item.action="{ item }">
+              <VBtn variant="text" icon @click="navigateAction(item.id)">
+                <VIcon>mdi-chevron-right</VIcon>
+              </VBtn>
             </template>
           </VDataTable>
         </VCardItem>

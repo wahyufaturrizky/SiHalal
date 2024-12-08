@@ -1,205 +1,171 @@
 <script setup lang="ts">
-import InformationLoginPopUp from '@/components/halalCommon/InformationLoginPopUp.vue'
-import { themeConfig } from '@themeConfig'
-import { RecaptchaV2, useRecaptcha } from 'vue3-recaptcha-v2'
-import { useDisplay } from 'vuetify'
-import { VForm } from 'vuetify/components/VForm'
+import InformationLoginPopUp from "@/components/halalCommon/InformationLoginPopUp.vue";
+import { themeConfig } from "@themeConfig";
+import { useDisplay } from "vuetify";
+import { VForm } from "vuetify/components/VForm";
 
-import { emailValidator, requiredValidator } from '#imports'
-import { VNodeRenderer } from '@/@layouts/components/VNodeRenderer'
-import bseImage from '@images/bse.png'
-import NoImage from '@images/no-image.png'
-import ossImage from '@images/oss.png'
-import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
-import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
-import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
-import authV2LoginMaskDark from '@images/pages/auth-v2-login-mask-dark.png'
-import authV2LoginMaskLight from '@images/pages/auth-v2-login-mask-light.png'
-
-const { signIn, data: sessionData, status, signOut } = useAuth()
-const { mdAndUp } = useDisplay()
+import { emailValidator, requiredValidator } from "#imports";
+import { VNodeRenderer } from "@/@layouts/components/VNodeRenderer";
+import bseImage from "@images/bse.png";
+import NoImage from "@images/no-image.png";
+import ossImage from "@images/oss.png";
+import authV2LoginIllustrationBorderedDark from "@images/pages/auth-v2-login-illustration-bordered-dark.png";
+import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-illustration-bordered-light.png";
+import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
+import authV2LoginMaskDark from "@images/pages/auth-v2-login-mask-dark.png";
+import authV2LoginMaskLight from "@images/pages/auth-v2-login-mask-light.png";
+import { RecaptchaV2, useRecaptcha } from "vue3-recaptcha-v2";
+const { signIn, data: sessionData, status, signOut } = useAuth();
+const { mdAndUp } = useDisplay();
 
 const authThemeImg = useGenerateImageVariant(
   NoImage,
   authV2LoginIllustrationDark,
   authV2LoginIllustrationBorderedLight,
   authV2LoginIllustrationBorderedDark,
-  true,
-)
+  true
+);
 
 const authThemeMask = useGenerateImageVariant(
   authV2LoginMaskLight,
-  authV2LoginMaskDark,
-)
+  authV2LoginMaskDark
+);
 
 definePageMeta({
-  layout: 'blank',
+  layout: "blank",
   unauthenticatedOnly: true,
-})
+});
+const { handleReset, handleGetResponse } = useRecaptcha();
 
-const { handleReset, handleGetResponse } = useRecaptcha()
+const isPasswordVisible = useState("isPasswordVisible", () => false);
+const isDisabledSubmit = useState("isDisabledSubmit", () => true);
+const config = useRuntimeConfig();
+const siteKey = config.public.turnstile.siteKey;
+const route = useRoute();
 
-const isPasswordVisible = useState('isPasswordVisible', () => false)
-const isDisabledSubmit = useState('isDisabledSubmit', () => true)
-const config = useRuntimeConfig()
-const siteKey = config.public.turnstile.siteKey
-const route = useRoute()
-
-const ability = useAbility()
+const ability = useAbility();
 
 const errors = ref<Record<string, string | undefined>>({
   email: undefined,
   password: undefined,
-})
+});
 
-const turnstile = ref()
-const buttonClicked = ref(false)
-const refVForm = ref<VForm>()
+const turnstile = ref();
+const buttonClicked = ref(false);
+const refVForm = ref<VForm>();
 
 const credentials = ref({
-  email: '',
-  password: '',
-})
+  email: "",
+  password: "",
+});
 
-const rememberMe = useState('rememberMe', () => false)
+const rememberMe = useState("rememberMe", () => false);
 
 async function login() {
+  buttonClicked.value = true;
   try {
     const response = await signIn({
-      callbackUrl: '/',
+      callbackUrl: "/",
       redirect: false,
       email: credentials.value.email,
       password: credentials.value.password,
       token: token.value,
-    })
+    });
 
-    navigateTo(route.query.to ? String(route.query.to) : '/', {
+    navigateTo(route.query.to ? String(route.query.to) : "/", {
       replace: true,
-    })
-  }
-  catch (error: any) {
-    handleReset(widgetCaptcha.value)
+    });
+  } catch (error: any) {
+    buttonClicked.value = true;
+    handleReset(widgetCaptcha.value);
     if (error.data.statusCode == 400) {
       useUserVerificationStore().setUserData({
         id: error.data.data.user.id,
         email: error.data.data.user.email,
         phone_number: error.data.data.user.phone_number,
-      })
+      });
       navigateTo({
-        path: '/verifikasi-user',
+        path: "/verifikasi-user",
         query: {
           id: error.data.data.user.id,
           email: error.data.data.user.email,
         },
-      })
-
-      return
+      });
+      return;
     }
     if (error.data.data.code === 400000) {
-      errors.value.password = 'Kata sandi tidak tepat!'
-      errors.value.email = 'Alamat Email tidak ditemukan!'
+      errors.value.password = "Kata sandi tidak tepat!";
+      errors.value.email = "Alamat Email tidak ditemukan!";
     }
     if (error.data.data.success == false) {
-      useSnackbar().sendSnackbar('Captcha Failed', 'error')
+      useSnackbar().sendSnackbar("Captcha Failed", "error");
 
-      return
+      return;
     }
     useSnackbar().sendSnackbar(
-      'Gagal masuk, mohon periksa kembali kelengkapan data!',
-      'error',
-    )
-    buttonClicked.value = false
+      "Gagal masuk, mohon periksa kembali kelengkapan data!",
+      "error"
+    );
+    buttonClicked.value = false;
   }
 
   // If error is not null => Error is occurred
 
   // Update user abilities
 }
-const captchaError = useState('captchaError', () => false)
+const captchaError = useState("captchaError", () => false);
 
 const onSubmit = async () => {
   // sendSnackbar("error bang", "success");
-  buttonClicked.value = true
+  buttonClicked.value = true;
   refVForm.value?.validate().then(({ valid: isValid }) => {
-    if (isValid)
-      login()
-  })
-  buttonClicked.value = false
-}
+    if (isValid) login();
+  });
+  buttonClicked.value = false;
+};
 
 const redirectToForgotPass = () => {
-  navigateTo('/forgot-password')
-}
-
-const widgetCaptcha = ref()
-
+  navigateTo("/forgot-password");
+};
+const widgetCaptcha = ref();
 const handleWidgetId = (widgetId: number) => {
-  widgetCaptcha.value = widgetId
-  handleGetResponse(widgetId)
-}
-
+  widgetCaptcha.value = widgetId;
+  handleGetResponse(widgetId);
+};
 const handleErrorCallback = () => {
-  token.value = ''
-}
-
+  token.value = "";
+};
 const handleExpiredCallback = () => {
-  token.value = ''
-}
-
-const token = ref('')
-
+  token.value = "";
+};
+const token = ref("");
 const handleLoadCallback = (response: unknown) => {
-  token.value = response
-}
+  token.value = response;
+};
 
 const getDate = (): string => {
   // Get the current date
-  const currentDate = new Date()
+  const currentDate = new Date();
 
   // Format the modified date to "id-ID" locale
-  return currentDate.toLocaleDateString('id-ID', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
-}
+  const formattedDate = currentDate.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 
-const imageArray = [
-  '/images/login-register/1.png',
-  '/images/login-register/2.png',
-  '/images/login-register/3.png',
-]
-
-const currentImage = ref('')
-
-const getRandomImage = () => {
-  const randomIndex = Math.floor(Math.random() * imageArray.length)
-
-  console.log(currentImage, 'sini', randomIndex, '---', imageArray[randomIndex])
-
-  return imageArray[randomIndex]
-}
-
-onMounted(() => {
-  currentImage.value = getRandomImage()
-})
+  return formattedDate;
+};
 </script>
 
 <template>
-  <VRow
-    no-gutters
-    class="auth-wrapper"
-  >
+  <VRow no-gutters class="auth-wrapper">
     <VCol
       cols="12"
       md="6"
       class="auth-card-v2 d-flex align-center justify-center login-bg"
     >
-      <VCard
-        flat
-        :max-width="500"
-        class="mt-12 mt-sm-0 pa-5 pa-lg-7"
-      >
+      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
         <VCardText>
           <NuxtLink to="/">
             <div class="auth-logo app-logo">
@@ -210,10 +176,7 @@ onMounted(() => {
         <VCardText>
           <h4 class="text-h4 mb-1">
             Selamat Datang di
-            <span
-              class="text-capitalize"
-              color="#652672"
-            >{{
+            <span class="text-capitalize" color="#652672">{{
               themeConfig.app.title
             }}</span>
           </h4>
@@ -224,10 +187,7 @@ onMounted(() => {
         </VCardText>
 
         <VCardText>
-          <VForm
-            ref="refVForm"
-            @submit.prevent="onSubmit"
-          >
+          <VForm ref="refVForm" @submit.prevent="onSubmit">
             <VRow>
               <!-- email -->
               <VCol cols="12">
@@ -261,10 +221,7 @@ onMounted(() => {
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
 
-                <VCol
-                  cols="12"
-                  class="text-body-1 text-right"
-                >
+                <VCol cols="12" class="text-body-1 text-right">
                   <NuxtLink
                     class="text-primary ms-1 d-inline-block text-body-1"
                     :to="{ name: 'forgot-password' }"
@@ -301,10 +258,10 @@ onMounted(() => {
                   block
                   type="submit"
                   :disabled="
-                    token == ''
-                      || buttonClicked
-                      || credentials.email == ''
-                      || credentials.password == ''
+                    token == '' ||
+                    buttonClicked ||
+                    credentials.email == '' ||
+                    credentials.password == ''
                   "
                 >
                   Login
@@ -312,10 +269,7 @@ onMounted(() => {
               </VCol>
 
               <!-- create account -->
-              <VCol
-                cols="12"
-                class="text-body-1 text-center"
-              >
+              <VCol cols="12" class="text-body-1 text-center">
                 <span class="d-inline-block"> Belum punya akun ?</span>
                 <NuxtLink
                   class="text-primary ms-1 d-inline-block text-body-1"
@@ -343,45 +297,19 @@ onMounted(() => {
           </VForm>
         </VCardText>
         <VCardText>
-          <VCol
-            cols="12"
-            class="text-body-1 text-center"
-          >
+          <VCol cols="12" class="text-body-1 text-center">
             <span class="d-inline-block">Terhubung Ke</span>
           </VCol>
-          <VRow
-            align="center"
-            justify="center"
-          >
-            <VCol
-              cols="12"
-              md="auto"
-              class="d-flex align-center"
-            >
-              <VImg
-                :src="ossImage"
-                width="100"
-                height="48"
-              />
+          <VRow align="center" justify="center">
+            <VCol cols="12" md="auto" class="d-flex align-center">
+              <VImg :src="ossImage" width="100" height="48" />
             </VCol>
-            <VCol
-              cols="12"
-              md="auto"
-              class="d-flex align-center"
-            >
-              <VImg
-                :src="bseImage"
-                width="100"
-                height="48"
-              />
+            <VCol cols="12" md="auto" class="d-flex align-center">
+              <VImg :src="bseImage" width="100" height="48" />
             </VCol>
           </VRow>
           <VRow>
-            <VCol
-              cols="12"
-              align="center"
-              justify="center"
-            >
+            <VCol cols="12" align="center" justify="center">
               Update:
               {{ getDate() }}
             </VCol>

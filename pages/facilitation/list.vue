@@ -10,7 +10,7 @@ const tableHeader = [
   { title: "tanggal Selesai", value: "tgl_selesai" },
   { title: "Kuota", value: "kuota" },
   { title: "Sisa", value: "sisa" },
-  { title: "Status", value: "status" },
+  { title: "Status", value: "status_code" },
   { title: "Action", value: "action", fixed: true }, // Kolom Action
 ];
 
@@ -47,12 +47,11 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
         page,
         size,
         keyword,
-        status: "",
+        status: "OF320",
       },
     });
 
     items.value = response.data;
-    console.log(items.value);
     totalItems.value = response.total_item;
     loading.value = false;
   } catch (error) {
@@ -104,9 +103,9 @@ const navigateAction = (id: string) => {
             <template #item.index="{ index }">
               {{ index + 1 + (page - 1) * itemPerPage }}
             </template>
-            <template #item.status="{ item }">
-              <VChip label :color="statusItem[item.status].color">
-                {{ statusItem[item.status].desc }}
+            <template #item.status_code="{ item }">
+              <VChip label :color="statusItem[item.status_code].color">
+                {{ statusItem[item.status_code].desc }}
               </VChip>
             </template>
             <template #item.action="{ item }">

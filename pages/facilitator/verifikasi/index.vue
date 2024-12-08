@@ -107,8 +107,8 @@ const maxWidthSearch = computed(() => (mdAndUp ? 700 : "90%"));
             {{ index + 1 + (page - 1) * itemPerPage }}
           </template>
           <template #item.status="{ item }">
-            <VChip label :color="statusItem[item.status].color">
-              {{ statusItem[item.status].desc }}
+            <VChip label :color="statusItem[item.status_code].color">
+              {{ statusItem[item.status_code].desc }}
             </VChip>
           </template>
           <template #item.action="{ item }">
