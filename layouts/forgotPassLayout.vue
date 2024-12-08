@@ -6,7 +6,12 @@ const { mdAndUp } = useDisplay();
 </script>
 
 <template>
-  <VSnackbar v-model="isSnackbarVisible" location="top" :color="snackColor">
+  <VSnackbar
+    v-model="isSnackbarVisible"
+    location="top"
+    :color="snackColor"
+    :timeout="500"
+  >
     <v-icon left>fa-circle-info</v-icon> {{ snackMessage }}
   </VSnackbar>
   <VRow no-gutters>
