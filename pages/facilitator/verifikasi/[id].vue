@@ -121,6 +121,13 @@ const approveHandler = (message: string) => {
 onMounted(async () => {
   await Promise.allSettled([getDetail()]);
 });
+
+const institutionHeader = [
+  { title: "No", key: "index" },
+  { title: "Nama LPH / LP3H", key: "lph" },
+  { title: "Nama Penanggung Jawab", key: "nama_pic_lembaga" },
+  { title: "Nomor Penanggung Jawab", key: "nomor_pic_lembaga" },
+];
 </script>
 
 <template>
@@ -182,10 +189,14 @@ onMounted(async () => {
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4">Lembaga</VExpansionPanelTitle>
             <VExpansionPanelText>
-              <VDataTable
-                :headers="institutionHeader"
-                :items="detail.lembaga"
-              />
+              <VDataTable :headers="institutionHeader" :items="detail.lembaga">
+                <template #item.index="{ index }">
+                  {{ index + 1 }}
+                </template>
+                <template #item.lph="{ item }">
+                  {{ item.lp_id != null ? item.lp_id : item.lph_id }}
+                </template>
+              </VDataTable>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
