@@ -3,8 +3,7 @@ const tabs = ref(0);
 const route = useRoute();
 
 const facilitateId = route.params.id;
-const loading = ref(false);
-const loadingSOF = ref(false);
+const loading = ref(true);
 
 const form = ref({
   facilitatorName: "",
@@ -29,8 +28,6 @@ const dataDetailRegistration = ref();
 
 const loadItemById = async () => {
   try {
-    loading.value = true;
-
     const response = await $api(`/facilitate/entry/${facilitateId}`, {
       method: "get",
     });
@@ -75,21 +72,17 @@ const loadItemById = async () => {
         picPhoneNumber: phone_penanggung_jawab,
       };
 
-      loading.value = false;
+      return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-      loading.value = false;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loading.value = false;
   }
 };
 
 const loadSOF = async () => {
   try {
-    loadingSOF.value = true;
-
     const response = await $api("/master/source-of-fund", {
       method: "get",
     });
@@ -97,20 +90,27 @@ const loadSOF = async () => {
     if (response) {
       dataSOF.value = response;
 
-      loadingSOF.value = false;
+      return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan asd", "error");
-      loadingSOF.value = false;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingSOF.value = false;
   }
 };
 
 onMounted(async () => {
-  await loadItemById();
-  await loadSOF();
+  const res = await Promise.all([loadSOF(), loadItemById()]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loading.value = false;
+  } else {
+    loading.value = false;
+  }
 });
 </script>
 
@@ -131,7 +131,7 @@ onMounted(async () => {
       </VBtn>
     </VCol>
   </VRow>
-  <VRow v-if="!loading && !loadingSOF">
+  <VRow v-if="!loading">
     <VCol cols="10">
       <VTabs v-model="tabs" align-tabs="start">
         <VTab value="1"> Pengajuan </VTab>
@@ -140,7 +140,7 @@ onMounted(async () => {
       </VTabs>
     </VCol>
   </VRow>
-  <VRow v-if="!loading && !loadingSOF">
+  <VRow v-if="!loading">
     <VCol cols="12">
       <VTabsWindow v-model="tabs">
         <VTabsWindowItem value="1">
