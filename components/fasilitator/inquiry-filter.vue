@@ -2,12 +2,6 @@
 import { ref } from "vue";
 
 const props = defineProps({
-  loadingstatus: {
-    type: Boolean,
-  },
-  loadingsof: {
-    type: Boolean,
-  },
   itemsstatus: {
     type: Array,
   },
@@ -20,7 +14,7 @@ const emit = defineEmits<{
   (event: "formvalue", value: any): void;
 }>();
 
-const { loadingstatus, itemsstatus, loadingsof, datsof } = props;
+const { itemsstatus, datsof } = props;
 
 const form = ref({
   no_daftar: null,
@@ -65,7 +59,6 @@ const viewResults = () => {
             v-model="form.statusPermohonan"
             placeholder="Pilih Status Permohonanan"
             :items="itemsstatus"
-            :loading="loadingstatus"
             item-title="name"
             item-value="code"
           />
@@ -83,7 +76,6 @@ const viewResults = () => {
             v-model="form.kode_fac"
             placeholder="Pilih sumber pembiayaan"
             :items="datsof"
-            :loading="loadingsof"
             item-title="name"
             item-value="code"
           />

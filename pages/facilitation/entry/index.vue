@@ -7,7 +7,7 @@ const loading = ref(false);
 const page = ref(1);
 const searchQuery = ref("");
 const status = ref("OF1,OF10,OF5,OF2,OF290");
-const loadingSOF = ref(true);
+const loadingAll = ref(true);
 const dataSOF = ref([]);
 
 const loadItem = async (
@@ -29,9 +29,15 @@ const loadItem = async (
       },
     });
 
-    items.value = response.data;
-    totalItems.value = response.total_item;
-    loading.value = false;
+    if (response) {
+      items.value = response.data;
+      totalItems.value = response.total_item;
+      loading.value = false;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loading.value = false;
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loading.value = false;
@@ -40,22 +46,19 @@ const loadItem = async (
 
 const loadSOF = async () => {
   try {
-    loadingSOF.value = true;
-
     const response = await $api("/master/source-of-fund", {
       method: "get",
     });
 
     if (response.length) {
       dataSOF.value = response;
-      loadingSOF.value = false;
+
+      return response;
     } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan asd", "error");
-      loadingSOF.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingSOF.value = false;
   }
 };
 
@@ -75,8 +78,20 @@ const getStatusColor = (status) => {
 const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
-  await loadSOF();
-  await loadItem(1, itemPerPage.value, "", "OF1,OF10,OF5,OF2,OF290");
+  const res = await Promise.all([
+    loadSOF(),
+    loadItem(1, itemPerPage.value, "", "OF1,OF10,OF5,OF2,OF290"),
+  ]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
 });
 
 const handleInput = () => {
@@ -116,7 +131,7 @@ const formatSof = (val: string) => {
   <VRow>
     <VCol><h3>Entri Fasilitasi</h3></VCol>
   </VRow>
-  <VRow v-if="!loadingSOF">
+  <VRow v-if="!loadingAll">
     <VCol>
       <VCard>
         <VCardTitle><h4>List Fasilitasi</h4></VCardTitle>
