@@ -125,7 +125,7 @@ const returnHandler = async (message: string) => {
   // window.location.href = "/login";
 };
 
-const rejectHandler = (message: string) => {
+const rejectHandler = async (message: string) => {
   try {
     const res = await $api("/facilitate/verifikator/reject", {
       method: "post",
@@ -145,7 +145,7 @@ const rejectHandler = (message: string) => {
   }
 };
 
-const approveHandler = (message: string) => {
+const approveHandler = async (message: string) => {
   try {
     const res = await $api("/facilitate/verifikator/approve", {
       method: "post",
