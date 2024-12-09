@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
     });
   }
   const { hcb_id } = getQuery(event);
-  const { data } = await $fetch<any>(
+  const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/certificate-halal-foreign/scopes`,
     {
       method: "get",
@@ -18,10 +18,9 @@ export default defineEventHandler(async (event) => {
       params: { hcb_id },
     }
   ).catch((err: NuxtError) => {
-    throw createError({
-      statusCode: err.statusCode,
-      statusMessage: JSON.stringify(err.data),
-    });
+    setResponseStatus(event, 400);
+
+    return err.data;
   });
   return data || null;
 });

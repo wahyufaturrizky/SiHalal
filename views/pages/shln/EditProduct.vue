@@ -51,6 +51,7 @@ const insertProduct = async () => {
       return;
     }
     await loadItem(page.value, itemPerPage.value);
+    await loadTracking();
     form.value = {
       shlnId: shlnId,
       manufactur_id: null,
