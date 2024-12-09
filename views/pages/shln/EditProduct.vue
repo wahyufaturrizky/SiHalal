@@ -3,6 +3,7 @@ import type { Manufacture } from "@/pages/sertifikasi-halal/luar-negeri/submissi
 import { useDisplay } from "vuetify";
 const props = defineProps<{
   manufacture: Manufacture[];
+  scope: string;
 }>();
 const headers = [
   { title: "No", key: "index" },
@@ -35,13 +36,21 @@ const onSubmit = async () => {
 const insertProduct = async () => {
   productAddButton.value = true;
   try {
+    let hs_code_id = form.value.hs_code_id;
+    if (
+      props.scope == "4405c628-894b-4622-aaf0-b1acab962db1" ||
+      props.scope == "5b18abfa-47e9-4846-9faa-0e6013bb4211" ||
+      props.scope == "78a95209-5d90-4f90-ace0-b785ef474efc"
+    ) {
+      hs_code_id = lastSelectedId.value;
+    }
     const response = await $api("/shln/submission/product/add", {
       method: "post",
       body: {
         shln_id: form.value.shlnId,
         manufactur_id: form.value.manufactur_id,
         name: form.value.name,
-        hs_code_id: lastSelectedId.value,
+        hs_code_id: hs_code_id,
       },
     });
     if (response.code == 500) {
@@ -389,6 +398,11 @@ const formatItemTitle = (item) => {
                 HS Code
               </div>
               <div
+                v-if="
+                  scope == '4405c628-894b-4622-aaf0-b1acab962db1' ||
+                  scope == '5b18abfa-47e9-4846-9faa-0e6013bb4211' ||
+                  scope == '78a95209-5d90-4f90-ace0-b785ef474efc'
+                "
                 class="mb-5"
                 v-for="(level, index) in selectLevels"
                 :key="index"
@@ -405,6 +419,14 @@ const formatItemTitle = (item) => {
                   v-on:update:model-value="handleSelect(index)"
                 />
               </div>
+              <v-text-field
+                v-else
+                placeholder="Input HS Code"
+                :rules="[requiredValidator]"
+                variant="outlined"
+                density="compact"
+                v-model="form.hs_code_id"
+              ></v-text-field>
               <!-- <VSelect
                 v-model="form.hs_code_id"
                 :items="hsCode"
