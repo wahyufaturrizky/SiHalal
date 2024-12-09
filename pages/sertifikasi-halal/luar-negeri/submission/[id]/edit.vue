@@ -170,6 +170,7 @@ const disabledTab = (
         <EditProduct
           v-if="manufacture != undefined"
           :manufacture="manufacture"
+          :scope="identity?.hcn.scope"
         />
       </VTabsWindowItem>
     </VTabsWindow>
