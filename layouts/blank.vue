@@ -7,7 +7,12 @@ injectSkinClasses();
 
 <template>
   <div class="layout-wrapper layout-blank">
-    <VSnackbar v-model="isSnackbarVisible" location="top" :color="snackColor">
+    <VSnackbar
+      v-model="isSnackbarVisible"
+      location="top"
+      :color="snackColor"
+      :timeout="500"
+    >
       <v-icon left>fa-info-circle</v-icon> {{ snackMessage }}
     </VSnackbar>
     <slot />

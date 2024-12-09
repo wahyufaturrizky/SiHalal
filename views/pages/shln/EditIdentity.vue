@@ -114,11 +114,12 @@ const getCountry = async () => {
   country.value = response.map((item) => item.name);
 };
 const scope = ref<{ id: string; name: string }[]>();
-const getScope = async () => {
+const getScope = async (hcb_id) => {
   const response: { id: string; name: string }[] = await $api(
     "shln/submission/identity/scope",
     {
       method: "get",
+      params: { hcb_id },
     }
   );
 
@@ -218,8 +219,15 @@ const loadTracking = async () => {
 //     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
 //   }
 // };
-const changeHcb = (item: string) => {
+const loadHcb = async (item: string) => {
   const country = props.hcb.find((body) => body.id == item).country;
+  await getScope(item);
+  hcbCountry.value = country;
+};
+const changeHcb = async (item: string) => {
+  const country = props.hcb.find((body) => body.id == item).country;
+  formIdentity.value.hcn.scope = "";
+  await getScope(item);
   hcbCountry.value = country;
 };
 const province = ref();
@@ -249,12 +257,15 @@ const getSubDistrict = async (item: string) => {
 };
 
 onMounted(async () => {
-  await Promise.allSettled([getCountry(), loadTracking(), getScope()]);
+  await Promise.allSettled([getCountry(), loadTracking()]);
+  // if (formIdentity.value.hcb.hcb_id != '') {
+  //   await getScope(formIdentity.value.hcb.hcb_id);
+  // }
   const response: MasterProvince[] = await $api("/master/province", {
     method: "get",
   });
   province.value = response;
-  changeHcb(formIdentity.value.hcb.hcb_id);
+  await loadHcb(formIdentity.value.hcb.hcb_id);
   if (props.event.profile.province != "")
     await getDistrict(props.event.profile.province);
   if (props.event.profile.regency != "")

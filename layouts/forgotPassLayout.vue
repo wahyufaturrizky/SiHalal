@@ -16,10 +16,9 @@ const maxWidth = computed(() => {
     v-model="isSnackbarVisible"
     location="top"
     :color="snackColor"
+    :timeout="500"
   >
-    <VIcon left>
-      fa-circle-info
-    </VIcon> {{ snackMessage }}
+    <v-icon left>fa-circle-info</v-icon> {{ snackMessage }}
   </VSnackbar>
   <VRow no-gutters>
     <VCol
