@@ -130,7 +130,7 @@ const handleCancel = (message: string) => {
 }
 
 const navigateAction = (id: string) => {
-  navigateTo(`/sertifikasi-halal/luar-negeri/verification/${id}`);
+  navigateTo(`/online-registration/verifikasi-reguler/${id}`);
 }
 
 const loadItem = async (page, size) => {

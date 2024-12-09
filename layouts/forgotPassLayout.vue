@@ -1,12 +1,23 @@
 <script setup lang="ts">
-import NoImage from "@images/no-image.png";
-import { useDisplay } from "vuetify";
-const { isSnackbarVisible, snackColor, snackMessage } = useSnackbar();
-const { mdAndUp } = useDisplay();
+import { computed } from 'vue'
+import { useDisplay } from 'vuetify'
+import NoImage from '@images/no-image.png'
+
+const { isSnackbarVisible, snackColor, snackMessage } = useSnackbar()
+const { mdAndUp } = useDisplay()
+
+const maxWidth = computed(() => {
+  return mdAndUp ? 700 : '80%'
+})
 </script>
 
 <template>
-  <VSnackbar v-model="isSnackbarVisible" location="top" :color="snackColor">
+  <VSnackbar
+    v-model="isSnackbarVisible"
+    location="top"
+    :color="snackColor"
+    :timeout="500"
+  >
     <v-icon left>fa-circle-info</v-icon> {{ snackMessage }}
   </VSnackbar>
   <VRow no-gutters>
@@ -15,16 +26,20 @@ const { mdAndUp } = useDisplay();
       md="6"
       class="auth-card-v2 d-flex align-center justify-center bg-white"
     >
-      <VCard variant="text" :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
-        <VCardText style="width: 500px">
-          <slot name="pageTitle"></slot>
+      <VCard
+        variant="text"
+        :max-width="maxWidth"
+        class="mt-12 mt-sm-0 pa-5 pa-lg-7"
+      >
+        <VCardText>
+          <slot name="pageTitle" />
         </VCardText>
 
         <VCardText>
-          <slot name="formSlot"></slot>
+          <slot name="formSlot" />
         </VCardText>
         <VCardText>
-          <slot name="sponsorImage"></slot>
+          <slot name="sponsorImage" />
         </VCardText>
       </VCard>
     </VCol>
@@ -34,10 +49,15 @@ const { mdAndUp } = useDisplay();
       md="6"
       class="auth-card-v2 d-flex align-center justify-center"
     >
-      <VImg :src="NoImage" height="100dvh" cover />
+      <VImg
+        :src="NoImage"
+        height="100dvh"
+        cover
+      />
     </VCol>
   </VRow>
 </template>
+
 <style lang="scss">
 @use "@core/scss/template/pages/page-auth.scss";
 .auth-logo {

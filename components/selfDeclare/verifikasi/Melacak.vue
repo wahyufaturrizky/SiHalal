@@ -15,13 +15,19 @@ interface TimelineItem {
 
 const timelineItems = ref<TimelineItem[]>([]);
 
-timelineItems.value = props.data?.map((item: any) => {
-  const { title, description, time } = item || {};
+const dummyData = [
+  { status: "Draft PU", username: "Ramen Grill Indonesia", created_at: "2024-11-01" },
+  { status: "Submitted PU", username: "Ramen Grill Indonesia", created_at: "2024-11-02" },
+  { status: "Verifikasi", username: "Yuan", created_at: "2024-11-03" },
+];
+
+timelineItems.value = dummyData?.map((item: any) => {
+  const { status, username, created_at } = item || {};
 
   return {
-    title,
-    user: description,
-    date: time,
+    title: status,
+    user: username,
+    date: created_at,
     color: "grey",
   };
 });
@@ -38,33 +44,27 @@ const formatDate = (date: string): string => {
 <template>
   <VContainer class="pa-0">
     <VCard variant="flat" class="pa-4">
-      <VTimeline
-        side="end"
-        align="start"
-        line-inset="9"
-        truncate-line="start"
-        density="compact"
-        class="v-timeline--variant-outlined"
-      >
+      <VTimeline align="start" density="compact" truncate-line="both">
         <VTimelineItem
           v-for="(item, i) in timelineItems"
           :key="i"
-          dot-color="rgb(var(--v-theme-surface))"
-          size="x-small"
+          dot-color="#FFFFFF"
         >
           <template #icon>
-            <VIcon icon="ri-circle-line" color="primary" size="16" />
+            <VIcon icon="ri-circle-line" color="primary" size="35" />
           </template>
-          <div
-            class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
-          >
-            <span class="app-timeline-title">
-              {{ item.title }}
-            </span>
-            <span class="app-timeline-meta">{{ formatDate(item.date) }}</span>
-          </div>
-          <div class="app-timeline-text mt-1">
-            {{ item.user }}
+          <div class="d-flex justify-space-between align-start">
+            <div>
+              <div class="text-subtitle-2 font-weight-bold">
+                {{ item.title }}
+              </div>
+              <div class="text-caption text-grey">
+                {{ item.user }}
+              </div>
+            </div>
+            <div class="text-caption text-grey">
+              {{ formatDate(item.date) }}
+            </div>
           </div>
         </VTimelineItem>
       </VTimeline>

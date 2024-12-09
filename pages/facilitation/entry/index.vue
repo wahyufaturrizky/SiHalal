@@ -6,7 +6,9 @@ const loading = ref(false);
 
 const page = ref(1);
 const searchQuery = ref("");
-const status = ref("OF1");
+const status = ref("OF1,OF10,OF5,OF2,OF290");
+const loadingAll = ref(true);
+const dataSOF = ref([]);
 
 const loadItem = async (
   page: number,
@@ -27,12 +29,36 @@ const loadItem = async (
       },
     });
 
-    items.value = response.data;
-    totalItems.value = response.total_item;
-    loading.value = false;
+    if (response) {
+      items.value = response.data;
+      totalItems.value = response.total_item;
+      loading.value = false;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loading.value = false;
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loading.value = false;
+  }
+};
+
+const loadSOF = async () => {
+  try {
+    const response = await $api("/master/source-of-fund", {
+      method: "get",
+    });
+
+    if (response.length) {
+      dataSOF.value = response;
+
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
@@ -52,11 +78,29 @@ const getStatusColor = (status) => {
 const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
-  await loadItem(1, itemPerPage.value, "", "OF1");
+  const res = await Promise.all([
+    loadSOF(),
+    loadItem(1, itemPerPage.value, "", "OF1,OF10,OF5,OF2,OF290"),
+  ]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
 });
 
 const handleInput = () => {
-  debouncedFetch(page.value, itemPerPage.value, searchQuery.value, "OF1");
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    "OF1,OF10,OF5,OF2,OF290"
+  );
 };
 
 const tableHeader = [
@@ -77,13 +121,17 @@ const tableHeader = [
 const navigateAction = (id: string) => {
   navigateTo(`/facilitation/entry/${id}`);
 };
+
+const formatSof = (val: string) => {
+  return dataSOF.value.find((item: any) => item.code === val)?.name;
+};
 </script>
 
 <template>
   <VRow>
     <VCol><h3>Entri Fasilitasi</h3></VCol>
   </VRow>
-  <VRow>
+  <VRow v-if="!loadingAll">
     <VCol>
       <VCard>
         <VCardTitle><h4>List Fasilitasi</h4></VCardTitle>
@@ -115,6 +163,10 @@ const navigateAction = (id: string) => {
               <template #item.id="{ index }">
                 {{ index + 1 + (page - 1) * itemPerPage }}
               </template>
+              <template #item.sumber_biaya="{ item }">
+                {{ formatSof(item.sumber_biaya) }}
+              </template>
+
               <template #item.tgl_aktif="{ item }">
                 {{ formatDateIntl(new Date(item.tgl_aktif)) }}
               </template>

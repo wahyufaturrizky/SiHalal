@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const loading = ref(false);
+const loading = ref(true);
 const loadingSubmit = ref(false);
 const loadingDelete = ref(false);
 const visibleModalKirim = ref(false);
@@ -10,6 +10,7 @@ const timelineEvents = ref();
 const openPanelRegisterData = ref(0);
 const openPanelFacilitate = ref(0);
 const openPanelTracking = ref(0);
+const dataSOF = ref([]);
 
 const route = useRoute();
 const router = useRouter();
@@ -18,8 +19,6 @@ const facilitateId = route.params.id;
 
 const loadItemById = async () => {
   try {
-    loading.value = true;
-
     const response = await $api(`/facilitate/entry/${facilitateId}`, {
       method: "get",
     });
@@ -116,16 +115,14 @@ const loadItemById = async () => {
         };
       });
 
-      loading.value = false;
+      return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-      loading.value = false;
     }
   } catch (error) {
     console.log("@error", error);
 
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loading.value = false;
   }
 };
 
@@ -181,12 +178,44 @@ const deleteFacilitate = async () => {
   }
 };
 
+const loadSOF = async () => {
+  try {
+    const response = await $api("/master/source-of-fund", {
+      method: "get",
+    });
+
+    if (response.length) {
+      dataSOF.value = response;
+
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan asd", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
 onMounted(async () => {
-  await loadItemById();
+  const res = await Promise.all([loadSOF(), loadItemById()]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loading.value = false;
+  } else {
+    loading.value = false;
+  }
 });
 
 const navigateAction = () => {
   navigateTo(`/facilitation/entry/${facilitateId}/edit`);
+};
+
+const formatSof = (val: string) => {
+  return dataSOF.value.find((item: any) => item.code === val)?.name;
 };
 </script>
 
@@ -292,13 +321,24 @@ const navigateAction = () => {
           </VExpansionPanelTitle>
           <VExpansionPanelText>
             <VRow v-for="item in dataFasilitasi" :key="item.id" gutter="1svh">
-              <VCol cols="3">
-                {{ item.key }}
-              </VCol>
-              <VCol cols="1"> : </VCol>
-              <VCol cols="8">
-                {{ item.value }}
-              </VCol>
+              <template v-if="item.key === 'Sumber Pembiayaan'">
+                <VCol cols="3">
+                  {{ item.key }}
+                </VCol>
+                <VCol cols="1"> : </VCol>
+                <VCol cols="8">
+                  {{ formatSof(item.value) }}
+                </VCol>
+              </template>
+              <template v-else>
+                <VCol cols="3">
+                  {{ item.key }}
+                </VCol>
+                <VCol cols="1"> : </VCol>
+                <VCol cols="8">
+                  {{ item.value }}
+                </VCol>
+              </template>
             </VRow>
           </VExpansionPanelText>
         </VExpansionPanel>

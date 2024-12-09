@@ -55,6 +55,7 @@ const loa = ref<LOAData>({
   authorizer_company: "",
   date: "",
   id: "",
+  letter_no: "",
   loa_document: "",
 });
 const fhc = ref<FHCData>({
@@ -75,7 +76,9 @@ const getLoa = async () => {
         id: shlnId,
       },
     });
-
+    if (response.code != 2000) {
+      return;
+    }
     loa.value = response.data;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -89,7 +92,9 @@ const getFhc = async () => {
         id: shlnId,
       },
     });
-
+    if (response.code != 2000) {
+      return;
+    }
     fhc.value = response.data;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -209,7 +214,9 @@ const saveLoa = async () => {
       body: loaForm.value,
     });
     loadDialog.value = false;
+    refLoaForm.value?.resetValidation();
     await getLoa();
+    await getLoaTracking;
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
       return;
@@ -217,6 +224,7 @@ const saveLoa = async () => {
     useMyUpdateSubmissionEditStore().setData("document");
     useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
   } catch (error) {
+    refLoaForm.value?.resetValidation();
     loadDialog.value = false;
     useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
   }
@@ -234,7 +242,10 @@ const saveFhc = async () => {
       body: fhcForm.value,
     });
     await getFhc();
+    await getFhcTracking();
+    refFhcForm.value?.resetValidation();
     loadFhcDialog.value = false;
+
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
       return;
@@ -272,6 +283,9 @@ const saveReqDocument = async () => {
       },
     });
     loadReqDialog.value = false;
+    refReqDocForm.value?.resetValidation();
+    refReqDocForm.value?.reset();
+
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
       return;
@@ -369,7 +383,6 @@ onMounted(async () => {
     getLoaTracking(),
     getRequirementDocument(),
   ]);
-  console.log(requirementDocArray.value);
   loaForm.value.authorized_name = loa.value?.authorized_company;
   loaForm.value.authorizer_name = loa.value?.authorizer_company;
   loaForm.value.letter_number = loa.value?.letter_no;
@@ -544,7 +557,7 @@ onMounted(async () => {
         >
           <VListItem lines="two" subtitle="Subtitle" title="Title" rounded />
         </VSkeletonLoader>
-        <HalalTimeLine v-if="loaTracking != undefined" :events="loaTracking" />
+        <HalalTimeLine v-if="loaTracking != undefined" :event="loaTracking" />
       </ExpandCard>
 
       <ExpandCard title="Tracking of Certificate and Legalization">
@@ -555,7 +568,7 @@ onMounted(async () => {
         >
           <VListItem lines="two" subtitle="Subtitle" title="Title" rounded />
         </VSkeletonLoader>
-        <HalalTimeLine v-if="fhcTracking != undefined" :events="fhcTracking" />
+        <HalalTimeLine v-if="fhcTracking" :event="fhcTracking" />
       </ExpandCard>
     </VCol>
   </VRow>
@@ -600,6 +613,11 @@ onMounted(async () => {
               color="primary"
               variant="outlined"
               append-icon="ri-download-line"
+              @click="
+                downloadDOcument(
+                  '7b6c4e03-9ae0-4ee2-b045-53882314443d_sample_template_surat_permohonan_dan_perpanjangan_rshln (3).docx'
+                )
+              "
               >Download FHCR Application Letter Document Format</VBtn
             >
             <VBtn color="primary" type="submit">Save</VBtn>

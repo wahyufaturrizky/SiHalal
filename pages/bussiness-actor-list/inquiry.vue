@@ -4,10 +4,7 @@ const size = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
 const loadingStatus = ref(false);
-const loadingCodeFaciiltate = ref(false);
-const loadingSOF = ref(false);
 const itemsStatus = ref();
-const itemsCodeFaciiltate = ref();
 const page = ref(1);
 const no_daftar = ref("");
 const nama_pu = ref("");
@@ -16,6 +13,7 @@ const status = ref("");
 const jenis = ref("");
 const kode_fac = ref("");
 const dataSOF = ref([]);
+const loadingAll = ref(true);
 
 const loadItem = async ({
   page,
@@ -69,60 +67,63 @@ const loadItem = async ({
 
 const loadItemStatusApplication = async () => {
   try {
-    loadingStatus.value = true;
-
     const response = await $api("/master/application-status", {
       method: "get",
     });
 
     if (response.length) {
       itemsStatus.value = response;
-      loadingStatus.value = false;
+      return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-      loadingStatus.value = false;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingStatus.value = false;
   }
 };
 
 const loadSOF = async () => {
   try {
-    loadingSOF.value = true;
-
     const response = await $api("/master/source-of-fund", {
       method: "get",
     });
 
     if (response.length) {
       dataSOF.value = response;
-
-      loadingSOF.value = false;
+      return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan asd", "error");
-      loadingSOF.value = false;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingSOF.value = false;
   }
 };
 
 onMounted(async () => {
-  await loadItem({
-    page: 1,
-    size: size.value,
-    no_daftar: no_daftar.value,
-    nama_pu: nama_pu.value,
-    merek_dagang: merek_dagang.value,
-    status: status.value,
-    jenis: jenis.value,
-    kode_fac: kode_fac.value,
+  const res = await Promise.all([
+    loadSOF(),
+    loadItem({
+      page: 1,
+      size: size.value,
+      no_daftar: no_daftar.value,
+      nama_pu: nama_pu.value,
+      merek_dagang: merek_dagang.value,
+      status: status.value,
+      jenis: jenis.value,
+      kode_fac: kode_fac.value,
+    }),
+    loadItemStatusApplication(),
+  ]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
   });
-  await loadItemStatusApplication();
-  await loadSOF();
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
 });
 
 const debouncedFetch = debounce(loadItem, 500);
@@ -132,12 +133,9 @@ const debouncedFetch = debounce(loadItem, 500);
   <h1 class="mb-3">
     <b> Inquiry </b>
   </h1>
-  <div>
+  <div v-if="!loadingAll">
     <InquiryFilter
-      v-if="!loadingStatus && !loadingCodeFaciiltate && !loadingSOF"
       :itemsstatus="itemsStatus"
-      :loadingstatus="loadingStatus"
-      :loadingsof="loadingSOF"
       :datsof="dataSOF"
       @formvalue="
         debouncedFetch({

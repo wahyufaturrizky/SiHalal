@@ -164,7 +164,7 @@ export default [
       {
         title: "navbar.online_registration.menu.fa_verification",
         icon: { icon: "fa-check-circle" },
-        to: "online-registration-facilitator-verification",
+        to: "facilitator-verifikasi",
         roles: ["Verifikator Fasilitator", "Admin"],
       },
       {

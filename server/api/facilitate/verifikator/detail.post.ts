@@ -9,17 +9,18 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-  const { hcb_id } = getQuery(event);
+  const { id } = await readBody(event);
+  console.log(id);
+
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/certificate-halal-foreign/scopes`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/fasilitator/${id}/detail`,
     {
       method: "get",
       headers: { Authorization: authorizationHeader },
-      params: { hcb_id },
     }
   ).catch((err: NuxtError) => {
-    setResponseStatus(event, 200);
-
+    console.log(err);
+    setResponseStatus(event, 400);
     return err.data;
   });
   return data || null;

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const tableHeader = [
   { title: "No", value: "index" },
+  { title: "Tanggal Daftar", value: "tgl_daftar" },
   { title: "Kode Fasilitasi", value: "id" },
   { title: "Tahun", value: "tahun" },
   { title: "Nama Fasilitasi", value: "fac_name" },
@@ -9,9 +10,8 @@ const tableHeader = [
   { title: "Tanggal Aktif", value: "tgl_aktif" },
   { title: "tanggal Selesai", value: "tgl_selesai" },
   { title: "Kuota", value: "kuota" },
-  { title: "Sisa", value: "sisa" },
-  { title: "Status", value: "status_code" },
-  { title: "Action", value: "action", fixed: true }, // Kolom Action
+  { title: "Status", value: "status" },
+  { title: "Action", value: "action", align: "center" }, // Kolom Action
 ];
 
 const defaultStatus = { color: "error", desc: "Unknown Status" };
@@ -41,13 +41,13 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
   try {
     loading.value = true;
 
-    const response = await $api("/facilitate/list", {
+    const response = await $api("/facilitate/verifikator/list", {
       method: "get",
       params: {
         page,
         size,
         keyword,
-        status: "OF320",
+        status: "OF10",
       },
     });
 
@@ -67,55 +67,57 @@ const handleInput = () => {
   debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
 };
 const navigateAction = (id: string) => {
-  navigateTo(`/facilitation/entry/${id}`);
+  navigateTo(`/facilitator/verifikasi/${id}`);
 };
+
+import { useDisplay } from "vuetify";
+const { mdAndUp } = useDisplay();
+const maxWidthSearch = computed(() => (mdAndUp ? 700 : "90%"));
 </script>
 
 <template>
-  <h2>Daftar Fasilitasi</h2>
-  <br />
-  <VCard>
-    <VCardTitle><h3>List Fasilitasi</h3></VCardTitle>
-    <VCardItem>
+  <div>
+    <p class="text-h4">Verifikasi Fasilitator</p>
+    <VCard class="pa-4">
+      <p class="text-h5">Daftar pengajuan Fasilitasi</p>
       <VRow>
-        <VCol :cols="6">
+        <VCol class="d-flex justify-sm-space-between align-center">
           <VTextField
             v-model="searchQuery"
             density="compact"
-            append-inner-icon="mdi-magnify"
-            placeholder="Cari data"
+            placeholder="Search Data"
+            append-inner-icon="ri-search-line"
+            :max-width="maxWidthSearch"
             @input="handleInput"
           />
         </VCol>
       </VRow>
       <VRow>
-        <VCol :cols="12">
-          <VDataTableServer
-            v-model:items-per-page="itemPerPage"
-            v-model:page="page"
-            :headers="tableHeader"
-            :items-length="totalItems"
-            :loading="loading"
-            loading-text="Loading..."
-            :items="items"
-            @update:options="loadItem(page, itemPerPage, searchQuery)"
-          >
-            <template #item.index="{ index }">
-              {{ index + 1 + (page - 1) * itemPerPage }}
-            </template>
-            <template #item.status_code="{ item }">
-              <VChip label :color="statusItem[item.status_code].color">
-                {{ statusItem[item.status_code].desc }}
-              </VChip>
-            </template>
-            <template #item.action="{ item }">
-              <VBtn variant="text" icon @click="navigateAction(item.id)">
-                <VIcon>mdi-chevron-right</VIcon>
-              </VBtn>
-            </template>
-          </VDataTableServer>
-        </VCol>
+        <VDataTableServer
+          v-model:items-per-page="itemPerPage"
+          v-model:page="page"
+          :headers="tableHeader"
+          :items-length="totalItems"
+          :loading="loading"
+          loading-text="Loading..."
+          :items="items"
+          @update:options="loadItem(page, itemPerPage, searchQuery)"
+        >
+          <template #item.index="{ index }">
+            {{ index + 1 + (page - 1) * itemPerPage }}
+          </template>
+          <template #item.status="{ item }">
+            <VChip label :color="statusItem[item.status_code].color">
+              {{ statusItem[item.status_code].desc }}
+            </VChip>
+          </template>
+          <template #item.action="{ item }">
+            <VBtn variant="text" icon @click="navigateAction(item.id)">
+              <VIcon>mdi-chevron-right</VIcon>
+            </VBtn>
+          </template>
+        </VDataTableServer>
       </VRow>
-    </VCardItem>
-  </VCard>
+    </VCard>
+  </div>
 </template>
