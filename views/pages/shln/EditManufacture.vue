@@ -49,6 +49,7 @@ const insertManufacturer = async () => {
       country: props.hcbCountry != "" ? props.hcbCountry : "",
     };
     setData("manufacture");
+    await loadTracking();
     useSnackbar().sendSnackbar("Berhasil menambahkan manufacture", "success");
     manufactureDialog.value = false;
     manufactureAddButton.value = false;

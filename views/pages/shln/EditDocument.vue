@@ -214,7 +214,9 @@ const saveLoa = async () => {
       body: loaForm.value,
     });
     loadDialog.value = false;
+    refLoaForm.value?.resetValidation();
     await getLoa();
+    await getLoaTracking;
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
       return;
@@ -222,6 +224,7 @@ const saveLoa = async () => {
     useMyUpdateSubmissionEditStore().setData("document");
     useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
   } catch (error) {
+    refLoaForm.value?.resetValidation();
     loadDialog.value = false;
     useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
   }
@@ -239,7 +242,10 @@ const saveFhc = async () => {
       body: fhcForm.value,
     });
     await getFhc();
+    await getFhcTracking();
+    refFhcForm.value?.resetValidation();
     loadFhcDialog.value = false;
+
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
       return;
@@ -277,6 +283,9 @@ const saveReqDocument = async () => {
       },
     });
     loadReqDialog.value = false;
+    refReqDocForm.value?.resetValidation();
+    refReqDocForm.value?.reset();
+
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
       return;
