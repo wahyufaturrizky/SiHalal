@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/certificate-halal-foreign/${id}/accept`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/certificate-halal-foreign/${id}/verified`,
     {
       method: "put",
       headers: { Authorization: authorizationHeader },
