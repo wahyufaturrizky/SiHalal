@@ -331,7 +331,6 @@ const getDate = (): string => {
       />
     </VCol>
   </VRow>
-  <InformationLoginPopUp />
 </template>
 
 <style lang="scss">
