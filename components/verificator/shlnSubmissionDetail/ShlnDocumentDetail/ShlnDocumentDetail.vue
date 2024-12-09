@@ -21,6 +21,7 @@ const props = defineProps({
     required: true,
   },
 });
+console.log(props);
 
 const route = useRoute();
 const shlnId = route.params.id;
@@ -73,8 +74,13 @@ const {
 const { country, expired_date, halal_institution_name, issued_date } =
   props.datadocumentmra || {};
 
-const { document, document_no, verification_link, file } =
-  props.datadocumentfhc || {};
+const {
+  document,
+  document_no,
+  verification_link,
+  file,
+  id: idFHC,
+} = props.datadocumentfhc || {};
 
 const MRA = [
   { id: 1, key: "Halal Institution Name", value: halal_institution_name },
@@ -83,23 +89,25 @@ const MRA = [
   { id: 4, key: "Country", value: country },
 ];
 
-const trackingLOA = props.datatrackingloa?.map((item) => {
-  const { username, status, id } = item || {};
+const trackingLOA = props.datatrackingloa?.map((item: any) => {
+  const { username, status, id, created_at } = item || {};
 
   return {
     id,
     key: status,
     value: username,
+    created_at,
   };
 });
 
-const trackingFHC = props.datatrackingfhc?.map((item) => {
-  const { username, status, id } = item || {};
+const trackingFHC = props.datatrackingfhc?.map((item: any) => {
+  const { username, status, id, created_at } = item || {};
 
   return {
     id,
     key: status,
     value: username,
+    created_at,
   };
 });
 
@@ -206,18 +214,35 @@ const headers = [
       <VCard>
         <VCardTitle>Tracking of LoA</VCardTitle>
         <VCardItem>
-          <VTimeline side="end">
+          <VTimeline
+            side="end"
+            align="start"
+            line-inset="9"
+            truncate-line="start"
+            density="compact"
+            class="v-timeline--variant-outlined"
+          >
             <VTimelineItem
               v-for="item in trackingLOA"
               :key="item.id"
-              dot-color="blue"
-              max-height="30svh"
+              dot-color="rgb(var(--v-theme-surface))"
+              size="x-small"
             >
-              <div>
-                <div class="text-h6">
+              <template #icon>
+                <VIcon icon="ri-circle-line" color="primary" size="16" />
+              </template>
+              <div
+                class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
+              >
+                <span class="app-timeline-title">
                   {{ item.key }}
-                </div>
-                <p>{{ item.value }}</p>
+                </span>
+                <span class="app-timeline-meta">
+                  {{ formatDate(item.created_at) }}</span
+                >
+              </div>
+              <div class="app-timeline-text mt-1">
+                {{ item.value }}
               </div>
             </VTimelineItem>
           </VTimeline>
@@ -267,8 +292,8 @@ const headers = [
         </VCardText>
         <VCardActions style="justify-content: end">
           <div>
-            <ReturnConfirmationModal :id="id" documenttype="fhc" />
-            <ApproveConfirmationModal :id="id" documenttype="fhc" />
+            <ReturnConfirmationModal :id="idFHC" documenttype="fhc" />
+            <ApproveConfirmationModal :id="idFHC" documenttype="fhc" />
           </div>
         </VCardActions>
       </VCard>
@@ -277,18 +302,35 @@ const headers = [
       <VCard>
         <VCardTitle>Tracking of Certificate</VCardTitle>
         <VCardItem>
-          <VTimeline side="end">
+          <VTimeline
+            side="end"
+            align="start"
+            line-inset="9"
+            truncate-line="start"
+            density="compact"
+            class="v-timeline--variant-outlined"
+          >
             <VTimelineItem
               v-for="item in trackingFHC"
               :key="item.id"
-              dot-color="blue"
-              max-height="30svh"
+              dot-color="rgb(var(--v-theme-surface))"
+              size="x-small"
             >
-              <div>
-                <div class="text-h6">
+              <template #icon>
+                <VIcon icon="ri-circle-line" color="primary" size="16" />
+              </template>
+              <div
+                class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
+              >
+                <span class="app-timeline-title">
                   {{ item.key }}
-                </div>
-                <p>{{ item.value }}</p>
+                </span>
+                <span class="app-timeline-meta">
+                  {{ formatDate(item.created_at) }}</span
+                >
+              </div>
+              <div class="app-timeline-text mt-1">
+                {{ item.value }}
               </div>
             </VTimelineItem>
           </VTimeline>
