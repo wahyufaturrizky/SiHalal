@@ -178,7 +178,7 @@ const saveImporter = async () => {
     });
     importerDialog.value = false;
     importerPOCButton.value = false;
-
+    await loadTracking();
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
       return;
