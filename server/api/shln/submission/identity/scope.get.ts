@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
       params: { hcb_id },
     }
   ).catch((err: NuxtError) => {
-    setResponseStatus(event, 400);
+    setResponseStatus(event, 200);
 
     return err.data;
   });
