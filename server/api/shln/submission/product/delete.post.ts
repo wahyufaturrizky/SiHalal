@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
   const { shlnId, productId } = await readBody(event);
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/certificate-halal-foreign/${shlnId}/delete/${productId}/manufacture`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/certificate-halal-foreign/${shlnId}/delete/${productId}/product`,
     {
       method: "delete",
       headers: { Authorization: authorizationHeader },
