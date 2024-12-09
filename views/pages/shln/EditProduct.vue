@@ -104,19 +104,23 @@ const closeDelete = () => {
 };
 const deleteProduct = async () => {
   try {
-    await $api("/shln/submission/manufacture/delete", {
+    const response = await $api("/shln/submission/product/delete", {
       method: "post",
       body: {
         shlnId: shlnId,
-        manufactureId: deletedId.value,
+        productId: deletedId.value,
       },
     });
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("Gagal Menghapus product", "error");
+      return;
+    }
     await loadItem(page.value, itemPerPage.value);
     deleteDialog.value = false;
-    useSnackbar().sendSnackbar("Berhasil Menghapus manufacture", "success");
+    useSnackbar().sendSnackbar("Berhasil Menghapus product", "success");
   } catch (error) {
     deleteDialog.value = false;
-    useSnackbar().sendSnackbar("Gagal Menghapus manufacture", "error");
+    useSnackbar().sendSnackbar("Gagal Menghapus product", "error");
   }
 };
 const { mdAndDown } = useDisplay();

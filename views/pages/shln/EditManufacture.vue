@@ -104,13 +104,17 @@ const loadTracking = async () => {
 };
 const deleteManufacture = async () => {
   try {
-    await $api("/shln/submission/manufacture/delete", {
+    const response = await $api("/shln/submission/manufacture/delete", {
       method: "post",
       body: {
         shlnId: shlnId,
         manufactureId: deletedId.value,
       },
     });
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("Gagal Menghapus manufacture", "error");
+      return;
+    }
     deleteDialog.value = false;
     setData("manufacture");
     useSnackbar().sendSnackbar("Berhasil Menghapus manufacture", "success");
