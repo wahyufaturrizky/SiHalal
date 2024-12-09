@@ -8,6 +8,7 @@ import {
   type legal,
   type outlet,
   type penanggungJawab,
+  type perizinanData,
   type profileMain,
   type supervisorHalal,
 } from "./interface/pelakuUsahaProfileIntf";
@@ -24,6 +25,7 @@ export const pelakuUsahaProfile = defineStore({
     outlet: [] as Array<outlet>,
     supervisorData: [] as Array<supervisorHalal>,
     isLoading: true as Boolean,
+    perizinan: [] as Array<perizinanData>,
   }),
   getters: {
     getProfileData: (state) => state.profileData,
@@ -57,6 +59,7 @@ export const pelakuUsahaProfile = defineStore({
         this.legal = response.data.business_actor.legal;
         this.outlet = response.data.business_actor.outlet;
         this.supervisorData = response.data.business_actor.supervisor_halal;
+        this.perizinan = response.data.business_actor.perizinan;
       }
     },
     setProfileData(input: profileMain) {

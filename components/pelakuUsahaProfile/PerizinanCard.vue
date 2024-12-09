@@ -3,16 +3,28 @@ import { onMounted, reactive, ref } from "vue";
 
 const tablePerizinanHeader = [
   { title: "No", key: "no" },
-  { title: "Penerbit", key: "publishing_agency" },
-  { title: "Nama Izin", key: "type" },
-  { title: "Nomor", key: "doc_number" },
+  { title: "Penerbit", key: "instansi" },
+  { title: "Nama Izin", key: "nama_izin" },
+  { title: "Nomor", key: "no_izin" },
   { title: "Tanggal", key: "date" },
-  { title: "Document", key: "document" },
+  { title: "Document", key: "file_izin" },
+  { title: "Document", key: "file_izin_oss" },
 ];
 
 const panelOpen = ref([0]);
 const store = reactive(pelakuUsahaProfile());
 const isLoading = ref(true);
+
+// TODO -> LOGIC TO DONWLOAD FILE
+const download = (item) => {
+  console.log("item url", item);
+  try {
+    window.open(item, "_blank", "noopener,noreferrer");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+  // console.log("DOWNLOAD FILE ", item.file)
+};
 
 onMounted(async () => {
   try {
@@ -36,8 +48,8 @@ onMounted(async () => {
         <VContainer style="max-height: 35svh; overflow-y: auto">
           <div v-if="isLoading">Loading...</div>
           <div
-            v-else-if="store.legal?.length"
-            v-for="(item, index) in store.legal"
+            v-else-if="store.perizinan?.length"
+            v-for="(item, index) in store.perizinan"
             :key="index"
           >
             <div style="padding: 2svh; border: dotted; overflow-x: auto">
@@ -47,14 +59,13 @@ onMounted(async () => {
                 </VCol>
               </VRow>
               <VRow>
-                <VCol cols="12">
-                  Penerbit: {{ item?.publishing_agency || "-" }}
-                </VCol>
+                <VCol cols="12"> Penerbit: {{ item?.instansi || "-" }} </VCol>
               </VRow>
               <VRow>
-                <VCol cols="12">Nama Izin: {{ item?.type || "-" }}</VCol>
+                <VCol cols="12">Nama Izin: {{ item?.nama_izin || "-" }}</VCol>
               </VRow>
             </div>
+            <br />
           </div>
           <p v-else>No data available</p>
         </VContainer>
@@ -64,8 +75,33 @@ onMounted(async () => {
               <template #content>
                 <VDataTable
                   :headers="tablePerizinanHeader"
-                  :items="store.legal ?? store.legal"
-                />
+                  :items="store.perizinan ?? store.perizinan"
+                >
+                  <template #item.file_izin="{ item }">
+                    <v-btn
+                      v-if="item.file_izin"
+                      color="primary"
+                      variant="plain"
+                      prepend-icon="mdi-download"
+                      @click="download(item.file_izin)"
+                    >
+                      File
+                    </v-btn>
+                    <p v-else>File not available</p>
+                  </template>
+                  <template #item.file_izin_oss="{ item }">
+                    <v-btn
+                      v-if="item.file_izin_oss"
+                      color="primary"
+                      variant="plain"
+                      prepend-icon="mdi-download"
+                      @click="download(item.file_izin_oss)"
+                    >
+                      File
+                    </v-btn>
+                    <p v-else>File not available</p>
+                  </template>
+                </VDataTable>
               </template>
             </BasicDataPopup>
           </VCol>
