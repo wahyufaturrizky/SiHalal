@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/fasilitator/fasilitasi/reject`,
     {
-      method: "get",
+      method: "put",
       headers: { Authorization: authorizationHeader },
       body: {
         fasilitasi_id: id,
