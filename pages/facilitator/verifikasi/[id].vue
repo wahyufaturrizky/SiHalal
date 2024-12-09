@@ -68,6 +68,8 @@ const detail = ref<FasilitatorData>({
   },
   tracking: [],
 });
+const jenisFasilitasi = ref();
+const listLembaga = ref([]);
 const getDetail = async () => {
   try {
     const response = await $api("/facilitate/verifikator/detail", {
@@ -81,11 +83,27 @@ const getDetail = async () => {
       navigateTo("/facilitator/verifikasi");
     }
     detail.value = response.data.fasilitator;
+    jenisFasilitasi.value = detail.value.fasilitasi.jenis_fasilitasi;
+    let url = "/facilitate/verifikator/lp";
+    if (jenisFasilitasi.value == "Reguler") {
+      url = "/facilitate/verifikator/lph";
+    }
+    const lembaga = await $api(url, {
+      method: "get",
+    });
+    if (lembaga.code != 2000) {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      return;
+    }
+    listLembaga.value = lembaga.data;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
+const formatLembaga = (val: string) => {
+  return listLembaga.value.find((item: any) => item.id === val)?.name;
+};
 const defaultStatus = { color: "error", desc: "Unknown Status" };
 const statusItem = new Proxy(
   {
@@ -110,7 +128,7 @@ const returnHandler = async (message: string) => {
       method: "post",
       body: {
         id: route.params.id,
-        keterangan: message,
+        comment: message,
       },
     });
     if (res.code != 2000) {
@@ -131,7 +149,7 @@ const rejectHandler = async (message: string) => {
       method: "post",
       body: {
         id: route.params.id,
-        keterangan: message,
+        comment: message,
       },
     });
     if (res.code != 2000) {
@@ -163,8 +181,27 @@ const approveHandler = async (message: string) => {
     useSnackbar().sendSnackbar("Ada kesalahan!", "error");
   }
 };
+const dataSOF = ref([]);
+const loadSOF = async () => {
+  try {
+    const response = await $api("/master/source-of-fund", {
+      method: "get",
+    });
+
+    if (response.length) {
+      dataSOF.value = response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan asd", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+const formatSof = (val: string) => {
+  return dataSOF.value.find((item: any) => item.code === val)?.name;
+};
 onMounted(async () => {
-  await Promise.allSettled([getDetail()]);
+  await Promise.allSettled([getDetail(), loadSOF()]);
 });
 
 const institutionHeader = [
@@ -212,19 +249,19 @@ const institutionHeader = [
               }}</InfoRow>
               <InfoRow name="Tgl. Mulai ">{{
                 detail.fasilitasi.tgl_mulai != ""
-                  ? new Date(detail.fasilitasi.tgl_mulai)
+                  ? formatDateIntl(new Date(detail.fasilitasi.tgl_mulai))
                   : ""
               }}</InfoRow>
               <InfoRow name="Tgl. Selesai">{{
                 detail.fasilitasi.tgl_selesai != ""
-                  ? new Date(detail.fasilitasi.tgl_selesai)
+                  ? formatDateIntl(new Date(detail.fasilitasi.tgl_selesai))
                   : ""
               }}</InfoRow>
               <InfoRow name="Jenis Fasilitasi">{{
                 detail.fasilitasi.jenis_fasilitasi
               }}</InfoRow>
               <InfoRow name="Sumber Pembiayaan">{{
-                detail.fasilitasi.sumber_pembiayaan
+                formatSof(detail.fasilitasi.sumber_pembiayaan)
               }}</InfoRow>
               <InfoRow name="Kuota">{{ detail.fasilitasi.kuota }}</InfoRow>
             </VExpansionPanelText>
@@ -242,7 +279,11 @@ const institutionHeader = [
                   {{ index + 1 }}
                 </template>
                 <template #item.lph="{ item }">
-                  {{ item.lp_id != null ? item.lp_id : item.lph_id }}
+                  {{
+                    item.lp_id != null
+                      ? formatLembaga(item.lp_id)
+                      : formatLembaga(item.lph_id)
+                  }}
                 </template>
               </VDataTable>
             </VExpansionPanelText>

@@ -2,7 +2,7 @@
 const tableHeader = [
   { title: "No", value: "index" },
   { title: "Tanggal Daftar", value: "tgl_daftar" },
-  { title: "Kode Fasilitasi", value: "id" },
+  { title: "Kode Fasilitasi", value: "kode_fac" },
   { title: "Tahun", value: "tahun" },
   { title: "Nama Fasilitasi", value: "fac_name" },
   { title: "Sumber Pembiayaan", value: "sumber_biaya" },
@@ -70,6 +70,29 @@ const navigateAction = (id: string) => {
   navigateTo(`/facilitator/verifikasi/${id}`);
 };
 
+const dataSOF = ref();
+const loadSOF = async () => {
+  try {
+    const response = await $api("/master/source-of-fund", {
+      method: "get",
+    });
+
+    if (response.length) {
+      dataSOF.value = response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan asd", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+const formatSof = (val: string) => {
+  return dataSOF.value.find((item: any) => item.code === val)?.name;
+};
+onMounted(async () => {
+  await loadSOF();
+});
+
 import { useDisplay } from "vuetify";
 const { mdAndUp } = useDisplay();
 const maxWidthSearch = computed(() => (mdAndUp ? 700 : "90%"));
@@ -105,6 +128,15 @@ const maxWidthSearch = computed(() => (mdAndUp ? 700 : "90%"));
         >
           <template #item.index="{ index }">
             {{ index + 1 + (page - 1) * itemPerPage }}
+          </template>
+          <template #item.tgl_aktif="{ item }">
+            {{ formatDateIntl(new Date(item.tgl_aktif)) }}
+          </template>
+          <template #item.tgl_selesai="{ item }">
+            {{ formatDateIntl(new Date(item.tgl_selesai)) }}
+          </template>
+          <template #item.sumber_biaya="{ item }">
+            {{ formatSof(item.sumber_biaya) }}
           </template>
           <template #item.status="{ item }">
             <VChip label :color="statusItem[item.status_code].color">

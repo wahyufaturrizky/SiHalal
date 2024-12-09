@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/fasilitator/fasilitasi/${id}/approve`,
     {
-      method: "post",
+      method: "put",
       headers: { Authorization: authorizationHeader },
     }
   ).catch((err: NuxtError) => {

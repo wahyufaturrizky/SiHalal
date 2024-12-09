@@ -534,9 +534,14 @@ onMounted(async () => {
             <VCard outlined>
               <VCardText>
                 <p>
-                  This is the paragraph inside the box. You can put any content
-                  here, such as additional instructions, important information,
-                  or any other text you want to highlight in a box.
+                  If this document uses a anguage other than English, it is
+                  mandatory to include the original document and a document
+                  translated into English by a sworn translator in the same file
+                  Upload the Apostille certificate, Foreign Halal Certificate,
+                  and a screenshot of the proof of verification results. If the
+                  Apostille certificate cannot be verified online, proof of the
+                  results will be substituted by a statement letter in the
+                  following format below (Click Here)
                 </p>
               </VCardText>
             </VCard>

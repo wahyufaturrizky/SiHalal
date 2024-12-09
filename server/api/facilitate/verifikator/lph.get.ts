@@ -9,17 +9,12 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-  const { id, comment } = await readBody(event);
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/fasilitator/fasilitasi/return`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/list/lph`,
     {
-      method: "put",
+      method: "get",
       headers: { Authorization: authorizationHeader },
-      body: {
-        fasilitasi_id: id,
-        keterangan: comment,
-      },
     }
   ).catch((err: NuxtError) => {
     console.log(err);

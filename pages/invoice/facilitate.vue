@@ -44,7 +44,7 @@ const loadItem = async (page: number, size: number) => {
       },
     });
 
-    items.value = response.data;
+    if (response.code != 2000) items.value = response.data;
     totalItems.value = response.total_item;
     loading.value = false;
   } catch (error) {
