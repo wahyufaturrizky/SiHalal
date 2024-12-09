@@ -123,7 +123,10 @@ const getScope = async (hcb_id) => {
     }
   );
 
-  scope.value = response;
+  if (response.code != 2000) {
+    return;
+  }
+  scope.value = response.data;
 };
 const refImporterPocForm = ref<VForm>();
 const openImporterPOCDialog = () => {
@@ -220,7 +223,7 @@ const loadTracking = async () => {
 //   }
 // };
 const loadHcb = async (item: string) => {
-  const country = props.hcb.find((body) => body.id == item).country;
+  const country = props.hcb.find((body) => body.id == item)?.country;
   await getScope(item);
   hcbCountry.value = country;
 };
@@ -265,7 +268,7 @@ onMounted(async () => {
     method: "get",
   });
   province.value = response;
-  await loadHcb(formIdentity.value.hcb.hcb_id);
+  await loadHcb(props.event.hcb.hcb_id == "" ? null : props.event.hcb.hcb_id);
   if (props.event.profile.province != "")
     await getDistrict(props.event.profile.province);
   if (props.event.profile.regency != "")
