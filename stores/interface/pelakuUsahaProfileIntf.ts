@@ -85,3 +85,20 @@ export interface supervisorHalal {
   certification_no: string;
   sk_no: string;
 }
+
+export interface perizinanData {
+  id_proyek: string;
+  oss_id: string;
+  jenis_izin: string;
+  kd_izin: string;
+  kd_daerah: string;
+  nama_izin: string;
+  no_izin: string;
+  tgl_izin: string;
+  instansi: string;
+  file_izin: string;
+  file_izin_oss: string;
+  id_produk: string;
+  id_izin: string;
+  id: string;
+}
