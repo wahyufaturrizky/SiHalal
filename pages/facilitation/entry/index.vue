@@ -8,7 +8,6 @@ const page = ref(1);
 const searchQuery = ref("");
 const status = ref("OF1,OF10,OF5,OF2,OF290");
 const loadingAll = ref(true);
-const dataSOF = ref([]);
 
 const loadItem = async (
   page: number,
@@ -44,24 +43,6 @@ const loadItem = async (
   }
 };
 
-const loadSOF = async () => {
-  try {
-    const response = await $api("/master/source-of-fund", {
-      method: "get",
-    });
-
-    if (response.length) {
-      dataSOF.value = response;
-
-      return response;
-    } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
-
 const getStatusColor = (status) => {
   switch (status.toLowerCase()) {
     case "lunas":
@@ -79,7 +60,6 @@ const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
   const res = await Promise.all([
-    loadSOF(),
     loadItem(1, itemPerPage.value, "", "OF1,OF10,OF5,OF2,OF290"),
   ]);
 
@@ -108,7 +88,7 @@ const tableHeader = [
   { title: "Kode Fasilitasi", key: "kode_fac" },
   { title: "Tahun", key: "tahun" },
   { title: "Nama Fasilitasi", key: "fac_name" },
-  { title: "Sumber Pembiayaan", key: "sumber_biaya" },
+  { title: "Sumber Pembiayaan", key: "sumber_biaya_name" },
   { title: "Jenis", key: "jenis" },
   { title: "Tanggal Aktif", key: "tgl_selesai" },
   { title: "Tanggal Selesai", key: "tgl_aktif" },
@@ -120,10 +100,6 @@ const tableHeader = [
 
 const navigateAction = (id: string) => {
   navigateTo(`/facilitation/entry/${id}`);
-};
-
-const formatSof = (val: string) => {
-  return dataSOF.value.find((item: any) => item.code === val)?.name;
 };
 </script>
 
@@ -163,10 +139,6 @@ const formatSof = (val: string) => {
               <template #item.id="{ index }">
                 {{ index + 1 + (page - 1) * itemPerPage }}
               </template>
-              <template #item.sumber_biaya="{ item }">
-                {{ formatSof(item.sumber_biaya) }}
-              </template>
-
               <template #item.tgl_aktif="{ item }">
                 {{ formatDateIntl(new Date(item.tgl_aktif)) }}
               </template>

@@ -21,7 +21,11 @@ const props = defineProps({
     required: true,
   },
 });
-console.log(props);
+
+const emit = defineEmits<{
+  (e: "refreshloa"): void;
+  (e: "refreshfhc"): void;
+}>();
 
 const route = useRoute();
 const shlnId = route.params.id;
@@ -45,8 +49,27 @@ const loadItemListDocumentById = async (page: number, size: number) => {
     });
 
     if (response.code === 2000) {
-      dataListDocument.value = response.data || [];
-      totalItems.value = response?.total_item;
+      const { data } = response;
+      const { requirement_doc } = data || {};
+      const { loa, nib } = requirement_doc || {};
+
+      const resData = [
+        {
+          no: loa.id,
+          type: "LOA",
+          file: loa.file,
+          record: loa.status,
+        },
+        {
+          no: nib.id,
+          type: "NIB",
+          file: nib.file,
+          record: nib.status,
+        },
+      ];
+
+      dataListDocument.value = resData || [];
+      totalItems.value = 2;
       loadingListDocument.value = false;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -111,7 +134,7 @@ const trackingFHC = props.datatrackingfhc?.map((item: any) => {
   };
 });
 
-const downloadLOA = (file) => {
+const downloadLOA = (file: any) => {
   window.open(file, "_blank");
 };
 
@@ -121,6 +144,14 @@ const headers = [
   { title: "Upload / Download", key: "file" },
   { title: "HS Code", key: "record" },
 ];
+
+const onRefresh = (type: string) => {
+  if (type === "loa") {
+    emit("refreshloa");
+  } else if (type === "fhc") {
+    emit("refreshfhc");
+  }
+};
 </script>
 
 <template>
@@ -204,8 +235,16 @@ const headers = [
         </VCardText>
         <VCardActions style="justify-content: end">
           <div>
-            <ReturnConfirmationModal :id="id" documenttype="loa" />
-            <ApproveConfirmationModal :id="id" documenttype="loa" />
+            <ReturnConfirmationModal
+              @refresh="onRefresh('loa')"
+              :id="id"
+              documenttype="loa"
+            />
+            <ApproveConfirmationModal
+              @refresh="onRefresh('loa')"
+              :id="id"
+              documenttype="loa"
+            />
           </div>
         </VCardActions>
       </VCard>
@@ -292,8 +331,16 @@ const headers = [
         </VCardText>
         <VCardActions style="justify-content: end">
           <div>
-            <ReturnConfirmationModal :id="idFHC" documenttype="fhc" />
-            <ApproveConfirmationModal :id="idFHC" documenttype="fhc" />
+            <ReturnConfirmationModal
+              @refresh="onRefresh('fhc')"
+              :id="idFHC"
+              documenttype="fhc"
+            />
+            <ApproveConfirmationModal
+              @refresh="onRefresh('fhc')"
+              :id="idFHC"
+              documenttype="fhc"
+            />
           </div>
         </VCardActions>
       </VCard>
@@ -357,10 +404,11 @@ const headers = [
               {{ index + 1 + (page - 1) * itemPerPage }}
             </template>
             <template #item.file="{ item }">
-              <VBtn icon="fa-download" density="compact" />
-            </template>
-            <template #item.record="{ item }">
-              <VIcon icon="fa-history" />
+              <VBtn
+                icon="fa-download"
+                density="compact"
+                @click="downloadLOA(item.file)"
+              />
             </template>
           </VDataTableServer>
         </VCardText>

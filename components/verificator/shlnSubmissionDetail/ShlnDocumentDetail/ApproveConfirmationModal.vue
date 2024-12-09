@@ -12,6 +12,10 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits<{
+  (e: "refresh"): void;
+}>();
+
 const route = useRoute();
 const isVisible = ref(false);
 
@@ -39,6 +43,7 @@ const putVerificatorDocument = async (comment: string[]) => {
 
     if (res?.code === 2000) {
       closeDialog();
+      emit("refresh");
     } else {
       closeDialog();
       useSnackbar().sendSnackbar("Gagal menambahkan data", "error");

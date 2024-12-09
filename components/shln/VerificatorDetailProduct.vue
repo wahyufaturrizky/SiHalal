@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+const emit = defineEmits<{
+  (e: "refresh"): void;
+}>();
+
 const props = defineProps({
   datalistproducttracking: {
     type: Object,
@@ -66,10 +70,14 @@ const headers = [
           <VCol cols="4">
             <VRow no-gutters>
               <VCol cols="6">
-                <VerificationProductReturnConfirmation />
+                <VerificationProductReturnConfirmation
+                  @refresh="emit('refresh')"
+                />
               </VCol>
               <VCol cols="6">
-                <VerificationProductSaveConfirmation />
+                <VerificationProductSaveConfirmation
+                  @refresh="emit('refresh')"
+                />
               </VCol>
             </VRow>
           </VCol>

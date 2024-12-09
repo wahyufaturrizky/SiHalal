@@ -2,6 +2,10 @@
 import { computed, ref } from "vue";
 import { useDisplay } from "vuetify";
 
+const emit = defineEmits<{
+  (e: "refresh"): void;
+}>();
+
 const route = useRoute();
 
 const inputValue = ref("");
@@ -33,6 +37,7 @@ const postVerificatorReturn = async (comment: string[]) => {
     if (res?.code === 2000) {
       inputValue.value = "";
       closeDialog();
+      emit("refresh");
     } else {
       inputValue.value = "";
       closeDialog();
