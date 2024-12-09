@@ -1,81 +1,142 @@
 <script setup lang="ts">
-import { computed, defineEmits, defineProps, ref, watch } from 'vue'
-import { useDisplay } from 'vuetify'
+import type { MasterDistrict } from "@/server/interface/master.iface";
+import { computed, defineEmits, defineProps, ref, watch } from "vue";
+import { useDisplay } from "vuetify";
 
 const props = defineProps({
-  mode: { type: String, default: 'add' },
+  mode: { type: String, default: "add" },
   initialData: { type: Object, default: () => ({}) },
-})
+});
 
-const emit = defineEmits(['confirmAdd', 'confirmEdit', 'cancel'])
+const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
 
-const isVisible = ref(false)
+const isVisible = ref(false);
 
-const openDialog = () => {
-  isVisible.value = true
-}
+const openDialog = async () => {
+  if (props.mode == "add") {
+    resetForm();
+  }
+
+  await getProvince();
+
+  isVisible.value = true;
+};
 
 const closeDialog = () => {
-  isVisible.value = false
-}
+  isVisible.value = false;
+};
 
 const confirm = () => {
-  if (props.mode === 'add') {
-    emit('confirmAdd', form.value)
+  let whichEmit: any = null;
+  if (props.mode === "add") {
+    console.log("emitted add = ", form.value);
+    whichEmit = "confirmAdd";
   } else {
-    emit('confirmEdit', form.value)
+    whichEmit = "confirmEdit";
   }
-  closeDialog()
-}
+
+  vformref.value?.validate().then(({ valid: isValid }) => {
+    if (isValid) {
+      emit(whichEmit, form.value);
+      closeDialog();
+    }
+  });
+};
 
 const cancel = () => {
-  emit('cancel')
-  closeDialog()
-}
+  emit("cancel");
+  closeDialog();
+};
 
-const { mdAndUp } = useDisplay()
+const { mdAndUp } = useDisplay();
 const dialogMaxWidth = computed(() => {
-  return mdAndUp.value ? 700 : '90%'
-})
+  return mdAndUp.value ? 700 : "90%";
+});
 
 const form = ref({
-  namaOutlet: '',
-  alamatOutlet: '',
-  kabKota: '',
-  provinsi: '',
-  negara: '',
-  kodePos: '',
-})
+  namaOutlet: "",
+  alamatOutlet: "",
+  kabKota: "",
+  provinsi: "",
+  negara: "Indonesia",
+  kodePos: "",
+});
+
+const resetForm = () => {
+  form.value = {
+    namaOutlet: "",
+    alamatOutlet: "",
+    kabKota: "",
+    provinsi: "",
+    negara: "Indonesia",
+    kodePos: "",
+  };
+};
+
+const vformref = ref<VForm>();
+
+const provinsiOptions = ref([]);
+const kabKotaOptions = ref([]);
+
+const getDistrict = async (kode: string) => {
+  form.value.kabKota = "";
+  const response: MasterDistrict[] = await $api("/master/district", {
+    method: "post",
+    body: {
+      province: kode,
+    },
+  });
+  kabKotaOptions.value = response;
+};
+
+const getProvince = async () => {
+  const response = await $api("/master/province", {
+    method: "get",
+  });
+  provinsiOptions.value = response;
+};
+
 watch(
   () => props.initialData,
-  newData => {
-    if (props.mode === 'edit' && newData) {
-      form.value = { ...newData }
+  (newData) => {
+    if (props.mode === "edit" && newData) {
+      form.value = { ...newData };
     }
   },
   { immediate: true }
-)
+);
 </script>
 
 <template>
   <div class="ma-1">
-    <VBtn v-if="props.mode === 'add'" @click="openDialog" variant="outlined" append-icon="ri-add-line">
+    <VBtn
+      v-if="props.mode === 'add'"
+      @click="openDialog"
+      variant="outlined"
+      append-icon="ri-add-line"
+    >
       Tambah
     </VBtn>
-    <VBtn v-else-if="props.mode === 'edit'" @click="openDialog" variant="outlined" prepend-icon="ri-edit-line">
+    <VBtn
+      v-else-if="props.mode === 'edit'"
+      @click="openDialog"
+      variant="outlined"
+      prepend-icon="ri-edit-line"
+    >
       Edit
     </VBtn>
-    <VDialog
-      v-model="isVisible"
-      :max-width="dialogMaxWidth"
-    >
+    <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
-        <VCardTitle class="text-h5 font-weight-bold d-flex justify-space-between align-center">
-          <span>{{ props.mode === 'add' ? 'Tambah Data Outlet' : 'Edit Data Outlet' }}</span>
+        <VCardTitle
+          class="text-h5 font-weight-bold d-flex justify-space-between align-center"
+        >
+          <span>{{
+            props.mode === "add" ? "Tambah Data Outlet" : "Edit Data Outlet"
+          }}</span>
           <VBtn
             icon
             color="transparent"
-            style="border: none;"
+            style="border: none"
             elevation="0"
             @click="closeDialog"
           >
@@ -84,74 +145,104 @@ watch(
         </VCardTitle>
 
         <VCardText>
-          <VTextField
-            v-model="form.namaOutlet"
-            label="Nama Outlet"
-            outlined
-            dense
-            required
-            class="mb-2"
-          />
-          <VTextField
-            v-model="form.alamatOutlet"
-            label="Alamat Outlet"
-            outlined
-            dense
-            required
-            class="mb-2"
-          />
+          <VForm ref="vformref">
+            <VItemGroup>
+              <VLabel>Nama Outlet</VLabel>
+              <VTextField
+                :rules="[requiredValidator]"
+                v-model="form.namaOutlet"
+                outlined
+                dense
+                required
+                class="mb-2"
+              />
+            </VItemGroup>
+            <VItemGroup>
+              <VLabel>Alamat Outlet</VLabel>
+              <VTextField
+                :rules="[requiredValidator]"
+                v-model="form.alamatOutlet"
+                outlined
+                dense
+                required
+                class="mb-2"
+              />
+            </VItemGroup>
 
-          <VRow no-gutters class="mb-2">
-            <VCol cols="5" class="me-2">
-              <VTextField
-                v-model="form.kabKota"
-                label="Kab/Kota"
-                outlined
-                dense
-                required
-              />
-            </VCol>
-            <VSpacer />
-            <VCol cols="5">
-              <VTextField
-                v-model="form.provinsi"
-                label="Provinsi"
-                outlined
-                dense
-                required
-              />
-            </VCol>
-          </VRow>
+            <VRow no-gutters class="mb-2">
+              <VCol cols="5" class="me-2">
+                <VItemGroup>
+                  <VLabel>Kab/Kota</VLabel>
+                  <VAutocomplete
+                    :rules="[requiredValidator]"
+                    v-model="form.kabKota"
+                    :items="kabKotaOptions"
+                    item-title="name"
+                    item-value="code"
+                    outlined
+                    dense
+                    required
+                    class="input-field"
+                  />
+                </VItemGroup>
+              </VCol>
+              <VSpacer />
+              <VCol cols="5">
+                <VItemGroup>
+                  <VLabel>Provinsi</VLabel>
+                  <VAutocomplete
+                    :rules="[requiredValidator]"
+                    v-model="form.provinsi"
+                    v-on:update:model-value="getDistrict"
+                    :items="provinsiOptions"
+                    item-title="name"
+                    item-value="code"
+                    outlined
+                    dense
+                    required
+                    class="input-field"
+                  />
+                </VItemGroup>
+              </VCol>
+            </VRow>
 
-          <VRow no-gutters>
-            <VCol cols="5" class="me-2">
-              <VTextField
-                v-model="form.negara"
-                label="Negara"
-                outlined
-                dense
-                required
-              />
-            </VCol>
-            <VSpacer />
-            <VCol cols="5">
-              <VTextField
-                v-model="form.kodePos"
-                label="Kode Pos"
-                outlined
-                dense
-                required
-              />
-            </VCol>
-          </VRow>
+            <VRow no-gutters>
+              <VCol cols="5" class="me-2">
+                <VItemGroup>
+                  <VLabel>Negara</VLabel>
+                  <VTextField
+                    v-model="form.negara"
+                    disabled
+                    outlined
+                    dense
+                    required
+                  />
+                </VItemGroup>
+              </VCol>
+              <VSpacer />
+              <VCol cols="5">
+                <VItemGroup>
+                  <VLabel>Kode Pos</VLabel>
+                  <VTextField
+                    :rules="[
+                      requiredValidator,
+                      lengthValidator(form.kodePos, 5),
+                    ]"
+                    v-model="form.kodePos"
+                    outlined
+                    dense
+                    required
+                  />
+                </VItemGroup>
+              </VCol>
+            </VRow>
+          </VForm>
         </VCardText>
 
         <div class="d-flex justify-end ga-2">
-          <VBtn @click="cancel" variant="outlined">
-            Batal
-          </VBtn>
+          <VBtn @click="cancel" variant="outlined"> Batal </VBtn>
           <VBtn @click="confirm" :color="props.confirmColor">
-            {{ props.mode === 'add' ? 'Tambah' : 'Simpan' }}
+            {{ props.mode === "add" ? "Tambah" : "Simpan" }}
           </VBtn>
         </div>
       </VCard>
@@ -159,5 +250,4 @@ watch(
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
