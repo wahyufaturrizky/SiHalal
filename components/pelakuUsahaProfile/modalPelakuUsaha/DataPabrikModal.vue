@@ -37,120 +37,159 @@
 
         <VCardText>
           <!-- Lokasi Pabrik -->
-          <VRow class="mb-1">
-            <VCol cols="12">
-              <VLabel>Lokasi Pabrik</VLabel>
-              <VAutocomplete
-                v-model="form.lokasiPabrik"
-                :items="lokasiPabrikOptions"
-                placeholder="Pilih Lokasi Pabrik"
-                outlined
-                dense
-                required
-                class="input-field"
-              />
-            </VCol>
-          </VRow>
+          <VForm ref="pabrikFormRef">
+            <VRow class="mb-1">
+              <VCol cols="12">
+                <VLabel>Lokasi Pabrik</VLabel>
+                <VAutocomplete
+                  :rules="[requiredValidator]"
+                  v-model="form.lokasiPabrik"
+                  :items="lokasiPabrikOptions"
+                  placeholder="Pilih Lokasi Pabrik"
+                  outlined
+                  dense
+                  required
+                  class="input-field"
+                />
+              </VCol>
+            </VRow>
 
-          <VRow class="mb-1">
-            <VCol cols="12">
-              <VLabel>Nama Pabrik</VLabel>
-              <VTextField
-                v-model="form.namaPabrik"
-                placeholder="Isi Nama Pabrik"
-                outlined
-                dense
-                required
-                class="input-field"
-              />
-            </VCol>
-          </VRow>
+            <VRow class="mb-1">
+              <VCol cols="12">
+                <VLabel>Nama Pabrik</VLabel>
+                <VTextField
+                  :rules="[requiredValidator]"
+                  v-model="form.namaPabrik"
+                  placeholder="Isi Nama Pabrik"
+                  outlined
+                  dense
+                  required
+                  class="input-field"
+                />
+              </VCol>
+            </VRow>
 
-          <VRow class="mb-1">
-            <VCol cols="12">
-              <VLabel>Alamat Pabrik</VLabel>
-              <VTextField
-                v-model="form.alamatPabrik"
-                placeholder="Isi Alamat Pabrik"
-                outlined
-                dense
-                required
-                class="input-field"
-              />
-            </VCol>
-          </VRow>
+            <VRow class="mb-1">
+              <VCol cols="12">
+                <VLabel>Alamat Pabrik</VLabel>
+                <VTextField
+                  :rules="[requiredValidator]"
+                  v-model="form.alamatPabrik"
+                  placeholder="Isi Alamat Pabrik"
+                  outlined
+                  dense
+                  required
+                  class="input-field"
+                />
+              </VCol>
+            </VRow>
 
-          <VRow class="mb-1">
-            <VCol cols="6" class="pe-1">
-              <VLabel>Kab/Kota</VLabel>
-              <VTextField
-                v-model="form.kabKota"
-                placeholder="Isi Kab/Kota"
-                outlined
-                dense
-                required
-                class="input-field"
-              />
-            </VCol>
-            <VCol cols="6" class="ps-1">
-              <VLabel>Provinsi</VLabel>
-              <VTextField
-                v-model="form.provinsi"
-                placeholder="Isi Provinsi"
-                outlined
-                dense
-                required
-                class="input-field"
-              />
-            </VCol>
-          </VRow>
+            <VRow class="mb-1">
+              <VCol cols="6" class="pe-1">
+                <VLabel>Kab/Kota</VLabel>
+                <VTextField
+                  v-model="form.kabKota"
+                  placeholder="Isi Kab/Kota"
+                  outlined
+                  dense
+                  required
+                  class="input-field"
+                  v-if="form.lokasiPabrik == 'Luar Negeri'"
+                />
+                <VAutocomplete
+                  :rules="[requiredValidator]"
+                  v-model="form.kabKota"
+                  :items="kabKotaOptions"
+                  item-title="name"
+                  item-value="code"
+                  placeholder="Pilih Kab/Kota"
+                  outlined
+                  dense
+                  required
+                  class="input-field"
+                  v-if="form.lokasiPabrik == 'Dalam Negeri'"
+                />
+              </VCol>
+              <VCol cols="6" class="ps-1">
+                <VLabel>Provinsi</VLabel>
+                <VTextField
+                  :rules="[requiredValidator]"
+                  v-model="form.provinsi"
+                  placeholder="Isi Provinsi"
+                  outlined
+                  dense
+                  required
+                  class="input-field"
+                  v-if="form.lokasiPabrik == 'Luar Negeri'"
+                />
+                <VAutocomplete
+                  v-model="form.provinsi"
+                  v-on:update:model-value="getDistrict"
+                  :rules="[requiredValidator]"
+                  :items="provinsiOptions"
+                  item-title="name"
+                  item-value="code"
+                  placeholder="Pilih Provinsi"
+                  outlined
+                  dense
+                  required
+                  class="input-field"
+                  v-if="form.lokasiPabrik == 'Dalam Negeri'"
+                />
+              </VCol>
+            </VRow>
 
-          <!-- Negara and Kode Pos -->
-          <VRow class="mb-1">
-            <VCol cols="6" class="pe-1">
-              <VLabel>Negara</VLabel>
-              <VTextField
-                v-model="form.negara"
-                placeholder="Isi Negara"
-                outlined
-                dense
-                required
-                class="input-field"
-              />
-            </VCol>
-            <VCol cols="6" class="ps-1">
-              <VLabel>Kode Pos</VLabel>
-              <VTextField
-                v-model="form.kodePos"
-                placeholder="Isi Kode Pos"
-                outlined
-                dense
-                required
-                class="input-field"
-              />
-            </VCol>
-          </VRow>
+            <!-- Negara and Kode Pos -->
+            <VRow class="mb-1">
+              <VCol cols="6" class="pe-1">
+                <VLabel>Negara</VLabel>
+                <VTextField
+                  :rules="[requiredValidator]"
+                  v-model="form.negara"
+                  placeholder="Isi Negara"
+                  outlined
+                  dense
+                  class="input-field"
+                />
+              </VCol>
+              <VCol cols="6" class="ps-1">
+                <VLabel>Kode Pos</VLabel>
+                <VTextField
+                  :rules="[requiredValidator]"
+                  v-model="form.kodePos"
+                  placeholder="Isi Kode Pos"
+                  outlined
+                  dense
+                  required
+                  class="input-field"
+                />
+              </VCol>
+            </VRow>
 
-          <!-- Status Pabrik -->
-          <VRow class="mb-1">
-            <VCol cols="12">
-              <VLabel>Status Pabrik</VLabel>
-              <VAutocomplete
-                v-model="form.statusPabrik"
-                :items="statusOptions"
-                placeholder="Pilih Status Pabrik"
-                outlined
-                dense
-                required
-                class="input-field"
-              />
-            </VCol>
-          </VRow>
+            <!-- Status Pabrik -->
+            <VRow class="mb-1">
+              <VCol cols="12">
+                <VLabel>Status Pabrik</VLabel>
+                <VAutocomplete
+                  :rules="[requiredValidator]"
+                  v-model="form.statusPabrik"
+                  :items="statusOptions"
+                  item-title="name"
+                  item-value="name"
+                  placeholder="Pilih Status Pabrik"
+                  outlined
+                  dense
+                  required
+                  class="input-field"
+                />
+              </VCol>
+            </VRow>
+          </VForm>
         </VCardText>
 
         <div class="d-flex justify-end ga-2">
           <VBtn @click="cancel" variant="outlined"> Batal </VBtn>
-          <VBtn @click="confirm" :color="props.confirmColor">
+          <VBtn @click="confirm" color="primary">
             {{ props.mode === "add" ? "Tambah" : "Simpan" }}
           </VBtn>
         </div>
@@ -160,8 +199,10 @@
 </template>
 
 <script setup lang="ts">
+import type { MasterDistrict } from "@/server/interface/master.iface";
 import { computed, defineEmits, defineProps, ref, watch } from "vue";
 import { useDisplay } from "vuetify";
+import type { VForm } from "vuetify/components";
 
 const props = defineProps({
   mode: { type: String, default: "add" },
@@ -172,7 +213,13 @@ const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
 
 const isVisible = ref(false);
 
-const openDialog = () => {
+const openDialog = async () => {
+  if (props.mode == "add") {
+    resetForm();
+  }
+
+  await getProvince();
+  statusOptions.value = await getMasterStatusPabrik();
   isVisible.value = true;
 };
 
@@ -180,13 +227,23 @@ const closeDialog = () => {
   isVisible.value = false;
 };
 
+const pabrikFormRef = ref<VForm>();
+
 const confirm = () => {
+  let whichEmit: any = null;
   if (props.mode === "add") {
-    emit("confirmAdd", form.value);
+    console.log("emitted add = ", form.value);
+    whichEmit = "confirmAdd";
   } else {
-    emit("confirmEdit", form.value);
+    whichEmit = "confirmEdit";
   }
-  closeDialog();
+
+  pabrikFormRef.value?.validate().then(({ valid: isValid }) => {
+    if (isValid) {
+      emit(whichEmit, form.value);
+      closeDialog();
+    }
+  });
 };
 
 const cancel = () => {
@@ -205,13 +262,54 @@ const form = ref({
   alamatPabrik: "",
   kabKota: "",
   provinsi: "",
-  negara: "",
+  negara: "Indonesia",
   kodePos: "",
   statusPabrik: "",
 });
 
-const statusOptions = ["Aktif", "Non-Aktif"];
-const lokasiPabrikOptions = ["Lokasi 1", "Lokasi 2", "Lokasi 3"];
+const statusOptions = ref([]);
+const lokasiPabrikOptions = ["Dalam Negeri", "Luar Negeri"];
+
+async function getMasterStatusPabrik() {
+  const response = await $api(`master/common-code?type=factorystatus`, {
+    method: "get",
+  });
+
+  return response;
+}
+const provinsiOptions = ref();
+const kabKotaOptions = ref();
+
+const getDistrict = async (kode: string) => {
+  form.value.kabKota = "";
+  const response: MasterDistrict[] = await $api("/master/district", {
+    method: "post",
+    body: {
+      province: kode,
+    },
+  });
+  kabKotaOptions.value = response;
+};
+
+const getProvince = async () => {
+  const response = await $api("/master/province", {
+    method: "get",
+  });
+  provinsiOptions.value = response;
+};
+
+const resetForm = () => {
+  form.value = {
+    lokasiPabrik: "",
+    namaPabrik: "",
+    alamatPabrik: "",
+    kabKota: "",
+    provinsi: "",
+    negara: "Indonesia",
+    kodePos: "",
+    statusPabrik: "",
+  };
+};
 
 watch(
   () => props.initialData,
