@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import AspekLegalCard from "@/components/pelakuUsahaProfile/AspekLegalCard.vue";
-import DivisiUnitUsaha from "@/components/pelakuUsahaProfile/DivisiUnitUsaha.vue";
 import PerizinanCard from "@/components/pelakuUsahaProfile/PerizinanCard.vue";
 import SubPelakuUsahaLayout from "@/layouts/subPelakuUsahaLayout.vue";
 import { pelakuUsahaProfile } from "@/stores/pelaku-usaha-profile";
@@ -9,7 +8,7 @@ const tablePabrikHeader = [
   { title: "No", key: "no" },
   { title: "Nama", key: "name" },
   { title: "Alamat", key: "address" },
-  { title: "Action", key: "action", align: "end" },
+  { title: "Action", key: "action" },
 ];
 
 const tableOutletHeader = [
@@ -88,6 +87,7 @@ const downloadDOcument = async (filename: string) => {
       <VRow>
         <VCol cols="12">
           <PenanggungJawabCard
+            v-if="store.penanggungJawabHalal"
             :responsible-person-data="store.penanggungJawabHalal"
           />
         </VCol>
@@ -160,11 +160,11 @@ const downloadDOcument = async (filename: string) => {
           <KBLICard />
         </VCol>
       </VRow>
-      <VRow>
+      <!-- <VRow>
         <VCol :cols="12">
           <DivisiUnitUsaha />
         </VCol>
-      </VRow>
+      </VRow> -->
     </template>
   </SubPelakuUsahaLayout>
 </template>
