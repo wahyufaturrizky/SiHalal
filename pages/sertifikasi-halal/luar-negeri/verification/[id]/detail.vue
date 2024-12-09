@@ -199,6 +199,7 @@ onMounted(async () => {
     loadItemFHCTrackingById(),
     loadItemListProductTrackingById(),
     loadItemListManufactureTrackingById(),
+    loadDocumentLOAById(),
   ]);
 
   const checkResIfUndefined = res.every((item) => {

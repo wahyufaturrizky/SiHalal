@@ -21,6 +21,7 @@ const props = defineProps({
     required: true,
   },
 });
+console.log(props);
 
 const route = useRoute();
 const shlnId = route.params.id;
@@ -73,8 +74,13 @@ const {
 const { country, expired_date, halal_institution_name, issued_date } =
   props.datadocumentmra || {};
 
-const { document, document_no, verification_link, file } =
-  props.datadocumentfhc || {};
+const {
+  document,
+  document_no,
+  verification_link,
+  file,
+  id: idFHC,
+} = props.datadocumentfhc || {};
 
 const MRA = [
   { id: 1, key: "Halal Institution Name", value: halal_institution_name },
@@ -286,8 +292,8 @@ const headers = [
         </VCardText>
         <VCardActions style="justify-content: end">
           <div>
-            <ReturnConfirmationModal :id="id" documenttype="fhc" />
-            <ApproveConfirmationModal :id="id" documenttype="fhc" />
+            <ReturnConfirmationModal :id="idFHC" documenttype="fhc" />
+            <ApproveConfirmationModal :id="idFHC" documenttype="fhc" />
           </div>
         </VCardActions>
       </VCard>

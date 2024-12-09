@@ -51,7 +51,7 @@ const headers = [
   { title: "No", key: "no" },
   { title: "Manufacture", key: "name" },
   { title: "Product Name", key: "name" },
-  { title: "HS Code", key: "hs_code" },
+  { title: "HS Code", key: "hc_code" },
 ];
 </script>
 
