@@ -15,7 +15,9 @@ const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
 const isVisible = ref(false);
 
 const openDialog = () => {
-  form.value = { ...initAddData };
+  if (props.mode == "add") {
+    form.value = { ...initAddData };
+  }
   isVisible.value = true;
 };
 
@@ -82,36 +84,33 @@ const initAddData = {
   ktpFile: null,
 };
 
-const fillEditForm = (newData) => {
-  const response = $api(
+const fillEditForm = async (newData) => {
+  const val: any = await $api(
     `/pelaku-usaha-profile/${store.profileData?.id}/penyelia/${newData.id}/detail`,
     {
       method: "GET",
     }
-  ).then((val: any) => {
-    if (val.code == 2000) {
-      console.log("edited data", val.data);
-      // form.value = { ...val.data };
-      form.value.noKtp = val.data.id_number;
-      form.value.noKontak = val.data.phone_number;
-      form.value.namaPenyelia = val.data.name;
-      form.value.agamaPenyelia = val.data.religion;
-      form.value.nomorSertifikat = val.data.certificate_number;
-      form.value.tanggalSertifikat = new Date(val.data.certificate_date)
-        .toISOString()
-        .substring(0, 10);
-      form.value.nomorSk = val.data.sk_number;
-      form.value.tanggalSk = new Date(val.data.sk_date)
-        .toISOString()
-        .substring(0, 10);
-      form.value.sertifikatKompetensi = val.data.skph_file;
-      form.value.sertifikatPelatihan = val.data.spph_file;
-      form.value.ktpFile = val.data.ktp_file;
-    } else {
-      // snackbar.sendSnackbar("Gagal mendapatkan Data ", "error");
-      console.error("fetching data error");
-    }
-  });
+  );
+
+  if (val.code == 2000) {
+    console.log("edited data", val.data);
+    // form.value = { ...val.data };
+    form.value.noKtp = val.data.id_number;
+    form.value.noKontak = val.data.phone_number;
+    form.value.namaPenyelia = val.data.name;
+    form.value.agamaPenyelia = val.data.religion;
+    form.value.nomorSertifikat = val.data.certificate_number;
+    form.value.tanggalSertifikat = new Date(val.data.certificate_date)
+      .toISOString()
+      .substring(0, 10);
+    form.value.nomorSk = val.data.sk_number;
+    form.value.tanggalSk = new Date(val.data.sk_date)
+      .toISOString()
+      .substring(0, 10);
+    form.value.sertifikatKompetensi = val.data.skph_file;
+    form.value.sertifikatPelatihan = val.data.spph_file;
+    form.value.ktpFile = val.data.ktp_file;
+  }
 };
 
 const selectedIdPenyelia = ref("");
