@@ -10,7 +10,6 @@ const timelineEvents = ref();
 const openPanelRegisterData = ref(0);
 const openPanelFacilitate = ref(0);
 const openPanelTracking = ref(0);
-const dataSOF = ref([]);
 
 const route = useRoute();
 const router = useRouter();
@@ -30,7 +29,6 @@ const loadItemById = async () => {
 
       const {
         nama,
-        sumber_pembiayaan,
         kuota,
         penanggung_jawab,
         nama_program,
@@ -41,6 +39,7 @@ const loadItemById = async () => {
         tgl_selesai,
         jenis_fasilitasi,
         fac_description,
+        sumber_biaya_name,
       } = fasilitasi || {};
 
       dataFasilitasi.value = [
@@ -93,7 +92,7 @@ const loadItemById = async () => {
         {
           id: 11,
           key: "Sumber Pembiayaan",
-          value: sumber_pembiayaan,
+          value: sumber_biaya_name,
         },
         {
           id: 12,
@@ -178,26 +177,8 @@ const deleteFacilitate = async () => {
   }
 };
 
-const loadSOF = async () => {
-  try {
-    const response = await $api("/master/source-of-fund", {
-      method: "get",
-    });
-
-    if (response.length) {
-      dataSOF.value = response;
-
-      return response;
-    } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan asd", "error");
-    }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
-
 onMounted(async () => {
-  const res = await Promise.all([loadSOF(), loadItemById()]);
+  const res = await Promise.all([loadItemById()]);
 
   const checkResIfUndefined = res.every((item) => {
     return item !== undefined;
@@ -212,10 +193,6 @@ onMounted(async () => {
 
 const navigateAction = () => {
   navigateTo(`/facilitation/entry/${facilitateId}/edit`);
-};
-
-const formatSof = (val: string) => {
-  return dataSOF.value.find((item: any) => item.code === val)?.name;
 };
 </script>
 
@@ -321,24 +298,13 @@ const formatSof = (val: string) => {
           </VExpansionPanelTitle>
           <VExpansionPanelText>
             <VRow v-for="item in dataFasilitasi" :key="item.id" gutter="1svh">
-              <template v-if="item.key === 'Sumber Pembiayaan'">
-                <VCol cols="3">
-                  {{ item.key }}
-                </VCol>
-                <VCol cols="1"> : </VCol>
-                <VCol cols="8">
-                  {{ formatSof(item.value) }}
-                </VCol>
-              </template>
-              <template v-else>
-                <VCol cols="3">
-                  {{ item.key }}
-                </VCol>
-                <VCol cols="1"> : </VCol>
-                <VCol cols="8">
-                  {{ item.value }}
-                </VCol>
-              </template>
+              <VCol cols="3">
+                {{ item.key }}
+              </VCol>
+              <VCol cols="1"> : </VCol>
+              <VCol cols="8">
+                {{ item.value }}
+              </VCol>
             </VRow>
           </VExpansionPanelText>
         </VExpansionPanel>
