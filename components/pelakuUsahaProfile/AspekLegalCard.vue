@@ -28,7 +28,11 @@ const legalHeader = [
         <VDataTable
           :headers="legalHeader"
           :items="props.aspekLegalData ?? props.aspekLegalData"
-        ></VDataTable>
+        >
+          <template #item.no="{ index }">
+            {{ index + 1 }}
+          </template>
+        </VDataTable>
       </VExpansionPanelText>
     </VExpansionPanel>
   </VExpansionPanels>

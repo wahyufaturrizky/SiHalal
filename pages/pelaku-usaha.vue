@@ -107,7 +107,11 @@ const downloadDOcument = async (filename: string) => {
                 <VDataTable
                   :headers="tablePabrikHeader"
                   :items="store.factory ? store.factory : []"
-                />
+                >
+                  <template #item.no="{ index }">
+                    {{ index + 1 }}
+                  </template>
+                </VDataTable>
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -122,7 +126,11 @@ const downloadDOcument = async (filename: string) => {
                 <VDataTable
                   :headers="tableOutletHeader"
                   :items="store.outlet ? store.outlet : []"
-                />
+                >
+                  <template #item.no="{ index }">
+                    {{ index + 1 }}
+                  </template>
+                </VDataTable>
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -140,8 +148,11 @@ const downloadDOcument = async (filename: string) => {
                   :headers="penyeliaHeader"
                   :items="store.supervisorData"
                 >
-                </VDataTable
-              ></VExpansionPanelText>
+                  <template #item.no="{ index }">
+                    {{ index + 1 }}
+                  </template>
+                </VDataTable></VExpansionPanelText
+              >
             </VExpansionPanel>
           </VExpansionPanels>
         </VCol>
