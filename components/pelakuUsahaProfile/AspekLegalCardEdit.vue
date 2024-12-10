@@ -26,13 +26,13 @@ const legalHeader = [
 
 function handleDelete(item) {
   console.log("Delete item:", item);
-
-  const submitApi = $api(
-    `/pelaku-usaha-profile/${store.profileData?.id}/${item.id}/delete-legal`,
-    {
-      method: "DELETE",
-    }
-  )
+  const submitApi = $api(`pelaku-usaha-profile/delete-legal`, {
+    method: "post",
+    body: {
+      id: store.profileData?.id,
+      id_legal: item.id,
+    },
+  })
     .then((val: any) => {
       if (val.code == 2000) {
         store.deleteLegal(item.id);
