@@ -7,8 +7,7 @@ const loading = ref(false);
 const page = ref(1);
 const searchQuery = ref("");
 const status = ref("OF1,OF10,OF5,OF2,OF290");
-const loadingSOF = ref(true);
-const dataSOF = ref([]);
+const loadingAll = ref(true);
 
 const loadItem = async (
   page: number,
@@ -29,33 +28,18 @@ const loadItem = async (
       },
     });
 
-    items.value = response.data;
-    totalItems.value = response.total_item;
-    loading.value = false;
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loading.value = false;
-  }
-};
-
-const loadSOF = async () => {
-  try {
-    loadingSOF.value = true;
-
-    const response = await $api("/master/source-of-fund", {
-      method: "get",
-    });
-
-    if (response.length) {
-      dataSOF.value = response;
-      loadingSOF.value = false;
+    if (response) {
+      items.value = response.data;
+      totalItems.value = response.total_item;
+      loading.value = false;
+      return response;
     } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan asd", "error");
-      loadingSOF.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loading.value = false;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingSOF.value = false;
+    loading.value = false;
   }
 };
 
@@ -75,8 +59,19 @@ const getStatusColor = (status) => {
 const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
-  await loadSOF();
-  await loadItem(1, itemPerPage.value, "", "OF1,OF10,OF5,OF2,OF290");
+  const res = await Promise.all([
+    loadItem(1, itemPerPage.value, "", "OF1,OF10,OF5,OF2,OF290"),
+  ]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
 });
 
 const handleInput = () => {
@@ -93,7 +88,7 @@ const tableHeader = [
   { title: "Kode Fasilitasi", key: "kode_fac" },
   { title: "Tahun", key: "tahun" },
   { title: "Nama Fasilitasi", key: "fac_name" },
-  { title: "Sumber Pembiayaan", key: "sumber_biaya" },
+  { title: "Sumber Pembiayaan", key: "sumber_biaya_name" },
   { title: "Jenis", key: "jenis" },
   { title: "Tanggal Aktif", key: "tgl_selesai" },
   { title: "Tanggal Selesai", key: "tgl_aktif" },
@@ -106,17 +101,13 @@ const tableHeader = [
 const navigateAction = (id: string) => {
   navigateTo(`/facilitation/entry/${id}`);
 };
-
-const formatSof = (val: string) => {
-  return dataSOF.value.find((item: any) => item.code === val)?.name;
-};
 </script>
 
 <template>
   <VRow>
     <VCol><h3>Entri Fasilitasi</h3></VCol>
   </VRow>
-  <VRow v-if="!loadingSOF">
+  <VRow v-if="!loadingAll">
     <VCol>
       <VCard>
         <VCardTitle><h4>List Fasilitasi</h4></VCardTitle>
@@ -148,10 +139,6 @@ const formatSof = (val: string) => {
               <template #item.id="{ index }">
                 {{ index + 1 + (page - 1) * itemPerPage }}
               </template>
-              <template #item.sumber_biaya="{ item }">
-                {{ formatSof(item.sumber_biaya) }}
-              </template>
-
               <template #item.tgl_aktif="{ item }">
                 {{ formatDateIntl(new Date(item.tgl_aktif)) }}
               </template>

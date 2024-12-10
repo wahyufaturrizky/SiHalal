@@ -39,78 +39,88 @@
         </VCardTitle>
 
         <VCardText>
+          <VForm ref="legalForm">
+            <VRow class="mb-1">
+              <VCol cols="12">
+                <VLabel>Jenis Document</VLabel>
+                <VAutocomplete
+                  v-model="form.type"
+                  :items="documentTypes"
+                  item-title="name"
+                  item-value="code"
+                  placeholder="Pilih Jenis Document"
+                  outlined
+                  dense
+                  required
+                  auto-select-first
+                  class="input-field"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+            </VRow>
+
+            <VRow class="mb-1">
+              <VCol cols="12">
+                <VLabel>Nomor Document</VLabel>
+                <VTextField
+                  v-model="form.doc_number"
+                  placeholder="Isi Nomor Document"
+                  outlined
+                  dense
+                  required
+                  class="input-field"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+            </VRow>
+            <VRow class="mb-1">
+              <VCol cols="12">
+                <VLabel>Tanggal Document</VLabel>
+                <VTextField
+                  v-model="form.date"
+                  placeholder="Isi Tanggal Document"
+                  outlined
+                  dense
+                  required
+                  type="date"
+                  class="input-field"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+            </VRow>
+
+            <VRow class="mb-1">
+              <VCol cols="12">
+                <VLabel>Masa Berlaku</VLabel>
+                <VTextField
+                  v-model="form.expiration_date"
+                  placeholder="Isi Masa Berlaku"
+                  outlined
+                  dense
+                  required
+                  type="date"
+                  class="input-field"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+            </VRow>
+
+            <VRow class="mb-1">
+              <VCol cols="12">
+                <VLabel>Instansi Penerbit</VLabel>
+                <VTextField
+                  v-model="form.publishing_agency"
+                  placeholder="Isi Instansi Penerbit"
+                  outlined
+                  dense
+                  required
+                  class="input-field"
+                  :rules="[requiredValidator]"
+                />
+              </VCol>
+            </VRow>
+          </VForm>
           <!-- Jenis Document -->
-          <VRow class="mb-1">
-            <VCol cols="12">
-              <VLabel>Jenis Document</VLabel>
-              <VAutocomplete
-                v-model="form.type"
-                :items="documentTypes"
-                placeholder="Pilih Jenis Document"
-                outlined
-                dense
-                required
-                class="input-field"
-              />
-            </VCol>
-          </VRow>
-
-          <VRow class="mb-1">
-            <VCol cols="12">
-              <VLabel>Nomor Document</VLabel>
-              <VTextField
-                v-model="form.doc_number"
-                placeholder="Isi Nomor Document"
-                outlined
-                dense
-                required
-                class="input-field"
-              />
-            </VCol>
-          </VRow>
-          <VRow class="mb-1">
-            <VCol cols="12">
-              <VLabel>Tanggal Document</VLabel>
-              <VTextField
-                v-model="form.date"
-                placeholder="Isi Tanggal Document"
-                outlined
-                dense
-                required
-                type="date"
-                class="input-field"
-              />
-            </VCol>
-          </VRow>
-
-          <VRow class="mb-1">
-            <VCol cols="12">
-              <VLabel>Masa Berlaku</VLabel>
-              <VTextField
-                v-model="form.expiration_date"
-                placeholder="Isi Masa Berlaku"
-                outlined
-                dense
-                required
-                type="date"
-                class="input-field"
-              />
-            </VCol>
-          </VRow>
-
-          <VRow class="mb-1">
-            <VCol cols="12">
-              <VLabel>Instansi Penerbit</VLabel>
-              <VTextField
-                v-model="form.publishing_agency"
-                placeholder="Isi Instansi Penerbit"
-                outlined
-                dense
-                required
-                class="input-field"
-              />
-            </VCol>
-          </VRow>
         </VCardText>
 
         <div class="d-flex justify-end ga-2">
@@ -127,6 +137,7 @@
 <script setup lang="ts">
 import { computed, defineEmits, defineProps, ref, watch } from "vue";
 import { useDisplay } from "vuetify";
+import type { VForm } from "vuetify/components";
 
 const props = defineProps({
   mode: { type: String, default: "add" },
@@ -137,7 +148,8 @@ const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
 
 const isVisible = ref(false);
 
-const openDialog = () => {
+const openDialog = async () => {
+  documentTypes.value = await getMasterDocsTypes();
   isVisible.value = true;
 };
 
@@ -145,13 +157,23 @@ const closeDialog = () => {
   isVisible.value = false;
 };
 
+const legalForm = ref<VForm>();
+
 const confirm = () => {
+  let whichEmit: any = null;
   if (props.mode === "add") {
-    emit("confirmAdd", form.value);
+    console.log("emitted add = ", form.value);
+    whichEmit = "confirmAdd";
   } else {
-    emit("confirmEdit", form.value);
+    whichEmit = "confirmEdit";
   }
-  closeDialog();
+
+  legalForm.value?.validate().then(({ valid: isValid }) => {
+    if (isValid) {
+      emit(whichEmit, form.value);
+      closeDialog();
+    }
+  });
 };
 
 const cancel = () => {
@@ -172,7 +194,7 @@ const form = ref({
   type: "",
 });
 
-const documentTypes = ["SIUP", "ANOTHER"];
+const documentTypes = ref([]);
 
 watch(
   () => props.initialData,
@@ -184,6 +206,16 @@ watch(
   },
   { immediate: true }
 );
+
+const snackbar = useSnackbar();
+
+async function getMasterDocsTypes() {
+  const response = await $api(`master/common-code?type=legaldocs`, {
+    method: "get",
+  });
+
+  return response;
+}
 </script>
 
 <style scoped></style>

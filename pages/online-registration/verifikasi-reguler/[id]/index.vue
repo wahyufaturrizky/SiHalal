@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import AspekLegal from "@/components/selfDeclare/verifikasi/AspekLegal.vue";
-import DaftarNamaProduk from "@/components/selfDeclare/verifikasi/DaftarNamaProduk.vue";
+import DaftarNamaProdukSelfDeclare from "@/components/selfDeclare/verifikasi/DaftarNamaProdukSelfDeclare.vue";
 import PenanggungJawabUsaha from "@/components/selfDeclare/verifikasi/PenanggungJawabUsaha.vue";
 import Penyelia from "@/components/selfDeclare/verifikasi/Penyelia.vue";
 import ProfilPengajuan from "@/components/selfDeclare/verifikasi/ProfilPengajuan.vue";
@@ -12,7 +12,7 @@ const panelOpenPenanggungJawab = ref(0);
 const panelOpenAspekLegal = ref(0);
 const panelOpenPabrik = ref(0);
 const panelOpenOutlet = ref(0);
-const panelOpenPenyelia= ref(0);
+const panelOpenPenyelia = ref(0);
 const panelOpenProduk = ref(0);
 
 const openPanelRegisterData = ref(0);
@@ -42,7 +42,6 @@ const returnDocument = () => {
   console.log("Return note:", returnNote.value);
   closeReturn();
 };
-
 </script>
 
 <template>
@@ -51,19 +50,17 @@ const returnDocument = () => {
   >
     <template #pageTitle>
       <VRow>
-        <VCol style="display: flex; justify-content: start;"><h2>Verifikasi Dokumen Pengajuan: Detail</h2></VCol>
-        <VCol style="display: flex; justify-content: end;">
-          <VBtn 
+        <VCol style="display: flex; justify-content: start"
+          ><h2>Verifikasi Dokumen Pengajuan: Detail</h2></VCol
+        >
+        <VCol style="display: flex; justify-content: end">
+          <VBtn
             text="Pengembalian"
             color="#e1442e"
             class="ma-1"
-            @click="openConfirmation" 
+            @click="openConfirmation"
           />
-          <VBtn 
-            text="Verifikasi"
-            class="ma-1"
-            @click="openReturn"
-          />
+          <VBtn text="Verifikasi" class="ma-1" @click="openReturn" />
         </VCol>
       </VRow>
 
@@ -94,7 +91,7 @@ const returnDocument = () => {
           <VExpansionPanels v-model="panelOpenPengajuan">
             <VExpansionPanel>
               <VExpansionPanelTitle>
-                <h2> Profil Pengajuan </h2>
+                <h2>Profil Pengajuan</h2>
               </VExpansionPanelTitle>
 
               <VExpansionPanelText>
@@ -109,9 +106,7 @@ const returnDocument = () => {
           <VExpansionPanels v-model="panelOpenPenanggungJawab">
             <VExpansionPanel>
               <VExpansionPanelTitle>
-                <h2>
-                  Penanggung Jawab
-                </h2>
+                <h2>Penanggung Jawab</h2>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <PenanggungJawabUsaha :data="data" />
@@ -125,9 +120,7 @@ const returnDocument = () => {
           <VExpansionPanels v-model="panelOpenAspekLegal">
             <VExpansionPanel>
               <VExpansionPanelTitle>
-                <h2>
-                  Aspek Legal
-                </h2>
+                <h2>Aspek Legal</h2>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <AspekLegal :data="data" />
@@ -142,16 +135,11 @@ const returnDocument = () => {
             <VExpansionPanel>
               <VExpansionPanelTitle>
                 <VCol cols="9">
-                <h2>
-                  Pabrik
-                </h2>
-              </VCol>
-              <VCol cols="3">
-                <VBtn
-                  variant="outlined"
-                  text="Unduh"
-                />
-              </VCol>
+                  <h2>Pabrik</h2>
+                </VCol>
+                <VCol cols="3">
+                  <VBtn variant="outlined" text="Unduh" />
+                </VCol>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <Pabrik :data="data" />
@@ -166,16 +154,11 @@ const returnDocument = () => {
             <VExpansionPanel>
               <VExpansionPanelTitle>
                 <VCol cols="9">
-                <h2>
-                  Outlet
-                </h2>
-              </VCol>
-              <VCol cols="3">
-                <VBtn
-                  variant="outlined"
-                  text="Unduh"
-                />
-              </VCol>
+                  <h2>Outlet</h2>
+                </VCol>
+                <VCol cols="3">
+                  <VBtn variant="outlined" text="Unduh" />
+                </VCol>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <Outlet :data="data" />
@@ -189,9 +172,7 @@ const returnDocument = () => {
           <VExpansionPanels v-model="panelOpenPenyelia">
             <VExpansionPanel>
               <VExpansionPanelTitle>
-                <h2>
-                  Penyelia Halal
-                </h2>
+                <h2>Penyelia Halal</h2>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <Penyelia :data="data" />
@@ -206,19 +187,14 @@ const returnDocument = () => {
             <VExpansionPanel>
               <VExpansionPanelTitle>
                 <VCol cols="9">
-                <h2>
-                  Daftar Nama Produk
-                </h2>
-              </VCol>
-              <VCol cols="3">
-                <VBtn
-                  variant="outlined"
-                  text="Unduh"
-                />
-              </VCol>
+                  <h2>Daftar Nama Produk</h2>
+                </VCol>
+                <VCol cols="3">
+                  <VBtn variant="outlined" text="Unduh" />
+                </VCol>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <DaftarNamaProduk :data="data" />
+                <DaftarNamaProdukSelfDeclare :data="data" />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -236,18 +212,18 @@ const returnDocument = () => {
                 <h2>Formulir Unduhan</h2>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                  <VRow>
-                    <VCol cols="3"> STTD </VCol>
-                    <VCol cols="1"> : </VCol>
-                    <VCol cols="8"> 
-                      <VBtn 
-                        icon="ri-download-fill"
-                        class="rounded"
-                        variant="flat"
-                        density="compact"
-                      />   
-                      </VCol>
-                  </VRow>
+                <VRow>
+                  <VCol cols="3"> STTD </VCol>
+                  <VCol cols="1"> : </VCol>
+                  <VCol cols="8">
+                    <VBtn
+                      icon="ri-download-fill"
+                      class="rounded"
+                      variant="flat"
+                      density="compact"
+                    />
+                  </VCol>
+                </VRow>
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -338,19 +314,23 @@ const returnDocument = () => {
       </VRow>
       <VDialog v-model="showConfirmation" max-width="600px">
         <VCard>
-          <VCardTitle class="font-weight-bold d-flex justify-space-between"><h3>Konfirmasi</h3>
-            <VBtn
-                icon
-                variant="plain"
-                @click="closeConfirmation"
-              >
-              <VIcon style="color: black;">mdi-close</VIcon>
-          </VBtn>
-        </VCardTitle>
-          <VCardText>Data akan dikirim ke LPH, pastikan dokumen telah memenuhi persyaratan!</VCardText>
+          <VCardTitle class="font-weight-bold d-flex justify-space-between"
+            ><h3>Konfirmasi</h3>
+            <VBtn icon variant="plain" @click="closeConfirmation">
+              <VIcon style="color: black">mdi-close</VIcon>
+            </VBtn>
+          </VCardTitle>
+          <VCardText
+            >Data akan dikirim ke LPH, pastikan dokumen telah memenuhi
+            persyaratan!</VCardText
+          >
           <VCardActions class="d-flex justify-end">
-            <VBtn color="primary" variant="outlined" @click="closeConfirmation">Batal</VBtn>
-            <VBtn color="primary" variant="flat" @click="submitData">Kirim</VBtn>
+            <VBtn color="primary" variant="outlined" @click="closeConfirmation"
+              >Batal</VBtn
+            >
+            <VBtn color="primary" variant="flat" @click="submitData"
+              >Kirim</VBtn
+            >
           </VCardActions>
         </VCard>
       </VDialog>
@@ -358,19 +338,18 @@ const returnDocument = () => {
       <!-- Document Return Modal -->
       <VDialog v-model="showReturn" max-width="600px">
         <VCard>
-          <VCardTitle class="font-weight-bold d-flex justify-space-between"><h3>Pengembalian Dokumen</h3>
-            <VBtn
-              icon
-              variant="plain"
-              @click="closeReturn"
-            >
-            <VIcon style="color: black;">mdi-close</VIcon>
-        </VBtn>
-      </VCardTitle>
+          <VCardTitle class="font-weight-bold d-flex justify-space-between"
+            ><h3>Pengembalian Dokumen</h3>
+            <VBtn icon variant="plain" @click="closeReturn">
+              <VIcon style="color: black">mdi-close</VIcon>
+            </VBtn>
+          </VCardTitle>
           <VCardText>
             <div class="mb-3 font-weight-medium text-caption text-grey">
-          <span style="color: black;"><b>Masukan Keterangan Pengembalian</b></span>(Max. 1000 Karakter)
-        </div>
+              <span style="color: black"
+                ><b>Masukan Keterangan Pengembalian</b></span
+              >(Max. 1000 Karakter)
+            </div>
             <VTextarea
               label="Masukan Keterangan Pengembalian (Max. 1000 Karakter)"
               v-model="returnNote"
@@ -379,8 +358,12 @@ const returnDocument = () => {
             />
           </VCardText>
           <VCardActions class="d-flex justify-end">
-            <VBtn color="primary" variant="outlined" @click="closeReturn">Batal</VBtn>
-            <VBtn color="primary" variant="flat" @click="returnDocument">Kembalikan</VBtn>
+            <VBtn color="primary" variant="outlined" @click="closeReturn"
+              >Batal</VBtn
+            >
+            <VBtn color="primary" variant="flat" @click="returnDocument"
+              >Kembalikan</VBtn
+            >
           </VCardActions>
         </VCard>
       </VDialog>

@@ -41,7 +41,9 @@ const tracking = props.datalistmanufacturetracking?.map((item) => {
           <span class="app-timeline-title">
             {{ item.status }}
           </span>
-          <span class="app-timeline-meta">{{ item.created_at }}</span>
+          <span class="app-timeline-meta">{{
+            formatDate(item.created_at)
+          }}</span>
         </div>
         <div class="app-timeline-text mt-1">
           {{ item.username }}

@@ -12,40 +12,29 @@ const dataLOATracking = ref();
 const dataListManufactureTracking = ref();
 const dataListProductTracking = ref();
 const dataFHCTracking = ref();
-const loading = ref(false);
-const loadingDetailRegistration = ref(false);
-const loadingDocumentLOA = ref(false);
-const loadingDocumentFHC = ref(false);
-const loadingDocumentMRA = ref(false);
-const loadingTracking = ref(false);
-const loadingLOATracking = ref(false);
-const loadingFHCTracking = ref(false);
-const loadingListProductTracking = ref(false);
-
-const loadingListManufactureTracking = ref(false);
+const loading = ref(true);
+const loadingListTrackingManufacture = ref(false);
+const loadingListTrackingProduct = ref(false);
+const loadingListTrackingLOA = ref(false);
+const loadingListTrackingFHC = ref(false);
 
 const loadItemById = async () => {
   try {
-    loading.value = true;
-
     const response = await $api(`/shln/verificator/${shlnId}`, {
       method: "get",
     });
 
-    if (response.code === 2000) data.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-
-    loading.value = false;
+    if (response.code === 2000) {
+      data.value = response.data;
+      return response;
+    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loading.value = false;
   }
 };
 
 const loadItemDetailRegistrationById = async () => {
   try {
-    loadingDetailRegistration.value = true;
-
     const response = await $api(
       `/shln/verificator/detail/registration/${shlnId}`,
       {
@@ -53,38 +42,35 @@ const loadItemDetailRegistrationById = async () => {
       }
     );
 
-    if (response.code === 2000) dataDetailRegistration.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (response.code === 2000) {
+      dataDetailRegistration.value = response.data;
 
-    loadingDetailRegistration.value = false;
+      return response;
+    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingDetailRegistration.value = false;
   }
 };
 
 const loadItemTrackingById = async () => {
   try {
-    loadingTracking.value = true;
-
     const response = await $api(`/shln/verificator/tracking/${shlnId}`, {
       method: "get",
     });
 
-    if (response.code === 2000) dataTracking.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (response.code === 2000) {
+      dataTracking.value = response.data;
 
-    loadingTracking.value = false;
+      return response;
+    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingTracking.value = false;
   }
 };
 
 const loadItemListProductTrackingById = async () => {
+  loadingListTrackingProduct.value = true;
   try {
-    loadingListProductTracking.value = true;
-
     const response = await $api(
       `/shln/verificator/product/list-tracking/${shlnId}`,
       {
@@ -92,20 +78,22 @@ const loadItemListProductTrackingById = async () => {
       }
     );
 
-    if (response.code === 2000) dataListProductTracking.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-
-    loadingListProductTracking.value = false;
+    if (response.code === 2000) {
+      dataListProductTracking.value = response.data;
+      loadingListTrackingProduct.value = false;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingListTrackingProduct.value = false;
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingListProductTracking.value = false;
   }
 };
 
 const loadItemListManufactureTrackingById = async () => {
+  loadingListTrackingManufacture.value = true;
   try {
-    loadingListManufactureTracking.value = true;
-
     const response = await $api(
       `/shln/verificator/manufacture/list-tracking/${shlnId}`,
       {
@@ -113,21 +101,23 @@ const loadItemListManufactureTrackingById = async () => {
       }
     );
 
-    if (response.code === 2000)
+    if (response.code === 2000) {
       dataListManufactureTracking.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-
-    loadingListManufactureTracking.value = false;
+      loadingListTrackingManufacture.value = false;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingListTrackingManufacture.value = false;
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingListManufactureTracking.value = false;
+    loadingListTrackingManufacture.value = false;
   }
 };
 
 const loadItemLOATrackingById = async () => {
+  loadingListTrackingLOA.value = true;
   try {
-    loadingLOATracking.value = true;
-
     const response = await $api(
       `/shln/verificator/document/loa/tracking/${shlnId}`,
       {
@@ -135,20 +125,24 @@ const loadItemLOATrackingById = async () => {
       }
     );
 
-    if (response.code === 2000) dataLOATracking.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (response.code === 2000) {
+      dataLOATracking.value = response.data;
+      loadingListTrackingLOA.value = false;
 
-    loadingLOATracking.value = false;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingListTrackingLOA.value = false;
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingLOATracking.value = false;
+    loadingListTrackingLOA.value = false;
   }
 };
 
 const loadItemFHCTrackingById = async () => {
+  loadingListTrackingFHC.value = true;
   try {
-    loadingFHCTracking.value = true;
-
     const response = await $api(
       `/shln/verificator/document/fhc/tracking/${shlnId}`,
       {
@@ -156,81 +150,91 @@ const loadItemFHCTrackingById = async () => {
       }
     );
 
-    if (response.code === 2000) dataFHCTracking.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-
-    loadingFHCTracking.value = false;
+    if (response.code === 2000) {
+      dataFHCTracking.value = response.data;
+      loadingListTrackingFHC.value = false;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingListTrackingFHC.value = false;
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingFHCTracking.value = false;
+    loadingListTrackingFHC.value = false;
   }
 };
 
 const loadDocumentLOAById = async () => {
   try {
-    loadingDocumentLOA.value = true;
-
     const response = await $api(`/shln/verificator/document/loa/${shlnId}`, {
       method: "get",
     });
 
-    if (response.code === 2000) dataDocumentLOA.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (response.code === 2000) {
+      dataDocumentLOA.value = response.data;
 
-    loadingDocumentLOA.value = false;
+      return response;
+    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingDocumentLOA.value = false;
   }
 };
 
 const loadDocumentFHCById = async () => {
   try {
-    loadingDocumentFHC.value = true;
-
     const response = await $api(`/shln/verificator/document/fhc/${shlnId}`, {
       method: "get",
     });
 
-    if (response.code === 2000) dataDocumentFHC.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (response.code === 2000) {
+      dataDocumentFHC.value = response.data;
 
-    loadingDocumentFHC.value = false;
+      return response;
+    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingDocumentFHC.value = false;
   }
 };
 
 const loadDocumentMRAById = async () => {
   try {
-    loadingDocumentMRA.value = true;
-
     const response = await $api(`/shln/verificator/document/mra/${shlnId}`, {
       method: "get",
     });
 
-    if (response.code === 2000) dataDocumentMRA.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (response.code === 2000) {
+      dataDocumentMRA.value = response.data;
 
-    loadingDocumentMRA.value = false;
+      return response;
+    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingDocumentMRA.value = false;
   }
 };
 
 onMounted(async () => {
-  await loadItemById();
-  await loadDocumentLOAById();
-  await loadItemTrackingById();
-  await loadItemDetailRegistrationById();
-  await loadDocumentFHCById();
-  await loadDocumentMRAById();
-  await loadItemLOATrackingById();
-  await loadItemFHCTrackingById();
-  await loadItemListProductTrackingById();
-  await loadItemListManufactureTrackingById();
+  const res = await Promise.all([
+    loadItemById(),
+    loadItemTrackingById(),
+    loadItemDetailRegistrationById(),
+    loadDocumentFHCById(),
+    loadDocumentMRAById(),
+    loadItemLOATrackingById(),
+    loadItemFHCTrackingById(),
+    loadItemListProductTrackingById(),
+    loadItemListManufactureTrackingById(),
+    loadDocumentLOAById(),
+  ]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loading.value = false;
+  } else {
+    loading.value = false;
+  }
 });
 </script>
 
@@ -255,20 +259,7 @@ onMounted(async () => {
       </VTabs>
     </VCol>
   </VRow>
-  <VRow
-    v-if="
-      !loading &&
-      !loadingDocumentLOA &&
-      !loadingDocumentFHC &&
-      !loadingDocumentMRA &&
-      !loadingTracking &&
-      !loadingLOATracking &&
-      !loadingFHCTracking &&
-      !loadingListProductTracking &&
-      !loadingListManufactureTracking &&
-      !loadingDetailRegistration
-    "
-  >
+  <VRow v-if="!loading">
     <VCol>
       <VTabsWindow v-model="tabs">
         <br />
@@ -281,21 +272,28 @@ onMounted(async () => {
         </VTabsWindowItem>
         <VTabsWindowItem value="2">
           <ShlnDocumentDetail
+            v-if="!loadingListTrackingFHC && !loadingListTrackingLOA"
             :datadocumentfhc="dataDocumentFHC"
             :datadocumentloa="dataDocumentLOA"
             :datadocumentmra="dataDocumentMRA"
             :datatrackingloa="dataLOATracking"
             :datatrackingfhc="dataFHCTracking"
+            @refreshloa="loadItemLOATrackingById"
+            @refreshfhc="loadItemFHCTrackingById"
           />
         </VTabsWindowItem>
         <VTabsWindowItem value="3">
           <VerificatorDetailManufacture
+            v-if="!loadingListTrackingManufacture"
             :datalistmanufacturetracking="dataListManufactureTracking"
+            @refresh="loadItemListManufactureTrackingById"
           />
         </VTabsWindowItem>
         <VTabsWindowItem value="4">
           <VerificatorDetailProduct
+            v-if="!loadingListTrackingProduct"
             :datalistproducttracking="dataListProductTracking"
+            @refresh="loadItemListProductTrackingById"
           />
         </VTabsWindowItem>
       </VTabsWindow>

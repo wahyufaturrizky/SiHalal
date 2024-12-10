@@ -2,6 +2,10 @@
 import { computed, ref } from "vue";
 import { useDisplay } from "vuetify";
 
+const emit = defineEmits<{
+  (e: "refresh"): void;
+}>();
+
 const loading = ref(false);
 
 const isVisible = ref(false);
@@ -32,6 +36,7 @@ const postVerificatorReturn = async () => {
     if (res?.code === 2000) {
       closeDialog();
       loading.value = false;
+      emit("refresh");
     } else {
       closeDialog();
       loading.value = false;

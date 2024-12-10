@@ -1,6 +1,5 @@
 <script setup lang="ts">
-const loading = ref(false);
-const loadingSOF = ref(false);
+const loading = ref(true);
 const loadingSubmit = ref(false);
 const loadingDelete = ref(false);
 const visibleModalKirim = ref(false);
@@ -11,7 +10,6 @@ const timelineEvents = ref();
 const openPanelRegisterData = ref(0);
 const openPanelFacilitate = ref(0);
 const openPanelTracking = ref(0);
-const dataSOF = ref([]);
 
 const route = useRoute();
 const router = useRouter();
@@ -20,8 +18,6 @@ const facilitateId = route.params.id;
 
 const loadItemById = async () => {
   try {
-    loading.value = true;
-
     const response = await $api(`/facilitate/entry/${facilitateId}`, {
       method: "get",
     });
@@ -33,7 +29,6 @@ const loadItemById = async () => {
 
       const {
         nama,
-        sumber_pembiayaan,
         kuota,
         penanggung_jawab,
         nama_program,
@@ -44,6 +39,7 @@ const loadItemById = async () => {
         tgl_selesai,
         jenis_fasilitasi,
         fac_description,
+        sumber_biaya_name,
       } = fasilitasi || {};
 
       dataFasilitasi.value = [
@@ -96,7 +92,7 @@ const loadItemById = async () => {
         {
           id: 11,
           key: "Sumber Pembiayaan",
-          value: sumber_pembiayaan,
+          value: sumber_biaya_name,
         },
         {
           id: 12,
@@ -118,16 +114,14 @@ const loadItemById = async () => {
         };
       });
 
-      loading.value = false;
+      return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-      loading.value = false;
     }
   } catch (error) {
     console.log("@error", error);
 
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loading.value = false;
   }
 };
 
@@ -183,45 +177,28 @@ const deleteFacilitate = async () => {
   }
 };
 
-const loadSOF = async () => {
-  try {
-    loadingSOF.value = true;
-
-    const response = await $api("/master/source-of-fund", {
-      method: "get",
-    });
-
-    if (response.length) {
-      dataSOF.value = response;
-
-      loadingSOF.value = false;
-    } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan asd", "error");
-      loadingSOF.value = false;
-    }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingSOF.value = false;
-  }
-};
-
 onMounted(async () => {
-  await loadItemById();
-  await loadSOF();
+  const res = await Promise.all([loadItemById()]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loading.value = false;
+  } else {
+    loading.value = false;
+  }
 });
 
 const navigateAction = () => {
   navigateTo(`/facilitation/entry/${facilitateId}/edit`);
 };
-
-const formatSof = (val: string) => {
-  return dataSOF.value.find((item: any) => item.code === val)?.name;
-};
 </script>
 
 <template>
   <KembaliButton />
-  <VRow v-if="!loading && !loadingSOF">
+  <VRow v-if="!loading">
     <VCol cols="6" style="display: flex; align-items: center">
       <h2>Detail Data Fasilitasi</h2>
     </VCol>
@@ -312,7 +289,7 @@ const formatSof = (val: string) => {
       </div>
     </VCol>
   </VRow>
-  <VRow v-if="!loading && !loadingSOF">
+  <VRow v-if="!loading">
     <VCol cols="8">
       <VExpansionPanels v-model="openPanelFacilitate">
         <VExpansionPanel>
@@ -321,24 +298,13 @@ const formatSof = (val: string) => {
           </VExpansionPanelTitle>
           <VExpansionPanelText>
             <VRow v-for="item in dataFasilitasi" :key="item.id" gutter="1svh">
-              <template v-if="item.key === 'Sumber Pembiayaan'">
-                <VCol cols="3">
-                  {{ item.key }}
-                </VCol>
-                <VCol cols="1"> : </VCol>
-                <VCol cols="8">
-                  {{ formatSof(item.value) }}
-                </VCol>
-              </template>
-              <template v-else>
-                <VCol cols="3">
-                  {{ item.key }}
-                </VCol>
-                <VCol cols="1"> : </VCol>
-                <VCol cols="8">
-                  {{ item.value }}
-                </VCol>
-              </template>
+              <VCol cols="3">
+                {{ item.key }}
+              </VCol>
+              <VCol cols="1"> : </VCol>
+              <VCol cols="8">
+                {{ item.value }}
+              </VCol>
             </VRow>
           </VExpansionPanelText>
         </VExpansionPanel>

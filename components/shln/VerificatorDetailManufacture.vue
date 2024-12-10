@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+const emit = defineEmits<{
+  (e: "refresh"): void;
+}>();
+
 const props = defineProps({
   datalistmanufacturetracking: {
     type: Object,
@@ -71,10 +75,14 @@ const headers = [
           <VCol cols="4">
             <VRow no-gutters>
               <VCol cols="6">
-                <VerificationManufactureReturnConfirmation />
+                <VerificationManufactureReturnConfirmation
+                  @refresh="emit('refresh')"
+                />
               </VCol>
               <VCol cols="6">
-                <VerificationManufactureSaveConfirmation />
+                <VerificationManufactureSaveConfirmation
+                  @refresh="emit('refresh')"
+                />
               </VCol>
             </VRow>
           </VCol>

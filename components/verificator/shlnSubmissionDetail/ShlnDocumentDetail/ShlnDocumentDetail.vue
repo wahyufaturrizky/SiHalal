@@ -22,6 +22,11 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits<{
+  (e: "refreshloa"): void;
+  (e: "refreshfhc"): void;
+}>();
+
 const route = useRoute();
 const shlnId = route.params.id;
 
@@ -44,8 +49,27 @@ const loadItemListDocumentById = async (page: number, size: number) => {
     });
 
     if (response.code === 2000) {
-      dataListDocument.value = response.data || [];
-      totalItems.value = response?.total_item;
+      const { data } = response;
+      const { requirement_doc } = data || {};
+      const { loa, nib } = requirement_doc || {};
+
+      const resData = [
+        {
+          no: loa.id,
+          type: "LOA",
+          file: loa.file,
+          record: loa.status,
+        },
+        {
+          no: nib.id,
+          type: "NIB",
+          file: nib.file,
+          record: nib.status,
+        },
+      ];
+
+      dataListDocument.value = resData || [];
+      totalItems.value = 2;
       loadingListDocument.value = false;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -73,8 +97,13 @@ const {
 const { country, expired_date, halal_institution_name, issued_date } =
   props.datadocumentmra || {};
 
-const { document, document_no, verification_link, file } =
-  props.datadocumentfhc || {};
+const {
+  document,
+  document_no,
+  verification_link,
+  file,
+  id: idFHC,
+} = props.datadocumentfhc || {};
 
 const MRA = [
   { id: 1, key: "Halal Institution Name", value: halal_institution_name },
@@ -83,27 +112,29 @@ const MRA = [
   { id: 4, key: "Country", value: country },
 ];
 
-const trackingLOA = props.datatrackingloa?.map((item) => {
-  const { username, status, id } = item || {};
+const trackingLOA = props.datatrackingloa?.map((item: any) => {
+  const { username, status, id, created_at } = item || {};
 
   return {
     id,
     key: status,
     value: username,
+    created_at,
   };
 });
 
-const trackingFHC = props.datatrackingfhc?.map((item) => {
-  const { username, status, id } = item || {};
+const trackingFHC = props.datatrackingfhc?.map((item: any) => {
+  const { username, status, id, created_at } = item || {};
 
   return {
     id,
     key: status,
     value: username,
+    created_at,
   };
 });
 
-const downloadLOA = (file) => {
+const downloadLOA = (file: any) => {
   window.open(file, "_blank");
 };
 
@@ -113,6 +144,14 @@ const headers = [
   { title: "Upload / Download", key: "file" },
   { title: "HS Code", key: "record" },
 ];
+
+const onRefresh = (type: string) => {
+  if (type === "loa") {
+    emit("refreshloa");
+  } else if (type === "fhc") {
+    emit("refreshfhc");
+  }
+};
 </script>
 
 <template>
@@ -196,8 +235,16 @@ const headers = [
         </VCardText>
         <VCardActions style="justify-content: end">
           <div>
-            <ReturnConfirmationModal :id="id" documenttype="loa" />
-            <ApproveConfirmationModal :id="id" documenttype="loa" />
+            <ReturnConfirmationModal
+              @refresh="onRefresh('loa')"
+              :id="id"
+              documenttype="loa"
+            />
+            <ApproveConfirmationModal
+              @refresh="onRefresh('loa')"
+              :id="id"
+              documenttype="loa"
+            />
           </div>
         </VCardActions>
       </VCard>
@@ -206,18 +253,35 @@ const headers = [
       <VCard>
         <VCardTitle>Tracking of LoA</VCardTitle>
         <VCardItem>
-          <VTimeline side="end">
+          <VTimeline
+            side="end"
+            align="start"
+            line-inset="9"
+            truncate-line="start"
+            density="compact"
+            class="v-timeline--variant-outlined"
+          >
             <VTimelineItem
               v-for="item in trackingLOA"
               :key="item.id"
-              dot-color="blue"
-              max-height="30svh"
+              dot-color="rgb(var(--v-theme-surface))"
+              size="x-small"
             >
-              <div>
-                <div class="text-h6">
+              <template #icon>
+                <VIcon icon="ri-circle-line" color="primary" size="16" />
+              </template>
+              <div
+                class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
+              >
+                <span class="app-timeline-title">
                   {{ item.key }}
-                </div>
-                <p>{{ item.value }}</p>
+                </span>
+                <span class="app-timeline-meta">
+                  {{ formatDate(item.created_at) }}</span
+                >
+              </div>
+              <div class="app-timeline-text mt-1">
+                {{ item.value }}
               </div>
             </VTimelineItem>
           </VTimeline>
@@ -267,8 +331,16 @@ const headers = [
         </VCardText>
         <VCardActions style="justify-content: end">
           <div>
-            <ReturnConfirmationModal :id="id" documenttype="fhc" />
-            <ApproveConfirmationModal :id="id" documenttype="fhc" />
+            <ReturnConfirmationModal
+              @refresh="onRefresh('fhc')"
+              :id="idFHC"
+              documenttype="fhc"
+            />
+            <ApproveConfirmationModal
+              @refresh="onRefresh('fhc')"
+              :id="idFHC"
+              documenttype="fhc"
+            />
           </div>
         </VCardActions>
       </VCard>
@@ -277,18 +349,35 @@ const headers = [
       <VCard>
         <VCardTitle>Tracking of Certificate</VCardTitle>
         <VCardItem>
-          <VTimeline side="end">
+          <VTimeline
+            side="end"
+            align="start"
+            line-inset="9"
+            truncate-line="start"
+            density="compact"
+            class="v-timeline--variant-outlined"
+          >
             <VTimelineItem
               v-for="item in trackingFHC"
               :key="item.id"
-              dot-color="blue"
-              max-height="30svh"
+              dot-color="rgb(var(--v-theme-surface))"
+              size="x-small"
             >
-              <div>
-                <div class="text-h6">
+              <template #icon>
+                <VIcon icon="ri-circle-line" color="primary" size="16" />
+              </template>
+              <div
+                class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
+              >
+                <span class="app-timeline-title">
                   {{ item.key }}
-                </div>
-                <p>{{ item.value }}</p>
+                </span>
+                <span class="app-timeline-meta">
+                  {{ formatDate(item.created_at) }}</span
+                >
+              </div>
+              <div class="app-timeline-text mt-1">
+                {{ item.value }}
               </div>
             </VTimelineItem>
           </VTimeline>
@@ -315,10 +404,11 @@ const headers = [
               {{ index + 1 + (page - 1) * itemPerPage }}
             </template>
             <template #item.file="{ item }">
-              <VBtn icon="fa-download" density="compact" />
-            </template>
-            <template #item.record="{ item }">
-              <VIcon icon="fa-history" />
+              <VBtn
+                icon="fa-download"
+                density="compact"
+                @click="downloadLOA(item.file)"
+              />
             </template>
           </VDataTableServer>
         </VCardText>

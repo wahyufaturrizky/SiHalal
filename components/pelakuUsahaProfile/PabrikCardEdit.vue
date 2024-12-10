@@ -127,6 +127,9 @@ const initialDataForEdit = (item: any) => ({
         item-value="no"
         class="elevation-1"
       >
+        <template #item.no="{ index }">
+          {{ index + 1 }}
+        </template>
         <template #[`item.action`]="{ item }">
           <VMenu :close-on-content-click="false">
             <template #activator="{ props }">

@@ -7,6 +7,10 @@ const props = defineProps({
     type: Object as profileMain | any,
     required: true,
   },
+  mode: {
+    type: String,
+    default: "add",
+  },
 });
 // onMounted(() => {
 //   console.log("ini data props", props.profileData);
@@ -25,7 +29,7 @@ const profilData = [
   },
   { id: 3, field: "Kota/Kab", value: props.profileData?.city_name || "-" },
   { id: 4, field: "Provinsi", value: props.profileData?.province_name || "-" },
-  { id: 5, field: "Kodepos", value: props.profileData?.postal_code || "-" },
+  { id: 5, field: "Kodepos", value: props.profileData?.kode_pos_pu || "-" },
   { id: 6, field: "Negara", value: props.profileData?.country_name || "-" },
   { id: 7, field: "Telepon", value: props.profileData?.phone || "-" },
   { id: 8, field: "Email", value: props.profileData?.email || "-" },
@@ -53,12 +57,14 @@ const profilData = [
         <VRow>
           <VCol cols="4"> Jenis Badan Usaha </VCol>
           <VCol cols="1"> : </VCol>
-          <VCol cols="7"> Lainnya </VCol>
+          <VCol cols="7">
+            {{ props.profileData?.jenis_badan_usaha || "-" }}
+          </VCol>
         </VRow>
         <VRow>
           <VCol cols="4"> Tingkat Usaha </VCol>
           <VCol cols="1"> : </VCol>
-          <VCol cols="7"> UMK </VCol>
+          <VCol cols="7"> {{ props.profileData?.tingkat_usaha || "-" }} </VCol>
         </VRow>
         <VRow>
           <VCol cols="4" style="display: flex; align-items: center">
@@ -66,25 +72,18 @@ const profilData = [
           </VCol>
           <VCol cols="1" style="display: flex; align-items: center"> : </VCol>
           <VCol cols="7">
-            <div
-              style="display: flex; align-items: center; justify-content: end"
-            >
-              <VSelect density="compact" :items="['Mikro']" />
-              <!-- <VBtn style="margin-inline-start: 1svw" variant="outlined">
-                Update
-              </VBtn> -->
-            </div>
+            {{ props.profileData?.skala_usaha || "-" }}
           </VCol>
         </VRow>
         <VRow>
           <VCol cols="4"> Modal Dasar </VCol>
           <VCol cols="1"> : </VCol>
-          <VCol cols="7"> Rp 0 </VCol>
+          <VCol cols="7"> {{ props.profileData?.modal_dasar || "-" }} </VCol>
         </VRow>
         <VRow>
           <VCol cols="4"> Asal Usaha </VCol>
           <VCol cols="1"> : </VCol>
-          <VCol cols="7"> Domestik </VCol>
+          <VCol cols="7"> {{ props.profileData?.asal_usaha || "-" }} </VCol>
         </VRow>
         <br />
       </VExpansionPanelText>

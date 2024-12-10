@@ -1,31 +1,68 @@
 <script setup lang="ts">
-import DivisiUnitUsaha from "@/components/pelakuUsahaProfile/DivisiUnitUsaha.vue";
 import PerizinanCard from "@/components/pelakuUsahaProfile/PerizinanCard.vue";
 import SubPelakuUsahaLayout from "@/layouts/subPelakuUsahaLayout.vue";
-
-// import DeleteConfirmation from "@/views/pages/pelaku-usaha/DeleteConfirmation.vue";
-// import SaveConfirmation from "@/views/pages/pelaku-usaha/SaveConfirmation.vue";
-
-const tablePabrikHeader = [
-  { title: "No", key: "no" },
-  { title: "Jenis", key: "kind" },
-  { title: "No. Dokumen", key: "no_docs" },
-  { title: "Tanggal", key: "date" },
-  { title: "Masa Berlaku", key: "exp_date" },
-  { title: "Instansi Penerbit", key: "publisher" },
-];
-
-const tableOutletHeader = [
-  { title: "No", key: "no" },
-  { title: "Nama", key: "name" },
-  { title: "Alamat", key: "address" },
-];
-
-// const onEdit = () => {
-//   navigateTo("/pelaku-usaha-edit");
-// };
+import { VForm } from "vuetify/components";
 
 const store = pelakuUsahaProfile();
+
+const navigatePage = () => navigateTo("/pelaku-usaha");
+
+const panelOpen = ref(0);
+
+const formData = ref({
+  nameResponsible: store.penanggungJawabHalal?.name,
+  nomorKontak: store.penanggungJawabHalal?.phone,
+  email: store.penanggungJawabHalal?.email,
+});
+
+const snackbar = useSnackbar();
+const penanggungJawabRef = ref<VForm>();
+
+const submitPenanggungJawab = () => {
+  penanggungJawabRef.value?.validate().then(({ valid: isValid }) => {
+    if (isValid) {
+      const submitApi = $api(
+        `/pelaku-usaha-profile/${store.profileData?.id}/update-responsible`,
+        {
+          method: "PUT",
+          body: {
+            pic_name: formData.value.nameResponsible,
+            pic_phone_number: formData.value.nomorKontak,
+            pic_email: formData.value.email,
+          },
+        }
+      ).then((val: any) => {
+        if (val.code == 2000) {
+          store.fetchProfile();
+          snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+        } else {
+          snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
+        }
+      });
+    }
+  });
+};
+
+const phoneValidator = (value: string) => {
+  const isValid = /^08\d{8,15}$/.test(value);
+
+  return (
+    isValid ||
+    'Nomor Handphone harus dimulai dengan "08" dan berjumlah 10-13 digit angka'
+  );
+};
+
+const nameValidator = (value: string) => {
+  const isValid = /^[a-zA-Z'-]+$/.test(value);
+
+  return isValid || "Nama tidak boleh angka";
+};
+
+onMounted(() => {
+  formData.value.nameResponsible = store.penanggungJawabHalal?.name;
+  formData.value.nomorKontak = store.penanggungJawabHalal?.phone;
+  formData.value.email = store.penanggungJawabHalal?.email;
+});
 </script>
 
 <template>
@@ -34,8 +71,12 @@ const store = pelakuUsahaProfile();
       <VRow>
         <VCol><h3>Ubah Pelaku Usaha</h3></VCol>
         <VCol style="display: flex; justify-content: end">
-          <DeleteConfirmation />
-          <SaveConfirmation />
+          <!-- <DeleteConfirmation /> -->
+          <VBtn variant="outlined" @click="navigatePage()">Batal</VBtn>
+          <SaveConfirmation
+            @confirm-add="submitPenanggungJawab"
+            :responsible-data="formData"
+          />
         </VCol>
       </VRow>
     </template>
@@ -51,11 +92,50 @@ const store = pelakuUsahaProfile();
       </VRow>
       <VRow>
         <VCol cols="12">
-          <PenanggungJawabCardEdit
-            :responsible-person="
-              store.penanggungJawabHalal ? store.penanggungJawabHalal : {}
-            "
-          />
+          <VExpansionPanels v-model="panelOpen">
+            <VExpansionPanel>
+              <VExpansionPanelTitle>
+                <h2>Penanggung Jawab</h2>
+              </VExpansionPanelTitle>
+              <VExpansionPanelText>
+                <VForm ref="penanggungJawabRef">
+                  <VRow>
+                    <VCol cols="12">
+                      <VTextField
+                        v-model="formData.nameResponsible"
+                        label="Nama"
+                        outlined
+                        dense
+                        :rules="[requiredValidator, nameValidator]"
+                      />
+                    </VCol>
+                  </VRow>
+                  <VRow>
+                    <VCol cols="12">
+                      <VTextField
+                        v-model="formData.nomorKontak"
+                        label="Nomor Kontak"
+                        outlined
+                        dense
+                        :rules="[requiredValidator, phoneValidator]"
+                      />
+                    </VCol>
+                  </VRow>
+                  <VRow>
+                    <VCol cols="12">
+                      <VTextField
+                        v-model="formData.email"
+                        label="Email"
+                        outlined
+                        dense
+                        :rules="[emailValidator, requiredValidator]"
+                      />
+                    </VCol>
+                  </VRow>
+                </VForm>
+              </VExpansionPanelText>
+            </VExpansionPanel>
+          </VExpansionPanels>
         </VCol>
       </VRow>
       <VRow>
@@ -94,11 +174,11 @@ const store = pelakuUsahaProfile();
           <KBLICard />
         </VCol>
       </VRow>
-      <VRow>
+      <!-- <VRow>
         <VCol :cols="12">
           <DivisiUnitUsaha />
         </VCol>
-      </VRow>
+      </VRow> -->
     </template>
   </SubPelakuUsahaLayout>
 </template>

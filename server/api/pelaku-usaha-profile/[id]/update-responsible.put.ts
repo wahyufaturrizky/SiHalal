@@ -1,10 +1,8 @@
-import type { NuxtError } from "nuxt/app";
+import { NuxtError } from "nuxt/app";
 
 const runtimeConfig = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
-  const id = getRouterParam(event, "id");
-
   if (typeof authorizationHeader === "undefined") {
     throw createError({
       statusCode: 403,
@@ -13,15 +11,20 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  const { id } = event.context.params;
+  const body: any = await readBody(event);
+
+  // return files;
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/certificate-halal-foreign/${id}/verified`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/business-actor/foreign/${id}`,
     {
       method: "put",
       headers: { Authorization: authorizationHeader },
+      body,
     }
   ).catch((err: NuxtError) => {
+    console.log(err);
     setResponseStatus(event, 400);
-
     return err.data;
   });
 

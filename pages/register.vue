@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { themeConfig } from '@themeConfig'
 import { useDisplay } from 'vuetify'
 import { VForm } from 'vuetify/components/VForm'
+import { themeConfig } from '@themeConfig'
 
 import { VNodeRenderer } from '@/@layouts/components/VNodeRenderer'
 import bseImage from '@images/bse.png'
@@ -12,6 +12,9 @@ import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-il
 import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
 import authV2LoginMaskDark from '@images/pages/auth-v2-login-mask-dark.png'
 import authV2LoginMaskLight from '@images/pages/auth-v2-login-mask-light.png'
+
+
+const MAX_LENGTH_PHONE_NUMBER = 16
 
 const { sendSnackbar } = useSnackbar()
 const userVerificationStore = useUserVerificationStore()
@@ -70,18 +73,35 @@ const validateEmail = () => {
   else errors.email = ''
 }
 
-// validateNomorhandphone
 const validateNomorHandphone = async (event: Event) => {
   const target = event.target as HTMLInputElement
-
   target.value = target.value.replace(/\D/g, '')
 
+  form.value.noHandphone = target.value
   if (!form.value.noHandphone)
     errors.noHandphone = 'Wajib diisi'
   else errors.noHandphone = ''
 }
 
-// validateConfrimPassword
+const handlePasteNomorTelepon = (event: ClipboardEvent) => {
+  event.preventDefault();
+  const target = event.target as HTMLInputElement;
+
+  const clipboardData = event.clipboardData?.getData('text') || '';
+  let filteredData = clipboardData.replace(/\D/g, '');
+  filteredData = filteredData.slice(0, MAX_LENGTH_PHONE_NUMBER);
+
+
+  if (target) target.value = filteredData;
+
+  form.value.noHandphone = filteredData
+
+  if (!target.value) {
+    errors.noHandphone = 'Wajib diisi';
+  } else {
+    errors.noHandphone = '';
+  }
+};
 
 const refVForm = ref<VForm>()
 
@@ -393,9 +413,10 @@ onMounted(() => {
                   <VTextField
                     v-model="form.noHandphone"
                     type="tel"
-                    maxlength="16"
+                    :maxlength="MAX_LENGTH_PHONE_NUMBER"
                     placeholder="Masukan Nomor Handphone"
                     @input="validateNomorHandphone"
+                    @paste="handlePasteNomorTelepon"
                   />
                   <span
                     v-if="errors.noHandphone"
