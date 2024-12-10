@@ -44,7 +44,11 @@ const loadItem = async (page: number, size: number) => {
       },
     });
 
-    if (response.code != 2000) items.value = response.data;
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      return;
+    }
+    items.value = response.data;
     totalItems.value = response.total_item;
     loading.value = false;
   } catch (error) {
