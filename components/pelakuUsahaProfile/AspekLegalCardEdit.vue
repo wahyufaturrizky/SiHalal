@@ -58,8 +58,10 @@ const handleAddAspekLegalConfirm = (formData) => {
       body: {
         document_type: formData.type,
         document_number: formData.doc_number,
-        date: new Date(formData.date).toISOString(),
-        valid_date: new Date(formData.expiration_date).toISOString(),
+        date: new Date(formData.date).toISOString().substring(0, 10),
+        valid_date: new Date(formData.expiration_date)
+          .toISOString()
+          .substring(0, 10),
         publish_agency: formData.publishing_agency,
       },
     }
@@ -130,6 +132,9 @@ const initialDataAspekLegal = (item: any) => ({
         :items="props.aspekLegalData"
         class="elevation-1"
       >
+        <template #item.no="{ index }">
+          {{ index + 1 }}
+        </template>
         <template #[`item.action`]="{ item }">
           <VMenu :close-on-content-click="false">
             <template #activator="{ props }">
