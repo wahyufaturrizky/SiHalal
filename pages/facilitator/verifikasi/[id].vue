@@ -88,6 +88,7 @@ const getDetail = async () => {
     if (jenisFasilitasi.value == "Reguler") {
       url = "/facilitate/verifikator/lph";
     }
+    console.log(url);
     const lembaga = await $api(url, {
       method: "get",
     });
