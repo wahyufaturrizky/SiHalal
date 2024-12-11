@@ -507,7 +507,14 @@ const timelineEvents = ref([
             </VBtn>
           </InfoRow>
           <InfoRow name="Download Halal Registration Number">
-            <VBtn :href="registration?.download_file" target="_blank">
+            <VBtn
+              @click="
+                registration?.download_file != ''
+                  ? downloadDocument(registration?.download_file)
+                  : () => {}
+              "
+              target="_blank"
+            >
               <VIcon icon="ri-download-line" />
             </VBtn>
           </InfoRow>
