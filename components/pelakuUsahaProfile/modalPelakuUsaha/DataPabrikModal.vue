@@ -172,7 +172,7 @@
                 <VLabel>Status Pabrik</VLabel>
                 <VAutocomplete
                   :rules="[requiredValidator]"
-                  v-model="form.statusPabrik"
+                  :model-value="form.statusPabrik"
                   :items="statusOptions"
                   item-title="name"
                   item-value="name"
@@ -218,7 +218,7 @@ const masterDataStore = dataMasterStore();
 const convertstfas = async (name: string) => {
   const api = await masterDataStore.getMasterData("factorystatus");
 
-  return api.filter((val) => val.name == name);
+  return api.filter((val) => val.name == name)[0]?.name;
 };
 
 const openDialog = async () => {
@@ -240,18 +240,21 @@ const pabrikFormRef = ref<VForm>();
 const confirm = () => {
   let whichEmit: any = null;
   if (props.mode === "add") {
-    console.log("emitted add = ", form.value);
-    whichEmit = "confirmAdd";
+    // console.log("emitted add = ", form.value);
+    pabrikFormRef.value?.validate().then(({ valid: isValid }) => {
+      if (isValid) {
+        emit("confirmAdd", form.value);
+        closeDialog();
+      }
+    });
   } else {
-    whichEmit = "confirmEdit";
+    pabrikFormRef.value?.validate().then(({ valid: isValid }) => {
+      if (isValid) {
+        emit("confirmEdit", form.value, selectedIdPabrik.value);
+        closeDialog();
+      }
+    });
   }
-
-  pabrikFormRef.value?.validate().then(({ valid: isValid }) => {
-    if (isValid) {
-      emit(whichEmit, form.value);
-      closeDialog();
-    }
-  });
 };
 
 const cancel = () => {
@@ -319,6 +322,8 @@ const resetForm = () => {
   };
 };
 
+const selectedIdPabrik = ref();
+
 watch(
   () => props.initialData,
   (newData) => {
@@ -347,6 +352,7 @@ watch(
           console.error("fetching data error");
         }
       });
+      selectedIdPabrik.value = newData.id;
     }
   },
   { immediate: true }

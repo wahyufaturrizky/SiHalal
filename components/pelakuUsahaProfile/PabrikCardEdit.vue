@@ -21,11 +21,11 @@ const props = defineProps({
 
 const store = pelakuUsahaProfile();
 
-function handleEdit(item) {
+function handleEdit(item, idPabrik) {
   console.log("Edit item:", item);
 
   const submitApi = $api(
-    `/pelaku-usaha-profile/${store.profileData?.id}/${item.id}/update-factory`,
+    `/pelaku-usaha-profile/${store.profileData?.id}/${idPabrik}/update-factory`,
     {
       method: "PUT",
       body: {
@@ -38,14 +38,18 @@ function handleEdit(item) {
         status: item.statusPabrik,
       },
     }
-  ).then((val: any) => {
-    if (val.code == 2000) {
-      store.updateFactory(item.id, item);
-      snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
-    } else {
+  )
+    .then((val: any) => {
+      if (val.code == 2000) {
+        store.updateFactory(item.id, item);
+        snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+      } else {
+        snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
+      }
+    })
+    .catch((e) => {
       snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
-    }
-  });
+    });
 }
 
 function handleDelete(item) {
