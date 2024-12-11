@@ -92,14 +92,18 @@ const handleAddAspekLegalConfirm = (formData) => {
         // lokasiPabrik: '',
       },
     }
-  ).then((val: any) => {
-    if (val.code == 2000) {
-      store.fetchProfile();
-      snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
-    } else {
+  )
+    .then((val: any) => {
+      if (val.code == 2000) {
+        store.fetchProfile();
+        snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+      } else {
+        snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
+      }
+    })
+    .catch((e) => {
       snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
-    }
-  });
+    });
 };
 
 const initialDataForEdit = (item: any) => ({
