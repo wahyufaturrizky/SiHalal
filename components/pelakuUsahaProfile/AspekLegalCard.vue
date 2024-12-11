@@ -18,6 +18,20 @@ const legalHeader = [
   { title: "Instansi Penerbit", key: "publishing_agency" },
   { title: "Action", key: "action" },
 ];
+
+const storeDataMaster = dataMasterStore();
+
+const convertDocType = (type: string | null) => {
+  if (type.includes("LGL")) {
+    return storeDataMaster.masterJnlgl.filter((val) => val.code == type)[0]
+      ?.name;
+  }
+  return type;
+};
+
+onMounted(() => {
+  storeDataMaster.initMasterData();
+});
 </script>
 
 <template>
@@ -31,6 +45,9 @@ const legalHeader = [
         >
           <template #item.no="{ index }">
             {{ index + 1 }}
+          </template>
+          <template #item.type="{ item }">
+            {{ convertDocType(item.type) }}
           </template>
         </VDataTable>
       </VExpansionPanelText>
