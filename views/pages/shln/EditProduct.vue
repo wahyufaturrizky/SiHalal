@@ -37,21 +37,30 @@ const insertProduct = async () => {
   productAddButton.value = true;
   try {
     let hs_code_id = form.value.hs_code_id;
+    let body = {};
     if (
       props.scope == "4405c628-894b-4622-aaf0-b1acab962db1" ||
       props.scope == "5b18abfa-47e9-4846-9faa-0e6013bb4211" ||
       props.scope == "78a95209-5d90-4f90-ace0-b785ef474efc"
     ) {
-      hs_code_id = lastSelectedId.value;
-    }
-    const response = await $api("/shln/submission/product/add", {
-      method: "post",
-      body: {
+      body = {
         shln_id: form.value.shlnId,
         manufactur_id: form.value.manufactur_id,
         name: form.value.name,
-        hs_code_id: hs_code_id,
-      },
+        hs_code_id: lastSelectedId.value,
+      };
+    } else {
+      body = {
+        shln_id: form.value.shlnId,
+        manufactur_id: form.value.manufactur_id,
+        name: form.value.name,
+        hs_code: form.value.hs_code_id,
+        hs_code_desc: form.value.hs_code_desc,
+      };
+    }
+    const response = await $api("/shln/submission/product/add", {
+      method: "post",
+      body,
     });
     if (response.code == 500) {
       useSnackbar().sendSnackbar("Gagal menambahkan Product", "error");
@@ -89,6 +98,7 @@ const form = ref({
   manufactur_id: null,
   name: "",
   hs_code_id: null,
+  hs_code_desc: "",
 });
 
 const deleteDialog = ref(false);
@@ -397,11 +407,6 @@ const formatItemTitle = (item) => {
             </VCol>
             <VCol>
               <div
-                class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1"
-              >
-                HS Code
-              </div>
-              <div
                 v-if="
                   scope == '4405c628-894b-4622-aaf0-b1acab962db1' ||
                   scope == '5b18abfa-47e9-4846-9faa-0e6013bb4211' ||
@@ -411,6 +416,11 @@ const formatItemTitle = (item) => {
                 v-for="(level, index) in selectLevels"
                 :key="index"
               >
+                <div
+                  class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1"
+                >
+                  HS Code
+                </div>
                 <v-select
                   v-model="selectedValues[index]"
                   :items="level.options"
@@ -423,14 +433,38 @@ const formatItemTitle = (item) => {
                   v-on:update:model-value="handleSelect(index)"
                 />
               </div>
-              <v-text-field
-                v-else
-                placeholder="Input HS Code"
-                :rules="[requiredValidator]"
-                variant="outlined"
-                density="compact"
-                v-model="form.hs_code_id"
-              ></v-text-field>
+              <div v-else>
+                <div>
+                  <div
+                    class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1"
+                  >
+                    HS Code
+                  </div>
+                  <div>
+                    <v-text-field
+                      placeholder="Input HS Code"
+                      :rules="[requiredValidator]"
+                      variant="outlined"
+                      density="compact"
+                      v-model="form.hs_code_id"
+                    ></v-text-field>
+                  </div>
+                </div>
+                <div>
+                  <div
+                    class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1"
+                  >
+                    HS Code Description
+                  </div>
+                  <v-text-field
+                    placeholder="Input HS Code"
+                    :rules="[requiredValidator]"
+                    variant="outlined"
+                    density="compact"
+                    v-model="form.hs_code_desc"
+                  ></v-text-field>
+                </div>
+              </div>
               <!-- <VSelect
                 v-model="form.hs_code_id"
                 :items="hsCode"
