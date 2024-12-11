@@ -108,6 +108,20 @@ const navigateAction = (id: string) => {
                 {{ statusItem[item.status_code].desc }}
               </VChip>
             </template>
+            <template #item.tgl_aktif="{ item }">
+              {{
+                new Date(item.tgl_aktif) != "Invalid Date"
+                  ? formatDateIntl(new Date(item.tgl_aktif))
+                  : ""
+              }}
+            </template>
+            <template #item.tgl_selesai="{ item }">
+              {{
+                new Date(item.tgl_selesai) != "Invalid Date"
+                  ? formatDateIntl(new Date(item.tgl_selesai))
+                  : ""
+              }}
+            </template>
             <template #item.action="{ item }">
               <VBtn variant="text" icon @click="navigateAction(item.id)">
                 <VIcon>mdi-chevron-right</VIcon>

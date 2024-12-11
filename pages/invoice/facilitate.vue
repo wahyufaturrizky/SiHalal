@@ -107,12 +107,16 @@ const navigateAction = (id: string) => {
               </VChip>
             </template>
             <template #item.tanggal_tagihan="{ item }">
-              {{ formatDateIntl(new Date(item.tanggal_tagihan)) }}
+              {{
+                new Date(item.tanggal_tagihan) != "Invalid Date"
+                  ? formatDateIntl(new Date(item.tanggal_tagihan))
+                  : ""
+              }}
             </template>
             <template #item.tanggal_jatuh_tempo="{ item }">
               {{
-                new Date(item.jtanggal_jatuh_tempo) != "Invalid Date"
-                  ? formatDateIntl(new Date(item.jtanggal_jatuh_tempo))
+                new Date(item.tanggal_jatuh_tempo) != "Invalid Date"
+                  ? formatDateIntl(new Date(item.tanggal_jatuh_tempo))
                   : ""
               }}
             </template>
