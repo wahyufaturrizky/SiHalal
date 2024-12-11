@@ -2,6 +2,7 @@
 import type { MasterDistrict } from "@/server/interface/master.iface";
 import { computed, defineEmits, defineProps, ref, watch } from "vue";
 import { useDisplay } from "vuetify";
+import type { VForm } from "vuetify/components";
 
 const props = defineProps({
   mode: { type: String, default: "add" },
@@ -26,10 +27,11 @@ const closeDialog = () => {
   isVisible.value = false;
 };
 
+const selectedIdOutlet = ref();
+
 const confirm = () => {
   let whichEmit: any = null;
   if (props.mode === "add") {
-    console.log("emitted add = ", form.value);
     whichEmit = "confirmAdd";
   } else {
     whichEmit = "confirmEdit";
@@ -37,7 +39,7 @@ const confirm = () => {
 
   vformref.value?.validate().then(({ valid: isValid }) => {
     if (isValid) {
-      emit(whichEmit, form.value);
+      emit(whichEmit, form.value, selectedIdOutlet.value);
       closeDialog();
     }
   });
@@ -100,7 +102,19 @@ watch(
   () => props.initialData,
   (newData) => {
     if (props.mode === "edit" && newData) {
-      form.value = { ...newData };
+      form.value.namaOutlet = newData.name;
+      form.value.alamatOutlet = newData.address;
+      form.value.provinsi = newData.province_code;
+      form.value.negara = "Indonesia";
+      form.value.kodePos = newData.postal_code;
+
+      getDistrict(newData.province_code).then((val) => {
+        form.value.kabKota = kabKotaOptions.value.filter(
+          (resp) => resp.code == newData.city_code
+        )[0]?.name;
+      });
+
+      selectedIdOutlet.value = newData.id;
     }
   },
   { immediate: true }

@@ -91,7 +91,7 @@ const dialogMaxWidth = computed(() => {
             <VLabel for="regency"> Kab/Kota </VLabel>
             <VTextField
               id="regency"
-              v-model="form.regency"
+              v-model="form.city_code"
               placeholder="Isi Kabupaten/Kota"
               outlined
               dense
@@ -103,7 +103,7 @@ const dialogMaxWidth = computed(() => {
             <VLabel for="regency"> Provinsi </VLabel>
             <VTextField
               id="regency"
-              v-model="form.provinsi"
+              v-model="form.province_code"
               placeholder="Isi Provinsi"
               outlined
               dense
@@ -129,7 +129,7 @@ const dialogMaxWidth = computed(() => {
             <VLabel for="zipCode"> Kode Pos </VLabel>
             <VTextField
               id="zipCode"
-              v-model="form.zipCode"
+              v-model="form.postal_code"
               placeholder="Isi Kode Pos"
               outlined
               dense
