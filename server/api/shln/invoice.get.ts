@@ -19,8 +19,8 @@ export default defineEventHandler(async (event) => {
     size: isNaN(parseInt(size, 10)) ? 10 : parseInt(size, 10),
   };
   if (keyword != "") {
+    params["keywords"] = keyword;
   }
-  params["keyword"] = keyword;
 
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/certificate-halal-foreign/invoices`,
