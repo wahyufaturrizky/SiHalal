@@ -24,8 +24,11 @@ const putVerificatorApprove = async () => {
       method: "put",
     });
 
-    if (res?.code === 2000) router.go(-1);
-    else useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+    if (res?.code === 2000) {
+      router.go(-1);
+    } else {
+      useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
+    }
 
     closeDialog();
     loading.value = false;
