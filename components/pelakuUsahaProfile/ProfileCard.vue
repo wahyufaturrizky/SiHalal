@@ -34,6 +34,56 @@ const profilData = [
   { id: 7, field: "Telepon", value: props.profileData?.phone || "-" },
   { id: 8, field: "Email", value: props.profileData?.email || "-" },
 ];
+
+async function getMasterData(mastertype: string) {
+  const response = await $api(`master/common-code?type=${mastertype}`, {
+    method: "get",
+  });
+
+  return response;
+}
+
+const convertJnbus = async (code: string) => {
+  const jnbusCode = "JBU." + code.substring(1);
+  const api = await getMasterData("bustype");
+
+  return api.filter((val) => val.code == jnbusCode)[0]?.name;
+};
+
+const convertJnush = async (code: string) => {
+  const jnushCode = code;
+  const api = await getMasterData("busscale");
+
+  // console.log("jnush => ", );
+
+  return api.filter((val) => val.code == jnushCode)[0]?.name;
+};
+
+const convertFln = (code: string): string => {
+  if (!code) {
+    return "Instansi Pemerintah";
+  } else {
+    return code == "1" || code == "Luar Negeri" ? "Luar Negeri" : "Domestik";
+  }
+};
+
+const convertFumk = (code: string): string => {
+  if (!code) {
+    return "Non UMK";
+  } else {
+    return code == "1" ? "UMK" : "Non UMK";
+  }
+};
+
+const jenisBadanUsaha = ref();
+const skalaUsaha = ref();
+
+onMounted(async () => {
+  jenisBadanUsaha.value = await convertJnbus(
+    props.profileData?.jenis_badan_usaha
+  );
+  skalaUsaha.value = await convertJnush(props.profileData?.skala_usaha);
+});
 </script>
 
 <template>
@@ -58,7 +108,7 @@ const profilData = [
           <VCol cols="4"> Jenis Badan Usaha </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
-            {{ props.profileData?.jenis_badan_usaha || "-" }}
+            {{ jenisBadanUsaha }}
           </VCol>
         </VRow>
         <VRow>
@@ -72,7 +122,7 @@ const profilData = [
           </VCol>
           <VCol cols="1" style="display: flex; align-items: center"> : </VCol>
           <VCol cols="7">
-            {{ props.profileData?.skala_usaha || "-" }}
+            {{ skalaUsaha || "-" }}
           </VCol>
         </VRow>
         <VRow>
