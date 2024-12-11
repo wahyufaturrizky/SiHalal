@@ -6,7 +6,7 @@ const tablePerizinanHeader = [
   { title: "Penerbit", key: "instansi" },
   { title: "Nama Izin", key: "nama_izin" },
   { title: "Nomor", key: "no_izin" },
-  { title: "Tanggal", key: "date" },
+  { title: "Tanggal", key: "tgl_izin" },
   { title: "Document", key: "file_izin" },
   { title: "Document", key: "file_izin_oss" },
 ];
@@ -77,9 +77,19 @@ onMounted(async () => {
                   :headers="tablePerizinanHeader"
                   :items="store.perizinan ?? store.perizinan"
                 >
+                  <template #item.no="{ index }">
+                    {{ index + 1 }}
+                  </template>
+                  <template #item.tgl_izin="{ item }">
+                    {{
+                      item?.tgl_izin == null
+                        ? "-"
+                        : new Date(item.tgl_izin).toISOString().substring(0, 10)
+                    }}
+                  </template>
                   <template #item.file_izin="{ item }">
                     <v-btn
-                      v-if="item.file_izin"
+                      v-if="item.file_izin && item.file_izin != '-'"
                       color="primary"
                       variant="plain"
                       prepend-icon="mdi-download"
