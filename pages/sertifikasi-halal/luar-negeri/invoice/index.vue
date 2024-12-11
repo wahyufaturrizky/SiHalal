@@ -94,7 +94,13 @@ const statusInvoice = {
               ></VTextField
             ></VCol>
             <VCol cols="4" style="display: flex; justify-content: end"
-              ><VBtn append-icon="fa-download"
+              ><VBtn
+                append-icon="fa-download"
+                @click="
+                  downloadDocument(
+                    'carabayar_shln_sample_cara_bayar_rshln (2).pdf'
+                  )
+                "
                 >Download Payment Instructions</VBtn
               ></VCol
             >
