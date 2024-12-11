@@ -155,7 +155,11 @@
               <VCol cols="6" class="ps-1">
                 <VLabel>Kode Pos</VLabel>
                 <VTextField
-                  :rules="[requiredValidator]"
+                  :rules="[
+                    requiredValidator,
+                    lengthValidator(form.kodePos, 5),
+                    integerValidator,
+                  ]"
                   v-model="form.kodePos"
                   placeholder="Isi Kode Pos"
                   outlined
@@ -172,7 +176,7 @@
                 <VLabel>Status Pabrik</VLabel>
                 <VAutocomplete
                   :rules="[requiredValidator]"
-                  :model-value="form.statusPabrik"
+                  v-model="form.statusPabrik"
                   :items="statusOptions"
                   item-title="name"
                   item-value="name"
@@ -250,6 +254,7 @@ const confirm = () => {
   } else {
     pabrikFormRef.value?.validate().then(({ valid: isValid }) => {
       if (isValid) {
+        console.log("form edited = ", form.value);
         emit("confirmEdit", form.value, selectedIdPabrik.value);
         closeDialog();
       }
@@ -344,7 +349,6 @@ watch(
           form.value.negara = val.data.country;
           form.value.kodePos = val.data.zip_code;
           convertstfas(val.data.status).then((val) => {
-            console.log("tes convert stfas", val);
             form.value.statusPabrik = val;
           });
         } else {
