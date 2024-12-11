@@ -14,13 +14,14 @@ const { status, registration_number, issued_date } =
   props.datadetailregistration || {};
 
 const tracking = props.data?.map((item: any) => {
-  const { status, username, id, created_at } = item || {};
+  const { status, username, id, created_at, comment } = item || {};
 
   return {
     id,
     key: status,
     value: username,
     created_at,
+    comment,
   };
 });
 
@@ -84,6 +85,13 @@ const registData = [
               </div>
               <div class="app-timeline-text mt-1">
                 {{ item.value }}
+              </div>
+              <div v-if="item.comment" class="app-timeline-text mt-1">
+                {{
+                  item.comment.length > 38
+                    ? item.comment.slice(0, 38) + "..."
+                    : item.comment
+                }}
               </div>
             </VTimelineItem>
           </VTimeline>
