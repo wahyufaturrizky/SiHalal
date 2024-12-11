@@ -121,7 +121,15 @@ const navigateAction = (id: string) => {
               }}
             </template>
             <template #item.file="{ item }">
-              <VBtn variant="text" icon @click="">
+              <VBtn
+                variant="text"
+                icon
+                @click="
+                  item.invoice_url != ''
+                    ? downloadDocument(item.invoice_url)
+                    : () => {}
+                "
+              >
                 <VIcon>fa-file</VIcon>
               </VBtn>
             </template>
