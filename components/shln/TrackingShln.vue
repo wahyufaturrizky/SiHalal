@@ -11,18 +11,20 @@ interface TimelineItem {
   user: string;
   date: string;
   color: string;
+  comment: string;
 }
 
 const timelineItems = ref<TimelineItem[]>([]);
 
 timelineItems.value = props.data?.map((item: any) => {
-  const { status, username, created_at } = item || {};
+  const { status, username, created_at, comment } = item || {};
 
   return {
     title: status,
     user: username,
     date: created_at,
     color: "grey",
+    comment,
   };
 });
 
@@ -65,6 +67,13 @@ const formatDate = (date: string): string => {
           </div>
           <div class="app-timeline-text mt-1">
             {{ item.user }}
+          </div>
+          <div v-if="item.comment" class="app-timeline-text mt-1">
+            {{
+              item.comment.length > 38
+                ? item.comment.slice(0, 38) + "..."
+                : item.comment
+            }}
           </div>
         </VTimelineItem>
       </VTimeline>
