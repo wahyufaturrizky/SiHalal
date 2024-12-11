@@ -52,7 +52,14 @@ onMounted(async () => {
             v-for="(item, index) in store.perizinan"
             :key="index"
           >
-            <div style="padding: 2svh; border: dotted; overflow-x: auto">
+            <div
+              style="
+                padding: 2svh;
+                border: solid #eae9eb;
+                border-radius: 10px;
+                overflow-x: auto;
+              "
+            >
               <VRow>
                 <VCol cols="12">
                   <p>No. {{ index + 1 }}</p>

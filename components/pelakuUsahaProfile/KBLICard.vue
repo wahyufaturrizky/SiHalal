@@ -43,7 +43,8 @@ onMounted(async () => {
                   <div
                     style="
                       padding: 2svh;
-                      border: dotted;
+                      border: solid #eae9eb;
+                      border-radius: 10px;
                       max-inline-size: max-content;
                       overflow-x: auto;
                     "
