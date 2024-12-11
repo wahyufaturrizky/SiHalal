@@ -1,13 +1,13 @@
 <script setup lang="ts">
 const tableHeader = [
   { title: "No", value: "index" },
-  { title: "No Tagihan", value: "code_fasilitasi" },
+  { title: "No Tagihan", value: "no_tagihan" },
   { title: "Tanggal Tagihan", value: "tanggal_tagihan" },
-  { title: "Nama Fasilitasi", value: "code_fasilitasi" },
+  { title: "Nama Fasilitasi", value: "nama_program" },
   { title: "Jatuh Tempo", value: "tanggal_jatuh_tempo" },
   { title: "Jumlah Tagihan", value: "jumlah_tagihan" },
   { title: "Status", value: "status" },
-  { title: "File Invoice", value: "file" },
+  { title: "File Invoice", value: "invoice_url" },
 ];
 
 const defaultStatus = { color: "error", desc: "Unknown Status" };
@@ -99,11 +99,11 @@ const navigateAction = (id: string) => {
             </template>
             <template #item.status="{ item }">
               <VChip
-                :color="statusItem[item.status_code].color"
+                :color="statusItem[item.status].color"
                 text-color="white"
                 small
               >
-                {{ statusItem[item.status_code].desc }}
+                {{ statusItem[item.status].desc }}
               </VChip>
             </template>
             <template #item.tanggal_tagihan="{ item }">
@@ -120,7 +120,7 @@ const navigateAction = (id: string) => {
                   : ""
               }}
             </template>
-            <template #item.file="{ item }">
+            <template #item.invoice_url="{ item }">
               <VBtn
                 variant="text"
                 icon
