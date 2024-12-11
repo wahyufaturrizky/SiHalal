@@ -23,6 +23,7 @@ const loadItem = async (page: number, size: number) => {
         page,
         size,
         keyword: "",
+        status: "OF1,OF10,OF5,OF2,OF290",
       },
     });
 
