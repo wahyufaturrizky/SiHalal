@@ -41,7 +41,7 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
   try {
     loading.value = true;
 
-    const response = await $api("/facilitate/list", {
+    const response = await $api("/facilitate/entry", {
       method: "get",
       params: {
         page,
