@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { profileMain } from "@/stores/interface/pelakuUsahaProfileIntf";
+import { formatCurrency } from "@/utils/conversionIntl";
 const panelOpen = ref(0);
 
 const props = defineProps({
@@ -196,7 +197,7 @@ onMounted(async () => {
           <VCol cols="4"> Modal Dasar </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
-            <VTextField>{{ form.modal_dasar }}</VTextField>
+            <VTextField>{{ formatCurrency(form.modal_dasar) }}</VTextField>
           </VCol>
         </VRow>
         <VRow>
