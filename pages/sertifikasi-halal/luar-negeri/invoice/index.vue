@@ -120,13 +120,11 @@ const statusInvoice = {
                 <template #item.index="{ index }">
                   {{ index + 1 + (page - 1) * itemPerPage }}
                 </template>
-                <template #item.invoice>
+                <template #item.invoice="{ item }">
                   <VBtn
                     variant="text"
                     @click="
-                      item.file! + ''
-                        ? downloadDocument(itemPerPage.file)
-                        : () => {}
+                      item.file! + '' ? downloadDocument(item.file) : () => {}
                     "
                   >
                     <v-icon>fa-file</v-icon>
