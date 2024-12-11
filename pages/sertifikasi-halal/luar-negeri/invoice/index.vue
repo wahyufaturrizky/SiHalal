@@ -121,7 +121,16 @@ const statusInvoice = {
                   {{ index + 1 + (page - 1) * itemPerPage }}
                 </template>
                 <template #item.invoice>
-                  <VIcon icon="fa-file" color="primary"></VIcon>
+                  <VBtn
+                    variant="text"
+                    @click="
+                      item.file! + ''
+                        ? downloadDocument(itemPerPage.file)
+                        : () => {}
+                    "
+                  >
+                    <v-icon>fa-file</v-icon>
+                  </VBtn>
                 </template>
                 <template #item.status="{ item }">
                   <VChip
