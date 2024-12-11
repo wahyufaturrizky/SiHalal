@@ -4,6 +4,7 @@ const route = useRoute();
 
 const facilitateId = route.params.id;
 const loading = ref(true);
+const loadingLoadItemById = ref(true);
 
 const form = ref({
   facilitatorName: "",
@@ -27,6 +28,7 @@ const isLockedLembaga = ref(false);
 const dataDetailRegistration = ref();
 
 const loadItemById = async () => {
+  loadingLoadItemById.value = true;
   try {
     const response = await $api(`/facilitate/entry/${facilitateId}`, {
       method: "get",
@@ -72,12 +74,16 @@ const loadItemById = async () => {
         picPhoneNumber: phone_penanggung_jawab,
       };
 
+      loadingLoadItemById.value = false;
+
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingLoadItemById.value = false;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingLoadItemById.value = false;
   }
 };
 
@@ -131,7 +137,7 @@ onMounted(async () => {
       </VBtn>
     </VCol>
   </VRow>
-  <VRow v-if="!loading">
+  <VRow v-if="!loading && !loadingLoadItemById">
     <VCol cols="10">
       <VTabs v-model="tabs" align-tabs="start">
         <VTab value="1"> Pengajuan </VTab>
@@ -140,7 +146,7 @@ onMounted(async () => {
       </VTabs>
     </VCol>
   </VRow>
-  <VRow v-if="!loading">
+  <VRow v-if="!loading && !loadingLoadItemById">
     <VCol cols="12">
       <VTabsWindow v-model="tabs">
         <VTabsWindowItem value="1">
