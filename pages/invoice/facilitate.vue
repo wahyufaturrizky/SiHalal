@@ -6,7 +6,7 @@ const tableHeader = [
   { title: "Nama Fasilitasi", value: "code_fasilitasi" },
   { title: "Jatuh Tempo", value: "tanggal_jatuh_tempo" },
   { title: "Jumlah Tagihan", value: "jumlah_tagihan" },
-  { title: "Status", value: "code_fasilitasi" },
+  { title: "Status", value: "status" },
   { title: "File Invoice", value: "file" },
 ];
 
@@ -56,6 +56,10 @@ const loadItem = async (page: number, size: number) => {
     loading.value = false;
   }
 };
+const download = async () => {
+  await downloadDocument("carabayar_sample_cara_bayar_rshln (1).pdf");
+};
+// carabayar_sample_cara_bayar_rshln (1).pdf
 const navigateAction = (id: string) => {
   navigateTo(`/facilitator/verifikasi/${id}`);
 };
@@ -73,7 +77,7 @@ const navigateAction = (id: string) => {
               >Daftar Invoice Fasilitasi</VCol
             >
             <VCol cols="6" style="display: flex; justify-content: end"
-              ><VBtn variant="flat" append-icon="fa-download"
+              ><VBtn variant="flat" append-icon="fa-download" @click="download"
                 >Download Cara Pembayaran</VBtn
               ></VCol
             >
@@ -95,16 +99,26 @@ const navigateAction = (id: string) => {
             </template>
             <template #item.status="{ item }">
               <VChip
-                :color="statusItem[item.status].color"
+                :color="statusItem[item.status_code].color"
                 text-color="white"
                 small
               >
-                {{ statusItem[item.status].desc }}
+                {{ statusItem[item.status_code].desc }}
               </VChip>
             </template>
-            <template #item.action="{ item }">
-              <VBtn variant="text" icon @click="navigateAction(item.id)">
-                <VIcon>mdi-chevron-right</VIcon>
+            <template #item.tanggal_tagihan="{ item }">
+              {{ formatDateIntl(new Date(item.tanggal_tagihan)) }}
+            </template>
+            <template #item.tanggal_jatuh_tempo="{ item }">
+              {{
+                new Date(item.jtanggal_jatuh_tempo) != "Invalid Date"
+                  ? formatDateIntl(new Date(item.jtanggal_jatuh_tempo))
+                  : ""
+              }}
+            </template>
+            <template #item.file="{ item }">
+              <VBtn variant="text" icon @click="">
+                <VIcon>fa-file</VIcon>
               </VBtn>
             </template>
           </VDataTable>
