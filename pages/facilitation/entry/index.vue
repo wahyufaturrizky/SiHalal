@@ -6,7 +6,7 @@ const loading = ref(false);
 
 const page = ref(1);
 const searchQuery = ref("");
-const status = ref("OF1,OF10,OF5,OF2,OF290");
+const status = ref("OF1,OF10,OF5,OF2,OF290,OF15");
 const loadingAll = ref(true);
 
 const loadItem = async (
@@ -60,7 +60,7 @@ const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
   const res = await Promise.all([
-    loadItem(1, itemPerPage.value, "", "OF1,OF10,OF5,OF2,OF290"),
+    loadItem(1, itemPerPage.value, "", "OF1,OF10,OF5,OF2,OF290,OF15"),
   ]);
 
   const checkResIfUndefined = res.every((item) => {
@@ -79,7 +79,7 @@ const handleInput = () => {
     page.value,
     itemPerPage.value,
     searchQuery.value,
-    "OF1,OF10,OF5,OF2,OF290"
+    "OF1,OF10,OF5,OF2,OF290,OF15"
   );
 };
 

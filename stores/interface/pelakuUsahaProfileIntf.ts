@@ -52,11 +52,11 @@ export interface factory {
 }
 
 export interface kbli {
-  no: String;
-  name: String;
-  kbli: String;
-  address: String;
-  capital: String;
+  No: String;
+  Name: String;
+  KBLI: String;
+  Address: String;
+  BusinessCapital: String;
 }
 
 export interface legal {

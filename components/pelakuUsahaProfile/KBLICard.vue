@@ -2,12 +2,12 @@
 import { onMounted, reactive, ref } from "vue";
 
 const tableKBLIHeader = [
-  { title: "No", key: "no" },
-  { title: "No. KBLI", key: "kbli_number" },
-  { title: "Nama KBLI", key: "kbli_name" },
-  { title: "Nama Usaha", key: "business_name" },
-  { title: "Alamat", key: "address" },
-  { title: "Modal Usaha", key: "business_capital" },
+  { title: "No", key: "no_idx" },
+  { title: "No. KBLI", key: "No" },
+  { title: "Nama KBLI", key: "KBLI" },
+  { title: "Nama Usaha", key: "Name" },
+  { title: "Alamat", key: "Address" },
+  { title: "Modal Usaha", key: "BusinessCapital" },
 ];
 
 const panelOpen = ref(0);
@@ -35,40 +35,53 @@ onMounted(async () => {
       <VExpansionPanelText>
         <!-- Check if KBLI data exists -->
         <p v-if="!store.kbli || store.kbli.length === 0">No data</p>
-        <VRow v-else v-for="(item, key) in store.kbli" :key="key">
-          <VCol cols="12">
-            <div style="max-block-size: 30svh; overflow-y: auto">
-              <div
-                style="
-                  padding: 2svh;
-                  border: dotted;
-                  max-inline-size: max-content;
-                  overflow-x: auto;
-                "
-              >
-                <VRow>
-                  <VCol cols="12">
-                    <p>{{ item.no }}</p>
-                  </VCol>
-                </VRow>
-                <VRow>
-                  <VCol cols="12"> {{ item.kbli || "-" }} </VCol>
-                </VRow>
-                <VRow>
-                  <VCol cols="12"> {{ item.name || "-" }} </VCol>
-                </VRow>
-                <VRow>
-                  <VCol cols="12"> {{ item.address || "-" }} </VCol>
-                </VRow>
-              </div>
-            </div>
+        <VRow v-else>
+          <VCol style="max-block-size: 30svh; overflow-y: auto">
+            <VRow v-for="(item, key) in store.kbli" :key="key">
+              <VCol cols="12">
+                <div>
+                  <div
+                    style="
+                      padding: 2svh;
+                      border: dotted;
+                      max-inline-size: max-content;
+                      overflow-x: auto;
+                    "
+                  >
+                    <VRow>
+                      <VCol cols="12">
+                        <p>No. {{ item.No }}</p>
+                      </VCol>
+                    </VRow>
+                    <VRow>
+                      <VCol cols="12">KBLI: {{ item.KBLI || "-" }} </VCol>
+                    </VRow>
+                    <VRow>
+                      <VCol cols="12">Nama KBLI: {{ item.Name || "-" }} </VCol>
+                    </VRow>
+                    <VRow>
+                      <VCol cols="12">Alamat: {{ item.Address || "-" }} </VCol>
+                    </VRow>
+                  </div>
+                </div>
+              </VCol>
+            </VRow>
           </VCol>
         </VRow>
+
         <VRow>
           <VCol cols="12">
             <BasicDataPopup parent-btn-label="Lihat Data">
               <template #content>
-                <VDataTable :headers="tableKBLIHeader" :items="store.kbli" />
+                <VRow style="max-height: 60svh; overflow-y: auto">
+                  <VCol cols="12">
+                    <VDataTable :headers="tableKBLIHeader" :items="store.kbli">
+                      <template #item.no_idx="{ index }">
+                        {{ index + 1 }}
+                      </template>
+                    </VDataTable>
+                  </VCol>
+                </VRow>
               </template>
             </BasicDataPopup>
           </VCol>
