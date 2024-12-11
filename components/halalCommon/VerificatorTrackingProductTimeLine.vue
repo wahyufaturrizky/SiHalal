@@ -7,12 +7,13 @@ const props = defineProps({
 });
 
 const tracking = props.datalistproducttracking?.map((item) => {
-  const { created_at, status, username } = item || {};
+  const { created_at, status, username, comment } = item || {};
 
   return {
     status,
     created_at,
     username,
+    comment,
   };
 });
 </script>
@@ -47,6 +48,13 @@ const tracking = props.datalistproducttracking?.map((item) => {
         </div>
         <div class="app-timeline-text mt-1">
           {{ item.username }}
+        </div>
+        <div v-if="item.comment" class="app-timeline-text mt-1">
+          {{
+            item.comment.length > 38
+              ? item.comment.slice(0, 38) + "..."
+              : item.comment
+          }}
         </div>
       </VTimelineItem>
     </VTimeline>
