@@ -35,6 +35,9 @@ const props = defineProps<{
         <div class="app-timeline-text mt-1">
           {{ item.username }}
         </div>
+        <div v-if="item.comment != ''" class="app-timeline-text mt-1">
+          {{ item.comment }}
+        </div>
       </VTimelineItem>
     </VTimeline>
   </div>

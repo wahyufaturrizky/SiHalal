@@ -49,6 +49,7 @@ export interface ShlnTracking {
   id: string;
   status: string;
   username: string;
+  comment: string;
 }
 export interface ShlnRegistration {
   download_file: string;
