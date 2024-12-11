@@ -65,14 +65,18 @@ const handleAddAspekLegalConfirm = (formData) => {
         publish_agency: formData.publishing_agency,
       },
     }
-  ).then((val: any) => {
-    if (val.code == 2000) {
-      store.fetchProfile();
-      snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
-    } else {
+  )
+    .then((val: any) => {
+      if (val.code == 2000) {
+        store.fetchProfile();
+        snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+      } else {
+        snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
+      }
+    })
+    .catch((e) => {
       snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
-    }
-  });
+    });
 };
 
 const handleEditAspekLegalConfirm = (formData) => {
@@ -85,19 +89,25 @@ const handleEditAspekLegalConfirm = (formData) => {
       body: {
         document_type: formData.type,
         document_number: formData.doc_number,
-        date: new Date(formData.date).toISOString(),
-        valid_date: new Date(formData.expiration_date).toISOString(),
+        date: new Date(formData.date).toISOString().substring(0, 10),
+        valid_date: new Date(formData.expiration_date)
+          .toISOString()
+          .substring(0, 10),
         publish_agency: formData.publishing_agency,
       },
     }
-  ).then((val: any) => {
-    if (val.code == 2000) {
-      store.updateLegal(formData.id, formData);
-      snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
-    } else {
+  )
+    .then((val: any) => {
+      if (val.code == 2000) {
+        store.updateLegal(formData.id, formData);
+        snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+      } else {
+        snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
+      }
+    })
+    .catch((e) => {
       snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
-    }
-  });
+    });
 };
 
 const initialDataAspekLegal = (item: any) => ({
