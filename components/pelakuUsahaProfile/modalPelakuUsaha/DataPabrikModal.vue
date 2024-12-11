@@ -213,6 +213,14 @@ const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
 
 const isVisible = ref(false);
 
+const masterDataStore = dataMasterStore();
+
+const convertstfas = async (name: string) => {
+  const api = await masterDataStore.getMasterData("factorystatus");
+
+  return api.filter((val) => val.name == name);
+};
+
 const openDialog = async () => {
   if (props.mode == "add") {
     resetForm();
@@ -330,6 +338,10 @@ watch(
           form.value.provinsi = val.data.province;
           form.value.negara = val.data.country;
           form.value.kodePos = val.data.zip_code;
+          convertstfas(val.data.status).then((val) => {
+            console.log("tes convert stfas", val);
+            form.value.statusPabrik = val;
+          });
         } else {
           // snackbar.sendSnackbar("Gagal mendapatkan Data ", "error");
           console.error("fetching data error");
