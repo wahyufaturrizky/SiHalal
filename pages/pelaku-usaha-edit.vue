@@ -85,9 +85,12 @@ onMounted(() => {
     <template #leftContent>
       <VRow>
         <VCol cols="12">
-          <ProfileCard
+          <!-- <ProfileCard
             :profile-data="store.profileData ? store.profileData : {}"
-          />
+          /> -->
+          <ProfileCardEdit
+            :profile-data="store.profileData ? store.profileData : {}"
+          ></ProfileCardEdit>
         </VCol>
       </VRow>
       <VRow>
