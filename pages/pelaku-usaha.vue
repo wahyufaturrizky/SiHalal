@@ -40,20 +40,6 @@ const store = pelakuUsahaProfile();
 onMounted(() => {
   store.fetchProfile();
 });
-
-const downloadDOcument = async (filename: string) => {
-  try {
-    const response = await $api("/shln/submission/document/download", {
-      method: "post",
-      body: {
-        filename,
-      },
-    });
-    window.open(response.url, "_blank", "noopener,noreferrer");
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
 </script>
 
 <template>
@@ -163,7 +149,7 @@ const downloadDOcument = async (filename: string) => {
     <template #rightContent>
       <VRow>
         <VCol :cols="12">
-          <PerizinanCard :aspek-legal-data="store.legal" />
+          <PerizinanCard />
         </VCol>
       </VRow>
       <VRow>
