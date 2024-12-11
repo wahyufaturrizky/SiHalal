@@ -246,14 +246,14 @@ const getRequirementDocument = async () => {
       file: requirementDocument.value?.loa.file,
       notes: requirementDocument.value?.loa.comment,
       status: requirementDocument.value?.loa.status,
-      tracking: requirementDocument.value?.loa.status,
+      tracking: requirementDocument.value?.loa.tracking,
     };
     requirementDocArray.value[1] = {
       documentTypes: "Business License Number (NIB)",
       file: requirementDocument.value?.nib.file,
       notes: requirementDocument.value?.nib.comment,
       status: requirementDocument.value?.nib.status,
-      tracking: requirementDocument.value?.nib.status,
+      tracking: requirementDocument.value?.nib.tracking,
     };
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
