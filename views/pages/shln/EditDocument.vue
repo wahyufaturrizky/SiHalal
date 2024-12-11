@@ -216,7 +216,7 @@ const saveLoa = async () => {
     loadDialog.value = false;
     refLoaForm.value?.resetValidation();
     await getLoa();
-    await getLoaTracking;
+    await getLoaTracking();
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
       return;
