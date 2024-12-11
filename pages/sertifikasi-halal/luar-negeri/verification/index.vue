@@ -20,7 +20,12 @@ const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
 
-const loadItem = async (page: number, size: number, keyword: string = "") => {
+const loadItem = async (
+  page: number,
+  size: number,
+  keyword: string = "",
+  status: string = ""
+) => {
   try {
     loading.value = true;
 
@@ -30,6 +35,7 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
         page,
         size,
         keyword,
+        status,
       },
     });
 
@@ -45,11 +51,11 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
 const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
-  await loadItem(1, itemPerPage.value, "");
+  await loadItem(1, itemPerPage.value, "", "OF1,OF10,OF5,OF2,OF290,OF15");
 });
 
 const refresh = async () => {
-  await loadItem(1, itemPerPage.value, "");
+  await loadItem(1, itemPerPage.value, "", "OF1,OF10,OF5,OF2,OF290,OF15");
 };
 
 const verifikatorTableHeader = [
@@ -114,7 +120,7 @@ const navigateAction = (id: string) => {
             :loading="loading"
             :items-length="totalItems"
             loading-text="Loading..."
-            @update:options="loadItem(page, itemPerPage, searchQuery)"
+            @update:options="loadItem(page, itemPerPage, searchQuery, status)"
           >
             <template #item.id="{ index }">
               {{ index + 1 + (page - 1) * itemPerPage }}
