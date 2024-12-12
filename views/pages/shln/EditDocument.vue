@@ -612,6 +612,19 @@ onMounted(async () => {
                 >
                   <VIcon icon="fa-history" color="primary" />
                 </IconBtn>
+                <v-btn color="primary" variant="plain">
+                  <VIcon>mdi-dots-vertical</VIcon>
+                  <VMenu activator="parent" :close-on-content-click="false">
+                    <VList>
+                      <VListItem>
+                        <ApproveDocumentModal></ApproveDocumentModal>
+                      </VListItem>
+                      <VListItem>
+                        <ReturnDocumentModal></ReturnDocumentModal>
+                      </VListItem>
+                    </VList>
+                  </VMenu>
+                </v-btn>
               </div>
             </template>
           </VDataTable>
