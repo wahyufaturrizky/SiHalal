@@ -147,6 +147,35 @@ const headers = [
   { title: "HS Code", key: "record" },
 ];
 
+const headersVerification = [
+  { title: "No", key: "no" },
+  { title: "Document Types", key: "type" },
+  { title: "Upload / Download", key: "file" },
+  { title: "Notes", key: "notes" },
+  { title: "Status", key: "status" },
+  { title: "Action", key: "action" },
+];
+
+const headersVerified = [
+  { title: "No", key: "no" },
+  { title: "Document Types", key: "type" },
+  { title: "Upload / Download", key: "file" },
+  { title: "Notes", key: "notes" },
+  { title: "Action", key: "action" },
+];
+
+const headerSelection = (status: string): Array<Object> => {
+  if (status == "verified") {
+    return headersVerified;
+  } else if (status == "verification") {
+    return headersVerification;
+  } else {
+    return headers;
+  }
+};
+
+const userStatus = ref("verified");
+
 const onRefresh = (type: string) => {
   if (type === "loa") {
     emit("refreshloa");
@@ -409,7 +438,7 @@ const onRefresh = (type: string) => {
           <VDataTableServer
             v-model:items-per-page="itemPerPage"
             v-model:page="page"
-            :headers="headers"
+            :headers="headerSelection('verified')"
             :items="dataListDocument"
             :loading="loadingListDocument"
             :items-length="totalItems"
@@ -425,6 +454,28 @@ const onRefresh = (type: string) => {
                 density="compact"
                 @click="downloadLOA(item.file)"
               />
+            </template>
+            <template #item.action="{ item }">
+              <div class="d-flex gap-1">
+                <TrackingModal :data="[]"></TrackingModal>
+                <v-btn
+                  v-if="userStatus == 'verification'"
+                  color="primary"
+                  variant="plain"
+                >
+                  <VIcon>mdi-dots-vertical</VIcon>
+                  <VMenu activator="parent" :close-on-content-click="false">
+                    <VList>
+                      <VListItem>
+                        <ApproveDocumentModal></ApproveDocumentModal>
+                      </VListItem>
+                      <VListItem>
+                        <ReturnDocumentModal></ReturnDocumentModal>
+                      </VListItem>
+                    </VList>
+                  </VMenu>
+                </v-btn>
+              </div>
             </template>
           </VDataTableServer>
         </VCardText>

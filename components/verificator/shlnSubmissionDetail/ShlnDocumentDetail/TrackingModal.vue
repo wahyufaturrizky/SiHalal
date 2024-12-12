@@ -1,5 +1,11 @@
 <script setup lang="ts">
 const isVisible = ref(false);
+const props = defineProps({
+  data: {
+    type: Array<Object>,
+    required: true,
+  },
+});
 </script>
 <template>
   <IconBtn @click="isVisible = true">
@@ -10,7 +16,7 @@ const isVisible = ref(false);
       <TrackingShln
         :use-title="true"
         title-text="Tracking Details"
-        :data="[]"
+        :data="props.data"
       ></TrackingShln>
     </template>
   </VDialog>
