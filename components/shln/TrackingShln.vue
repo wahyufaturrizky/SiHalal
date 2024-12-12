@@ -4,13 +4,6 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  useTitle: {
-    type: Boolean,
-    default: false,
-  },
-  titleText: {
-    type: String,
-  },
 });
 
 interface TimelineItem {
@@ -47,55 +40,43 @@ const formatDate = (date: string): string => {
 <template>
   <VContainer class="pa-0">
     <VCard variant="flat" class="pa-4">
-      <VCardTitle v-if="props.useTitle">
-        <VCol cols="10" style="display: flex; justify-content: end">
-          <h3>{{ props.titleText }}</h3>
-        </VCol>
-        <VCol cols="2" style="display: flex; justify-content: end"
-          ><VIcon size="small" icon="fa-times"></VIcon
-        ></VCol>
-      </VCardTitle>
-      <VCardItem>
-        <VTimeline
-          side="end"
-          align="start"
-          line-inset="9"
-          truncate-line="start"
-          density="compact"
-          class="v-timeline--variant-outlined"
+      <VTimeline
+        side="end"
+        align="start"
+        line-inset="9"
+        truncate-line="start"
+        density="compact"
+        class="v-timeline--variant-outlined"
+      >
+        <VTimelineItem
+          v-for="(item, i) in timelineItems"
+          :key="i"
+          dot-color="rgb(var(--v-theme-surface))"
+          size="x-small"
         >
-          <VTimelineItem
-            v-for="(item, i) in timelineItems"
-            :key="i"
-            dot-color="rgb(var(--v-theme-surface))"
-            size="x-small"
+          <template #icon>
+            <VIcon icon="ri-circle-line" color="primary" size="16" />
+          </template>
+          <div
+            class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
           >
-            <template #icon>
-              <VIcon icon="ri-circle-line" color="primary" size="16" />
-            </template>
-            <div
-              class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
-            >
-              <span class="app-timeline-title">
-                {{ item.title }}
-              </span>
-              <span class="app-timeline-meta">
-                {{ formatDate(item.date) }}</span
-              >
-            </div>
-            <div class="app-timeline-text mt-1">
-              {{ item.user }}
-            </div>
-            <div v-if="item.comment" class="app-timeline-text mt-1">
-              {{
-                item.comment.length > 38
-                  ? item.comment.slice(0, 38) + "..."
-                  : item.comment
-              }}
-            </div>
-          </VTimelineItem>
-        </VTimeline>
-      </VCardItem>
+            <span class="app-timeline-title">
+              {{ item.title }}
+            </span>
+            <span class="app-timeline-meta"> {{ formatDate(item.date) }}</span>
+          </div>
+          <div class="app-timeline-text mt-1">
+            {{ item.user }}
+          </div>
+          <div v-if="item.comment" class="app-timeline-text mt-1">
+            {{
+              item.comment.length > 38
+                ? item.comment.slice(0, 38) + "..."
+                : item.comment
+            }}
+          </div>
+        </VTimelineItem>
+      </VTimeline>
     </VCard>
   </VContainer>
 </template>
