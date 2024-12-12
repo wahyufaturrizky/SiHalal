@@ -11,7 +11,7 @@ const tableHeader = [
   { title: "Payment Code", value: "va" },
   { title: "Importer's Name", value: "importer_name" },
   { title: "Due Date", value: "due_date" },
-  { title: "Amount", value: "amount" },
+  { title: "Amount", value: "amount", align: "right" },
   { title: "Note", value: "note" },
   { title: "Status", value: "status" },
   { title: "Invoice File", value: "invoice" },
@@ -120,6 +120,9 @@ const statusInvoice = {
                 <template #item.index="{ index }">
                   {{ index + 1 + (page - 1) * itemPerPage }}
                 </template>
+                <template #item.amount="{ item }">
+                  {{ formatToIDR(item.amount) }}
+                </template>
                 <template #item.invoice="{ item }">
                   <VBtn
                     variant="text"
@@ -129,6 +132,20 @@ const statusInvoice = {
                   >
                     <v-icon>fa-file</v-icon>
                   </VBtn>
+                </template>
+                <template #item.date="{ item }">
+                  {{
+                    new Date(item.date) != "Invalid Date"
+                      ? formatDateIntl(new Date(item.date))
+                      : ""
+                  }}
+                </template>
+                <template #item.due_date="{ item }">
+                  {{
+                    new Date(item.due_date) != "Invalid Date"
+                      ? formatDateIntl(new Date(item.due_date))
+                      : ""
+                  }}
                 </template>
                 <template #item.status="{ item }">
                   <VChip

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const tableHeader = [
   { title: "No", value: "index" },
-  { title: "Kode Fasilitasi", value: "id" },
+  { title: "Kode Fasilitasi", value: "kode_fac" },
   { title: "Tahun", value: "tahun" },
   { title: "Nama Fasilitasi", value: "fac_name" },
   { title: "Sumber Pembiayaan", value: "sumber_biaya" },

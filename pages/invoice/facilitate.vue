@@ -5,7 +5,7 @@ const tableHeader = [
   { title: "Tanggal Tagihan", value: "tanggal_tagihan" },
   { title: "Nama Fasilitasi", value: "nama_program" },
   { title: "Jatuh Tempo", value: "tanggal_jatuh_tempo" },
-  { title: "Jumlah Tagihan", value: "jumlah_tagihan" },
+  { title: "Jumlah Tagihan", value: "jumlah_tagihan", align: "right" },
   { title: "Status", value: "status" },
   { title: "File Invoice", value: "invoice_url" },
 ];
@@ -105,6 +105,9 @@ const navigateAction = (id: string) => {
               >
                 {{ statusItem[item.status].desc }}
               </VChip>
+            </template>
+            <template #item.jumlah_tagihan="{ item }">
+              {{ formatToIDR(item.jumlah_tagihan) }}
             </template>
             <template #item.tanggal_tagihan="{ item }">
               {{
