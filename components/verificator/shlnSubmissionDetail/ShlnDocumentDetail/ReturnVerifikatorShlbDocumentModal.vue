@@ -15,6 +15,8 @@ const isVisible = ref(false);
 
 const loading = ref(false);
 
+const comment = ref("");
+
 const uploadDocument = async (file: any) => {
   try {
     const formData = new FormData();
@@ -37,15 +39,19 @@ const uploadDocument = async (file: any) => {
 const saveReqDocument = async () => {
   try {
     loading.value = true;
-    const fileDoc: any = await uploadDocument(reqfile);
-    if (fileDoc.code != 2000) {
-      isVisible.value = false;
-      loading.value = false;
-      useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
-      return;
+
+    let fileDoc: any;
+    if (reqfile) {
+      fileDoc = await uploadDocument(reqfile);
+      if (fileDoc.code != 2000) {
+        isVisible.value = false;
+        loading.value = false;
+        useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
+        return;
+      }
     }
 
-    const { type, no, comment } = item.value || {};
+    const { type, no } = item || {};
 
     const response: any = await $api(
       "/shln/submission/document/add-requirement",
@@ -55,10 +61,12 @@ const saveReqDocument = async () => {
           id: shlnId,
           id_loa: type == "LOA" ? no : "",
           id_nib: type == "NIB" ? no : "",
-          file_url_loa: type == "LOA" ? fileDoc.data.file_url : "",
-          file_url_nib: type == "NIB" ? fileDoc.data.file_url : "",
-          comment_loa: type == "LOA" ? comment : "",
-          comment_nib: type == "NIB" ? comment : "",
+          file_url_loa:
+            type == "LOA" ? (fileDoc ? fileDoc.data.file_url : "") : "",
+          file_url_nib:
+            type == "NIB" ? (fileDoc ? fileDoc.data.file_url : "") : "",
+          comment_loa: type == "LOA" ? comment.value : "",
+          comment_nib: type == "NIB" ? comment.value : "",
           is_return: true,
           is_accept: false,
         },
@@ -69,7 +77,9 @@ const saveReqDocument = async () => {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
       loading.value = false;
       isVisible.value = false;
+      comment.value = "";
     } else {
+      comment.value = "";
       emit("refresh");
       useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
       isVisible.value = false;
@@ -118,7 +128,10 @@ const openDialog = () => {
           </VRow>
           <VRow>
             <VCol
-              ><VTextarea placeholder="Input Return Note (Opsional)"></VTextarea
+              ><VTextarea
+                v-model="comment"
+                placeholder="Input Return Note (Opsional)"
+              ></VTextarea
             ></VCol>
           </VRow>
         </VCardText>
