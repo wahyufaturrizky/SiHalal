@@ -147,7 +147,7 @@ const trackingFHC = props.datatrackingfhc?.map((item: any) => {
 const headers = [
   { title: "No", key: "no" },
   { title: "Document Types", key: "type" },
-  { title: "Upload / Download", key: "file" },
+  { title: "Download / Upload", key: "file" },
   { title: "Notes", key: "comment" },
   { title: "Status", key: "status" },
   { title: "Action", key: "action" },
@@ -450,6 +450,7 @@ const onRefresh = (type: string) => {
                   <VIcon icon="fa-download" />
                 </VBtn>
                 <HalalFileInput
+                  v-if="(item as any).status != 'Terverifikasi'"
                   v-model="reqFile[index]"
                   :rules="[requiredValidator]"
                 />
@@ -480,12 +481,14 @@ const onRefresh = (type: string) => {
                         <ApproveVerifikatorShlbDocumentModal
                           :item="item"
                           :reqfile="reqFile[index]"
+                          @refresh="loadItemListDocumentById()"
                         ></ApproveVerifikatorShlbDocumentModal>
                       </VListItem>
                       <VListItem>
                         <ReturnVerifikatorShlbDocumentModal
                           :item="item"
                           :reqfile="reqFile[index]"
+                          @refresh="loadItemListDocumentById()"
                         ></ReturnVerifikatorShlbDocumentModal>
                       </VListItem>
                     </VList>
@@ -499,7 +502,7 @@ const onRefresh = (type: string) => {
     </VCol>
   </VRow>
 
-  <VDialog v-model="reqTrackingModal" width="auto">
+  <VDialog v-model="reqTrackingModal">
     <v-card>
       <v-card-text>
         <p class="text-h5 font-weight-bold">Tracking</p>
