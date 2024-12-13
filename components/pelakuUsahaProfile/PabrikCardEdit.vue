@@ -41,7 +41,8 @@ function handleEdit(item, idPabrik) {
   )
     .then((val: any) => {
       if (val.code == 2000) {
-        store.updateFactory(item.id, item);
+        // store.updateFactory(item.id, item);
+        store.fetchProfile();
         snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
       } else {
         snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
