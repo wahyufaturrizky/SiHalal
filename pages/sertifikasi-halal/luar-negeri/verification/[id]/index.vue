@@ -115,7 +115,7 @@ const navigateAction = () => {
           <VerificationReturnConfirmation />
           <VerificationRejectConfirmation />
 
-          <VerificationApproveConfirmationDetail />
+          <VerificationApproveConfirmationDetail :data="data" />
         </VCol>
       </VRow>
     </template>

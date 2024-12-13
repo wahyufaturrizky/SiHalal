@@ -38,7 +38,7 @@ const itemsSubmission = ref<
     date: string;
     hcb: string;
     id: string;
-    importir_name: string;
+    verificator_name: string;
     nib: string;
     register_number: string;
     status: string;
@@ -94,7 +94,7 @@ const verifikatorTablePopUpHeader = [
   { title: "HCB", key: "hcb" },
   { title: "Registration Date", key: "date" },
   { title: "Submit Date", key: "date" },
-  { title: "Verifikator", key: "importir_name" },
+  { title: "Verifikator", key: "verificator_name" },
   { title: "Status", key: "status" },
   { title: "Action", key: "check" },
 ];
@@ -217,8 +217,8 @@ const openDialog = () => {
             <template #item.hcb="{ item }">
               {{ item.hcb || "NA" }}
             </template>
-            <template #item.importir_name="{ item }">
-              {{ item.status === "OF10" && item.importir_name }}
+            <template #item.verificator_name="{ item }">
+              {{ item.status === "OF10" ? item.verificator_name : "" }}
             </template>
             <template #item.status="{ item }">
               <VChip label :color="statusItem[item.status].color">

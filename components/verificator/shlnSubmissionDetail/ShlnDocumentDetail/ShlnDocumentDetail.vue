@@ -248,13 +248,6 @@ const onRefresh = (type: string) => {
               />
             </VCol>
           </VRow>
-          <VRow>
-            <VCol cols="3"> Catatan Pengembalian </VCol>
-            <VCol cols="1"> : </VCol>
-            <VCol cols="8">
-              <VTextField density="compact" />
-            </VCol>
-          </VRow>
         </VCardText>
         <VCardActions style="justify-content: end">
           <div>
@@ -327,21 +320,28 @@ const onRefresh = (type: string) => {
         </VCardTitle>
         <VCardText>
           <VRow>
-            <VCol cols="3"> Document </VCol>
+            <VCol cols="3"> HCB </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
               <p>{{ document }}</p>
             </VCol>
           </VRow>
           <VRow>
-            <VCol cols="3"> Document No. </VCol>
+            <VCol cols="3"> Issued Date </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
               <p>{{ document_no }}</p>
             </VCol>
           </VRow>
           <VRow>
-            <VCol cols="3"> Verification Link (Optional) </VCol>
+            <VCol cols="3"> Expired Date </VCol>
+            <VCol cols="1"> : </VCol>
+            <VCol cols="8">
+              <p>{{ verification_link }}</p>
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol cols="3"> Scope </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
               <p>{{ verification_link }}</p>

@@ -19,7 +19,7 @@ const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
-const status = ref("OF1,OF10,OF5,OF15");
+const status = ref("OF10,OF5,OF15,OF11");
 
 const loadItem = async (
   page: number,
@@ -52,11 +52,11 @@ const loadItem = async (
 const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
-  await loadItem(1, itemPerPage.value, "", "OF1,OF10,OF5,OF15");
+  await loadItem(1, itemPerPage.value, "", "OF10,OF5,OF15,OF11");
 });
 
 const refresh = async () => {
-  await loadItem(1, itemPerPage.value, "", "OF1,OF10,OF5,OF15");
+  await loadItem(1, itemPerPage.value, "", "OF10,OF5,OF15,OF11");
 };
 
 const verifikatorTableHeader = [
@@ -72,7 +72,12 @@ const verifikatorTableHeader = [
 const searchQuery = ref("");
 
 const handleInput = () => {
-  debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    status.value
+  );
 };
 
 const handleCancel = (message: string) => {
