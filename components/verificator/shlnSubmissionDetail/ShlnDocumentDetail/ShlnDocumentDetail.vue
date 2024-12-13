@@ -480,12 +480,14 @@ const onRefresh = (type: string) => {
                         <ApproveVerifikatorShlbDocumentModal
                           :item="item"
                           :reqfile="reqFile[index]"
+                          @refresh="loadItemListDocumentById()"
                         ></ApproveVerifikatorShlbDocumentModal>
                       </VListItem>
                       <VListItem>
                         <ReturnVerifikatorShlbDocumentModal
                           :item="item"
                           :reqfile="reqFile[index]"
+                          @refresh="loadItemListDocumentById()"
                         ></ReturnVerifikatorShlbDocumentModal>
                       </VListItem>
                     </VList>

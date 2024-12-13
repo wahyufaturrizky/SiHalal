@@ -7,6 +7,8 @@ const props = defineProps<{
   reqfile: any;
 }>();
 
+const emit = defineEmits(["refresh"]);
+
 const { item, reqfile } = props || {};
 
 const isVisible = ref(false);
@@ -70,6 +72,7 @@ const saveReqDocument = async () => {
       loading.value = false;
       isVisible.value = false;
     } else {
+      emit("refresh");
       useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
       isVisible.value = false;
       loading.value = false;
