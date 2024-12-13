@@ -35,17 +35,21 @@ const dataListDocument = ref();
 const totalItems = ref(0);
 const itemPerPage = ref(10);
 const page = ref(1);
+const reqFile = ref([]);
+const reqTracking = ref(null);
+const reqTrackingModal = ref(false);
 
-const loadItemListDocumentById = async (page: number, size: number) => {
+const getReqTrackingModal = (data: any) => {
+  reqTracking.value = data;
+  reqTrackingModal.value = true;
+};
+
+const loadItemListDocumentById = async () => {
   try {
     loadingListDocument.value = true;
 
     const response = await $api(`/shln/verificator/document/list/${shlnId}`, {
       method: "get",
-      params: {
-        page,
-        size,
-      },
     });
 
     if (response.code === 2000) {
@@ -58,13 +62,17 @@ const loadItemListDocumentById = async (page: number, size: number) => {
           no: loa.id,
           type: "LOA",
           file: loa.file,
-          record: loa.status,
+          tracking: loa.tracking,
+          comment: loa.comment,
+          status: loa.status,
         },
         {
           no: nib.id,
           type: "NIB",
           file: nib.file,
-          record: nib.status,
+          tracking: nib.tracking,
+          comment: nib.comment,
+          status: nib.status,
         },
       ];
 
@@ -82,7 +90,7 @@ const loadItemListDocumentById = async (page: number, size: number) => {
 };
 
 onMounted(async () => {
-  await loadItemListDocumentById(1, itemPerPage.value);
+  await loadItemListDocumentById();
 });
 
 const {
@@ -136,16 +144,29 @@ const trackingFHC = props.datatrackingfhc?.map((item: any) => {
   };
 });
 
-const downloadLOA = (file: any) => {
-  window.open(file, "_blank");
-};
-
 const headers = [
   { title: "No", key: "no" },
   { title: "Document Types", key: "type" },
   { title: "Upload / Download", key: "file" },
-  { title: "HS Code", key: "record" },
+  { title: "Notes", key: "comment" },
+  { title: "Status", key: "status" },
+  { title: "Action", key: "action" },
 ];
+
+const downloadDOcument = async (filename: string) => {
+  try {
+    const response: any = await $api("/shln/submission/document/download", {
+      method: "post",
+      body: {
+        filename,
+      },
+    });
+
+    window.open(response.url, "_blank", "noopener,noreferrer");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 
 const onRefresh = (type: string) => {
   if (type === "loa") {
@@ -223,7 +244,7 @@ const onRefresh = (type: string) => {
               <VBtn
                 icon="fa-download"
                 density="compact"
-                @click="downloadLOA(loa_document)"
+                @click="dataListDocument(loa_document)"
               />
             </VCol>
           </VRow>
@@ -333,7 +354,7 @@ const onRefresh = (type: string) => {
               <VBtn
                 icon="fa-download"
                 density="compact"
-                @click="downloadLOA(file)"
+                @click="downloadDOcument(file)"
               />
             </VCol>
           </VRow>
@@ -414,21 +435,76 @@ const onRefresh = (type: string) => {
             :loading="loadingListDocument"
             :items-length="totalItems"
             loading-text="Loading..."
-            @update:options="loadItemListDocumentById(page, itemPerPage)"
+            @update:options="loadItemListDocumentById()"
           >
             <template #item.no="{ index }">
               {{ index + 1 + (page - 1) * itemPerPage }}
             </template>
-            <template #item.file="{ item }">
-              <VBtn
-                icon="fa-download"
-                density="compact"
-                @click="downloadLOA(item.file)"
-              />
+            <template #item.file="{ item, index }">
+              <div class="d-flex align-center justify-center py-3 gap-2">
+                <VBtn
+                  @click="downloadDOcument((item as any).file)"
+                  v-if="(item as any).file != ''"
+                  color="primary"
+                >
+                  <VIcon icon="fa-download" />
+                </VBtn>
+                <HalalFileInput
+                  v-model="reqFile[index]"
+                  :rules="[requiredValidator]"
+                />
+              </div>
+            </template>
+            <template #item.comment="{ item }">
+              <p>
+                {{
+                  (item as any).comment.length > 20
+                    ? (item as any).comment.slice(0, 20) + "..."
+                    : (item as any).comment
+                }}
+              </p>
+            </template>
+            <template #item.action="{ item, index }">
+              <div class="d-flex gap-1">
+                <IconBtn
+                  size="small"
+                  @click="getReqTrackingModal((item as any).tracking)"
+                >
+                  <VIcon icon="fa-history" color="primary" />
+                </IconBtn>
+                <v-btn color="primary" variant="plain">
+                  <VIcon>mdi-dots-vertical</VIcon>
+                  <VMenu activator="parent" :close-on-content-click="false">
+                    <VList>
+                      <VListItem>
+                        <ApproveVerifikatorShlbDocumentModal
+                          :item="item"
+                          :reqfile="reqFile[index]"
+                        ></ApproveVerifikatorShlbDocumentModal>
+                      </VListItem>
+                      <VListItem>
+                        <ReturnVerifikatorShlbDocumentModal
+                          :item="item"
+                          :reqfile="reqFile[index]"
+                        ></ReturnVerifikatorShlbDocumentModal>
+                      </VListItem>
+                    </VList>
+                  </VMenu>
+                </v-btn>
+              </div>
             </template>
           </VDataTableServer>
         </VCardText>
       </VCard>
     </VCol>
   </VRow>
+
+  <VDialog v-model="reqTrackingModal" width="auto">
+    <v-card>
+      <v-card-text>
+        <p class="text-h5 font-weight-bold">Tracking</p>
+        <HalalTimeLine v-if="reqTracking" :event="reqTracking" />
+      </v-card-text>
+    </v-card>
+  </VDialog>
 </template>
