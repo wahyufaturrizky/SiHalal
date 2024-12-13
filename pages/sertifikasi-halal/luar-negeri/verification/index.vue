@@ -63,7 +63,7 @@ const verifikatorTableHeader = [
   { title: "No", key: "id" },
   { title: "Registration Number", key: "no_daftar" },
   { title: "Importer's Name", key: "nama_importir" },
-  { title: "NIB / Business ID No", key: "nib" },
+  { title: "NIB / Bu  siness ID No", key: "nib" },
   { title: "NPWP / Taxpayer ID No", key: "npwp" },
   { title: "Date", key: "tgl_daftar" },
   { title: "Action", key: "action" },
