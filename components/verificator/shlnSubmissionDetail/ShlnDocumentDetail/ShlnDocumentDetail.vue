@@ -147,7 +147,7 @@ const trackingFHC = props.datatrackingfhc?.map((item: any) => {
 const headers = [
   { title: "No", key: "no" },
   { title: "Document Types", key: "type" },
-  { title: "Download / Upload", key: "file" },
+  { title: "Download", key: "file" },
   { title: "Notes", key: "comment" },
   { title: "Status", key: "status" },
   { title: "Action", key: "action" },
@@ -449,11 +449,11 @@ const onRefresh = (type: string) => {
                 >
                   <VIcon icon="fa-download" />
                 </VBtn>
-                <HalalFileInput
+                <!-- <HalalFileInput
                   v-if="(item as any).status != 'Terverifikasi'"
                   v-model="reqFile[index]"
                   :rules="[requiredValidator]"
-                />
+                /> -->
               </div>
             </template>
             <template #item.comment="{ item }">

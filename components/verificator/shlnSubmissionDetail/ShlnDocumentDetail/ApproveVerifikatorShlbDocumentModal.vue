@@ -39,6 +39,7 @@ const uploadDocument = async (file: any) => {
 const saveReqDocument = async () => {
   try {
     loading.value = true;
+    console.log("@reqfile", reqfile);
 
     let fileDoc: any;
     if (reqfile) {
@@ -51,7 +52,7 @@ const saveReqDocument = async () => {
       }
     }
 
-    const { type, no, comment } = item || {};
+    const { type, no } = item || {};
 
     const response: any = await $api(
       "/shln/submission/document/add-requirement",
@@ -74,16 +75,17 @@ const saveReqDocument = async () => {
     );
 
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
+      useSnackbar().sendSnackbar(
+        "ada kesalahan asdasd, gagal menyimpan!",
+        "error"
+      );
       loading.value = false;
       isVisible.value = false;
-      comment.value = "";
     } else {
       emit("refresh");
       useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
       isVisible.value = false;
       loading.value = false;
-      comment.value = "";
     }
   } catch (error) {
     isVisible.value = false;
