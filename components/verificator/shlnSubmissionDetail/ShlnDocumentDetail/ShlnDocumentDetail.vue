@@ -269,45 +269,52 @@ const onRefresh = (type: string) => {
       <VCard>
         <VCardTitle>Tracking of LoA</VCardTitle>
         <VCardItem>
-          <VTimeline
-            side="end"
-            align="start"
-            line-inset="9"
-            truncate-line="start"
-            density="compact"
-            class="v-timeline--variant-outlined"
-          >
-            <VTimelineItem
-              v-for="item in trackingLOA"
-              :key="item.id"
-              dot-color="rgb(var(--v-theme-surface))"
-              size="x-small"
+          <VContainer
+            :style="
+              trackingLOA?.length > 5
+                ? 'max-height: 350px; overflow-y: auto'
+                : ''
+            "
+            ><VTimeline
+              side="end"
+              align="start"
+              line-inset="9"
+              truncate-line="start"
+              density="compact"
+              class="v-timeline--variant-outlined"
             >
-              <template #icon>
-                <VIcon icon="ri-circle-line" color="primary" size="16" />
-              </template>
-              <div
-                class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
+              <VTimelineItem
+                v-for="item in trackingLOA"
+                :key="item.id"
+                dot-color="rgb(var(--v-theme-surface))"
+                size="x-small"
               >
-                <span class="app-timeline-title">
-                  {{ item.key }}
-                </span>
-                <span class="app-timeline-meta">
-                  {{ formatDate(item.created_at) }}</span
+                <template #icon>
+                  <VIcon icon="ri-circle-line" color="primary" size="16" />
+                </template>
+                <div
+                  class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
                 >
-              </div>
-              <div class="app-timeline-text mt-1">
-                {{ item.value }}
-              </div>
-              <div v-if="item.comment" class="app-timeline-text mt-1">
-                {{
-                  item.comment.length > 38
-                    ? item.comment.slice(0, 38) + "..."
-                    : item.comment
-                }}
-              </div>
-            </VTimelineItem>
-          </VTimeline>
+                  <span class="app-timeline-title">
+                    {{ item.key }}
+                  </span>
+                  <span class="app-timeline-meta">
+                    {{ formatDate(item.created_at) }}</span
+                  >
+                </div>
+                <div class="app-timeline-text mt-1">
+                  {{ item.value }}
+                </div>
+                <div v-if="item.comment" class="app-timeline-text mt-1">
+                  {{
+                    item.comment.length > 38
+                      ? item.comment.slice(0, 38) + "..."
+                      : item.comment
+                  }}
+                </div>
+              </VTimelineItem>
+            </VTimeline>
+          </VContainer>
         </VCardItem>
       </VCard>
     </VCol>
@@ -379,45 +386,52 @@ const onRefresh = (type: string) => {
       <VCard>
         <VCardTitle>Tracking of Certificate</VCardTitle>
         <VCardItem>
-          <VTimeline
-            side="end"
-            align="start"
-            line-inset="9"
-            truncate-line="start"
-            density="compact"
-            class="v-timeline--variant-outlined"
-          >
-            <VTimelineItem
-              v-for="item in trackingFHC"
-              :key="item.id"
-              dot-color="rgb(var(--v-theme-surface))"
-              size="x-small"
+          <VContainer
+            :style="
+              trackingFHC?.length > 5
+                ? 'max-height: 240px; overflow-y: auto'
+                : ''
+            "
+            ><VTimeline
+              side="end"
+              align="start"
+              line-inset="9"
+              truncate-line="start"
+              density="compact"
+              class="v-timeline--variant-outlined"
             >
-              <template #icon>
-                <VIcon icon="ri-circle-line" color="primary" size="16" />
-              </template>
-              <div
-                class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
+              <VTimelineItem
+                v-for="item in trackingFHC"
+                :key="item.id"
+                dot-color="rgb(var(--v-theme-surface))"
+                size="x-small"
               >
-                <span class="app-timeline-title">
-                  {{ item.key }}
-                </span>
-                <span class="app-timeline-meta">
-                  {{ formatDate(item.created_at) }}</span
+                <template #icon>
+                  <VIcon icon="ri-circle-line" color="primary" size="16" />
+                </template>
+                <div
+                  class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
                 >
-              </div>
-              <div class="app-timeline-text mt-1">
-                {{ item.value }}
-              </div>
-              <div v-if="item.comment" class="app-timeline-text mt-1">
-                {{
-                  item.comment.length > 38
-                    ? item.comment.slice(0, 38) + "..."
-                    : item.comment
-                }}
-              </div>
-            </VTimelineItem>
-          </VTimeline>
+                  <span class="app-timeline-title">
+                    {{ item.key }}
+                  </span>
+                  <span class="app-timeline-meta">
+                    {{ formatDate(item.created_at) }}</span
+                  >
+                </div>
+                <div class="app-timeline-text mt-1">
+                  {{ item.value }}
+                </div>
+                <div v-if="item.comment" class="app-timeline-text mt-1">
+                  {{
+                    item.comment.length > 38
+                      ? item.comment.slice(0, 38) + "..."
+                      : item.comment
+                  }}
+                </div>
+              </VTimelineItem>
+            </VTimeline>
+          </VContainer>
         </VCardItem>
       </VCard>
     </VCol>

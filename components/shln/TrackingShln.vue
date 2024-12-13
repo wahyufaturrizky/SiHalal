@@ -38,7 +38,12 @@ const formatDate = (date: string): string => {
 </script>
 
 <template>
-  <VContainer class="pa-0">
+  <VContainer
+    :style="
+      timelineItems?.length > 5 ? 'max-height: 600px; overflow-y: auto' : ''
+    "
+    class="pa-0"
+  >
     <VCard variant="flat" class="pa-4">
       <VTimeline
         side="end"

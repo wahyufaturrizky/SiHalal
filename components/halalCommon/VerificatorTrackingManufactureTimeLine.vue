@@ -19,7 +19,9 @@ const tracking = props.datalistmanufacturetracking?.map((item: any) => {
 </script>
 
 <template>
-  <div class="pa-2">
+  <VContainer
+    :style="tracking?.length > 5 ? 'max-height: 300px; overflow-y: auto' : ''"
+  >
     <VTimeline
       side="end"
       align="start"
@@ -58,5 +60,5 @@ const tracking = props.datalistmanufacturetracking?.map((item: any) => {
         </div>
       </VTimelineItem>
     </VTimeline>
-  </div>
+  </VContainer>
 </template>
