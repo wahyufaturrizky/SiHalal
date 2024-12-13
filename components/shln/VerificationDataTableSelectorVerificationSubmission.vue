@@ -8,6 +8,25 @@ const emit = defineEmits<{
   (event: "refresh"): void;
 }>();
 
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+
+const statusItem: any = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+  },
+  {
+    get(target: any, prop: any) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
+
 const searchQuerySubmission = ref("");
 const loadingAddSubmission = ref(false);
 
@@ -199,10 +218,12 @@ const openDialog = () => {
               {{ item.hcb || "NA" }}
             </template>
             <template #item.importir_name="{ item }">
-              {{ item.importir_name || "NA" }}
+              {{ item.status === "OF10" && item.importir_name }}
             </template>
             <template #item.status="{ item }">
-              {{ item.status || "NA" }}
+              <VChip label :color="statusItem[item.status].color">
+                {{ statusItem[item.status].desc }}
+              </VChip>
             </template>
             <template #item.check="{ item }">
               <VCheckbox v-model="checkedItems[item.id]" />
