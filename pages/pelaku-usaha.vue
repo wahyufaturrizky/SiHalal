@@ -21,10 +21,10 @@ const penyeliaHeader = [
   { title: "No", key: "no" },
   { title: "Nama", key: "name" },
   { title: "No. KTP", key: "ktp_no" },
-  { title: "No. Kontak", key: "no_contact" },
+  { title: "No. Kontak", key: "no_kontak" },
   { title: "No/Tgl Sertif Penyelia Halal", key: "certification_no" },
   { title: "No/Tanggal SK", key: "sk_no" },
-  { title: "Action", key: "action" },
+  // { title: "Action", key: "action" },
 ];
 // const { canAccess } = useMyAuthUserStore();
 const panelOpenPabrik = ref(0);

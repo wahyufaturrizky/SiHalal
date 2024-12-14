@@ -1,5 +1,5 @@
 export enum MasterRef {
-  JNFAS,
+  JNFAS = "JNFAS",
   legaldocs = "JNLGL",
   factorystatus = "STFAS",
   busscale = "JNUSH",
