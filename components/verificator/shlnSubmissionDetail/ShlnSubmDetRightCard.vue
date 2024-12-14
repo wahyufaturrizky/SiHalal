@@ -56,45 +56,55 @@ const registData = [
       <VCard>
         <VCardTitle>Tracking</VCardTitle>
         <VCardText>
-          <VTimeline
-            side="end"
-            align="start"
-            line-inset="9"
-            truncate-line="start"
-            density="compact"
-            class="v-timeline--variant-outlined"
-          >
-            <VTimelineItem
-              v-for="item in tracking"
-              :key="item.id"
-              dot-color="rgb(var(--v-theme-surface))"
-              size="x-small"
+          <VContainer
+            :style="
+              tracking?.length > 5 ? 'max-height: 600px; overflow-y: auto' : ''
+            "
+            ><VTimeline
+              :style="
+                tracking?.length > 5
+                  ? 'max-height: 500px; overflow-y: auto'
+                  : ''
+              "
+              side="end"
+              align="start"
+              line-inset="9"
+              truncate-line="start"
+              density="compact"
+              class="v-timeline--variant-outlined"
             >
-              <template #icon>
-                <VIcon icon="ri-circle-line" color="primary" size="16" />
-              </template>
-              <div
-                class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
+              <VTimelineItem
+                v-for="item in tracking"
+                :key="item.id"
+                dot-color="rgb(var(--v-theme-surface))"
+                size="x-small"
               >
-                <span class="app-timeline-title">
-                  {{ item.key }}
-                </span>
-                <span class="app-timeline-meta">
-                  {{ formatDate(item.created_at) }}</span
+                <template #icon>
+                  <VIcon icon="ri-circle-line" color="primary" size="16" />
+                </template>
+                <div
+                  class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
                 >
-              </div>
-              <div class="app-timeline-text mt-1">
-                {{ item.value }}
-              </div>
-              <div v-if="item.comment" class="app-timeline-text mt-1">
-                {{
-                  item.comment.length > 38
-                    ? item.comment.slice(0, 38) + "..."
-                    : item.comment
-                }}
-              </div>
-            </VTimelineItem>
-          </VTimeline>
+                  <span class="app-timeline-title">
+                    {{ item.key }}
+                  </span>
+                  <span class="app-timeline-meta">
+                    {{ formatDate(item.created_at) }}</span
+                  >
+                </div>
+                <div class="app-timeline-text mt-1">
+                  {{ item.value }}
+                </div>
+                <div v-if="item.comment" class="app-timeline-text mt-1">
+                  {{
+                    item.comment.length > 38
+                      ? item.comment.slice(0, 38) + "..."
+                      : item.comment
+                  }}
+                </div>
+              </VTimelineItem>
+            </VTimeline></VContainer
+          >
         </VCardText>
       </VCard>
     </VCol>

@@ -14,17 +14,17 @@ const importerData = [
   { id: 2, key: "NIB/Business Id No.", value: profile?.nib },
   { id: 3, key: "API-P/API-U", value: profile?.api_type },
   { id: 4, key: "NPWP/TaxPayer Id No.", value: profile?.npwp },
-  { id: 5, key: "Address", value: importer?.address },
-  { id: 6, key: "Province", value: profile?.province },
-  { id: 7, key: "Regency", value: profile?.regency },
-  { id: 8, key: "Sub-district", value: profile?.sub_district },
+  { id: 5, key: "Address", value: profile?.address },
+  { id: 6, key: "Province", value: profile?.province_name },
+  { id: 7, key: "Regency", value: profile?.regency_name },
+  { id: 8, key: "Sub-district", value: profile?.sub_district_name },
 ];
 
 const HCB = [
   {
     id: 1,
     key: "Halal Certification Body (HCB)",
-    value: hcb?.hcb_id,
+    value: hcb?.hcb_name,
   },
   { id: 2, key: "Company Name", value: hcb?.company_name },
   { id: 3, key: "Company/Corporate Id No.", value: hcb?.corporate_id_number },
@@ -34,8 +34,8 @@ const HCB = [
 
 const halalCert = [
   { id: 1, key: "Halal Certification Number", value: hcn?.hcn_number },
-  { id: 2, key: "Issued Date", value: hcn?.issued_date },
-  { id: 3, key: "Expired Date", value: hcn?.expired_date },
+  { id: 2, key: "Issued Date", value: formatDate(hcn?.issued_date) },
+  { id: 3, key: "Expired Date", value: formatDate(hcn?.expired_date) },
   { id: 4, key: "Scope", value: hcn?.scope },
 ];
 

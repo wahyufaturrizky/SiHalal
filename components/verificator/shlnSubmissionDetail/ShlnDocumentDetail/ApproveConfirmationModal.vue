@@ -95,7 +95,7 @@ const dialogMaxWidth = computed(() => {
         </VRow>
       </VCardTitle>
       <VCardText>
-        <VRow>
+        <!-- <VRow>
           <VCol cols="12">
             <VTable>
               <thead>
@@ -124,16 +124,20 @@ const dialogMaxWidth = computed(() => {
           <VCol cols="12">
             <VTextarea placeholder="Input Additional Notes" />
           </VCol>
-        </VRow>
+        </VRow> -->
+
+        <p class="mb-2">Are you sure you want to Return this submission?</p>
       </VCardText>
       <VCardActions>
-        <VBtn variant="outlined" @click="cancel"> Cancel </VBtn>
-        <VBtn variant="elevated"> Save Notes </VBtn>
+        <VBtn variant="outlined" :disabled="loading" @click="cancel">
+          Cancel
+        </VBtn>
         <VBtn
           :disabled="loading"
           color="#49A84C"
           variant="elevated"
           @click="onConfirm"
+          :loading="loading"
         >
           {{ loading ? "Loading..." : "Approve" }}
         </VBtn>

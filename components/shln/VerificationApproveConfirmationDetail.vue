@@ -2,6 +2,12 @@
 import { computed, ref } from "vue";
 import { useDisplay } from "vuetify";
 
+const props = defineProps<{
+  data: any;
+}>();
+
+const { data } = props || {};
+
 const router = useRouter();
 const route = useRoute();
 
@@ -86,7 +92,7 @@ const dialogMaxWidth = computed(() => {
           <VCardActions style="display: flex; justify-content: end">
             <VBtn variant="outlined" text @click="cancel"> Cancel </VBtn>
             <VBtn
-              :disabled="loading"
+              :disabled="loading || !data?.ready_approve"
               color="success"
               variant="flat"
               @click="confirm"
