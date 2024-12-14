@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useDisplay } from "vuetify";
+
 const route = useRoute();
 const shlnId = (route.params as any).id;
 
@@ -95,6 +97,11 @@ const saveReqDocument = async () => {
 const openDialog = () => {
   isVisible.value = true;
 };
+const { mdAndUp } = useDisplay();
+
+const dialogMaxWidth = computed(() => {
+  return mdAndUp ? 700 : "90%";
+});
 </script>
 
 <template>
@@ -104,7 +111,7 @@ const openDialog = () => {
       <p class="text-primary">Return</p>
     </div>
   </VItemGroup>
-  <VDialog v-model="isVisible">
+  <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
     <template #default>
       <VCard>
         <VCardTitle>
