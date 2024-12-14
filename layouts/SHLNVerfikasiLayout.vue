@@ -12,16 +12,10 @@
     </VRow>
     <br />
     <VRow>
-      <VCol
-        cols="8"
-        style="z-index: 0 !important; max-block-size: 65svh; overflow-y: auto"
-      >
+      <VCol cols="8">
         <slot name="leftContent" />
       </VCol>
-      <VCol
-        cols="4"
-        style="z-index: 0 !important; max-block-size: 65svh; overflow-y: auto"
-      >
+      <VCol cols="4">
         <slot name="rightContent" />
       </VCol>
     </VRow>

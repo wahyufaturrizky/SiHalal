@@ -26,9 +26,27 @@ const headers = [
   { title: "NIB/Bussiness Id No", key: "nib", align: "start" },
   { title: "NPWP/Taxpayer Id No.", key: "npwp", align: "start" },
   { title: "Date", key: "tgl_daftar", align: "start" },
+  { title: "Status", key: "status" },
   { title: "Action", key: "action" },
 ];
-
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+const statusItem = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF11: { color: "success", desc: "Verification" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF300: { color: "success", desc: "Halal Certified Issued" },
+  },
+  {
+    get(target, prop) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
 const loadItem = async (page: number, size: number, no_shln: string = "") => {
   try {
     loading.value = true;
@@ -146,6 +164,12 @@ const openModalsRequest = () => {
             <template #item.tgl_daftar="{ item }">
               {{ formatDateIntl(new Date(item.tgl_daftar)) }}
             </template>
+            <template #item.status="{ item }">
+              <VChip :color="statusItem[item?.status_reg].color">
+                {{ statusItem[item?.status_reg].desc }}
+              </VChip>
+            </template>
+
             <template #item.action="{ item }">
               <div class="d-flex gap-1">
                 <IconBtn size="small" @click="">

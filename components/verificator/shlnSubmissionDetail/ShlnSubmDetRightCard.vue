@@ -9,8 +9,9 @@ const props = defineProps({
     required: true,
   },
 });
+console.log("@props", props);
 
-const { status, registration_number, issued_date } =
+const { status_code, submission_number, issued_date } =
   props.datadetailregistration || {};
 
 const tracking = props.data?.map((item: any) => {
@@ -25,10 +26,30 @@ const tracking = props.data?.map((item: any) => {
   };
 });
 
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+
+const statusItem: any = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+    OF11: { color: "success", desc: "Verification" },
+  },
+  {
+    get(target: any, prop: any) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
+
 const registData = [
-  { id: 1, key: "Status", value: status },
-  { id: 2, key: "Registration No.", value: registration_number },
-  { id: 3, key: "Date", value: issued_date },
+  { id: 1, key: "Status", value: status_code },
+  { id: 2, key: "Registration No.", value: submission_number },
+  { id: 3, key: "Date", value: issued_date ? formatDate(issued_date) : "" },
 ];
 </script>
 
@@ -44,7 +65,12 @@ const registData = [
             </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="7">
-              <p>{{ item.value }}</p>
+              <template v-if="item.key === 'Status'">
+                <VChip label :color="statusItem[item.value].color">
+                  {{ statusItem[item.value].desc }}
+                </VChip>
+              </template>
+              <p v-else>{{ item.value }}</p>
             </VCol>
           </VRow>
         </VCardText>
@@ -56,45 +82,55 @@ const registData = [
       <VCard>
         <VCardTitle>Tracking</VCardTitle>
         <VCardText>
-          <VTimeline
-            side="end"
-            align="start"
-            line-inset="9"
-            truncate-line="start"
-            density="compact"
-            class="v-timeline--variant-outlined"
-          >
-            <VTimelineItem
-              v-for="item in tracking"
-              :key="item.id"
-              dot-color="rgb(var(--v-theme-surface))"
-              size="x-small"
+          <VContainer
+            :style="
+              tracking?.length > 5 ? 'max-height: 600px; overflow-y: auto' : ''
+            "
+            ><VTimeline
+              :style="
+                tracking?.length > 5
+                  ? 'max-height: 500px; overflow-y: auto'
+                  : ''
+              "
+              side="end"
+              align="start"
+              line-inset="9"
+              truncate-line="start"
+              density="compact"
+              class="v-timeline--variant-outlined"
             >
-              <template #icon>
-                <VIcon icon="ri-circle-line" color="primary" size="16" />
-              </template>
-              <div
-                class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
+              <VTimelineItem
+                v-for="item in tracking"
+                :key="item.id"
+                dot-color="rgb(var(--v-theme-surface))"
+                size="x-small"
               >
-                <span class="app-timeline-title">
-                  {{ item.key }}
-                </span>
-                <span class="app-timeline-meta">
-                  {{ formatDate(item.created_at) }}</span
+                <template #icon>
+                  <VIcon icon="ri-circle-line" color="primary" size="16" />
+                </template>
+                <div
+                  class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
                 >
-              </div>
-              <div class="app-timeline-text mt-1">
-                {{ item.value }}
-              </div>
-              <div v-if="item.comment" class="app-timeline-text mt-1">
-                {{
-                  item.comment.length > 38
-                    ? item.comment.slice(0, 38) + "..."
-                    : item.comment
-                }}
-              </div>
-            </VTimelineItem>
-          </VTimeline>
+                  <span class="app-timeline-title">
+                    {{ item.key }}
+                  </span>
+                  <span class="app-timeline-meta">
+                    {{ formatDate(item.created_at) }}</span
+                  >
+                </div>
+                <div class="app-timeline-text mt-1">
+                  {{ item.value }}
+                </div>
+                <div v-if="item.comment" class="app-timeline-text mt-1">
+                  {{
+                    item.comment.length > 38
+                      ? item.comment.slice(0, 38) + "..."
+                      : item.comment
+                  }}
+                </div>
+              </VTimelineItem>
+            </VTimeline></VContainer
+          >
         </VCardText>
       </VCard>
     </VCol>

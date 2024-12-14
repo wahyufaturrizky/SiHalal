@@ -203,7 +203,7 @@ const navigateAction = () => {
       <h2>Detail Data Fasilitasi</h2>
     </VCol>
     <VCol cols="6" style="display: flex; justify-content: end">
-      <div>
+      <div v-if="['OF1', 'OF2'].includes(dataDetailRegistration.status_code)">
         <VBtn
           density="compact"
           style="margin: 0.5svw"
@@ -213,33 +213,6 @@ const navigateAction = () => {
         >
           <VIcon style="color: #e1442e" icon="fa-trash" />
         </VBtn>
-
-        <VDialog v-model="visibleModalHapus" max-width="50svw">
-          <VCard style="padding: 1svw">
-            <VCardTitle><h3>Hapus Pengajuan</h3></VCardTitle>
-            <VCardItem>
-              <p>Yakin ingin menghapus pengajuan fasilitasi?</p>
-            </VCardItem>
-            <VCardActions>
-              <VBtn
-                variant="outlined"
-                density="compact"
-                @click="visibleModalHapus = false"
-              >
-                Batal
-              </VBtn>
-              <VBtn
-                color="#E1442E"
-                variant="flat"
-                density="compact"
-                :disabled="loadingDelete"
-                @click="deleteFacilitate"
-              >
-                {{ loadingDelete ? "Loading..." : "Ya, Hapus" }}
-              </VBtn>
-            </VCardActions>
-          </VCard>
-        </VDialog>
 
         <VBtn
           density="compact"
@@ -260,32 +233,6 @@ const navigateAction = () => {
         >
           Kirim
         </VBtn>
-
-        <VDialog v-model="visibleModalKirim" max-width="50svw">
-          <VCard>
-            <VCardTitle><h3>Kirim Pengajuan</h3></VCardTitle>
-            <VCardItem>
-              <p>Yakin ingin mengirim pengajuan fasilitasi?</p>
-            </VCardItem>
-            <VCardActions>
-              <VBtn
-                variant="outlined"
-                density="compact"
-                @click="visibleModalKirim = false"
-              >
-                Batal
-              </VBtn>
-              <VBtn
-                :disabled="loadingSubmit"
-                variant="flat"
-                density="compact"
-                @click="submitFacilitate"
-              >
-                {{ loadingSubmit ? "Loading..." : "Kirim" }}
-              </VBtn>
-            </VCardActions>
-          </VCard>
-        </VDialog>
       </div>
     </VCol>
   </VRow>
@@ -342,6 +289,59 @@ const navigateAction = () => {
       </VRow>
     </VCol>
   </VRow>
+
+  <VDialog v-model="visibleModalHapus" max-width="50svw">
+    <VCard style="padding: 1svw">
+      <VCardTitle><h3>Hapus Pengajuan</h3></VCardTitle>
+      <VCardItem>
+        <p>Yakin ingin menghapus pengajuan fasilitasi?</p>
+      </VCardItem>
+      <VCardActions>
+        <VBtn
+          variant="outlined"
+          density="compact"
+          @click="visibleModalHapus = false"
+        >
+          Batal
+        </VBtn>
+        <VBtn
+          color="#E1442E"
+          variant="flat"
+          density="compact"
+          :disabled="loadingDelete"
+          @click="deleteFacilitate"
+        >
+          {{ loadingDelete ? "Loading..." : "Ya, Hapus" }}
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
+
+  <VDialog v-model="visibleModalKirim" max-width="50svw">
+    <VCard>
+      <VCardTitle><h3>Kirim Pengajuan</h3></VCardTitle>
+      <VCardItem>
+        <p>Yakin ingin mengirim pengajuan fasilitasi?</p>
+      </VCardItem>
+      <VCardActions>
+        <VBtn
+          variant="outlined"
+          density="compact"
+          @click="visibleModalKirim = false"
+        >
+          Batal
+        </VBtn>
+        <VBtn
+          :disabled="loadingSubmit"
+          variant="flat"
+          density="compact"
+          @click="submitFacilitate"
+        >
+          {{ loadingSubmit ? "Loading..." : "Kirim" }}
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
 
 <style>

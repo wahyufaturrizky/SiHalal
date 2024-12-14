@@ -29,12 +29,21 @@ const putVerificatorReturn = async (comment: string[]) => {
       },
     });
 
-    if (res?.code === 2000) router.go(-1);
-    else useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+    if (res?.code === 2000) {
+      useSnackbar().sendSnackbar("Success Return Submission", "success");
+      inputValue.value = "";
+      closeDialog();
+      loading.value = false;
 
-    inputValue.value = "";
-    closeDialog();
-    loading.value = false;
+      setTimeout(() => {
+        router.go(-1);
+      }, 1000);
+    } else {
+      useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
+      inputValue.value = "";
+      closeDialog();
+      loading.value = false;
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     inputValue.value = "";

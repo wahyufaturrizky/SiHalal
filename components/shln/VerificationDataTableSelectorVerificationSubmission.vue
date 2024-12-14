@@ -19,6 +19,7 @@ const statusItem: any = new Proxy(
     OF290: { color: "error", desc: "Rejected" },
     OF5: { color: "success", desc: "Invoice issued" },
     OF320: { color: "success", desc: "Code Issued" },
+    OF11: { color: "success", desc: "Verification" },
   },
   {
     get(target: any, prop: any) {
@@ -38,10 +39,10 @@ const itemsSubmission = ref<
     date: string;
     hcb: string;
     id: string;
-    importir_name: string;
+    verificator_name: string;
     nib: string;
     register_number: string;
-    status: string;
+    status_code: string;
   }[]
 >([]);
 
@@ -94,8 +95,8 @@ const verifikatorTablePopUpHeader = [
   { title: "HCB", key: "hcb" },
   { title: "Registration Date", key: "date" },
   { title: "Submit Date", key: "date" },
-  { title: "Verifikator", key: "importir_name" },
-  { title: "Status", key: "status" },
+  { title: "Verifikator", key: "verificator_name" },
+  { title: "Status", key: "status_code" },
   { title: "Action", key: "check" },
 ];
 
@@ -217,12 +218,12 @@ const openDialog = () => {
             <template #item.hcb="{ item }">
               {{ item.hcb || "NA" }}
             </template>
-            <template #item.importir_name="{ item }">
-              {{ item.status === "OF10" && item.importir_name }}
+            <template #item.verificator_name="{ item }">
+              {{ item.status_code === "OF10" ? item.verificator_name : "" }}
             </template>
-            <template #item.status="{ item }">
-              <VChip label :color="statusItem[item.status].color">
-                {{ statusItem[item.status].desc }}
+            <template #item.status_code="{ item }">
+              <VChip label :color="statusItem[item.status_code].color">
+                {{ statusItem[item.status_code].desc }}
               </VChip>
             </template>
             <template #item.check="{ item }">
