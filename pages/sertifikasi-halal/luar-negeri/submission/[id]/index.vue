@@ -531,12 +531,9 @@ const timelineEvents = ref([
             {{ registration?.expired_date }}
           </InfoRow>
           <InfoRow name="Status">
-            <VBtn
-              variant="outlined"
-              :color="statusItem[registration?.status_code].color"
-            >
+            <VChip :color="statusItem[registration?.status_code].color">
               {{ statusItem[registration?.status_code].desc }}
-            </VBtn>
+            </VChip>
           </InfoRow>
           <InfoRow name="Download Halal Registration Number">
             <VBtn
