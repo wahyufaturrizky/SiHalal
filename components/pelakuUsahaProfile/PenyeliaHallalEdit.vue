@@ -173,6 +173,19 @@ function handleDelete(item) {
       snackbar.sendSnackbar("Gagal Menghapus Data ", "error");
     });
 }
+
+const props = defineProps({
+  fileSkBlob: {
+    type: String,
+    required: true,
+  },
+});
+
+const downloadSkHandler = () => {
+  if (props.fileSkBlob != null) {
+    window.open(props.fileSkBlob);
+  }
+};
 </script>
 
 <template>
@@ -181,7 +194,7 @@ function handleDelete(item) {
       <VRow>
         <VCol cols="8" style="display: inline-flex; align-items: center">
           <h3 class="mr-4">Penyelia Halal</h3>
-          <VChip
+          <!-- <VChip
             color="primary"
             style="
               background-color: #652672;
@@ -190,7 +203,16 @@ function handleDelete(item) {
             "
           >
             SK Penetapan Penyelia Halal
-          </VChip>
+          </VChip> -->
+
+          <VBtn
+            @click="downloadSkHandler"
+            density="compact"
+            variant="flat"
+            color="primary"
+          >
+            SK Penetapan Penyelia Halal</VBtn
+          >
         </VCol>
         <VCol cols="4" style="display: flex; justify-content: end">
           <DataPenyeliaHalalModal

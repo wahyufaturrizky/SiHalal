@@ -63,6 +63,12 @@ onMounted(() => {
   formData.value.nomorKontak = store.penanggungJawabHalal?.phone;
   formData.value.email = store.penanggungJawabHalal?.email;
 });
+
+const skBlobUri = ref();
+
+const skReadyHandler = (blob) => {
+  skBlobUri.value = blob;
+};
 </script>
 
 <template>
@@ -160,7 +166,20 @@ onMounted(() => {
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <PenyeliaHallalEdit />
+          <PenyeliaHallalEdit :file-sk-blob="skBlobUri" />
+        </VCol>
+      </VRow>
+      <VRow style="display: none">
+        <VCol cols="12">
+          <VCard>
+            <VCardItem>
+              <!-- <component :is="SkPenyeliaHalal" :></component> -->
+              <!-- <VBtn @click="downloadSkHandler">tes</VBtn> -->
+              <SkPenyeliaHalal
+                @sk-penyelia-download-handler="skReadyHandler"
+              ></SkPenyeliaHalal>
+            </VCardItem>
+          </VCard>
         </VCol>
       </VRow>
     </template>
