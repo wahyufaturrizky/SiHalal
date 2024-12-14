@@ -31,13 +31,18 @@ const putVerificatorApprove = async () => {
     });
 
     if (res?.code === 2000) {
-      router.go(-1);
+      useSnackbar().sendSnackbar("Success Approve Submission", "success");
+      closeDialog();
+      loading.value = false;
+
+      setTimeout(() => {
+        router.go(-1);
+      }, 1000);
     } else {
       useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
+      closeDialog();
+      loading.value = false;
     }
-
-    closeDialog();
-    loading.value = false;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     closeDialog();

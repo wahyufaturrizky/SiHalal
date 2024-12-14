@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useDisplay } from "vuetify";
+
 const route = useRoute();
 const shlnId = (route.params as any).id;
 
@@ -93,6 +95,12 @@ const saveReqDocument = async () => {
     useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
   }
 };
+
+const { mdAndUp } = useDisplay();
+
+const dialogMaxWidth = computed(() => {
+  return mdAndUp ? 700 : "90%";
+});
 </script>
 
 <template>
@@ -102,7 +110,7 @@ const saveReqDocument = async () => {
       <p class="text-success">Approve</p>
     </div>
   </VItemGroup>
-  <VDialog v-model="isVisible">
+  <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
     <template #default>
       <VCard>
         <VCardTitle>
