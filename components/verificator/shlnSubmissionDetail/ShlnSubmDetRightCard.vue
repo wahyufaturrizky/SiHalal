@@ -9,8 +9,9 @@ const props = defineProps({
     required: true,
   },
 });
+console.log("@props", props);
 
-const { status, registration_number, issued_date } =
+const { status_code, submission_number, issued_date } =
   props.datadetailregistration || {};
 
 const tracking = props.data?.map((item: any) => {
@@ -25,10 +26,30 @@ const tracking = props.data?.map((item: any) => {
   };
 });
 
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+
+const statusItem: any = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+    OF11: { color: "success", desc: "Verification" },
+  },
+  {
+    get(target: any, prop: any) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
+
 const registData = [
-  { id: 1, key: "Status", value: status },
-  { id: 2, key: "Registration No.", value: registration_number },
-  { id: 3, key: "Date", value: issued_date },
+  { id: 1, key: "Status", value: status_code },
+  { id: 2, key: "Registration No.", value: submission_number },
+  { id: 3, key: "Date", value: issued_date ? formatDate(issued_date) : "" },
 ];
 </script>
 
@@ -44,7 +65,12 @@ const registData = [
             </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="7">
-              <p>{{ item.value }}</p>
+              <template v-if="item.key === 'Status'">
+                <VChip label :color="statusItem[item.value].color">
+                  {{ statusItem[item.value].desc }}
+                </VChip>
+              </template>
+              <p v-else>{{ item.value }}</p>
             </VCol>
           </VRow>
         </VCardText>
