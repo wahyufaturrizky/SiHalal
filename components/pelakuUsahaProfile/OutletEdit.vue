@@ -1,34 +1,34 @@
 <script setup lang="ts">
-import type { outlet } from "@/stores/interface/pelakuUsahaProfileIntf";
-
-const panelOpen = ref(0);
-
-const tableOutletHeader = [
-  { title: "No", key: "no" },
-  { title: "Nama", key: "name" },
-  { title: "Alamat", key: "address" },
-  { title: "Action", key: "action" },
-];
+import type { outlet } from '@/stores/interface/pelakuUsahaProfileIntf'
 
 const props = defineProps({
   outletData: {
     type: Object as outlet | any,
     required: true,
   },
-});
+})
 
-const items = ref([]);
+const panelOpen = ref(0)
 
-const store = pelakuUsahaProfile();
-const snackbar = useSnackbar();
+const tableOutletHeader = [
+  { title: 'No', key: 'no' },
+  { title: 'Nama', key: 'name' },
+  { title: 'Alamat', key: 'address' },
+  { title: 'Action', key: 'action' },
+]
 
-const handleAddAspekLegalConfirm = (formData) => {
-  console.log("Add confirmed:", formData);
+const items = ref([])
+
+const store = pelakuUsahaProfile()
+const snackbar = useSnackbar()
+
+const handleAddAspekLegalConfirm = formData => {
+  console.log('Add confirmed:', formData)
 
   const submitApi = $api(
     `/pelaku-usaha-profile/${store.profileData?.id}/add-outlet`,
     {
-      method: "POST",
+      method: 'POST',
       body: {
         name: formData.namaOutlet,
         address: formData.alamatOutlet,
@@ -37,25 +37,26 @@ const handleAddAspekLegalConfirm = (formData) => {
         country: formData.negara,
         zip_code: formData.kodePos,
       },
-    }
+    },
   ).then((val: any) => {
     if (val.code == 2000) {
-      store.fetchProfile();
-      snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
-    } else {
-      snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
+      store.fetchProfile()
+      snackbar.sendSnackbar('Berhasil Menambahkan Data ', 'success')
     }
-  });
-};
+    else {
+      snackbar.sendSnackbar('Gagal Menambahkan Data ', 'error')
+    }
+  })
+}
 
 const handleEditOutletConfirm = (formData, id_outlet) => {
-  console.log("Add confirmed:", formData);
+  console.log('Add confirmed:', formData)
 
-  const submitApi = $api(`/pelaku-usaha-profile/update-outlet`, {
-    method: "POST",
+  const submitApi = $api('/pelaku-usaha-profile/update-outlet', {
+    method: 'POST',
     body: {
       id_profile: store.profileData?.id,
-      id_outlet: id_outlet,
+      id_outlet,
       name: formData.namaOutlet,
       address: formData.alamatOutlet,
       city: formData.kabKota,
@@ -66,26 +67,55 @@ const handleEditOutletConfirm = (formData, id_outlet) => {
   })
     .then((val: any) => {
       if (val.code == 2000) {
-        store.fetchProfile();
-        snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
-      } else {
-        snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
+        store.fetchProfile()
+        snackbar.sendSnackbar('Berhasil Menambahkan Data ', 'success')
+      }
+      else {
+        snackbar.sendSnackbar('Gagal Menambahkan Data ', 'error')
       }
     })
-    .catch((e) => {
-      snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
-    });
-};
+    .catch(e => {
+      snackbar.sendSnackbar('Gagal Menambahkan Data ', 'error')
+    })
+}
+
+function handleDelete(item) {
+  console.log('Delete item:', item)
+
+  const status = false
+  if (status) {
+    const submitApi = $api(
+      `/pelaku-usaha-profile/${store.profileData?.id}/${item.id}/delete-factory`,
+      {
+        method: 'DELETE',
+      },
+    )
+      .then((val: any) => {
+        if (val.code == 2000) {
+          store.fetchProfile()
+          snackbar.sendSnackbar('Berhasil Menghapus Data ', 'success')
+        }
+        else {
+          snackbar.sendSnackbar('Gagal Menghapus Data ', 'error')
+        }
+      })
+      .catch(e => {
+        snackbar.sendSnackbar('Gagal Menghapus Data ', 'error')
+      })
+  }
+}
 </script>
 
 <template>
   <VCard>
     <VCardTitle>
       <VRow>
-        <VCol cols="6"><h3>Outlet</h3></VCol>
+        <VCol cols="6">
+          <h3>Outlet</h3>
+        </VCol>
         <VCol
           cols="6"
-          style="display: flex; justify-content: end; align-items: center"
+          style="display: flex; align-items: center; justify-content: end;"
         >
           <DataOuletModal
             mode="add"
@@ -107,27 +137,36 @@ const handleEditOutletConfirm = (formData, id_outlet) => {
         <template #item.action="{ item }">
           <VMenu :close-on-content-click="false">
             <template #activator="{ props }">
-              <VBtn icon variant="text" v-bind="props">
+              <VBtn
+                icon
+                variant="text"
+                v-bind="props"
+              >
                 <VIcon>mdi-dots-vertical</VIcon>
               </VBtn>
             </template>
             <VList>
               <VListItem>
-                <VListItemTitle>
-                  <!-- <FormEditOutlet :initial-data="item"></FormEditOutlet> -->
-                  <DataOuletModal
-                    mode="edit"
-                    :initial-data="item"
-                    @confirm-edit="handleEditOutletConfirm"
-                  ></DataOuletModal>
-                </VListItemTitle>
+                <FormEditOutlet :initial-data="item" />
+
+                <DataOuletModal
+                  mode="edit"
+                  :initial-data="item"
+                  @confirm-edit="handleEditOutletConfirm"
+                />
               </VListItem>
-              <!-- <VListItem @click="handleDelete(item)">
+
+              <VListItem @click="handleDelete(item)">
                 <VListItemTitle class="text-red">
-                  <VIcon color="red" class="mr-2"> mdi-delete </VIcon>
+                  <VIcon
+                    color="red"
+                    class="mr-2"
+                  >
+                    mdi-delete
+                  </VIcon>
                   Hapus
                 </VListItemTitle>
-              </VListItem> -->
+              </VListItem>
             </VList>
           </VMenu>
         </template>
@@ -205,5 +244,21 @@ const handleEditOutletConfirm = (formData, id_outlet) => {
 :deep(.v-expansion-panel-text__wrapper) {
   padding-block: 0;
   padding-inline: 16px;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.mb-4 {
+  margin-block-end: 16px;
+}
+
+.text-red {
+  color: red;
 }
 </style>

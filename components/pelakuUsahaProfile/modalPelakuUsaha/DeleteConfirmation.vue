@@ -1,10 +1,14 @@
 <script setup lang="ts">
-const handleDeleteConfirm = () => {
+const emit = defineEmits(['delete-confirm', 'delete-cancel'])
+
+const handleDeleteConfirm = (String: id) => {
   console.log('Action confirmed!')
+  emit('delete-confirm', id)
 }
 
 const handleDeleteCancel = () => {
   console.log('Action cancelled!')
+  emit('delete-cancel')
 }
 </script>
 
