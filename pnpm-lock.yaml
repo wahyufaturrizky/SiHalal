@@ -27,6 +27,9 @@ importers:
       '@formkit/drag-and-drop':
         specifier: 0.1.6
         version: 0.1.6
+      '@i2d/nuxt-pdf-frame':
+        specifier: ^0.5.0
+        version: 0.5.0(magicast@0.3.5)(rollup@4.24.1)(typescript@5.5.4)(webpack-sources@3.2.3)
       '@iconify-json/bxl':
         specifier: 1.1.11
         version: 1.1.11
@@ -1052,6 +1055,12 @@ packages:
   '@humanwhocodes/object-schema@2.0.3':
     resolution: {integrity: sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==}
     deprecated: Use @eslint/object-schema instead
+
+  '@i2d/nuxt-pdf-frame@0.5.0':
+    resolution: {integrity: sha512-T3WNfhgrfx48Tq8PhpfBaeWoZ1ewCp7EdYQ8fdNHuY0Ty6Mdg5KElo6Flu572zwccCh1PmDITG/a5FGJWnGU1A==}
+
+  '@i2d/pdf-frame-vue@2.4.0':
+    resolution: {integrity: sha512-gsXiqSkLt2jfOIwlfODKUg/2i2lItX8g4xAF9D9KE5Z2QvdcBaqv6LZuX+2CZ3kzH06avaHa2wYze8wvqxCK6g==}
 
   '@iconify-json/bxl@1.1.11':
     resolution: {integrity: sha512-VOsPggoCBpLgyWiA4L9h404IT6xl5Bv0LdlM7qhRQeAQyFiiSPWEq5HBEtxlrVf3tx92zA+Vz9ySJy2KbQOdUQ==}
@@ -4049,6 +4058,10 @@ packages:
   human-signals@5.0.0:
     resolution: {integrity: sha512-AXcZb6vzzrFAUE61HnN4mpLqd/cSIwNQjtNWR0euPm6y0iqx3G4gOXaIDdtdDwZmhwe82LA6+zinmW4UBWVePQ==}
     engines: {node: '>=16.17.0'}
+
+  i2djs@5.4.0:
+    resolution: {integrity: sha512-HLEI3CmYUmWRUVm4QR/7ghrvwkMtN2xM8ilLAZmqpq7YdvDgN59wI120Zj+YUgVOVcS+IwKR4kOUORon43W6VQ==}
+    engines: {node: '>=16.0.0'}
 
   ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
@@ -7386,6 +7399,24 @@ snapshots:
   '@humanwhocodes/module-importer@1.0.1': {}
 
   '@humanwhocodes/object-schema@2.0.3': {}
+
+  '@i2d/nuxt-pdf-frame@0.5.0(magicast@0.3.5)(rollup@4.24.1)(typescript@5.5.4)(webpack-sources@3.2.3)':
+    dependencies:
+      '@i2d/pdf-frame-vue': 2.4.0(typescript@5.5.4)
+      '@nuxt/kit': 3.13.2(magicast@0.3.5)(rollup@4.24.1)(webpack-sources@3.2.3)
+    transitivePeerDependencies:
+      - magicast
+      - rollup
+      - supports-color
+      - typescript
+      - webpack-sources
+
+  '@i2d/pdf-frame-vue@2.4.0(typescript@5.5.4)':
+    dependencies:
+      i2djs: 5.4.0
+      vue: 3.3.13(typescript@5.5.4)
+    transitivePeerDependencies:
+      - typescript
 
   '@iconify-json/bxl@1.1.11':
     dependencies:
@@ -11455,6 +11486,8 @@ snapshots:
   human-signals@4.3.1: {}
 
   human-signals@5.0.0: {}
+
+  i2djs@5.4.0: {}
 
   ieee754@1.2.1: {}
 
