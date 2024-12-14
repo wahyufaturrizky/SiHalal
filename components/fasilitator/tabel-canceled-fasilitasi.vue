@@ -38,6 +38,7 @@ const statusItem: any = new Proxy(
     OF290: { color: "error", desc: "Rejected" },
     OF5: { color: "success", desc: "Invoice issued" },
     OF320: { color: "success", desc: "Code Issued" },
+    OF11: { color: "success", desc: "Verification" },
   },
   {
     get(target: any, prop: any) {
