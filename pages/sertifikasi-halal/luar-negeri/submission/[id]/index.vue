@@ -73,6 +73,23 @@ const submitDialog = ref(false);
 const submitItem = () => {
   submitDialog.value = true;
 };
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+const statusItem = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+  },
+  {
+    get(target, prop) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
 
 const deleteSubmission = async () => {
   try {
@@ -342,7 +359,13 @@ const timelineEvents = ref([
               <VIcon icon="ri-delete-bin-6-line" />
             </VBtn>
           </VCol>
-          <VCol cols="auto">
+          <VCol
+            cols="auto"
+            v-if="
+              registration?.status_code == 'OF1' ||
+              registration?.status_code == 'OF2'
+            "
+          >
             <VBtn
               variant="outlined"
               color="primary"
@@ -352,7 +375,13 @@ const timelineEvents = ref([
               Edit
             </VBtn>
           </VCol>
-          <VCol cols="auto">
+          <VCol
+            cols="auto"
+            v-if="
+              registration?.status_code == 'OF1' ||
+              registration?.status_code == 'OF2'
+            "
+          >
             <VBtn
               variant="outlined"
               color="primary"
@@ -502,8 +531,11 @@ const timelineEvents = ref([
             {{ registration?.expired_date }}
           </InfoRow>
           <InfoRow name="Status">
-            <VBtn variant="outlined">
-              {{ registration?.status }}
+            <VBtn
+              variant="outlined"
+              :color="statusItem[registration?.status_code].color"
+            >
+              {{ statusItem[registration?.status_code].desc }}
             </VBtn>
           </InfoRow>
           <InfoRow name="Download Halal Registration Number">
