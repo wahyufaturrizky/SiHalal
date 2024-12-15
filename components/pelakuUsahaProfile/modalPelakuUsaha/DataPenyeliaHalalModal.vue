@@ -270,30 +270,30 @@ watch(
               </VCol>
             </VRow>
             <VFileInput
-              :rules="[requiredValidator]"
+              :rules="[requiredValidator, fileSizeValidator]"
               v-model="form.sertifikatKompetensi"
               label="Unggah Sertifikat Kompetensi Penyelia Halal"
               outlined
               dense
-              accept=".pdf,.jpg,.png"
+              accept=".pdf,.jpg,.png,.jpeg"
               class="mb-2"
             />
             <VFileInput
-              :rules="[requiredValidator]"
+              :rules="[requiredValidator, fileSizeValidator]"
               v-model="form.sertifikatPelatihan"
               label="Unggah Sertifikat Pelatihan Penyelia Halal"
               outlined
               dense
-              accept=".pdf,.jpg,.png"
+              accept=".pdf,.jpg,.png,.jpeg"
               class="mb-2"
             />
             <VFileInput
-              :rules="[requiredValidator]"
+              :rules="[requiredValidator, fileSizeValidator]"
               v-model="form.ktpFile"
               label="Unggah KTP"
               outlined
               dense
-              accept=".pdf,.jpg,.png"
+              accept=".pdf,.jpg,.png,.jpeg"
               class="mb-2"
             />
           </VForm>
