@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { outlet } from '@/stores/interface/pelakuUsahaProfileIntf'
+import type { outlet } from '@/stores/interface/pelakuUsahaProfileIntf';
 
 const props = defineProps({
   outletData: {
@@ -82,27 +82,24 @@ const handleEditOutletConfirm = (formData, id_outlet) => {
 function handleDelete(item) {
   console.log('Delete item:', item)
 
-  const status = false
-  if (status) {
-    const submitApi = $api(
-      `/pelaku-usaha-profile/${store.profileData?.id}/${item.id}/delete-factory`,
-      {
-        method: 'DELETE',
-      },
-    )
-      .then((val: any) => {
-        if (val.code == 2000) {
-          store.fetchProfile()
-          snackbar.sendSnackbar('Berhasil Menghapus Data ', 'success')
-        }
-        else {
-          snackbar.sendSnackbar('Gagal Menghapus Data ', 'error')
-        }
-      })
-      .catch(e => {
+  const submitApi = $api(
+    `/pelaku-usaha-profile/${store.profileData?.id}/${item.id}/delete-factory`,
+    {
+      method: 'DELETE',
+    },
+  )
+    .then((val: any) => {
+      if (val.code == 2000) {
+        store.fetchProfile()
+        snackbar.sendSnackbar('Berhasil Menghapus Data ', 'success')
+      }
+      else {
         snackbar.sendSnackbar('Gagal Menghapus Data ', 'error')
-      })
-  }
+      }
+    })
+    .catch(e => {
+      snackbar.sendSnackbar('Gagal Menghapus Data ', 'error')
+    })
 }
 </script>
 
@@ -147,7 +144,7 @@ function handleDelete(item) {
             </template>
             <VList>
               <VListItem>
-                <FormEditOutlet :initial-data="item" />
+                <!-- <FormEditOutlet :initial-data="item" /> -->
 
                 <DataOuletModal
                   mode="edit"
@@ -156,17 +153,23 @@ function handleDelete(item) {
                 />
               </VListItem>
 
-              <VListItem @click="handleDelete(item)">
-                <VListItemTitle class="text-red">
-                  <VIcon
-                    color="red"
-                    class="mr-2"
-                  >
-                    mdi-delete
-                  </VIcon>
-                  Hapus
-                </VListItemTitle>
+              <VListItem>
+                <DeleteConfirmation @delete-confirm="handleDelete(item)" />
               </VListItem>
+              <!--
+                <VListItem>
+                <DeleteConfirmation @delete-confirm="handleDelete(item)" />
+                <VListItemTitle class="text-red">
+                <VIcon
+                color="red"
+                class="mr-2"
+                >
+                mdi-delete
+                </VIcon>
+                Hapus
+                </VListItemTitle>
+                </VListItem>
+              -->
             </VList>
           </VMenu>
         </template>

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, defineEmits, defineProps, ref, watch } from 'vue'
-import { useDisplay } from 'vuetify'
-import type { VForm } from 'vuetify/components'
-import type { MasterDistrict } from '@/server/interface/master.iface'
+import type { MasterDistrict } from '@/server/interface/master.iface';
+import { computed, defineEmits, defineProps, ref, watch } from 'vue';
+import { useDisplay } from 'vuetify';
+import type { VForm } from 'vuetify/components';
 
 const props = defineProps({
   mode: { type: String, default: 'add' },
@@ -124,7 +124,7 @@ watch(
 </script>
 
 <template>
-  <div>
+  <div class="ma-1">
     <VBtn
       v-if="props.mode === 'add'"
       variant="outlined"
