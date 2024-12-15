@@ -1,17 +1,20 @@
 <script setup lang="ts">
+const emit = defineEmits(['delete-confirm', 'delete-cancel'])
+
 const handleDeleteConfirm = () => {
-  console.log('Action confirmed!')
+  emit('delete-confirm')
 }
 
 const handleDeleteCancel = () => {
-  console.log('Action cancelled!')
+  emit('delete-cancel')
 }
 </script>
 
 <template>
   <ConfirmationDialog
+    prepend-icon="  mdi-delete"
     parent-btn-label="Hapus"
-    parent-btn-variant="outlined"
+    parent-btn-variant="text"
     parent-btn-color="error"
     :card-width="500"
     title="Menghapus Data"

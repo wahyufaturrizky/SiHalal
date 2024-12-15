@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import type { outlet } from "@/stores/interface/pelakuUsahaProfileIntf";
 
+const props = defineProps({
+  outletData: {
+    type: Object as outlet | any,
+    required: true,
+  },
+});
+
 const panelOpen = ref(0);
 
 const tableOutletHeader = [
@@ -9,13 +16,6 @@ const tableOutletHeader = [
   { title: "Alamat", key: "address" },
   { title: "Action", key: "action" },
 ];
-
-const props = defineProps({
-  outletData: {
-    type: Object as outlet | any,
-    required: true,
-  },
-});
 
 const items = ref([]);
 
@@ -51,11 +51,11 @@ const handleAddAspekLegalConfirm = (formData) => {
 const handleEditOutletConfirm = (formData, id_outlet) => {
   console.log("Add confirmed:", formData);
 
-  const submitApi = $api(`/pelaku-usaha-profile/update-outlet`, {
+  const submitApi = $api("/pelaku-usaha-profile/update-outlet", {
     method: "POST",
     body: {
       id_profile: store.profileData?.id,
-      id_outlet: id_outlet,
+      id_outlet,
       name: formData.namaOutlet,
       address: formData.alamatOutlet,
       city: formData.kabKota,
@@ -76,16 +76,41 @@ const handleEditOutletConfirm = (formData, id_outlet) => {
       snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
     });
 };
+
+function handleDelete(item) {
+  console.log("Delete item:", item);
+
+  const submitApi = $api(`pelaku-usaha-profile/delete-outlet`, {
+    method: "POST",
+    body: {
+      id_profile: store.profileData?.id,
+      id_outlet: item.id,
+    },
+  })
+    .then((val: any) => {
+      if (val.code == 2000) {
+        store.fetchProfile();
+        snackbar.sendSnackbar("Berhasil Menghapus Data ", "success");
+      } else {
+        snackbar.sendSnackbar("Gagal Menghapus Data ", "error");
+      }
+    })
+    .catch((e) => {
+      snackbar.sendSnackbar("Gagal Menghapus Data ", "error");
+    });
+}
 </script>
 
 <template>
   <VCard>
     <VCardTitle>
       <VRow>
-        <VCol cols="6"><h3>Outlet</h3></VCol>
+        <VCol cols="6">
+          <h3>Outlet</h3>
+        </VCol>
         <VCol
           cols="6"
-          style="display: flex; justify-content: end; align-items: center"
+          style="display: flex; align-items: center; justify-content: end"
         >
           <DataOuletModal
             mode="add"
@@ -113,21 +138,32 @@ const handleEditOutletConfirm = (formData, id_outlet) => {
             </template>
             <VList>
               <VListItem>
-                <VListItemTitle>
-                  <!-- <FormEditOutlet :initial-data="item"></FormEditOutlet> -->
-                  <DataOuletModal
-                    mode="edit"
-                    :initial-data="item"
-                    @confirm-edit="handleEditOutletConfirm"
-                  ></DataOuletModal>
-                </VListItemTitle>
+                <!-- <FormEditOutlet :initial-data="item" /> -->
+
+                <DataOuletModal
+                  mode="edit"
+                  :initial-data="item"
+                  @confirm-edit="handleEditOutletConfirm"
+                />
               </VListItem>
-              <!-- <VListItem @click="handleDelete(item)">
+
+              <VListItem>
+                <DeleteConfirmation @delete-confirm="handleDelete(item)" />
+              </VListItem>
+              <!--
+                <VListItem>
+                <DeleteConfirmation @delete-confirm="handleDelete(item)" />
                 <VListItemTitle class="text-red">
-                  <VIcon color="red" class="mr-2"> mdi-delete </VIcon>
-                  Hapus
+                <VIcon
+                color="red"
+                class="mr-2"
+                >
+                mdi-delete
+                </VIcon>
+                Hapus
                 </VListItemTitle>
-              </VListItem> -->
+                </VListItem>
+              -->
             </VList>
           </VMenu>
         </template>
@@ -205,5 +241,21 @@ const handleEditOutletConfirm = (formData, id_outlet) => {
 :deep(.v-expansion-panel-text__wrapper) {
   padding-block: 0;
   padding-inline: 16px;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.mb-4 {
+  margin-block-end: 16px;
+}
+
+.text-red {
+  color: red;
 }
 </style>
