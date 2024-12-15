@@ -216,7 +216,6 @@ const downloadSkHandler = () => {
         </VCol>
         <VCol cols="4" style="display: flex; justify-content: end">
           <DataPenyeliaHalalModal
-            v-if="store.profileData?.skala_usaha > '02'"
             @click.stop
             mode="add"
             @confirm-add="handleAddAspekLegalConfirm"
