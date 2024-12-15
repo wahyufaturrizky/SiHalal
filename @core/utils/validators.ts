@@ -162,3 +162,12 @@ export const alphaDashValidator = (value: unknown) => {
 
   return /^[0-9A-Z_-]*$/i.test(valueAsString) || "Semua karakter tidak valid";
 };
+
+// 👉 File Size Validator
+export const fileSizeValidator = (value: unknown) => {
+  console.log("file attribute = ", value[0].size > 2097152);
+  if (value[0].size > 2097152) {
+    return "File maksimal 2MB";
+  }
+  return true;
+};

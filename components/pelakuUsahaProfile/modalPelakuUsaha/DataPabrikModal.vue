@@ -85,31 +85,6 @@
             </VRow>
 
             <VRow class="mb-1">
-              <VCol cols="6" class="pe-1">
-                <VLabel>Kab/Kota</VLabel>
-                <VTextField
-                  v-model="form.kabKota"
-                  placeholder="Isi Kab/Kota"
-                  outlined
-                  dense
-                  required
-                  class="input-field"
-                  v-if="form.lokasiPabrik == 'Luar Negeri'"
-                />
-                <VAutocomplete
-                  :rules="[requiredValidator]"
-                  v-model="form.kabKota"
-                  :items="kabKotaOptions"
-                  item-title="name"
-                  item-value="code"
-                  placeholder="Pilih Kab/Kota"
-                  outlined
-                  dense
-                  required
-                  class="input-field"
-                  v-if="form.lokasiPabrik == 'Dalam Negeri'"
-                />
-              </VCol>
               <VCol cols="6" class="ps-1">
                 <VLabel>Provinsi</VLabel>
                 <VTextField
@@ -130,6 +105,31 @@
                   item-title="name"
                   item-value="code"
                   placeholder="Pilih Provinsi"
+                  outlined
+                  dense
+                  required
+                  class="input-field"
+                  v-if="form.lokasiPabrik == 'Dalam Negeri'"
+                />
+              </VCol>
+              <VCol cols="6" class="pe-1">
+                <VLabel>Kab/Kota</VLabel>
+                <VTextField
+                  v-model="form.kabKota"
+                  placeholder="Isi Kab/Kota"
+                  outlined
+                  dense
+                  required
+                  class="input-field"
+                  v-if="form.lokasiPabrik == 'Luar Negeri'"
+                />
+                <VAutocomplete
+                  :rules="[requiredValidator]"
+                  v-model="form.kabKota"
+                  :items="kabKotaOptions"
+                  item-title="name"
+                  item-value="code"
+                  placeholder="Pilih Kab/Kota"
                   outlined
                   dense
                   required

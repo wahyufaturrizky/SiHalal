@@ -184,13 +184,14 @@ watch(
             </VItemGroup>
 
             <VRow no-gutters class="mb-2">
-              <VCol cols="5" class="me-2">
+              <VCol cols="5">
                 <VItemGroup>
-                  <VLabel>Kab/Kota</VLabel>
+                  <VLabel>Provinsi</VLabel>
                   <VAutocomplete
                     :rules="[requiredValidator]"
-                    v-model="form.kabKota"
-                    :items="kabKotaOptions"
+                    v-model="form.provinsi"
+                    v-on:update:model-value="getDistrict"
+                    :items="provinsiOptions"
                     item-title="name"
                     item-value="code"
                     outlined
@@ -201,14 +202,13 @@ watch(
                 </VItemGroup>
               </VCol>
               <VSpacer />
-              <VCol cols="5">
+              <VCol cols="5" class="me-2">
                 <VItemGroup>
-                  <VLabel>Provinsi</VLabel>
+                  <VLabel>Kab/Kota</VLabel>
                   <VAutocomplete
                     :rules="[requiredValidator]"
-                    v-model="form.provinsi"
-                    v-on:update:model-value="getDistrict"
-                    :items="provinsiOptions"
+                    v-model="form.kabKota"
+                    :items="kabKotaOptions"
                     item-title="name"
                     item-value="code"
                     outlined
