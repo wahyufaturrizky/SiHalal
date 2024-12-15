@@ -6,19 +6,22 @@ const props = defineProps({
   },
 });
 
-const tracking = props.datalistmanufacturetracking?.map((item) => {
-  const { created_at, status, username } = item || {};
+const tracking = props.datalistmanufacturetracking?.map((item: any) => {
+  const { created_at, status, username, comment } = item || {};
 
   return {
     status,
     created_at,
     username,
+    comment,
   };
 });
 </script>
 
 <template>
-  <div class="pa-2">
+  <VContainer
+    :style="tracking?.length > 5 ? 'max-height: 300px; overflow-y: auto' : ''"
+  >
     <VTimeline
       side="end"
       align="start"
@@ -48,7 +51,14 @@ const tracking = props.datalistmanufacturetracking?.map((item) => {
         <div class="app-timeline-text mt-1">
           {{ item.username }}
         </div>
+        <div v-if="item.comment" class="app-timeline-text mt-1">
+          {{
+            item.comment.length > 38
+              ? item.comment.slice(0, 38) + "..."
+              : item.comment
+          }}
+        </div>
       </VTimelineItem>
     </VTimeline>
-  </div>
+  </VContainer>
 </template>

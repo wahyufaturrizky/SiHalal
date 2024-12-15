@@ -6,17 +6,27 @@ const props = defineProps({
   },
 });
 
-const { status, registration_number } = props.data || {};
+const { status_code, registration_number } = props.data || {};
 
-const getStatusColor = (status: string): string => {
-  const statusColors: Record<string, string> = {
-    Verification: "success",
-    Pending: "warning",
-    Rejected: "error",
-  };
+const defaultStatus = { color: "error", desc: "Unknown Status" };
 
-  return statusColors[status] || "grey";
-};
+const statusItem: any = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+    OF11: { color: "success", desc: "Verification" },
+  },
+  {
+    get(target: any, prop: any) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
 </script>
 
 <template>
@@ -27,12 +37,12 @@ const getStatusColor = (status: string): string => {
       </VCol>
       <VCol cols="auto">
         <VChip
-          :color="getStatusColor(status)"
+          :color="statusItem[status_code].color"
           text-color="white"
           size="small"
           class="px-2"
         >
-          {{ status }}
+          {{ statusItem[status_code].desc }}
         </VChip>
       </VCol>
     </VRow>

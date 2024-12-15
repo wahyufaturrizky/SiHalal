@@ -35,17 +35,21 @@ const dataListDocument = ref();
 const totalItems = ref(0);
 const itemPerPage = ref(10);
 const page = ref(1);
+const reqFile = ref([]);
+const reqTracking = ref(null);
+const reqTrackingModal = ref(false);
 
-const loadItemListDocumentById = async (page: number, size: number) => {
+const getReqTrackingModal = (data: any) => {
+  reqTracking.value = data;
+  reqTrackingModal.value = true;
+};
+
+const loadItemListDocumentById = async () => {
   try {
     loadingListDocument.value = true;
 
     const response = await $api(`/shln/verificator/document/list/${shlnId}`, {
       method: "get",
-      params: {
-        page,
-        size,
-      },
     });
 
     if (response.code === 2000) {
@@ -58,13 +62,17 @@ const loadItemListDocumentById = async (page: number, size: number) => {
           no: loa.id,
           type: "LOA",
           file: loa.file,
-          record: loa.status,
+          tracking: loa.tracking,
+          comment: loa.comment,
+          status: loa.status,
         },
         {
           no: nib.id,
           type: "NIB",
           file: nib.file,
-          record: nib.status,
+          tracking: nib.tracking,
+          comment: nib.comment,
+          status: nib.status,
         },
       ];
 
@@ -82,7 +90,7 @@ const loadItemListDocumentById = async (page: number, size: number) => {
 };
 
 onMounted(async () => {
-  await loadItemListDocumentById(1, itemPerPage.value);
+  await loadItemListDocumentById();
 });
 
 const {
@@ -113,37 +121,52 @@ const MRA = [
 ];
 
 const trackingLOA = props.datatrackingloa?.map((item: any) => {
-  const { username, status, id, created_at } = item || {};
+  const { username, status, id, created_at, comment } = item || {};
 
   return {
     id,
     key: status,
     value: username,
     created_at,
+    comment,
   };
 });
 
 const trackingFHC = props.datatrackingfhc?.map((item: any) => {
-  const { username, status, id, created_at } = item || {};
+  const { username, status, id, created_at, comment } = item || {};
 
   return {
     id,
     key: status,
     value: username,
     created_at,
+    comment,
   };
 });
-
-const downloadLOA = (file: any) => {
-  window.open(file, "_blank");
-};
 
 const headers = [
   { title: "No", key: "no" },
   { title: "Document Types", key: "type" },
-  { title: "Upload / Download", key: "file" },
-  { title: "HS Code", key: "record" },
+  { title: "Download", key: "file" },
+  { title: "Notes", key: "comment" },
+  { title: "Status", key: "status" },
+  { title: "Action", key: "action" },
 ];
+
+const downloadDOcument = async (filename: string) => {
+  try {
+    const response: any = await $api("/shln/submission/document/download", {
+      method: "post",
+      body: {
+        filename,
+      },
+    });
+
+    window.open(response.url, "_blank", "noopener,noreferrer");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 
 const onRefresh = (type: string) => {
   if (type === "loa") {
@@ -221,15 +244,8 @@ const onRefresh = (type: string) => {
               <VBtn
                 icon="fa-download"
                 density="compact"
-                @click="downloadLOA(loa_document)"
+                @click="dataListDocument(loa_document)"
               />
-            </VCol>
-          </VRow>
-          <VRow>
-            <VCol cols="3"> Catatan Pengembalian </VCol>
-            <VCol cols="1"> : </VCol>
-            <VCol cols="8">
-              <VTextField density="compact" />
             </VCol>
           </VRow>
         </VCardText>
@@ -253,38 +269,52 @@ const onRefresh = (type: string) => {
       <VCard>
         <VCardTitle>Tracking of LoA</VCardTitle>
         <VCardItem>
-          <VTimeline
-            side="end"
-            align="start"
-            line-inset="9"
-            truncate-line="start"
-            density="compact"
-            class="v-timeline--variant-outlined"
-          >
-            <VTimelineItem
-              v-for="item in trackingLOA"
-              :key="item.id"
-              dot-color="rgb(var(--v-theme-surface))"
-              size="x-small"
+          <VContainer
+            :style="
+              trackingLOA?.length > 5
+                ? 'max-height: 350px; overflow-y: auto'
+                : ''
+            "
+            ><VTimeline
+              side="end"
+              align="start"
+              line-inset="9"
+              truncate-line="start"
+              density="compact"
+              class="v-timeline--variant-outlined"
             >
-              <template #icon>
-                <VIcon icon="ri-circle-line" color="primary" size="16" />
-              </template>
-              <div
-                class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
+              <VTimelineItem
+                v-for="item in trackingLOA"
+                :key="item.id"
+                dot-color="rgb(var(--v-theme-surface))"
+                size="x-small"
               >
-                <span class="app-timeline-title">
-                  {{ item.key }}
-                </span>
-                <span class="app-timeline-meta">
-                  {{ formatDate(item.created_at) }}</span
+                <template #icon>
+                  <VIcon icon="ri-circle-line" color="primary" size="16" />
+                </template>
+                <div
+                  class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
                 >
-              </div>
-              <div class="app-timeline-text mt-1">
-                {{ item.value }}
-              </div>
-            </VTimelineItem>
-          </VTimeline>
+                  <span class="app-timeline-title">
+                    {{ item.key }}
+                  </span>
+                  <span class="app-timeline-meta">
+                    {{ formatDate(item.created_at) }}</span
+                  >
+                </div>
+                <div class="app-timeline-text mt-1">
+                  {{ item.value }}
+                </div>
+                <div v-if="item.comment" class="app-timeline-text mt-1">
+                  {{
+                    item.comment.length > 38
+                      ? item.comment.slice(0, 38) + "..."
+                      : item.comment
+                  }}
+                </div>
+              </VTimelineItem>
+            </VTimeline>
+          </VContainer>
         </VCardItem>
       </VCard>
     </VCol>
@@ -297,21 +327,28 @@ const onRefresh = (type: string) => {
         </VCardTitle>
         <VCardText>
           <VRow>
-            <VCol cols="3"> Document </VCol>
+            <VCol cols="3"> HCB </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
               <p>{{ document }}</p>
             </VCol>
           </VRow>
           <VRow>
-            <VCol cols="3"> Document No. </VCol>
+            <VCol cols="3"> Issued Date </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
               <p>{{ document_no }}</p>
             </VCol>
           </VRow>
           <VRow>
-            <VCol cols="3"> Verification Link (Optional) </VCol>
+            <VCol cols="3"> Expired Date </VCol>
+            <VCol cols="1"> : </VCol>
+            <VCol cols="8">
+              <p>{{ verification_link }}</p>
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol cols="3"> Scope </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
               <p>{{ verification_link }}</p>
@@ -324,7 +361,7 @@ const onRefresh = (type: string) => {
               <VBtn
                 icon="fa-download"
                 density="compact"
-                @click="downloadLOA(file)"
+                @click="downloadDOcument(file)"
               />
             </VCol>
           </VRow>
@@ -349,38 +386,52 @@ const onRefresh = (type: string) => {
       <VCard>
         <VCardTitle>Tracking of Certificate</VCardTitle>
         <VCardItem>
-          <VTimeline
-            side="end"
-            align="start"
-            line-inset="9"
-            truncate-line="start"
-            density="compact"
-            class="v-timeline--variant-outlined"
-          >
-            <VTimelineItem
-              v-for="item in trackingFHC"
-              :key="item.id"
-              dot-color="rgb(var(--v-theme-surface))"
-              size="x-small"
+          <VContainer
+            :style="
+              trackingFHC?.length > 5
+                ? 'max-height: 240px; overflow-y: auto'
+                : ''
+            "
+            ><VTimeline
+              side="end"
+              align="start"
+              line-inset="9"
+              truncate-line="start"
+              density="compact"
+              class="v-timeline--variant-outlined"
             >
-              <template #icon>
-                <VIcon icon="ri-circle-line" color="primary" size="16" />
-              </template>
-              <div
-                class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
+              <VTimelineItem
+                v-for="item in trackingFHC"
+                :key="item.id"
+                dot-color="rgb(var(--v-theme-surface))"
+                size="x-small"
               >
-                <span class="app-timeline-title">
-                  {{ item.key }}
-                </span>
-                <span class="app-timeline-meta">
-                  {{ formatDate(item.created_at) }}</span
+                <template #icon>
+                  <VIcon icon="ri-circle-line" color="primary" size="16" />
+                </template>
+                <div
+                  class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
                 >
-              </div>
-              <div class="app-timeline-text mt-1">
-                {{ item.value }}
-              </div>
-            </VTimelineItem>
-          </VTimeline>
+                  <span class="app-timeline-title">
+                    {{ item.key }}
+                  </span>
+                  <span class="app-timeline-meta">
+                    {{ formatDate(item.created_at) }}</span
+                  >
+                </div>
+                <div class="app-timeline-text mt-1">
+                  {{ item.value }}
+                </div>
+                <div v-if="item.comment" class="app-timeline-text mt-1">
+                  {{
+                    item.comment.length > 38
+                      ? item.comment.slice(0, 38) + "..."
+                      : item.comment
+                  }}
+                </div>
+              </VTimelineItem>
+            </VTimeline>
+          </VContainer>
         </VCardItem>
       </VCard>
     </VCol>
@@ -398,21 +449,79 @@ const onRefresh = (type: string) => {
             :loading="loadingListDocument"
             :items-length="totalItems"
             loading-text="Loading..."
-            @update:options="loadItemListDocumentById(page, itemPerPage)"
+            @update:options="loadItemListDocumentById()"
           >
             <template #item.no="{ index }">
               {{ index + 1 + (page - 1) * itemPerPage }}
             </template>
-            <template #item.file="{ item }">
-              <VBtn
-                icon="fa-download"
-                density="compact"
-                @click="downloadLOA(item.file)"
-              />
+            <template #item.file="{ item, index }">
+              <div class="d-flex align-center justify-center py-3 gap-2">
+                <VBtn
+                  @click="downloadDOcument((item as any).file)"
+                  v-if="(item as any).file != ''"
+                  color="primary"
+                >
+                  <VIcon icon="fa-download" />
+                </VBtn>
+                <!-- <HalalFileInput
+                  v-if="(item as any).status != 'Terverifikasi'"
+                  v-model="reqFile[index]"
+                  :rules="[requiredValidator]"
+                /> -->
+              </div>
+            </template>
+            <template #item.comment="{ item }">
+              <p>
+                {{
+                  (item as any).comment.length > 20
+                    ? (item as any).comment.slice(0, 20) + "..."
+                    : (item as any).comment
+                }}
+              </p>
+            </template>
+            <template #item.action="{ item, index }">
+              <div class="d-flex gap-1">
+                <IconBtn
+                  size="small"
+                  @click="getReqTrackingModal((item as any).tracking)"
+                >
+                  <VIcon icon="fa-history" color="primary" />
+                </IconBtn>
+                <v-btn color="primary" variant="plain">
+                  <VIcon>mdi-dots-vertical</VIcon>
+                  <VMenu activator="parent" :close-on-content-click="false">
+                    <VList>
+                      <VListItem>
+                        <ApproveVerifikatorShlbDocumentModal
+                          :item="item"
+                          :reqfile="reqFile[index]"
+                          @refresh="loadItemListDocumentById()"
+                        ></ApproveVerifikatorShlbDocumentModal>
+                      </VListItem>
+                      <VListItem>
+                        <ReturnVerifikatorShlbDocumentModal
+                          :item="item"
+                          :reqfile="reqFile[index]"
+                          @refresh="loadItemListDocumentById()"
+                        ></ReturnVerifikatorShlbDocumentModal>
+                      </VListItem>
+                    </VList>
+                  </VMenu>
+                </v-btn>
+              </div>
             </template>
           </VDataTableServer>
         </VCardText>
       </VCard>
     </VCol>
   </VRow>
+
+  <VDialog v-model="reqTrackingModal">
+    <v-card>
+      <v-card-text>
+        <p class="text-h5 font-weight-bold">Tracking</p>
+        <HalalTimeLine v-if="reqTracking" :event="reqTracking" />
+      </v-card-text>
+    </v-card>
+  </VDialog>
 </template>

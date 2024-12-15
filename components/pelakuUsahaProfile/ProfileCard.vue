@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { profileMain } from "@/stores/interface/pelakuUsahaProfileIntf";
+import { formatCurrency } from "@/utils/conversionIntl";
 const panelOpen = ref(0);
 
 const props = defineProps({
@@ -30,7 +31,14 @@ const profilData = [
   { id: 3, field: "Kota/Kab", value: props.profileData?.city_name || "-" },
   { id: 4, field: "Provinsi", value: props.profileData?.province_name || "-" },
   { id: 5, field: "Kodepos", value: props.profileData?.kode_pos_pu || "-" },
-  { id: 6, field: "Negara", value: props.profileData?.country_name || "-" },
+  {
+    id: 6,
+    field: "Negara",
+    value:
+      props.profileData?.asal_usaha == "Dalam Negeri"
+        ? "Indonesia"
+        : props.profileData?.country_name,
+  },
   { id: 7, field: "Telepon", value: props.profileData?.phone || "-" },
   { id: 8, field: "Email", value: props.profileData?.email || "-" },
 ];
@@ -44,10 +52,10 @@ async function getMasterData(mastertype: string) {
 }
 
 const convertJnbus = async (code: string) => {
-  const jnbusCode = "JBU." + code.substring(1);
+  // const jnbusCode = "JBU." + code.substring(1);
   const api = await getMasterData("bustype");
 
-  return api.filter((val) => val.code == jnbusCode)[0]?.name;
+  return api.filter((val) => val.code == code)[0]?.name;
 };
 
 const convertJnush = async (code: string) => {
@@ -114,7 +122,9 @@ onMounted(async () => {
         <VRow>
           <VCol cols="4"> Tingkat Usaha </VCol>
           <VCol cols="1"> : </VCol>
-          <VCol cols="7"> {{ props.profileData?.tingkat_usaha || "-" }} </VCol>
+          <VCol cols="7">
+            {{ convertFumk(props.profileData?.tingkat_usaha) || "-" }}
+          </VCol>
         </VRow>
         <VRow>
           <VCol cols="4" style="display: flex; align-items: center">
@@ -128,7 +138,9 @@ onMounted(async () => {
         <VRow>
           <VCol cols="4"> Modal Dasar </VCol>
           <VCol cols="1"> : </VCol>
-          <VCol cols="7"> {{ props.profileData?.modal_dasar || "-" }} </VCol>
+          <VCol cols="7">
+            {{ formatCurrency(props.profileData?.modal_dasar) || "-" }}
+          </VCol>
         </VRow>
         <VRow>
           <VCol cols="4"> Asal Usaha </VCol>

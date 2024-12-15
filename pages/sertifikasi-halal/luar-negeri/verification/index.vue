@@ -19,8 +19,14 @@ const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
+const status = ref("OF10,OF5,OF15,OF11");
 
-const loadItem = async (page: number, size: number, keyword: string = "") => {
+const loadItem = async (
+  page: number,
+  size: number,
+  keyword: string = "",
+  status: string = ""
+) => {
   try {
     loading.value = true;
 
@@ -30,6 +36,7 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
         page,
         size,
         keyword,
+        status,
       },
     });
 
@@ -45,18 +52,18 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
 const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
-  await loadItem(1, itemPerPage.value, "");
+  await loadItem(1, itemPerPage.value, "", status.value);
 });
 
 const refresh = async () => {
-  await loadItem(1, itemPerPage.value, "");
+  await loadItem(1, itemPerPage.value, "", status.value);
 };
 
 const verifikatorTableHeader = [
   { title: "No", key: "id" },
   { title: "Registration Number", key: "no_daftar" },
   { title: "Importer's Name", key: "nama_importir" },
-  { title: "NIB / Business ID No", key: "nib" },
+  { title: "NIB / Bu  siness ID No", key: "nib" },
   { title: "NPWP / Taxpayer ID No", key: "npwp" },
   { title: "Date", key: "tgl_daftar" },
   { title: "Action", key: "action" },
@@ -65,7 +72,12 @@ const verifikatorTableHeader = [
 const searchQuery = ref("");
 
 const handleInput = () => {
-  debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    status.value
+  );
 };
 
 const handleCancel = (message: string) => {
@@ -114,7 +126,7 @@ const navigateAction = (id: string) => {
             :loading="loading"
             :items-length="totalItems"
             loading-text="Loading..."
-            @update:options="loadItem(page, itemPerPage, searchQuery)"
+            @update:options="loadItem(page, itemPerPage, searchQuery, status)"
           >
             <template #item.id="{ index }">
               {{ index + 1 + (page - 1) * itemPerPage }}

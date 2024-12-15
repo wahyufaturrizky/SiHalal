@@ -21,10 +21,10 @@ const penyeliaHeader = [
   { title: "No", key: "no" },
   { title: "Nama", key: "name" },
   { title: "No. KTP", key: "ktp_no" },
-  { title: "No. Kontak", key: "no_contact" },
+  { title: "No. Kontak", key: "no_kontak" },
   { title: "No/Tgl Sertif Penyelia Halal", key: "certification_no" },
   { title: "No/Tanggal SK", key: "sk_no" },
-  { title: "Action", key: "action" },
+  // { title: "Action", key: "action" },
 ];
 // const { canAccess } = useMyAuthUserStore();
 const panelOpenPabrik = ref(0);
@@ -40,20 +40,6 @@ const store = pelakuUsahaProfile();
 onMounted(() => {
   store.fetchProfile();
 });
-
-const downloadDOcument = async (filename: string) => {
-  try {
-    const response = await $api("/shln/submission/document/download", {
-      method: "post",
-      body: {
-        filename,
-      },
-    });
-    window.open(response.url, "_blank", "noopener,noreferrer");
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
 </script>
 
 <template>
@@ -163,7 +149,7 @@ const downloadDOcument = async (filename: string) => {
     <template #rightContent>
       <VRow>
         <VCol :cols="12">
-          <PerizinanCard :aspek-legal-data="store.legal" />
+          <PerizinanCard />
         </VCol>
       </VRow>
       <VRow>

@@ -8,6 +8,26 @@ const emit = defineEmits<{
   (event: "refresh"): void;
 }>();
 
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+
+const statusItem: any = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+    OF11: { color: "success", desc: "Verification" },
+  },
+  {
+    get(target: any, prop: any) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
+
 const searchQuerySubmission = ref("");
 const loadingAddSubmission = ref(false);
 
@@ -19,10 +39,10 @@ const itemsSubmission = ref<
     date: string;
     hcb: string;
     id: string;
-    importir_name: string;
+    verificator_name: string;
     nib: string;
     register_number: string;
-    status: string;
+    status_code: string;
   }[]
 >([]);
 
@@ -75,8 +95,8 @@ const verifikatorTablePopUpHeader = [
   { title: "HCB", key: "hcb" },
   { title: "Registration Date", key: "date" },
   { title: "Submit Date", key: "date" },
-  { title: "Verifikator", key: "importir_name" },
-  { title: "Status", key: "status" },
+  { title: "Verifikator", key: "verificator_name" },
+  { title: "Status", key: "status_code" },
   { title: "Action", key: "check" },
 ];
 
@@ -198,11 +218,13 @@ const openDialog = () => {
             <template #item.hcb="{ item }">
               {{ item.hcb || "NA" }}
             </template>
-            <template #item.importir_name="{ item }">
-              {{ item.importir_name || "NA" }}
+            <template #item.verificator_name="{ item }">
+              {{ item.status_code === "OF10" ? item.verificator_name : "" }}
             </template>
-            <template #item.status="{ item }">
-              {{ item.status || "NA" }}
+            <template #item.status_code="{ item }">
+              <VChip label :color="statusItem[item.status_code].color">
+                {{ statusItem[item.status_code].desc }}
+              </VChip>
             </template>
             <template #item.check="{ item }">
               <VCheckbox v-model="checkedItems[item.id]" />

@@ -92,7 +92,7 @@ const loadSOF = async () => {
       dataSOF.value = response;
       return response;
     } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan asd", "error");
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");

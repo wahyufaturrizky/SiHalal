@@ -16,10 +16,10 @@ const isLoading = ref(true);
 
 onMounted(async () => {
   try {
-    console.log("Before loading KBLI:", store.kbli);
+    // console.log("Before loading KBLI:", store.kbli);
     // Simulate API call or asynchronous data fetch
     await store.fetchProfile(); // Assume this fetches `kbli` data
-    console.log("After loading KBLI:", store.kbli);
+    // console.log("After loading KBLI:", store.kbli);
   } catch (error) {
     console.error("Failed to load KBLI data:", error);
   } finally {
@@ -43,7 +43,8 @@ onMounted(async () => {
                   <div
                     style="
                       padding: 2svh;
-                      border: dotted;
+                      border: solid #eae9eb;
+                      border-radius: 10px;
                       max-inline-size: max-content;
                       overflow-x: auto;
                     "

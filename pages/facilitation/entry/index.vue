@@ -9,6 +9,26 @@ const searchQuery = ref("");
 const status = ref("OF1,OF10,OF5,OF2,OF290,OF15");
 const loadingAll = ref(true);
 
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+
+const statusItem: any = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+    OF11: { color: "success", desc: "Verification" },
+  },
+  {
+    get(target: any, prop: any) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
+
 const loadItem = async (
   page: number,
   size: number,
@@ -43,24 +63,11 @@ const loadItem = async (
   }
 };
 
-const getStatusColor = (status) => {
-  switch (status.toLowerCase()) {
-    case "lunas":
-      return "success";
-    case "pending":
-      return "warning";
-    case "telat":
-      return "error";
-    default:
-      return "grey";
-  }
-};
-
 const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
   const res = await Promise.all([
-    loadItem(1, itemPerPage.value, "", "OF1,OF10,OF5,OF2,OF290,OF15"),
+    loadItem(1, itemPerPage.value, "", status.value),
   ]);
 
   const checkResIfUndefined = res.every((item) => {
@@ -79,7 +86,7 @@ const handleInput = () => {
     page.value,
     itemPerPage.value,
     searchQuery.value,
-    "OF1,OF10,OF5,OF2,OF290,OF15"
+    status.value
   );
 };
 
@@ -94,7 +101,7 @@ const tableHeader = [
   { title: "Tanggal Selesai", key: "tgl_aktif" },
   { title: "Kuota", key: "kuota" },
   { title: "Sisa", key: "sisa" },
-  { title: "Status", key: "status" },
+  { title: "Status", key: "status_code" },
   { title: "Action", key: "action" },
 ];
 
@@ -140,18 +147,17 @@ const navigateAction = (id: string) => {
                 {{ index + 1 + (page - 1) * itemPerPage }}
               </template>
               <template #item.tgl_aktif="{ item }">
-                {{ formatDateIntl(new Date(item.tgl_aktif)) }}
+                {{ formatDateIntl(new Date((item as any).tgl_aktif)) }}
               </template>
               <template #item.tgl_selesai="{ item }">
-                {{ formatDateIntl(new Date(item.tgl_selesai)) }}
+                {{ formatDateIntl(new Date((item as any).tgl_selesai)) }}
               </template>
-              <template #item.status="{ item }">
+              <template #item.status_code="{ item }">
                 <VChip
-                  :color="getStatusColor(item.status)"
-                  text-color="white"
-                  small
+                  label
+                  :color="statusItem[(item as any).status_code].color"
                 >
-                  {{ item.status }}
+                  {{ statusItem[(item as any).status_code].desc }}
                 </VChip>
               </template>
               <template #item.action="{ item }">
@@ -160,7 +166,7 @@ const navigateAction = (id: string) => {
                     <VIcon
                       icon="ri-arrow-right-line"
                       color="primary"
-                      @click="navigateAction(item.id)"
+                      @click="navigateAction((item as any).id)"
                     />
                   </IconBtn>
                 </div>

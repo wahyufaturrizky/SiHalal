@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { profileMain } from "@/stores/interface/pelakuUsahaProfileIntf";
+import { formatCurrency } from "@/utils/conversionIntl";
 const panelOpen = ref(0);
 
 const props = defineProps({
@@ -16,8 +17,12 @@ const props = defineProps({
 //   console.log("ini data props", props.profileData);
 // });
 
-const convertJnbus = (code: string): string => {
-  return "JBU." + code.substring(1);
+const convertJnbus = (code: string) => {
+  if (code !== null || code !== "") {
+    return "JBU." + code.substring(4);
+  } else {
+    return "-";
+  }
 };
 
 const convertFln = (code: string): string => {
@@ -52,7 +57,10 @@ const form = ref({
   kota_kab: props.profileData?.city_name || "-",
   provinsi: props.profileData?.province_name || "-",
   kodepos: props.profileData?.kode_pos_pu || "-",
-  negara: props.profileData?.country_name || "-",
+  negara:
+    props.profileData?.asal_usaha == "Dalam Negeri"
+      ? "Indonesia"
+      : props.profileData?.country_name || "-",
   phone: props.profileData?.phone || "-",
   email: props.profileData?.email || "-",
   jenis_badan_usaha: convertJnbus(props.profileData?.jenis_badan_usaha) || "-",
@@ -196,7 +204,7 @@ onMounted(async () => {
           <VCol cols="4"> Modal Dasar </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
-            <VTextField>{{ form.modal_dasar }}</VTextField>
+            <VTextField>{{ formatCurrency(form.modal_dasar) }}</VTextField>
           </VCol>
         </VRow>
         <VRow>
