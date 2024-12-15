@@ -53,7 +53,7 @@
           :y="90"
           :width="530"
           :style="{ fill: 'grad(grad1)', align: 'left' }"
-          text="Jabatan:"
+          text="Jabatan: Penanggung Jawab"
         ></i-text>
         <i-text
           :x="60"
@@ -161,11 +161,9 @@ onMounted(async () => {
     })
     .filter((val) => val.value);
   // listPenyelia.value = tmp;
-  console.log("list penyelia = ", listPenyelia);
 
   company.value.hereby = store.profileData?.company_name;
   company.value.name = store.penanggungJawabHalal?.name;
-  company.value.position = "";
 
   listPdfElement.value = [
     {
@@ -211,7 +209,12 @@ onMounted(async () => {
       spacesX: 450,
       type: "non-list",
     },
-    { value: "Samsul", spacesY: 40, spacesX: 480, type: "non-list" },
+    {
+      value: store.profileData?.company_name,
+      spacesY: 40,
+      spacesX: 430,
+      type: "non-list",
+    },
   ];
 });
 </script>
