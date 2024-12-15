@@ -30,7 +30,6 @@ const typePengajuanOptions = ["Reguler", "Self Declare"];
 const layarExcelOptions = ["1excel", "2layar"];
 
 const viewResults = () => {
-  console.log(form.value);
   emit("formvalue", form.value);
 };
 </script>
