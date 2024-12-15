@@ -53,7 +53,7 @@
           :y="90"
           :width="530"
           :style="{ fill: 'grad(grad1)', align: 'left' }"
-          text="Jabatan:"
+          text="Jabatan: Penanggung Jawab"
         ></i-text>
         <i-text
           :x="60"
@@ -119,13 +119,13 @@ const pdfCfg = {
 };
 
 function callMethod(l) {
-  console.log(l);
+  // console.log(l);
 }
 
 const emit = defineEmits(["skPenyeliaDownloadHandler"]);
 
 function getBlob(blob) {
-  console.log("tes blob = ", blob);
+  // console.log("tes blob = ", blob);
   pdfBlob.value = blob;
   emit("skPenyeliaDownloadHandler", blob);
 }
@@ -133,7 +133,7 @@ function getBlob(blob) {
 let baseCoordY = 140;
 
 const calculateRelativeCoordY = (currCoordY: number, keterangan: string) => {
-  console.log("occured", baseCoordY, " - ", keterangan);
+  // console.log("occured", baseCoordY, " - ", keterangan);
   baseCoordY += currCoordY;
   return baseCoordY;
 };
@@ -156,16 +156,14 @@ onMounted(async () => {
   // const tmp: Array<IpenyeliaList> = [];
   listPenyelia.value = store.supervisorData
     ?.map((val) => {
-      console.log("basecoordy", baseCoordY);
+      // console.log("basecoordy", baseCoordY);
       return { value: val.name, spacesY: 20, spacesX: 60 };
     })
     .filter((val) => val.value);
   // listPenyelia.value = tmp;
-  console.log("list penyelia = ", listPenyelia);
 
   company.value.hereby = store.profileData?.company_name;
   company.value.name = store.penanggungJawabHalal?.name;
-  company.value.position = "";
 
   listPdfElement.value = [
     {
@@ -211,7 +209,12 @@ onMounted(async () => {
       spacesX: 450,
       type: "non-list",
     },
-    { value: "Samsul", spacesY: 40, spacesX: 480, type: "non-list" },
+    {
+      value: store.profileData?.company_name,
+      spacesY: 40,
+      spacesX: 430,
+      type: "non-list",
+    },
   ];
 });
 </script>

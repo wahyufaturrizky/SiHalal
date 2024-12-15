@@ -193,6 +193,24 @@ watch(
               no-gutters
               class="mb-2"
             >
+              <VCol cols="5">
+                <VItemGroup>
+                  <VLabel>Provinsi</VLabel>
+                  <VAutocomplete
+                    v-model="form.provinsi"
+                    :rules="[requiredValidator]"
+                    :items="provinsiOptions"
+                    item-title="name"
+                    item-value="code"
+                    outlined
+                    dense
+                    required
+                    class="input-field"
+                    @update:model-value="getDistrict"
+                  />
+                </VItemGroup>
+              </VCol>
+              <VSpacer />
               <VCol
                 cols="5"
                 class="me-2"
@@ -203,23 +221,6 @@ watch(
                     v-model="form.kabKota"
                     :rules="[requiredValidator]"
                     :items="kabKotaOptions"
-                    item-title="name"
-                    item-value="code"
-                    outlined
-                    dense
-                    required
-                    class="input-field"
-                  />
-                </VItemGroup>
-              </VCol>
-              <VSpacer />
-              <VCol cols="5">
-                <VItemGroup>
-                  <VLabel>Provinsi</VLabel>
-                  <VAutocomplete
-                    v-model="form.provinsi"
-                    :rules="[requiredValidator]"
-                    :items="provinsiOptions"
                     item-title="name"
                     item-value="code"
                     outlined
