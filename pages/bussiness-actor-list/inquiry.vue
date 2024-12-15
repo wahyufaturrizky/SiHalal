@@ -3,7 +3,6 @@ const items = ref();
 const size = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
-const loadingStatus = ref(false);
 const itemsStatus = ref();
 const page = ref(1);
 const no_daftar = ref("");
@@ -101,7 +100,6 @@ const loadSOF = async () => {
 
 onMounted(async () => {
   const res = await Promise.all([
-    loadSOF(),
     loadItem({
       page: 1,
       size: size.value,
