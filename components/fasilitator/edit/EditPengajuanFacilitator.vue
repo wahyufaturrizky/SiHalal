@@ -225,7 +225,7 @@ const limitCharProgramNameFacilitate = (v: string) => {
                 id="facilitationProgramName"
                 v-model="form.facilitationProgramName"
                 :rules="[requiredValidator, limitCharProgramNameFacilitate]"
-                placeholder="isi nama program fasilitasi (maks. 30 karakter)"
+                placeholder="Contoh: Dinas Koperasi Kab. Klaten Jawa Tengah"
                 outlined
               />
             </VCol>
