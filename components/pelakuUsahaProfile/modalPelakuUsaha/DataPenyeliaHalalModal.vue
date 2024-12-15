@@ -181,7 +181,11 @@ watch(
             <VRow>
               <VCol cols="6">
                 <VTextField
-                  :rules="[requiredValidator]"
+                  :rules="[
+                    requiredValidator,
+                    integerValidator,
+                    lengthValidator(form.noKtp, 16),
+                  ]"
                   v-model="form.noKtp"
                   label="No. KTP"
                   outlined
@@ -191,7 +195,7 @@ watch(
               </VCol>
               <VCol cols="6">
                 <VTextField
-                  :rules="[requiredValidator]"
+                  :rules="[requiredValidator, phoneNumberIdValidator]"
                   v-model="form.noKontak"
                   label="No. Kontak"
                   outlined
@@ -203,7 +207,7 @@ watch(
             <VRow>
               <VCol cols="6">
                 <VTextField
-                  :rules="[requiredValidator]"
+                  :rules="[requiredValidator, alphaValidator]"
                   v-model="form.namaPenyelia"
                   label="Nama Penyelia"
                   outlined
