@@ -32,7 +32,7 @@
       }
     },
     "shln": {
-      "title": "SH Luar Negeri",
+      "title": "Registrasi SHLN",
       "menu": {
         "submission": "Submission",
         "invoice": "Invoice",
@@ -40,7 +40,7 @@
       }
     },
     "sh_registration": {
-      "title": "Registrasi SH",
+      "title": "Sertifikasi Halal",
       "menu": {
         "self_declare_submission": "Pengajuan Self Declare",
         "regular_submission": "Pengajuan Reguler"
