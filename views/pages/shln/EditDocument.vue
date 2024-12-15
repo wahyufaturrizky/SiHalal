@@ -475,7 +475,17 @@ onMounted(async () => {
               dense
               accept=".pdf,.jpg,.png,.jpeg"
               class="mb-2"
-              :rules="[requiredValidator]"
+              :rules="[
+                requiredValidator,
+                (value) => {
+                  return (
+                    !value ||
+                    !value.length ||
+                    value[0].size < 2000000 ||
+                    'file maksimum 2MB'
+                  );
+                },
+              ]"
             />
           </VCol>
 
@@ -522,7 +532,17 @@ onMounted(async () => {
               dense
               accept=".pdf,.jpg,.png,.jpeg"
               class="mb-2"
-              :rules="[requiredValidator]"
+              :rules="[
+                requiredValidator,
+                (value) => {
+                  return (
+                    !value ||
+                    !value.length ||
+                    value[0].size < 2000000 ||
+                    'file maksimum 2MB'
+                  );
+                },
+              ]"
             />
           </VCol>
 
@@ -599,7 +619,17 @@ onMounted(async () => {
                 </VBtn>
                 <HalalFileInput
                   v-model="reqFile[index]"
-                  :rules="[requiredValidator]"
+                  :rules="[
+                    requiredValidator,
+                    (value) => {
+                      return (
+                        !value ||
+                        !value.length ||
+                        value[0].size < 2000000 ||
+                        'file maksimum 2MB'
+                      );
+                    },
+                  ]"
                 />
               </div>
               <!-- {{ item.file != "" ? "asd" : "dsa" }} -->

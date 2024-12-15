@@ -37,6 +37,7 @@ watch(file, (newFile) => {
     <VFileInput
       ref="fileInput"
       v-model="file"
+      accept=".pdf,image/*"
       prepend-icon=""
       clearable
       :rules="rules"
