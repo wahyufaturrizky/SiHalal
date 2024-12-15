@@ -36,6 +36,7 @@ interface Lembaga {
 interface StatusRegistrasi {
   status: string;
   kode_fasilitasi: string;
+  status_code: string;
 }
 
 const panelFasilitasi = ref([0, 1]);
@@ -64,6 +65,7 @@ const detail = ref<FasilitatorData>({
   lembaga: [],
   status_registrasi: {
     status: "",
+    status_code: "",
     kode_fasilitasi: "",
   },
   tracking: [],
@@ -88,7 +90,6 @@ const getDetail = async () => {
     if (jenisFasilitasi.value == "Reguler") {
       url = "/facilitate/verifikator/lph";
     }
-    console.log(url);
     const lembaga = await $api(url, {
       method: "get",
     });
@@ -219,7 +220,10 @@ const institutionHeader = [
     <VRow class="d-flex justify-start align-center">
       <h2 class="text-h2">Detail Pengajuan Verifikasi</h2>
     </VRow>
-    <VRow class="d-flex justify-end align-center">
+    <VRow
+      class="d-flex justify-end align-center"
+      v-if="detail.status_registrasi.status_code == 'OF10'"
+    >
       <VerifikatorFasilitatorReturnConfirm @confirm="returnHandler" />
       <VerifikatorFasilitatorRejectConfirm @confirm="rejectHandler" />
       <VerifikatorFasilitatorApproveConfirm @confirm="approveHandler" />
@@ -299,9 +303,16 @@ const institutionHeader = [
             >
             <VExpansionPanelText>
               <InfoRow name="Status" separator="" class="d-flex align-center"
-                ><v-chip class="ma-2" label>{{
-                  detail.status_registrasi.status
-                }}</v-chip></InfoRow
+                ><v-chip
+                  class="ma-2"
+                  label
+                  :color="
+                    statusItem[detail.status_registrasi.status_code].color
+                  "
+                  >{{
+                    statusItem[detail.status_registrasi.status_code].desc
+                  }}</v-chip
+                ></InfoRow
               >
               <InfoRow name="Kode Fasilitasi" separator="">{{
                 detail.status_registrasi.kode_fasilitasi
