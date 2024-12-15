@@ -10,7 +10,6 @@ const loadingAll = ref(true);
 const page = ref(1);
 const searchQuery = ref("");
 const status = ref("");
-const selectedItems = ref<any[]>([]);
 const itemsStatus = ref<any[]>([]);
 
 const defaultStatus = { color: "error", desc: "Unknown Status" };
@@ -34,7 +33,7 @@ const statusItem: any = new Proxy(
 );
 
 // Table headers
-const permohonanHeaders: any = [
+const headers: any = [
   { title: "No", key: "id", align: "center" },
   { title: "ID Registrasi", key: "id_registrasi" },
   { title: "Nomor Daftar", key: "nomor_daftar" },
@@ -169,7 +168,7 @@ onMounted(async () => {
         <VDataTableServer
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
-          :headers="permohonanHeaders"
+          :headers="headers"
           :items="items"
           :loading="loading"
           :items-length="totalItems"
@@ -192,9 +191,6 @@ onMounted(async () => {
                 />
               </IconBtn>
             </div>
-          </template>
-          <template #item.pilih="{ item }">
-            <VCheckbox v-model="selectedItems" :value="item" />
           </template>
           <template #item.status_code="{ item }">
             <VChip label :color="statusItem[(item as any).status_code].color">
