@@ -119,13 +119,13 @@ const pdfCfg = {
 };
 
 function callMethod(l) {
-  console.log(l);
+  // console.log(l);
 }
 
 const emit = defineEmits(["skPenyeliaDownloadHandler"]);
 
 function getBlob(blob) {
-  console.log("tes blob = ", blob);
+  // console.log("tes blob = ", blob);
   pdfBlob.value = blob;
   emit("skPenyeliaDownloadHandler", blob);
 }
@@ -133,7 +133,7 @@ function getBlob(blob) {
 let baseCoordY = 140;
 
 const calculateRelativeCoordY = (currCoordY: number, keterangan: string) => {
-  console.log("occured", baseCoordY, " - ", keterangan);
+  // console.log("occured", baseCoordY, " - ", keterangan);
   baseCoordY += currCoordY;
   return baseCoordY;
 };
@@ -156,7 +156,7 @@ onMounted(async () => {
   // const tmp: Array<IpenyeliaList> = [];
   listPenyelia.value = store.supervisorData
     ?.map((val) => {
-      console.log("basecoordy", baseCoordY);
+      // console.log("basecoordy", baseCoordY);
       return { value: val.name, spacesY: 20, spacesX: 60 };
     })
     .filter((val) => val.value);
