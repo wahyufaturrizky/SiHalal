@@ -389,6 +389,9 @@ onMounted(async () => {
   loaForm.value.date = loa.value?.date;
   loaForm.value.file_url = loa.value?.loa_document;
 });
+watch(loaFile, (newValue, oldValue) => {
+  console.log(newValue);
+});
 </script>
 
 <template>
@@ -477,6 +480,7 @@ onMounted(async () => {
               class="mb-2"
               :rules="[
                 requiredValidator,
+                fileExtensionValidator,
                 (value) => {
                   return (
                     !value ||
@@ -534,6 +538,7 @@ onMounted(async () => {
               class="mb-2"
               :rules="[
                 requiredValidator,
+                fileExtensionValidator,
                 (value) => {
                   return (
                     !value ||
@@ -621,6 +626,7 @@ onMounted(async () => {
                   v-model="reqFile[index]"
                   :rules="[
                     requiredValidator,
+                    fileExtensionValidator,
                     (value) => {
                       return (
                         !value ||
