@@ -339,7 +339,13 @@ const timelineEvents = ref([
       </VCol>
       <VCol cols="4">
         <VRow justify="end" class="gap-1">
-          <VCol cols="auto">
+          <VCol
+            cols="auto"
+            v-if="
+              registration?.status_code == 'OF1' ||
+              registration?.status_code == 'OF2'
+            "
+          >
             <VBtn variant="outlined" color="error" @click="deleteItem">
               <VIcon icon="ri-delete-bin-6-line" />
             </VBtn>
