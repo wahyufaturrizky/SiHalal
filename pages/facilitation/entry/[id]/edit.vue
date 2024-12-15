@@ -69,7 +69,7 @@ const loadItemById = async () => {
           tgl_mulai || new Date(new Date().setDate(new Date().getDate() + 1))
         ),
         endDate: formatToISOString(
-          tgl_selesai || new Date(new Date().setDate(new Date().getDate() + 1))
+          tgl_selesai || new Date(new Date().setDate(new Date().getDate() + 2))
         ),
         type: jenis_fasilitasi,
         sourceOfFund: sumber_pembiayaan,
