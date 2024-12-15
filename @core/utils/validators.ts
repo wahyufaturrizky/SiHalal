@@ -174,7 +174,10 @@ export const fileSizeValidator = (value: unknown) => {
 
 export const fileExtensionValidator = (value: unknown) => {
   // use this reference for allowed extension: https://developer.mozilla.org/en-US/docs/Web/HTTP/MIME_types/Common_types
-
+  let file = value;
+  if (Array.isArray(value)) {
+    file = value[0];
+  }
   console.log("file attribute = ", value[0].type);
   const allowedFileExtensionList = [
     "image/jpg",
@@ -182,10 +185,7 @@ export const fileExtensionValidator = (value: unknown) => {
     "image/png",
     "application/pdf",
   ];
-  const result = useArrayIncludes(
-    allowedFileExtensionList,
-    value[0].type
-  ).value;
+  const result = useArrayIncludes(allowedFileExtensionList, file.type).value;
   // console.log("file extension match = ", result);
   if (result) {
     return true;
