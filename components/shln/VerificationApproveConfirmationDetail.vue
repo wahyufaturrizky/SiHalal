@@ -2,12 +2,6 @@
 import { computed, ref } from "vue";
 import { useDisplay } from "vuetify";
 
-const props = defineProps<{
-  data: any;
-}>();
-
-const { data } = props || {};
-
 const router = useRouter();
 const route = useRoute();
 
@@ -31,13 +25,18 @@ const putVerificatorApprove = async () => {
     });
 
     if (res?.code === 2000) {
-      router.go(-1);
+      useSnackbar().sendSnackbar("Success Approve Submission", "success");
+      closeDialog();
+      loading.value = false;
+
+      setTimeout(() => {
+        router.go(-1);
+      }, 1000);
     } else {
       useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
+      closeDialog();
+      loading.value = false;
     }
-
-    closeDialog();
-    loading.value = false;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     closeDialog();
@@ -92,7 +91,7 @@ const dialogMaxWidth = computed(() => {
           <VCardActions style="display: flex; justify-content: end">
             <VBtn variant="outlined" text @click="cancel"> Cancel </VBtn>
             <VBtn
-              :disabled="loading || !data?.ready_approve"
+              :disabled="loading"
               color="success"
               variant="flat"
               @click="confirm"

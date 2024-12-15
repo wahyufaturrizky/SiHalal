@@ -16,10 +16,10 @@ const isLoading = ref(true);
 
 onMounted(async () => {
   try {
-    console.log("Before loading KBLI:", store.kbli);
+    // console.log("Before loading KBLI:", store.kbli);
     // Simulate API call or asynchronous data fetch
     await store.fetchProfile(); // Assume this fetches `kbli` data
-    console.log("After loading KBLI:", store.kbli);
+    // console.log("After loading KBLI:", store.kbli);
   } catch (error) {
     console.error("Failed to load KBLI data:", error);
   } finally {
