@@ -106,7 +106,7 @@ const tableRequirementDocumentHeader = [
   { title: "Upload / Download ", key: "file", align: "left" },
   { title: "Notes", key: "notes" },
   { title: "status", key: "status" },
-  { title: "Action", key: "action" },
+  { title: "Tracking", key: "action" },
 ];
 const requirementDocument = ref<RequirementDocument>();
 const requirementDocArray = ref([
