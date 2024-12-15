@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const tableHeader = [
   { title: "No", value: "index" },
-  { title: "No Tagihan", value: "no_tagihan" },
   { title: "Tanggal Tagihan", value: "tanggal_tagihan" },
   { title: "Nama Fasilitasi", value: "nama_program" },
   { title: "Jatuh Tempo", value: "tanggal_jatuh_tempo" },
