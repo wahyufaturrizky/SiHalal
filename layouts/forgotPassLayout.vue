@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useDisplay } from 'vuetify'
-import NoImage from '@images/no-image.png'
+import NoImage from "@images/no-image.png";
+import { computed } from "vue";
+import { useDisplay } from "vuetify";
 
-const { isSnackbarVisible, snackColor, snackMessage } = useSnackbar()
-const { mdAndUp } = useDisplay()
+const { isSnackbarVisible, snackColor, snackMessage } = useSnackbar();
+const { mdAndUp } = useDisplay();
 
 const maxWidth = computed(() => {
-  return mdAndUp ? 700 : '80%'
-})
+  return mdAndUp ? 700 : "80%";
+});
 </script>
 
 <template>
@@ -16,7 +16,7 @@ const maxWidth = computed(() => {
     v-model="isSnackbarVisible"
     location="top"
     :color="snackColor"
-    :timeout="500"
+    :timeout="5000"
   >
     <v-icon left>fa-circle-info</v-icon> {{ snackMessage }}
   </VSnackbar>
@@ -49,11 +49,7 @@ const maxWidth = computed(() => {
       md="6"
       class="auth-card-v2 d-flex align-center justify-center"
     >
-      <VImg
-        :src="NoImage"
-        height="100dvh"
-        cover
-      />
+      <VImg :src="NoImage" height="100dvh" cover />
     </VCol>
   </VRow>
 </template>

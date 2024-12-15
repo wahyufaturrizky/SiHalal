@@ -11,7 +11,7 @@ injectSkinClasses();
       v-model="isSnackbarVisible"
       location="top"
       :color="snackColor"
-      :timeout="500"
+      :timeout="5000"
     >
       <v-icon left>fa-info-circle</v-icon> {{ snackMessage }}
     </VSnackbar>
