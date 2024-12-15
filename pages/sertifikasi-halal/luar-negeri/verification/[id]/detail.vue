@@ -274,6 +274,7 @@ onMounted(async () => {
           <ShlnDocumentDetail
             v-if="!loadingListTrackingFHC && !loadingListTrackingLOA"
             :datadocumentfhc="dataDocumentFHC"
+            :data="data"
             :datadocumentloa="dataDocumentLOA"
             :datadocumentmra="dataDocumentMRA"
             :datatrackingloa="dataLOATracking"
