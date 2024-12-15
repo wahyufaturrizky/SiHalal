@@ -148,8 +148,16 @@ const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
 
 const isVisible = ref(false);
 
+interface IDocsTypeMaster {
+  code: String;
+  name: String;
+  name_eng: String;
+}
+
 const openDialog = async () => {
-  documentTypes.value = await getMasterDocsTypes();
+  const documentTypesTmp: Array<IDocsTypeMaster> = await getMasterDocsTypes();
+  console.log("data document = ", documentTypesTmp);
+  documentTypes.value = documentTypesTmp.filter((val) => val.name !== "NIB");
   isVisible.value = true;
 };
 

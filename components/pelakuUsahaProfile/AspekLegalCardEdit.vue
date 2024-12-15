@@ -172,13 +172,17 @@ onMounted(() => {
                     Ubah
                   </VListItemTitle> -->
                 <AspekLegalModal
+                  v-if="item?.jenis !== 'NIB'"
                   mode="edit"
                   :initial-data="initialDataAspekLegal(item)"
                   @confirm-edit="handleEditAspekLegalConfirm"
                   @cancel="() => console.log('Edit cancelled')"
                 />
               </VListItem>
-              <VListItem @click="handleDelete(item)">
+              <VListItem
+                :disabled="item?.jenis === 'NIB'"
+                @click="handleDelete(item)"
+              >
                 <VListItemTitle class="text-red">
                   <VIcon color="red" class="mr-2"> mdi-delete </VIcon>
                   Hapus
