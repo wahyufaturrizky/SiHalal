@@ -44,7 +44,7 @@ const form = ref({
   picPhoneNumber: "",
 });
 
-const isFormValid = ref(false);
+const isFormError = ref(false);
 
 const { mdAndUp } = useDisplay();
 const openPanelRegisterData = ref(0);
@@ -132,6 +132,42 @@ const checkIsFieldEMpty = (data: any) => {
   return Object.keys(data)?.find((key: any) => {
     if (key !== "facilitatorName") return !data[key];
   });
+};
+
+const yearMustBeSameWithSelectedYear = (v: any) => {
+  const selectedDate = new Date(v);
+  const selectedYear = selectedDate.getFullYear();
+
+  if (selectedYear !== Number(form.value.year)) {
+    isFormError.value = true;
+    return "Tahun harus sesuai dengan yang dipilih";
+  } else {
+    isFormError.value = false;
+  }
+};
+
+const dateMustBeGreaterThanToday = (v: string) => {
+  const selectedDate = new Date(v);
+  const today = new Date();
+
+  if (selectedDate < today) {
+    isFormError.value = true;
+    return "Tanggal harus lebih besar dari hari ini";
+  } else {
+    isFormError.value = false;
+  }
+};
+
+const endDateMustBeGreaterThanStartDate = (v: string) => {
+  const startDate = new Date(form.value.startDate);
+  const endDate = new Date(v);
+
+  if (endDate < startDate) {
+    isFormError.value = true;
+    return "Tanggal selesai harus lebih besar dari tanggal mulai";
+  } else {
+    isFormError.value = false;
+  }
 };
 </script>
 
@@ -222,22 +258,8 @@ const checkIsFieldEMpty = (data: any) => {
                 v-model="form.startDate"
                 :rules="[
                   requiredValidator,
-                  (v) => {
-                    const selectedDate = new Date(v);
-                    const selectedYear = selectedDate.getFullYear();
-                    return (
-                      selectedYear === form.year ||
-                      'Tahun harus sesuai dengan yang dipilih'
-                    );
-                  },
-                  (v) => {
-                    const today = new Date();
-                    const selectedDate = new Date(v);
-                    return (
-                      selectedDate > today ||
-                      'Tanggal harus lebih besar dari hari ini'
-                    );
-                  },
+                  yearMustBeSameWithSelectedYear,
+                  dateMustBeGreaterThanToday,
                 ]"
                 type="date"
                 placeholder="Pilih tanggal mulai"
@@ -251,17 +273,7 @@ const checkIsFieldEMpty = (data: any) => {
               <VTextField
                 id="endDate"
                 v-model="form.endDate"
-                :rules="[
-                  requiredValidator,
-                  (v) => {
-                    const startDate = new Date(form.startDate);
-                    const endDate = new Date(v);
-                    return (
-                      endDate > startDate ||
-                      'Tanggal selesai harus lebih besar dari tanggal mulai'
-                    );
-                  },
-                ]"
+                :rules="[requiredValidator, endDateMustBeGreaterThanStartDate]"
                 type="date"
                 placeholder="Pilih tanggal selesai"
                 clearable
@@ -350,11 +362,7 @@ const checkIsFieldEMpty = (data: any) => {
               <div class="ma-1">
                 <VBtn
                   variant="flat"
-                  :disabled="
-                    checkIsFieldEMpty(form) ||
-                    form.startDate === '' ||
-                    form.endDate === ''
-                  "
+                  :disabled="checkIsFieldEMpty(form) || isFormError"
                   color="primary"
                   @click="openDialog"
                 >
