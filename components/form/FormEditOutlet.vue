@@ -87,24 +87,24 @@ const dialogMaxWidth = computed(() => {
         />
 
         <VRow no-gutters class="mb-2">
-          <VCol cols="5" class="me-2">
-            <VLabel for="regency"> Kab/Kota </VLabel>
-            <VTextField
-              id="regency"
-              v-model="form.city_code"
-              placeholder="Isi Kabupaten/Kota"
-              outlined
-              dense
-              required
-            />
-          </VCol>
-          <VSpacer />
           <VCol cols="5">
             <VLabel for="regency"> Provinsi </VLabel>
             <VTextField
               id="regency"
               v-model="form.province_code"
               placeholder="Isi Provinsi"
+              outlined
+              dense
+              required
+            />
+          </VCol>
+          <VSpacer />
+          <VCol cols="5" class="me-2">
+            <VLabel for="regency"> Kab/Kota </VLabel>
+            <VTextField
+              id="regency"
+              v-model="form.city_code"
+              placeholder="Isi Kabupaten/Kota"
               outlined
               dense
               required
