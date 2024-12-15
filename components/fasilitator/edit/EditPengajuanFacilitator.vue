@@ -44,6 +44,8 @@ const form = ref({
   picPhoneNumber: "",
 });
 
+const isFormValid = ref(false);
+
 const { mdAndUp } = useDisplay();
 const openPanelRegisterData = ref(0);
 
@@ -188,7 +190,10 @@ const checkIsFieldEMpty = (data: any) => {
                 v-model="form.year"
                 :rules="[requiredValidator]"
                 :items="
-                  Array.from({ length: 2028 - 2008 + 1 }, (_, i) => 2028 - i)
+                  Array.from(
+                    { length: 6 },
+                    (_, i) => new Date().getFullYear() + i
+                  )
                 "
               />
             </VCol>
@@ -199,7 +204,7 @@ const checkIsFieldEMpty = (data: any) => {
                 Lingkup Wilayah Fasilitasi
               </label>
               <VAutocomplete
-                id="year"
+                id="regionalScope"
                 v-model="form.regionalScope"
                 :rules="[requiredValidator]"
                 :items="['Nasional', 'Provinsi', 'Kota/Kab.']"
@@ -215,7 +220,25 @@ const checkIsFieldEMpty = (data: any) => {
               <VTextField
                 id="startDate"
                 v-model="form.startDate"
-                :rules="[requiredValidator]"
+                :rules="[
+                  requiredValidator,
+                  (v) => {
+                    const selectedDate = new Date(v);
+                    const selectedYear = selectedDate.getFullYear();
+                    return (
+                      selectedYear === form.year ||
+                      'Tahun harus sesuai dengan yang dipilih'
+                    );
+                  },
+                  (v) => {
+                    const today = new Date();
+                    const selectedDate = new Date(v);
+                    return (
+                      selectedDate > today ||
+                      'Tanggal harus lebih besar dari hari ini'
+                    );
+                  },
+                ]"
                 type="date"
                 placeholder="Pilih tanggal mulai"
                 clearable
@@ -228,9 +251,19 @@ const checkIsFieldEMpty = (data: any) => {
               <VTextField
                 id="endDate"
                 v-model="form.endDate"
-                :rules="[requiredValidator]"
+                :rules="[
+                  requiredValidator,
+                  (v) => {
+                    const startDate = new Date(form.startDate);
+                    const endDate = new Date(v);
+                    return (
+                      endDate > startDate ||
+                      'Tanggal selesai harus lebih besar dari tanggal mulai'
+                    );
+                  },
+                ]"
                 type="date"
-                placeholder="Pilih tanggal mulai"
+                placeholder="Pilih tanggal selesai"
                 clearable
               />
             </VCol>
@@ -317,7 +350,11 @@ const checkIsFieldEMpty = (data: any) => {
               <div class="ma-1">
                 <VBtn
                   variant="flat"
-                  :disabled="checkIsFieldEMpty(form)"
+                  :disabled="
+                    checkIsFieldEMpty(form) ||
+                    form.startDate === '' ||
+                    form.endDate === ''
+                  "
                   color="primary"
                   @click="openDialog"
                 >
