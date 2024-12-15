@@ -20,6 +20,10 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  data: {
+    type: Object,
+    required: true,
+  },
 });
 
 const emit = defineEmits<{
@@ -92,6 +96,14 @@ const loadItemListDocumentById = async () => {
 onMounted(async () => {
   await loadItemListDocumentById();
 });
+
+const { hcb, hcn } = props.data || {};
+const { hcb_name } = hcb || {};
+const {
+  issued_date: issuedDateFHC,
+  expired_date: expiredDateFHC,
+  scope: scopeFHC,
+} = hcn || {};
 
 const {
   authorized_company,
@@ -330,28 +342,28 @@ const onRefresh = (type: string) => {
             <VCol cols="3"> HCB </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <p>{{ document }}</p>
+              <p>{{ hcb_name }}</p>
             </VCol>
           </VRow>
           <VRow>
             <VCol cols="3"> Issued Date </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <p>{{ document_no }}</p>
+              <p>{{ issuedDateFHC }}</p>
             </VCol>
           </VRow>
           <VRow>
             <VCol cols="3"> Expired Date </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <p>{{ verification_link }}</p>
+              <p>{{ expiredDateFHC }}</p>
             </VCol>
           </VRow>
           <VRow>
             <VCol cols="3"> Scope </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <p>{{ verification_link }}</p>
+              <p>{{ scopeFHC }}</p>
             </VCol>
           </VRow>
           <VRow style="display: flex; align-items: center">
