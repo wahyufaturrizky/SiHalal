@@ -63,10 +63,14 @@ const loadItemById = async () => {
         facilitatorName: nama,
         facilitationProgramName: nama_program,
         explanationOfFacilitation: fac_description,
-        year: tahun,
+        year: tahun || new Date().getFullYear(),
         regionalScope: lingkup_wilayah_fasilitas,
-        startDate: formatToISOString(tgl_mulai),
-        endDate: formatToISOString(tgl_selesai),
+        startDate: formatToISOString(
+          tgl_mulai || new Date(new Date().setDate(new Date().getDate() + 1))
+        ),
+        endDate: formatToISOString(
+          tgl_selesai || new Date(new Date().setDate(new Date().getDate() + 1))
+        ),
         type: jenis_fasilitasi,
         sourceOfFund: sumber_pembiayaan,
         kuota,

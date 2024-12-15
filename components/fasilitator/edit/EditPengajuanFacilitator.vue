@@ -146,6 +146,23 @@ const yearMustBeSameWithSelectedYear = (v: any) => {
   }
 };
 
+const yearMustBeSameWithSelectedDate = (v: any) => {
+  const selectedStartDate = new Date(form.value.startDate);
+  const selectedStartDateYear = selectedStartDate.getFullYear();
+  const selectedEndDate = new Date(form.value.endDate);
+  const selectedEndDateYear = selectedEndDate.getFullYear();
+
+  if (
+    selectedStartDateYear !== Number(v) ||
+    selectedEndDateYear !== Number(v)
+  ) {
+    isFormError.value = true;
+    return "Tahun harus sesuai dengan yang dipilih";
+  } else {
+    isFormError.value = false;
+  }
+};
+
 const dateMustBeGreaterThanToday = (v: string) => {
   const selectedDate = new Date(v);
   const today = new Date();
@@ -165,6 +182,15 @@ const endDateMustBeGreaterThanStartDate = (v: string) => {
   if (endDate < startDate) {
     isFormError.value = true;
     return "Tanggal selesai harus lebih besar dari tanggal mulai";
+  } else {
+    isFormError.value = false;
+  }
+};
+
+const limitCharProgramNameFacilitate = (v: string) => {
+  if (v.length > 30) {
+    isFormError.value = true;
+    return "Maksimal 30 karakter";
   } else {
     isFormError.value = false;
   }
@@ -198,8 +224,8 @@ const endDateMustBeGreaterThanStartDate = (v: string) => {
               <VTextField
                 id="facilitationProgramName"
                 v-model="form.facilitationProgramName"
-                :rules="[requiredValidator]"
-                placeholder="isi nama program fasilitasi"
+                :rules="[requiredValidator, limitCharProgramNameFacilitate]"
+                placeholder="isi nama program fasilitasi (maks. 30 karakter)"
                 outlined
               />
             </VCol>
@@ -224,7 +250,7 @@ const endDateMustBeGreaterThanStartDate = (v: string) => {
               <VAutocomplete
                 id="year"
                 v-model="form.year"
-                :rules="[requiredValidator]"
+                :rules="[requiredValidator, yearMustBeSameWithSelectedDate]"
                 :items="
                   Array.from(
                     { length: 6 },
