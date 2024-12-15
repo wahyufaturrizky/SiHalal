@@ -172,7 +172,7 @@ onMounted(() => {
                     Ubah
                   </VListItemTitle> -->
                 <AspekLegalModal
-                  v-if="item?.jenis !== 'NIB'"
+                  v-if="item?.type !== 'NIB'"
                   mode="edit"
                   :initial-data="initialDataAspekLegal(item)"
                   @confirm-edit="handleEditAspekLegalConfirm"
@@ -180,7 +180,7 @@ onMounted(() => {
                 />
               </VListItem>
               <VListItem
-                :disabled="item?.jenis === 'NIB'"
+                v-if="item?.type !== 'NIB'"
                 @click="handleDelete(item)"
               >
                 <VListItemTitle class="text-red">
