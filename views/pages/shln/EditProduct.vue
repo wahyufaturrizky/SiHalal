@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { hsCodeValidator } from "@/@core/utils/validators";
 import type { Manufacture } from "@/pages/sertifikasi-halal/luar-negeri/submission/[id]/edit.vue";
 import { useDisplay } from "vuetify";
 const props = defineProps<{
@@ -443,7 +444,7 @@ const formatItemTitle = (item) => {
                   <div>
                     <v-text-field
                       placeholder="Input HS Code"
-                      :rules="[requiredValidator]"
+                      :rules="[requiredValidator, hsCodeValidator]"
                       variant="outlined"
                       density="compact"
                       v-model="form.hs_code_id"

@@ -8,6 +8,24 @@ export const requiredValidator = (value: unknown) => {
   return !!String(value).trim().length || "Kolom ini wajib diisi";
 };
 
+// HSCODE validator
+export const hsCodeValidator = (value: unknown) => {
+  if (isEmpty(value)) return true;
+
+  const re = /^\d{4}\.\d{2}\.\d{2}$/;
+
+  if (Array.isArray(value))
+    return (
+      value.every((val) => re.test(String(val))) ||
+      "Kolom HS Code hanya berisi angka dan titik berformat 0000.00.00"
+    );
+
+  return (
+    re.test(String(value)) ||
+    "Kolom HS Code hanya berisi angka dan titik berformat 0000.00.00"
+  );
+};
+
 // 👉 Email Validator
 export const emailValidator = (value: unknown) => {
   if (isEmpty(value)) return true;
