@@ -459,7 +459,7 @@ const formatItemTitle = (item) => {
                   </div>
                   <v-text-field
                     placeholder="Input HS Code"
-                    :rules="[requiredValidator]"
+                    :rules="[requiredValidator, hsCodeDescValidator]"
                     variant="outlined"
                     density="compact"
                     v-model="form.hs_code_desc"
