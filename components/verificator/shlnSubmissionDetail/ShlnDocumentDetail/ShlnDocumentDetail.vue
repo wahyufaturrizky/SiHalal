@@ -244,7 +244,7 @@ const onRefresh = (type: string) => {
               <VBtn
                 icon="fa-download"
                 density="compact"
-                @click="dataListDocument(loa_document)"
+                @click="downloadDOcument(loa_document)"
               />
             </VCol>
           </VRow>
