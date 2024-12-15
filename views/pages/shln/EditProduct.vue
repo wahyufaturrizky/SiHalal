@@ -23,16 +23,29 @@ const hsCode = ref<
 const route = useRoute();
 const shlnId = route.params.id;
 const productDialog = ref(false);
+const bulkingDialog = ref(false);
 const addProduct = () => {
   productDialog.value = true;
 };
+const addBulking = () => {
+  bulkingDialog.value = true;
+};
 const refVForm = ref<VForm>();
+const bulkingForm = ref<VForm>();
 
 const onSubmit = async () => {
   // sendSnackbar("error bang", "success");
   refVForm.value?.validate().then(({ valid: isValid }) => {
     if (isValid) insertProduct();
   });
+};
+const onSubmitBulking = async () => {
+  // sendSnackbar("error bang", "success");
+  if (selectedFile.value == null) {
+    useSnackbar().sendSnackbar("mohon masukkan file", "error");
+    return;
+  }
+  bulkingDialog.value = false;
 };
 const insertProduct = async () => {
   productAddButton.value = true;
@@ -290,22 +303,47 @@ const formatItemTitle = (item) => {
         <v-card>
           <v-card-text>
             <VRow>
-              <VCol cols="12" md="10">
+              <VCol cols="12" md="2">
                 <h3 class="text-h4">Product</h3>
+              </VCol>
+            </VRow>
+            <VRow class="justify-beetwen">
+              <VCol
+                cols="12"
+                md="4"
+                :class="`d-flex justify-end ${mdAndDown ? 'flex-wrap' : ''}`"
+              >
+                <v-btn color="primary" block class="ma-1"
+                  >Download Template <v-icon end icon="fa-download" />
+                </v-btn>
               </VCol>
               <VCol
                 cols="12"
-                md="2"
+                md="6"
                 :class="`d-flex justify-end ${mdAndDown ? 'flex-wrap' : ''}`"
               >
-                <v-btn
-                  color="primary"
-                  variant="outlined"
-                  block
-                  class="ma-1"
-                  @click="addProduct"
-                  >Tambah <v-icon end icon="fa-plus" />
-                </v-btn>
+                <VRow class="justify-end">
+                  <VCol cols="12" md="6">
+                    <v-btn
+                      color="primary"
+                      variant="outlined"
+                      class="ma-1"
+                      block
+                      @click="addBulking"
+                      >Tambah Bulking <v-icon end icon="fa-plus" />
+                    </v-btn>
+                  </VCol>
+                  <VCol cols="12" md="6">
+                    <v-btn
+                      color="primary"
+                      variant="outlined"
+                      block
+                      class="ma-1"
+                      @click="addProduct"
+                      >Tambah <v-icon end icon="fa-plus" />
+                    </v-btn>
+                  </VCol>
+                </VRow>
               </VCol>
             </VRow>
             <VRow>
@@ -492,6 +530,63 @@ const formatItemTitle = (item) => {
                   density="compact"
                   v-model="form.name"
                 ></v-text-field>
+              </div>
+            </VCol>
+          </v-card-text>
+          <VCardText>
+            <VCol>
+              <div class="d-flex justify-end gap-4">
+                <VBtn
+                  color="primary"
+                  variant="outlined"
+                  @click="productDialog = false"
+                >
+                  Cancel
+                </VBtn>
+                <VBtn
+                  type="submit"
+                  color="primary"
+                  :disabled="productAddButton"
+                  variant="elevated"
+                >
+                  Add
+                </VBtn>
+              </div>
+            </VCol>
+          </VCardText>
+        </v-form>
+      </VCard>
+    </VDialog>
+    <VDialog v-model="deleteDialog" max-width="500px">
+      <VCard title="Are you sure you want to delete this item?">
+        <VCardText>
+          <div class="d-flex justify-center gap-4">
+            <VBtn color="primary" variant="outlined" @click="closeDelete">
+              Cancel
+            </VBtn>
+            <VBtn color="primary" variant="elevated" @click="deleteProduct">
+              OK
+            </VBtn>
+          </div>
+        </VCardText>
+      </VCard>
+    </VDialog>
+    <VDialog v-model="bulkingDialog" max-width="800px">
+      <DialogCloseBtn
+        variant="text"
+        size="default"
+        @click="bulkingDialog = false"
+      />
+      <VCard title="Add Product">
+        <v-form ref="bulkingForm" @submit.prevent="onSubmitBulking">
+          <v-card-text>
+            <VCol>
+              <div
+                class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1"
+              >
+                File Products
+              </div>
+              <div class="d-flex flex-row gap-5 flex-wrap">
                 <FileInputButton
                   buttonText="Choose File"
                   buttonColor="primary"
@@ -506,7 +601,7 @@ const formatItemTitle = (item) => {
                 <VBtn
                   color="primary"
                   variant="outlined"
-                  @click="productDialog = false"
+                  @click="bulkingDialog = false"
                 >
                   Cancel
                 </VBtn>
