@@ -131,9 +131,38 @@ export const alphaDashValidator = (value: unknown) => {
 
 // 👉 File Size Validator
 export const fileSizeValidator = (value: unknown) => {
-  console.log("file attribute = ", value[0].size > 2097152);
+  console.log("file attribute = ", value[0]);
   if (value[0].size > 2097152) {
     return "File maksimal 2MB";
+  }
+  return true;
+};
+
+export const fileExtensionValidator = (value: unknown) => {
+  // use this reference for allowed extension: https://developer.mozilla.org/en-US/docs/Web/HTTP/MIME_types/Common_types
+
+  console.log("file attribute = ", value[0].type);
+  const allowedFileExtensionList = [
+    "image/jpg",
+    "image/jpeg",
+    "image/png",
+    "application/pdf",
+  ];
+  const result = useArrayIncludes(
+    allowedFileExtensionList,
+    value[0].type
+  ).value;
+  // console.log("file extension match = ", result);
+  if (result) {
+    return true;
+  }
+  return "File extension not allowed";
+};
+
+export const fileNameLengthValidator = (value: unknown) => {
+  console.log("file attribute = ", value[0].name);
+  if (value[0].name.length > 77) {
+    return "File name too long";
   }
   return true;
 };

@@ -270,7 +270,12 @@ watch(
               </VCol>
             </VRow>
             <VFileInput
-              :rules="[requiredValidator, fileSizeValidator]"
+              :rules="[
+                requiredValidator,
+                fileSizeValidator,
+                fileNameLengthValidator,
+                fileExtensionValidator,
+              ]"
               v-model="form.sertifikatKompetensi"
               label="Unggah Sertifikat Kompetensi Penyelia Halal"
               outlined
@@ -279,7 +284,12 @@ watch(
               class="mb-2"
             />
             <VFileInput
-              :rules="[requiredValidator, fileSizeValidator]"
+              :rules="[
+                requiredValidator,
+                fileSizeValidator,
+                fileNameLengthValidator,
+                fileExtensionValidator,
+              ]"
               v-model="form.sertifikatPelatihan"
               label="Unggah Sertifikat Pelatihan Penyelia Halal"
               outlined
@@ -288,7 +298,12 @@ watch(
               class="mb-2"
             />
             <VFileInput
-              :rules="[requiredValidator, fileSizeValidator]"
+              :rules="[
+                requiredValidator,
+                fileSizeValidator,
+                fileNameLengthValidator,
+                fileExtensionValidator,
+              ]"
               v-model="form.ktpFile"
               label="Unggah KTP"
               outlined
