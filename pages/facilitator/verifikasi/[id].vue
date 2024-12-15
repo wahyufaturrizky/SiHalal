@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { statusItemFacilitator } from "@/server/utils/statusFasilitator";
+
 interface FasilitatorData {
   fasilitasi: Fasilitasi;
   lembaga: Lembaga[];
@@ -106,23 +108,6 @@ const getDetail = async () => {
 const formatLembaga = (val: string) => {
   return listLembaga.value.find((item: any) => item.id === val)?.name;
 };
-const defaultStatus = { color: "error", desc: "Unknown Status" };
-const statusItem = new Proxy(
-  {
-    OF1: { color: "grey-300", desc: "Draft" },
-    OF10: { color: "success", desc: "Submitted" },
-    OF15: { color: "success", desc: "Verified" },
-    OF2: { color: "error", desc: "Returned" },
-    OF290: { color: "error", desc: "Rejected" },
-    OF5: { color: "success", desc: "Invoice issued" },
-    OF320: { color: "success", desc: "Code Issued" },
-  },
-  {
-    get(target, prop) {
-      return prop in target ? target[prop] : defaultStatus;
-    },
-  }
-);
 
 const returnHandler = async (message: string) => {
   try {
@@ -307,10 +292,12 @@ const institutionHeader = [
                   class="ma-2"
                   label
                   :color="
-                    statusItem[detail.status_registrasi.status_code].color
+                    statusItemFacilitator[detail.status_registrasi.status_code]
+                      .color
                   "
                   >{{
-                    statusItem[detail.status_registrasi.status_code].desc
+                    statusItemFacilitator[detail.status_registrasi.status_code]
+                      .desc
                   }}</v-chip
                 ></InfoRow
               >

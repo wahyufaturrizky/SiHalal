@@ -10,27 +10,10 @@ const tableHeader = [
   { title: "Tanggal Aktif", value: "tgl_aktif" },
   { title: "tanggal Selesai", value: "tgl_selesai" },
   { title: "Kuota", value: "kuota" },
+  { title: "tanggal Submit", value: "tgl_submit" },
   { title: "Status", value: "status" },
   { title: "Action", value: "action", align: "center" }, // Kolom Action
 ];
-
-const defaultStatus = { color: "error", desc: "Unknown Status" };
-const statusItem = new Proxy(
-  {
-    OF1: { color: "grey-300", desc: "Draft" },
-    OF10: { color: "success", desc: "Submitted" },
-    OF15: { color: "success", desc: "Verified" },
-    OF2: { color: "error", desc: "Returned" },
-    OF290: { color: "error", desc: "Rejected" },
-    OF5: { color: "success", desc: "Invoice issued" },
-    OF320: { color: "success", desc: "Code Issued" },
-  },
-  {
-    get(target, prop) {
-      return prop in target ? target[prop] : defaultStatus;
-    },
-  }
-);
 
 const items = ref([]);
 const itemPerPage = ref(10);
@@ -93,6 +76,7 @@ onMounted(async () => {
   await loadSOF();
 });
 
+import { statusItemFacilitator } from "@/server/utils/statusFasilitator";
 import { useDisplay } from "vuetify";
 const { mdAndUp } = useDisplay();
 const maxWidthSearch = computed(() => (mdAndUp ? 700 : "90%"));
@@ -129,18 +113,24 @@ const maxWidthSearch = computed(() => (mdAndUp ? 700 : "90%"));
           <template #item.index="{ index }">
             {{ index + 1 + (page - 1) * itemPerPage }}
           </template>
+          <template #item.tgl_daftar="{ item }">
+            {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+          </template>
           <template #item.tgl_aktif="{ item }">
             {{ formatDateIntl(new Date(item.tgl_aktif)) }}
           </template>
           <template #item.tgl_selesai="{ item }">
             {{ formatDateIntl(new Date(item.tgl_selesai)) }}
           </template>
+          <template #item.tgl_submit="{ item }">
+            {{ formatDateIntl(new Date(item.tgl_submit)) }}
+          </template>
           <template #item.sumber_biaya="{ item }">
             {{ formatSof(item.sumber_biaya) }}
           </template>
           <template #item.status="{ item }">
-            <VChip label :color="statusItem[item.status_code].color">
-              {{ statusItem[item.status_code].desc }}
+            <VChip label :color="statusItemFacilitator[item.status_code].color">
+              {{ statusItemFacilitator[item.status_code].desc }}
             </VChip>
           </template>
           <template #item.action="{ item }">
