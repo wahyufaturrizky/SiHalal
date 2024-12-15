@@ -30,7 +30,7 @@ const statusItem: any = new Proxy(
 
 const searchQuerySubmission = ref("");
 const loadingAddSubmission = ref(false);
-
+const isverificatorParams = ref(false);
 const dialogVisible = ref(false);
 const loadingSubmission = ref(false);
 
@@ -55,7 +55,8 @@ const checkedItems = ref<{ [key: string]: boolean }>({});
 const loadItemSubmission = async (
   pageParams: number,
   sizeParams: number,
-  keywordParams: string = ""
+  keywordParams: string = "",
+  isverificatorParams: boolean = false
 ) => {
   try {
     loadingSubmission.value = true;
@@ -66,6 +67,7 @@ const loadItemSubmission = async (
         page: pageParams,
         size: sizeParams,
         keyword: keywordParams,
+        isverificator: isverificatorParams,
       },
     });
 
@@ -84,7 +86,8 @@ const handleInputSubmission = () => {
   debouncedFetch(
     pageSubmission.value,
     itemPerPageSubmission.value,
-    searchQuerySubmission.value
+    searchQuerySubmission.value,
+    isverificatorParams.value
   );
 };
 
@@ -178,16 +181,33 @@ const openDialog = () => {
   <VDialog v-model="dialogVisible" :max-width="dialogMaxWidth">
     <VCard class="pa-4">
       <p class="text-h4">Submission</p>
-      <VCol class="d-flex justify-sm-space-between align-center" cols="5">
-        <VTextField
-          v-model="searchQuerySubmission"
-          density="compact"
-          placeholder="Search Data"
-          append-inner-icon="ri-search-line"
-          style="max-width: 100%"
-          @input="handleInputSubmission"
-        />
-      </VCol>
+
+      <VRow>
+        <VCol>
+          <VCheckbox
+            v-model="isverificatorParams"
+            label="Verifikator"
+            @change="
+              loadItemSubmission(
+                pageSubmission,
+                itemPerPageSubmission,
+                searchQuerySubmission,
+                isverificatorParams
+              )
+            "
+          />
+        </VCol>
+        <VCol>
+          <VTextField
+            v-model="searchQuerySubmission"
+            density="compact"
+            placeholder="Search Data"
+            append-inner-icon="ri-search-line"
+            style="max-width: 100%"
+            @input="handleInputSubmission"
+          />
+        </VCol>
+      </VRow>
       <VRow>
         <VCol>
           <VDataTableServer
@@ -202,7 +222,8 @@ const openDialog = () => {
               loadItemSubmission(
                 pageSubmission,
                 itemPerPageSubmission,
-                searchQuerySubmission
+                searchQuerySubmission,
+                isverificatorParams
               )
             "
           >
