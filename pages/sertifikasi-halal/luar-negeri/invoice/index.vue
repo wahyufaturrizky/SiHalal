@@ -7,7 +7,7 @@ const tableHeader = [
   { title: "No", value: "index" },
   { title: "No Invoice", value: "no" },
   { title: "Tanggal Invoice", value: "date" },
-  { title: "No Daftar", value: "shln_no" },
+  { title: "No Daftar", value: "no_daftar" },
   { title: "Payment Code", value: "va" },
   { title: "Importer's Name", value: "importer_name" },
   { title: "Due Date", value: "due_date" },
