@@ -27,6 +27,26 @@ const emit = defineEmits<{
   (event: "formvalue", value: any): void;
 }>();
 
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+
+const statusItem: any = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+    OF11: { color: "success", desc: "Verification" },
+  },
+  {
+    get(target: any, prop: any) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
+
 const { items, size, page, totalitems, loading } = props || {};
 
 const form = ref({
@@ -76,7 +96,7 @@ const headers = [
   },
   {
     title: "Status",
-    key: "status",
+    key: "status_code",
   },
 ];
 
@@ -128,7 +148,12 @@ const handleSearch = () => {
           {{ index + 1 + (page - 1) * size }}
         </template>
         <template #item.tgl_daftar="{ item }">
-          {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+          {{ formatDateIntl(new Date((item as any).tgl_daftar)) }}
+        </template>
+        <template #item.status_code="{ item }">
+          <VChip label :color="statusItem[(item as any).status_code].color">
+            {{ statusItem[(item as any).status_code].desc }}
+          </VChip>
         </template>
       </VDataTableServer>
     </VCard>

@@ -18,7 +18,7 @@ const dataDetail = {
   province: profile?.province_name,
   regence: profile?.regency_name,
   subDistrict: profile?.sub_district_name,
-  hcb: hcb?.hcb_id,
+  hcb: hcb?.hcb_name,
   companyName: hcb?.company_name,
   companyId: hcb?.corporate_id_number,
   country: hcb?.country,

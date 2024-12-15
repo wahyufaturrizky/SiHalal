@@ -13,6 +13,7 @@ const props = defineProps({
 });
 
 const store = pelakuUsahaProfile();
+const storeDataMaster = dataMasterStore();
 
 const legalHeader = [
   { title: "No", key: "no" },
@@ -65,39 +66,46 @@ const handleAddAspekLegalConfirm = (formData) => {
         publish_agency: formData.publishing_agency,
       },
     }
-  ).then((val: any) => {
-    if (val.code == 2000) {
-      store.fetchProfile();
-      snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
-    } else {
+  )
+    .then((val: any) => {
+      if (val.code == 2000) {
+        store.fetchProfile();
+        snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+      } else {
+        snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
+      }
+    })
+    .catch((e) => {
       snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
-    }
-  });
+    });
 };
 
 const handleEditAspekLegalConfirm = (formData) => {
   console.log("Edit confirmed:", formData);
 
-  const submitApi = $api(
-    `/pelaku-usaha-profile/${store.profileData?.id}/${formData.id}/update-legal`,
-    {
-      method: "PUT",
-      body: {
-        document_type: formData.type,
-        document_number: formData.doc_number,
-        date: new Date(formData.date).toISOString(),
-        valid_date: new Date(formData.expiration_date).toISOString(),
-        publish_agency: formData.publishing_agency,
-      },
-    }
-  ).then((val: any) => {
-    if (val.code == 2000) {
-      store.updateLegal(formData.id, formData);
-      snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
-    } else {
+  const submitApi = $api(`/pelaku-usaha-profile/update-legal`, {
+    method: "post",
+    body: {
+      id_profile: store.profileData?.id,
+      legal_id: formData.id,
+      document_type: formData.type,
+      document_number: formData.doc_number,
+      date: new Date(formData.date).toISOString(),
+      valid_date: new Date(formData.expiration_date).toISOString(),
+      publish_agency: formData.publishing_agency,
+    },
+  })
+    .then((val: any) => {
+      if (val.code == 2000) {
+        store.updateLegal(formData.id, formData);
+        snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+      } else {
+        snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
+      }
+    })
+    .catch((e) => {
       snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
-    }
-  });
+    });
 };
 
 const initialDataAspekLegal = (item: any) => ({
@@ -109,6 +117,18 @@ const initialDataAspekLegal = (item: any) => ({
   date: new Date(item.date).toISOString().substring(0, 10),
   publishing_agency: item.publishing_agency,
   type: item.type,
+});
+
+const convertDocType = (type: string | null) => {
+  if (type.includes("LGL")) {
+    return storeDataMaster.masterJnlgl.filter((val) => val.code == type)[0]
+      ?.name;
+  }
+  return type;
+};
+
+onMounted(() => {
+  storeDataMaster.initMasterData();
 });
 </script>
 
@@ -134,6 +154,9 @@ const initialDataAspekLegal = (item: any) => ({
       >
         <template #item.no="{ index }">
           {{ index + 1 }}
+        </template>
+        <template #item.type="{ item }">
+          {{ convertDocType(item.type) }}
         </template>
         <template #[`item.action`]="{ item }">
           <VMenu :close-on-content-click="false">

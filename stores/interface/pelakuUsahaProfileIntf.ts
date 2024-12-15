@@ -102,3 +102,9 @@ export interface perizinanData {
   id_izin: string;
   id: string;
 }
+
+export interface commonDataMaster {
+  code: string;
+  name: string;
+  name_eng: string;
+}

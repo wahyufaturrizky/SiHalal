@@ -7,6 +7,7 @@ const tableOutletHeader = [
   { title: "No", key: "no" },
   { title: "Nama", key: "name" },
   { title: "Alamat", key: "address" },
+  { title: "Action", key: "action" },
 ];
 
 const props = defineProps({
@@ -46,6 +47,35 @@ const handleAddAspekLegalConfirm = (formData) => {
     }
   });
 };
+
+const handleEditOutletConfirm = (formData, id_outlet) => {
+  console.log("Add confirmed:", formData);
+
+  const submitApi = $api(`/pelaku-usaha-profile/update-outlet`, {
+    method: "POST",
+    body: {
+      id_profile: store.profileData?.id,
+      id_outlet: id_outlet,
+      name: formData.namaOutlet,
+      address: formData.alamatOutlet,
+      city: formData.kabKota,
+      province: formData.provinsi,
+      country: formData.negara,
+      zip_code: formData.kodePos,
+    },
+  })
+    .then((val: any) => {
+      if (val.code == 2000) {
+        store.fetchProfile();
+        snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+      } else {
+        snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
+      }
+    })
+    .catch((e) => {
+      snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
+    });
+};
 </script>
 
 <template>
@@ -70,7 +100,38 @@ const handleAddAspekLegalConfirm = (formData) => {
       <VDataTable
         :headers="tableOutletHeader"
         :items="props.outletData ? props.outletData : []"
-      />
+      >
+        <template #item.no="{ index }">
+          {{ index + 1 }}
+        </template>
+        <template #item.action="{ item }">
+          <VMenu :close-on-content-click="false">
+            <template #activator="{ props }">
+              <VBtn icon variant="text" v-bind="props">
+                <VIcon>mdi-dots-vertical</VIcon>
+              </VBtn>
+            </template>
+            <VList>
+              <VListItem>
+                <VListItemTitle>
+                  <!-- <FormEditOutlet :initial-data="item"></FormEditOutlet> -->
+                  <DataOuletModal
+                    mode="edit"
+                    :initial-data="item"
+                    @confirm-edit="handleEditOutletConfirm"
+                  ></DataOuletModal>
+                </VListItemTitle>
+              </VListItem>
+              <!-- <VListItem @click="handleDelete(item)">
+                <VListItemTitle class="text-red">
+                  <VIcon color="red" class="mr-2"> mdi-delete </VIcon>
+                  Hapus
+                </VListItemTitle>
+              </VListItem> -->
+            </VList>
+          </VMenu>
+        </template>
+      </VDataTable>
     </VCardItem>
   </VCard>
 </template>

@@ -155,7 +155,11 @@
               <VCol cols="6" class="ps-1">
                 <VLabel>Kode Pos</VLabel>
                 <VTextField
-                  :rules="[requiredValidator]"
+                  :rules="[
+                    requiredValidator,
+                    lengthValidator(form.kodePos, 5),
+                    integerValidator,
+                  ]"
                   v-model="form.kodePos"
                   placeholder="Isi Kode Pos"
                   outlined
@@ -213,6 +217,14 @@ const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
 
 const isVisible = ref(false);
 
+const masterDataStore = dataMasterStore();
+
+const convertstfas = async (name: string) => {
+  const api = await masterDataStore.getMasterData("factorystatus");
+
+  return api.filter((val) => val.name == name)[0]?.name;
+};
+
 const openDialog = async () => {
   if (props.mode == "add") {
     resetForm();
@@ -232,18 +244,22 @@ const pabrikFormRef = ref<VForm>();
 const confirm = () => {
   let whichEmit: any = null;
   if (props.mode === "add") {
-    console.log("emitted add = ", form.value);
-    whichEmit = "confirmAdd";
+    // console.log("emitted add = ", form.value);
+    pabrikFormRef.value?.validate().then(({ valid: isValid }) => {
+      if (isValid) {
+        emit("confirmAdd", form.value);
+        closeDialog();
+      }
+    });
   } else {
-    whichEmit = "confirmEdit";
+    pabrikFormRef.value?.validate().then(({ valid: isValid }) => {
+      if (isValid) {
+        console.log("form edited = ", form.value);
+        emit("confirmEdit", form.value, selectedIdPabrik.value);
+        closeDialog();
+      }
+    });
   }
-
-  pabrikFormRef.value?.validate().then(({ valid: isValid }) => {
-    if (isValid) {
-      emit(whichEmit, form.value);
-      closeDialog();
-    }
-  });
 };
 
 const cancel = () => {
@@ -311,6 +327,8 @@ const resetForm = () => {
   };
 };
 
+const selectedIdPabrik = ref();
+
 watch(
   () => props.initialData,
   (newData) => {
@@ -330,11 +348,15 @@ watch(
           form.value.provinsi = val.data.province;
           form.value.negara = val.data.country;
           form.value.kodePos = val.data.zip_code;
+          convertstfas(val.data.status).then((val) => {
+            form.value.statusPabrik = val;
+          });
         } else {
           // snackbar.sendSnackbar("Gagal mendapatkan Data ", "error");
           console.error("fetching data error");
         }
       });
+      selectedIdPabrik.value = newData.id;
     }
   },
   { immediate: true }
