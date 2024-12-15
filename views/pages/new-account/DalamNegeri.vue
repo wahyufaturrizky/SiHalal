@@ -23,7 +23,7 @@
           </VRow>
           <VRow class="flex-row-reverse">
             <VCol cols="12" md="auto">
-              <VBtn block type="submit"> Kirim </VBtn>
+              <VBtn block type="submit" :disabled="buttonClicked"> Kirim </VBtn>
             </VCol>
             <VCol cols="12" md="auto">
               <VBtn
@@ -151,7 +151,7 @@ const statusNib = ref("");
 
 const nibError = ref("");
 
-const authUserStore = useMyAuthUserStore()
+const authUserStore = useMyAuthUserStore();
 
 const resetForm2 = () => {
   nibData.value = undefined;
@@ -185,7 +185,7 @@ const submitDalamNegeri = async () => {
     return;
   }
   // useAuth().signOut();
-  authUserStore.resetUser()
+  authUserStore.resetUser();
   useSnackbar().sendSnackbar("Data Pelaku Usaha Berhasil Disimpan", "success");
   navigateTo("/");
 };
@@ -203,16 +203,15 @@ const checkNib = async () => {
     nibAlamat.value = await getAddress(
       nibData.value.pelaku_usaha.daerah_id_user_proses
     );
-    daftarUsaha.value = await Promise.all(
-      nibData.value.pelaku_usaha.DataProyek.map(async (data) => {
-        const address = await getAddress(data.proyek_daerah_id);
+    daftarUsaha.value = nibData.value.pelaku_usaha.DataProyek.map(
+      async (data) => {
         return {
           kbli: data.kbli,
           namausaha: data.business_name,
-          address: `${data.address} -  ${getAddressString(address)}`,
+          address: data.address,
           modalUsaha: data.investment_amount,
         };
-      })
+      }
     );
     domesticForm.value = {
       nib: nibData.value.pelaku_usaha.nib,
@@ -232,6 +231,8 @@ const checkNib = async () => {
     if (registeredNib.value.status) {
       buttonClicked2.value = true;
     }
+    buttonClicked.value = false;
+
     domesticWindow.value = 2;
   } else {
     nibError.value = "NIB tidak ditemukan.";
