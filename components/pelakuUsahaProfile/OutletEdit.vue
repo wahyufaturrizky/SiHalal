@@ -83,7 +83,7 @@ function handleDelete(item) {
   console.log('Delete item:', item)
 
   const submitApi = $api(
-    `/pelaku-usaha-profile/${store.profileData?.id}/${item.id}/delete-factory`,
+    `/pelaku-usaha-profile/delete-outlet/${store.profileData?.id}/outlet/${item.id}`,
     {
       method: 'DELETE',
     },
