@@ -165,5 +165,9 @@ export const alphaDashValidator = (value: unknown) => {
 
 // 👉 File Size Validator
 export const fileSizeValidator = (value: unknown) => {
-  return !value || value.size > 2_097_152 || "File maksimal 2MB";
+  console.log("file attribute = ", value[0].size > 2097152);
+  if (value[0].size > 2097152) {
+    return "File maksimal 2MB";
+  }
+  return true;
 };
