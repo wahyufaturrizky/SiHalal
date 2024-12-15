@@ -1,211 +1,195 @@
 <script setup lang="ts">
-import { computed, defineEmits, defineProps, ref } from 'vue';
-import { VDataTableServer } from 'vuetify/components';
+import { computed, ref } from "vue";
+import { VDataTableServer } from "vuetify/components";
 
-// Props and Emits
-defineProps({ mode: String })
-
-const emit = defineEmits(['confirm-add', 'cancel'])
-
-// State variables
-const isModalOpen = ref(false)
+const isModalOpen = ref(false);
 interface DataItem {
-  id: number
-  id_daftar: string
-  TanggalDaftar: string
-  Nama: string
-  Alamat: string
-  JenisProduk: string
-  MerkDagang: string
-  Status: string
+  id: number;
+  id_daftar: string;
+  TanggalDaftar: string;
+  Nama: string;
+  Alamat: string;
+  JenisProduk: string;
+  MerkDagang: string;
+  Status: string;
 }
 
-const selectedItems = ref<DataItem[]>([])
+const selectedItems = ref<DataItem[]>([]);
 
 // Dummy data for table
 // Dummy data for the table
 const items = ref([
   {
     id: 1,
-    id_registrasi: 'D001',
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-01',
-    Nama: 'John Doe',
-    Alamat: '1234 Elm Street, Springfield',
-    JenisProduk: 'Electronics',
-    MerkDagang: 'TechBrand',
-    nama_pendamping: 'John',
-    Status: 'OF74',
+    id_registrasi: "D001",
+    nomor_daftar: "SH2024-225-29480",
+    TanggalDaftar: "2024-11-01",
+    Nama: "John Doe",
+    Alamat: "1234 Elm Street, Springfield",
+    JenisProduk: "Electronics",
+    MerkDagang: "TechBrand",
+    nama_pendamping: "John",
+    Status: "OF74",
   },
-  {
-    id: 2,
-    id_registrasi: 'D002',
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-02',
-    Nama: 'Jane Smith',
-    Alamat: '5678 Oak Avenue, Riverdale',
-    JenisProduk: 'Food & Beverages',
-    MerkDagang: 'Tasty Treats',
-    nama_pendamping: 'Ben',
-    Status: 'OF74',
-  },
-  {
-    id: 3,
-    id_registrasi: 'D003',
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-03',
-    Nama: 'Alice Johnson',
-    Alamat: '9102 Pine Lane, Metropolis',
-    JenisProduk: 'Apparel',
-    MerkDagang: 'FashionWear',
-    nama_pendamping: 'Dodi',
-    Status: 'OF74',
-  },
-  {
-    id: 4,
-    id_registrasi: 'D004',
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-04',
-    Nama: 'Bob Brown',
-    Alamat: '1122 Maple Drive, Gotham',
-    JenisProduk: 'Home Appliances',
-    MerkDagang: 'HomeEase',
-    nama_pendamping: 'Gus',
-    Status: 'Verifikasi',
-  },
-  {
-    id: 5,
-    id_registrasi: 'D005',
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-05',
-    Nama: 'Emily Davis',
-    Alamat: '3344 Birch Road, Star City',
-    JenisProduk: 'Cosmetics',
-    MerkDagang: 'BeautyGlow',
-    nama_pendamping: 'Yun',
-    Status: 'OF74',
-  },
-])
+]);
 
-const itemPerPage = ref(10)
-const totalItems = ref(0)
-const loading = ref(false)
-const page = ref(1)
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const loading = ref(false);
+const page = ref(1);
 
 // Table headers
 const permohonanHeaders = [
-  { title: 'No', key: 'id', align: 'center' },
-  { title: 'ID Registrasi', key: 'id_registrasi' },
-  { title: 'Nomor Daftar', key: 'nomor_daftar' },
-  { title: 'Tanggal Daftar', key: 'TanggalDaftar' },
-  { title: 'Nama PU', key: 'Nama' },
-  { title: 'Alamat', key: 'Alamat' },
-  { title: 'Jenis Produk', key: 'JenisProduk' },
-  { title: 'Merk Dagang', key: 'MerkDagang' },
-  { title: 'Nama Pendamping', key: 'nama_pendamping' },
-  { title: 'Status', key: 'Status' },
-  { title: 'Action', key: 'action' },
-]
+  { title: "No", key: "id", align: "center" },
+  { title: "ID Registrasi", key: "id_registrasi" },
+  { title: "Nomor Daftar", key: "nomor_daftar" },
+  { title: "Tanggal Daftar", key: "TanggalDaftar" },
+  { title: "Nama PU", key: "Nama" },
+  { title: "Alamat", key: "Alamat" },
+  { title: "Jenis Produk", key: "JenisProduk" },
+  { title: "Merk Dagang", key: "MerkDagang" },
+  { title: "Nama Pendamping", key: "nama_pendamping" },
+  { title: "Status", key: "Status" },
+  { title: "Action", key: "action" },
+];
 
 // Methods
 const openModal = () => {
-  isModalOpen.value = true
-}
+  isModalOpen.value = true;
+};
 
 const closeModal = () => {
-  isModalOpen.value = false
-  emit('cancel')
-}
+  isModalOpen.value = false;
+};
 
-const searchQuery = ref('')
+const searchQuery = ref("");
 
 const handleInput = () => {
-  debouncedFetch(page.value, itemPerPage.value, searchQuery.value)
-}
+  debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
+};
 
 const handleCancel = (message: string) => {
-  console.log('Cancel message:', message)
-}
+  console.log("Cancel message:", message);
+};
 
 const navigateAction = (id: string) => {
-  navigateTo(`/sertifikasi-halal/luar-negeri/verification/${id}`)
-}
+  navigateTo(`/sertifikasi-halal/luar-negeri/verification/${id}`);
+};
 
-const loadItem = async (page, size) => {
-  // Temporarily skip API call for dummy data testing
-  items.value = items.value.slice((page - 1) * size, page * size) // Paginate dummy data
-  totalItems.value = items.value.length
-}
+const loadItem = async (
+  page: number,
+  size: number,
+  keyword: string = "",
+  status: string = ""
+) => {
+  try {
+    loading.value = true;
 
-const debouncedFetch = debounce(loadItem, 500)
+    const response = await $api("/self-declare/verificator", {
+      method: "get",
+      params: {
+        page,
+        size,
+        keyword,
+        status,
+      },
+    });
+
+    items.value = response.data;
+    totalItems.value = response.total_item;
+    loading.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
+  }
+};
+
+const debouncedFetch = debounce(loadItem, 500);
 
 // Filter state
-const showFilterMenu = ref(false)
+const showFilterMenu = ref(false);
 
 const selectedFilters = ref({
-  fasilitas: 'Semua',
-  jenisProduk: 'Semua',
-  provinsi: 'Semua',
-  lembaga: 'Semua',
-  pendamping: 'Semua',
-  kabupaten: 'Semua',
-})
+  fasilitas: "Semua",
+  jenisProduk: "Semua",
+  provinsi: "Semua",
+  lembaga: "Semua",
+  pendamping: "Semua",
+  kabupaten: "Semua",
+});
 
 const applyFilters = () => {
-  loadItem(page.value, itemPerPage.value, searchQuery.value, selectedFilters.value)
-}
+  loadItem(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    selectedFilters.value
+  );
+};
 
 // Check if all items are selected
-const isAllSelected = computed(() => selectedItems.value.length === tableData.value.length)
+const isAllSelected = computed(
+  () => selectedItems.value.length === tableData.value.length
+);
 
 // Toggle select all
 const toggleSelectAll = () => {
-  selectedItems.value = isAllSelected.value ? [] : tableData.value.slice()
-}
+  selectedItems.value = isAllSelected.value ? [] : tableData.value.slice();
+};
 
 // Adaptive button text
 const buttonText = computed(() =>
   selectedItems.value.length > 0
     ? `Pilih Data (${selectedItems.value.length})`
-    : 'Pilih Data',
-)
+    : "Pilih Data"
+);
 
 // Handle checkbox change
-const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaftar: string; Nama: string; Alamat: string; JenisProduk: string; MerkDagang: string; Status: string }, checked: any) => {
+const handleCheckboxChange = (
+  item: {
+    id: number;
+    id_daftar: string;
+    TanggalDaftar: string;
+    Nama: string;
+    Alamat: string;
+    JenisProduk: string;
+    MerkDagang: string;
+    Status: string;
+  },
+  checked: any
+) => {
   if (checked) {
     // Add item if not already selected
-    if (!selectedItems.value.includes(item))
-      selectedItems.value.push(item)
-  }
-  else {
+    if (!selectedItems.value.includes(item)) selectedItems.value.push(item);
+  } else {
     // Remove item by filtering out the current item
-    selectedItems.value = selectedItems.value.filter(selectedItem => selectedItem.id !== item.id)
+    selectedItems.value = selectedItems.value.filter(
+      (selectedItem) => selectedItem.id !== item.id
+    );
   }
-}
+};
 
 // Sample data for "Bahan Bersertifikat" and "Tidak Bersertifikat"
 const StatusOptions = [
-  { name: 'OF74', value: 'of74' },
-  { name: 'Verifikasi', value: 'verifikasi' },
-]
+  { name: "OF74", value: "of74" },
+  { name: "Verifikasi", value: "verifikasi" },
+];
 
-const bahanType = ref(null)
+const bahanType = ref(null);
+
+onMounted(async () => {
+  await loadItem(1, itemPerPage.value, "", status.value);
+});
 </script>
 
 <template>
-  <VCard
-    variant="flat"
-    class="pa-4"
-  >
+  <VCard variant="flat" class="pa-4">
     <VCardTitle>
       <VRow>
         <VCol cols="10">
           <h3>Data Pengajuan</h3>
         </VCol>
-        <VCol
-          cols="2"
-          style="display: flex; justify-content: end;"
-        >
+        <VCol cols="2" style="display: flex; justify-content: end">
           <DataPermohonanSertifikasi />
         </VCol>
       </VRow>
@@ -225,16 +209,13 @@ const bahanType = ref(null)
             placeholder="Status"
           />
         </VCol>
-        <VCol
-          class="d-flex justify-sm-space-between align-center"
-          cols="9"
-        >
+        <VCol class="d-flex justify-sm-space-between align-center" cols="9">
           <VTextField
             v-model="searchQuery"
             density="compact"
             placeholder="Search Data"
             append-inner-icon="ri-search-line"
-            style="max-inline-size: 100%;"
+            style="max-inline-size: 100%"
             @input="handleInput"
           />
         </VCol>
@@ -264,23 +245,25 @@ const bahanType = ref(null)
                   color="primary"
                   @click="navigateAction(item.id)"
                 />
-              </IconBtn> <!-- Right arrow icon for action -->
+              </IconBtn>
+              <!-- Right arrow icon for action -->
             </div>
           </template>
           <template #item.pilih="{ item }">
-            <VCheckbox
-              v-model="selectedItems"
-              :value="item"
-            />
+            <VCheckbox v-model="selectedItems" :value="item" />
           </template>
           <template #item.Status="{ item }">
             <div v-if="item.Status === 'OF74'">
               <div class="status-container">
                 <VChip
                   variant="outlined"
-                  style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
+                  style="
+                    border-color: #49a84c;
+                    border-radius: 8px;
+                    background-color: #edf6ed;
+                  "
                 >
-                  <span style="color: #49a84c;">
+                  <span style="color: #49a84c">
                     {{ item.Status }}
                   </span>
                 </VChip>
@@ -290,9 +273,13 @@ const bahanType = ref(null)
               <div class="status-container">
                 <VChip
                   variant="outlined"
-                  style="border-color: #652672; border-radius: 8px; background-color: #f0e9f1;"
+                  style="
+                    border-color: #652672;
+                    border-radius: 8px;
+                    background-color: #f0e9f1;
+                  "
                 >
-                  <span style="color: #652672;">
+                  <span style="color: #652672">
                     {{ item.Status }}
                   </span>
                 </VChip>
@@ -301,11 +288,7 @@ const bahanType = ref(null)
           </template>
         </VDataTableServer>
       </VRow>
-      <VPagination
-        v-model="page"
-        :total-visible="7"
-        :length="totalPages"
-      />
+      <VPagination v-model="page" :total-visible="7" :length="totalPages" />
     </VCardText>
   </VCard>
 </template>
