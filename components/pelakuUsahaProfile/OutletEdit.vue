@@ -1,34 +1,34 @@
 <script setup lang="ts">
-import type { outlet } from '@/stores/interface/pelakuUsahaProfileIntf';
+import type { outlet } from "@/stores/interface/pelakuUsahaProfileIntf";
 
 const props = defineProps({
   outletData: {
     type: Object as outlet | any,
     required: true,
   },
-})
+});
 
-const panelOpen = ref(0)
+const panelOpen = ref(0);
 
 const tableOutletHeader = [
-  { title: 'No', key: 'no' },
-  { title: 'Nama', key: 'name' },
-  { title: 'Alamat', key: 'address' },
-  { title: 'Action', key: 'action' },
-]
+  { title: "No", key: "no" },
+  { title: "Nama", key: "name" },
+  { title: "Alamat", key: "address" },
+  { title: "Action", key: "action" },
+];
 
-const items = ref([])
+const items = ref([]);
 
-const store = pelakuUsahaProfile()
-const snackbar = useSnackbar()
+const store = pelakuUsahaProfile();
+const snackbar = useSnackbar();
 
-const handleAddAspekLegalConfirm = formData => {
-  console.log('Add confirmed:', formData)
+const handleAddAspekLegalConfirm = (formData) => {
+  console.log("Add confirmed:", formData);
 
   const submitApi = $api(
     `/pelaku-usaha-profile/${store.profileData?.id}/add-outlet`,
     {
-      method: 'POST',
+      method: "POST",
       body: {
         name: formData.namaOutlet,
         address: formData.alamatOutlet,
@@ -37,23 +37,22 @@ const handleAddAspekLegalConfirm = formData => {
         country: formData.negara,
         zip_code: formData.kodePos,
       },
-    },
+    }
   ).then((val: any) => {
     if (val.code == 2000) {
-      store.fetchProfile()
-      snackbar.sendSnackbar('Berhasil Menambahkan Data ', 'success')
+      store.fetchProfile();
+      snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+    } else {
+      snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
     }
-    else {
-      snackbar.sendSnackbar('Gagal Menambahkan Data ', 'error')
-    }
-  })
-}
+  });
+};
 
 const handleEditOutletConfirm = (formData, id_outlet) => {
-  console.log('Add confirmed:', formData)
+  console.log("Add confirmed:", formData);
 
-  const submitApi = $api('/pelaku-usaha-profile/update-outlet', {
-    method: 'POST',
+  const submitApi = $api("/pelaku-usaha-profile/update-outlet", {
+    method: "POST",
     body: {
       id_profile: store.profileData?.id,
       id_outlet,
@@ -67,39 +66,38 @@ const handleEditOutletConfirm = (formData, id_outlet) => {
   })
     .then((val: any) => {
       if (val.code == 2000) {
-        store.fetchProfile()
-        snackbar.sendSnackbar('Berhasil Menambahkan Data ', 'success')
-      }
-      else {
-        snackbar.sendSnackbar('Gagal Menambahkan Data ', 'error')
+        store.fetchProfile();
+        snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+      } else {
+        snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
       }
     })
-    .catch(e => {
-      snackbar.sendSnackbar('Gagal Menambahkan Data ', 'error')
-    })
-}
+    .catch((e) => {
+      snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
+    });
+};
 
 function handleDelete(item) {
-  console.log('Delete item:', item)
+  console.log("Delete item:", item);
 
-  const submitApi = $api(
-    `/pelaku-usaha-profile/${store.profileData?.id}/${item.id}/delete-outlet`,
-    {
-      method: 'DELETE',
+  const submitApi = $api(`pelaku-usaha-profile/delete-outlet`, {
+    method: "POST",
+    body: {
+      id_profile: store.profileData?.id,
+      id_outlet: item.id,
     },
-  )
+  })
     .then((val: any) => {
       if (val.code == 2000) {
-        store.fetchProfile()
-        snackbar.sendSnackbar('Berhasil Menghapus Data ', 'success')
-      }
-      else {
-        snackbar.sendSnackbar('Gagal Menghapus Data ', 'error')
+        store.fetchProfile();
+        snackbar.sendSnackbar("Berhasil Menghapus Data ", "success");
+      } else {
+        snackbar.sendSnackbar("Gagal Menghapus Data ", "error");
       }
     })
-    .catch(e => {
-      snackbar.sendSnackbar('Gagal Menghapus Data ', 'error')
-    })
+    .catch((e) => {
+      snackbar.sendSnackbar("Gagal Menghapus Data ", "error");
+    });
 }
 </script>
 
@@ -112,7 +110,7 @@ function handleDelete(item) {
         </VCol>
         <VCol
           cols="6"
-          style="display: flex; align-items: center; justify-content: end;"
+          style="display: flex; align-items: center; justify-content: end"
         >
           <DataOuletModal
             mode="add"
@@ -134,11 +132,7 @@ function handleDelete(item) {
         <template #item.action="{ item }">
           <VMenu :close-on-content-click="false">
             <template #activator="{ props }">
-              <VBtn
-                icon
-                variant="text"
-                v-bind="props"
-              >
+              <VBtn icon variant="text" v-bind="props">
                 <VIcon>mdi-dots-vertical</VIcon>
               </VBtn>
             </template>
