@@ -67,6 +67,7 @@ const dialogMaxWidth = computed(() => {
           placeholder="Isi Jenis Badan Usaha"
           :rules="[rules.required]"
           class="mb-4"
+          :disable="!props.isEditable"
         />
 
         <CustomTextField
@@ -76,6 +77,7 @@ const dialogMaxWidth = computed(() => {
           placeholder="Isi Nomor Kontak"
           :rules="[rules.required]"
           class="mb-4"
+          :disable="!props.isEditable"
         />
 
         <CustomTextField
@@ -85,6 +87,7 @@ const dialogMaxWidth = computed(() => {
           placeholder="Isi email"
           :rules="[rules.required]"
           class="mb-4"
+          :disable="!props.isEditable"
         />
       </VCardItem>
       <VCardActions v-if="props.isEditable" class="d-flex justify-end">

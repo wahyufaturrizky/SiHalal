@@ -120,6 +120,7 @@ const dialogMaxWidth = computed(() => {
           placeholder="Isi Nama Perusahaan yang Tertera pada Sertifikat"
           :rules="[rules.required]"
           class="mb-4"
+          :disable="!props.isEditable"
         />
 
         <CustomTextField
@@ -129,6 +130,7 @@ const dialogMaxWidth = computed(() => {
           placeholder="isi Nomor Surat Permohonan"
           :rules="[rules.required]"
           class="mb-4"
+          :disable="!props.isEditable"
         />
 
         <CustomTextField
@@ -138,6 +140,7 @@ const dialogMaxWidth = computed(() => {
           placeholder="isi Tanggal Surat Permohonan"
           :rules="[rules.required]"
           class="mb-4"
+          :disable="!props.isEditable"
         />
 
         <CustomSelect
@@ -158,6 +161,7 @@ const dialogMaxWidth = computed(() => {
           :rules="[rules.required]"
           class="mb-4"
           :items="productTypes"
+          :disable="!props.isEditable"
         />
 
         <CustomTextarea
@@ -167,6 +171,7 @@ const dialogMaxWidth = computed(() => {
           placeholder="Isi Merek Dagang"
           :rules="[rules.required]"
           class="mb-4"
+          :disable="!props.isEditable"
         />
 
         <CustomSelect
@@ -177,6 +182,7 @@ const dialogMaxWidth = computed(() => {
           :rules="[rules.required]"
           class="mb-4"
           :items="area"
+          :disable="!props.isEditable"
         />
 
         <CustomSelect
@@ -187,6 +193,7 @@ const dialogMaxWidth = computed(() => {
           :rules="[rules.required]"
           class="mb-4"
           :items="lph"
+          :disable="!props.isEditable"
         />
 
         <CustomSelect
@@ -197,6 +204,7 @@ const dialogMaxWidth = computed(() => {
           :rules="[rules.required]"
           class="mb-4"
           :items="registrationType"
+          :disable="!props.isEditable"
         />
       </VCardItem>
       <VCardActions v-if="props.isEditable" class="d-flex justify-end">

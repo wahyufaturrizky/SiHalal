@@ -2,7 +2,7 @@
 const props = defineProps({
   isEditable: {
     type: Boolean,
-    default: true,
+    default: false,
   },
 });
 </script>
