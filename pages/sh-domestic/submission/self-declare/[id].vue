@@ -7,7 +7,12 @@
       </VCol>
       <VCol cols="3">
         <VRow class="d-flex justify-end align-center ga-2">
-          <VBtn variant="outlined" color="error" class="px-3">
+          <VBtn
+            variant="outlined"
+            color="error"
+            class="px-3"
+            @click="isDeleteModalOpen = true"
+          >
             <VIcon icon="mdi-delete" />
           </VBtn>
           <VBtn variant="outlined" append-icon="ri-pencil-fill">Ubah</VBtn>
@@ -464,6 +469,8 @@
                   "
                   density="compact"
                   class="px-2"
+                  :href="downloadForms.surat_permohonan"
+                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -477,6 +484,8 @@
                   "
                   density="compact"
                   class="px-2"
+                  :href="downloadForms.surat_pernyataan"
+                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -488,6 +497,8 @@
                   :color="downloadForms.ikrar ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
+                  :href="downloadForms.ikrar"
+                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -499,6 +510,8 @@
                   :color="downloadForms.hasil_verval ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
+                  :href="downloadForms.hasil_verval"
+                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -510,6 +523,8 @@
                   :color="downloadForms.rekomendasi ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
+                  :href="downloadForms.rekomendasi"
+                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -521,6 +536,8 @@
                   :color="downloadForms.sjph ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
+                  :href="downloadForms.sjph"
+                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -532,6 +549,8 @@
                   :color="downloadForms.laporan ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
+                  :href="downloadForms.laporan"
+                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -543,6 +562,8 @@
                   :color="downloadForms.sttd ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
+                  :href="downloadForms.sttd"
+                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -556,6 +577,8 @@
                   "
                   density="compact"
                   class="px-2"
+                  :href="downloadForms.sertifikasi_halal"
+                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -698,6 +721,17 @@
       </VCol>
     </VRow>
   </VContainer>
+  <ShSubmissionDetailFormModal
+    dialog-title="Menghapus Data"
+    :dialog-visible="isDeleteModalOpen"
+    dialog-use="DELETE"
+    @update:dialog-visible="isDeleteModalOpen = $event"
+    @submit:commit-action=""
+  >
+    <VCardText>
+      <div>Apakah yakin ingin menghapus data pengajuan ini</div>
+    </VCardText>
+  </ShSubmissionDetailFormModal>
 </template>
 
 <script setup lang="ts">
@@ -709,6 +743,7 @@ const submissionId = route.params?.id;
 
 const snackbar = useSnackbar();
 
+const isDeleteModalOpen = ref(false);
 const panelSubmission = ref([0, 1]);
 const panelPic = ref([0, 1]);
 const panelAspectLegal = ref([0, 1]);
@@ -868,15 +903,15 @@ const productItems = ref([
 ]);
 
 const downloadForms = reactive({
-  surat_permohonan: null,
-  surat_pernyataan: null,
-  ikrar: null,
-  hasil_verval: null,
-  rekomendasi: null,
-  sjph: null,
-  laporan: null,
-  sttd: null,
-  sertifikasi_halal: null,
+  surat_permohonan: "",
+  surat_pernyataan: "",
+  ikrar: "",
+  hasil_verval: "",
+  rekomendasi: "",
+  sjph: "",
+  laporan: "",
+  sttd: "",
+  sertifikasi_halal: "",
 });
 
 const registrationDetail = reactive({
@@ -905,6 +940,22 @@ const updateKbli = () => {
 };
 
 onMounted(async () => {
+  await Promise.all([
+    getSubmissionDetail(),
+    getKbli(),
+    getSuratPermohonan(),
+    getSuratPernyataan(),
+    getIkrar(),
+    getHasilVerval(),
+    getRekomendasi(),
+    getSjph(),
+    getLaporan(),
+    getSttd(),
+    getSertifikatHalal(),
+  ]);
+});
+
+const getSubmissionDetail = async () => {
   try {
     const response: any = await $api(`/self-declare/${submissionId}/detail`, {
       method: "get",
@@ -934,12 +985,100 @@ onMounted(async () => {
   } catch (error) {
     console.log(error);
   }
+};
 
+const getKbli = async () => {
   const response3: MasterBadanUsaha[] = await $api("/master/kbli", {
     method: "get",
   });
   kbliDropdown.value = response3;
+};
 
-  // console.log(response3, "< res kbli");
-});
+const getSuratPermohonan = async () => {
+  const result: any = await $api(
+    `/self-declare/${submissionId}/surat-permohonan/file`,
+    {
+      method: "get",
+    }
+  );
+  if (result.code === 2000) {
+    downloadForms.surat_permohonan = result.data.file;
+  }
+};
+const getSuratPernyataan = async () => {
+  const result: any = await $api(
+    `/self-declare/${submissionId}/surat-pernyataan/file`,
+    {
+      method: "get",
+    }
+  );
+  if (result.code === 2000) {
+    downloadForms.surat_pernyataan = result.data.file;
+  }
+};
+const getIkrar = async () => {
+  const result: any = await $api(`/self-declare/${submissionId}/ikrar/file`, {
+    method: "get",
+  });
+  if (result.code === 2000) {
+    downloadForms.ikrar = result.data.file;
+  }
+};
+const getHasilVerval = async () => {
+  const result: any = await $api(
+    `/self-declare/${submissionId}/hasil-verval/file`,
+    {
+      method: "get",
+    }
+  );
+  if (result.code === 2000) {
+    downloadForms.hasil_verval = result.data.file;
+  }
+};
+const getRekomendasi = async () => {
+  const result: any = await $api(
+    `/self-declare/${submissionId}/rekomendasi/file`,
+    {
+      method: "get",
+    }
+  );
+  if (result.code === 2000) {
+    downloadForms.rekomendasi = result.data.file;
+  }
+};
+const getSjph = async () => {
+  const result: any = await $api(`/self-declare/${submissionId}/sjph/file`, {
+    method: "get",
+  });
+  if (result.code === 2000) {
+    downloadForms.sjph = result.data.file;
+  }
+};
+const getLaporan = async () => {
+  const result: any = await $api(`/self-declare/${submissionId}/laporan/file`, {
+    method: "get",
+  });
+  if (result.code === 2000) {
+    downloadForms.laporan = result.data.file;
+  }
+};
+const getSttd = async () => {
+  const result: any = await $api(`/self-declare/${submissionId}/sttd/file`, {
+    method: "get",
+  });
+  if (result.code === 2000) {
+    downloadForms.sttd = result.data.file;
+  }
+};
+const getSertifikatHalal = async () => {
+  const result: any = await $api(
+    `/self-declare/${submissionId}/sertifikasi-halal/file`,
+    {
+      method: "get",
+    }
+  );
+  if (result.code === 2000) {
+    downloadForms.sertifikasi_halal = result.data.file;
+  }
+};
 </script>
