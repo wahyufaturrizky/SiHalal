@@ -184,7 +184,7 @@ onMounted(async () => {
               color="primary"
               style="cursor: pointer"
               class="ic-center"
-              @click="navigateTo(`/audit-pengajuan/${item.no}`)"
+              @click="navigateTo(`/audit-pengajuan/${item.id_reg}`)"
             >
               ri-arrow-right-line
             </VIcon>
