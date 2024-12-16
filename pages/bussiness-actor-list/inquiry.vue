@@ -81,23 +81,6 @@ const loadItemStatusApplication = async () => {
   }
 };
 
-const loadSOF = async () => {
-  try {
-    const response = await $api("/master/source-of-fund", {
-      method: "get",
-    });
-
-    if (response.length) {
-      dataSOF.value = response;
-      return response;
-    } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
-
 onMounted(async () => {
   const res = await Promise.all([
     loadItem({
