@@ -6,7 +6,6 @@ onMounted(() => {
   tabs.value = route.query?.tab ? String(route.query.tab) : "1";
 });
 </script>
-
 <template>
   <VContainer>
     <VRow>
