@@ -174,6 +174,12 @@ export default [
         roles: ["Verifikator Self-Declare", "Admin"],
       },
       {
+        title: "navbar.online_registration.menu.sd_distribusi",
+        icon: { icon: "fa-check-circle" },
+        to: "self-declare-distribusi-komite",
+        roles: ["Verifikator Self-Declare", "Admin"],
+      },
+      {
         title: "navbar.online_registration.menu.rg_verification",
         icon: { icon: "fa-check-circle" },
         to: "online-registration-verifikasi-reguler",
