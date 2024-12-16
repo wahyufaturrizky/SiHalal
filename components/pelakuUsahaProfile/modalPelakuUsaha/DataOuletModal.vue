@@ -1,126 +1,123 @@
 <script setup lang="ts">
-import type { MasterDistrict } from '@/server/interface/master.iface';
-import { computed, defineEmits, defineProps, ref, watch } from 'vue';
-import { useDisplay } from 'vuetify';
-import type { VForm } from 'vuetify/components';
+import type { MasterDistrict } from "@/server/interface/master.iface";
+import { computed, defineEmits, defineProps, ref, watch } from "vue";
+import { useDisplay } from "vuetify";
+import type { VForm } from "vuetify/components";
 
 const props = defineProps({
-  mode: { type: String, default: 'add' },
+  mode: { type: String, default: "add" },
   initialData: { type: Object, default: () => ({}) },
-})
+});
 
-const emit = defineEmits(['confirmAdd', 'confirmEdit', 'cancel'])
+const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
 
-const isVisible = ref(false)
+const isVisible = ref(false);
 
 const openDialog = async () => {
-  if (props.mode == 'add')
-    resetForm()
+  if (props.mode == "add") resetForm();
 
-  await getProvince()
+  await getProvince();
 
-  isVisible.value = true
-}
+  isVisible.value = true;
+};
 
 const closeDialog = () => {
-  isVisible.value = false
-}
+  isVisible.value = false;
+};
 
-const selectedIdOutlet = ref()
+const selectedIdOutlet = ref();
 
 const confirm = () => {
-  let whichEmit: any = null
-  if (props.mode === 'add')
-    whichEmit = 'confirmAdd'
-  else
-    whichEmit = 'confirmEdit'
+  let whichEmit: any = null;
+  if (props.mode === "add") whichEmit = "confirmAdd";
+  else whichEmit = "confirmEdit";
 
   vformref.value?.validate().then(({ valid: isValid }) => {
     if (isValid) {
-      emit(whichEmit, form.value, selectedIdOutlet.value)
-      closeDialog()
+      emit(whichEmit, form.value, selectedIdOutlet.value);
+      closeDialog();
     }
-  })
-}
+  });
+};
 
 const cancel = () => {
-  emit('cancel')
-  closeDialog()
-}
+  emit("cancel");
+  closeDialog();
+};
 
-const { mdAndUp } = useDisplay()
+const { mdAndUp } = useDisplay();
 
 const dialogMaxWidth = computed(() => {
-  return mdAndUp.value ? 700 : '90%'
-})
+  return mdAndUp.value ? 700 : "90%";
+});
 
 const form = ref({
-  namaOutlet: '',
-  alamatOutlet: '',
-  kabKota: '',
-  provinsi: '',
-  negara: 'Indonesia',
-  kodePos: '',
-})
+  namaOutlet: "",
+  alamatOutlet: "",
+  kabKota: "",
+  provinsi: "",
+  negara: "Indonesia",
+  kodePos: "",
+});
 
 const resetForm = () => {
   form.value = {
-    namaOutlet: '',
-    alamatOutlet: '',
-    kabKota: '',
-    provinsi: '',
-    negara: 'Indonesia',
-    kodePos: '',
-  }
-}
+    namaOutlet: "",
+    alamatOutlet: "",
+    kabKota: "",
+    provinsi: "",
+    negara: "Indonesia",
+    kodePos: "",
+  };
+};
 
-const vformref = ref<VForm>()
+const vformref = ref<VForm>();
 
-const provinsiOptions = ref([])
-const kabKotaOptions = ref([])
+const provinsiOptions = ref([]);
+const kabKotaOptions = ref([]);
 
 const getDistrict = async (kode: string) => {
-  form.value.kabKota = ''
+  form.value.kabKota = "";
 
-  const response: MasterDistrict[] = await $api('/master/district', {
-    method: 'post',
+  const response: MasterDistrict[] = await $api("/master/district", {
+    method: "post",
     body: {
       province: kode,
     },
-  })
+  });
 
-  kabKotaOptions.value = response
-}
+  kabKotaOptions.value = response;
+};
 
 const getProvince = async () => {
-  const response = await $api('/master/province', {
-    method: 'get',
-  })
+  const response = await $api("/master/province", {
+    method: "get",
+  });
 
-  provinsiOptions.value = response
-}
+  provinsiOptions.value = response;
+};
 
 watch(
   () => props.initialData,
-  newData => {
-    if (props.mode === 'edit' && newData) {
-      form.value.namaOutlet = newData.name
-      form.value.alamatOutlet = newData.address
-      form.value.provinsi = newData.province_code
-      form.value.negara = 'Indonesia'
-      form.value.kodePos = newData.postal_code
+  (newData) => {
+    if (props.mode === "edit" && newData) {
+      form.value.namaOutlet = newData.name;
+      form.value.alamatOutlet = newData.address;
+      form.value.provinsi = newData.province_code;
+      form.value.negara = "Indonesia";
+      form.value.kodePos = newData.postal_code;
 
-      getDistrict(newData.province_code).then(val => {
+      getDistrict(newData.province_code).then((val) => {
         form.value.kabKota = kabKotaOptions.value.filter(
-          resp => resp.code == newData.city_code,
-        )[0]?.name
-      })
+          (resp) => resp.code == newData.city_code
+        )[0]?.name;
+      });
 
-      selectedIdOutlet.value = newData.id
+      selectedIdOutlet.value = newData.id;
     }
   },
-  { immediate: true },
-)
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -142,25 +139,22 @@ watch(
     >
       Ubah
     </VBtn>
-    <VDialog
-      v-model="isVisible"
-      :max-width="dialogMaxWidth"
-    >
+    <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
-        <VCardTitle class="text-h5 font-weight-bold d-flex justify-space-between align-center">
+        <VCardTitle
+          class="text-h5 font-weight-bold d-flex justify-space-between align-center"
+        >
           <span>{{
             props.mode === "add" ? "Tambah Data Outlet" : "Edit Data Outlet"
           }}</span>
           <VBtn
             icon
             color="transparent"
-            style="border: none;"
+            style="border: none"
             elevation="0"
             @click="closeDialog"
           >
-            <VIcon color="black">
-              ri-close-line
-            </VIcon>
+            <VIcon color="black"> ri-close-line </VIcon>
           </VBtn>
         </VCardTitle>
 
@@ -189,10 +183,7 @@ watch(
               />
             </VItemGroup>
 
-            <VRow
-              no-gutters
-              class="mb-2"
-            >
+            <VRow no-gutters class="mb-2">
               <VCol cols="5">
                 <VItemGroup>
                   <VLabel>Provinsi</VLabel>
@@ -206,15 +197,12 @@ watch(
                     dense
                     required
                     class="input-field"
-                    @update:model-value="getDistrict"
+                    v-on:update:model-value="getDistrict"
                   />
                 </VItemGroup>
               </VCol>
               <VSpacer />
-              <VCol
-                cols="5"
-                class="me-2"
-              >
+              <VCol cols="5" class="me-2">
                 <VItemGroup>
                   <VLabel>Kab/Kota</VLabel>
                   <VAutocomplete
@@ -227,17 +215,13 @@ watch(
                     dense
                     required
                     class="input-field"
-                    @update:model-value="getDistrict"
                   />
                 </VItemGroup>
               </VCol>
             </VRow>
 
             <VRow no-gutters>
-              <VCol
-                cols="5"
-                class="me-2"
-              >
+              <VCol cols="5" class="me-2">
                 <VItemGroup>
                   <VLabel>Negara</VLabel>
                   <VTextField
@@ -271,16 +255,8 @@ watch(
         </VCardText>
 
         <div class="d-flex justify-end ga-2">
-          <VBtn
-            variant="outlined"
-            @click="cancel"
-          >
-            Batal
-          </VBtn>
-          <VBtn
-            :color="props.confirmColor"
-            @click="confirm"
-          >
+          <VBtn variant="outlined" @click="cancel"> Batal </VBtn>
+          <VBtn :color="props.confirmColor" @click="confirm">
             {{ props.mode === "add" ? "Tambah" : "Simpan" }}
           </VBtn>
         </div>
