@@ -226,7 +226,7 @@ const tableRequirementDocumentHeader = [
   { title: "Download ", key: "file", align: "left" },
   { title: "Notes", key: "notes" },
   { title: "status", key: "status" },
-  { title: "Action", key: "action" },
+  { title: "Tracking", key: "action" },
 ];
 const reqTracking = ref(null);
 const reqTrackingModal = ref(false);
