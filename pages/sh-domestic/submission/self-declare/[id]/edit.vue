@@ -6,5 +6,5 @@ import EditDomesticSelfDeclLayout from "@/layouts/editDomesticSelfDeclLayout.vue
 // });
 </script>
 <template>
-  <EditDomesticSelfDeclLayout></EditDomesticSelfDeclLayout>
+  <EditDomesticSelfDeclLayout />
 </template>

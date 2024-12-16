@@ -15,7 +15,16 @@
           >
             <VIcon icon="mdi-delete" />
           </VBtn>
-          <VBtn variant="outlined" append-icon="ri-pencil-fill">Ubah</VBtn>
+          <VBtn
+            variant="outlined"
+            append-icon="ri-pencil-fill"
+            @click="
+              $router.push(
+                `/sh-domestic/submission/self-declare/${submissionId}/edit`
+              )
+            "
+            >Ubah</VBtn
+          >
           <VBtn>Kirim</VBtn>
         </VRow>
       </VCol>
@@ -666,18 +675,32 @@
               Sidang Fatwa
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
-              <InfoRowV2 class="d-flex align-center" name="Nomor Penetapan"
-                >-</InfoRowV2
-              >
-              <InfoRowV2 class="d-flex align-center" name="Tanggal Penetapan"
-                >-</InfoRowV2
-              >
-              <InfoRowV2 class="d-flex align-center" name="Penetapan"
-                >-</InfoRowV2
-              >
-              <InfoRowV2 class="d-flex align-center" name="Dokumen"
-                >-</InfoRowV2
-              >
+              <InfoRowV2 class="d-flex align-center" name="Nomor Penetapan">
+                {{
+                  fatwaSessionDetail.nomor_penetapan
+                    ? fatwaSessionDetail.nomor_penetapan
+                    : "-"
+                }}
+              </InfoRowV2>
+              <InfoRowV2 class="d-flex align-center" name="Tanggal Penetapan">
+                {{
+                  fatwaSessionDetail.tanggal_penetapan
+                    ? fatwaSessionDetail.tanggal_penetapan
+                    : "-"
+                }}
+              </InfoRowV2>
+              <InfoRowV2 class="d-flex align-center" name="Penetapan">
+                {{
+                  fatwaSessionDetail.nomor_penetapan
+                    ? fatwaSessionDetail.nomor_penetapan
+                    : "-"
+                }}
+              </InfoRowV2>
+              <InfoRowV2 class="d-flex align-center" name="Dokumen">
+                {{
+                  fatwaSessionDetail.dokumen ? fatwaSessionDetail.dokumen : "-"
+                }}
+              </InfoRowV2>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -693,12 +716,20 @@
               Sertifikat Halal
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
-              <InfoRowV2 class="d-flex align-center" name="Nomor Sertifikat"
-                >-</InfoRowV2
-              >
-              <InfoRowV2 class="d-flex align-center" name="Tanggal Sertifikat"
-                >-</InfoRowV2
-              >
+              <InfoRowV2 class="d-flex align-center" name="Nomor Sertifikat">
+                {{
+                  halalCertificateDetail.nomor_sertifikat
+                    ? halalCertificateDetail.nomor_sertifikat
+                    : "-"
+                }}
+              </InfoRowV2>
+              <InfoRowV2 class="d-flex align-center" name="Tanggal Sertifikat">
+                {{
+                  halalCertificateDetail.nomor_sertifikat
+                    ? halalCertificateDetail.nomor_sertifikat
+                    : "-"
+                }}
+              </InfoRowV2>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -957,9 +988,12 @@ onMounted(async () => {
 
 const getSubmissionDetail = async () => {
   try {
-    const response: any = await $api(`/self-declare/${submissionId}/detail`, {
-      method: "get",
-    });
+    const response: Promise<any> = await $api(
+      `/self-declare/${submissionId}/detail`,
+      {
+        method: "get",
+      }
+    );
 
     if (response.code === 2000) {
       // console.log(response.data, "< res detail");
