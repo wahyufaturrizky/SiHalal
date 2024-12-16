@@ -174,7 +174,7 @@ export default [
   {
     title: "navbar.online_registration.menu.sd_verification",
     icon: { icon: "fa-check-circle" },
-    to: "self-declare-verifikasi-self-declare",
+    to: "self-declare-verification",
     roles: ["Verifikator Self-Declare", "Admin"],
   },
   {
