@@ -1,19 +1,28 @@
+<script setup lang="ts">
+const props = defineProps<{
+  data: any;
+}>();
+</script>
+
 <template>
   <VRow>
     <VCol cols="12">
       <VItemGroup>
         <VLabel>Nama</VLabel>
-        <VTextField density="compact">Sumayah</VTextField>
+        <VTextField density="compact" :model-value="props.data.nama_pj" />
       </VItemGroup>
       <br />
       <VItemGroup>
         <VLabel>Nomor Handphone</VLabel>
-        <VTextField density="compact">0812345678912</VTextField>
+        <VTextField
+          density="compact"
+          :model-value="props.data.nomor_kontak_pj"
+        />
       </VItemGroup>
       <br />
       <VItemGroup>
         <VLabel>Email</VLabel>
-        <VTextField density="compact">Sumayah@yahoo.com</VTextField>
+        <VTextField density="compact" :model-value="props.data.email_pj" />
       </VItemGroup>
     </VCol>
   </VRow>
