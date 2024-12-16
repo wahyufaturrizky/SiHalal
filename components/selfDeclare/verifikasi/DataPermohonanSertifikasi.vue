@@ -1,175 +1,211 @@
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits } from 'vue'
-import { VDataTableServer } from 'vuetify/components'
+import { computed, ref } from "vue";
+import { VDataTableServer } from "vuetify/components";
 
-// Props and Emits
-defineProps({ mode: String })
+const items = ref([]);
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const loading = ref(false);
+const loadingAll = ref(false);
+const page = ref(1);
+const searchQuery = ref("");
 
-const emit = defineEmits(['confirm-add', 'cancel']);
-
-// State variables
-const isModalOpen = ref(false)
 interface DataItem {
-  id: number
-  id_daftar: string
-  TanggalDaftar: string
-  Nama: string
-  Alamat: string
-  JenisProduk: string
-  MerkDagang: string
-  Status: string
+  id: number;
+  id_daftar: string;
+  TanggalDaftar: string;
+  Nama: string;
+  Alamat: string;
+  JenisProduk: string;
+  MerkDagang: string;
+  Status: string;
 }
 
-const selectedItems = ref<DataItem[]>([])
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+
+const statusItem: any = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+    OF11: { color: "success", desc: "Verification" },
+  },
+  {
+    get(target: any, prop: any) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
+
+const selectedItems = ref<DataItem[]>([]);
 
 // Dummy data for table
-// Dummy data for the table
 const tableData = ref([
   {
     id: 1,
-    id_daftar: 'D001',
-    TanggalDaftar: '2024-11-01',
-    Nama: 'John Doe',
-    Alamat: '1234 Elm Street, Springfield',
-    JenisProduk: 'Electronics',
-    MerkDagang: 'TechBrand',
-    Status: 'OF74',
+    id_daftar: "D001",
+    TanggalDaftar: "2024-11-01",
+    Nama: "John Doe",
+    Alamat: "1234 Elm Street, Springfield",
+    JenisProduk: "Electronics",
+    MerkDagang: "TechBrand",
+    Status: "OF74",
   },
-  {
-    id: 2,
-    id_daftar: 'D002',
-    TanggalDaftar: '2024-11-02',
-    Nama: 'Jane Smith',
-    Alamat: '5678 Oak Avenue, Riverdale',
-    JenisProduk: 'Food & Beverages',
-    MerkDagang: 'Tasty Treats',
-    Status: 'OF74',
-  },
-  {
-    id: 3,
-    id_daftar: 'D003',
-    TanggalDaftar: '2024-11-03',
-    Nama: 'Alice Johnson',
-    Alamat: '9102 Pine Lane, Metropolis',
-    JenisProduk: 'Apparel',
-    MerkDagang: 'FashionWear',
-    Status: 'OF74',
-  },
-  {
-    id: 4,
-    id_daftar: 'D004',
-    TanggalDaftar: '2024-11-04',
-    Nama: 'Bob Brown',
-    Alamat: '1122 Maple Drive, Gotham',
-    JenisProduk: 'Home Appliances',
-    MerkDagang: 'HomeEase',
-    Status: 'OF74',
-  },
-  {
-    id: 5,
-    id_daftar: 'D005',
-    TanggalDaftar: '2024-11-05',
-    Nama: 'Emily Davis',
-    Alamat: '3344 Birch Road, Star City',
-    JenisProduk: 'Cosmetics',
-    MerkDagang: 'BeautyGlow',
-    Status: 'OF74',
-  },
-])
+]);
 
-const itemPerPage = ref(10)
-const totalItems = ref(0)
-const loading = ref(false)
-const page = ref(1)
-
-// Table headers
-const permohonanHeaders = [
-  { title: 'No', key: 'id', align: 'center' },
-  { title: 'ID Daftar', key: 'id_daftar' },
-  { title: 'Pilih', key: 'pilih' },
-  { title: 'Tanggal Daftar', key: 'TanggalDaftar' },
-  { title: 'Nama', key: 'Nama' },
-  { title: 'Alamat', key: 'Alamat' },
-  { title: 'Jenis Produk', key: 'JenisProduk' },
-  { title: 'Merk Dagang', key: 'MerkDagang' },
-  { title: 'Status', key: 'Status' },
-  { title: 'Action', key: 'action' },
-]
-
-// Methods
-const openModal = () => {
-  isModalOpen.value = true
-}
-
-const closeModal = () => {
-  isModalOpen.value = false
-  emit('cancel')
-}
-
-const searchQuery = ref('')
+const headers: any = [
+  { title: "No", key: "id", align: "center" },
+  { title: "ID Daftar", key: "id_daftar" },
+  { title: "Pilih", key: "pilih" },
+  { title: "Tanggal Daftar", key: "TanggalDaftar" },
+  { title: "Nama", key: "Nama" },
+  { title: "Alamat", key: "Alamat" },
+  { title: "Jenis Produk", key: "JenisProduk" },
+  { title: "Merk Dagang", key: "MerkDagang" },
+  { title: "Status", key: "Status" },
+  { title: "Action", key: "action" },
+];
 
 const handleInput = () => {
-  debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
-}
-
-const handleCancel = (message: string) => {
-  console.log('Cancel message:', message);
-}
+  debouncedFetch({
+    page: page.value,
+    size: itemPerPage.value,
+    keyword: searchQuery.value,
+    fasilitas: selectedFilters.value.fasilitas,
+    jenis_produk: selectedFilters.value.jenisProduk,
+    provinsi: selectedFilters.value.provinsi,
+    lembaga: selectedFilters.value.lembaga,
+    pendamping: selectedFilters.value.pendamping,
+    kabupaten: selectedFilters.value.kabupaten,
+  });
+};
 
 const navigateAction = (id: string) => {
   navigateTo(`/sertifikasi-halal/luar-negeri/verification/${id}`);
-}
+};
 
-const loadItem = async (page, size) => {
-  // Temporarily skip API call for dummy data testing
-  items.value = items.value.slice((page - 1) * size, page * size) // Paginate dummy data
-  totalItems.value = items.value.length
-}
+const loadItem = async ({
+  page,
+  size,
+  keyword,
+  fasilitas,
+  jenis_produk,
+  provinsi,
+  lembaga,
+  pendamping,
+  kabupaten,
+}: {
+  page: number;
+  size: number;
+  keyword: string;
+  fasilitas: string;
+  jenis_produk: string;
+  provinsi: string;
+  lembaga: string;
+  pendamping: string;
+  kabupaten: string;
+}) => {
+  try {
+    loading.value = true;
 
-const debouncedFetch = debounce(loadItem, 500)
-// Filter state
+    const response: any = await $api("/self-declare/verificator/submission", {
+      method: "get",
+      params: {
+        page,
+        size,
+        keyword,
+        fasilitas,
+        jenis_produk,
+        provinsi,
+        lembaga,
+        pendamping,
+        kabupaten,
+      },
+    });
+
+    items.value = response.data;
+    totalItems.value = response.total_item;
+    loading.value = false;
+    return response;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
+  }
+};
+
+const debouncedFetch = debounce(loadItem, 500);
+
 const showFilterMenu = ref(false);
 
 const selectedFilters = ref({
-  fasilitas: 'Semua',
-  jenisProduk: 'Semua',
-  provinsi: 'Semua',
-  lembaga: 'Semua',
-  pendamping: 'Semua',
-  kabupaten: 'Semua',
-})
+  fasilitas: "Semua",
+  jenisProduk: "Semua",
+  provinsi: "Semua",
+  lembaga: "Semua",
+  pendamping: "Semua",
+  kabupaten: "Semua",
+});
 
 const applyFilters = () => {
-  loadItem(page.value, itemPerPage.value, searchQuery.value, selectedFilters.value);
-}
+  loadItem({
+    page: page.value,
+    size: itemPerPage.value,
+    keyword: searchQuery.value,
+    fasilitas: selectedFilters.value.fasilitas,
+    jenis_produk: selectedFilters.value.jenisProduk,
+    provinsi: selectedFilters.value.provinsi,
+    lembaga: selectedFilters.value.lembaga,
+    pendamping: selectedFilters.value.pendamping,
+    kabupaten: selectedFilters.value.kabupaten,
+  });
+};
 
-// Check if all items are selected
-const isAllSelected = computed(() => selectedItems.value.length === tableData.value.length)
+const isAllSelected = computed(
+  () => selectedItems.value.length === items.value.length
+);
 
 // Toggle select all
 const toggleSelectAll = () => {
-  selectedItems.value = isAllSelected.value ? [] : tableData.value.slice()
-}
+  selectedItems.value = isAllSelected.value ? [] : items.value.slice();
+};
 
 // Adaptive button text
 const buttonText = computed(() =>
   selectedItems.value.length > 0
     ? `Pilih Data (${selectedItems.value.length})`
-    : 'Pilih Data',
-)
+    : "Pilih Data"
+);
 
-// Handle checkbox change
-const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaftar: string; Nama: string; Alamat: string; JenisProduk: string; MerkDagang: string; Status: string }, checked: any) => {
-  if (checked) {
-    // Add item if not already selected
-    if (!selectedItems.value.includes(item))
-      selectedItems.value.push(item)
+onMounted(async () => {
+  loadingAll.value = true;
+  const res = await Promise.all([
+    loadItem({
+      page: page.value,
+      size: itemPerPage.value,
+      keyword: searchQuery.value,
+      fasilitas: selectedFilters.value.fasilitas,
+      jenis_produk: selectedFilters.value.jenisProduk,
+      provinsi: selectedFilters.value.provinsi,
+      lembaga: selectedFilters.value.lembaga,
+      pendamping: selectedFilters.value.pendamping,
+      kabupaten: selectedFilters.value.kabupaten,
+    }),
+  ]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
   }
-  else {
-    // Remove item by filtering out the current item
-    selectedItems.value = selectedItems.value.filter(selectedItem => selectedItem.id !== item.id)
-  }
-}
+});
 </script>
 
 <template>
@@ -185,10 +221,7 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
       </VBtn>
     </template>
     <template #default="{ isActive }">
-      <VCard
-        variant="flat"
-        class="pa-4"
-      >
+      <VCard v-if="!loadingAll" variant="flat" class="pa-4">
         <VCardTitle>
           <VRow>
             <VCol cols="10"><h3>Data Permohonan Sertifikasi</h3></VCol>
@@ -214,13 +247,26 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
           <VRow>
             <VCol cols="1">
               <div class="checkbox-container">
-                <VCheckbox v-model="isAllSelected" class="custom-checkbox" @click="toggleSelectAll" />
+                <VCheckbox
+                  v-model="isAllSelected"
+                  class="custom-checkbox"
+                  @click="toggleSelectAll"
+                />
               </div>
             </VCol>
             <VCol class="d-flex justify-start align-center" cols="2">
-              <VMenu v-model="showFilterMenu" :close-on-content-click="false" offset-y>
+              <VMenu
+                v-model="showFilterMenu"
+                :close-on-content-click="false"
+                offset-y
+              >
                 <template #activator="{ props }">
-                  <VBtn color="primary" variant="outlined" v-bind="props" append-icon="ri-filter-fill">
+                  <VBtn
+                    color="primary"
+                    variant="outlined"
+                    v-bind="props"
+                    append-icon="ri-filter-fill"
+                  >
                     Filter
                   </VBtn>
                 </template>
@@ -261,7 +307,12 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
                     :items="['Semua', 'Kabupaten A', 'Kabupaten B']"
                     class="mt-3"
                   />
-                  <VBtn block color="primary" class="mt-3" @click="applyFilters">
+                  <VBtn
+                    block
+                    color="primary"
+                    class="mt-3"
+                    @click="applyFilters"
+                  >
                     Apply Filters
                   </VBtn>
                 </VCard>
@@ -282,19 +333,31 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
             <VDataTableServer
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
-              :headers="permohonanHeaders"
-              :items="tableData"
+              :headers="headers"
+              :items="items"
               :loading="loading"
               :items-length="totalItems"
               loading-text="Loading..."
-              style="white-space: nowrap;"
-              @update:options="loadItem(page, itemPerPage)"
+              style="white-space: nowrap"
+              @update:options="
+                loadItem({
+                  page: page,
+                  size: itemPerPage,
+                  keyword: searchQuery,
+                  fasilitas: selectedFilters.fasilitas,
+                  jenis_produk: selectedFilters.jenisProduk,
+                  provinsi: selectedFilters.provinsi,
+                  lembaga: selectedFilters.lembaga,
+                  pendamping: selectedFilters.pendamping,
+                  kabupaten: selectedFilters.kabupaten,
+                })
+              "
             >
               <template #item.id="{ index }">
                 {{ index + 1 + (page - 1) * itemPerPage }}
               </template>
               <template #item.tgl_daftar="{ item }">
-                {{ formatDateIntl(new Date(item.TanggalDaftar)) }}
+                {{ formatDateIntl(new Date((item as any).tgl_daftar)) }}
               </template>
               <template #item.action="{ item }">
                 <div class="d-flex gap-1">
@@ -302,50 +365,25 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
                     <VIcon
                       icon="ri-arrow-right-line"
                       color="primary"
-                      @click="navigateAction(item.id)"
+                      @click="navigateAction((item as any).id)"
                     />
-                  </IconBtn> <!-- Right arrow icon for action -->
+                  </IconBtn>
+                  <!-- Right arrow icon for action -->
                 </div>
               </template>
               <template #item.pilih="{ item }">
-                <VCheckbox
-                  v-model="selectedItems"
-                  :value="item"
-                />
+                <VCheckbox v-model="selectedItems" :value="item" />
               </template>
-              <template #item.Status="{ item }">
-                <div v-if="item.Status === 'OF74'">
-                  <div class="status-container">
-                    <VChip
-                      variant="outlined"
-                      style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
-                    >
-                      <span style="color: #49a84c;">
-                        {{ item.Status }}
-                      </span>
-                    </VChip>
-                  </div>
-                </div>
-                <div v-else>
-                  <div class="status-container">
-                    <VChip
-                      variant="outlined"
-                      style="border-color: #652672; border-radius: 8px; background-color: #f0e9f1;"
-                    >
-                      <span style="color: #652672;">
-                        {{ item.Status }}
-                      </span>
-                    </VChip>
-                  </div>
-                </div>
+              <template #item.status_code="{ item }">
+                <VChip
+                  label
+                  :color="statusItem[(item as any).status_code].color"
+                >
+                  {{ statusItem[(item as any).status_code].desc }}
+                </VChip>
               </template>
             </VDataTableServer>
           </VRow>
-          <VPagination
-            v-model="page"
-            :total-visible="7"
-            :length="totalPages"
-          />
         </VCardText>
       </VCard>
     </template>

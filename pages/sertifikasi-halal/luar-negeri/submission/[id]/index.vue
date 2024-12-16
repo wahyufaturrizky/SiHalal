@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { statusItemPelakuUsaha } from "@/server/utils/statusPelakuUsaha";
+
 export interface ShlnDetail {
   hcb: Hcb;
   hcn: Hcn;
@@ -73,24 +75,6 @@ const submitDialog = ref(false);
 const submitItem = () => {
   submitDialog.value = true;
 };
-const defaultStatus = { color: "error", desc: "Unknown Status" };
-const statusItem = new Proxy(
-  {
-    OF1: { color: "grey-300", desc: "Draft" },
-    OF10: { color: "success", desc: "Submitted" },
-    OF11: { color: "success", desc: "Verification" },
-    OF15: { color: "success", desc: "Verified" },
-    OF2: { color: "error", desc: "Returned" },
-    OF290: { color: "error", desc: "Rejected" },
-    OF5: { color: "success", desc: "Invoice issued" },
-    OF300: { color: "success", desc: "Halal Certified Issued" },
-  },
-  {
-    get(target, prop) {
-      return prop in target ? target[prop] : defaultStatus;
-    },
-  }
-);
 
 const deleteSubmission = async () => {
   try {
@@ -242,7 +226,7 @@ const tableRequirementDocumentHeader = [
   { title: "Download ", key: "file", align: "left" },
   { title: "Notes", key: "notes" },
   { title: "status", key: "status" },
-  { title: "Action", key: "action" },
+  { title: "Tracking", key: "action" },
 ];
 const reqTracking = ref(null);
 const reqTrackingModal = ref(false);
@@ -355,7 +339,13 @@ const timelineEvents = ref([
       </VCol>
       <VCol cols="4">
         <VRow justify="end" class="gap-1">
-          <VCol cols="auto">
+          <VCol
+            cols="auto"
+            v-if="
+              registration?.status_code == 'OF1' ||
+              registration?.status_code == 'OF2'
+            "
+          >
             <VBtn variant="outlined" color="error" @click="deleteItem">
               <VIcon icon="ri-delete-bin-6-line" />
             </VBtn>
@@ -532,8 +522,10 @@ const timelineEvents = ref([
             {{ registration?.expired_date }}
           </InfoRow>
           <InfoRow name="Status">
-            <VChip :color="statusItem[registration?.status_code].color">
-              {{ statusItem[registration?.status_code].desc }}
+            <VChip
+              :color="statusItemPelakuUsaha[registration?.status_code].color"
+            >
+              {{ statusItemPelakuUsaha[registration?.status_code].desc }}
             </VChip>
           </InfoRow>
           <InfoRow name="Download Halal Registration Number">

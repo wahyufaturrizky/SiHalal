@@ -142,22 +142,22 @@ const dialogMaxWidth = computed(() => {
           </VRow>
 
           <VRow class="mb-1">
-            <VCol cols="6" class="pe-1">
-              <VLabel>Kab/Kota</VLabel>
+            <VCol cols="6" class="ps-1">
+              <VLabel>Provinsi</VLabel>
               <VTextField
-                v-model="form.regency"
-                placeholder="Isi Kab/Kota"
+                v-model="form.provinsi"
+                placeholder="Isi Provinsi"
                 outlined
                 dense
                 required
                 class="input-field"
               />
             </VCol>
-            <VCol cols="6" class="ps-1">
-              <VLabel>Provinsi</VLabel>
+            <VCol cols="6" class="pe-1">
+              <VLabel>Kab/Kota</VLabel>
               <VTextField
-                v-model="form.provinsi"
-                placeholder="Isi Provinsi"
+                v-model="form.regency"
+                placeholder="Isi Kab/Kota"
                 outlined
                 dense
                 required

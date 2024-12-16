@@ -16,6 +16,15 @@ export const useSnackbar = () => {
     snackColor.value = allowedColors[color];
     snackMessage.value = msg;
   };
+  const setVisible = (visible: boolean) => {
+    isSnackbarVisible.value = visible;
+  };
 
-  return { isSnackbarVisible, snackMessage, snackColor, sendSnackbar };
+  return {
+    isSnackbarVisible,
+    snackMessage,
+    snackColor,
+    sendSnackbar,
+    setVisible,
+  };
 };

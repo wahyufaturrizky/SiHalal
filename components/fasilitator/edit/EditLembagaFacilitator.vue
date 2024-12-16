@@ -67,6 +67,7 @@ const loadItemById = async (page: number, size: number) => {
           institutionName: nama_lph_lp3h,
           picName: nama_pic_lembaga,
           picPhoneNumber: nomor_pic_lembaga,
+          isactive: item.isactive,
         };
       });
 
@@ -313,7 +314,8 @@ const checkIsFieldEMpty = (data: any) => {
               <VIcon
                 color="error"
                 style="cursor: pointer"
-                @click="confirmDelete(item.no)"
+                @click="confirmDelete((item as any).no)"
+                :disabled="(item as any).isactive"
               >
                 ri-delete-bin-6-line
               </VIcon>

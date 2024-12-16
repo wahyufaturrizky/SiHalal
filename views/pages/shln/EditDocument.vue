@@ -106,7 +106,7 @@ const tableRequirementDocumentHeader = [
   { title: "Upload / Download ", key: "file", align: "left" },
   { title: "Notes", key: "notes" },
   { title: "status", key: "status" },
-  { title: "Action", key: "action" },
+  { title: "Tracking", key: "action" },
 ];
 const requirementDocument = ref<RequirementDocument>();
 const requirementDocArray = ref([
@@ -389,6 +389,9 @@ onMounted(async () => {
   loaForm.value.date = loa.value?.date;
   loaForm.value.file_url = loa.value?.loa_document;
 });
+watch(loaFile, (newValue, oldValue) => {
+  console.log(newValue);
+});
 </script>
 
 <template>
@@ -475,7 +478,18 @@ onMounted(async () => {
               dense
               accept=".pdf,.jpg,.png,.jpeg"
               class="mb-2"
-              :rules="[requiredValidator]"
+              :rules="[
+                requiredValidator,
+                fileExtensionValidator,
+                (value) => {
+                  return (
+                    !value ||
+                    !value.length ||
+                    value[0].size < 2000000 ||
+                    'file maksimum 2MB'
+                  );
+                },
+              ]"
             />
           </VCol>
 
@@ -522,7 +536,18 @@ onMounted(async () => {
               dense
               accept=".pdf,.jpg,.png,.jpeg"
               class="mb-2"
-              :rules="[requiredValidator]"
+              :rules="[
+                requiredValidator,
+                fileExtensionValidator,
+                (value) => {
+                  return (
+                    !value ||
+                    !value.length ||
+                    value[0].size < 2000000 ||
+                    'file maksimum 2MB'
+                  );
+                },
+              ]"
             />
           </VCol>
 
@@ -599,7 +624,18 @@ onMounted(async () => {
                 </VBtn>
                 <HalalFileInput
                   v-model="reqFile[index]"
-                  :rules="[requiredValidator]"
+                  :rules="[
+                    requiredValidator,
+                    fileExtensionValidator,
+                    (value) => {
+                      return (
+                        !value ||
+                        !value.length ||
+                        value[0].size < 2000000 ||
+                        'file maksimum 2MB'
+                      );
+                    },
+                  ]"
                 />
               </div>
               <!-- {{ item.file != "" ? "asd" : "dsa" }} -->

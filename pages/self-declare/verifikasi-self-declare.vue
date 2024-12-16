@@ -1,211 +1,139 @@
 <script setup lang="ts">
-import { computed, defineEmits, defineProps, ref } from 'vue';
-import { VDataTableServer } from 'vuetify/components';
+import { ref } from "vue";
+import { VDataTableServer } from "vuetify/components";
 
-// Props and Emits
-defineProps({ mode: String })
+const items = ref([]);
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const loading = ref(false);
+const loadingAll = ref(true);
+const page = ref(1);
+const searchQuery = ref("");
+const status = ref("");
+const itemsStatus = ref<any[]>([]);
 
-const emit = defineEmits(['confirm-add', 'cancel'])
+const defaultStatus = { color: "error", desc: "Unknown Status" };
 
-// State variables
-const isModalOpen = ref(false)
-interface DataItem {
-  id: number
-  id_daftar: string
-  TanggalDaftar: string
-  Nama: string
-  Alamat: string
-  JenisProduk: string
-  MerkDagang: string
-  Status: string
-}
-
-const selectedItems = ref<DataItem[]>([])
-
-// Dummy data for table
-// Dummy data for the table
-const items = ref([
+const statusItem: any = new Proxy(
   {
-    id: 1,
-    id_registrasi: 'D001',
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-01',
-    Nama: 'John Doe',
-    Alamat: '1234 Elm Street, Springfield',
-    JenisProduk: 'Electronics',
-    MerkDagang: 'TechBrand',
-    nama_pendamping: 'John',
-    Status: 'OF74',
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+    OF11: { color: "success", desc: "Verification" },
   },
   {
-    id: 2,
-    id_registrasi: 'D002',
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-02',
-    Nama: 'Jane Smith',
-    Alamat: '5678 Oak Avenue, Riverdale',
-    JenisProduk: 'Food & Beverages',
-    MerkDagang: 'Tasty Treats',
-    nama_pendamping: 'Ben',
-    Status: 'OF74',
-  },
-  {
-    id: 3,
-    id_registrasi: 'D003',
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-03',
-    Nama: 'Alice Johnson',
-    Alamat: '9102 Pine Lane, Metropolis',
-    JenisProduk: 'Apparel',
-    MerkDagang: 'FashionWear',
-    nama_pendamping: 'Dodi',
-    Status: 'OF74',
-  },
-  {
-    id: 4,
-    id_registrasi: 'D004',
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-04',
-    Nama: 'Bob Brown',
-    Alamat: '1122 Maple Drive, Gotham',
-    JenisProduk: 'Home Appliances',
-    MerkDagang: 'HomeEase',
-    nama_pendamping: 'Gus',
-    Status: 'Verifikasi',
-  },
-  {
-    id: 5,
-    id_registrasi: 'D005',
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-05',
-    Nama: 'Emily Davis',
-    Alamat: '3344 Birch Road, Star City',
-    JenisProduk: 'Cosmetics',
-    MerkDagang: 'BeautyGlow',
-    nama_pendamping: 'Yun',
-    Status: 'OF74',
-  },
-])
-
-const itemPerPage = ref(10)
-const totalItems = ref(0)
-const loading = ref(false)
-const page = ref(1)
+    get(target: any, prop: any) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
 
 // Table headers
-const permohonanHeaders = [
-  { title: 'No', key: 'id', align: 'center' },
-  { title: 'ID Registrasi', key: 'id_registrasi' },
-  { title: 'Nomor Daftar', key: 'nomor_daftar' },
-  { title: 'Tanggal Daftar', key: 'TanggalDaftar' },
-  { title: 'Nama PU', key: 'Nama' },
-  { title: 'Alamat', key: 'Alamat' },
-  { title: 'Jenis Produk', key: 'JenisProduk' },
-  { title: 'Merk Dagang', key: 'MerkDagang' },
-  { title: 'Nama Pendamping', key: 'nama_pendamping' },
-  { title: 'Status', key: 'Status' },
-  { title: 'Action', key: 'action' },
-]
-
-// Methods
-const openModal = () => {
-  isModalOpen.value = true
-}
-
-const closeModal = () => {
-  isModalOpen.value = false
-  emit('cancel')
-}
-
-const searchQuery = ref('')
+const headers: any = [
+  { title: "No", key: "id", align: "center" },
+  { title: "ID Registrasi", key: "id_registrasi" },
+  { title: "Nomor Daftar", key: "nomor_daftar" },
+  { title: "Tanggal Daftar", key: "TanggalDaftar" },
+  { title: "Nama PU", key: "Nama" },
+  { title: "Alamat", key: "Alamat" },
+  { title: "Jenis Produk", key: "JenisProduk" },
+  { title: "Merk Dagang", key: "MerkDagang" },
+  { title: "Nama Pendamping", key: "nama_pendamping" },
+  { title: "Status", key: "Status" },
+  { title: "Action", key: "action" },
+];
 
 const handleInput = () => {
-  debouncedFetch(page.value, itemPerPage.value, searchQuery.value)
-}
-
-const handleCancel = (message: string) => {
-  console.log('Cancel message:', message)
-}
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    status.value
+  );
+};
 
 const navigateAction = (id: string) => {
-  navigateTo(`/sertifikasi-halal/luar-negeri/verification/${id}`)
-}
+  navigateTo(`/sertifikasi-halal/luar-negeri/verification/${id}`);
+};
 
-const loadItem = async (page, size) => {
-  // Temporarily skip API call for dummy data testing
-  items.value = items.value.slice((page - 1) * size, page * size) // Paginate dummy data
-  totalItems.value = items.value.length
-}
+const loadItem = async (
+  page: number,
+  size: number,
+  keyword: string = "",
+  status: string = ""
+) => {
+  try {
+    loading.value = true;
 
-const debouncedFetch = debounce(loadItem, 500)
+    const response: any = await $api("/self-declare/verificator", {
+      method: "get",
+      params: {
+        page,
+        size,
+        keyword,
+        status,
+      },
+    });
 
-// Filter state
-const showFilterMenu = ref(false)
-
-const selectedFilters = ref({
-  fasilitas: 'Semua',
-  jenisProduk: 'Semua',
-  provinsi: 'Semua',
-  lembaga: 'Semua',
-  pendamping: 'Semua',
-  kabupaten: 'Semua',
-})
-
-const applyFilters = () => {
-  loadItem(page.value, itemPerPage.value, searchQuery.value, selectedFilters.value)
-}
-
-// Check if all items are selected
-const isAllSelected = computed(() => selectedItems.value.length === tableData.value.length)
-
-// Toggle select all
-const toggleSelectAll = () => {
-  selectedItems.value = isAllSelected.value ? [] : tableData.value.slice()
-}
-
-// Adaptive button text
-const buttonText = computed(() =>
-  selectedItems.value.length > 0
-    ? `Pilih Data (${selectedItems.value.length})`
-    : 'Pilih Data',
-)
-
-// Handle checkbox change
-const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaftar: string; Nama: string; Alamat: string; JenisProduk: string; MerkDagang: string; Status: string }, checked: any) => {
-  if (checked) {
-    // Add item if not already selected
-    if (!selectedItems.value.includes(item))
-      selectedItems.value.push(item)
+    items.value = response.data;
+    totalItems.value = response.total_item;
+    loading.value = false;
+    return response;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
   }
-  else {
-    // Remove item by filtering out the current item
-    selectedItems.value = selectedItems.value.filter(selectedItem => selectedItem.id !== item.id)
+};
+
+const loadItemStatusApplication = async () => {
+  try {
+    const response: any = await $api("/master/application-status", {
+      method: "get",
+    });
+
+    if (response.length) {
+      itemsStatus.value = response;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-}
+};
 
-// Sample data for "Bahan Bersertifikat" and "Tidak Bersertifikat"
-const StatusOptions = [
-  { name: 'OF74', value: 'of74' },
-  { name: 'Verifikasi', value: 'verifikasi' },
-]
+const debouncedFetch = debounce(loadItem, 500);
 
-const bahanType = ref(null)
+onMounted(async () => {
+  const res = await Promise.all([
+    loadItem(1, itemPerPage.value, "", status.value),
+    loadItemStatusApplication(),
+  ]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
+});
 </script>
 
 <template>
-  <VCard
-    variant="flat"
-    class="pa-4"
-  >
+  <VCard v-if="!loadingAll" variant="flat" class="pa-4">
     <VCardTitle>
       <VRow>
         <VCol cols="10">
           <h3>Data Pengajuan</h3>
         </VCol>
-        <VCol
-          cols="2"
-          style="display: flex; justify-content: end;"
-        >
+        <VCol cols="2" style="display: flex; justify-content: end">
           <DataPermohonanSertifikasi />
         </VCol>
       </VRow>
@@ -217,24 +145,21 @@ const bahanType = ref(null)
       <VRow>
         <VCol cols="3">
           <VSelect
-            v-model="bahanType"
-            density="compact"
-            :items="StatusOptions"
+            v-model="status"
+            placeholder="Pilih Status"
+            :items="itemsStatus"
             item-title="name"
-            item-value="value"
-            placeholder="Status"
+            item-value="code"
+            @update:modelValue="loadItem(1, itemPerPage, searchQuery, $event)"
           />
         </VCol>
-        <VCol
-          class="d-flex justify-sm-space-between align-center"
-          cols="9"
-        >
+        <VCol class="d-flex justify-sm-space-between align-center" cols="9">
           <VTextField
             v-model="searchQuery"
             density="compact"
             placeholder="Search Data"
             append-inner-icon="ri-search-line"
-            style="max-inline-size: 100%;"
+            style="max-inline-size: 100%"
             @input="handleInput"
           />
         </VCol>
@@ -243,18 +168,18 @@ const bahanType = ref(null)
         <VDataTableServer
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
-          :headers="permohonanHeaders"
+          :headers="headers"
           :items="items"
           :loading="loading"
           :items-length="totalItems"
           loading-text="Loading..."
-          @update:options="loadItem(page, itemPerPage)"
+          @update:options="loadItem(page, itemPerPage, searchQuery, status)"
         >
           <template #item.id="{ index }">
             {{ index + 1 + (page - 1) * itemPerPage }}
           </template>
           <template #item.tgl_daftar="{ item }">
-            {{ formatDateIntl(new Date(item.TanggalDaftar)) }}
+            {{ formatDateIntl(new Date((item as any).TanggalDaftar)) }}
           </template>
           <template #item.action="{ item }">
             <div class="d-flex gap-1">
@@ -262,50 +187,18 @@ const bahanType = ref(null)
                 <VIcon
                   icon="ri-arrow-right-line"
                   color="primary"
-                  @click="navigateAction(item.id)"
+                  @click="navigateAction((item as any).id)"
                 />
-              </IconBtn> <!-- Right arrow icon for action -->
+              </IconBtn>
             </div>
           </template>
-          <template #item.pilih="{ item }">
-            <VCheckbox
-              v-model="selectedItems"
-              :value="item"
-            />
-          </template>
-          <template #item.Status="{ item }">
-            <div v-if="item.Status === 'OF74'">
-              <div class="status-container">
-                <VChip
-                  variant="outlined"
-                  style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
-                >
-                  <span style="color: #49a84c;">
-                    {{ item.Status }}
-                  </span>
-                </VChip>
-              </div>
-            </div>
-            <div v-else>
-              <div class="status-container">
-                <VChip
-                  variant="outlined"
-                  style="border-color: #652672; border-radius: 8px; background-color: #f0e9f1;"
-                >
-                  <span style="color: #652672;">
-                    {{ item.Status }}
-                  </span>
-                </VChip>
-              </div>
-            </div>
+          <template #item.status_code="{ item }">
+            <VChip label :color="statusItem[(item as any).status_code].color">
+              {{ statusItem[(item as any).status_code].desc }}
+            </VChip>
           </template>
         </VDataTableServer>
       </VRow>
-      <VPagination
-        v-model="page"
-        :total-visible="7"
-        :length="totalPages"
-      />
     </VCardText>
   </VCard>
 </template>

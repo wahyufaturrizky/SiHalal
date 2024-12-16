@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { statusItemFacilitator } from "@/server/utils/statusFasilitator";
+
 interface FasilitatorData {
   fasilitasi: Fasilitasi;
   lembaga: Lembaga[];
@@ -36,6 +38,7 @@ interface Lembaga {
 interface StatusRegistrasi {
   status: string;
   kode_fasilitasi: string;
+  status_code: string;
 }
 
 const panelFasilitasi = ref([0, 1]);
@@ -64,6 +67,7 @@ const detail = ref<FasilitatorData>({
   lembaga: [],
   status_registrasi: {
     status: "",
+    status_code: "",
     kode_fasilitasi: "",
   },
   tracking: [],
@@ -88,7 +92,6 @@ const getDetail = async () => {
     if (jenisFasilitasi.value == "Reguler") {
       url = "/facilitate/verifikator/lph";
     }
-    console.log(url);
     const lembaga = await $api(url, {
       method: "get",
     });
@@ -105,24 +108,6 @@ const getDetail = async () => {
 const formatLembaga = (val: string) => {
   return listLembaga.value.find((item: any) => item.id === val)?.name;
 };
-const defaultStatus = { color: "error", desc: "Unknown Status" };
-const statusItem = new Proxy(
-  {
-    OF1: { color: "grey-300", desc: "Draft" },
-    OF10: { color: "success", desc: "Submitted" },
-    OF15: { color: "success", desc: "Verified" },
-    OF2: { color: "error", desc: "Returned" },
-    OF290: { color: "error", desc: "Rejected" },
-    OF5: { color: "success", desc: "Invoice issued" },
-    OF320: { color: "success", desc: "Code Issued" },
-    OF11: { color: "success", desc: "Verification" },
-  },
-  {
-    get(target, prop) {
-      return prop in target ? target[prop] : defaultStatus;
-    },
-  }
-);
 
 const returnHandler = async (message: string) => {
   try {
@@ -220,7 +205,10 @@ const institutionHeader = [
     <VRow class="d-flex justify-start align-center">
       <h2 class="text-h2">Detail Pengajuan Verifikasi</h2>
     </VRow>
-    <VRow class="d-flex justify-end align-center">
+    <VRow
+      class="d-flex justify-end align-center"
+      v-if="detail.status_registrasi.status_code == 'OF10'"
+    >
       <VerifikatorFasilitatorReturnConfirm @confirm="returnHandler" />
       <VerifikatorFasilitatorRejectConfirm @confirm="rejectHandler" />
       <VerifikatorFasilitatorApproveConfirm @confirm="approveHandler" />
@@ -300,9 +288,18 @@ const institutionHeader = [
             >
             <VExpansionPanelText>
               <InfoRow name="Status" separator="" class="d-flex align-center"
-                ><v-chip class="ma-2" label>{{
-                  detail.status_registrasi.status
-                }}</v-chip></InfoRow
+                ><v-chip
+                  class="ma-2"
+                  label
+                  :color="
+                    statusItemFacilitator[detail.status_registrasi.status_code]
+                      .color
+                  "
+                  >{{
+                    statusItemFacilitator[detail.status_registrasi.status_code]
+                      .desc
+                  }}</v-chip
+                ></InfoRow
               >
               <InfoRow name="Kode Fasilitasi" separator="">{{
                 detail.status_registrasi.kode_fasilitasi

@@ -8,6 +8,40 @@ export const requiredValidator = (value: unknown) => {
   return !!String(value).trim().length || "Kolom ini wajib diisi";
 };
 
+// HSCODE validator
+export const hsCodeValidator = (value: unknown) => {
+  if (isEmpty(value)) return true;
+
+  const re = /^\d{4}\.\d{2}\.\d{2}$/;
+
+  if (Array.isArray(value))
+    return (
+      value.every((val) => re.test(String(val))) ||
+      "Kolom HS Code hanya berisi angka dan titik berformat 0000.00.00"
+    );
+
+  return (
+    re.test(String(value)) ||
+    "Kolom HS Code hanya berisi angka dan titik berformat 0000.00.00"
+  );
+};
+export const hsCodeDescValidator = (value: unknown) => {
+  if (isEmpty(value)) return true;
+
+  const re = /^[a-zA-Z0-9 .,]+$/;
+
+  if (Array.isArray(value))
+    return (
+      value.every((val) => re.test(String(val))) ||
+      "Kolom HS Code Desc hanya berisi alphanumeric, spasi, (.), (,)"
+    );
+
+  return (
+    re.test(String(value)) ||
+    "Kolom HS Code Desc hanya berisi alphanumeric, spasi, (.), (,)"
+  );
+};
+
 // 👉 Email Validator
 export const emailValidator = (value: unknown) => {
   if (isEmpty(value)) return true;
@@ -127,4 +161,42 @@ export const alphaDashValidator = (value: unknown) => {
   const valueAsString = String(value);
 
   return /^[0-9A-Z_-]*$/i.test(valueAsString) || "Semua karakter tidak valid";
+};
+
+// 👉 File Size Validator
+export const fileSizeValidator = (value: unknown) => {
+  console.log("file attribute = ", value[0]);
+  if (value[0].size > 2097152) {
+    return "File maksimal 2MB";
+  }
+  return true;
+};
+
+export const fileExtensionValidator = (value: unknown) => {
+  // use this reference for allowed extension: https://developer.mozilla.org/en-US/docs/Web/HTTP/MIME_types/Common_types
+  let file = value;
+  if (Array.isArray(value)) {
+    file = value[0];
+  }
+  console.log("file attribute = ", value[0].type);
+  const allowedFileExtensionList = [
+    "image/jpg",
+    "image/jpeg",
+    "image/png",
+    "application/pdf",
+  ];
+  const result = useArrayIncludes(allowedFileExtensionList, file.type).value;
+  // console.log("file extension match = ", result);
+  if (result) {
+    return true;
+  }
+  return "File extension not allowed";
+};
+
+export const fileNameLengthValidator = (value: unknown) => {
+  console.log("file attribute = ", value[0].name);
+  if (value[0].name.length > 77) {
+    return "File name too long";
+  }
+  return true;
 };

@@ -181,7 +181,11 @@ watch(
             <VRow>
               <VCol cols="6">
                 <VTextField
-                  :rules="[requiredValidator]"
+                  :rules="[
+                    requiredValidator,
+                    integerValidator,
+                    lengthValidator(form.noKtp, 16),
+                  ]"
                   v-model="form.noKtp"
                   label="No. KTP"
                   outlined
@@ -191,7 +195,7 @@ watch(
               </VCol>
               <VCol cols="6">
                 <VTextField
-                  :rules="[requiredValidator]"
+                  :rules="[requiredValidator, phoneNumberIdValidator]"
                   v-model="form.noKontak"
                   label="No. Kontak"
                   outlined
@@ -203,7 +207,7 @@ watch(
             <VRow>
               <VCol cols="6">
                 <VTextField
-                  :rules="[requiredValidator]"
+                  :rules="[requiredValidator, alphaValidator]"
                   v-model="form.namaPenyelia"
                   label="Nama Penyelia"
                   outlined
@@ -270,30 +274,45 @@ watch(
               </VCol>
             </VRow>
             <VFileInput
-              :rules="[requiredValidator]"
+              :rules="[
+                requiredValidator,
+                fileSizeValidator,
+                fileNameLengthValidator,
+                fileExtensionValidator,
+              ]"
               v-model="form.sertifikatKompetensi"
               label="Unggah Sertifikat Kompetensi Penyelia Halal"
               outlined
               dense
-              accept=".pdf,.jpg,.png"
+              accept=".pdf,.jpg,.png,.jpeg"
               class="mb-2"
             />
             <VFileInput
-              :rules="[requiredValidator]"
+              :rules="[
+                requiredValidator,
+                fileSizeValidator,
+                fileNameLengthValidator,
+                fileExtensionValidator,
+              ]"
               v-model="form.sertifikatPelatihan"
               label="Unggah Sertifikat Pelatihan Penyelia Halal"
               outlined
               dense
-              accept=".pdf,.jpg,.png"
+              accept=".pdf,.jpg,.png,.jpeg"
               class="mb-2"
             />
             <VFileInput
-              :rules="[requiredValidator]"
+              :rules="[
+                requiredValidator,
+                fileSizeValidator,
+                fileNameLengthValidator,
+                fileExtensionValidator,
+              ]"
               v-model="form.ktpFile"
               label="Unggah KTP"
               outlined
               dense
-              accept=".pdf,.jpg,.png"
+              accept=".pdf,.jpg,.png,.jpeg"
               class="mb-2"
             />
           </VForm>

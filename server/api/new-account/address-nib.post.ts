@@ -10,10 +10,16 @@ export default defineEventHandler(async (event) => {
     });
   }
   const { daerahId } = await readBody<{ daerahId: string }>(event);
+  if (daerahId == "") {
+    return {
+      provinsi: "",
+      kabupaten: "",
+      kecamatan: "",
+    };
+  }
   const province = daerahId.slice(0, 2);
   const district = daerahId.slice(0, 4);
   const subDistrict = daerahId.slice(0, 6);
-  console.log(daerahId, province, district, subDistrict);
   const { data } = await $fetch<{ data: RegionData[] }>(
     `${runtimeConfig.coreBaseUrl}/api/list/provinsi`,
     {

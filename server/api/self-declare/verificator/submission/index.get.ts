@@ -11,25 +11,45 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { page, size, keyword, isverificator } = (await getQuery(event)) as {
+  const {
+    page,
+    size,
+    keyword,
+    fasilitas,
+    jenis_produk,
+    provinsi,
+    lembaga,
+    pendamping,
+    kabupaten,
+  } = (await getQuery(event)) as {
     page: string;
     size: string;
     keyword: string;
-    isverificator: boolean;
+    fasilitas: string;
+    jenis_produk: string;
+    provinsi: string;
+    lembaga: string;
+    pendamping: string;
+    kabupaten: string;
   };
 
   const params: any = {
     page: isNaN(Number.parseInt(page, 10)) ? 1 : Number.parseInt(page, 10),
     size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
-    isverificator: isverificator,
+    fasilitas,
+    jenis_produk,
+    provinsi,
+    lembaga,
+    pendamping,
+    kabupaten,
   };
 
   if (keyword != "") {
-    params["keyword"] = keyword;
   }
+  params["keyword"] = keyword;
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/unverified-certificate-halal-foreign/search`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/halal-certificate-reguler/self-declare/search`,
     {
       method: "get",
       headers: { Authorization: authorizationHeader },
