@@ -15,6 +15,26 @@ const items = ref<
   }[]
 >([]);
 
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+
+const statusItem: any = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+    OF11: { color: "success", desc: "Verification" },
+  },
+  {
+    get(target: any, prop: any) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
+
 const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
@@ -66,6 +86,7 @@ const verifikatorTableHeader = [
   { title: "NIB / Bu  siness ID No", key: "nib" },
   { title: "NPWP / Taxpayer ID No", key: "npwp" },
   { title: "Date", key: "tgl_daftar" },
+  { title: "Status", key: "status_reg" },
   { title: "Action", key: "action" },
 ];
 
@@ -133,6 +154,11 @@ const navigateAction = (id: string) => {
             </template>
             <template #item.tgl_daftar="{ item }">
               {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+            </template>
+            <template #item.status_reg="{ item }">
+              <VChip label :color="statusItem[(item as any).status_reg].color">
+                {{ statusItem[(item as any).status_reg].desc }}
+              </VChip>
             </template>
             <template #item.action="{ item }">
               <div class="d-flex gap-1">
