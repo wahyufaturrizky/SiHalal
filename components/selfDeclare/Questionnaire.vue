@@ -20,6 +20,7 @@ const emit = defineEmits(["update:dialogVisible"]);
 
 const localDialogVisible = ref(props.dialogVisible);
 const answers = ref(Array(props.questions.length).fill(null));
+const isAllAnswered = computed(() => answers.value.some((el) => el == null));
 
 watch(
   () => props.dialogVisible,
@@ -38,6 +39,7 @@ const closeDialog = () => {
 
 const handleSubmit = () => {
   props.submit(answers.value);
+  answers.value = Array(props.questions.length).fill(null);
   closeDialog();
 };
 </script>
@@ -51,7 +53,13 @@ const handleSubmit = () => {
       <VCardText>
         <VForm>
           <div v-for="(question, index) in questions" :key="index" class="pa-2">
-            <VRadioGroup v-model="answers[index]" :label="question" inline>
+            <div class="d-flex">
+              <div class="pe-1">
+                {{ `${index + 1}.` }}
+              </div>
+              <div>{{ `${question}` }}</div>
+            </div>
+            <VRadioGroup v-model="answers[index]" inline class="ps-2">
               <VRadio label="Yes" value="yes" />
               <VRadio label="No" value="no" />
             </VRadioGroup>
@@ -62,7 +70,12 @@ const handleSubmit = () => {
         <VBtn @click="closeDialog" variant="outlined" color="error">
           Batal
         </VBtn>
-        <VBtn color="primary" @click="handleSubmit" variant="flat">
+        <VBtn
+          color="primary"
+          @click="handleSubmit"
+          variant="flat"
+          :disabled="isAllAnswered"
+        >
           Simpan
         </VBtn>
       </VCardActions>

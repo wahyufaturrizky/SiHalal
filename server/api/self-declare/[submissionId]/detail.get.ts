@@ -12,7 +12,6 @@ export default defineEventHandler(async (event: any) => {
     });
   }
   const { submissionId } = event.context.params;
-  // console.log(submissionId);
 
   const baseUrl = `${runtimeConfig.coreBaseUrl}/api/v1`;
   const selfDeclareDetailUrl = `${baseUrl}/halal-certificate-reguler/${submissionId}/detail`;
@@ -23,7 +22,6 @@ export default defineEventHandler(async (event: any) => {
     setResponseStatus(event, 400);
     return err.data;
   });
-  console.log(response, "< detail res");
 
   return response || null;
 });

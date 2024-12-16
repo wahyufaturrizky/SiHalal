@@ -911,7 +911,7 @@ onMounted(async () => {
     });
 
     if (response.code === 2000) {
-      console.log(response.data, "< res detail");
+      // console.log(response.data, "< res detail");
       // data for left side
       Object.assign(submissionDetail, response.data.certificate_halal);
       Object.assign(picDetail, response.data.penanggung_jawab);
@@ -932,7 +932,7 @@ onMounted(async () => {
       Object.assign(trackingDetail, response.data.tracking);
     }
   } catch (error) {
-    console.log(error, "< err detail");
+    console.log(error);
   }
 
   const response3: MasterBadanUsaha[] = await $api("/master/kbli", {
@@ -940,6 +940,6 @@ onMounted(async () => {
   });
   kbliDropdown.value = response3;
 
-  console.log(response3, "< res kbli");
+  // console.log(response3, "< res kbli");
 });
 </script>

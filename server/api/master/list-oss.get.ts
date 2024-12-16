@@ -23,6 +23,5 @@ export default defineEventHandler(async (event) => {
       statusMessage: JSON.stringify(err.data),
     });
   });
-  console.log(data, "< data here");
   return data || null;
 });

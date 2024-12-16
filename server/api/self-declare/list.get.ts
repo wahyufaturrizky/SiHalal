@@ -13,7 +13,6 @@ export default defineEventHandler(async (event: any) => {
   }
 
   const query: any = await getQuery(event);
-  console.log(query, "< query here");
   const params = {
     page: isNaN(Number.parseInt(query.page, 10))
       ? 1
@@ -31,11 +30,9 @@ export default defineEventHandler(async (event: any) => {
     headers: { Authorization: authHeader },
     params,
   }).catch((err: NuxtError) => {
-    console.log(err, "< err here");
     setResponseStatus(event, 400);
     return err.data;
   });
-  console.log(response, "< res here");
 
   return response || null;
 });

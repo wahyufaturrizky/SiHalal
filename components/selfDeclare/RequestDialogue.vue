@@ -31,8 +31,8 @@ const closeDialog = () => {
   localDialogVisible.value = false;
 };
 
-const kbliOptions = ref(["Option 1", "Option 2", "Option 3"]);
-const selectedKBLI = ref(kbliOptions.value[0]);
+const kbliOptions = ref([]);
+const selectedKBLI = ref();
 
 const handleRegister = () => {
   props.submit(selectedKBLI.value);
@@ -43,13 +43,14 @@ onMounted(async () => {
   const response: any = await $api("/master/list-oss", {
     method: "get",
   });
-  console.log(response, "< res here");
+  kbliOptions.value = response;
+  // console.log(response, "< res here");
 });
 </script>
 
 <template>
-  <VDialog v-model="localDialogVisible" max-width="24%">
-    <VCard class="py-4 px-8">
+  <VDialog v-model="localDialogVisible" max-width="500px">
+    <VCard class="pa-4">
       <VCardTitle class="headline d-flex space-between align-center">
         <h4>Layanan Sertifikasi Halal</h4>
         <VSpacer />
@@ -81,11 +82,17 @@ onMounted(async () => {
             Daftar
           </VBtn>
         </VCard>
+        <div class="font-weight-bold text-body-2 mb-1">
+          Pilih KBLI/Usaha/Kegiatan
+        </div>
         <VSelect
           v-model="selectedKBLI"
           :items="kbliOptions"
-          label="Pilih KBLI/Usaha/Kegiatan"
+          item-title="uraian_usaha"
+          item-value="kbli"
+          placeholder="Pilih KBLI/Usaha/Kegiatan"
           outlined
+          density="compact"
         />
       </VCardText>
     </VCard>

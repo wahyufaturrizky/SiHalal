@@ -21,7 +21,6 @@ export default defineEventHandler(async (event: any) => {
     setResponseStatus(event, 400);
     return err.data;
   });
-  console.log(response, "< validation res");
 
   return response || null;
 });

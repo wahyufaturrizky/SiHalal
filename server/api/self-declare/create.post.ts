@@ -18,11 +18,9 @@ export default defineEventHandler(async (event: any) => {
     method: "post",
     headers: { Authorization: authHeader },
   }).catch((err: NuxtError) => {
-    console.log(err, "< err create here");
     setResponseStatus(event, 400);
     return err.data;
   });
-  console.log(response, "< create res here");
 
   return response || null;
 });
