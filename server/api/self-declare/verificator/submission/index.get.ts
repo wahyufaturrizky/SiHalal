@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
   params["keyword"] = keyword;
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/halal-certificate-reguler/self-declare/search`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/self-declare/search`,
     {
       method: "get",
       headers: { Authorization: authorizationHeader },

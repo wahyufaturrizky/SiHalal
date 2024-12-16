@@ -35,15 +35,15 @@ const statusItem: any = new Proxy(
 // Table headers
 const headers: any = [
   { title: "No", key: "id", align: "center" },
-  { title: "ID Registrasi", key: "id_registrasi" },
+  { title: "ID Registrasi", key: "id_daftar" },
   { title: "Nomor Daftar", key: "nomor_daftar" },
-  { title: "Tanggal Daftar", key: "TanggalDaftar" },
-  { title: "Nama PU", key: "Nama" },
-  { title: "Alamat", key: "Alamat" },
-  { title: "Jenis Produk", key: "JenisProduk" },
-  { title: "Merk Dagang", key: "MerkDagang" },
-  { title: "Nama Pendamping", key: "nama_pendamping" },
-  { title: "Status", key: "Status" },
+  { title: "Tanggal Daftar", key: "tgl_daftar" },
+  { title: "Nama PU", key: "nama" },
+  { title: "Alamat", key: "alamat" },
+  { title: "Jenis Produk", key: "jenis_produk" },
+  { title: "Merk Dagang", key: "merk_dagang" },
+  { title: "Nama Pendamping", key: "pendamping" },
+  { title: "Status", key: "status_code" },
   { title: "Action", key: "action" },
 ];
 
@@ -57,7 +57,7 @@ const handleInput = () => {
 };
 
 const navigateAction = (id: string) => {
-  navigateTo(`/sertifikasi-halal/luar-negeri/verification/${id}`);
+  navigateTo(`/self-declare/verification/${id}`);
 };
 
 const loadItem = async (

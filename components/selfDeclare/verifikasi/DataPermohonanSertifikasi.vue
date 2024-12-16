@@ -2,13 +2,25 @@
 import { computed, ref } from "vue";
 import { VDataTableServer } from "vuetify/components";
 
+const emit = defineEmits<{
+  (event: "refresh"): void;
+}>();
+
 const items = ref([]);
 const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
 const loadingAll = ref(false);
-const page = ref(1);
+const page = ref();
+const itemsProduct = ref();
 const searchQuery = ref("");
+const dialogVisible = ref(false);
+const itemsFacility = ref();
+const itemsLembaga = ref();
+const itemsPendamping = ref();
+const itemsProvince = ref();
+const itemsDistrict = ref();
+const loadingAddSubmission = ref(false);
 
 interface DataItem {
   id: number;
@@ -43,30 +55,16 @@ const statusItem: any = new Proxy(
 
 const selectedItems = ref<DataItem[]>([]);
 
-// Dummy data for table
-const tableData = ref([
-  {
-    id: 1,
-    id_daftar: "D001",
-    TanggalDaftar: "2024-11-01",
-    Nama: "John Doe",
-    Alamat: "1234 Elm Street, Springfield",
-    JenisProduk: "Electronics",
-    MerkDagang: "TechBrand",
-    Status: "OF74",
-  },
-]);
-
 const headers: any = [
   { title: "No", key: "id", align: "center" },
   { title: "ID Daftar", key: "id_daftar" },
   { title: "Pilih", key: "pilih" },
-  { title: "Tanggal Daftar", key: "TanggalDaftar" },
-  { title: "Nama", key: "Nama" },
-  { title: "Alamat", key: "Alamat" },
-  { title: "Jenis Produk", key: "JenisProduk" },
-  { title: "Merk Dagang", key: "MerkDagang" },
-  { title: "Status", key: "Status" },
+  { title: "Tanggal Daftar", key: "tgl_daftar" },
+  { title: "Nama", key: "nama" },
+  { title: "Alamat", key: "alamat" },
+  { title: "Jenis Produk", key: "jenis_produk" },
+  { title: "Merk Dagang", key: "merk_dagang" },
+  { title: "Status", key: "status_code" },
   { title: "Action", key: "action" },
 ];
 
@@ -85,7 +83,7 @@ const handleInput = () => {
 };
 
 const navigateAction = (id: string) => {
-  navigateTo(`/sertifikasi-halal/luar-negeri/verification/${id}`);
+  navigateTo(`/self-declare/verification/${id}`);
 };
 
 const loadItem = async ({
@@ -142,12 +140,12 @@ const debouncedFetch = debounce(loadItem, 500);
 const showFilterMenu = ref(false);
 
 const selectedFilters = ref({
-  fasilitas: "Semua",
-  jenisProduk: "Semua",
-  provinsi: "Semua",
-  lembaga: "Semua",
-  pendamping: "Semua",
-  kabupaten: "Semua",
+  fasilitas: "",
+  jenisProduk: "",
+  provinsi: "",
+  lembaga: "",
+  pendamping: "",
+  kabupaten: "",
 });
 
 const applyFilters = () => {
@@ -165,7 +163,8 @@ const applyFilters = () => {
 };
 
 const isAllSelected = computed(
-  () => selectedItems.value.length === items.value.length
+  () =>
+    selectedItems.value.length === items.value.length && items.value.length > 0
 );
 
 // Toggle select all
@@ -179,6 +178,139 @@ const buttonText = computed(() =>
     ? `Pilih Data (${selectedItems.value.length})`
     : "Pilih Data"
 );
+
+const loadItemProduct = async () => {
+  try {
+    const response: any = await $api("/master/products", {
+      method: "get",
+    });
+
+    if (response.length) {
+      itemsProduct.value = response;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const postSubmission = async (selectedItems: any) => {
+  try {
+    loadingAddSubmission.value = true;
+
+    const res: any = await $api("/self-declare/verificator/submission/assign", {
+      method: "post",
+      body: {
+        certificate_id: selectedItems,
+      },
+    });
+
+    if (res?.code === 2000) {
+      useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+      dialogVisible.value = false;
+      loadingAddSubmission.value = false;
+      emit("refresh");
+    } else {
+      useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+      dialogVisible.value = false;
+      loadingAddSubmission.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    dialogVisible.value = false;
+    loadingAddSubmission.value = false;
+  }
+};
+
+const loadItemFacility = async () => {
+  try {
+    const response: any = await $api("/master/facility", {
+      method: "get",
+    });
+
+    if (response.length) {
+      itemsFacility.value = response;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const loadItemLembaga = async () => {
+  try {
+    const response: any = await $api("/master/lembaga", {
+      method: "get",
+    });
+
+    if (response.length) {
+      itemsLembaga.value = response;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const loadItemPendamping = async () => {
+  try {
+    const response: any = await $api("/master/pendamping", {
+      method: "get",
+    });
+
+    if (response.length) {
+      itemsPendamping.value = response;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const loadItemProvince = async () => {
+  try {
+    const response: any = await $api("/master/province", {
+      method: "get",
+    });
+
+    if (response.length) {
+      itemsProvince.value = response;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const loadItemDistrict = async () => {
+  try {
+    const response: any = await $api("/master/district", {
+      method: "post",
+      body: {
+        province: selectedFilters.value.provinsi,
+      },
+    });
+
+    if (response.length) {
+      itemsDistrict.value = response;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 
 onMounted(async () => {
   loadingAll.value = true;
@@ -194,6 +326,11 @@ onMounted(async () => {
       pendamping: selectedFilters.value.pendamping,
       kabupaten: selectedFilters.value.kabupaten,
     }),
+    loadItemProduct(),
+    loadItemFacility(),
+    loadItemLembaga(),
+    loadItemPendamping(),
+    loadItemProvince(),
   ]);
 
   const checkResIfUndefined = res.every((item) => {
@@ -206,187 +343,200 @@ onMounted(async () => {
     loadingAll.value = false;
   }
 });
+
+const openDialog = () => {
+  dialogVisible.value = true;
+};
+
+console.log("@selectedItems", selectedItems.value);
 </script>
 
 <template>
-  <VDialog width="1200">
-    <template #activator="{ props: openModal }">
-      <VBtn
-        variant="flat"
-        append-icon="fa-plus"
-        style="margin: 1svw"
-        v-bind="openModal"
-      >
-        Ambil Data
-      </VBtn>
-    </template>
-    <template #default="{ isActive }">
-      <VCard v-if="!loadingAll" variant="flat" class="pa-4">
-        <VCardTitle>
-          <VRow>
-            <VCol cols="10"><h3>Data Permohonan Sertifikasi</h3></VCol>
-            <VCol cols="2" style="display: flex; justify-content: end">
-              <VIcon
-                size="small"
-                icon="fa-times"
-                @click="isActive.value = false"
+  <VBtn
+    variant="flat"
+    append-icon="fa-plus"
+    style="margin: 1svw"
+    @click="openDialog"
+  >
+    Ambil Data
+  </VBtn>
+
+  <VDialog v-model="dialogVisible" width="1200">
+    <VCard v-if="!loadingAll" variant="flat" class="pa-4">
+      <VCardTitle>
+        <VRow>
+          <VCol cols="10"><h3>Data Permohonan Sertifikasi</h3></VCol>
+          <VCol cols="2" style="display: flex; justify-content: end">
+            <VIcon
+              size="small"
+              icon="fa-times"
+              @click="dialogVisible = false"
+            />
+          </VCol>
+        </VRow>
+      </VCardTitle>
+      <VCardText>
+        <VRow>
+          <VCol>
+            <VBtn
+              :disabled="selectedItems.length === 0"
+              :text="buttonText"
+              @click="postSubmission(selectedItems)"
+              :loading="loadingAddSubmission"
+            />
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol cols="1">
+            <div class="checkbox-container">
+              <VCheckbox
+                v-model="isAllSelected"
+                class="custom-checkbox"
+                @click="toggleSelectAll"
+                :disabled="items.length === 0"
               />
-            </VCol>
-          </VRow>
-        </VCardTitle>
-        <VCardText>
-          <VRow>
-            <VCol>
-              <VBtn
-                :disabled="selectedItems.length === 0"
-                :text="buttonText"
-                @click="() => console.log(selectedItems)"
-              />
-            </VCol>
-          </VRow>
-          <VRow>
-            <VCol cols="1">
-              <div class="checkbox-container">
-                <VCheckbox
-                  v-model="isAllSelected"
-                  class="custom-checkbox"
-                  @click="toggleSelectAll"
-                />
-              </div>
-            </VCol>
-            <VCol class="d-flex justify-start align-center" cols="2">
-              <VMenu
-                v-model="showFilterMenu"
-                :close-on-content-click="false"
-                offset-y
-              >
-                <template #activator="{ props }">
-                  <VBtn
-                    color="primary"
-                    variant="outlined"
-                    v-bind="props"
-                    append-icon="ri-filter-fill"
-                  >
-                    Filter
-                  </VBtn>
-                </template>
-                <VCard class="pa-3" width="300">
-                  <VSelect
-                    v-model="selectedFilters.jenisProduk"
-                    label="Jenis Produk"
-                    :items="['Semua', 'Produk Y', 'Produk Z']"
-                    class="mt-3"
-                  />
-                  <VSelect
-                    v-model="selectedFilters.fasilitas"
-                    label="Fasilitas"
-                    :items="['Semua', 'Fasilitas A', 'Fasilitas AB']"
-                    class="mt-3"
-                  />
-                  <VSelect
-                    v-model="selectedFilters.lembaga"
-                    label="Lembaga"
-                    :items="['Semua', 'Lembaga A', 'Lembaga B']"
-                    class="mt-3"
-                  />
-                  <VSelect
-                    v-model="selectedFilters.pendamping"
-                    label="Pendamping"
-                    :items="['Semua', 'Pendamping A', 'Pendamping B']"
-                    class="mt-3"
-                  />
-                  <VSelect
-                    v-model="selectedFilters.provinsi"
-                    label="Provinsi"
-                    :items="['Semua', 'Provinsi A', 'Provinsi B']"
-                    class="mt-3"
-                  />
-                  <VSelect
-                    v-model="selectedFilters.kabupaten"
-                    label="Kabupaten"
-                    :items="['Semua', 'Kabupaten A', 'Kabupaten B']"
-                    class="mt-3"
-                  />
-                  <VBtn
-                    block
-                    color="primary"
-                    class="mt-3"
-                    @click="applyFilters"
-                  >
-                    Apply Filters
-                  </VBtn>
-                </VCard>
-              </VMenu>
-            </VCol>
-            <VCol class="d-flex justify-sm-space-between align-center" cols="9">
-              <VTextField
-                v-model="searchQuery"
-                density="compact"
-                placeholder="Search Data"
-                append-inner-icon="ri-search-line"
-                style="max-width: 100%"
-                @input="handleInput"
-              />
-            </VCol>
-          </VRow>
-          <VRow>
-            <VDataTableServer
-              v-model:items-per-page="itemPerPage"
-              v-model:page="page"
-              :headers="headers"
-              :items="items"
-              :loading="loading"
-              :items-length="totalItems"
-              loading-text="Loading..."
-              style="white-space: nowrap"
-              @update:options="
-                loadItem({
-                  page: page,
-                  size: itemPerPage,
-                  keyword: searchQuery,
-                  fasilitas: selectedFilters.fasilitas,
-                  jenis_produk: selectedFilters.jenisProduk,
-                  provinsi: selectedFilters.provinsi,
-                  lembaga: selectedFilters.lembaga,
-                  pendamping: selectedFilters.pendamping,
-                  kabupaten: selectedFilters.kabupaten,
-                })
-              "
+            </div>
+          </VCol>
+          <VCol class="d-flex justify-start align-center" cols="2">
+            <VMenu
+              v-model="showFilterMenu"
+              :close-on-content-click="false"
+              offset-y
             >
-              <template #item.id="{ index }">
-                {{ index + 1 + (page - 1) * itemPerPage }}
-              </template>
-              <template #item.tgl_daftar="{ item }">
-                {{ formatDateIntl(new Date((item as any).tgl_daftar)) }}
-              </template>
-              <template #item.action="{ item }">
-                <div class="d-flex gap-1">
-                  <IconBtn size="small">
-                    <VIcon
-                      icon="ri-arrow-right-line"
-                      color="primary"
-                      @click="navigateAction((item as any).id)"
-                    />
-                  </IconBtn>
-                  <!-- Right arrow icon for action -->
-                </div>
-              </template>
-              <template #item.pilih="{ item }">
-                <VCheckbox v-model="selectedItems" :value="item" />
-              </template>
-              <template #item.status_code="{ item }">
-                <VChip
-                  label
-                  :color="statusItem[(item as any).status_code].color"
+              <template #activator="{ props }">
+                <VBtn
+                  color="primary"
+                  variant="outlined"
+                  v-bind="props"
+                  append-icon="ri-filter-fill"
                 >
-                  {{ statusItem[(item as any).status_code].desc }}
-                </VChip>
+                  Filter
+                </VBtn>
               </template>
-            </VDataTableServer>
-          </VRow>
-        </VCardText>
-      </VCard>
-    </template>
+              <VCard class="pa-3" width="300">
+                <VSelect
+                  v-model="selectedFilters.jenisProduk"
+                  label="Jenis Produk"
+                  :items="itemsProduct"
+                  item-title="name"
+                  item-value="code"
+                  class="mt-3"
+                />
+                <VSelect
+                  v-model="selectedFilters.fasilitas"
+                  label="Fasilitas"
+                  :items="itemsFacility"
+                  class="mt-3"
+                  item-title="name"
+                  item-value="id"
+                />
+                <VSelect
+                  v-model="selectedFilters.lembaga"
+                  label="Lembaga"
+                  :items="itemsLembaga"
+                  class="mt-3"
+                  item-title="name"
+                  item-value="id"
+                />
+                <VSelect
+                  v-model="selectedFilters.pendamping"
+                  label="Pendamping"
+                  :items="itemsPendamping"
+                  class="mt-3"
+                  item-title="name"
+                  item-value="id"
+                />
+                <VSelect
+                  v-model="selectedFilters.provinsi"
+                  label="Provinsi"
+                  :items="itemsProvince"
+                  item-title="name"
+                  item-value="code"
+                  class="mt-3"
+                  @update:modelValue="loadItemDistrict"
+                />
+                <VSelect
+                  v-model="selectedFilters.kabupaten"
+                  label="Kabupaten"
+                  :items="itemsDistrict"
+                  item-title="name"
+                  item-value="code"
+                  class="mt-3"
+                />
+                <VBtn block color="primary" class="mt-3" @click="applyFilters">
+                  Apply Filters
+                </VBtn>
+              </VCard>
+            </VMenu>
+          </VCol>
+          <VCol class="d-flex justify-sm-space-between align-center" cols="9">
+            <VTextField
+              v-model="searchQuery"
+              density="compact"
+              placeholder="Search Data"
+              append-inner-icon="ri-search-line"
+              style="max-width: 100%"
+              @input="handleInput"
+            />
+          </VCol>
+        </VRow>
+        <VRow>
+          <VDataTableServer
+            v-model:items-per-page="itemPerPage"
+            v-model:page="page"
+            :headers="headers"
+            :items="items"
+            :loading="loading"
+            :items-length="totalItems"
+            loading-text="Loading..."
+            style="white-space: nowrap"
+            @update:options="
+              loadItem({
+                page: page,
+                size: itemPerPage,
+                keyword: searchQuery,
+                fasilitas: selectedFilters.fasilitas,
+                jenis_produk: selectedFilters.jenisProduk,
+                provinsi: selectedFilters.provinsi,
+                lembaga: selectedFilters.lembaga,
+                pendamping: selectedFilters.pendamping,
+                kabupaten: selectedFilters.kabupaten,
+              })
+            "
+          >
+            <template #item.id="{ index }">
+              {{ index + 1 + (page - 1) * itemPerPage }}
+            </template>
+            <template #item.tgl_daftar="{ item }">
+              {{ formatDateIntl(new Date((item as any).tgl_daftar)) }}
+            </template>
+            <template #item.action="{ item }">
+              <div class="d-flex gap-1">
+                <IconBtn size="small">
+                  <VIcon
+                    icon="ri-arrow-right-line"
+                    color="primary"
+                    @click="navigateAction((item as any).id_daftar)"
+                  />
+                </IconBtn>
+                <!-- Right arrow icon for action -->
+              </div>
+            </template>
+            <template #item.pilih="{ item }">
+              <VCheckbox
+                v-model="selectedItems"
+                :value="(item as any).id_daftar"
+              />
+            </template>
+            <template #item.status_code="{ item }">
+              <VChip label :color="statusItem[(item as any).status_code].color">
+                {{ statusItem[(item as any).status_code].desc }}
+              </VChip>
+            </template>
+          </VDataTableServer>
+        </VRow>
+      </VCardText>
+    </VCard>
   </VDialog>
 </template>
 
