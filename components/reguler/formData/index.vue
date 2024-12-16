@@ -2,7 +2,7 @@
 const props = defineProps({
   onSubmit: {
     type: Function,
-    default: () => { },
+    default: () => {},
     required: false,
   },
   title: {
@@ -20,38 +20,35 @@ const props = defineProps({
 })
 
 const getSelectOptions = (field: string): string => {
-  let data: string[] = []
+  let data: string[] = [];
   switch (field) {
-  case 'Skala Usaha':
-    data = ['Mikro', 'Kecil', 'Menengah', 'Besar']
+    case "Jenis Layanan":
+      data = ["Mikro", "Kecil", "Menengah", "Besar"];
       break;
-  case 'Nama Fasilitas':
-    data = ['Es Cream', 'Minuman', 'Snack', 'Lainnya']
+    case "Skala Usaha":
+      data = ["Mikro", "Kecil", "Menengah", "Besar"];
       break;
-  case 'Pengujian Laboratorium':
-    data = ['Ada', 'Tidak Ada']
+    case "Nama Fasilitas":
+      data = ["Es Cream", "Minuman", "Snack", "Lainnya"];
       break;
-  case 'Hasil Audit':
-    data = ['Lulus', 'Tidak Lulus']
+    case "Pengujian Laboratorium":
+      data = ["Ada", "Tidak Ada"];
       break;
-  default:
-    break;
+    case "Hasil Audit":
+      data = ["Lulus", "Tidak Lulus"];
+      break;
+    default:
+      break;
   }
 
-  return data
-}
+  return data;
+};
 </script>
 
 <template>
   <VCard class="pa-4">
     <VCardTitle class="d-flex justify-space-between align-center">
       <span class="text-h5 font-weight-bold">{{ props.title }}</span>
-      <VBtn
-        variant="flat"
-        @click="props.onSubmit"
-      >
-        Simpan
-      </VBtn>
     </VCardTitle>
     <VCardText>
       <br>
@@ -65,23 +62,14 @@ const getSelectOptions = (field: string): string => {
           <div v-if="item.type === 'text'">
             <p class="label-pengajuan">
               {{ item.title }}
-              <span
-                v-if="item.required"
-                class="required"
-              >*</span>
+              <span v-if="item.required" class="required">*</span>
             </p>
-            <VTextField
-              v-model="item.value"
-              class="-mt-10"
-            />
+            <VTextField v-model="item.value" class="-mt-10" />
           </div>
           <div v-if="item.type === 'select'">
             <p class="label-pengajuan">
               {{ item.title }}
-              <span
-                v-if="item.required"
-                class="required"
-              >*</span>
+              <span v-if="item.required" class="required">*</span>
             </p>
             <VSelect
               v-if="item.disabled"
@@ -91,6 +79,7 @@ const getSelectOptions = (field: string): string => {
               class="-mt-10"
               disabled
               bg-color="#F6F6F6"
+              :value="item.value"
             />
             <VSelect
               v-if="!item.disabled"
@@ -98,6 +87,8 @@ const getSelectOptions = (field: string): string => {
               :items="getSelectOptions(item.title)"
               outlined
               class="-mt-10"
+              item-value="code"
+              item-title="name"
             />
           </div>
           <VCol
@@ -128,19 +119,17 @@ const getSelectOptions = (field: string): string => {
             <div>
               <p class="label-pengajuan">
                 {{ item.title }}
-                <span
-                  v-if="item.required"
-                  class="required"
-                >*</span>
+                <span v-if="item.required" class="required">*</span>
               </p>
-              <VTextarea
-                v-model="item.value"
-                class="-mt-10"
-              />
+              <VTextarea v-model="item.value" class="-mt-10" />
             </div>
           </div>
         </VCol>
       </VRow>
+      <br />
+      <VBtn class="btn-container" variant="flat" @click="props.onSubmit">
+        Simpan
+      </VBtn>
     </VCardText>
   </VCard>
 </template>
@@ -149,5 +138,8 @@ const getSelectOptions = (field: string): string => {
 .required {
   color: red;
   font-size: 12px;
+}
+.btn-container {
+  float: inline-end !important;
 }
 </style>

@@ -1,52 +1,32 @@
+<!-- eslint-disable vue/attribute-hyphenation -->
+<!-- eslint-disable array-callback-return -->
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const searchQuery = ref('')
+const loading = ref<boolean>(false)
+const page = ref<number>(1)
+const size = ref<number>(10)
+const totalItems = ref<number>(0)
+const data = ref<any[]>([])
+const listOss = ref<any[]>([])
 
 const headers = [
   { title: 'No', key: 'no' },
-  { title: 'No. Daftar', key: 'registrationNo', nowrap: true },
-  { title: 'Tanggal', key: 'date', nowrap: true },
-  { title: 'Nama PU', key: 'puName', nowrap: true },
-  { title: 'Jenis Daftar', key: 'registrationType', nowrap: true },
-  { title: 'Jenis Produk', key: 'productType', nowrap: true },
-  { title: 'Status', key: 'status', nowrap: true },
+  { title: 'Nomor Daftar', key: 'no_daftar', nowrap: true },
+  { title: 'Tanggal Daftar', key: 'tgl_daftar', nowrap: true },
+  { title: 'Nama PU', key: 'nama_pu', nowrap: true },
+  { title: 'Jenis Daftar', key: 'jenis_daftar', nowrap: true },
+  { title: 'Jenis Produk', key: 'jenis_produk', nowrap: true },
+  { title: 'Status', key: 'newStatus', nowrap: true },
   { title: 'Action', value: 'action', sortable: false, nowrap: true },
 ]
 
-const items = [
-  {
-    no: 1,
-    registrationNo: 'SIUP',
-    date: '10/10/2024',
-    puName: 'Testing',
-    registrationType: 'Baru',
-    productType: 'Minuman Bahagia',
-    status: [1, 3, 'Proses di LPH'],
-  },
-  {
-    no: 2,
-    registrationNo: 'SIUP',
-    date: '10/10/2024',
-    puName: 'Testing',
-    registrationType: 'Baru',
-    productType: 'Minuman Bahagia',
-    status: [1, 3, 'Proses di LPH'],
-  },
-  {
-    no: 3,
-    registrationNo: 'SIUP',
-    date: '10/10/2024',
-    puName: 'Testing',
-    registrationType: 'Baru',
-    productType: 'Minuman Bahagia',
-    status: [1, 3, 'Proses di LPH'],
-  },
-]
-
-// TODO -> BIKIN LOGIC BUAT SET CHIP COLOR
 const getChipColor = (status: string) => {
-  if (status === 'Proses di LPH')
+  if (status === 'Draf')
     return 'primary'
   else if (status === 'Micre')
     return 'success'
@@ -57,41 +37,139 @@ const getChipColor = (status: string) => {
 const navigateTo = (url: string) => {
   window.location.href = url
 }
+
+const loadItem = async (pageNumber: number, sizeData: number, keyword: string = '') => {
+  try {
+    const response: any = await $api('/reguler/pelaku-usaha', {
+      method: 'get',
+      params: {
+        pageNumber,
+        sizeData,
+        keyword,
+      },
+    })
+
+    if (response?.code === 2000) {
+      response?.data?.map((item: any) => {
+        item.newStatus = [item?.jenis_usaha, item?.jumlah_produk, item.status]
+      })
+      data.value = response.data
+      totalItems.value = response.total_item
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const getListOss = async () => {
+  try {
+    const response: any = await $api('/reguler/pelaku-usaha/list-oss', {
+      method: 'get',
+    })
+
+    if (response?.code === 2000)
+      listOss.value = response?.data
+    else
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const handleInput = (e: any) => {
+  loading.value = true
+  debounce(loadItem(page.value, size.value, e.target.value), 500)
+  loading.value = false
+}
+
+const newRegister = async (type: string, id: string) => {
+  try {
+    const response: any = await $api('/reguler/pelaku-usaha/draft', {
+      method: 'post',
+      body: {
+        type,
+        id,
+      },
+    })
+
+    if (response?.code === 2000) {
+      router.push(
+        `/audit-pengajuan/${response?.data?.certificate_halal?.id_reg}`,
+      )
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const additionalRegister = () => {
+}
+
+onMounted(async () => {
+  loading.value = true
+  await Promise.allSettled([loadItem(page.value, size.value, searchQuery.value), getListOss()])
+  loading.value = false
+})
 </script>
 
 <template>
-  <VContainer>
-    <KembaliButton class="pl-0" />
+  <div v-if="loading">
+    <VSkeletonLoader
+      v-for="i in 1"
+      :key="i"
+      type="table"
+    />
+  </div>
+  <VContainer v-else-if="!loading">
+    <KembaliButton class="no-padding" />
     <h3 class="text-h3">
-      Audit Pengajuan
+      Pengajuan Reguler
     </h3>
     <br>
 
     <VCard class="pa-4">
       <VCardTitle class="d-flex justify-space-between align-center">
-        <span class="text-h5 font-weight-bold">Daftar Pengajuan untuk Dilakukan Audit</span>
+        <span class="text-h5 font-weight-bold">Daftar Pengajuan Reguler</span>
+        <NewRegulerSertificationHalalDialog
+          :new-register="newRegister"
+          :additional-register="additionalRegister"
+          :data="listOss"
+        />
       </VCardTitle>
       <VCardItem>
         <VTextField
           v-model="searchQuery"
           density="compact"
-          placeholder="Cari Tagihan"
+          placeholder="Cari Data"
           append-inner-icon="ri-search-line"
-          style="max-width: 100%"
+          style="max-inline-size: 100%"
           @input="handleInput"
         />
       </VCardItem>
       <VCardItem>
         <VDataTable
           :headers="headers"
-          :items="items"
+          :items="data"
           item-value="no"
           class="elevation-1"
+          @update:options="loadItem(page, size, searchQuery)"
         >
-          <template #[`item.status`]="{ item }">
+          <template #item.no="{ index }">
+            <label>{{ index + 1 }}</label>
+          </template>
+          <template #[`item.newStatus`]="{ item }">
             <div class="d-flex">
               <VChip
-                v-for="(status, index) in item.status"
+                v-for="(status, index) in item.newStatus"
                 :key="index"
                 :color="getChipColor(status)"
                 label
@@ -104,9 +182,9 @@ const navigateTo = (url: string) => {
           <template #item.action="{ item }">
             <VIcon
               color="primary"
-              style="cursor: pointer;"
+              style="cursor: pointer"
               class="ic-center"
-              @click="navigateTo(`/audit-pengajuan/${item.no}`)"
+              @click="navigateTo(`/audit-pengajuan/${item.id_reg}`)"
             >
               ri-arrow-right-line
             </VIcon>
@@ -119,7 +197,10 @@ const navigateTo = (url: string) => {
 
 <style lang="scss" scoped>
 .ic-center {
-    place-self: center;
-    display: flex;
+  display: flex;
+  place-self: center;
+}
+.no-padding {
+  padding-left: 0px !important;
 }
 </style>

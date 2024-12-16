@@ -1,9 +1,8 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+
 const route = useRoute()
 const id = route?.params?.id
-
-const snackbar = useSnackbar()
-
 const panelSubmission = ref([0, 1])
 const panelPic = ref([0, 1])
 const panelAspectLegal = ref([0, 1])
@@ -12,106 +11,78 @@ const panelOutlet = ref([0, 1])
 const panelSupervisor = ref([0, 1])
 const panelDownloadFormulir = ref([0, 1])
 const panelTracking = ref([0, 1])
-
-const detailSubmission = ref({
-  id,
-  date: '10/10/2024',
-  requestNumber: '389392924',
-  requestDate: 'Sumbawa Banget, RT002/RW002, Sumbang, Curio',
-  serviceType: 'PNB',
-  productType: 'Minuman',
-  brand: '-',
-  marketingArea: '-',
-  companion: '-',
-  companionInstitution: '-',
-  kbli: 'Minuman',
-  companyName: 'Kopi Susu Samsul',
-  address: 'Sumbawa Banget, RT002/RW002, Sumbang, Curio',
-  district: 'Kab. Enrekang',
-  province: 'Sulawesi Selatan',
-  zipCode: '-',
-  country: 'Indonesia',
-  phone: '081231123213',
-  email: 'kopisususamsul@gmail.com',
-  businessType: 'Lainnya',
-  businessScale: 'Mikro',
-  businessLevel: 'UMK',
-  authorizedCapital: 'Rp. 5.000.000',
-  businessOrigin: 'Domestik',
-})
-
-const pic = ref({
-  name: 'Sumayah',
-  phoneNumber: '0899999999',
-  email: 'rasarasa@gmail.com',
-})
+const data = ref<any>({})
+const loading = ref(false)
 
 const aspectLegalHeader = [
-  { title: 'No.', key: 'no', nowrap: true },
-  { title: 'Layanan Produk', key: 'productService', nowrap: true },
-  { title: 'Jenis Produk', key: 'productType', nowrap: true },
-  { title: 'Kelas Produk', key: 'productClass', nowrap: true },
-  { title: 'Rincian Produk', key: 'productDetail', nowrap: true },
-  { title: 'Nama Produk', key: 'productName', nowrap: true },
-  { title: 'Publikasi', key: 'publication', nowrap: true },
+  { title: 'No.', key: 'id_reg_legal', nowrap: true },
+  { title: 'Jenis', key: 'jenis_surat', nowrap: true },
+  { title: 'No. Dokumen', key: 'no_surat', nowrap: true },
+  { title: 'Tanggal', key: 'tanggal_surat', nowrap: true },
+  { title: 'Masa Berlaku', key: 'masa_berlaku', nowrap: true },
+  { title: 'Instansi Penerbit', key: 'instansi_penerbit', nowrap: true },
 ]
-
-const aspectLegalItems = ref([
-  { no: 1, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 2, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 3, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 4, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 5, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 6, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 7, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 8, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 9, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 10, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 11, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-])
 
 const factoryHeader = [
   { title: 'No.', key: 'no', nowrap: true },
-  { title: 'Keterangan Biaya', key: 'priceDetail', nowrap: true },
-  { title: 'Jumlah', key: 'total', nowrap: true },
-  { title: 'Harga', key: 'price', nowrap: true },
-  { title: 'Sub Total', key: 'subTotal', nowrap: true },
+  { title: 'Nama', key: 'priceDetail', nowrap: true },
+  { title: 'Alamat', key: 'total', nowrap: true },
 ]
 
-const factoryItems = ref([
-  { no: 1, priceDetail: 'Biaya Pemeriksaan', total: '1', price: 'Rp 6.000.000', subTotal: 'Rp 6.000.000' },
-  { no: 2, priceDetail: 'Biaya Audit', total: '1', price: 'Rp 6.000.000', subTotal: 'Rp 6.000.000' },
-],
-)
-
-const outletHeader = [
+const penyeliaHalalHeaders = [
   { title: 'No.', key: 'no', nowrap: true },
-  { title: 'Nama.', key: 'name', nowrap: true },
-  { title: 'Alamat.', key: 'address', nowrap: true },
+  { title: 'Nama', key: 'penyelia_nama', nowrap: true },
+  { title: 'No. KTP', key: 'no_ktp', nowrap: true },
+  { title: 'No. Kontak', key: 'no_kontak', nowrap: true },
+  {
+    title: 'No/Tgl Sertif Penyelia Halal',
+    key: 'tgl_penyelia_halal',
+    nowrap: true,
+  },
+  { title: 'No/Tgl SK', key: 'tanggal_sk', nowrap: true },
 ]
 
-const outletItems = ref([
-  { no: 1, name: 'Maya', address: 'Jakarta' },
-  { no: 2, name: 'Rahmi', address: 'Bandung' },
-],
-)
+const getChipColor = (status: string) => {
+  if (status === 'Draf')
+    return 'primary'
+  else if (status === 'Micre')
+    return 'success'
 
-const supervisorHeader = [
-  { title: 'No.', key: 'no', nowrap: true },
-  { title: 'Nama', key: 'name', nowrap: true },
-  { title: 'Tanggal Lahir', key: 'birthdate', nowrap: true },
-  { title: 'JK', key: 'gender', nowrap: true },
-  { title: 'No. Pendaftaran', key: 'registrationNo', nowrap: true },
-]
-
-const supervisorItems = ref([
-  { no: 1, name: 'Maya', birthdate: '20/10/2000', gender: '-', registrationNo: 'REG RI AHA 10102134' },
-  { no: 2, name: 'Bambang', birthdate: '20/10/2000', gender: '-', registrationNo: 'REG RI AHA 10102134' },
-])
-
-const updateKbli = () => {
-  snackbar.sendSnackbar('KBLI Successfully Updated', 'success')
+  return 'success'
 }
+
+const getDetailData = async () => {
+  try {
+    loading.value = true
+
+    const response: any = await $api('/reguler/pelaku-usaha/detail', {
+      method: 'get',
+      params: { id },
+    })
+
+    if (response?.code === 2000) {
+      data.value = response.data
+      loading.value = false
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      loading.value = false
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    loading.value = false
+  }
+}
+
+const handleDownload = (type: string, url: string) => {
+  if (type === 'STTD')
+    window.open(url, '_blank')
+}
+
+onMounted(() => {
+  getDetailData()
+})
 
 const navigateTo = (url: string) => {
   window.location.href = url
@@ -133,20 +104,21 @@ const navigateTo = (url: string) => {
         <VRow class="d-flex justify-end align-center ga-2">
           <VBtn
             variant="outlined"
-            append-icon="ri-edit-line"
+            olor="#E1442E"
+            class="delete-container"
           >
-            Ubah Data
+            <VIcon color="red">
+              fa-trash
+            </VIcon>
           </VBtn>
           <VBtn
             variant="outlined"
             append-icon="ri-edit-line"
-            @click="navigateTo(`/audit-pengajuan/ubah-laporan/${id}`)"
+            @click="navigateTo(`/auditor-halal/layanan/${id}`)"
           >
             Ubah Laporan
           </VBtn>
-          <VBtn append-icon="fa-paper-plane">
-            Kirim
-          </VBtn>
+          <VBtn append-icon="fa-paper-plane"> Kirim </VBtn>
         </VRow>
       </VCol>
     </VRow>
@@ -156,7 +128,7 @@ const navigateTo = (url: string) => {
         <VExpansionPanels v-model="panelSubmission">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
-              Data Pengajuan
+              Pengajuan Sertifikasi Halal
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <InfoRow
@@ -165,15 +137,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="No.ID"
               >
-                {{ detailSubmission.id }}
-              </InfoRow>
-              <InfoRow
-                cols-name="5"
-                cols-separator="1"
-                cols-value="6"
-                name="Status"
-              >
-                {{ detailSubmission.date }}
+                {{ data?.certificate_halal?.no_daftar || "-" }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -181,7 +145,64 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Tanggal"
               >
-                {{ detailSubmission.date }}
+                {{ data?.certificate_halal?.tanggal_buat || "-" }}
+              </InfoRow>
+              <ThinLine :thickness="1" />
+              <InfoRow
+                cols-name="5"
+                cols-separator="1"
+                cols-value="6"
+                name="No. Surat Permohonan"
+              >
+                {{ data?.certificate_halal?.no_mohon || "-" }}
+              </InfoRow>
+              <InfoRow
+                cols-name="5"
+                cols-separator="1"
+                cols-value="6"
+                name="Tanggal Permohonan"
+              >
+                {{ data?.certificate_halal?.tgl_mohon || "-" }}
+              </InfoRow>
+              <InfoRow
+                cols-name="5"
+                cols-separator="1"
+                cols-value="6"
+                name="Jenis Layanan"
+              >
+                {{ data?.certificate_halal?.jenis_layanan || "-" }}
+              </InfoRow>
+              <InfoRow
+                cols-name="5"
+                cols-separator="1"
+                cols-value="6"
+                name="Jenis Produk"
+              >
+                {{ data?.certificate_halal?.jenis_produk || "-" }}
+              </InfoRow>
+              <InfoRow
+                cols-name="5"
+                cols-separator="1"
+                cols-value="6"
+                name="Merk Dagang"
+              >
+                {{ data?.certificate_halal?.merk_dagang || "-" }}
+              </InfoRow>
+              <InfoRow
+                cols-name="5"
+                cols-separator="1"
+                cols-value="6"
+                name="Area Pemasaran"
+              >
+                {{ data?.certificate_halal?.area_pemasaran || "-" }}
+              </InfoRow>
+              <InfoRow
+                cols-name="5"
+                cols-separator="1"
+                cols-value="6"
+                name="LPH"
+              >
+                {{ data?.certificate_halal?.lembaga_pendamping || "-" }}
               </InfoRow>
               <ThinLine :thickness="1" />
               <InfoRow
@@ -190,7 +211,23 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Nama Perusahaan"
               >
-                {{ detailSubmission.requestNumber }}
+                {{ data?.certificate_halal?.nama_pu || "-" }}
+              </InfoRow>
+              <InfoRow
+                cols-name="5"
+                cols-separator="1"
+                cols-value="6"
+                name="Nama Perusahaan tertera di SH"
+              >
+                {{ data?.certificate_halal?.nama_provinsi || "-" }}
+              </InfoRow>
+              <InfoRow
+                cols-name="5"
+                cols-separator="1"
+                cols-value="6"
+                name="Nama KBLI"
+              >
+                {{ data?.certificate_halal?.nam_kbli || "-" }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -198,7 +235,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Alamat"
               >
-                {{ detailSubmission.requestDate }}
+                {{ data?.certificate_halal?.alamat_pu || "-" }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -206,7 +243,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Kota/Kab"
               >
-                {{ detailSubmission.serviceType }}
+                {{ data?.certificate_halal?.kota_pu || "-" }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -214,7 +251,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Provinsi"
               >
-                {{ detailSubmission.productType }}
+                {{ data?.certificate_halal?.provinsi_pu || "-" }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -222,7 +259,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Kode Pos"
               >
-                {{ detailSubmission.brand }}
+                {{ data?.certificate_halal?.kode_pos_pu || "-" }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -230,7 +267,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Negara"
               >
-                {{ detailSubmission.marketingArea }}
+                {{ data?.certificate_halal?.negara_pu || "-" }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -238,7 +275,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Telepon"
               >
-                {{ detailSubmission.companion }}
+                {{ data?.certificate_halal?.telp_pu || "-" }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -246,7 +283,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Email"
               >
-                {{ detailSubmission.companionInstitution }}
+                {{ data?.certificate_halal?.email || "-" }}
               </InfoRow>
               <ThinLine :thickness="1" />
               <InfoRow
@@ -255,33 +292,39 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Jenis Badan Usaha"
               >
-                {{ detailSubmission.companionInstitution }}
+                {{ data?.certificate_halal?.jenis_badan_usaha || "-" }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
                 cols-separator="1"
                 cols-value="6"
-                name="Skala Usaha"
-                class="d-flex align-center"
+                name="Sekala Usaha"
               >
-                <VRow class="d-flex align-center">
-                  <VCol cols="8">
-                    <VSelect
-                      v-model="detailSubmission.K"
-                      :items="['Minuman', 'Makanan']"
-                      label="Choose an option"
-                      outlined
-                    />
-                  </VCol>
-                  <VCol cols="4">
-                    <VBtn
-                      variant="outlined"
-                      @click="updateKbli"
-                    >
-                      Update
-                    </VBtn>
-                  </VCol>
-                </VRow>
+                {{ data?.certificate_halal?.skala_usaha || "-" }}
+              </InfoRow>
+              <InfoRow
+                cols-name="5"
+                cols-separator="1"
+                cols-value="6"
+                name="Tingkat Usaha"
+              >
+                {{ data?.certificate_halal?.tingkat_usaha || "-" }}
+              </InfoRow>
+              <InfoRow
+                cols-name="5"
+                cols-separator="1"
+                cols-value="6"
+                name="Modal Dasar"
+              >
+                {{ data?.certificate_halal?.modal_usaha || "-" }}
+              </InfoRow>
+              <InfoRow
+                cols-name="5"
+                cols-separator="1"
+                cols-value="6"
+                name="Asal Usaha"
+              >
+                {{ data?.certificate_halal?.asal_usaha || "-" }}
               </InfoRow>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -291,56 +334,32 @@ const navigateTo = (url: string) => {
         <VExpansionPanels v-model="panelPic">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
-              Pengajuan Sertifikasi
+              Penanggung Jawab
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <InfoRow
                 cols-name="5"
                 cols-separator="1"
                 cols-value="6"
-                name="No / Tanggal Permohonan"
+                name="Nama"
               >
-                {{ pic.name }}
+                {{ data?.penanggung_jawab?.nama_pj || "-" }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
                 cols-separator="1"
                 cols-value="6"
-                name="Jenis Layanan"
+                name="Nomor Kontak"
               >
-                {{ pic.phoneNumber }}
+                {{ data?.penanggung_jawab?.nomor_kontak_pj || "-" }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
                 cols-separator="1"
                 cols-value="6"
-                name="Jenis Pengajuan"
+                name="Email"
               >
-                {{ pic.email }}
-              </InfoRow>
-              <InfoRow
-                cols-name="5"
-                cols-separator="1"
-                cols-value="6"
-                name="Jenis Produk"
-              >
-                {{ pic.email }}
-              </InfoRow>
-              <InfoRow
-                cols-name="5"
-                cols-separator="1"
-                cols-value="6"
-                name="Merek Dagang"
-              >
-                {{ pic.email }}
-              </InfoRow>
-              <InfoRow
-                cols-name="5"
-                cols-separator="1"
-                cols-value="6"
-                name="Area Pemasaran"
-              >
-                {{ pic.email }}
+                {{ data?.penanggung_jawab?.email_pj || "-" }}
               </InfoRow>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -350,12 +369,14 @@ const navigateTo = (url: string) => {
         <VExpansionPanels v-model="panelAspectLegal">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
-              Daftar Nama Produk
+              Aspek Legal
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
                 :headers="aspectLegalHeader"
-                :items="aspectLegalItems"
+                :items="data?.aspek_legal"
+                class="border rounded"
+                hide-default-footer
               >
                 <template #item.productType="{ item }">
                   <div class="mw-170">
@@ -367,8 +388,10 @@ const navigateTo = (url: string) => {
                     {{ item.productName }}
                   </div>
                 </template>
-                <template #item.publication="{ item }">
-                  <VCheckbox true-value="true" />
+                <template #item.id_reg_legal="{ index }">
+                  <div class="mw-170">
+                    {{ index + 1 }}
+                  </div>
                 </template>
               </VDataTable>
             </VExpansionPanelText>
@@ -379,12 +402,14 @@ const navigateTo = (url: string) => {
         <VExpansionPanels v-model="panelFactory">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
-              Biaya Pemeriksaan
+              Pabrik
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
                 :headers="factoryHeader"
-                :items="factoryItems"
+                :items="data?.pabrik"
+                hide-default-footer
+                class="border rounded"
               />
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -394,25 +419,26 @@ const navigateTo = (url: string) => {
         <VExpansionPanels v-model="panelOutlet">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
-              Jadwal Audit
+              Outlet
             </VExpansionPanelTitle>
             <VExpansionPanelText>
-              <InfoRow
-                cols-name="5"
-                cols-separator="1"
-                cols-value="6"
-                name="Tanggal Mulai"
+              <div
+                class="border rounded w-100"
+                style="justify-items: center"
               >
-                {{ detailSubmission.companionInstitution }}
-              </InfoRow>
-              <InfoRow
-                cols-name="5"
-                cols-separator="1"
-                cols-value="6"
-                name="Tanggal Selesai"
-              >
-                {{ detailSubmission.companionInstitution }}
-              </InfoRow>
+                <div
+                  v-if="data?.outlet?.length === 0"
+                  class="pt-2"
+                >
+                  <img
+                    src="~/assets/images/empty-data.png"
+                    alt="empty_data"
+                  >
+                  <div class="pt-2 pb-2 font-weight-bold">
+                    Data Kosong
+                  </div>
+                </div>
+              </div>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -421,12 +447,14 @@ const navigateTo = (url: string) => {
         <VExpansionPanels v-model="panelSupervisor">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
-              Auditor
+              Penyelia Halal
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
-                :headers="supervisorHeader"
-                :items="supervisorItems"
+                :headers="penyeliaHalalHeaders"
+                :items="data?.penyelia_halal"
+                hide-default-footer
+                class="border rounded"
               />
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -435,56 +463,79 @@ const navigateTo = (url: string) => {
         <VExpansionPanels v-model="panelOutlet">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
-              Hasil Pemeriksaan
+              Daftar Nama Produk
             </VExpansionPanelTitle>
             <VExpansionPanelText>
-              <InfoRow
-                cols-name="5"
-                cols-separator="1"
-                cols-value="6"
-                name="Tanggal Selesai LPH"
+              <div
+                class="border rounded w-100"
+                style="justify-items: center"
               >
-                {{ detailSubmission.companionInstitution }}
-              </InfoRow>
-              <InfoRow
-                cols-name="5"
-                cols-separator="1"
-                cols-value="6"
-                name="Hasil"
-              >
-                {{ detailSubmission.companionInstitution }}
-              </InfoRow>
-              <InfoRow
-                cols-name="5"
-                cols-separator="1"
-                cols-value="6"
-                name="Dokumen"
-              >
-                {{ detailSubmission.companionInstitution }}
-              </InfoRow>
+                <div
+                  v-if="data?.produk?.length === 0"
+                  class="pt-2"
+                >
+                  <img
+                    src="~/assets/images/empty-data.png"
+                    alt="empty_data"
+                  >
+                  <div class="pt-2 pb-2 font-weight-bold">
+                    Data Kosong
+                  </div>
+                </div>
+              </div>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
       </VCol>
       <VCol
         cols="4"
-        class="pr-0"
+        class="zero-padding"
       >
         <VExpansionPanels v-model="panelDownloadFormulir">
           <VExpansionPanel class="pa-5">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
-              No. Pendaftaran
+              Formulir Unduhan
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
-              <p class="font-weight-bold text-black">
-                SH2023-1-582897
-              </p>
-              <p class="font-weight-bold text-black">
-                13/10/2024
-              </p>
-              <p class="font-weight-bold text-black">
-                Jawa Tengah
-              </p>
+              <VRow>
+                <VCol cols="4">
+                  STTD
+                </VCol>
+                <VCol cols="1">
+                  :
+                </VCol>
+                <VCol cols="7">
+                  <VBtn
+                    icon="ri-download-fill"
+                    class="rounded"
+                    variant="flat"
+                    density="compact"
+                    @click="
+                      () =>
+                        handleDownload(
+                          'STTD',
+                          data?.certificate_halal?.url_sample_penyelia_sk,
+                        )
+                    "
+                  />
+                </VCol>
+              </VRow>
+              <VRow>
+                <VCol cols="4">
+                  Sertifikasi Halal
+                </VCol>
+                <VCol cols="1">
+                  :
+                </VCol>
+                <VCol cols="7">
+                  <VBtn
+                    icon="ri-download-fill"
+                    class="rounded"
+                    variant="flat"
+                    density="compact"
+                  />
+                </VCol>
+              </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -492,12 +543,97 @@ const navigateTo = (url: string) => {
         <VExpansionPanels v-model="panelDownloadFormulir">
           <VExpansionPanel class="pa-5">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
-              Biaya Pemeriksaan
+              Pendaftaran
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
-              <p class="font-weight-bold text-black">
-                Rp 7.000.000
-              </p>
+              <InfoRow
+                cols-name="4"
+                cols-separator="1"
+                cols-value="7"
+                name="Nomor Daftar"
+              >
+                {{ data?.certificate_halal?.no_daftar || "-" }}
+              </InfoRow>
+              <InfoRow
+                cols-name="4"
+                cols-separator="1"
+                cols-value="7"
+                name="Tanggal"
+              >
+                {{ data?.certificate_halal?.tgl_daftar || "-" }}
+              </InfoRow>
+              <InfoRow
+                cols-name="4"
+                cols-separator="1"
+                cols-value="7"
+                name="Tempat Pendaftaran"
+              >
+                {{ data?.certificate_halal?.no_daftar || "-" }}
+              </InfoRow>
+              <InfoRow
+                cols-name="4"
+                cols-separator="1"
+                cols-value="7"
+                name="Jenis Daftar"
+              >
+                {{ data?.certificate_halal?.jenis_pengajuan || "-" }}
+              </InfoRow>
+              <InfoRow
+                cols-name="4"
+                cols-separator="1"
+                cols-value="7"
+                name="Status"
+              >
+                <VChip
+                  :color="getChipColor(data?.certificate_halal?.status || '-')"
+                  label
+                  class="ma-1"
+                >
+                  {{ data?.certificate_halal?.status || "-" }}
+                </VChip>
+              </InfoRow>
+              <InfoRow
+                cols-name="4"
+                cols-separator="1"
+                cols-value="7"
+                name="Channel"
+              >
+                {{ data?.certificate_halal?.channel || "-" }}
+              </InfoRow>
+              <InfoRow
+                cols-name="4"
+                cols-separator="1"
+                cols-value="7"
+                name="Fasilitator"
+              >
+                {{ data?.certificate_halal?.fasilitator_name || "-" }}
+              </InfoRow>
+            </VExpansionPanelText>
+          </VExpansionPanel>
+        </VExpansionPanels>
+        <br>
+        <VExpansionPanels v-model="panelDownloadFormulir">
+          <VExpansionPanel class="pa-5">
+            <VExpansionPanelTitle class="text-h4 font-weight-bold">
+              Sertifikasi Halal
+            </VExpansionPanelTitle>
+            <VExpansionPanelText class="d-flex align-center">
+              <InfoRow
+                cols-name="4"
+                cols-separator="1"
+                cols-value="7"
+                name="Nomor Sertifikat"
+              >
+                {{ data?.sertifikat_halal_info?.nomor_sertifikat || "-" }}
+              </InfoRow>
+              <InfoRow
+                cols-name="4"
+                cols-separator="1"
+                cols-value="7"
+                name="Tanggal Sertifikat"
+              >
+                {{ data?.sertifikat_halal_info?.tanggal_sertifikat || "-" }}
+              </InfoRow>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -510,10 +646,7 @@ const navigateTo = (url: string) => {
               Melacak
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
-              <HalalTimeLine
-                :event="[
-                  { status: 'Draft PU', created_at: '2024/10/05', username: 'Samsul' }]"
-              />
+              <HalalTimeLine :event="data?.tracking" />
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -528,5 +661,11 @@ const navigateTo = (url: string) => {
   overflow: hidden;
   white-space: nowrap;
   text-wrap: wrap;
+}
+.delete-container {
+  border-color: #e1442e !important;
+}
+.zero-padding {
+  padding-right: 0px !important;
 }
 </style>
