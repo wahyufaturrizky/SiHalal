@@ -29,7 +29,6 @@ const statusItem: any = new Proxy(
     OF285: { color: "success", desc: "Dikembalikan Oleh Fatwa" },
     OF74: { color: "success", desc: "Sent to Komite Fatwa" },
     OF280: { color: "success", desc: "Dikembalikan Ke PU" },
-    OF280: { color: "success", desc: "Dikembalikan Ke PU" },
     OF100: { color: "success", desc: "Selesai Sidang Fatwa" },
     OF120: { color: "success", desc: "Certificate Issued" },
     OF900: { color: "error", desc: "Dibatalkan" },
