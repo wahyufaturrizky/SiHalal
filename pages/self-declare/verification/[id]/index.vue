@@ -64,7 +64,7 @@ const nomorKontakPenanggungJawab = ref();
 const emailPenanggungJawab = ref();
 const aspekLegal = ref();
 const penyeliaHalal = ref();
-
+const dokumen = ref();
 const loadItem = async (page, size) => {
   // Temporarily skip API call for dummy data testing
   items.value = items.value.slice((page - 1) * size, page * size); // Paginate dummy data
@@ -136,6 +136,23 @@ const loadItemById = async () => {
   }
 };
 
+const loadDocument = async () => {
+  try {
+    const response: any = await $api("/master/dokumen", {
+      method: "get",
+    });
+
+    if (response.length > 0) {
+      dokumen.value = response;
+      return response;
+    }
+  } catch (error) {
+    console.log("@error", error);
+
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
 onMounted(async () => {
   // Assign dummy data to items instead of fetching from API
   items.value = [
@@ -151,7 +168,7 @@ onMounted(async () => {
 
   totalItems.value = items.value.length; // Set totalItems for pagination
 
-  const res: any = await Promise.all([loadItemById()]);
+  const res: any = await Promise.all([loadItemById(), loadDocument()]);
 
   const checkResIfUndefined = res.every((item: any) => {
     return item !== undefined;
@@ -530,6 +547,7 @@ const onFasilitatorSearchInput = debounce((input) => {
                   mode="add"
                   @confirm-add="handleAddProductConfirm"
                   @cancel="() => console.log('Add cancelled')"
+                  :dokumen="dokumen"
                 />
               </VCol>
             </VRow>

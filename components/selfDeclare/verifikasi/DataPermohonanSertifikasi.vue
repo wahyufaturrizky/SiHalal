@@ -33,38 +33,18 @@ interface DataItem {
   Status: string;
 }
 
-const defaultStatus = { color: "error", desc: "Unknown Status" };
-
-const statusItem: any = new Proxy(
-  {
-    OF1: { color: "grey-300", desc: "Draft" },
-    OF10: { color: "success", desc: "Submitted" },
-    OF15: { color: "success", desc: "Verified" },
-    OF2: { color: "error", desc: "Returned" },
-    OF290: { color: "error", desc: "Rejected" },
-    OF5: { color: "success", desc: "Invoice issued" },
-    OF320: { color: "success", desc: "Code Issued" },
-    OF11: { color: "success", desc: "Verification" },
-  },
-  {
-    get(target: any, prop: any) {
-      return prop in target ? target[prop] : defaultStatus;
-    },
-  }
-);
-
 const selectedItems = ref<DataItem[]>([]);
 
 const headers: any = [
   { title: "No", key: "id", align: "center" },
-  { title: "ID Daftar", key: "id_daftar" },
+  { title: "ID Daftar", key: "no_daftar" },
   { title: "Pilih", key: "pilih" },
   { title: "Tanggal Daftar", key: "tgl_daftar" },
-  { title: "Nama", key: "nama" },
+  { title: "Nama", key: "nama_pu" },
   { title: "Alamat", key: "alamat" },
-  { title: "Jenis Produk", key: "jenis_produk" },
-  { title: "Merk Dagang", key: "merk_dagang" },
-  { title: "Status", key: "status_code" },
+  { title: "Jenis Produk", key: "jenis_product" },
+  { title: "Merk Dagang", key: "merek_dagang" },
+  { title: "Status", key: "status_reg" },
   { title: "Action", key: "action" },
 ];
 
@@ -527,11 +507,6 @@ console.log("@selectedItems", selectedItems.value);
                 v-model="selectedItems"
                 :value="(item as any).id_daftar"
               />
-            </template>
-            <template #item.status_code="{ item }">
-              <VChip label :color="statusItem[(item as any).status_code].color">
-                {{ statusItem[(item as any).status_code].desc }}
-              </VChip>
             </template>
           </VDataTableServer>
         </VRow>

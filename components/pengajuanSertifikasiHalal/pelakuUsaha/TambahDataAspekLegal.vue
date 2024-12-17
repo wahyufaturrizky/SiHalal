@@ -1,27 +1,29 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { VTextField } from "vuetify/components";
-import { ref } from 'vue';
+
+const props = defineProps({
+  dokumen: {
+    type: Array,
+  },
+});
+
+const { dokumen } = props || {};
 
 // Static bill date value
 const data = {
   sertifikasi_date: ref([]),
-}
+};
 const bahanType = ref(null);
 // Function to format the date as DD/MM/YY
 const formatDate = (date: Date): string => {
-  let date2 = new Date(date)
-  const day = date2.getDate().toString().padStart(2, '0'); // Add leading zero for single digit days
-  const month = (date2.getMonth() + 1).toString().padStart(2, '0'); // Add leading zero for single digit months
+  let date2 = new Date(date);
+  const day = date2.getDate().toString().padStart(2, "0"); // Add leading zero for single digit days
+  const month = (date2.getMonth() + 1).toString().padStart(2, "0"); // Add leading zero for single digit months
   const year = date2.getFullYear().toString().slice(-2); // Extract last 2 digits of the year
 
   return `${day}/${month}/${year}`;
-}
-
-// Sample data for "Bahan Bersertifikat" and "Tidak Bersertifikat"
-const bahanOptions = [
-  { name: 'Dokumen A', value: 'bersertifikat' },
-  { name: 'Dokumen B', value: 'tidak_bersertifikat' },
-]
+};
 
 // Search term entered by the user
 const searchTerm = ref("");
@@ -33,7 +35,7 @@ const isCariBahanModalOpen = ref(false);
 // Function to handle search input
 const handleSearch = () => {
   showSuggestion.value = searchTerm.value.toLowerCase() === "susu";
-}
+};
 </script>
 
 <template>
@@ -69,9 +71,9 @@ const handleSearch = () => {
                 <VLabel>Jenis Dokumen</VLabel>
                 <VSelect
                   v-model="bahanType"
-                  :items="bahanOptions"
+                  :items="dokumen"
                   item-title="name"
-                  item-value="value"
+                  item-value="code"
                   placeholder="Pilih Jenis Dokumen"
                   density="compact"
                 />
@@ -83,10 +85,7 @@ const handleSearch = () => {
             <VCol cols="12">
               <VItemGroup>
                 <VLabel>Nomor Dokumen</VLabel>
-                <VTextField
-                  placeholder="Isi Nomor Dokumen"
-                  density="compact"
-                />
+                <VTextField placeholder="Isi Nomor Dokumen" density="compact" />
               </VItemGroup>
             </VCol>
           </VRow>
@@ -163,7 +162,9 @@ const handleSearch = () => {
             </VCol>
           </VRow>
         </VCardItem>
-        <VCardActions style="display: flex; justify-content: end; padding: 1.5svw">
+        <VCardActions
+          style="display: flex; justify-content: end; padding: 1.5svw"
+        >
           <div>
             <VBtn @click="isActive.value = false" variant="outlined">
               Batal
