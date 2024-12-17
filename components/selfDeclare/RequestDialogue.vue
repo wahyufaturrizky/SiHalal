@@ -44,7 +44,6 @@ onMounted(async () => {
     method: "get",
   });
   kbliOptions.value = response;
-  // console.log(response, "< res here");
 });
 </script>
 

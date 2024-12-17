@@ -117,7 +117,7 @@ const loadValidation = async () => {
   }
 };
 
-const { refresh } = useAsyncData("self-declare-list", async () => {
+const handleLoadList = async () => {
   try {
     const response: any = await $api("/self-declare/submission/list", {
       method: "get",
@@ -136,7 +136,15 @@ const { refresh } = useAsyncData("self-declare-list", async () => {
   } catch (error) {
     console.log(error);
   }
-});
+};
+
+const { refresh } = await useAsyncData(
+  "self-declare-list",
+  async () => handleLoadList(),
+  {
+    // watch: [tablePageData.value.current_page],
+  }
+);
 
 const handleSearchSubmission = useDebounceFn((val: string) => {
   searchQuery.value = val;
@@ -147,6 +155,7 @@ const handleSearchSubmission = useDebounceFn((val: string) => {
 
 onMounted(() => {
   loadValidation();
+  handleLoadList();
 });
 </script>
 

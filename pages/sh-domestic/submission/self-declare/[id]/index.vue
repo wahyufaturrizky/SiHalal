@@ -766,11 +766,10 @@
 </template>
 
 <script setup lang="ts">
-import type { RouteLocationAsString } from "#vue-router";
 import type { MasterBadanUsaha } from "@/server/interface/master.iface";
 
 const router = useRouter();
-const route = useRoute<RouteLocationAsString>();
+const route = useRoute<"">();
 const submissionId = route.params?.id;
 
 const snackbar = useSnackbar();
