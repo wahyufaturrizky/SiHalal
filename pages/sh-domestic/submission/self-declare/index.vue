@@ -90,8 +90,8 @@ const hanleSubmitRequest = async (answer: any) => {
 
 const handleCreate = async () => {
   try {
-    const result: any = await $api("/self-declare/create", {
-      method: "POST",
+    const result: any = await $api("/self-declare/submission/create", {
+      method: "post",
     });
 
     if (result.code === 2000) {
@@ -107,7 +107,7 @@ const alertData = ref({
   text: "",
 });
 const loadValidation = async () => {
-  const response: any = await $api("/self-declare/validation", {
+  const response: any = await $api("/self-declare/submission/validation", {
     method: "get",
   });
 
@@ -119,7 +119,7 @@ const loadValidation = async () => {
 
 const { refresh } = useAsyncData("self-declare-list", async () => {
   try {
-    const response: any = await $api("/self-declare/list", {
+    const response: any = await $api("/self-declare/submission/list", {
       method: "get",
       params: {
         page: tablePageData.value.current_page,
