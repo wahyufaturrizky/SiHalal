@@ -123,7 +123,11 @@ const maxWidthSearch = computed(() => (mdAndUp ? 700 : "90%"));
             {{ formatDateIntl(new Date(item.tgl_selesai)) }}
           </template>
           <template #item.tgl_submit="{ item }">
-            {{ formatDateIntl(new Date(item.tgl_submit)) }}
+            {{
+              item.tgl_submit != undefined
+                ? formatDateIntl(new Date(item.tgl_submit))
+                : ""
+            }}
           </template>
           <template #item.sumber_biaya="{ item }">
             {{ formatSof(item.sumber_biaya) }}
