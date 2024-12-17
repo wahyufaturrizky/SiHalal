@@ -2,6 +2,10 @@
 import { ref } from "vue";
 import { VDataTableServer } from "vuetify/components";
 
+const route = useRoute();
+
+const selfDeclareId = route.params.id;
+
 interface TimelineItem {
   title: string;
   user: string;
@@ -47,43 +51,10 @@ const showTimeline = ref(false);
 const showPengajuan = ref(false);
 const showDetail = ref(false);
 
-// const items = ref<
-//   {
-//     id: string;
-//     jenis_bahan: string;
-//     nama_bahan: string;
-//     produsen: string;
-//     no_sertifikat_halal: string;
-//     keterangan: string;
-//   }[]
-// >([]);
-
 const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
-
-// const loadItem = async (page: number, size: number, keyword: string = "") => {
-//   try {
-//     loading.value = true;
-
-//     const response = await $api("/shln/verificator", {
-//       method: "get",
-//       params: {
-//         page,
-//         size,
-//         keyword,
-//       },
-//     });
-
-//     items.value = response.data;
-//     totalItems.value = response.total_item;
-//     loading.value = false;
-//   } catch (error) {
-//     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-//     loading.value = false;
-//   }
-// };
 
 const loadItem = async (page, size) => {
   // Temporarily skip API call for dummy data testing
@@ -92,6 +63,27 @@ const loadItem = async (page, size) => {
 };
 
 const debouncedFetch = debounce(loadItem, 500);
+
+const loadItemById = async () => {
+  try {
+    const response: any = await $api(
+      `/self-declare/verificator/${selfDeclareId}`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) {
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    console.log("@error", error);
+
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 
 onMounted(() => {
   // Assign dummy data to items instead of fetching from API
@@ -104,50 +96,12 @@ onMounted(() => {
       nomor_sertifikat_halal: "123456",
       keterangan: "Digunakan untuk mencuci",
     },
-    {
-      id: 2,
-      jenis_bahan: "Kemasan",
-      nama_bahan: "Alumunium Foil",
-      produsen: "Produsen B",
-      nomor_sertifikat_halal: "789012",
-      keterangan: "Kemasan tahan panas",
-    },
-    {
-      id: 3,
-      jenis_bahan: "Cleaning Agent",
-      nama_bahan: "Sabun Pencuci",
-      produsen: "Produsen C",
-      nomor_sertifikat_halal: "345678",
-      keterangan: "Menghilangkan noda",
-    },
-    {
-      id: 4,
-      jenis_bahan: "Kemasan",
-      nama_bahan: "Plastik",
-      produsen: "Produsen D",
-      nomor_sertifikat_halal: "-",
-      keterangan: "Kemasan fleksibel",
-    },
-    {
-      id: 5,
-      jenis_bahan: "Cleaning Agent",
-      nama_bahan: "Detergent",
-      produsen: "Produsen E",
-      nomor_sertifikat_halal: "901234",
-      keterangan: "Membersihkan bahan",
-    },
   ];
 
   totalItems.value = items.value.length; // Set totalItems for pagination
+
+  loadItemById();
 });
-
-// onMounted(async () => {
-//   await loadItem(1, itemPerPage.value, "");
-// });
-
-// const refresh = async () => {
-//   await loadItem(1, itemPerPage.value, "");
-// };
 
 const verifikatorTableHeader = [
   { title: "No", key: "id" },
