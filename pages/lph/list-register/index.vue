@@ -1,48 +1,85 @@
+<!-- eslint-disable array-callback-return -->
 <script setup lang="ts">
+import { ref } from 'vue'
+
+const totalItems = ref<number>(0)
+const data = ref<any[]>([])
+const loading = ref<boolean>(false)
+const page = ref<number>(1)
+const size = ref<number>(10)
+const searchQuery = ref<string>('')
+
 const tableHeader = [
-  { title: "No", value: "no" },
-  { title: "No. Daftar", value: "regist_no" },
-  { title: "Tanggal", value: "date" },
-  { title: "Nama PU", value: "pu_name" },
-  { title: "Jenis Usaha dan Jumlah", value: "kind_and_amount" },
-  { title: "Status", value: "status" },
-  { title: "Tanggal Dikirim oleh BPJPH", value: "date_sent" },
-  { title: "Action", value: "action" },
-];
+  { title: 'No', value: 'no' },
+  { title: 'No. Daftar', value: 'nomor_daftar' },
+  { title: 'Tanggal', value: 'tanggal' },
+  { title: 'Nama PU', value: 'nama_pu' },
+  { title: 'Jenis Daftar', value: 'jenis_daftar' },
+  { title: 'Jenis Produk', value: 'jenis_produk' },
+  { title: 'Jenis Usaha dan Jumlah', value: 'typeAndTotal' },
+  { title: 'Status', value: 'status' },
+  { title: 'Tanggal Dikirim oleh BPJPH', value: 'tgl_dikirim' },
+  { title: 'Action', value: 'action' },
+]
 
-const items = [
-  {
-    no: "xx",
-    regist_no: "xx",
-    date: "xx",
-    pu_name: "xx",
-    kind_and_amount: "xx",
-    status: "xx",
-    date_sent: "xx",
-  },
-];
+const getChipColor = (status: string) => {
+  if (status === 'Draf')
+    return 'primary'
+  else if (status === 'Micre')
+    return 'success'
 
-const getStatusColor = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "lunas":
-      return "success";
-    case "pending":
-      return "warning";
-    case "telat":
-      return "error";
-    default:
-      return "grey";
+  return 'success'
+}
+
+const loadItem = async (pageNumber: number, sizeData: number, search: string = '') => {
+  try {
+    const response: any = await $api('/lph/list', {
+      method: 'get',
+      params: {
+        pageNumber,
+        sizeData,
+        search,
+        url: LPH_LIST_REGISTER_PATH,
+      },
+    })
+
+    if (response?.code === 2000) {
+      response?.data?.map((item: any) => {
+        item.typeAndTotal = [item?.jenis_usaha, item?.jumlah_produk]
+      })
+      data.value = response.data
+      totalItems.value = response.total_item
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
   }
-};
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
 
 const navigateToDetail = (id: string) => {
-  navigateTo(`/lph/list-register/detail/${id}`);
-};
+  navigateTo(`/lph/list-register/detail/${id}`)
+}
+
+const handleInput = (e: any) => {
+  loading.value = true
+  debounce(loadItem(page.value, size.value, e.target.value), 500)
+  loading.value = false
+}
+
+onMounted(async () => {
+  loading.value = true
+  await Promise.allSettled([loadItem(page.value, size.value, searchQuery.value), getListOss()])
+  loading.value = false
+})
 </script>
+
 <template>
   <VRow>
     <VCol cols="12">
-      <KembaliButton></KembaliButton>
+      <KembaliButton />
     </VCol>
   </VRow>
   <VRow>
@@ -55,57 +92,89 @@ const navigateToDetail = (id: string) => {
       <VCard>
         <VCardTitle><h3>Data Pengajuan</h3></VCardTitle>
         <VCardItem>
-          <VRow
-            ><VCol cols="12"
-              ><VTextField
+          <VRow>
+            <VCol cols="12">
+              <VTextField
+                v-model="searchQuery"
                 placeholder="Cari Nama Pengajuan"
-                append-inner-icon="mdi-magnify"
                 density="compact"
-              ></VTextField></VCol
-          ></VRow>
-          <VRow
-            ><VCol cols="12">
-              <VDataTable :headers="tableHeader" :items="items">
-                <template #item.status="{ item }">
-                  <VChip
-                    color="success"
-                    text-color="white"
-                    small
-                    variant="outlined"
-                    style="margin-right: 1svw; background-color: #edf6ed"
+                append-inner-icon="ri-search-line"
+                style="max-inline-size: 100%"
+                @input="handleInput"
+              />
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol cols="12">
+              <VDataTable
+                :headers="tableHeader"
+                :items="data"
+              >
+                <template #item.no="{ index }">
+                  {{ index + 1 }}
+                </template>
+                <template #item.nomor_daftar="{ item }">
+                  <div class="mw-9">
+                    {{ item.nomor_daftar }}
+                  </div>
+                </template>
+                <template #item.jenis_daftar="{ item }">
+                  <div class="mw-9">
+                    {{ item.jenis_daftar }}
+                  </div>
+                </template>
+                <template #item.jenis_produk="{ item }">
+                  <div class="mw-9">
+                    {{ item.jenis_produk }}
+                  </div>
+                </template>
+                <template #item.nama_pu="{ item }">
+                  <div class="mw-15">
+                    {{ item.nama_pu }}
+                  </div>
+                </template>
+                <template #item.tgl_dikirim="{ item }">
+                  <div class="mw-15">
+                    {{ item.tgl_dikirim }}
+                  </div>
+                </template>
+                <template #item.typeAndTotal="{ item }">
+                  <div
+                    class="d-flex"
+                    style="min-width: 12rem !important"
                   >
-                    1
-                  </VChip>
-                  <VChip
-                    color="success"
-                    text-color="white"
-                    small
-                    variant="outlined"
-                    style="margin-right: 1svw; background-color: #edf6ed"
-                  >
-                    3
-                  </VChip>
-                  <VChip
-                    color="primary"
-                    text-color="white"
-                    small
-                    variant="outlined"
-                    style="margin-right: 1svw; background-color: #f0e9f1"
-                  >
-                    {{ item.status }}
-                  </VChip>
+                    <VChip
+                      v-for="(status, index) in item.typeAndTotal"
+                      :key="index"
+                      :color="getChipColor(status)"
+                      label
+                      class="ma-1"
+                    >
+                      {{ status }}
+                    </VChip>
+                  </div>
                 </template>
                 <template #item.action="{ item }">
                   <VIcon
-                    @click="navigateToDetail(item.regist_no)"
                     color="primary"
                     icon="mdi-arrow-right"
-                  ></VIcon>
+                    @click="navigateToDetail(item.regist_no)"
+                  />
                 </template>
-              </VDataTable> </VCol
-          ></VRow>
+              </VDataTable>
+            </VCol>
+          </VRow>
         </VCardItem>
       </VCard>
     </VCol>
   </VRow>
 </template>
+
+<style scoped>
+.mw-9 {
+  min-width: 9rem !important;
+}
+.mw-15 {
+  min-width: 15rem !important;
+}
+</style>
