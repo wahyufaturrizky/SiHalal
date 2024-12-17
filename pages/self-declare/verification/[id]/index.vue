@@ -2,12 +2,19 @@
 import { ref } from "vue";
 import { VDataTableServer } from "vuetify/components";
 
+const route = useRoute();
+
+const selfDeclareId = route.params.id;
+
 interface TimelineItem {
   title: string;
   user: string;
   date: string;
   color: string;
 }
+
+const detailData = ref();
+const loadingAll = ref(true);
 
 const tabs = ref([
   { text: "Pelaku Usaha", value: "pelaku_usaha" },
@@ -45,45 +52,18 @@ const formatDate = (date: string): string => {
 
 const showTimeline = ref(false);
 const showPengajuan = ref(false);
-const showDetail = ref(false);
-
-// const items = ref<
-//   {
-//     id: string;
-//     jenis_bahan: string;
-//     nama_bahan: string;
-//     produsen: string;
-//     no_sertifikat_halal: string;
-//     keterangan: string;
-//   }[]
-// >([]);
+const showDetail = ref(true);
 
 const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
-
-// const loadItem = async (page: number, size: number, keyword: string = "") => {
-//   try {
-//     loading.value = true;
-
-//     const response = await $api("/shln/verificator", {
-//       method: "get",
-//       params: {
-//         page,
-//         size,
-//         keyword,
-//       },
-//     });
-
-//     items.value = response.data;
-//     totalItems.value = response.total_item;
-//     loading.value = false;
-//   } catch (error) {
-//     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-//     loading.value = false;
-//   }
-// };
+const dataPengajuanSertifikasiHalal = ref();
+const jenisBadanUsahaPenanggungJawab = ref();
+const nomorKontakPenanggungJawab = ref();
+const emailPenanggungJawab = ref();
+const aspekLegal = ref();
+const penyeliaHalal = ref();
 
 const loadItem = async (page, size) => {
   // Temporarily skip API call for dummy data testing
@@ -93,7 +73,70 @@ const loadItem = async (page, size) => {
 
 const debouncedFetch = debounce(loadItem, 500);
 
-onMounted(() => {
+const loadItemById = async () => {
+  try {
+    const response: any = await $api(
+      `/self-declare/verificator/${selfDeclareId}`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) {
+      const { data } = response || {};
+      const {
+        certificate_halal,
+        penanggung_jawab,
+        aspek_legal,
+        penyelia_halal,
+      } = data || {};
+      const { nama_pj, nomor_kontak_pj, email_pj } = penanggung_jawab || {};
+      const { nama_pu, alamat_pu, jenis_badan_usaha, skala_usaha } =
+        certificate_halal || {};
+
+      jenisBadanUsahaPenanggungJawab.value = jenis_badan_usaha;
+      nomorKontakPenanggungJawab.value = nomor_kontak_pj;
+      emailPenanggungJawab.value = email_pj;
+
+      aspekLegal.value = aspek_legal;
+
+      penyeliaHalal.value = penyelia_halal;
+
+      dataPengajuanSertifikasiHalal.value = [
+        {
+          label: "Nama",
+          value: nama_pu,
+        },
+        {
+          label: "Alamat",
+          value: alamat_pu,
+        },
+        {
+          label: "Jenis Badan Usaha",
+          value: jenis_badan_usaha,
+        },
+        {
+          label: "Skala Usaha",
+          value: skala_usaha,
+        },
+        {
+          label: "Penanggung Jawab",
+          value: nama_pj,
+        },
+      ];
+
+      detailData.value = response.data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    console.log("@error", error);
+
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+onMounted(async () => {
   // Assign dummy data to items instead of fetching from API
   items.value = [
     {
@@ -104,50 +147,22 @@ onMounted(() => {
       nomor_sertifikat_halal: "123456",
       keterangan: "Digunakan untuk mencuci",
     },
-    {
-      id: 2,
-      jenis_bahan: "Kemasan",
-      nama_bahan: "Alumunium Foil",
-      produsen: "Produsen B",
-      nomor_sertifikat_halal: "789012",
-      keterangan: "Kemasan tahan panas",
-    },
-    {
-      id: 3,
-      jenis_bahan: "Cleaning Agent",
-      nama_bahan: "Sabun Pencuci",
-      produsen: "Produsen C",
-      nomor_sertifikat_halal: "345678",
-      keterangan: "Menghilangkan noda",
-    },
-    {
-      id: 4,
-      jenis_bahan: "Kemasan",
-      nama_bahan: "Plastik",
-      produsen: "Produsen D",
-      nomor_sertifikat_halal: "-",
-      keterangan: "Kemasan fleksibel",
-    },
-    {
-      id: 5,
-      jenis_bahan: "Cleaning Agent",
-      nama_bahan: "Detergent",
-      produsen: "Produsen E",
-      nomor_sertifikat_halal: "901234",
-      keterangan: "Membersihkan bahan",
-    },
   ];
 
   totalItems.value = items.value.length; // Set totalItems for pagination
+
+  const res: any = await Promise.all([loadItemById()]);
+
+  const checkResIfUndefined = res.every((item: any) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
 });
-
-// onMounted(async () => {
-//   await loadItem(1, itemPerPage.value, "");
-// });
-
-// const refresh = async () => {
-//   await loadItem(1, itemPerPage.value, "");
-// };
 
 const verifikatorTableHeader = [
   { title: "No", key: "id" },
@@ -177,23 +192,44 @@ const outletTableHeader = [
 ];
 
 const legalTableHeader = [
-  { title: "No", key: "id" },
-  { title: "Jenis", key: "jenis" },
-  { title: "No. Dokumen", key: "no_dokumen" },
-  { title: "Tanggal", key: "tanggal" },
+  { title: "No", key: "id_reg_legal" },
+  { title: "Jenis", key: "jenis_surat" },
+  { title: "No. Dokumen", key: "no_surat" },
+  { title: "Tanggal", key: "tanggal_surat" },
   { title: "Masa Berlaku", key: "masa_berlaku" },
   { title: "Instansi Penerbit", key: "instansi_penerbit" },
 ];
 
 const penyeliaTableHeader = [
-  { title: "No", key: "id" },
-  { title: "Nama", key: "nama" },
+  { title: "No", key: "penyelia_id" },
+  { title: "Nama", key: "penyelia_nama" },
   { title: "No. KTP", key: "no_ktp" },
   { title: "No. Kontak", key: "no_kontak" },
-  { title: "No/Tgl Sertif Penyelia Halal", key: "sertif_penyelia_halal" },
-  { title: "No/Tgl SK", key: "sk" },
+  { title: "No/Tgl Sertif Penyelia Halal", key: "no_penyelia_halal" },
+  { title: "Tgl SK", key: "tanggal_sk" },
+  { title: "Tgl Penyelia Halal", key: "tgl_penyelia_halal" },
+  { title: "No SK", key: "no_sk" },
   { title: "Action", key: "action" },
 ];
+
+const headersDokumenPersyaratanFasilitas = [
+  { title: "No", key: "id" },
+  { title: "Nama", key: "nama" },
+  { title: "Dokumen", key: "doc" },
+];
+
+const itemsDokumenPersyaratanFasilitas = ref([
+  {
+    id: 1,
+    nama: "Dokumen 1",
+    doc: "Dokumen 1",
+  },
+  {
+    id: 2,
+    nama: "Dokumen 2",
+    doc: "Dokumen 2",
+  },
+]);
 
 // Dummy data
 const items = ref([
@@ -236,33 +272,6 @@ const items = ref([
     produsen: "Produsen E",
     nomor_sertifikat_halal: "901234",
     keterangan: "Membersihkan bahan",
-  },
-]);
-
-const pabrikTableData = ref([
-  {
-    id: 1,
-    jenis: "Sertifikat ISO",
-    no_dokumen: "ISO-123456",
-    tanggal: "01/01/2024",
-    masa_berlaku: "01/01/2027",
-    instansi_penerbit: "ISO Certification Body",
-  },
-  {
-    id: 2,
-    jenis: "Surat Izin Usaha",
-    no_dokumen: "SIU-987654",
-    tanggal: "15/02/2024",
-    masa_berlaku: "12/03/2027",
-    instansi_penerbit: "Dinas Perizinan",
-  },
-  {
-    id: 3,
-    jenis: "HACCP Certificate",
-    no_dokumen: "HACCP-345678",
-    tanggal: "11/02/2024",
-    masa_berlaku: "21/03/2025",
-    instansi_penerbit: "HACCP Authority",
   },
 ]);
 
@@ -408,7 +417,7 @@ const onFasilitatorSearchInput = debounce((input) => {
 </script>
 
 <template>
-  <VContainer class="pa-0">
+  <VContainer v-if="!loadingAll" class="pa-0">
     <!-- Title and Buttons Row -->
     <VRow>
       <VCol>
@@ -458,45 +467,15 @@ const onFasilitatorSearchInput = debounce((input) => {
                   <div class="d-flex flex-column">
                     <!-- Static Details -->
                     <VRow>
-                      <VCol cols="12">
+                      <VCol
+                        v-for="(item, index) in dataPengajuanSertifikasiHalal"
+                        :key="index"
+                        cols="12"
+                      >
                         <div class="info-row">
-                          <span class="label">Nama</span>
+                          <span class="label">{{ item.label }}</span>
                           <span class="colon">:</span>
-                          <span class="value"
-                            >Sartika/Industri Makanan Ringan</span
-                          >
-                        </div>
-                      </VCol>
-                      <VCol cols="12">
-                        <div class="info-row">
-                          <span class="label">Alamat</span>
-                          <span class="colon">:</span>
-                          <span class="value"
-                            >Sumbawa Banget, RT002/RW002, Sumbang, Curio, Jawa
-                            Barat</span
-                          >
-                        </div>
-                      </VCol>
-                      <VCol cols="12">
-                        <div class="info-row">
-                          <span class="label">Jenis Badan Usaha</span>
-                          <span class="colon">:</span>
-                          <span class="value">Lainnya</span>
-                        </div>
-                      </VCol>
-                      <VCol cols="12">
-                        <div class="info-row">
-                          <span class="label">Skala Usaha</span>
-                          <span class="colon">:</span>
-                          <span class="value">Mikro</span>
-                        </div>
-                      </VCol>
-                      <VDivider />
-                      <VCol cols="12">
-                        <div class="info-row">
-                          <span class="label">Penanggung Jawab</span>
-                          <span class="colon">:</span>
-                          <span class="value">Sumayah</span>
+                          <span class="value">{{ item.value }}</span>
                         </div>
                       </VCol>
                     </VRow>
@@ -514,15 +493,27 @@ const onFasilitatorSearchInput = debounce((input) => {
             <!-- Nama Usaha -->
             <VCol cols="12">
               <VLabel class="required"> Jenis Badan Usaha </VLabel>
-              <VTextField required placeholder="Jenis Badan Usaha" />
+              <VTextField
+                v-model="jenisBadanUsahaPenanggungJawab"
+                required
+                placeholder="Jenis Badan Usaha"
+              />
             </VCol>
             <VCol cols="12">
               <VLabel class="required"> Nomor Kontak </VLabel>
-              <VTextField required placeholder="Nomor Kontak" />
+              <VTextField
+                v-model="nomorKontakPenanggungJawab"
+                required
+                placeholder="Nomor Kontak"
+              />
             </VCol>
             <VCol cols="12">
               <VLabel class="required"> Email </VLabel>
-              <VTextField required placeholder="Email" />
+              <VTextField
+                v-model="emailPenanggungJawab"
+                required
+                placeholder="Email"
+              />
             </VCol>
           </VCard>
         </VCol>
@@ -548,17 +539,15 @@ const onFasilitatorSearchInput = debounce((input) => {
                   v-model:items-per-page="itemPerPage"
                   v-model:page="page"
                   :headers="legalTableHeader"
-                  :items="pabrikTableData"
+                  :items="aspekLegal"
                   :loading="loading"
                   :items-length="totalItems"
+                  :hide-default-footer="true"
                   loading-text="Loading..."
                   @update:options="loadItem(page, itemPerPage)"
                 >
-                  <template #item.id="{ index }">
+                  <template #item.id_reg_legal="{ index }">
                     {{ index + 1 + (page - 1) * itemPerPage }}
-                  </template>
-                  <template #item.tgl_daftar="{ item }">
-                    {{ formatDateIntl(new Date(item.tgl_daftar)) }}
                   </template>
                 </VDataTableServer>
               </VCol>
@@ -587,19 +576,17 @@ const onFasilitatorSearchInput = debounce((input) => {
                   v-model:items-per-page="itemPerPage"
                   v-model:page="page"
                   :headers="penyeliaTableHeader"
-                  :items="penyeliaTableData"
+                  :items="penyeliaHalal"
                   :loading="loading"
                   :items-length="totalItems"
+                  :hide-default-footer="true"
                   loading-text="Loading..."
                   @update:options="loadItem(page, itemPerPage)"
                 >
-                  <template #item.id="{ index }">
+                  <template #item.penyelia_id="{ index }">
                     {{ index + 1 + (page - 1) * itemPerPage }}
                   </template>
-                  <template #item.tgl_daftar="{ item }">
-                    {{ formatDateIntl(new Date(item.tgl_daftar)) }}
-                  </template>
-                  <template #item.action="{ item }">
+                  <!-- <template #item.action="{ item }">
                     <div class="d-flex gap-1">
                       <VBtn
                         variant="text"
@@ -613,7 +600,7 @@ const onFasilitatorSearchInput = debounce((input) => {
                         />
                       </VBtn>
                     </div>
-                  </template>
+                  </template> -->
                 </VDataTableServer>
               </VCol>
             </VRow>
@@ -651,69 +638,28 @@ const onFasilitatorSearchInput = debounce((input) => {
             </VRow>
             <VRow>
               <VCol>
-                <VTable class="fixed-table">
-                  <thead>
-                    <tr>
-                      <th style="inline-size: 50px">No</th>
-                      <th style="inline-size: 150px">Nama</th>
-                      <th style="inline-size: 400px">Dokumen</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(doc, index) in documentList" :key="index">
-                      <td>{{ index + 1 }}</td>
-                      <td>{{ doc.nama }}</td>
-                      <td>
-                        <VCols v-if="documentList[0].fileName" cols="6">
-                          <!-- Display file name with remove button -->
-                          <VTextField
-                            v-model="documentList[0].fileName"
-                            dense
-                            outlined
-                            readonly
-                            style="
-                              max-inline-size: 300px;
-                              padding-inline-end: 0;
-                            "
-                          >
-                            <template #append-inner>
-                              <VBtn variant="text" @click="removeFile">
-                                <VIcon color="error">
-                                  ri-delete-bin-fill
-                                </VIcon>
-                              </VBtn>
-                            </template>
-                          </VTextField>
-                        </VCols>
-                        <VCols v-else cols="6">
-                          <!-- File upload input -->
-                          <VFileInput
-                            v-model="file"
-                            dense
-                            prepend-icon=""
-                            hide-details
-                            label="No File Chosen"
-                            style="max-inline-size: 400px"
-                            class="custom-file-input"
-                            @change="uploadFile"
-                          >
-                            <!-- Button upload input -->
-                            <template #append-inner>
-                              <VBtn
-                                color="primary"
-                                variant="flat"
-                                class="choose-file"
-                                style="block-size: 100%; inline-size: 150px"
-                              >
-                                Choose File
-                              </VBtn>
-                            </template>
-                          </VFileInput>
-                        </VCols>
-                      </td>
-                    </tr>
-                  </tbody>
-                </VTable>
+                <VDataTableServer
+                  :headers="headersDokumenPersyaratanFasilitas"
+                  :items="itemsDokumenPersyaratanFasilitas"
+                  :loading="loading"
+                  :hide-default-footer="true"
+                  loading-text="Loading..."
+                  items-per-page="2"
+                  page="1"
+                  :items-length="2"
+                >
+                  <template #item.id="{ index }">
+                    {{ index + 1 + (page - 1) * itemPerPage }}
+                  </template>
+                  <template #item.nama="{ item }">
+                    {{ item.nama }}
+                  </template>
+                  <template #item.doc="{ item }">
+                    <div>
+                      <HalalFileInput />
+                    </div>
+                  </template>
+                </VDataTableServer>
               </VCol>
             </VRow>
           </VCard>
@@ -957,7 +903,7 @@ const onFasilitatorSearchInput = debounce((input) => {
                   v-model:items-per-page="itemPerPage"
                   v-model:page="page"
                   :headers="pabrikTableHeader"
-                  :items="pabrikTableData"
+                  :items="[]"
                   :loading="loading"
                   :items-length="totalItems"
                   loading-text="Loading..."
