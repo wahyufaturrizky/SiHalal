@@ -10,7 +10,6 @@ const tableHeader = [
   { title: "Tanggal Aktif", value: "tgl_aktif" },
   { title: "tanggal Selesai", value: "tgl_selesai" },
   { title: "Kuota", value: "kuota" },
-  { title: "tanggal Submit", value: "tgl_submit" },
   { title: "Status", value: "status" },
   { title: "Action", value: "action", align: "center" }, // Kolom Action
 ];
@@ -121,13 +120,6 @@ const maxWidthSearch = computed(() => (mdAndUp ? 700 : "90%"));
           </template>
           <template #item.tgl_selesai="{ item }">
             {{ formatDateIntl(new Date(item.tgl_selesai)) }}
-          </template>
-          <template #item.tgl_submit="{ item }">
-            {{
-              item.tgl_submit != undefined
-                ? formatDateIntl(new Date(item.tgl_submit))
-                : ""
-            }}
           </template>
           <template #item.sumber_biaya="{ item }">
             {{ formatSof(item.sumber_biaya) }}
