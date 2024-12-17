@@ -76,8 +76,9 @@ onMounted(async () => {
           <VBtn
             color="primary"
             class="mt-2 text-center"
-            @click="handleRegister"
             width="100%"
+            :disabled="!selectedKBLI"
+            @click="handleRegister"
           >
             Daftar
           </VBtn>
