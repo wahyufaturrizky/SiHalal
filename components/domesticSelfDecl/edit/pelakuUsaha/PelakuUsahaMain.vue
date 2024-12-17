@@ -18,13 +18,24 @@ const picDetail = reactive({
 const legalHeader = [
   { title: "No", key: "no", sortable: false },
   { title: "Jenis", key: "jenis_surat" },
-  { title: "No. Dokumen", key: "no_surat" },
-  { title: "Tanggal", key: "tgl_surat" },
-  { title: "Masa Berlaku", key: "masa_berlaku" },
-  { title: "Instansi Penerbit", key: "instansi_penerbit" },
+  { title: "No. Dokumen", key: "no_surat", nowrap: true },
+  { title: "Tanggal", key: "tgl_surat", nowrap: true },
+  { title: "Masa Berlaku", key: "masa_berlaku", nowrap: true },
+  { title: "Instansi Penerbit", key: "instansi_penerbit", nowrap: true },
   { title: "Action", key: "action", align: "center", sortable: false },
 ];
 const legalData = ref([]);
+
+const halalSupervisorHeader = [
+  { title: "No", key: "no" },
+  { title: "Nama", key: "nama" },
+  { title: "No. KTP", key: "no_ktp" },
+  { title: "No. Kontak", key: "no_kontak" },
+  { title: "No/Tgl Sertif Penyelia Halal", key: "no_sertifikat" },
+  { title: "No/Tanggal SK", key: "no_sk" },
+  { title: "Action", key: "action" },
+];
+const halalSupervisorData = ref([]);
 
 const getSubmissionDetail = async () => {
   try {
@@ -108,7 +119,7 @@ onMounted(async () => {
         </VCardTitle>
         <VCardText>
           <VDataTable
-            class="legal-aspect-table"
+            class="custom-table"
             :headers="legalHeader"
             :items="legalData"
           >
@@ -138,7 +149,22 @@ onMounted(async () => {
             </VCol>
           </VRow>
         </VCardTitle>
-        <VCardText><AspekLegalTable /></VCardText>
+        <VCardText>
+          <VDataTable
+            class="custom-table"
+            :headers="halalSupervisorHeader"
+            :items="halalSupervisorData"
+          >
+            <template #item.no="{ index }">
+              {{ index + 1 }}
+            </template>
+            <template #item.action="{ index }">
+              <div>
+                <VIcon icon="mdi-delete" color="error" class="cursor-pointer" />
+              </div>
+            </template>
+          </VDataTable>
+        </VCardText>
       </VCard>
     </VCol>
   </VRow>
@@ -170,7 +196,7 @@ onMounted(async () => {
 </template>
 
 <style scoped lang="scss">
-:deep(.v-data-table.legal-aspect-table > .v-table__wrapper) {
+:deep(.v-data-table.custom-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
       right: 0;
