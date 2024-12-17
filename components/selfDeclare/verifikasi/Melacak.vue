@@ -15,13 +15,13 @@ interface TimelineItem {
 
 const timelineItems = ref<TimelineItem[]>([]);
 
-const dummyData = [
-  { status: "Draft PU", username: "Ramen Grill Indonesia", created_at: "2024-11-01" },
-  { status: "Submitted PU", username: "Ramen Grill Indonesia", created_at: "2024-11-02" },
-  { status: "Verifikasi", username: "Yuan", created_at: "2024-11-03" },
-];
+// const dummyData = [
+// { status: "Draft PU", username: "Ramen Grill Indonesia", created_at: "2024-11-01" },
+// { status: "Submitted PU", username: "Ramen Grill Indonesia", created_at: "2024-11-02" },
+// { status: "Verifikasi", username: "Yuan", created_at: "2024-11-03" },
+// ];
 
-timelineItems.value = dummyData?.map((item: any) => {
+timelineItems.value = props.data?.map((item: any) => {
   const { status, username, created_at } = item || {};
 
   return {
