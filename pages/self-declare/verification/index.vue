@@ -24,6 +24,15 @@ const statusItem: any = new Proxy(
     OF5: { color: "success", desc: "Invoice issued" },
     OF320: { color: "success", desc: "Code Issued" },
     OF11: { color: "success", desc: "Verification" },
+    OF50: { color: "success", desc: "Dikirim ke LPH" },
+    OF300: { color: "success", desc: "Halal Certified Issued" },
+    OF285: { color: "success", desc: "Dikembalikan Oleh Fatwa" },
+    OF74: { color: "success", desc: "Sent to Komite Fatwa" },
+    OF280: { color: "success", desc: "Dikembalikan Ke PU" },
+    OF280: { color: "success", desc: "Dikembalikan Ke PU" },
+    OF100: { color: "success", desc: "Selesai Sidang Fatwa" },
+    OF120: { color: "success", desc: "Certificate Issued" },
+    OF900: { color: "error", desc: "Dibatalkan" },
   },
   {
     get(target: any, prop: any) {
@@ -34,15 +43,14 @@ const statusItem: any = new Proxy(
 
 // Table headers
 const headers: any = [
-  { title: "No", key: "id", align: "center" },
+  { title: "No", key: "no", align: "center" },
   { title: "ID Registrasi", key: "id_daftar" },
-  { title: "Nomor Daftar", key: "nomor_daftar" },
+  { title: "Nomor Daftar", key: "no_daftar" },
   { title: "Tanggal Daftar", key: "tgl_daftar" },
   { title: "Nama PU", key: "nama" },
   { title: "Alamat", key: "alamat" },
   { title: "Jenis Produk", key: "jenis_produk" },
   { title: "Merk Dagang", key: "merk_dagang" },
-  { title: "Nama Pendamping", key: "pendamping" },
   { title: "Status", key: "status_code" },
   { title: "Action", key: "action" },
 ];
@@ -79,8 +87,8 @@ const loadItem = async (
       },
     });
 
-    items.value = response.data;
-    totalItems.value = response.total_item;
+    items.value = response.data || [];
+    totalItems.value = response.total_item || 0;
     loading.value = false;
     return response;
   } catch (error) {
@@ -110,7 +118,7 @@ const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
   const res = await Promise.all([
-    loadItem(1, itemPerPage.value, "", status.value),
+    loadItem(page.value, itemPerPage.value, searchQuery.value, status.value),
     loadItemStatusApplication(),
   ]);
 
@@ -127,7 +135,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <VCard v-if="!loadingAll" variant="flat" class="pa-4">
+  <VCard variant="flat" class="pa-4">
     <VCardTitle>
       <VRow>
         <VCol cols="10">
@@ -138,7 +146,7 @@ onMounted(async () => {
         </VCol>
       </VRow>
     </VCardTitle>
-    <VCardText>
+    <VCardText v-if="!loadingAll">
       <VRow>
         <VCol />
       </VRow>
@@ -175,11 +183,11 @@ onMounted(async () => {
           loading-text="Loading..."
           @update:options="loadItem(page, itemPerPage, searchQuery, status)"
         >
-          <template #item.id="{ index }">
+          <template #item.no="{ index }">
             {{ index + 1 + (page - 1) * itemPerPage }}
           </template>
           <template #item.tgl_daftar="{ item }">
-            {{ formatDateIntl(new Date((item as any).TanggalDaftar)) }}
+            {{ formatDate(item.tgl_daftar) }}
           </template>
           <template #item.action="{ item }">
             <div class="d-flex gap-1">
@@ -187,7 +195,7 @@ onMounted(async () => {
                 <VIcon
                   icon="ri-arrow-right-line"
                   color="primary"
-                  @click="navigateAction((item as any).id)"
+                  @click="navigateAction((item as any).id_daftar)"
                 />
               </IconBtn>
             </div>
