@@ -11,8 +11,8 @@ const detail = ref(props?.data)
     <div class="semi-bold">
       {{ detail?.no_daftar }}
     </div>
-    <div class="text-h6">
-      {{ detail?.tanggal_daftar }}
+    <div class="text-h6" v-if="detail?.tanggal_daftar">
+      {{ formatDateIntl(new Date(detail?.tanggal_daftar)) }}
     </div>
     <div class="text-h6">
       {{ detail?.provinsi }}

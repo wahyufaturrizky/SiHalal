@@ -2,34 +2,6 @@
 const props = defineProps<{
   data: array
 }>()
-
-const trackingData = ref([
-  {
-    title: "Draft PU",
-    desc: "Ramen Gril Indonesia",
-    date: "09/09/2024",
-  },
-  {
-    title: "Submmited PU",
-    desc: "Ramen Gril Indonesia",
-    date: "09/09/2024",
-  },
-  {
-    title: "Verifikasi",
-    desc: "Oleh Yuan",
-    date: "09/09/2024",
-  },
-  {
-    title: "Dikirim ke LPH",
-    desc: "Yuan (selesai verif)",
-    date: "09/09/2024",
-  },
-  {
-    title: "Penetapan Biaya",
-    desc: "Global halal",
-    date: "09/09/2024",
-  },
-]);
 </script>
 
 <template>
@@ -47,8 +19,8 @@ const trackingData = ref([
               <div class="text-h6">{{ item.status }}</div>
               <div>{{ item.username }}</div>
             </VCol>
-            <VCol cols="5">
-              <div>{{ item.date }}</div>
+            <VCol cols="5" v-if="item.date">
+              <div>{{ formatDateIntl(new Date(item.date)) }}</div>
             </VCol>
           </VRow>
         </VTimelineItem>

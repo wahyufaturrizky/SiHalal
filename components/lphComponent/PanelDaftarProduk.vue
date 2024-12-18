@@ -41,6 +41,7 @@ const productNameData = ref([
     :headers="productNameHeader"
     :items="productNameData"
     hide-default-footer
+    class="border rounded"
   >
     <template #item.index="{ index }">
       {{ index + 1 }}

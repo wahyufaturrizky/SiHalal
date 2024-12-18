@@ -70,7 +70,9 @@ const detail = props?.dataPengajuan
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">Provinsi</VCol>
+      <VCol cols="7">
+        {{ detail?.provinsi }}
+      </VCol>
     </VRow>
   </div>
 </template>

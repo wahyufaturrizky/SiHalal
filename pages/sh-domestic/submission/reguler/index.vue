@@ -99,7 +99,7 @@ const newRegister = async (type: string, id: string) => {
 
     if (response?.code === 2000) {
       router.push(
-        `/audit-pengajuan/${response?.data?.certificate_halal?.id_reg}`,
+        `/sh-domestic/submission/reguler/${response?.data?.certificate_halal?.id_reg}`,
       )
     }
     else {

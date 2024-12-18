@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
-  data: object
+  data?: object
 }>()
 
 const detail = props?.data
@@ -15,8 +15,8 @@ const detail = props?.data
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">
-        {{ detail?.tanggal_mulai }}
+      <VCol cols="7" v-if="detail?.tanggal_mulai">
+        {{ formatDateIntl(new Date(detail?.tanggal_mulai)) }}
       </VCol>
     </VRow>
     <VRow no-gutters>
@@ -26,8 +26,8 @@ const detail = props?.data
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">
-        {{ detail?.tanggal_selesai }}
+      <VCol cols="7" v-if="detail?.tanggal_selesai">
+        {{ formatDateIntl(new Date(detail?.tanggal_mulai)) }}
       </VCol>
     </VRow>
   </div>

@@ -17,6 +17,7 @@ const auditorHeader: any[] = [
     :headers="auditorHeader"
     :items="props?.data"
     hide-default-footer
+    class="border rounded"
   >
     <template #item.index="{ index }">
       {{ index + 1 }}

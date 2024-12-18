@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   type?: 'READ' | 'EDIT'
-  dataPengajuan: object
+  dataPengajuan?: object
 }>()
 
 const detail = ref(props?.dataPengajuan)
@@ -40,8 +40,8 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">
-        {{ detail?.tanggal_buat }}
+      <VCol cols="7" v-if="detail?.tanggal_buat">
+        {{ formatDateIntl(new Date(detail?.tanggal_buat)) }}
       </VCol>
     </VRow>
     <VDivider class="my-1" />
