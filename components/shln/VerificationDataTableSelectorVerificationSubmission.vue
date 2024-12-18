@@ -126,7 +126,7 @@ const postSubmission = async (selectedItems: string[]) => {
   try {
     loadingAddSubmission.value = true;
 
-    const res = await $api(
+    const res: any = await $api(
       "/shln/verificator/assign-certificate-halal-foreign",
       {
         method: "post",
@@ -157,7 +157,7 @@ const addSelection = () => {
       return itemsSubmission.value.find((item) => item.id === key);
     });
 
-  postSubmission(selectedItems.map((item) => item.id));
+  postSubmission(selectedItems.map((item: any) => item.id));
 };
 
 const { mdAndUp } = useDisplay();
