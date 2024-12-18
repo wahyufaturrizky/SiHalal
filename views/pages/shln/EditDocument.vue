@@ -127,7 +127,7 @@ const requirementDocArray = ref([
 ]);
 const reqTracking = ref(null);
 const reqTrackingModal = ref(false);
-const reqFile = ref([]);
+const reqFile = ref();
 const getRequirementDocument = async () => {
   try {
     const response = await $api(
