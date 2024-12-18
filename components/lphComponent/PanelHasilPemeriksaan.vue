@@ -16,8 +16,8 @@ const detail = props?.data
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">
-        {{ detail?.tanggal_selesai }}
+      <VCol cols="7" v-if="detail?.tanggal_selesai">
+        {{ formatDateIntl(new Date(detail?.tanggal_selesai)) }}
       </VCol>
     </VRow>
     <VRow no-gutters>

@@ -1,19 +1,56 @@
 <script setup lang="ts">
-import LPHDetailLayout from "@/layouts/LPHDetailLayout.vue";
+import LPHDetailLayout from '@/layouts/LPHDetailLayout.vue'
 
-const router = useRouter();
-const openedLeftPanels = ref([0, 1, 2, 3, 4, 5]);
-const openedRightPanels = ref([0, 1, 2]);
+const router = useRouter()
+const id = router?.params?.id
+const openedLeftPanels = ref([0, 1, 2, 3, 4, 5])
+const openedRightPanels = ref([0, 1, 2])
+const loading = ref(false)
+const dataPengajuan = ref<any>({})
+const dataProduk = ref<any>([])
+const dataPemeriksaanProduk = ref<any>(null)
 
-const isSendModalOpen = ref(false);
+const isSendModalOpen = ref(false)
 
 const handleOpenSendModal = () => {
-  isSendModalOpen.value = !isSendModalOpen.value;
-};
+  isSendModalOpen.value = !isSendModalOpen.value
+}
 
 const handleUpdateStatus = () => {
-  useSnackbar().sendSnackbar("Berhasil mengirim pengajuan data", "success");
-};
+  useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
+}
+
+const getDetailData = async (type: string) => {
+  try {
+    const response: any = await $api('/lph/detail-payment', {
+      method: 'get',
+      params: { url: `${LIST_INFORMASI_PEMBAYARAN}/${id}/${type}` },
+    })
+
+    if (response?.code === 2000)
+      return response?.data
+    else
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+onMounted(async () => {
+  loading.value = true
+
+  const responseData = await Promise.allSettled([
+    getDetailData('pengajuan'),
+    getDetailData('produk'),
+    getDetailData('pemeriksaanproduk'),
+  ])
+
+  dataPengajuan.value = responseData?.[0]?.value || {}
+  dataProduk.value = responseData?.[1]?.value || []
+  dataPemeriksaanProduk.value = responseData?.[2]?.value || {}
+  loading.value = false
+})
 </script>
 
 <template>

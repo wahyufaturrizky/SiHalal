@@ -430,6 +430,10 @@ const deleteFactoryOrOutlet = async (type: string, el: any) => {
     url = '/reguler/pelaku-usaha/delete-legal'
     id = el.id_reg_legal
   }
+ else if (type === 'halal data') {
+    url = '/reguler/pelaku-usaha/delete-penyelia'
+    id = el.penyelia_id
+  }
   try {
     const response: any = await $api(url, {
       method: 'delete',
@@ -669,6 +673,7 @@ onMounted(async () => {
       :on-submit="() => triggerSaveModal('Penyelia Halal')"
       :on-add="() => triggerAddModal('Penyelia Halal')"
       :data="halalData"
+      :on-delete="(el: any) => deleteFactoryOrOutlet('halal data', el)"
       title="Penyelia Halal"
       with-add-button
     />
