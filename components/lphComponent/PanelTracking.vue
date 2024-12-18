@@ -1,4 +1,8 @@
 <script setup lang="ts">
+const props = defineProps<{
+  data: array
+}>()
+
 const trackingData = ref([
   {
     title: "Draft PU",
@@ -33,11 +37,15 @@ const trackingData = ref([
     <VCardlTitle class="font-weight-bold text-h4"> Melacak </VCardlTitle>
     <VCardText class="px-0">
       <VTimeline side="end" align="start" hide-opposite>
-        <VTimelineItem dot-color="#FFFFFF" v-for="item in trackingData">
+        <VTimelineItem
+          v-for="(item, index) in props?.data"
+          :key="index"
+          dot-color="#FFFFFF"
+        >
           <VRow>
             <VCol cols="7">
-              <div class="text-h6">{{ item.title }}</div>
-              <div>{{ item.desc }}</div>
+              <div class="text-h6">{{ item.status }}</div>
+              <div>{{ item.username }}</div>
             </VCol>
             <VCol cols="5">
               <div>{{ item.date }}</div>

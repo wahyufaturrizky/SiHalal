@@ -2,9 +2,6 @@
 <script setup lang="ts">
 const router = useRouter()
 const dataTable = ref<any[]>([])
-const listChannel = ref<any[]>([])
-const skalaUsaha = ref<any[]>([])
-const provinceData = ref<any[]>([])
 const loading = ref<boolean>(false)
 const page = ref<number>(1)
 const size = ref<number>(10)
@@ -12,15 +9,15 @@ const searchQuery = ref<string>('')
 
 const invoiceHeader: any[] = [
   { title: 'No', value: 'index' },
-  { title: 'Nomor Tagihan', value: 'billNumber', nowrap: true },
-  { title: 'Tanggal Tagihan', value: 'billDate', nowrap: true },
-  { title: 'No Ref', value: 'refNumber', nowrap: true },
-  { title: 'Nama PU', value: 'businessName', nowrap: true },
-  { title: 'Tanggal Dikirim Oleh BPJPH', value: 'sentDate', nowrap: true },
-  { title: 'Jenis Transaksi', value: 'trxType', nowrap: true },
-  { title: 'Jatuh Tempo', value: 'dueDate', nowrap: true },
-  { title: 'Jumlah Tagihan', value: 'totalBill', nowrap: true },
-  { title: 'Tanggal Bayar', value: 'payDate', nowrap: true },
+  { title: 'Nomor Tagihan', value: 'no_tagihan', nowrap: true },
+  { title: 'Tanggal Tagihan', value: 'tanggal_tagihan', nowrap: true },
+  { title: 'No Ref', value: 'no_tagihan', nowrap: true },
+  { title: 'Nama PU', value: 'nama_pu', nowrap: true },
+  { title: 'Tanggal Dikirim Oleh BPJPH', value: 'tgl_dikirim', nowrap: true },
+  { title: 'Jenis Transaksi', value: 'jenis_transaksi', nowrap: true },
+  { title: 'Jatuh Tempo', value: 'tanggal_jatuh_tempo', nowrap: true },
+  { title: 'Jumlah Tagihan', value: 'jumlah_tagihan', nowrap: true },
+  { title: 'Tanggal Bayar', value: 'tanggal_bayar', nowrap: true },
   { title: 'Action', value: 'actions', align: 'center' },
 ]
 
@@ -70,22 +67,10 @@ const loadItem = async (pageNumber: number, sizeData: number, search: string = '
       },
     })
 
-    if (response?.code === 2000) {
-      if (path === LIST_CHANNEL_PATH) {
-        const newData: any = [{ name: 'Semua', code: '' }]
-
-        response?.data.map((item: any) => {
-          return newData.push(item)
-        })
-
-        return newData
-      }
-
-      return response.data
-    }
-    else {
+    if (response?.code === 2000)
+      dataTable.value = response?.data
+    else
       useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
   }
   catch (error) {
     useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
@@ -94,50 +79,13 @@ const loadItem = async (pageNumber: number, sizeData: number, search: string = '
 
 const handleInput = (e: any) => {
   loading.value = true
-  debounce(loadItem(page.value, size.value, e.target.value), 500)
+  debounce(loadItem(page.value, size.value, e.target.value, LIST_INFORMASI_PEMBAYARAN), 500)
   loading.value = false
-}
-
-const getMasterSkalaUsaha = async () => {
-  const response: any[] = await $api('/master/business-entity-scale',
-    { method: 'get' },
-  )
-
-  const newData: any = [{ name: 'Semua', code: '' }]
-
-  response.unshift(newData)
-
-  return response
-}
-
-const getMasterProvinsi = async () => {
-  const response: any[] = await $api('/master/province',
-    { method: 'get' },
-  )
-
-  const newData: any = [{ name: 'Semua', code: '' }]
-
-  response.unshift(newData)
-
-  return response
 }
 
 onMounted(async () => {
   loading.value = true
-
-  const responseData = await Promise.allSettled([
-    loadItem(page.value, size.value, searchQuery.value, LIST_PEMERIKSAAN_PATH),
-    loadItem(page.value, size.value, searchQuery.value, LIST_CHANNEL_PATH),
-    getMasterSkalaUsaha(),
-    getMasterProvinsi(),
-  ])
-
-  if (responseData) {
-    dataTable.value = responseData?.[0]?.value || []
-    listChannel.value = responseData?.[1]?.value || []
-    skalaUsaha.value = responseData?.[2]?.value || []
-    provinceData.value = responseData?.[3]?.value || []
-  }
+  loadItem(page.value, size.value, searchQuery.value, LIST_INFORMASI_PEMBAYARAN)
   loading.value = false
 })
 </script>
@@ -161,55 +109,7 @@ onMounted(async () => {
           </div>
         </VCardTitle>
         <VCardText>
-          <div class="d-flex gap-10 mb-5">
-            <VMenu
-              v-model="showFilterMenu"
-              :close-on-content-click="false"
-              offset-y
-            >
-              <template #activator="{ props }">
-                <VBtn
-                  color="primary"
-                  variant="outlined"
-                  v-bind="props"
-                  append-icon="ri-filter-fill"
-                >
-                  Filter
-                </VBtn>
-              </template>
-              <VCard
-                class="pa-3"
-                width="300"
-              >
-                <VSelect
-                  v-model="selectedFilters.jenisLayanan"
-                  label="Jenis Layanan"
-                  :items="listChannel"
-                  item-title="name"
-                  item-value="code"
-                />
-                <VSelect
-                  v-model="selectedFilters.jenisProduk"
-                  label="Skala Usaha"
-                  :items="['Semua', 'Produk Y', 'Produk Z']"
-                  class="mt-3"
-                />
-                <VSelect
-                  v-model="selectedFilters.provinsi"
-                  label="Pusat"
-                  :items="['Semua', 'Jakarta', 'Jawa Barat']"
-                  class="mt-3"
-                />
-                <VBtn
-                  block
-                  color="primary"
-                  class="mt-3"
-                  @click="applyFilters"
-                >
-                  Apply Filters
-                </VBtn>
-              </VCard>
-            </VMenu>
+          <div>
             <VTextField
               v-model="searchQuery"
               placeholder="Cari Nama Pengajuan"
@@ -220,20 +120,20 @@ onMounted(async () => {
             />
           </div>
           <VDataTable
-            class="invoice-table border rounded"
+            class="invoice-table border rounded mt-5"
             :headers="invoiceHeader"
-            :items="invoiceData"
+            :items="dataTable"
             :page="1"
           >
             <template #item.index="{ index }">
               {{ index + 1 }}
             </template>
-            <template #item.actions>
+            <template #item.actions="{ item }">
               <VIcon
                 icon="mdi-arrow-right"
                 color="primary"
                 size="x-large"
-                @click="router.push('/reguler/payment-info/detail')"
+                @click="router.push(`/reguler/payment-info/${item.id_reg}`)"
               />
             </template>
             <template #bottom>
