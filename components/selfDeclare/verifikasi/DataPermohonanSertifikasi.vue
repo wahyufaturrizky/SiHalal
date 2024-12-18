@@ -11,7 +11,7 @@ const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
 const loadingAll = ref(false);
-const page = ref();
+const page = ref(1);
 const itemsProduct = ref();
 const searchQuery = ref("");
 const dialogVisible = ref(false);
@@ -21,17 +21,20 @@ const itemsPendamping = ref();
 const itemsProvince = ref();
 const itemsDistrict = ref();
 const loadingAddSubmission = ref(false);
+const selectedItems = ref<any[]>([]);
 
-interface DataItem {
-  id: number;
-  id_daftar: string;
-  TanggalDaftar: string;
-  Nama: string;
-  Alamat: string;
-  JenisProduk: string;
-  MerkDagang: string;
-  Status: string;
-}
+const headers: any = [
+  { title: "No", key: "no", align: "center" },
+  { title: "ID Daftar", key: "no_daftar" },
+  { title: "Pilih", key: "pilih" },
+  { title: "Tanggal Daftar", key: "tgl_daftar" },
+  { title: "Nama", key: "nama" },
+  { title: "Alamat", key: "alamat" },
+  { title: "Jenis Produk", key: "jenis_produk" },
+  { title: "Merk Dagang", key: "merek_dagang" },
+  { title: "Status", key: "status_code" },
+  { title: "Action", key: "action" },
+];
 
 const defaultStatus = { color: "error", desc: "Unknown Status" };
 
@@ -45,6 +48,14 @@ const statusItem: any = new Proxy(
     OF5: { color: "success", desc: "Invoice issued" },
     OF320: { color: "success", desc: "Code Issued" },
     OF11: { color: "success", desc: "Verification" },
+    OF50: { color: "success", desc: "Dikirim ke LPH" },
+    OF300: { color: "success", desc: "Halal Certified Issued" },
+    OF285: { color: "success", desc: "Dikembalikan Oleh Fatwa" },
+    OF74: { color: "success", desc: "Sent to Komite Fatwa" },
+    OF280: { color: "success", desc: "Dikembalikan Ke PU" },
+    OF100: { color: "success", desc: "Selesai Sidang Fatwa" },
+    OF120: { color: "success", desc: "Certificate Issued" },
+    OF900: { color: "error", desc: "Dibatalkan" },
   },
   {
     get(target: any, prop: any) {
@@ -52,21 +63,6 @@ const statusItem: any = new Proxy(
     },
   }
 );
-
-const selectedItems = ref<DataItem[]>([]);
-
-const headers: any = [
-  { title: "No", key: "id", align: "center" },
-  { title: "ID Daftar", key: "id_daftar" },
-  { title: "Pilih", key: "pilih" },
-  { title: "Tanggal Daftar", key: "tgl_daftar" },
-  { title: "Nama", key: "nama" },
-  { title: "Alamat", key: "alamat" },
-  { title: "Jenis Produk", key: "jenis_produk" },
-  { title: "Merk Dagang", key: "merk_dagang" },
-  { title: "Status", key: "status_code" },
-  { title: "Action", key: "action" },
-];
 
 const handleInput = () => {
   debouncedFetch({
@@ -211,9 +207,11 @@ const postSubmission = async (selectedItems: any) => {
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
       dialogVisible.value = false;
       loadingAddSubmission.value = false;
+      selectedItems.value = [];
       emit("refresh");
     } else {
       useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+      selectedItems.value = [];
       dialogVisible.value = false;
       loadingAddSubmission.value = false;
     }
@@ -347,8 +345,6 @@ onMounted(async () => {
 const openDialog = () => {
   dialogVisible.value = true;
 };
-
-console.log("@selectedItems", selectedItems.value);
 </script>
 
 <template>
@@ -504,7 +500,7 @@ console.log("@selectedItems", selectedItems.value);
               })
             "
           >
-            <template #item.id="{ index }">
+            <template #item.no="{ index }">
               {{ index + 1 + (page - 1) * itemPerPage }}
             </template>
             <template #item.tgl_daftar="{ item }">
