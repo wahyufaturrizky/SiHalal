@@ -1,10 +1,22 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const props = defineProps<{
+  data: object
+}>()
+
+const detail = ref(props?.data)
+</script>
 
 <template>
   <div class="d-flex flex-column ga-2">
-    <div class="semi-bold">SH2023-1-582897</div>
-    <div class="text-h6">13/10/2024</div>
-    <div class="text-h6">Jawa Tengah</div>
+    <div class="semi-bold">
+      {{ detail?.no_daftar }}
+    </div>
+    <div class="text-h6">
+      {{ detail?.tanggal_daftar }}
+    </div>
+    <div class="text-h6">
+      {{ detail?.provinsi }}
+    </div>
   </div>
 </template>
 

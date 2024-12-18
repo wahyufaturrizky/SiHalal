@@ -1,4 +1,10 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const props = defineProps<{
+  dataPengajuan: object
+}>()
+
+const detail = props?.dataPengajuan
+</script>
 
 <template>
   <div class="d-flex flex-column ga-4">
@@ -9,7 +15,9 @@
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">1213 / 10/11/2023</VCol>
+      <VCol cols="7">
+        {{ detail?.tanggal_buat }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5">
@@ -18,7 +26,9 @@
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">Minuman</VCol>
+      <VCol cols="7">
+        {{ detail?.jenis_usaha }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5">
@@ -27,7 +37,9 @@
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">Baru</VCol>
+      <VCol cols="7">
+        {{ detail?.jenis_pendaftaran }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5">
@@ -36,7 +48,9 @@
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">Minuman Bahagia</VCol>
+      <VCol cols="7">
+        {{ detail?.jenis_produk }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5">
@@ -45,7 +59,9 @@
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">PT. Sukarasa</VCol>
+      <VCol cols="7">
+        {{ detail?.nama_pu }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5">

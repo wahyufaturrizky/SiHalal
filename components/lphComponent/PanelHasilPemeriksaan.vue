@@ -1,9 +1,10 @@
 <script setup lang="ts">
 const props = defineProps<{
-  type?: "READ" | "EDIT";
-}>();
+  type?: 'READ' | 'EDIT'
+  data: object
+}>()
 
-const panelType = computed(() => (props.type ? props.type : "READ"));
+const detail = props?.data
 </script>
 
 <template>
@@ -15,7 +16,9 @@ const panelType = computed(() => (props.type ? props.type : "READ"));
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">10/12/2023</VCol>
+      <VCol cols="7">
+        {{ detail?.tanggal_selesai }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5">
@@ -24,7 +27,9 @@ const panelType = computed(() => (props.type ? props.type : "READ"));
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">{{ panelType == "READ" ? "-" : "Lulus" }}</VCol>
+      <VCol cols="7">
+        {{ detail?.hasil }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5">
@@ -33,7 +38,9 @@ const panelType = computed(() => (props.type ? props.type : "READ"));
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">-</VCol>
+      <VCol cols="7">
+        {{ detail?.dokumen }}
+      </VCol>
     </VRow>
   </div>
 </template>
