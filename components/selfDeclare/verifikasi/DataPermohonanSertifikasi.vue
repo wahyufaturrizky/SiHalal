@@ -10,7 +10,7 @@ const items = ref([]);
 const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
-const loadingAll = ref(false);
+const loadingAll = ref(true);
 const page = ref(1);
 const itemsProduct = ref();
 const searchQuery = ref("");
@@ -311,7 +311,6 @@ const loadItemDistrict = async () => {
 };
 
 onMounted(async () => {
-  loadingAll.value = true;
   const res = await Promise.all([
     loadItem({
       page: page.value,

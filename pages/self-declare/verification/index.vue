@@ -43,14 +43,14 @@ const statusItem: any = new Proxy(
 // Table headers
 const headers: any = [
   { title: "No", key: "no", align: "center" },
-  { title: "ID Registrasi", key: "id_daftar" },
+  { title: "ID Registrasi", key: "id" },
   { title: "Nomor Daftar", key: "no_daftar" },
   { title: "Tanggal Daftar", key: "tgl_daftar" },
-  { title: "Nama PU", key: "nama" },
-  { title: "Alamat", key: "alamat" },
-  { title: "Jenis Produk", key: "jenis_produk" },
-  { title: "Merk Dagang", key: "merk_dagang" },
-  { title: "Status", key: "status_code" },
+  { title: "Nama PU", key: "nama_pu" },
+  { title: "Alamat", key: "alamat_pu" },
+  { title: "Jenis Produk", key: "jenis_product" },
+  { title: "Merk Dagang", key: "merek_dagang" },
+  { title: "Status", key: "status_reg" },
   { title: "Action", key: "action" },
 ];
 
@@ -141,7 +141,9 @@ onMounted(async () => {
           <h3>Data Pengajuan</h3>
         </VCol>
         <VCol cols="2" style="display: flex; justify-content: end">
-          <DataPermohonanSertifikasi />
+          <DataPermohonanSertifikasi
+            @refresh="loadItem(1, itemPerPage, searchQuery, status)"
+          />
         </VCol>
       </VRow>
     </VCardTitle>
@@ -194,15 +196,10 @@ onMounted(async () => {
                 <VIcon
                   icon="ri-arrow-right-line"
                   color="primary"
-                  @click="navigateAction((item as any).id_daftar)"
+                  @click="navigateAction((item as any).id)"
                 />
               </IconBtn>
             </div>
-          </template>
-          <template #item.status_code="{ item }">
-            <VChip label :color="statusItem[(item as any).status_code].color">
-              {{ statusItem[(item as any).status_code].desc }}
-            </VChip>
           </template>
         </VDataTableServer>
       </VRow>
