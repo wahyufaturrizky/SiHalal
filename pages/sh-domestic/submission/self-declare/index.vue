@@ -48,7 +48,7 @@ const questions = [
   "Aktivitas produksi yang dilakukan merupakan usaha rumahan (bukan usaha pabrikan)",
   "Proses produksi menggunakan bahan-bahan halal. (contoh bahan halal: 1. Bahan bersertifikat halal 2. Bahan berasal dari alam (tanpa melihat sertifikat): buah segar, sayur segar, telur segar, ikan segar, rempah, dll)",
   "Jika ada proses produksi produk lain yang menggunakan bahan non-halal, dilakukan pada tempat terpisah dan menggunakan alat yang berbeda.",
-  "Proses produksi tidak menggunakan bahan berbahaya (contoh bahan berbahaya tertuang dalam Peraturan BPOM Nomor 3 Tahun 2018)",
+  "Proses produksi tidak menggunakan bahan berbahaya (contoh bahan berbahaya tertuang dalam Peraturan BPOM Nomor 7 Tahun 2018)",
   "Proses pengawetan produk sederhana dan tidak menggunakan kombinasi lebih dari 1 metode pengawetan ",
   "Proses produksi menggunakan peralatan manual/ semi otomatis",
 ];
@@ -83,15 +83,18 @@ const handleSubmitQuestionare = (answers: Array<string>) => {
 
 const router = useRouter();
 
-const hanleSubmitRequest = async (answer: any) => {
+const hanleSubmitRequest = async (answer: string) => {
   // console.log("answer request : ", answer);
-  handleCreate();
+  handleCreate(answer);
 };
 
-const handleCreate = async () => {
+const handleCreate = async (answer: string) => {
   try {
-    const result: any = await $api("/self-declare/create", {
-      method: "POST",
+    const result: any = await $api("/self-declare/submission/create", {
+      method: "post",
+      body: {
+        kbli_id: answer,
+      },
     });
 
     if (result.code === 2000) {
@@ -107,7 +110,7 @@ const alertData = ref({
   text: "",
 });
 const loadValidation = async () => {
-  const response: any = await $api("/self-declare/validation", {
+  const response: any = await $api("/self-declare/submission/validation", {
     method: "get",
   });
 
@@ -117,9 +120,9 @@ const loadValidation = async () => {
   }
 };
 
-const { refresh } = useAsyncData("self-declare-list", async () => {
+const handleLoadList = async () => {
   try {
-    const response: any = await $api("/self-declare/list", {
+    const response: any = await $api("/self-declare/submission/list", {
       method: "get",
       params: {
         page: tablePageData.value.current_page,
@@ -136,7 +139,15 @@ const { refresh } = useAsyncData("self-declare-list", async () => {
   } catch (error) {
     console.log(error);
   }
-});
+};
+
+const { refresh } = await useAsyncData(
+  "self-declare-list",
+  async () => handleLoadList(),
+  {
+    // watch: [tablePageData.value.current_page],
+  }
+);
 
 const handleSearchSubmission = useDebounceFn((val: string) => {
   searchQuery.value = val;
@@ -147,6 +158,7 @@ const handleSearchSubmission = useDebounceFn((val: string) => {
 
 onMounted(() => {
   loadValidation();
+  handleLoadList();
 });
 </script>
 
