@@ -10,8 +10,8 @@ const items = ref([]);
 const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
-const loadingAll = ref(false);
-const page = ref();
+const loadingAll = ref(true);
+const page = ref(1);
 const itemsProduct = ref();
 const searchQuery = ref("");
 const dialogVisible = ref(false);
@@ -21,32 +21,48 @@ const itemsPendamping = ref();
 const itemsProvince = ref();
 const itemsDistrict = ref();
 const loadingAddSubmission = ref(false);
-
-interface DataItem {
-  id: number;
-  id_daftar: string;
-  TanggalDaftar: string;
-  Nama: string;
-  Alamat: string;
-  JenisProduk: string;
-  MerkDagang: string;
-  Status: string;
-}
-
-const selectedItems = ref<DataItem[]>([]);
+const selectedItems = ref<any[]>([]);
 
 const headers: any = [
-  { title: "No", key: "id", align: "center" },
+  { title: "No", key: "no", align: "center" },
   { title: "ID Daftar", key: "no_daftar" },
   { title: "Pilih", key: "pilih" },
   { title: "Tanggal Daftar", key: "tgl_daftar" },
-  { title: "Nama", key: "nama_pu" },
+  { title: "Nama", key: "nama" },
   { title: "Alamat", key: "alamat" },
-  { title: "Jenis Produk", key: "jenis_product" },
+  { title: "Jenis Produk", key: "jenis_produk" },
   { title: "Merk Dagang", key: "merek_dagang" },
-  { title: "Status", key: "status_reg" },
+  { title: "Status", key: "status_code" },
   { title: "Action", key: "action" },
 ];
+
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+
+const statusItem: any = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+    OF11: { color: "success", desc: "Verification" },
+    OF50: { color: "success", desc: "Dikirim ke LPH" },
+    OF300: { color: "success", desc: "Halal Certified Issued" },
+    OF285: { color: "success", desc: "Dikembalikan Oleh Fatwa" },
+    OF74: { color: "success", desc: "Sent to Komite Fatwa" },
+    OF280: { color: "success", desc: "Dikembalikan Ke PU" },
+    OF100: { color: "success", desc: "Selesai Sidang Fatwa" },
+    OF120: { color: "success", desc: "Certificate Issued" },
+    OF900: { color: "error", desc: "Dibatalkan" },
+  },
+  {
+    get(target: any, prop: any) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
 
 const handleInput = () => {
   debouncedFetch({
@@ -191,9 +207,11 @@ const postSubmission = async (selectedItems: any) => {
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
       dialogVisible.value = false;
       loadingAddSubmission.value = false;
+      selectedItems.value = [];
       emit("refresh");
     } else {
       useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+      selectedItems.value = [];
       dialogVisible.value = false;
       loadingAddSubmission.value = false;
     }
@@ -293,7 +311,6 @@ const loadItemDistrict = async () => {
 };
 
 onMounted(async () => {
-  loadingAll.value = true;
   const res = await Promise.all([
     loadItem({
       page: page.value,
@@ -327,8 +344,6 @@ onMounted(async () => {
 const openDialog = () => {
   dialogVisible.value = true;
 };
-
-console.log("@selectedItems", selectedItems.value);
 </script>
 
 <template>
@@ -484,7 +499,7 @@ console.log("@selectedItems", selectedItems.value);
               })
             "
           >
-            <template #item.id="{ index }">
+            <template #item.no="{ index }">
               {{ index + 1 + (page - 1) * itemPerPage }}
             </template>
             <template #item.tgl_daftar="{ item }">
@@ -507,6 +522,11 @@ console.log("@selectedItems", selectedItems.value);
                 v-model="selectedItems"
                 :value="(item as any).id_daftar"
               />
+            </template>
+            <template #item.status_code="{ item }">
+              <VChip label :color="statusItem[(item as any).status_code].color">
+                {{ statusItem[(item as any).status_code].desc }}
+              </VChip>
             </template>
           </VDataTableServer>
         </VRow>

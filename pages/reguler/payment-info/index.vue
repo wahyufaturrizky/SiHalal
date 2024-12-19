@@ -1,43 +1,93 @@
+<!-- eslint-disable regex/invalid -->
 <script setup lang="ts">
-const router = useRouter();
+const router = useRouter()
+const dataTable = ref<any[]>([])
+const loading = ref<boolean>(false)
+const page = ref<number>(1)
+const size = ref<number>(10)
+const searchQuery = ref<string>('')
 
 const invoiceHeader: any[] = [
-  { title: "No", value: "index" },
-  { title: "Nomor Tagihan", value: "billNumber", nowrap: true },
-  { title: "Tanggal Tagihan", value: "billDate", nowrap: true },
-  { title: "No Ref", value: "refNumber", nowrap: true },
-  { title: "Nama PU", value: "businessName", nowrap: true },
-  { title: "Tanggal Dikirim Oleh BPJPH", value: "sentDate", nowrap: true },
-  { title: "Jenis Transaksi", value: "trxType", nowrap: true },
-  { title: "Jatuh Tempo", value: "dueDate", nowrap: true },
-  { title: "Jumlah Tagihan", value: "totalBill", nowrap: true },
-  { title: "Tanggal Bayar", value: "payDate", nowrap: true },
-  { title: "Action", value: "actions", align: "center" },
-];
+  { title: 'No', value: 'index' },
+  { title: 'Nomor Tagihan', value: 'no_tagihan', nowrap: true },
+  { title: 'Tanggal Tagihan', value: 'tanggal_tagihan', nowrap: true },
+  { title: 'No Ref', value: 'no_tagihan', nowrap: true },
+  { title: 'Nama PU', value: 'nama_pu', nowrap: true },
+  { title: 'Tanggal Dikirim Oleh BPJPH', value: 'tgl_dikirim', nowrap: true },
+  { title: 'Jenis Transaksi', value: 'jenis_transaksi', nowrap: true },
+  { title: 'Jatuh Tempo', value: 'tanggal_jatuh_tempo', nowrap: true },
+  { title: 'Jumlah Tagihan', value: 'jumlah_tagihan', nowrap: true },
+  { title: 'Tanggal Bayar', value: 'tanggal_bayar', nowrap: true },
+  { title: 'Action', value: 'actions', align: 'center' },
+]
+
 const invoiceData = [
   {
-    billNumber: "SH2024-225-29480",
-    billDate: "22/08/2024",
-    refNumber: "SH2024-225-29480",
-    businessName: "Dapoer Boenda",
-    sentDate: "22/08/2024 06:38 (500 hari)",
-    trxType: "Sertifikasi Halal",
-    dueDate: "22/08/2024",
-    totalBill: "Rp 200,000",
-    payDate: "22/08/2024",
+    billNumber: 'SH2024-225-29480',
+    billDate: '22/08/2024',
+    refNumber: 'SH2024-225-29480',
+    businessName: 'Dapoer Boenda',
+    sentDate: '22/08/2024 06:38 (500 hari)',
+    trxType: 'Sertifikasi Halal',
+    dueDate: '22/08/2024',
+    totalBill: 'Rp 200,000',
+    payDate: '22/08/2024',
   },
   {
-    billNumber: "SH2024-225-29480",
-    billDate: "22/08/2024",
-    refNumber: "SH2024-225-29480",
-    businessName: "Dapoer Boenda",
-    sentDate: "22/08/2024 06:38 (500 hari)",
-    trxType: "Sertifikasi Halal",
-    dueDate: "22/08/2024",
-    totalBill: "Rp 200,000",
-    payDate: "22/08/2024",
+    billNumber: 'SH2024-225-29480',
+    billDate: '22/08/2024',
+    refNumber: 'SH2024-225-29480',
+    businessName: 'Dapoer Boenda',
+    sentDate: '22/08/2024 06:38 (500 hari)',
+    trxType: 'Sertifikasi Halal',
+    dueDate: '22/08/2024',
+    totalBill: 'Rp 200,000',
+    payDate: '22/08/2024',
   },
-];
+]
+
+const showFilterMenu = ref(false)
+
+const selectedFilters = ref({
+  jenisLayanan: 'Semua',
+  jenisProduk: 'Semua',
+  provinsi: 'Semua',
+  lph: 'Semua',
+})
+
+const loadItem = async (pageNumber: number, sizeData: number, search: string = '', path: string) => {
+  try {
+    const response: any = await $api('/lph/list', {
+      method: 'get',
+      params: {
+        pageNumber,
+        sizeData,
+        search,
+        url: path,
+      },
+    })
+
+    if (response?.code === 2000)
+      dataTable.value = response?.data
+    else
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const handleInput = (e: any) => {
+  loading.value = true
+  debounce(loadItem(page.value, size.value, e.target.value, LIST_INFORMASI_PEMBAYARAN), 500)
+  loading.value = false
+}
+
+onMounted(async () => {
+  loading.value = true
+  loadItem(page.value, size.value, searchQuery.value, LIST_INFORMASI_PEMBAYARAN)
+  loading.value = false
+})
 </script>
 
 <template>
@@ -59,28 +109,31 @@ const invoiceData = [
           </div>
         </VCardTitle>
         <VCardText>
-          <VTextField
-            placeholder="Cari Nama Pengajuan"
-            density="compact"
-            rounded="xl"
-            class="mb-5"
-            append-inner-icon="mdi-magnify"
-          />
+          <div>
+            <VTextField
+              v-model="searchQuery"
+              placeholder="Cari Nama Pengajuan"
+              density="compact"
+              append-inner-icon="ri-search-line"
+              style="max-inline-size: 100%"
+              @input="handleInput"
+            />
+          </div>
           <VDataTable
-            class="invoice-table"
+            class="invoice-table border rounded mt-5"
             :headers="invoiceHeader"
-            :items="invoiceData"
+            :items="dataTable"
             :page="1"
           >
             <template #item.index="{ index }">
               {{ index + 1 }}
             </template>
-            <template #item.actions>
+            <template #item.actions="{ item }">
               <VIcon
                 icon="mdi-arrow-right"
                 color="primary"
                 size="x-large"
-                @click="router.push('/reguler/payment-info/detail')"
+                @click="router.push(`/reguler/payment-info/${item.id_reg}`)"
               />
             </template>
             <template #bottom>

@@ -1,23 +1,24 @@
 <script setup lang="ts">
 const props = defineProps<{
-  detailPath: string;
-}>();
-const emit = defineEmits(["show:modal-info"]);
+  detailPath: string
+  data: array
+}>()
+const emit = defineEmits(["show:modal-info", 'tes']);
 
 const router = useRouter();
 
 const invoiceHeader: any[] = [
   { title: "No", value: "index" },
-  { title: "Nomor Daftar", value: "regisNumber", nowrap: true },
-  { title: "Tanggal", value: "date", nowrap: true },
-  { title: "Nama PU", value: "businessName", nowrap: true },
-  { title: "Janis Daftar", value: "regisType", nowrap: true },
-  { title: "Jenis Produk", value: "productType", nowrap: true },
+  { title: "Nomor Daftar", value: "no_daftar", nowrap: true },
+  { title: "Tanggal", value: "tanggal_daftar", nowrap: true },
+  { title: "Nama PU", value: "nama_pu", nowrap: true },
+  { title: "Jenis Daftar", value: "jenis_daftar", nowrap: true },
+  { title: "Jenis Produk", value: "jenis_produk", nowrap: true },
   { title: "Jenis Usaha dan Jumlah", value: "businessType", nowrap: true },
   { title: "Status", value: "status", nowrap: true },
-  { title: "Tanggal Dikirim Oleh BPJPH", value: "sentDate", nowrap: true },
+  { title: "Tanggal Dikirim Oleh BPJPH", value: "tgl_dikirim", nowrap: true },
   { title: "Action", value: "actions", align: "center" },
-];
+]
 const invoiceData = [
   {
     regisNumber: "SH2024-225-29480",
@@ -46,7 +47,7 @@ const invoiceData = [
   <VDataTable
     class="examination-table"
     :headers="invoiceHeader"
-    :items="invoiceData"
+    :items="props?.data"
     :page="1"
     hover
   >
@@ -63,7 +64,7 @@ const invoiceData = [
     <template #item.status="{ item }">
       <div
         class="status-box py-1 px-3 cursor-pointer"
-        @click="emit('show:modal-info')"
+        @click="emit('show:modal-info', item.status)"
       >
         {{ item.status }}
       </div>

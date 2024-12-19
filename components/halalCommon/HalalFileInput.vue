@@ -28,6 +28,7 @@ const width = computed(() => {
 });
 
 watch(file, (newFile) => {
+  console.log("file", newFile);
   emit("update:modelValue", newFile);
 });
 </script>

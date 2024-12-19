@@ -1,4 +1,10 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const props = defineProps<{
+  data?: object
+}>()
+
+const detail = props?.data
+</script>
 
 <template>
   <div class="d-flex flex-column ga-4">
@@ -9,7 +15,9 @@
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">10/12/2023</VCol>
+      <VCol cols="7" v-if="detail?.tanggal_mulai">
+        {{ formatDateIntl(new Date(detail?.tanggal_mulai)) }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5">
@@ -18,7 +26,9 @@
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">10/12/2023</VCol>
+      <VCol cols="7" v-if="detail?.tanggal_selesai">
+        {{ formatDateIntl(new Date(detail?.tanggal_mulai)) }}
+      </VCol>
     </VRow>
   </div>
 </template>

@@ -83,7 +83,7 @@ const handleSubmitQuestionare = (answers: Array<string>) => {
 
 const router = useRouter();
 
-const hanleSubmitRequest = async (answer: any) => {
+const hanleSubmitRequest = async (answer: string) => {
   // console.log("answer request : ", answer);
   handleCreate(answer);
 };

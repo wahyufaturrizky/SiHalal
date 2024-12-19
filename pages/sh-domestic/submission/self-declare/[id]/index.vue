@@ -26,6 +26,7 @@
             >Ubah</VBtn
           >
           <VBtn :color="!isCompleted ? '#A09BA1' : 'primary'">Kirim</VBtn>
+          <VBtn :color="!isComplete ? 'primary' : '#A09BA1'">Kirim</VBtn>
         </VRow>
       </VCol>
     </VRow>
@@ -250,10 +251,10 @@
                 <template #item.no="{ index }">
                   {{ index + 1 }}
                 </template>
-                <template #item.tgl_surat="{ item }">
+                <template #item.tgl_surat="{ item }: any">
                   {{ item.tgl_surat ? item.tgl_surat : "-" }}
                 </template>
-                <template #item.masa_berlaku="{ item }">
+                <template #item.masa_berlaku="{ item }: any">
                   {{ item.masa_berlaku ? item.masa_berlaku : "-" }}
                 </template>
               </VDataTable>
@@ -803,7 +804,7 @@ const panelHalalCertificate = ref([0, 1]);
 const panelTracking = ref([0, 1]);
 
 const isCompleted = computed(() => {
-  return ["", "Draf"].includes(submissionDetail.registrationDetail);
+  return ["", "Draf"].includes(registrationDetail.status);
 });
 
 const submissionDetail = reactive({
@@ -944,6 +945,9 @@ const downloadForms = reactive({
   sertifikasi_halal: "",
 }) as Record<string, string>;
 
+const isComplete = computed(() => {
+  return ["", "Draf"].includes(registrationDetail.status);
+});
 const registrationDetail = reactive({
   no_daftar: "",
   tgl_daftar: "",

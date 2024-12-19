@@ -2,31 +2,29 @@
 import LPHDetailLayout from '@/layouts/LPHDetailLayout.vue'
 
 const route = useRoute()
-const router = useRouter()
 const id = route?.params?.id
 
-const openedLeftPanels = ref([0, 1, 2, 3, 4, 5])
-const openedRightPanels = ref([0, 1, 2])
 const loading = ref(false)
 const dataPengajuan = ref<any>({})
 const dataProduk = ref<any>([])
-const dataPemeriksaanProduk = ref<any>(null)
+const dataPemeriksaanProduk = ref<any>({})
 
-const isSendModalOpen = ref(false)
+const openedLeftPanels = ref([0, 1, 2, 3, 4, 5]);
+const openedRightPanels = ref([0, 1, 2]);
 
-const handleOpenSendModal = () => {
-  isSendModalOpen.value = !isSendModalOpen.value
-}
-
-const handleUpdateStatus = () => {
-  useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
-}
+const checkingCostHeader: any[] = [
+  { title: 'No', key: 'index' },
+  { title: 'Keterangan Biaya', key: 'keterangan', nowrap: true },
+  { title: 'Jumlah', key: 'qty' },
+  { title: 'Harga', key: 'harga', nowrap: true },
+  { title: 'Sub Total', key: 'total', nowrap: true },
+]
 
 const getDetailData = async (type: string) => {
   try {
     const response: any = await $api('/lph/detail-payment', {
       method: 'get',
-      params: { url: `${LIST_DAFTAR_AJUAN_DITERIMA}/${id}/${type}` },
+      params: { url: `${LIST_INFORMASI_PEMBAYARAN}/${id}/${type}` },
     })
 
     if (response?.code === 2000)
@@ -61,17 +59,10 @@ onMounted(async () => {
       <template #page-title>
         <VRow no-gutters>
           <VCol>
-            <h1>Detail Ajuan Diterima</h1>
+            <h1>Informasi Pembayaran Detail</h1>
           </VCol>
           <VCol class="d-flex justify-end">
-            <VBtn text="STTD" variant="outlined" class="me-4" disabled />
-            <VBtn
-              text="Update Biaya"
-              variant="outlined"
-              class="me-4"
-              @click="router.push(`/lph/list-accepted/detail/update-cost`)"
-            />
-            <VBtn text="Kirim" @click="handleOpenSendModal" />
+            <VBtn text="Proses di LPH" append-icon="fa-paper-plane" />
           </VCol>
         </VRow>
       </template>
@@ -84,7 +75,7 @@ onMounted(async () => {
         >
           <VExpansionPanel :value="0" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Data Pengajuan
+              Daftar Pengajuan
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <PanelDaftarPengajuan
@@ -103,10 +94,42 @@ onMounted(async () => {
           </VExpansionPanel>
           <VExpansionPanel :value="2" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Daftar Nama Produk
+              Biaya Pemeriksaan
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelDaftarProduk :data="dataProduk" />
+              <VDataTable
+                :headers="checkingCostHeader"
+                :items="dataPemeriksaanProduk?.biaya"
+                hide-default-footer
+              >
+                <template #body>
+                  <tr
+                    v-for="(item, idx) in dataPemeriksaanProduk?.biaya"
+                    :key="idx"
+                  >
+                    <td>{{ idx + 1 }}</td>
+                    <td>{{ item.keterangan }}</td>
+                    <td>{{ item.qty }}</td>
+                    <td>{{ item.harga }}</td>
+                    <td class="d-flex justify-center align-center" width="150px">
+                      {{ item.total }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="3" />
+                    <td colspan="1" class="font-weight-bold">
+                      Total
+                    </td>
+                    <td
+                      colspan="1"
+                      class="d-flex justify-center align-center font-weight-bold"
+                      width="150px"
+                    >
+                      {{ dataPemeriksaanProduk?.total_biaya }}
+                    </td>
+                  </tr>
+                </template>
+              </VDataTable>
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="3" class="pt-3">
@@ -156,37 +179,18 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <VRow>
-                <VCol>{{ formatToIDR(dataPemeriksaanProduk?.total_biaya) }}</VCol>
+                <VCol>
+                  {{ dataPemeriksaanProduk?.total_biaya }}
+                </VCol>
               </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="2" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Dokumen
+              Informasi Lainnya
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <VRow align="center">
-                <VCol cols="5" class="text-h6"> File KH </VCol>
-                <VCol class="d-flex align-center">
-                  <div class="me-1">:</div>
-                  <VBtn rounded="xl" density="compact" class="px-2">
-                    <template #default>
-                      <VIcon icon="fa-download" />
-                    </template>
-                  </VBtn>
-                </VCol>
-              </VRow>
-              <VRow align="center">
-                <VCol cols="5" class="text-h6"> File Laporan LPH </VCol>
-                <VCol class="d-flex align-center">
-                  <div class="me-1">:</div>
-                  <VBtn rounded="xl" density="compact" class="px-2">
-                    <template #default>
-                      <VIcon icon="fa-download" />
-                    </template>
-                  </VBtn>
-                </VCol>
-              </VRow>
+              <VBtn color="primary"> Dokumen Lengkap </VBtn>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -195,36 +199,6 @@ onMounted(async () => {
         </div>
       </template>
     </LPHDetailLayout>
-    <VDialog v-model="isSendModalOpen" max-width="840px" persistent>
-      <VCard class="pa-4">
-        <VCardTitle class="d-flex justify-space-between align-center">
-          <div class="text-h3 font-weight-bold">Kirim Pengajuan</div>
-          <VIcon @click="handleOpenSendModal"> fa-times </VIcon>
-        </VCardTitle>
-        <VCardText>
-          <VRow>
-            <VCol>
-              Pastikan dokumen persyaratan lengkap dan semua biaya pemeriksaan
-              sudah dimasukkan. Invoice akan diterbitkan saat Anda klik tombol
-              ”kirim” dan invoice tidak dapat diedit kembali
-            </VCol>
-          </VRow>
-        </VCardText>
-        <VCardActions class="px-4">
-          <VBtn variant="outlined" class="px-4 me-3" @click="handleOpenSendModal"
-            >Batal</VBtn
-          >
-          <VBtn
-            variant="flat"
-            class="px-4"
-            color="primary"
-            @click="[handleUpdateStatus(), handleOpenSendModal()]"
-          >
-            Ya, Kirim
-          </VBtn>
-        </VCardActions>
-      </VCard>
-    </VDialog>
   </div>
 </template>
 
@@ -234,21 +208,5 @@ onMounted(async () => {
     .v-expansion-panel--active + .v-expansion-panel
   ) {
   margin-top: 40px !important;
-}
-
-:deep(.v-data-table.auditor-table > .v-table__wrapper) {
-  table {
-    thead > tr > th:last-of-type {
-      right: 0;
-      position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
-    }
-    tbody > tr > td:last-of-type {
-      right: 0;
-      position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
-      background: white;
-    }
-  }
 }
 </style>
