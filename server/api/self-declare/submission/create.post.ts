@@ -18,7 +18,7 @@ export default defineEventHandler(async (event: any) => {
       {
         method: "post",
         headers: { Authorization: authHeader },
-        payload,
+        body: payload,
       } as any
     );
 
