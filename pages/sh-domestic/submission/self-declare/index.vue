@@ -177,7 +177,7 @@ onMounted(() => {
         </VCol>
         <VCol class="d-flex justify-end align-center">
           <VBtn
-            v-if="!alertData.isValid"
+            v-if="alertData.isValid"
             color="primary"
             append-icon="fa-plus"
             @click="openModalsQuestionare"
