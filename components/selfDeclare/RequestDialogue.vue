@@ -89,7 +89,7 @@ onMounted(async () => {
           v-model="selectedKBLI"
           :items="kbliOptions"
           item-title="uraian_usaha"
-          item-value="kbli"
+          item-value="id"
           placeholder="Pilih KBLI/Usaha/Kegiatan"
           outlined
           density="compact"
