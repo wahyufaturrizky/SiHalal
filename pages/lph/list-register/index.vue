@@ -23,7 +23,7 @@ const tableHeader = [
 ]
 
 const getChipColor = (status: string) => {
-  if (status === 'Draf')
+  if (status === 'Diterima')
     return 'primary'
   else if (status === 'Micre')
     return 'success'
@@ -154,11 +154,26 @@ onMounted(async () => {
                     </VChip>
                   </div>
                 </template>
+                <template #item.status="{ item }">
+                  <div
+                    class="d-flex"
+                    style="min-width: 12rem !important"
+                  >
+                    <VChip
+                      :key="index"
+                      :color="getChipColor(item.status)"
+                      label
+                      class="ma-1"
+                    >
+                      {{ item.status }}
+                    </VChip>
+                  </div>
+                </template>
                 <template #item.action="{ item }">
                   <VIcon
                     color="primary"
                     icon="mdi-arrow-right"
-                    @click="navigateToDetail(item.regist_no)"
+                    @click="navigateToDetail(item.id_reg)"
                   />
                 </template>
               </VDataTable>
