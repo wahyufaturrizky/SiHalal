@@ -19,13 +19,13 @@
             variant="outlined"
             append-icon="ri-pencil-fill"
             @click="
-              $router.push(
+              router.push(
                 `/sh-domestic/submission/self-declare/${submissionId}/edit`
               )
             "
             >Ubah</VBtn
           >
-          <VBtn>Kirim</VBtn>
+          <VBtn :color="!isComplete ? 'primary' : '#A09BA1'">Kirim</VBtn>
         </VRow>
       </VCol>
     </VRow>
@@ -766,10 +766,10 @@
 </template>
 
 <script setup lang="ts">
-import type { RouteLocationAsString } from "#vue-router";
 import type { MasterBadanUsaha } from "@/server/interface/master.iface";
 
-const route = useRoute<RouteLocationAsString>();
+const router = useRouter();
+const route = useRoute<"">();
 const submissionId = route.params?.id;
 
 const snackbar = useSnackbar();
@@ -943,8 +943,11 @@ const downloadForms = reactive({
   laporan: "",
   sttd: "",
   sertifikasi_halal: "",
-});
+}) as Record<string, string>;
 
+const isComplete = computed(() => {
+  return ["", "Draf"].includes(registrationDetail.status);
+});
 const registrationDetail = reactive({
   no_daftar: "",
   tgl_daftar: "",
@@ -974,29 +977,28 @@ onMounted(async () => {
   await Promise.all([
     getSubmissionDetail(),
     getKbli(),
-    getSuratPermohonan(),
-    getSuratPernyataan(),
-    getIkrar(),
-    getHasilVerval(),
-    getRekomendasi(),
-    getSjph(),
-    getLaporan(),
-    getSttd(),
-    getSertifikatHalal(),
+    getDownloadForm("surat-permohonan", "surat_permohonan"),
+    getDownloadForm("surat-pernyataan", "surat_pernyataan"),
+    getDownloadForm("ikrar", "ikrar"),
+    getDownloadForm("surat-verval", "surat_verval"),
+    getDownloadForm("rekomendasi", "rekomendasi"),
+    getDownloadForm("sjph", "sjph"),
+    getDownloadForm("laporan", "laporan"),
+    getDownloadForm("sttd", "sttd"),
+    getDownloadForm("setifikasi-halal", "setifikasi_halal"),
   ]);
 });
 
 const getSubmissionDetail = async () => {
   try {
-    const response: Promise<any> = await $api(
-      `/self-declare/${submissionId}/detail`,
+    const response: any = await $api(
+      `/self-declare/submission/${submissionId}/detail`,
       {
         method: "get",
       }
     );
 
     if (response.code === 2000) {
-      // console.log(response.data, "< res detail");
       // data for left side
       Object.assign(submissionDetail, response.data.certificate_halal);
       Object.assign(picDetail, response.data.penanggung_jawab);
@@ -1028,91 +1030,16 @@ const getKbli = async () => {
   kbliDropdown.value = response3;
 };
 
-const getSuratPermohonan = async () => {
-  const result: any = await $api(
-    `/self-declare/${submissionId}/surat-permohonan/file`,
-    {
-      method: "get",
-    }
-  );
-  if (result.code === 2000) {
-    downloadForms.surat_permohonan = result.data.file;
-  }
-};
-const getSuratPernyataan = async () => {
-  const result: any = await $api(
-    `/self-declare/${submissionId}/surat-pernyataan/file`,
-    {
-      method: "get",
-    }
-  );
-  if (result.code === 2000) {
-    downloadForms.surat_pernyataan = result.data.file;
-  }
-};
-const getIkrar = async () => {
-  const result: any = await $api(`/self-declare/${submissionId}/ikrar/file`, {
+const submissionDetailFileUrl = `/self-declare/submission/${submissionId}/file`;
+const getDownloadForm = async (docName: string, propName: string) => {
+  const result: any = await $api(submissionDetailFileUrl, {
     method: "get",
+    query: {
+      document: docName,
+    },
   });
   if (result.code === 2000) {
-    downloadForms.ikrar = result.data.file;
-  }
-};
-const getHasilVerval = async () => {
-  const result: any = await $api(
-    `/self-declare/${submissionId}/hasil-verval/file`,
-    {
-      method: "get",
-    }
-  );
-  if (result.code === 2000) {
-    downloadForms.hasil_verval = result.data.file;
-  }
-};
-const getRekomendasi = async () => {
-  const result: any = await $api(
-    `/self-declare/${submissionId}/rekomendasi/file`,
-    {
-      method: "get",
-    }
-  );
-  if (result.code === 2000) {
-    downloadForms.rekomendasi = result.data.file;
-  }
-};
-const getSjph = async () => {
-  const result: any = await $api(`/self-declare/${submissionId}/sjph/file`, {
-    method: "get",
-  });
-  if (result.code === 2000) {
-    downloadForms.sjph = result.data.file;
-  }
-};
-const getLaporan = async () => {
-  const result: any = await $api(`/self-declare/${submissionId}/laporan/file`, {
-    method: "get",
-  });
-  if (result.code === 2000) {
-    downloadForms.laporan = result.data.file;
-  }
-};
-const getSttd = async () => {
-  const result: any = await $api(`/self-declare/${submissionId}/sttd/file`, {
-    method: "get",
-  });
-  if (result.code === 2000) {
-    downloadForms.sttd = result.data.file;
-  }
-};
-const getSertifikatHalal = async () => {
-  const result: any = await $api(
-    `/self-declare/${submissionId}/sertifikasi-halal/file`,
-    {
-      method: "get",
-    }
-  );
-  if (result.code === 2000) {
-    downloadForms.sertifikasi_halal = result.data.file;
+    downloadForms[propName] = result.data.file;
   }
 };
 </script>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const route = useRoute();
+const route = useRoute<"">();
 const submissionId = route.params?.id;
 
 const submissionDetail = reactive({
@@ -15,7 +15,7 @@ const picDetail = reactive({
   email_pj: null,
 });
 
-const legalHeader = [
+const legalHeader: any[] = [
   { title: "No", key: "no", sortable: false },
   { title: "Jenis", key: "jenis_surat" },
   { title: "No. Dokumen", key: "no_surat", nowrap: true },
@@ -39,8 +39,8 @@ const halalSupervisorData = ref([]);
 
 const getSubmissionDetail = async () => {
   try {
-    const response: Promise<any> = await $api(
-      `/self-declare/${submissionId}/detail`,
+    const response: any = await $api(
+      `/self-declare/submission/${submissionId}/detail`,
       {
         method: "get",
       }
@@ -57,7 +57,7 @@ const getSubmissionDetail = async () => {
 };
 const getLegalList = async () => {
   try {
-    const response: Promise<any> = await $api(
+    const response: any = await $api(
       `/self-declare/business-actor/list-legal`,
       {
         method: "get",
