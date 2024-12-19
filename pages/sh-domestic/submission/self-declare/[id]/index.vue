@@ -25,7 +25,7 @@
             "
             >Ubah</VBtn
           >
-          <VBtn>Kirim</VBtn>
+          <VBtn :color="!isCompleted ? '#A09BA1' : 'primary'">Kirim</VBtn>
         </VRow>
       </VCol>
     </VRow>
@@ -245,9 +245,16 @@
                 v-if="aspectLegalItems.length"
                 :headers="aspectLegalHeader"
                 :items="aspectLegalItems"
+                :hide-default-footer="aspectLegalItems.length < 10"
               >
                 <template #item.no="{ index }">
                   {{ index + 1 }}
+                </template>
+                <template #item.tgl_surat="{ item }">
+                  {{ item.tgl_surat ? item.tgl_surat : "-" }}
+                </template>
+                <template #item.masa_berlaku="{ item }">
+                  {{ item.masa_berlaku ? item.masa_berlaku : "-" }}
                 </template>
               </VDataTable>
               <VCard v-else variant="outlined" class="py-2">
@@ -277,6 +284,7 @@
                 v-if="factoryItems.length"
                 :headers="factoryHeader"
                 :items="factoryItems"
+                :hide-default-footer="factoryItems.length < 10"
               >
                 <template #item.no="{ index }">
                   {{ index + 1 }}
@@ -309,6 +317,7 @@
                 v-if="outletItems.length"
                 :headers="outletHeader"
                 :items="outletItems"
+                :hide-default-footer="outletItems.length < 10"
               >
                 <template #item.no="{ index }">
                   {{ index + 1 }}
@@ -333,7 +342,7 @@
           collapse-icon="fa-chevron-up"
         >
           <VExpansionPanel class="py-2">
-            <VExpansionPanelTitle class="text-h4 font-weight-bold">
+            <VExpansionPanelTitle class="text-h4 font-weight-bold mb-3">
               Penyelia Halal
             </VExpansionPanelTitle>
             <VExpansionPanelText>
@@ -341,6 +350,7 @@
                 v-if="supervisorItems.length"
                 :headers="supervisorHeader"
                 :items="supervisorItems"
+                :hide-default-footer="supervisorItems.length < 10"
               >
                 <template #item.no="{ index }">
                   {{ index + 1 }}
@@ -375,7 +385,7 @@
           collapse-icon="fa-chevron-up"
         >
           <VExpansionPanel class="py-2">
-            <VExpansionPanelTitle class="text-h4 font-weight-bold">
+            <VExpansionPanelTitle class="text-h4 font-weight-bold mb-3">
               Daftar Nama Bahan
             </VExpansionPanelTitle>
             <VExpansionPanelText>
@@ -383,6 +393,7 @@
                 v-if="substanceItems.length"
                 :headers="substanceHeader"
                 :items="substanceItems"
+                :hide-default-footer="substanceItems.length < 10"
               >
                 <template #item.no="{ index }">
                   {{ index + 1 }}
@@ -407,7 +418,7 @@
           collapse-icon="fa-chevron-up"
         >
           <VExpansionPanel class="py-2">
-            <VExpansionPanelTitle class="text-h4 font-weight-bold">
+            <VExpansionPanelTitle class="text-h4 font-weight-bold mb-3">
               Daftar Nama Produk
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
@@ -417,6 +428,7 @@
                 :items="productItems"
                 class="elevation-1"
                 fixed-header
+                :hide-default-footer="productItems.length < 10"
               >
                 <template #item.no="{ index }">
                   {{ index + 1 }}
@@ -446,14 +458,14 @@
           collapse-icon="fa-chevron-up"
         >
           <VExpansionPanel class="py-2">
-            <VExpansionPanelTitle class="text-h4 font-weight-bold">
+            <VExpansionPanelTitle class="text-h4 font-weight-bold mb-3">
               Proses Produksi
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
               <VTextarea
                 ref="processProduction"
-                placeholder="Masukkan proses produksi"
                 v-model="submissionDetail.narasi"
+                rounded="xl"
                 outlined
               />
             </VExpansionPanelText>
@@ -757,7 +769,7 @@
     :dialog-visible="isDeleteModalOpen"
     dialog-use="DELETE"
     @update:dialog-visible="isDeleteModalOpen = $event"
-    @submit:commit-action=""
+    @submit:commit-action="handleDelete"
   >
     <VCardText>
       <div>Apakah yakin ingin menghapus data pengajuan ini</div>
@@ -789,6 +801,10 @@ const panelRegistration = ref([0, 1]);
 const panelFatwaHearing = ref([0, 1]);
 const panelHalalCertificate = ref([0, 1]);
 const panelTracking = ref([0, 1]);
+
+const isCompleted = computed(() => {
+  return ["", "Draf"].includes(submissionDetail.registrationDetail);
+});
 
 const submissionDetail = reactive({
   id_reg: "",
@@ -829,45 +845,28 @@ const kbliData = computed(() =>
 );
 const kbliDropdown = ref<any>([]);
 const aspectLegalHeader = [
-  { title: "No.", key: "no", nowrap: true },
-  { title: "Jenis", key: "type", nowrap: true },
-  { title: "No. Document", key: "documentNumber", nowrap: true },
-  { title: "Tanggal", key: "date", nowrap: true },
-  { title: "Masa Berlaku", key: "validDate", nowrap: true },
-  { title: "Instansi Penerbit", key: "issuer", nowrap: true },
+  { title: "No", key: "no", nowrap: true, sortable: false },
+  { title: "Jenis", key: "jenis_surat", nowrap: true },
+  { title: "No. Dokumen", key: "no_surat", nowrap: true },
+  { title: "Tanggal", key: "tgl_surat", nowrap: true },
+  { title: "Masa Berlaku", key: "masa_berlaku", nowrap: true },
+  { title: "Instansi Penerbit", key: "instansi_penerbit", nowrap: true },
 ];
-const aspectLegalItems = ref([
-  // {
-  //   no: 1,
-  //   type: "SIUP",
-  //   documentNumber: "2131421421411",
-  //   date: "09/10/2024",
-  //   validDate: "09/10/2024",
-  //   issuer: "DITJEN PAJAK",
-  // },
-  // {
-  //   no: 2,
-  //   type: "NPWP",
-  //   documentNumber: "2131421421411",
-  //   date: "09/10/2024",
-  //   validDate: "09/10/2024",
-  //   issuer: "DITJEN PAJAK",
-  // },
-]);
+const aspectLegalItems = ref([]);
 
 const factoryHeader = [
-  { title: "No.", key: "no", nowrap: true },
-  { title: "Nama.", key: "name", nowrap: true },
-  { title: "Alamat.", key: "address", nowrap: true },
+  { title: "No", key: "no", nowrap: true, sortable: false },
+  { title: "Nama", key: "name", nowrap: true },
+  { title: "Alamat", key: "address", nowrap: true },
 ];
 const factoryItems = ref([
   // { no: 1, name: "My Drink Oke", address: "Jakarta" }
 ]);
 
 const outletHeader = [
-  { title: "No.", key: "no", nowrap: true },
-  { title: "Nama.", key: "name", nowrap: true },
-  { title: "Alamat.", key: "address", nowrap: true },
+  { title: "No", key: "no", nowrap: true, sortable: false },
+  { title: "Nama", key: "name", nowrap: true },
+  { title: "Alamat", key: "address", nowrap: true },
 ];
 const outletItems = ref([
   // { no: 1, name: "Maya", address: "Jakarta" },
@@ -875,38 +874,38 @@ const outletItems = ref([
 ]);
 
 const supervisorHeader = [
-  { title: "No.", key: "no", nowrap: true },
-  { title: "Nama.", key: "name", nowrap: true },
-  { title: "No. KTP.", key: "idNo", nowrap: true },
-  { title: "No. Kontak", key: "phoneNumber", nowrap: true },
+  { title: "No", key: "no", nowrap: true, sortable: false },
+  { title: "Nama", key: "nama", nowrap: true },
+  { title: "No. KTP", key: "no_ktp", nowrap: true },
+  { title: "No. Kontak", key: "no_kontak", nowrap: true },
   {
     title: "No/Tgl Sertif Penyelia Halal",
-    key: "sertificateDate",
+    key: "no_sertifikat",
     nowrap: true,
   },
-  { title: "No/Tgl SK", key: "skDate", nowrap: true },
+  { title: "No/Tgl SK", key: "no_sk", nowrap: true },
 ];
 const supervisorItems = ref([
-  // {
-  //   no: 1,
-  //   name: "Maya",
-  //   idNo: "2131421421411",
-  //   phoneNumber: "0899999999",
-  //   sertificateDate: "09/10/2024",
-  //   skDate: "DITJEN PAJAK",
-  // },
-  // {
-  //   no: 2,
-  //   name: "Rahmi",
-  //   idNo: "2131421421411",
-  //   phoneNumber: "0899999999",
-  //   sertificateDate: "09/10/2024",
-  //   skDate: "DITJEN PAJAK",
-  // },
+  {
+    no: 1,
+    nama: "Maya",
+    no_ktp: "2131421421411",
+    no_kontak: "0899999999",
+    no_sertifikat: "09/10/2024",
+    no_sk: "DITJEN PAJAK",
+  },
+  {
+    no: 2,
+    nama: "Rahmi",
+    no_ktp: "2131421421411",
+    no_kontak: "0899999999",
+    no_sertifikat: "09/10/2024",
+    no_sk: "DITJEN PAJAK",
+  },
 ]);
 
 const substanceHeader = [
-  { title: "No.", key: "no", nowrap: true },
+  { title: "No", key: "no", nowrap: true, sortable: false },
   { title: "Jenis Bahan ", key: "type", nowrap: true },
   { title: "Nama Bahan", key: "name", nowrap: true },
   { title: "Produsen", key: "produsen", nowrap: true },
@@ -923,7 +922,7 @@ const substanceItems = ref([
 ]);
 
 const productHeader = [
-  { title: "No.", key: "no", nowrap: true },
+  { title: "No.", key: "no", nowrap: true, sortable: false },
   { title: "Nama Produk ", key: "name", nowrap: true },
   { title: "Merk ", key: "brand", nowrap: true },
   { title: "Foto", value: "foto", sortable: false, nowrap: true },
@@ -1002,7 +1001,7 @@ const getSubmissionDetail = async () => {
       aspectLegalItems.value = response.data.aspek_legal;
       factoryItems.value = response.data.pabrik;
       outletItems.value = response.data.outlet;
-      supervisorItems.value = response.data.penyelia_halal;
+      // supervisorItems.value = response.data.penyelia_halal;
       substanceItems.value = response.data.bahan;
       productItems.value = response.data.produk;
 
@@ -1038,5 +1037,9 @@ const getDownloadForm = async (docName: string, propName: string) => {
   if (result.code === 2000) {
     downloadForms[propName] = result.data.file;
   }
+};
+
+const handleDelete = () => {
+  snackbar.sendSnackbar("Berhasil menghapus data", "success");
 };
 </script>
