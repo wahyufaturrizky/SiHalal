@@ -25,7 +25,7 @@
             "
             >Ubah</VBtn
           >
-          <VBtn>Kirim</VBtn>
+          <VBtn :color="!isComplete ? 'primary' : '#A09BA1'">Kirim</VBtn>
         </VRow>
       </VCol>
     </VRow>
@@ -945,6 +945,9 @@ const downloadForms = reactive({
   sertifikasi_halal: "",
 }) as Record<string, string>;
 
+const isComplete = computed(() => {
+  return ["", "Draf"].includes(registrationDetail.status);
+});
 const registrationDetail = reactive({
   no_daftar: "",
   tgl_daftar: "",
