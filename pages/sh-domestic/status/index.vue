@@ -1,4 +1,10 @@
 <script setup lang="ts">
+const dataTable = ref<any[]>([])
+const loading = ref<boolean>(false)
+const page = ref<number>(1)
+const size = ref<number>(10)
+const searchQuery = ref<string>('')
+
 const tableHeader = [
   { title: "No", value: "no" },
   { title: "No. Daftar", value: "regist_no" },
@@ -37,12 +43,47 @@ const getStatusColor = (status: string) => {
 
 const navigateToDetail = (id: string) => {
   navigateTo(`/sh-domestic/status/2`);
-};
+}
+
+const loadItem = async (pageNumber: number, sizeData: number, search: string = '', path: string) => {
+  try {
+    const response: any = await $api('/reguler/list', {
+      method: 'get',
+      params: {
+        pageNumber,
+        sizeData,
+        search,
+        url: path,
+      },
+    })
+
+    if (response?.code === 2000)
+      dataTable.value = response?.data
+    else
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const handleInput = (e: any) => {
+  loading.value = true
+  debounce(loadItem(page.value, size.value, e.target.value, LIST_MENU_STATUS), 500)
+  loading.value = false
+}
+
+onMounted(async () => {
+  loading.value = true
+  loadItem(page.value, size.value, searchQuery.value, LIST_MENU_STATUS)
+  loading.value = false
+})
 </script>
+
 <template>
   <VRow>
     <VCol cols="12">
-      <KembaliButton></KembaliButton>
+      <KembaliButton />
     </VCol>
   </VRow>
   <VRow>
@@ -55,14 +96,18 @@ const navigateToDetail = (id: string) => {
       <VCard>
         <VCardTitle><h3>Data Pengajuan</h3></VCardTitle>
         <VCardItem>
-          <VRow
-            ><VCol cols="12"
-              ><VTextField
-                placeholder="Search"
-                append-inner-icon="mdi-magnify"
+          <VRow>
+            <VCol cols="12">
+              <VTextField
+                v-model="searchQuery"
+                placeholder="Cari data"
                 density="compact"
-              ></VTextField></VCol
-          ></VRow>
+                append-inner-icon="ri-search-line"
+                style="max-inline-size: 100%"
+                @input="handleInput"
+              />
+            </VCol>
+          </VRow>
           <VRow
             ><VCol cols="12">
               <VDataTable :headers="tableHeader" :items="items">
