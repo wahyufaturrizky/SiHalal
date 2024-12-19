@@ -23,16 +23,19 @@ export default defineEventHandler(async (event: any) => {
       : Number.parseInt(query.size, 10),
   };
 
-  const baseUrl = `${runtimeConfig.coreBaseUrl}/api/v1`;
-  const legalListUrl = `${baseUrl}/pelaku-usaha/list-legal`;
-  const response = await $fetch<any>(legalListUrl, {
-    method: "get",
-    headers: { Authorization: authHeader },
-    params,
-  }).catch((err: NuxtError) => {
-    setResponseStatus(event, 400);
-    return err.data;
-  });
+  try {
+    const response = await $fetch(
+      `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/list-legal`,
+      {
+        method: "get",
+        headers: { Authorization: authHeader },
+        params,
+      } as any
+    );
 
-  return response || null;
+    return response || null;
+  } catch (error) {
+    setResponseStatus(event, 400);
+    return (error as NuxtError).data;
+  }
 });

@@ -58,7 +58,7 @@ const getSubmissionDetail = async () => {
 const getLegalList = async () => {
   try {
     const response: any = await $api(
-      `/self-declare/business-actor/list-legal`,
+      `/self-declare/business-actor/legal/list`,
       {
         method: "get",
         params: {
@@ -168,7 +168,7 @@ onMounted(async () => {
       </VCard>
     </VCol>
   </VRow>
-  <VRow>
+  <!-- <VRow>
     <VCol :cols="12">
       <VCard>
         <VCardTitle><h3>Dokumen Persyaratan</h3></VCardTitle>
@@ -192,7 +192,7 @@ onMounted(async () => {
         </VCardItem>
       </VCard>
     </VCol>
-  </VRow>
+  </VRow> -->
 </template>
 
 <style scoped lang="scss">

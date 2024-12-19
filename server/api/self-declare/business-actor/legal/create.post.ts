@@ -12,13 +12,14 @@ export default defineEventHandler(async (event: any) => {
 
   try {
     const runtimeConfig = useRuntimeConfig();
-    const query: any = await getQuery(event);
+    const payload = await readBody(event);
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/halal-certificate-reguler/${query.supervisor_id}/penyelia`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/halal-certificate-reguler/aspek-legal`,
       {
-        method: "delete",
+        method: "post",
         headers: { Authorization: authHeader },
+        body: payload,
       } as any
     );
 
