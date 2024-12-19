@@ -353,10 +353,6 @@ const penyeliaTableData = ref([
   },
 ]);
 
-const handleAddProductConfirm = (formData) => {
-  console.log("Add confirmed:", formData);
-};
-
 const handleDeleteOutletConfirm = (oulet) => {
   console.log("Delete outlet confirmed:", oulet);
 };
@@ -545,9 +541,8 @@ const onFasilitatorSearchInput = debounce((input) => {
               <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahDataAspekLegal
                   mode="add"
-                  @confirm-add="handleAddProductConfirm"
-                  @cancel="() => console.log('Add cancelled')"
                   :dokumen="dokumen"
+                  @refresh="loadItem(page, itemPerPage)"
                 />
               </VCol>
             </VRow>
@@ -582,9 +577,8 @@ const onFasilitatorSearchInput = debounce((input) => {
               </VCol>
               <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahDataPenyeliaHalal
+                  @refresh="loadItem(page, itemPerPage)"
                   mode="add"
-                  @confirm-add="handleAddProductConfirm"
-                  @cancel="() => console.log('Add cancelled')"
                 />
               </VCol>
             </VRow>
@@ -908,11 +902,7 @@ const onFasilitatorSearchInput = debounce((input) => {
                 <p class="text-h3">Pabrik</p>
               </VCol>
               <VCol class="d-flex justify-end align-center" cols="6" md="2">
-                <TambahPabrikOutlet
-                  mode="add"
-                  @confirm-add="handleAddProductConfirm"
-                  @cancel="() => console.log('Add cancelled')"
-                />
+                <TambahPabrikOutlet mode="add" />
               </VCol>
             </VRow>
             <VRow>
@@ -962,11 +952,7 @@ const onFasilitatorSearchInput = debounce((input) => {
                 <p class="text-h3">Outlet</p>
               </VCol>
               <VCol class="d-flex justify-end align-center" cols="6" md="2">
-                <TambahOutlet
-                  mode="add"
-                  @confirm-add="handleAddProductConfirm"
-                  @cancel="() => console.log('Add cancelled')"
-                />
+                <TambahOutlet mode="add" />
               </VCol>
             </VRow>
             <VRow>
@@ -1019,11 +1005,7 @@ const onFasilitatorSearchInput = debounce((input) => {
               <p class="text-h3">Daftar Nama Bahan dan Kemasan</p>
             </VCol>
             <VCol class="d-flex justify-end align-center" cols="0" md="2">
-              <TambahBahanModalHalal
-                mode="add"
-                @confirm-add="handleAddProductConfirm"
-                @cancel="() => console.log('Add cancelled')"
-              />
+              <TambahBahanModalHalal mode="add" />
               <VContainer>
                 <VBtn
                   color="primary"
@@ -1113,11 +1095,7 @@ const onFasilitatorSearchInput = debounce((input) => {
               </ol>
             </VCol>
             <VCol class="d-flex justify-end align-center" cols="6" md="2">
-              <TambahProduk
-                mode="add"
-                @confirm-add="handleAddProductConfirm"
-                @cancel="() => console.log('Add cancelled')"
-              />
+              <TambahProduk mode="add" />
             </VCol>
           </VRow>
           <VRow>

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 const props = defineProps<{
-  type?: "READ" | "EDIT";
-  businessType: string;
-}>();
+  type?: 'READ' | 'EDIT'
+  dataPengajuan?: object
+}>()
 
-const panelType = computed(() => (props.type ? props.type : "READ"));
+const detail = ref(props?.dataPengajuan)
+
+const panelType = computed(() => (props.type ? props.type : 'READ'))
 </script>
 
 <template>
@@ -16,7 +18,9 @@ const panelType = computed(() => (props.type ? props.type : "READ"));
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">39886986</VCol>
+      <VCol cols="7">
+        {{ detail?.nomor_id }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5">
@@ -25,7 +29,9 @@ const panelType = computed(() => (props.type ? props.type : "READ"));
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">Pembayaran</VCol>
+      <VCol cols="7">
+        {{ detail?.status }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5">
@@ -34,7 +40,9 @@ const panelType = computed(() => (props.type ? props.type : "READ"));
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">10/10/2024</VCol>
+      <VCol cols="7" v-if="detail?.tanggal_buat">
+        {{ formatDateIntl(new Date(detail?.tanggal_buat)) }}
+      </VCol>
     </VRow>
     <VDivider class="my-1" />
     <VRow no-gutters>
@@ -44,7 +52,9 @@ const panelType = computed(() => (props.type ? props.type : "READ"));
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">Kopi Susu Samsul</VCol>
+      <VCol cols="7">
+        {{ detail?.nama_pu }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5">
@@ -53,7 +63,9 @@ const panelType = computed(() => (props.type ? props.type : "READ"));
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">Sumbawa Banget, RT002/RW002, Sumbang, Curio</VCol>
+      <VCol cols="7">
+        {{ detail?.alamat }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5">
@@ -62,7 +74,9 @@ const panelType = computed(() => (props.type ? props.type : "READ"));
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">Kab. Enrekang</VCol>
+      <VCol cols="7">
+        {{ detail?.kota }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5">
@@ -71,7 +85,9 @@ const panelType = computed(() => (props.type ? props.type : "READ"));
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">Sulawesi Selatan</VCol>
+      <VCol cols="7">
+        {{ detail?.provinsi }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5">
@@ -80,7 +96,9 @@ const panelType = computed(() => (props.type ? props.type : "READ"));
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">-</VCol>
+      <VCol cols="7">
+        {{ detail?.kodepos }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5">
@@ -89,7 +107,9 @@ const panelType = computed(() => (props.type ? props.type : "READ"));
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">Indonesia</VCol>
+      <VCol cols="7">
+        {{ detail?.negara }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5">
@@ -98,7 +118,9 @@ const panelType = computed(() => (props.type ? props.type : "READ"));
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">081234567890</VCol>
+      <VCol cols="7">
+        {{ detail?.telepon }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5">
@@ -107,7 +129,9 @@ const panelType = computed(() => (props.type ? props.type : "READ"));
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">kopisususamsul@gmail.com</VCol>
+      <VCol cols="7">
+        {{ detail?.email }}
+      </VCol>
     </VRow>
     <VDivider class="my-1" />
     <VRow no-gutters>
@@ -117,14 +141,18 @@ const panelType = computed(() => (props.type ? props.type : "READ"));
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7">{{ props.businessType }}</VCol>
+      <VCol cols="7">
+        {{ detail?.jenis_usaha }}
+      </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5" class="d-flex align-center justify-space-between">
         <div class="text-h6">Skala Usaha</div>
         <div class="me-2">:</div>
       </VCol>
-      <VCol v-if="panelType == 'READ'" cols="7">Mikro</VCol>
+      <VCol v-if="panelType == 'READ'" cols="7">
+        {{ detail?.skala_usaha }}
+      </VCol>
       <VCol v-else cols="7" class="d-flex align-center">
         <VSelect density="compact" model-value="Mikro" rounded="xl">
           <template #append>
