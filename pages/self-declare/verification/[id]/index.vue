@@ -3,8 +3,9 @@ import { ref } from "vue";
 import { VDataTableServer } from "vuetify/components";
 
 const route = useRoute();
+const router = useRouter();
 
-const selfDeclareId = route.params.id;
+const selfDeclareId = (route.params as any).id;
 
 interface TimelineItem {
   title: string;
@@ -15,6 +16,9 @@ interface TimelineItem {
 
 const detailData = ref();
 const loadingAll = ref(true);
+const loadingTandaiOK = ref(false);
+const loadingTandaiNotOK = ref(false);
+const loadingPengembalian = ref(false);
 
 const tabs = ref([
   { text: "Pelaku Usaha", value: "pelaku_usaha" },
@@ -53,6 +57,12 @@ const formatDate = (date: string): string => {
 const showTimeline = ref(false);
 const showPengajuan = ref(false);
 const showDetail = ref(true);
+const loadingDibatalkan = ref(false);
+const loadingBahan = ref(false);
+
+const itemPerPageBahan = ref(10);
+const totalItemsBahan = ref(0);
+const pageBahan = ref(1);
 
 const itemPerPage = ref(10);
 const totalItems = ref(0);
@@ -65,13 +75,48 @@ const emailPenanggungJawab = ref();
 const aspekLegal = ref();
 const penyeliaHalal = ref();
 const dokumen = ref();
+const listBahan = ref([]);
+
 const loadItem = async (page, size) => {
   // Temporarily skip API call for dummy data testing
   items.value = items.value.slice((page - 1) * size, page * size); // Paginate dummy data
   totalItems.value = items.value.length;
 };
 
-const debouncedFetch = debounce(loadItem, 500);
+const loadItemBahanById = async ({
+  page,
+  size,
+}: {
+  page: number;
+  size: number;
+}) => {
+  loadingBahan.value = true;
+  try {
+    const response: any = await $api(
+      `/self-declare/verificator/bahan/${selfDeclareId}`,
+      {
+        method: "get",
+        params: {
+          page,
+          size,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      listBahan.value = response.data;
+      totalItemsBahan.value = response.total;
+      loadingBahan.value = false;
+      return response;
+    } else {
+      loadingBahan.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    loadingBahan.value = false;
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 
 const loadItemById = async () => {
   try {
@@ -168,7 +213,11 @@ onMounted(async () => {
 
   totalItems.value = items.value.length; // Set totalItems for pagination
 
-  const res: any = await Promise.all([loadItemById(), loadDocument()]);
+  const res: any = await Promise.all([
+    loadItemById(),
+    loadDocument(),
+    loadItemBahanById({ page: pageBahan.value, size: itemPerPageBahan.value }),
+  ]);
 
   const checkResIfUndefined = res.every((item: any) => {
     return item !== undefined;
@@ -188,6 +237,15 @@ const verifikatorTableHeader = [
   { title: "Produsen", key: "produsen" },
   { title: "Nomor Sertifikat Halal", key: "nomor_sertifikat_halal" },
   { title: "Keterangan", key: "keterangan" },
+  { title: "Action", key: "action" },
+];
+
+const bahanTableHeader = [
+  { title: "No", key: "no" },
+  { title: "Jenis Bahan", key: "jenis_bahan" },
+  { title: "Nama Bahan", key: "nama_bahan" },
+  { title: "Produsen", key: "produsen" },
+  { title: "Tanggal Berlaku", key: "tanggal_berlaku" },
   { title: "Action", key: "action" },
 ];
 
@@ -386,22 +444,6 @@ const uploadFile = (event: Event, index: string | number) => {
   }
 };
 
-// Handle file upload
-const handleFileUpload = (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
-    file.value = input.files[0];
-    console.log("File uploaded:", file.value.name);
-  } else {
-    console.log("No file selected");
-  }
-};
-
-// Trigger file input click
-const triggerFileInputClick = () => {
-  fileInputRef.value?.click();
-};
-
 const data = {
   sertifikasi_date: ref([]),
 };
@@ -423,10 +465,122 @@ const filteredFasilitators = computed(() => {
   );
 });
 
-const onFasilitatorSearchInput = debounce((input) => {
+const onFasilitatorSearchInput = debounce((input: any) => {
   console.log(input, "ini input");
   searchFasilitator.value = input;
 }, 500);
+
+const tandaiOK = async () => {
+  try {
+    loadingTandaiOK.value = true;
+
+    const res: any = await $api(
+      `/self-declare/verificator/tandai-ok/${selfDeclareId}`,
+      {
+        method: "put",
+      }
+    );
+
+    if (res?.code === 2000) {
+      useSnackbar().sendSnackbar("Success", "success");
+      loadingTandaiOK.value = false;
+
+      setTimeout(() => {
+        router.go(-1);
+      }, 1000);
+    } else {
+      useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
+      loadingTandaiOK.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingTandaiOK.value = false;
+  }
+};
+
+const batalkanStatusHijau = async () => {
+  try {
+    loadingTandaiNotOK.value = true;
+
+    const res: any = await $api(
+      `/self-declare/verificator/tandai-not-ok/${selfDeclareId}`,
+      {
+        method: "put",
+      }
+    );
+
+    if (res?.code === 2000) {
+      useSnackbar().sendSnackbar("Success", "success");
+      loadingTandaiNotOK.value = false;
+
+      setTimeout(() => {
+        router.go(-1);
+      }, 1000);
+    } else {
+      useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
+      loadingTandaiNotOK.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingTandaiNotOK.value = false;
+  }
+};
+
+const pengembalian = async () => {
+  try {
+    loadingPengembalian.value = true;
+
+    const res: any = await $api(
+      `/self-declare/verificator/return/${selfDeclareId}`,
+      {
+        method: "put",
+      }
+    );
+
+    if (res?.code === 2000) {
+      useSnackbar().sendSnackbar("Success", "success");
+      loadingPengembalian.value = false;
+
+      setTimeout(() => {
+        router.go(-1);
+      }, 1000);
+    } else {
+      useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
+      loadingPengembalian.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingPengembalian.value = false;
+  }
+};
+
+const dibatalkan = async () => {
+  try {
+    loadingDibatalkan.value = true;
+
+    const res: any = await $api(
+      `/self-declare/verificator/decline/${selfDeclareId}`,
+      {
+        method: "put",
+      }
+    );
+
+    if (res?.code === 2000) {
+      useSnackbar().sendSnackbar("Success", "success");
+      loadingDibatalkan.value = false;
+
+      setTimeout(() => {
+        router.go(-1);
+      }, 1000);
+    } else {
+      useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
+      loadingDibatalkan.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingDibatalkan.value = false;
+  }
+};
 </script>
 
 <template>
@@ -438,12 +592,39 @@ const onFasilitatorSearchInput = debounce((input) => {
       </VCol>
       <VCol class="d-flex justify-end align-center" cols="4" md="5">
         <VBtn variant="outlined" class="mx-2"> Lihat Laporan </VBtn>
-        <VBtn color="#49A84C" class="mx-2"> Tandai OK </VBtn>
-        <VBtn variant="outlined" color="error" class="mx-2">
+        <VBtn
+          :loading="loadingTandaiOK"
+          @click="tandaiOK"
+          color="#49A84C"
+          class="mx-2"
+        >
+          Tandai OK
+        </VBtn>
+        <VBtn
+          :loading="loadingTandaiNotOK"
+          @click="batalkanStatusHijau"
+          variant="outlined"
+          color="error"
+          class="mx-2"
+        >
           Batalkan Status Hijau
         </VBtn>
-        <VBtn variant="outlined" class="mx-2"> Pengembalian </VBtn>
-        <VBtn color="#E1442E" class="mx-2"> Dibatalkan </VBtn>
+        <VBtn
+          :loading="loadingPengembalian"
+          @click="pengembalian"
+          variant="outlined"
+          class="mx-2"
+        >
+          Pengembalian
+        </VBtn>
+        <VBtn
+          :loading="loadingDibatalkan"
+          @click="dibatalkan"
+          color="#E1442E"
+          class="mx-2"
+        >
+          Dibatalkan
+        </VBtn>
       </VCol>
     </VRow>
 
@@ -1006,7 +1187,7 @@ const onFasilitatorSearchInput = debounce((input) => {
             </VCol>
             <VCol class="d-flex justify-end align-center" cols="0" md="2">
               <TambahBahanModalHalal mode="add" />
-              <VContainer>
+              <!-- <VContainer>
                 <VBtn
                   color="primary"
                   variant="outlined"
@@ -1016,7 +1197,7 @@ const onFasilitatorSearchInput = debounce((input) => {
                   <VIcon size="20"> ri-upload-line </VIcon>
                   <span class="ml-2">Upload File</span>
                 </VBtn>
-                <!-- Hidden File Input -->
+
                 <input
                   ref="fileInputRef"
                   type="file"
@@ -1024,7 +1205,7 @@ const onFasilitatorSearchInput = debounce((input) => {
                   accept=".pdf,.doc,.docx"
                   @change="handleFileUpload"
                 />
-              </VContainer>
+              </VContainer> -->
             </VCol>
           </VRow>
           <VRow>
@@ -1046,27 +1227,26 @@ const onFasilitatorSearchInput = debounce((input) => {
           <VRow>
             <VCol>
               <VDataTableServer
-                v-model:items-per-page="itemPerPage"
-                v-model:page="page"
-                :headers="verifikatorTableHeader"
-                :items="items"
-                :loading="loading"
-                :items-length="totalItems"
+                v-model:items-per-page="itemPerPageBahan"
+                v-model:page="pageBahan"
+                :headers="bahanTableHeader"
+                :items="listBahan"
+                :loading="loadingBahan"
+                :items-length="totalItemsBahan"
                 loading-text="Loading..."
-                @update:options="loadItem(page, itemPerPage, searchQuery)"
+                @update:options="
+                  loadItemBahanById({ page: pageBahan, size: itemPerPageBahan })
+                "
               >
-                <template #item.id="{ index }">
-                  {{ index + 1 + (page - 1) * itemPerPage }}
+                <template #item.no="{ index }">
+                  {{ index + 1 + (pageBahan - 1) * itemPerPageBahan }}
                 </template>
-                <template #item.tgl_daftar="{ item }">
-                  {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+                <template #item.tanggal_berlaku="{ item }">
+                  {{ formatDate((item as any).tanggal_berlaku) }}
                 </template>
                 <template #item.action="{ item }">
                   <div class="d-flex gap-1">
-                    <UbahBahanModalHalal
-                      @confirm-edit="handleEditProductConfirm"
-                      @cancel="() => console.log('Add cancelled')"
-                    />
+                    <UbahBahanModalHalal />
                   </div>
                 </template>
               </VDataTableServer>
@@ -1124,8 +1304,6 @@ const onFasilitatorSearchInput = debounce((input) => {
                       icon="ri-pencil-fill"
                       :show-label="false"
                       color="#652672"
-                      @confirm-edit="handleEditProductConfirm"
-                      @cancel="() => console.log('Add cancelled')"
                     />
                   </div>
                 </template>
