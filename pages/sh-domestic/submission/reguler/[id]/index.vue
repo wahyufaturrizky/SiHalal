@@ -133,7 +133,7 @@ const navigateTo = (url: string) => {
                   cols-value="6"
                   name="No.ID"
                 >
-                  {{ data?.certificate_halal?.no_daftar || "-" }}
+                  {{ data?.certificate_halal?.id_reg || "-" }}
                 </InfoRow>
                 <InfoRow
                   v-if="data?.certificate_halal?.tanggal_buat"
@@ -228,7 +228,7 @@ const navigateTo = (url: string) => {
                   cols-value="6"
                   name="Nama Perusahaan tertera di SH"
                 >
-                  {{ data?.certificate_halal?.nama_provinsi || "-" }}
+                  {{ data?.certificate_halal?.nama_pu || "-" }}
                 </InfoRow>
                 <InfoRow
                   cols-name="5"
@@ -236,7 +236,7 @@ const navigateTo = (url: string) => {
                   cols-value="6"
                   name="Nama KBLI"
                 >
-                  {{ data?.certificate_halal?.nam_kbli || "-" }}
+                  {{ data?.certificate_halal?.nama_kbli || "-" }}
                 </InfoRow>
                 <InfoRow
                   cols-name="5"
