@@ -5,22 +5,16 @@ import { VTextField } from "vuetify/components";
 
 const emit = defineEmits(["refresh"]);
 
+const props = defineProps({
+  listagama: {
+    type: Array,
+  },
+});
+
+const { listagama } = props || {};
+
 const addDialog = ref(false);
 const loadingAdd = ref(false);
-
-const downloadDOcument = async (filename: string) => {
-  try {
-    const response = await $api("/shln/submission/document/download", {
-      method: "post",
-      body: {
-        filename,
-      },
-    });
-    window.open(response.url, "_blank", "noopener,noreferrer");
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
 
 const formData = ref({
   no_ktp: "",
@@ -76,28 +70,6 @@ const addDataPenyeliaHalal = async () => {
     resetForm();
     addDialog.value = false;
   }
-};
-
-const AgamaOptions = [
-  { name: "Islam", value: "islam" },
-  { name: "Hindu", value: "hindu" },
-  { name: "Kristen", value: "kristen" },
-];
-
-const file = ref<File | null>(null);
-
-// Mock data for document list
-const documentList = ref([
-  { nama: "Izin Edar", fileName: "Surat Izin Usaha.pdf", file: null },
-  { nama: "Izin Masuk", fileName: "", file: null },
-]);
-
-// Handle file removal
-const removeFile = (index: number) => {
-  documentList.value[0].fileName = "";
-  documentList.value[0].file = null;
-
-  file.value = null;
 };
 
 const { mdAndUp } = useDisplay();
@@ -162,9 +134,9 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
                   <VLabel>Agama Penyelia</VLabel>
                   <VSelect
                     v-model="formData.agama_penyelia"
-                    :items="AgamaOptions"
+                    :items="listagama"
                     item-title="name"
-                    item-value="value"
+                    item-value="name"
                     placeholder="Isi Agama Penyelia"
                   />
                 </VItemGroup>

@@ -9,36 +9,8 @@ const loading = ref(false);
 const loadingAll = ref(true);
 const page = ref(1);
 const searchQuery = ref("");
-const status = ref("");
+const status = ref("Semua");
 const itemsStatus = ref<any[]>([]);
-
-const defaultStatus = { color: "error", desc: "Unknown Status" };
-
-const statusItem: any = new Proxy(
-  {
-    OF1: { color: "grey-300", desc: "Draft" },
-    OF10: { color: "success", desc: "Submitted" },
-    OF15: { color: "success", desc: "Verified" },
-    OF2: { color: "error", desc: "Returned" },
-    OF290: { color: "error", desc: "Rejected" },
-    OF5: { color: "success", desc: "Invoice issued" },
-    OF320: { color: "success", desc: "Code Issued" },
-    OF11: { color: "success", desc: "Verification" },
-    OF50: { color: "success", desc: "Dikirim ke LPH" },
-    OF300: { color: "success", desc: "Halal Certified Issued" },
-    OF285: { color: "success", desc: "Dikembalikan Oleh Fatwa" },
-    OF74: { color: "success", desc: "Sent to Komite Fatwa" },
-    OF280: { color: "success", desc: "Dikembalikan Ke PU" },
-    OF100: { color: "success", desc: "Selesai Sidang Fatwa" },
-    OF120: { color: "success", desc: "Certificate Issued" },
-    OF900: { color: "error", desc: "Dibatalkan" },
-  },
-  {
-    get(target: any, prop: any) {
-      return prop in target ? target[prop] : defaultStatus;
-    },
-  }
-);
 
 // Table headers
 const headers: any = [
@@ -103,7 +75,7 @@ const loadItemStatusApplication = async () => {
     });
 
     if (response.length) {
-      itemsStatus.value = response;
+      itemsStatus.value = [{ code: "Semua", name: "Semua" }, ...response];
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -204,6 +176,7 @@ onMounted(async () => {
         </VDataTableServer>
       </VRow>
     </VCardText>
+    <VSkeletonLoader type="card" v-else />
   </VCard>
 </template>
 
