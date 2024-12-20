@@ -33,7 +33,7 @@ const getChipColor = (status: string) => {
 
 const loadItem = async (pageNumber: number, sizeData: number, search: string = '') => {
   try {
-    const response: any = await $api('/lph/list', {
+    const response: any = await $api('/reguler/lph/list', {
       method: 'get',
       params: {
         pageNumber,
@@ -109,7 +109,25 @@ onMounted(async () => {
               <VDataTable
                 :headers="tableHeader"
                 :items="data"
+                :hide-default-footer="data.length === 0"
+                class="border rounded"
               >
+                <template #no-data>
+                  <div class="w-full mt-2">
+                    <div
+                      class="pt-2"
+                      style="justify-items: center"
+                    >
+                      <img
+                        src="~/assets/images/empty-data.png"
+                        alt="empty_data"
+                      >
+                      <div class="pt-2 pb-2 font-weight-bold">
+                        Data Kosong
+                      </div>
+                    </div>
+                  </div>
+                </template>
                 <template #item.no="{ index }">
                   {{ index + 1 }}
                 </template>

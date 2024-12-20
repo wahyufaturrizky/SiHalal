@@ -23,8 +23,8 @@ export default defineEventHandler(async (event: any) => {
   }
 
   const params = {
-    page: Number.isNaN(Number.parseInt(page, 10)) ? 1 : Number.parseInt(page, 1),
-    size: Number.isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
+    page: +page || 1,
+    size: +size || 10,
     search,
     // eslint-disable-next-line camelcase
     skala_code,
@@ -42,6 +42,7 @@ export default defineEventHandler(async (event: any) => {
       params,
     },
   ).catch((err: NuxtError) => {
+    console.log(err, 'ini error nya <<<<<<')
     setResponseStatus(event, 400)
 
     return err.data

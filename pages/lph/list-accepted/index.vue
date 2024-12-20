@@ -54,7 +54,7 @@ const loadItem = async (pageNumber: number, sizeData: number, search: string = '
       url: path,
     }
 
-    const response: any = await $api('/lph/list', {
+    const response: any = await $api('/reguler/lph/list', {
       method: 'get',
       params,
     })
@@ -112,11 +112,33 @@ onMounted(() => {
                   style="max-inline-size: 100%"
                   @input="handleInput"
                 />
-              </VCol
-            ></VRow>
-            <VRow
-              ><VCol cols="12">
-                <VDataTable v-if="dataTable" :headers="tableHeader" :items="dataTable">
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol cols="12">
+                <VDataTable
+                  v-if="dataTable"
+                  :headers="tableHeader"
+                  :items="dataTable"
+                  :hide-default-footer="dataTable.length === 0"
+                  class="border rounded"
+                >
+                  <template #no-data>
+                    <div class="w-full mt-2">
+                      <div
+                        class="pt-2"
+                        style="justify-items: center"
+                      >
+                        <img
+                          src="~/assets/images/empty-data.png"
+                          alt="empty_data"
+                        >
+                        <div class="pt-2 pb-2 font-weight-bold">
+                          Data Kosong
+                        </div>
+                      </div>
+                    </div>
+                  </template>
                   <template #item.no="{ index }">
                     {{ index + 1 }}
                   </template>
