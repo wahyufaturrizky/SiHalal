@@ -1,4 +1,12 @@
 <script setup lang="ts">
+
+const props = defineProps({
+  isEditable: {
+    type: Boolean,
+    default: true,
+  },
+});
+
 const tableHeader = [
   { title: "No", value: "no" },
   { title: "Nama Produk", value: "product_name" },
@@ -20,7 +28,7 @@ const items = [
       <VRow>
         <VCol cols="6"><h3>Pemetaan Produk dan Pabrik</h3></VCol>
         <VCol cols="6" style="display: flex; justify-content: end"
-          ><ModalTambahProduk></ModalTambahProduk
+          ><ModalTambahProduk v-if="props.isEditable"></ModalTambahProduk
         ></VCol>
       </VRow>
     </VCardTitle>
@@ -28,7 +36,7 @@ const items = [
       <VDataTable :headers="tableHeader" :items="items">
         <template #item.action>
           <div class="text-center">
-            <ModalHapusProduk></ModalHapusProduk>
+            <ModalHapusProduk :is-editable="props.isEditable"></ModalHapusProduk>
           </div>
         </template>
       </VDataTable>

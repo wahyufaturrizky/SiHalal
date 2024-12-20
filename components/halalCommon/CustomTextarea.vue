@@ -5,6 +5,7 @@ const props = defineProps({
   id: { type: String, required: true },
   placeholder: { type: String, default: '' },
   rules: { type: Array, default: () => [] },
+  disable: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -29,6 +30,7 @@ watch(internalValue, newValue => {
       v-model="internalValue"
       :placeholder="placeholder"
       :rules="rules"
+      :disabled="props.disable"
     >
       <template #message="{ message }">
         <div>

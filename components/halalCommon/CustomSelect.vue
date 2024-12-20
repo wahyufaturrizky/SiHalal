@@ -6,6 +6,7 @@ const props = defineProps({
   placeholder: { type: String, default: 'Pilih' },
   rules: { type: Array, default: () => [] },
   items: { type: Array, default: () => [] },
+  disable: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -32,6 +33,7 @@ watch(internalValue, newValue => {
       :rules="rules"
       :items="items"
       clearable
+      :disabled="props.disable"
     >
       <template #message="{ message }">
         <div>

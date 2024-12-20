@@ -42,6 +42,11 @@ const returnDocument = () => {
   console.log("Return note:", returnNote.value);
   closeReturn();
 };
+
+const router = useRouter()
+const route = useRoute();
+const navigateAction = () => router.push(`${route.path}/detail`)
+
 </script>
 
 <template>
@@ -53,35 +58,21 @@ const returnDocument = () => {
         <VCol style="display: flex; justify-content: start"
           ><h2>Verifikasi Dokumen Pengajuan: Detail</h2></VCol
         >
-        <VCol style="display: flex; justify-content: end">
+        <VCol class="d-flex justify-end ga-4">
           <VBtn
             text="Pengembalian"
             color="#e1442e"
-            class="ma-1"
             @click="openConfirmation"
           />
-          <VBtn text="Verifikasi" class="ma-1" @click="openReturn" />
-        </VCol>
-      </VRow>
-
-      <!-- <VRow>
-        <VCol style="display: flex; justify-content: start">
           <VBtn
-            variant="flat"
-            prepend-icon=""
+            variant="outlined"
+            text="Cek Detail"
             color="primary"
             @click="navigateAction"
-          >
-            Detail
-          </VBtn>
+            />
+          <VBtn text="Verifikasi" @click="openReturn" />
         </VCol>
-        <VCol style="display: flex; justify-content: end">
-          <VerificationReturnConfirmation />
-          <VerificationRejectConfirmation />
-
-          <VerificationApproveConfirmationDetail />
-        </VCol>
-      </VRow> -->
+      </VRow>
     </template>
 
     <!-- left content -->

@@ -1,5 +1,12 @@
 <script setup lang="ts">
 
+const props = defineProps({
+  isEditable: {
+    type: Boolean,
+    default: true,
+  },
+})
+
 const headers = [
   { title: 'No', key: 'no' },
   { title: 'Nama', key: 'name' , nowrap: true},
@@ -42,7 +49,7 @@ const save = form => {
   <VCard class="pa-4 mb-8">
     <VCardTitle class="d-flex justify-space-between align-center">
       <span class="text-h3">Komitmen Dan Tanggung Jawab</span>
-      <FormTambahKomitmenDanTanggungJawab @confirm="save"/>
+      <FormTambahKomitmenDanTanggungJawab @confirm="save" v-if="props.isEditable"/>
     </VCardTitle>
     <VCardItem>
       <VDataTable
@@ -57,9 +64,11 @@ const save = form => {
             <VIcon>mdi-dots-vertical</VIcon>
             <VMenu activator="parent" :close-on-content-click="false">
               <VCard>
-                <FormEditPenyeliaHalal :initial-data="item" @confirm="update"/>
+                <FormEditPenyeliaHalal :initial-data="item" @confirm="update" :is-editable="props.isEditable"/>
                 <VBtn variant="text" color="error" prepend-icon="ri-delete-bin-6-line"
-                      @click="remove(item.no)" block >
+                      @click="remove(item.no)" block
+                      :disabled="!props.isEditable"
+                >
                   Hapus
                 </VBtn>
               </VCard>
