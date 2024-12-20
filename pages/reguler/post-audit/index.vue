@@ -3,7 +3,7 @@ const router = useRouter()
 const dataTable = ref<any[]>([])
 const loading = ref<boolean>(false)
 const page = ref<number>(1)
-const size = ref<number>(10)
+const size = ref<number>(50)
 const searchQuery = ref<string>('')
 const showFilterMenu = ref(false)
 const getWithFilter = ref<boolean>(false)
@@ -13,12 +13,12 @@ const provinceData = ref<any[]>([])
 
 const invoiceHeader: any[] = [
   { title: 'No', value: 'index' },
-  { title: 'Nomor Daftar', value: 'no_daftar', nowrap: true },
-  { title: 'Tanggal', value: 'tanggal_daftar', nowrap: true },
+  { title: 'Nomor Daftar', value: 'nomor_daftar', nowrap: true },
+  { title: 'Tanggal', value: 'tanggal', nowrap: true },
   { title: 'Nama PU', value: 'nama_pu', nowrap: true },
   { title: 'Jenis Daftar', value: 'jenis_daftar', nowrap: true },
   { title: 'Jenis Produk', value: 'jenis_produk', nowrap: true },
-  { title: 'Jenis Usaha dan Jumlah', value: 'businessType', nowrap: true },
+  { title: 'Jenis Usaha dan Jumlah', value: 'jenis_usaha_jumlah', nowrap: true },
   { title: 'Status', value: 'status', nowrap: true },
   { title: 'Tanggal Dikirim Oleh BPJPH', value: 'tgl_dikirim', nowrap: true },
   { title: 'Action', value: 'actions', align: 'center' },
@@ -34,8 +34,8 @@ const selectedFilters = ref({
 const loadItem = async (pageNumber: number, sizeData: number, search: string = '', path: string) => {
   try {
     let params = {
-      pageNumber,
-      sizeData,
+      page: pageNumber,
+      size: sizeData,
       search,
       url: path,
     }
@@ -78,8 +78,8 @@ const loadItem = async (pageNumber: number, sizeData: number, search: string = '
 const handleSearch = async (pageNumber: number, sizeData: number, search: string = '', path: string) => {
   try {
     let params = {
-      pageNumber,
-      sizeData,
+      page: pageNumber,
+      size: sizeData,
       search,
       url: path,
     }
@@ -263,7 +263,7 @@ onMounted(async () => {
               class="examination-table border rounded"
               :headers="invoiceHeader"
               :items="dataTable"
-              :page="1"
+              :hide-default-footer="dataTable.length === 0"
               hover
             >
               <template #no-data>
@@ -290,16 +290,25 @@ onMounted(async () => {
                   {{ formatDateIntl(new Date(item?.tanggal_daftar)) }}
                 </div>
               </template>
-              <template #item.businessType="{ item }">
-                <div class="d-flex">
-                  <div
-                    v-for="(el, idx) in item.businessType"
-                    :key="idx"
-                    class="green-box py-1 px-3 me-3"
+              <template #item.jenis_usaha_jumlah="{ item }">
+                <VContainer style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                  <VChip
+                    variant="outlined"
+                    style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
                   >
-                    {{ el }}
-                  </div>
-                </div>
+                    <span style="color: #49a84c;">
+                      {{ item.jenis_usaha }}
+                    </span>
+                  </VChip>
+                  <VChip
+                    variant="outlined"
+                    style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
+                  >
+                    <span style="color: #49a84c;">
+                      {{ item.jumlah_produk }}
+                    </span>
+                  </VChip>
+                </VContainer>
               </template>
               <template #item.status="{ item }">
                 <div class="status-box py-1 px-3 cursor-pointer">
@@ -311,15 +320,7 @@ onMounted(async () => {
                   icon="mdi-arrow-right"
                   color="primary"
                   size="x-large"
-                  @click="router.push(`/reguler/post-audit/${item?.no_daftar}`)"
-                />
-              </template>
-              <template #bottom>
-                <VDataTableFooter
-                  v-if="props?.data.length > 10"
-                  first-icon="mdi-chevron-double-left"
-                  last-icon="mdi-chevron-double-right"
-                  show-current-page
+                  @click="router.push(`/reguler/post-audit/${item?.id_reg}`)"
                 />
               </template>
             </VDataTable>
@@ -336,7 +337,7 @@ onMounted(async () => {
     thead > tr > th:last-of-type {
       right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-left: 1px solid rgba(#000000, 0.12) !important;
     }
     tbody > tr > td:last-of-type {
       right: 0;
@@ -344,12 +345,6 @@ onMounted(async () => {
       border-left: 1px solid rgba(#000000, 0.12);
       background: white;
     }
-  }
-}
-
-:deep(.v-data-table.examination-table > .v-data-table-footer) {
-  .v-data-table-footer__info {
-    display: none;
   }
 }
 

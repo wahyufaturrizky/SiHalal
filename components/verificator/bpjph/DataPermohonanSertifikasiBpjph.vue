@@ -348,24 +348,24 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
                 </div>
               </template>
               <template #item.jenis_usaha_jumlah="{ item }">
-                  <VContainer style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
-                    <VChip
-                      variant="outlined"
-                      style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
-                    >
-                      <span style="color: #49a84c;">
-                        {{ item.JenisUsaha }}
-                      </span>
-                    </VChip>
-                    <VChip
-                      variant="outlined"
-                      style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
-                    >
-                      <span style="color: #49a84c;">
-                        {{ item.Jumlah }}
-                      </span>
-                    </VChip>
-                  </VContainer>
+                <VContainer style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                  <VChip
+                    variant="outlined"
+                    style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
+                  >
+                    <span style="color: #49a84c;">
+                      {{ item.JenisUsaha }}
+                    </span>
+                  </VChip>
+                  <VChip
+                    variant="outlined"
+                    style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
+                  >
+                    <span style="color: #49a84c;">
+                      {{ item.Jumlah }}
+                    </span>
+                  </VChip>
+                </VContainer>
               </template>
             </VDataTableServer>
           </VRow>
