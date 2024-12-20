@@ -12,9 +12,11 @@ export default defineEventHandler(async (event: any) => {
 
   try {
     const runtimeConfig = useRuntimeConfig();
+    const apiEndpoint = "/pelaku-usaha/layanan-sertifikasi-halal";
     const payload = await readBody(event);
+
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/layanan-sertifikasi-halal`,
+      `${runtimeConfig.coreBaseUrl}/api/v1${apiEndpoint}`,
       {
         method: "post",
         headers: { Authorization: authHeader },

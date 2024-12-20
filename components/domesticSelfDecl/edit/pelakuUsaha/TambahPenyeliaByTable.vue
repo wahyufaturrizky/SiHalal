@@ -36,12 +36,7 @@ const selected = ref([]);
 <template>
   <VDialog max-width="60svw">
     <template #activator="{ props: openModal }">
-      <VBtn
-        v-bind="openModal"
-        density="compact"
-        variant="outlined"
-        append-icon="fa-plus"
-      >
+      <VBtn v-bind="openModal" variant="outlined" append-icon="fa-plus">
         Tambah
       </VBtn>
     </template>

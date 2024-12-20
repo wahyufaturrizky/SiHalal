@@ -12,10 +12,10 @@ export default defineEventHandler(async (event: any) => {
 
   try {
     const runtimeConfig = useRuntimeConfig();
-    const query: any = await getQuery(event);
+    const { id } = event.context.params;
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/halal-certificate-reguler/${query.supervisor_id}/penyelia`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/halal-certificate-reguler/${id}/delete`,
       {
         method: "delete",
         headers: { Authorization: authHeader },

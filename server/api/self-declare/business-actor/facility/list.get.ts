@@ -1,5 +1,7 @@
 import { NuxtError } from "nuxt/app";
 
+const runtimeConfig = useRuntimeConfig();
+
 export default defineEventHandler(async (event: any) => {
   const authHeader = getRequestHeader(event, "Authorization");
   if (typeof authHeader === "undefined") {
@@ -10,15 +12,24 @@ export default defineEventHandler(async (event: any) => {
     });
   }
 
-  try {
-    const runtimeConfig = useRuntimeConfig();
-    const query: any = await getQuery(event);
+  const query: any = await getQuery(event);
+  const params = {
+    fas_id: query.fas_id,
+    page: isNaN(Number.parseInt(query.page, 10))
+      ? 1
+      : Number.parseInt(query.page, 10),
+    size: isNaN(Number.parseInt(query.size, 10))
+      ? 1
+      : Number.parseInt(query.size, 10),
+  };
 
+  try {
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/halal-certificate-reguler/${query.supervisor_id}/penyelia`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/${query.supervisor_id}/list-fasilitas`,
       {
-        method: "delete",
+        method: "get",
         headers: { Authorization: authHeader },
+        params,
       } as any
     );
 
