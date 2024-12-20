@@ -2,7 +2,7 @@
   <VContainer>
     <KembaliButton />
     <VRow align="center">
-      <VCol class="8">
+      <VCol cols="8">
         <h3 class="text-h3 font-weight-bold">Detail Pengajuan Self Declare</h3>
       </VCol>
       <VCol cols="4">

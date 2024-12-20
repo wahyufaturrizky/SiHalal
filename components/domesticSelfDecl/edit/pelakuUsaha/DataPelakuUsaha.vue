@@ -8,7 +8,7 @@ const props = defineProps<{
   <VRow no-gutters class="mb-4">
     <VCol cols="3">
       <div class="d-flex justify-space-between">
-        <div class="text-h6">Nama</div>
+        <div class="text-h6 font-weight-bold">Nama</div>
         <div class="me-2">:</div>
       </div>
     </VCol>
@@ -17,7 +17,7 @@ const props = defineProps<{
   <VRow no-gutters class="mb-4">
     <VCol cols="3">
       <div class="d-flex justify-space-between">
-        <div class="text-h6">Alamat</div>
+        <div class="text-h6 font-weight-bold">Alamat</div>
         <div class="me-2">:</div>
       </div>
     </VCol>
@@ -28,7 +28,7 @@ const props = defineProps<{
   <VRow no-gutters class="mb-4">
     <VCol cols="3">
       <div class="d-flex justify-space-between">
-        <div class="text-h6">Jenis Badan Usaha</div>
+        <div class="text-h6 font-weight-bold">Jenis Badan Usaha</div>
         <div class="me-2">:</div>
       </div>
     </VCol>
@@ -39,7 +39,7 @@ const props = defineProps<{
   <VRow no-gutters class="mb-4">
     <VCol cols="3">
       <div class="d-flex justify-space-between">
-        <div class="text-h6">Skala usaha</div>
+        <div class="text-h6 font-weight-bold">Skala usaha</div>
         <div class="me-2">:</div>
       </div>
     </VCol>
@@ -50,7 +50,7 @@ const props = defineProps<{
   <VRow no-gutters class="mb-4">
     <VCol cols="3">
       <div class="d-flex justify-space-between">
-        <div class="text-h6">Penanggung Jawab</div>
+        <div class="text-h6 font-weight-bold">Penanggung Jawab</div>
         <div class="me-2">:</div>
       </div>
     </VCol>
