@@ -22,7 +22,7 @@ const checkingCostHeader: any[] = [
 
 const getDetailData = async (type: string) => {
   try {
-    const response: any = await $api('/lph/detail-payment', {
+    const response: any = await $api('/reguler/lph/detail-payment', {
       method: 'get',
       params: { url: `${LIST_INFORMASI_PEMBAYARAN}/${id}/${type}` },
     })
