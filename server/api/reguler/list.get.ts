@@ -11,17 +11,17 @@ export default defineEventHandler(async (event: any) => {
     })
   }
 
-  const { url, page, size, search } = (await getQuery(event)) as {
+  const { url, page, size, keyword } = (await getQuery(event)) as {
     url: string
     page: string
     size: string
-    search: string
+    keyword: string
   }
 
   const params = {
     page: Number.isNaN(Number.parseInt(page, 10)) ? 1 : Number.parseInt(page, 1),
     size: Number.isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
-    search,
+    keyword,
   }
 
   const data = await $fetch<any>(
