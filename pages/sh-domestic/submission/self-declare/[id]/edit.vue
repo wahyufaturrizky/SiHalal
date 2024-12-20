@@ -9,19 +9,16 @@ onMounted(() => {
 
 <template>
   <VContainer>
-    <VRow>
-      <VCol :cols="12">
-        <KembaliButton />
-      </VCol>
-    </VRow>
-    <VRow>
+    <KembaliButton />
+    <VRow align="center">
       <VCol>
-        <h2>Ubah Pengajuan Self Declare</h2>
+        <div class="text-h3 font-weight-bold">Ubah Pengajuan Self Declare</div>
       </VCol>
       <VCol class="d-flex justify-end">
         <VBtn color="primary" variant="flat" text="Simpan Perubahan" />
       </VCol>
     </VRow>
+
     <VRow>
       <VCol>
         <VTabs v-model="tabs" class="mb-10">
@@ -33,6 +30,7 @@ onMounted(() => {
           <VTab value="6">Proses Produk Halal</VTab>
           <VTab value="7">Pernyataan</VTab>
         </VTabs>
+
         <VTabsWindow v-model="tabs">
           <VTabsWindowItem value="1">
             <PelakuUsahaMain />

@@ -38,7 +38,7 @@ const addDataAspekLegal = async () => {
   try {
     loadingAdd.value = true;
 
-    const res: any = await $api("/self-declare/aspek-legal/add", {
+    const res: any = await $api("/self-declare/verificator/aspek-legal/add", {
       method: "post",
       body: formData.value,
     });
