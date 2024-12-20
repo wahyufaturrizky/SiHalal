@@ -7,18 +7,13 @@ const router = useRouter();
 
 const selfDeclareId = (route.params as any).id;
 
-interface TimelineItem {
-  title: string;
-  user: string;
-  date: string;
-  color: string;
-}
-
 const detailData = ref();
 const loadingAll = ref(true);
 const loadingTandaiOK = ref(false);
 const loadingTandaiNotOK = ref(false);
 const loadingPengembalian = ref(false);
+const itemsPabrik = ref([]);
+const itemsOutlet = ref([]);
 
 const tabs = ref([
   { text: "Pelaku Usaha", value: "pelaku_usaha" },
@@ -31,21 +26,6 @@ const tabs = ref([
 
 const tab = ref("pelaku_usaha"); // Default selected tab
 
-const timelineItems = ref<TimelineItem[]>([
-  {
-    title: "Submitted",
-    user: "Samsul",
-    date: "2024-09-09",
-    color: "deep-orange-lighten-4",
-  },
-  {
-    title: "Draft",
-    user: "Samsul",
-    date: "2024-09-09",
-    color: "purple-lighten-2",
-  },
-]);
-
 const formatDate = (date: string): string => {
   return new Date(date).toLocaleDateString("en-GB", {
     day: "2-digit",
@@ -54,33 +34,271 @@ const formatDate = (date: string): string => {
   });
 };
 
-const showTimeline = ref(false);
-const showPengajuan = ref(false);
+const showTimeline = ref(true);
+const showPengajuan = ref(true);
 const showDetail = ref(true);
 const loadingDibatalkan = ref(false);
 const loadingBahan = ref(false);
+const loadingTableProduk = ref(false);
 
 const itemPerPageBahan = ref(10);
 const totalItemsBahan = ref(0);
 const pageBahan = ref(1);
 
-const itemPerPage = ref(10);
-const totalItems = ref(0);
-const loading = ref(false);
-const page = ref(1);
+const itemPerPageTableProduk = ref(10);
+const totalItemsTableProduk = ref(0);
+const pageTableProduk = ref(1);
+
+const itemPerPagePabrik = ref(10);
+const totalItemsPabrik = ref(0);
+const pagePabrik = ref(1);
+const loadingPabrik = ref(false);
+
+const itemPerPageOutlet = ref(10);
+const totalItemsOutlet = ref(0);
+const pageOutlet = ref(1);
+const loadingOutlet = ref(false);
+
+const itemPerPageAspekLegal = ref(10);
+const totalItemsAspekLegal = ref(0);
+const loadingAspekLegal = ref(false);
+const pageAspekLegal = ref(1);
+
+const itemPerPagePenyelia = ref(10);
+const totalItemsPenyelia = ref(0);
+const loadingPenyelia = ref(false);
+const pagePenyelia = ref(1);
+
 const dataPengajuanSertifikasiHalal = ref();
 const jenisBadanUsahaPenanggungJawab = ref();
+const dataPengajuan = ref();
+const dataFormPengajuan = ref();
 const nomorKontakPenanggungJawab = ref();
 const emailPenanggungJawab = ref();
 const aspekLegal = ref();
 const penyeliaHalal = ref();
 const dokumen = ref();
+const listAgama = ref();
+const listJenisPendaftaran = ref();
+const listJenisLayanan = ref([]);
+const listProduk = ref([]);
+const dataTracking = ref([]);
 const listBahan = ref([]);
+const listTableProduk = ref([]);
 
-const loadItem = async (page, size) => {
-  // Temporarily skip API call for dummy data testing
-  items.value = items.value.slice((page - 1) * size, page * size); // Paginate dummy data
-  totalItems.value = items.value.length;
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+
+const statusItem: any = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+    OF11: { color: "success", desc: "Verification" },
+    OF50: { color: "success", desc: "Dikirim ke LPH" },
+    OF300: { color: "success", desc: "Halal Certified Issued" },
+    OF285: { color: "success", desc: "Dikembalikan Oleh Fatwa" },
+    OF74: { color: "success", desc: "Sent to Komite Fatwa" },
+    OF280: { color: "success", desc: "Dikembalikan Ke PU" },
+    OF100: { color: "success", desc: "Selesai Sidang Fatwa" },
+    OF120: { color: "success", desc: "Certificate Issued" },
+    OF900: { color: "error", desc: "Dibatalkan" },
+  },
+  {
+    get(target: any, prop: any) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
+
+const loadItemPabrik = async (
+  pageParamPabrik: number,
+  sizeParamPabrik: number
+) => {
+  try {
+    loadingPabrik.value = true;
+
+    const response: any = await $api(
+      `/self-declare/verificator/pabrik-outlet/${selfDeclareId}`,
+      {
+        method: "get",
+        params: {
+          page: pageParamPabrik,
+          size: sizeParamPabrik,
+          fas_id: "FAPAB",
+        },
+      }
+    );
+
+    if (response.code === 200) {
+      itemsPabrik.value = response.data || [];
+      totalItemsPabrik.value = response.total_item || 0;
+      loadingPabrik.value = false;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
+      loadingPabrik.value = false;
+      return response;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingPabrik.value = false;
+  }
+};
+
+const loadItemOutlet = async (
+  pageParamOutlet: number,
+  sizeParamOutlet: number
+) => {
+  try {
+    loadingOutlet.value = true;
+
+    const response: any = await $api(
+      `/self-declare/verificator/pabrik-outlet/${selfDeclareId}`,
+      {
+        method: "get",
+        params: {
+          page: pageParamOutlet,
+          size: sizeParamOutlet,
+          fas_id: "FAOUT",
+        },
+      }
+    );
+
+    if (response.code === 200) {
+      itemsOutlet.value = response.data || [];
+      totalItemsOutlet.value = response.total_item || 0;
+      loadingOutlet.value = false;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
+      loadingOutlet.value = false;
+      return response;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingOutlet.value = false;
+  }
+};
+
+const loadItemAspekLegalById = async ({
+  page,
+  size,
+}: {
+  page: number;
+  size: number;
+}) => {
+  loadingAspekLegal.value = true;
+  try {
+    const response: any = await $api(
+      `/self-declare/verificator/aspek-legal/${selfDeclareId}`,
+      {
+        method: "get",
+        params: {
+          page,
+          size,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      aspekLegal.value = response.data;
+      totalItemsAspekLegal.value = response.total;
+      loadingAspekLegal.value = false;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
+      loadingAspekLegal.value = false;
+    }
+  } catch (error) {
+    loadingAspekLegal.value = false;
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const loadItemPenyeliaById = async ({
+  page,
+  size,
+}: {
+  page: number;
+  size: number;
+}) => {
+  loadingPenyelia.value = true;
+  try {
+    const response: any = await $api(
+      `/self-declare/verificator/penyelia/${selfDeclareId}`,
+      {
+        method: "get",
+        params: {
+          page,
+          size,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      penyeliaHalal.value = response.data;
+      totalItemsPenyelia.value = response.total;
+      loadingPenyelia.value = false;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
+      loadingPenyelia.value = false;
+    }
+  } catch (error) {
+    loadingPenyelia.value = false;
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const loadItemProdukById = async ({
+  page,
+  size,
+}: {
+  page: number;
+  size: number;
+}) => {
+  loadingTableProduk.value = true;
+  try {
+    const response: any = await $api(
+      `/self-declare/verificator/produk/${selfDeclareId}`,
+      {
+        method: "get",
+        params: {
+          page,
+          size,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      listTableProduk.value = response.data;
+      totalItemsTableProduk.value = response.total;
+      loadingTableProduk.value = false;
+      return response;
+    } else {
+      loadingTableProduk.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    loadingTableProduk.value = false;
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
 };
 
 const loadItemBahanById = async ({
@@ -129,23 +347,59 @@ const loadItemById = async () => {
 
     if (response.code === 2000) {
       const { data } = response || {};
-      const {
-        certificate_halal,
-        penanggung_jawab,
-        aspek_legal,
-        penyelia_halal,
-      } = data || {};
+      const { certificate_halal, penanggung_jawab, tracking } = data || {};
       const { nama_pj, nomor_kontak_pj, email_pj } = penanggung_jawab || {};
-      const { nama_pu, alamat_pu, jenis_badan_usaha, skala_usaha } =
-        certificate_halal || {};
+      const {
+        nama_pu,
+        alamat_pu,
+        jenis_badan_usaha,
+        skala_usaha,
+        no_mohon,
+        tgl_mohon,
+        jenis_pengajuan,
+        jenis_layanan,
+        jenis_produk,
+        area_pemasaran,
+        lembaga_pendamping,
+        pendamping,
+      } = certificate_halal || {};
+
+      dataTracking.value = tracking;
+
+      dataFormPengajuan.value = {
+        jenisPendaftaran: "",
+        kodeDaftarFasilitasi: "",
+        nomorSuratPermohonan: no_mohon,
+        jenisLayanan: jenis_layanan,
+        jenisProduk: jenis_produk,
+        jenisUsaha: jenis_badan_usaha,
+        areaPemasaran: area_pemasaran,
+        lokasiPendamping: "",
+        lembagaPendamping: lembaga_pendamping,
+        pendamping: pendamping,
+        tanggalSuratPermohon: formatToISOString(
+          tgl_mohon || new Date(new Date().setDate(new Date().getDate() + 1))
+        ),
+      };
+
+      dataPengajuan.value = [
+        {
+          label: "No. ID",
+          value: no_mohon,
+        },
+        {
+          label: "Tanggal",
+          value: formatDate(tgl_mohon),
+        },
+        {
+          label: "Jenis Pengajuan",
+          value: jenis_pengajuan,
+        },
+      ];
 
       jenisBadanUsahaPenanggungJawab.value = jenis_badan_usaha;
       nomorKontakPenanggungJawab.value = nomor_kontak_pj;
       emailPenanggungJawab.value = email_pj;
-
-      aspekLegal.value = aspek_legal;
-
-      penyeliaHalal.value = penyelia_halal;
 
       dataPengajuanSertifikasiHalal.value = [
         {
@@ -192,31 +446,89 @@ const loadDocument = async () => {
       return response;
     }
   } catch (error) {
-    console.log("@error", error);
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 
+const loadAgama = async () => {
+  try {
+    const response: any = await $api("/master/agama", {
+      method: "get",
+    });
+
+    if (response.length > 0) {
+      listAgama.value = response;
+      return response;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const loadJenisPendaftaran = async () => {
+  try {
+    const response: any = await $api("/master/jenis-pendaftaran", {
+      method: "get",
+    });
+
+    if (response.length > 0) {
+      listJenisPendaftaran.value = response;
+      return response;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const loadJenisLayanan = async () => {
+  try {
+    const response: any = await $api("/master/jenis-layanan", {
+      method: "get",
+    });
+
+    if (response.length > 0) {
+      listJenisLayanan.value = response;
+      return response;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const loadJenisProduk = async () => {
+  try {
+    const response: any = await $api("/master/products", {
+      method: "get",
+    });
+
+    if (response.length > 0) {
+      listProduk.value = response;
+      return response;
+    }
+  } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
 onMounted(async () => {
-  // Assign dummy data to items instead of fetching from API
-  items.value = [
-    {
-      id: 1,
-      jenis_bahan: "Cleaning Agent",
-      nama_bahan: "Air",
-      produsen: "Produsen A",
-      nomor_sertifikat_halal: "123456",
-      keterangan: "Digunakan untuk mencuci",
-    },
-  ];
-
-  totalItems.value = items.value.length; // Set totalItems for pagination
-
   const res: any = await Promise.all([
     loadItemById(),
     loadDocument(),
+    loadAgama(),
+    loadJenisPendaftaran(),
+    loadJenisLayanan(),
+    loadJenisProduk(),
     loadItemBahanById({ page: pageBahan.value, size: itemPerPageBahan.value }),
+    loadItemPabrik(pagePabrik.value, itemPerPagePabrik.value),
+    loadItemOutlet(pageOutlet.value, itemPerPageOutlet.value),
+    loadItemProdukById({
+      page: pageTableProduk.value,
+      size: itemPerPageTableProduk.value,
+    }),
+    loadItemAspekLegalById({
+      page: pageAspekLegal.value,
+      size: itemPerPageAspekLegal.value,
+    }),
   ]);
 
   const checkResIfUndefined = res.every((item: any) => {
@@ -230,13 +542,12 @@ onMounted(async () => {
   }
 });
 
-const verifikatorTableHeader = [
-  { title: "No", key: "id" },
-  { title: "Jenis Bahan", key: "jenis_bahan" },
-  { title: "Nama Bahan", key: "nama_bahan" },
-  { title: "Produsen", key: "produsen" },
-  { title: "Nomor Sertifikat Halal", key: "nomor_sertifikat_halal" },
-  { title: "Keterangan", key: "keterangan" },
+const headersProduk = [
+  { title: "No", key: "no" },
+  { title: "Nama", key: "nama" },
+  { title: "Jumlah Bahan", key: "jumlah_bahan" },
+  { title: "Merek", key: "merek" },
+  { title: "Verified", key: "verified" },
   { title: "Action", key: "action" },
 ];
 
@@ -246,28 +557,27 @@ const bahanTableHeader = [
   { title: "Nama Bahan", key: "nama_bahan" },
   { title: "Produsen", key: "produsen" },
   { title: "Tanggal Berlaku", key: "tanggal_berlaku" },
-  { title: "Action", key: "action" },
-];
-
-const pabrikTableHeader = [
-  { title: "No", key: "id" },
-  { title: "Jenis", key: "jenis" },
-  { title: "No. Dokumen", key: "no_dokumen" },
-  { title: "Tanggal", key: "tanggal" },
-  { title: "Masa Berlaku", key: "masa_berlaku" },
-  { title: "Instansi Penerbit", key: "instansi_penerbit" },
-  { title: "Action", key: "action" },
+  // { title: "Action", key: "action" },
 ];
 
 const outletTableHeader = [
-  { title: "No", key: "id" },
+  { title: "No", key: "no" },
+  { title: "Jenis Bahan", key: "jenis_outlet" },
+  { title: "Nama Bahan", key: "nama_outlet" },
+  { title: "Status", key: "status_milik" },
+  // { title: "Action", key: "action" },
+];
+
+const pabrikTableHeader = [
+  { title: "No", key: "no" },
   { title: "Nama", key: "nama" },
   { title: "Alamat", key: "alamat" },
-  { title: "Action", key: "action" },
+  { title: "Status", key: "status_milik" },
+  // { title: "Action", key: "action" },
 ];
 
 const legalTableHeader = [
-  { title: "No", key: "id_reg_legal" },
+  { title: "No", key: "no" },
   { title: "Jenis", key: "jenis_surat" },
   { title: "No. Dokumen", key: "no_surat" },
   { title: "Tanggal", key: "tanggal_surat" },
@@ -276,7 +586,7 @@ const legalTableHeader = [
 ];
 
 const penyeliaTableHeader = [
-  { title: "No", key: "penyelia_id" },
+  { title: "No", key: "no" },
   { title: "Nama", key: "penyelia_nama" },
   { title: "No. KTP", key: "no_ktp" },
   { title: "No. Kontak", key: "no_kontak" },
@@ -306,149 +616,6 @@ const itemsDokumenPersyaratanFasilitas = ref([
   },
 ]);
 
-// Dummy data
-const items = ref([
-  {
-    id: 1,
-    jenis_bahan: "Cleaning Agent",
-    nama_bahan: "Air",
-    produsen: "Produsen A",
-    nomor_sertifikat_halal: "123456",
-    keterangan: "Digunakan untuk mencuci",
-  },
-  {
-    id: 2,
-    jenis_bahan: "Kemasan",
-    nama_bahan: "Alumunium Foil",
-    produsen: "Produsen B",
-    nomor_sertifikat_halal: "789012",
-    keterangan: "Kemasan tahan panas",
-  },
-  {
-    id: 3,
-    jenis_bahan: "Cleaning Agent",
-    nama_bahan: "Sabun Pencuci",
-    produsen: "Produsen C",
-    nomor_sertifikat_halal: "345678",
-    keterangan: "Menghilangkan noda",
-  },
-  {
-    id: 4,
-    jenis_bahan: "Kemasan",
-    nama_bahan: "Plastik",
-    produsen: "Produsen D",
-    nomor_sertifikat_halal: "-",
-    keterangan: "Kemasan fleksibel",
-  },
-  {
-    id: 5,
-    jenis_bahan: "Cleaning Agent",
-    nama_bahan: "Detergent",
-    produsen: "Produsen E",
-    nomor_sertifikat_halal: "901234",
-    keterangan: "Membersihkan bahan",
-  },
-]);
-
-const outletTableData = ref([
-  {
-    id: 1,
-    nama: "Outlet A",
-    alamat: "Jl. Sudirman No. 10, Jakarta",
-  },
-  {
-    id: 2,
-    nama: "Outlet B",
-    alamat: "Jl. Merdeka Raya No. 5, Bandung",
-  },
-  {
-    id: 3,
-    nama: "Outlet C",
-    alamat: "Jl. Ahmad Yani No. 8, Surabaya",
-  },
-]);
-
-const penyeliaTableData = ref([
-  {
-    id: 1,
-    nama: "Ahmad Fauzi",
-    no_ktp: "3201012001010001",
-    no_kontak: "081234567890",
-    sertif_penyelia_halal: "SH12345 / 01-01-2024",
-    sk: "SK001 / 15-02-2024",
-  },
-  {
-    id: 2,
-    nama: "Nurul Aini",
-    no_ktp: "3202011995010002",
-    no_kontak: "081298765432",
-    sertif_penyelia_halal: "SH67890 / 10-03-2024",
-    sk: "SK002 / 20-03-2024",
-  },
-  {
-    id: 3,
-    nama: "Rahmat Hidayat",
-    no_ktp: "3203011987020003",
-    no_kontak: "081345678901",
-    sertif_penyelia_halal: "SH11223 / 05-04-2024",
-    sk: "SK003 / 25-04-2024",
-  },
-  {
-    id: 4,
-    nama: "Sri Rahayu",
-    no_ktp: "3204011988010004",
-    no_kontak: "081456789012",
-    sertif_penyelia_halal: "SH33456 / 15-05-2024",
-    sk: "SK004 / 30-05-2024",
-  },
-  {
-    id: 5,
-    nama: "Budi Santoso",
-    no_ktp: "3205011985010005",
-    no_kontak: "081567890123",
-    sertif_penyelia_halal: "SH55678 / 20-06-2024",
-    sk: "SK005 / 05-07-2024",
-  },
-]);
-
-const handleDeleteOutletConfirm = (oulet) => {
-  console.log("Delete outlet confirmed:", oulet);
-};
-
-const handleDeletePabrikConfirm = (pabrik) => {
-  console.log("Delete pabrik confirmed:", pabrik);
-};
-
-const file = ref<File | null>(null);
-const fileInputRef = ref<HTMLInputElement | null>(null);
-
-// Mock data for document list
-const documentList = ref([
-  { nama: "Izin Edar", fileName: "Surat Izin Usaha.pdf", file: null },
-  { nama: "Izin Masuk", fileName: "", file: null },
-]);
-
-// Handle file removal
-const removeFile = (index: number) => {
-  documentList.value[0].fileName = "";
-  documentList.value[0].file = null;
-
-  file.value = null;
-};
-
-const uploadFile = (event: Event, index: string | number) => {
-  const fileUpload = event.target.files[0];
-  if (fileUpload) {
-    documentList.value[0].fileName = fileUpload.name;
-    documentList.value[0].file = fileUpload;
-  }
-};
-
-const data = {
-  sertifikasi_date: ref([]),
-};
-
-const selectedFasilitator = ref("");
 const searchFasilitator = ref("");
 
 const fasilitators = ref([
@@ -466,7 +633,6 @@ const filteredFasilitators = computed(() => {
 });
 
 const onFasilitatorSearchInput = debounce((input: any) => {
-  console.log(input, "ini input");
   searchFasilitator.value = input;
 }, 500);
 
@@ -585,6 +751,7 @@ const dibatalkan = async () => {
 
 <template>
   <VContainer v-if="!loadingAll" class="pa-0">
+    <KembaliButton />
     <!-- Title and Buttons Row -->
     <VRow>
       <VCol>
@@ -723,25 +890,36 @@ const dibatalkan = async () => {
                 <TambahDataAspekLegal
                   mode="add"
                   :dokumen="dokumen"
-                  @refresh="loadItem(page, itemPerPage)"
+                  @refresh="
+                    loadItemAspekLegalById({
+                      page: pageAspekLegal,
+                      size: itemPerPageAspekLegal,
+                    })
+                  "
                 />
               </VCol>
             </VRow>
             <VRow>
               <VCol>
                 <VDataTableServer
-                  v-model:items-per-page="itemPerPage"
-                  v-model:page="page"
+                  v-model:items-per-page="itemPerPageAspekLegal"
+                  v-model:page="pageAspekLegal"
                   :headers="legalTableHeader"
                   :items="aspekLegal"
-                  :loading="loading"
-                  :items-length="totalItems"
-                  :hide-default-footer="true"
+                  :loading="loadingAspekLegal"
+                  :items-length="totalItemsAspekLegal"
                   loading-text="Loading..."
-                  @update:options="loadItem(page, itemPerPage)"
+                  @update:options="
+                    loadItemAspekLegalById({
+                      page: pageAspekLegal,
+                      size: itemPerPageAspekLegal,
+                    })
+                  "
                 >
-                  <template #item.id_reg_legal="{ index }">
-                    {{ index + 1 + (page - 1) * itemPerPage }}
+                  <template #item.no="{ index }">
+                    {{
+                      index + 1 + (pageAspekLegal - 1) * itemPerPageAspekLegal
+                    }}
                   </template>
                 </VDataTableServer>
               </VCol>
@@ -749,6 +927,7 @@ const dibatalkan = async () => {
           </VCard>
         </VCol>
       </VRow>
+
       <VRow>
         <VCol>
           <VCard variant="flat" class="pa-4">
@@ -758,34 +937,40 @@ const dibatalkan = async () => {
               </VCol>
               <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahDataPenyeliaHalal
-                  @refresh="loadItem(page, itemPerPage)"
+                  @refresh="
+                    loadItemPenyeliaById({
+                      page: pagePenyelia,
+                      size: itemPerPagePenyelia,
+                    })
+                  "
                   mode="add"
+                  :listagama="listAgama"
                 />
               </VCol>
             </VRow>
             <VRow>
               <VCol>
                 <VDataTableServer
-                  v-model:items-per-page="itemPerPage"
-                  v-model:page="page"
+                  v-model:items-per-page="itemPerPagePenyelia"
+                  v-model:page="pagePenyelia"
                   :headers="penyeliaTableHeader"
                   :items="penyeliaHalal"
-                  :loading="loading"
-                  :items-length="totalItems"
-                  :hide-default-footer="true"
+                  :loading="loadingPenyelia"
+                  :items-length="totalItemsPenyelia"
                   loading-text="Loading..."
-                  @update:options="loadItem(page, itemPerPage)"
+                  @update:options="
+                    loadItemPenyeliaById({
+                      page: pagePenyelia,
+                      size: itemPerPagePenyelia,
+                    })
+                  "
                 >
-                  <template #item.penyelia_id="{ index }">
-                    {{ index + 1 + (page - 1) * itemPerPage }}
+                  <template #item.no="{ index }">
+                    {{ index + 1 + (pagePenyelia - 1) * itemPerPagePenyelia }}
                   </template>
-                  <!-- <template #item.action="{ item }">
+                  <template #item.action="{ item }">
                     <div class="d-flex gap-1">
-                      <VBtn
-                        variant="text"
-                        elevation="0"
-                        @click="handleDeletePabrikConfirm"
-                      >
+                      <VBtn variant="text" elevation="0">
                         <VIcon
                           mode="edit"
                           icon="ri-delete-bin-fill"
@@ -793,7 +978,7 @@ const dibatalkan = async () => {
                         />
                       </VBtn>
                     </div>
-                  </template> -->
+                  </template>
                 </VDataTableServer>
               </VCol>
             </VRow>
@@ -861,7 +1046,7 @@ const dibatalkan = async () => {
     </VContainer>
 
     <!-- Tab Content Pengajuan -->
-    <VRow v-if="tab === 'pengajuan'">
+    <VContainer v-if="tab === 'pengajuan'">
       <VCol>
         <VCard variant="flat" class="pa-4">
           <div
@@ -879,25 +1064,15 @@ const dibatalkan = async () => {
                 <div class="d-flex flex-column">
                   <!-- Static Details -->
                   <VRow>
-                    <VCol cols="12">
+                    <VCol
+                      v-for="({ label, value }, i) in dataPengajuan"
+                      :key="i"
+                      cols="12"
+                    >
                       <div class="info-row">
-                        <span class="label">No. ID</span>
+                        <span class="label">{{ label }}</span>
                         <span class="colon">:</span>
-                        <span class="value">39886986</span>
-                      </div>
-                    </VCol>
-                    <VCol cols="12">
-                      <div class="info-row">
-                        <span class="label">Tanggal</span>
-                        <span class="colon">:</span>
-                        <span class="value">10/10/2024</span>
-                      </div>
-                    </VCol>
-                    <VCol cols="12">
-                      <div class="info-row">
-                        <span class="label">Jenis Pengajuan</span>
-                        <span class="colon">:</span>
-                        <span class="value">Baru</span>
+                        <span class="value">{{ value }}</span>
                       </div>
                     </VCol>
                   </VRow>
@@ -909,7 +1084,10 @@ const dibatalkan = async () => {
                       <VLabel class="required"> Jenis Pendaftaran </VLabel>
                       <VSelect
                         density="compact"
-                        :items="['Self Declare', 'Lainnya']"
+                        :items="listJenisPendaftaran"
+                        v-model="dataFormPengajuan.jenisPendaftaran"
+                        item-title="name"
+                        item-value="code"
                         required
                       />
                     </VCol>
@@ -922,7 +1100,7 @@ const dibatalkan = async () => {
                       <VRow align="center" class="mb-2">
                         <VCol cols="5.5">
                           <VSelect
-                            v-model="selectedFasilitator"
+                            v-model="dataFormPengajuan.kodeDaftarFasilitasi"
                             :items="filteredFasilitators"
                             item-title="name"
                             item-value="id"
@@ -955,50 +1133,36 @@ const dibatalkan = async () => {
                     <VDivider class="mt-2" />
                     <!-- Nomor Surat Permohonan & Tanggal Surat Pemohon -->
                     <VCol cols="6">
-                      <VLabel class="required"> Nomor Surat Permohonan </VLabel>
+                      <VLabel
+                        v-model="dataFormPengajuan.nomorSuratPermohonan"
+                        class="required"
+                      >
+                        Nomor Surat Permohonan
+                      </VLabel>
                       <VTextField
                         required
                         placeholder="Isi Nomor Surat Permohonan"
                       />
                     </VCol>
                     <VCol cols="6">
-                      <VItemGroup>
-                        <!-- Date TextField -->
-                        <Vuepicdatepicker>
-                          <template #trigger>
-                            <Vuepicdatepicker
-                              v-model:model-value="data.sertifikasi_date.value"
-                              auto-apply
-                              model-type="dd/MM/yyyy"
-                              :enable-time-picker="false"
-                              teleport
-                              clearable
-                            >
-                              <template #trigger>
-                                <VLabel class="required">
-                                  Tanggal Surat Pemohon
-                                </VLabel>
-                                <VTextField
-                                  placeholder="Pilih Tanggal Surat Pemohon"
-                                  disabled
-                                  append-inner-icon="fa-calendar"
-                                  :model-value="data.sertifikasi_date.value"
-                                  color="#757575"
-                                />
-                              </template>
-                            </Vuepicdatepicker>
-                          </template>
-                        </Vuepicdatepicker>
-                      </VItemGroup>
+                      <VLabel class="required"> Tanggal Surat Pemohon </VLabel>
+                      <VTextField
+                        placeholder="Pilih Tanggal Surat Pemohon"
+                        type="date"
+                        v-model="dataFormPengajuan.tanggalSuratPermohon"
+                      />
                     </VCol>
 
                     <!-- Jenis Layanan -->
                     <VCol cols="12">
                       <VLabel class="required"> Jenis Layanan </VLabel>
                       <VSelect
-                        :items="['Layanan A', 'Layanan B']"
+                        :items="listJenisLayanan"
                         required
                         placeholder="Pilih Jenis Layanan"
+                        v-model="dataFormPengajuan.jenisLayanan"
+                        item-title="name"
+                        item-value="code"
                       />
                     </VCol>
 
@@ -1006,16 +1170,23 @@ const dibatalkan = async () => {
                     <VCol cols="12">
                       <VLabel class="required"> Jenis Produk </VLabel>
                       <VSelect
-                        :items="['Produk A', 'Produk B']"
+                        :items="listProduk"
                         required
                         placeholder="Pilih Jenis Produk"
+                        v-model="dataFormPengajuan.jenisProduk"
+                        item-title="name"
+                        item-value="code"
                       />
                     </VCol>
 
                     <!-- Nama Usaha -->
                     <VCol cols="12">
                       <VLabel class="required"> Jenis Usaha </VLabel>
-                      <VTextField required placeholder="Pilih Jenis Usaha" />
+                      <VTextField
+                        v-model="dataFormPengajuan.jenisUsaha"
+                        required
+                        placeholder="Pilih Jenis Usaha"
+                      />
                     </VCol>
 
                     <!-- Area Pemasaran -->
@@ -1023,8 +1194,14 @@ const dibatalkan = async () => {
                       <VLabel class="required"> Area Pemasaran </VLabel>
                       <VSelect
                         placeholder="Pilih Area Pemasaran"
-                        :items="['Nasional', 'Internasional']"
+                        :items="[
+                          'Nasional',
+                          'Internasional',
+                          'Kabupaten/Kota',
+                          'Provinsi',
+                        ]"
                         required
+                        v-model="dataFormPengajuan.areaPemasaran"
                       />
                     </VCol>
 
@@ -1035,6 +1212,7 @@ const dibatalkan = async () => {
                         placeholder="Pilih Area Pendamping"
                         :items="['Lokasi A', 'Lokasi B']"
                         required
+                        v-model="dataFormPengajuan.lokasiPendamping"
                       />
                     </VCol>
 
@@ -1045,6 +1223,7 @@ const dibatalkan = async () => {
                         placeholder="Pilih Lembaga Pendamping"
                         :items="['Lembaga A', 'Lembaga B']"
                         required
+                        v-model="dataFormPengajuan.lembagaPendamping"
                       />
                     </VCol>
 
@@ -1055,6 +1234,7 @@ const dibatalkan = async () => {
                         placeholder="Pilih Pendamping"
                         :items="['Pendamping A', 'Pendamping B']"
                         required
+                        v-model="dataFormPengajuan.pendamping"
                       />
                     </VCol>
                   </VRow>
@@ -1071,10 +1251,10 @@ const dibatalkan = async () => {
           </VExpandTransition>
         </VCard>
       </VCol>
-    </VRow>
+    </VContainer>
 
     <!-- Tab Content Pabrik dan Outlet -->
-    <VRow v-if="tab === 'pabrik'">
+    <VContainer v-if="tab === 'pabrik'">
       <VRow>
         <VCol>
           <VCard variant="flat" class="pa-4">
@@ -1089,28 +1269,24 @@ const dibatalkan = async () => {
             <VRow>
               <VCol>
                 <VDataTableServer
-                  v-model:items-per-page="itemPerPage"
-                  v-model:page="page"
+                  v-model:items-per-page="itemPerPagePabrik"
+                  v-model:page="pagePabrik"
                   :headers="pabrikTableHeader"
-                  :items="[]"
-                  :loading="loading"
-                  :items-length="totalItems"
+                  :items="itemsPabrik"
+                  :items-length="totalItemsPabrik"
+                  :hide-default-footer="true"
+                  :loading="loadingPabrik"
                   loading-text="Loading..."
-                  @update:options="loadItem(page, itemPerPage)"
+                  @update:options="
+                    loadItemPabrik(pagePabrik, itemPerPagePabrik)
+                  "
                 >
-                  <template #item.id="{ index }">
-                    {{ index + 1 + (page - 1) * itemPerPage }}
-                  </template>
-                  <template #item.tgl_daftar="{ item }">
-                    {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+                  <template #item.no="{ index }">
+                    {{ index + 1 + (pagePabrik - 1) * itemPerPagePabrik }}
                   </template>
                   <template #item.action="{ item }">
                     <div class="d-flex gap-1">
-                      <VBtn
-                        variant="text"
-                        elevation="0"
-                        @click="handleDeletePabrikConfirm"
-                      >
+                      <VBtn variant="text" elevation="0">
                         <VIcon
                           mode="edit"
                           icon="ri-delete-bin-fill"
@@ -1125,6 +1301,7 @@ const dibatalkan = async () => {
           </VCard>
         </VCol>
       </VRow>
+
       <VRow>
         <VCol>
           <VCard variant="flat" class="pa-4">
@@ -1139,28 +1316,24 @@ const dibatalkan = async () => {
             <VRow>
               <VCol>
                 <VDataTableServer
-                  v-model:items-per-page="itemPerPage"
-                  v-model:page="page"
+                  v-model:items-per-page="itemPerPageOutlet"
+                  v-model:page="pageOutlet"
                   :headers="outletTableHeader"
-                  :items="outletTableData"
-                  :loading="loading"
-                  :items-length="totalItems"
+                  :items="itemsOutlet"
+                  :items-length="totalItemsOutlet"
+                  :hide-default-footer="true"
+                  @update:options="
+                    loadItemOutlet(pageOutlet, itemPerPageOutlet)
+                  "
                   loading-text="Loading..."
-                  @update:options="loadItem(page, itemPerPage)"
+                  :loading="loadingOutlet"
                 >
-                  <template #item.id="{ index }">
-                    {{ index + 1 + (page - 1) * itemPerPage }}
-                  </template>
-                  <template #item.tgl_daftar="{ item }">
-                    {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+                  <template #item.no="{ index }">
+                    {{ index + 1 + (pageOutlet - 1) * totalItemsOutlet }}
                   </template>
                   <template #item.action="{ item }">
                     <div class="d-flex gap-1">
-                      <VBtn
-                        variant="text"
-                        elevation="0"
-                        @click="handleDeleteOutletConfirm"
-                      >
+                      <VBtn variant="text" elevation="0">
                         <VIcon
                           mode="edit"
                           icon="ri-delete-bin-fill"
@@ -1175,10 +1348,10 @@ const dibatalkan = async () => {
           </VCard>
         </VCol>
       </VRow>
-    </VRow>
+    </VContainer>
 
     <!-- Tab Content Bahan -->
-    <VRow v-if="tab === 'bahan'">
+    <VContainer v-if="tab === 'bahan'">
       <VCol>
         <VCard variant="flat" class="pa-4">
           <VRow>
@@ -1254,10 +1427,10 @@ const dibatalkan = async () => {
           </VRow>
         </VCard>
       </VCol>
-    </VRow>
+    </VContainer>
 
     <!-- Tab Content Produk -->
-    <VRow v-if="tab === 'produk'">
+    <VContainer v-if="tab === 'produk'">
       <VCol>
         <VCard variant="flat" class="pa-4">
           <VRow>
@@ -1281,26 +1454,29 @@ const dibatalkan = async () => {
           <VRow>
             <VCol>
               <VDataTableServer
-                v-model:items-per-page="itemPerPage"
-                v-model:page="page"
-                :headers="verifikatorTableHeader"
-                :items="items"
-                :loading="loading"
-                :items-length="totalItems"
+                v-model:items-per-page="itemPerPageTableProduk"
+                v-model:page="pageTableProduk"
+                :headers="headersProduk"
+                :items="listTableProduk"
+                :loading="loadingTableProduk"
+                :items-length="totalItemsTableProduk"
                 loading-text="Loading..."
-                @update:options="loadItem(page, itemPerPage)"
+                @update:options="
+                  loadItemProdukById({
+                    page: pageTableProduk,
+                    size: itemPerPageTableProduk,
+                  })
+                "
               >
-                <template #item.id="{ index }">
-                  {{ index + 1 + (page - 1) * itemPerPage }}
-                </template>
-                <template #item.tgl_daftar="{ item }">
-                  {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+                <template #item.no="{ index }">
+                  {{
+                    index + 1 + (pageTableProduk - 1) * itemPerPageTableProduk
+                  }}
                 </template>
                 <template #item.action="{ item }">
                   <div class="d-flex gap-1">
                     <UbahProduk
                       mode="edit"
-                      :initial-data="selectedProduct"
                       icon="ri-pencil-fill"
                       :show-label="false"
                       color="#652672"
@@ -1312,10 +1488,10 @@ const dibatalkan = async () => {
           </VRow>
         </VCard>
       </VCol>
-    </VRow>
+    </VContainer>
 
     <!-- Tab Content Melacak -->
-    <VRow v-if="tab === 'melacak'">
+    <VContainer v-if="tab === 'melacak'">
       <VCol>
         <VCard variant="flat" class="pa-4">
           <div
@@ -1329,27 +1505,44 @@ const dibatalkan = async () => {
           </div>
           <VExpandTransition>
             <div v-if="showTimeline">
-              <VTimeline align="start" density="compact" truncate-line="both">
+              <VTimeline
+                side="end"
+                align="start"
+                line-inset="9"
+                truncate-line="start"
+                density="compact"
+                class="v-timeline--variant-outlined"
+              >
                 <VTimelineItem
-                  v-for="(item, i) in timelineItems"
+                  v-for="(
+                    { status, username, tanggal, comment }, i
+                  ) in dataTracking"
                   :key="i"
-                  dot-color="#FFFFFF"
+                  dot-color="rgb(var(--v-theme-surface))"
+                  size="x-small"
                 >
                   <template #icon>
-                    <VIcon icon="ri-circle-line" color="primary" size="35" />
+                    <VIcon icon="ri-circle-line" color="primary" size="16" />
                   </template>
-                  <div class="d-flex justify-space-between align-start">
-                    <div>
-                      <div class="text-subtitle-2 font-weight-bold">
-                        {{ item.title }}
-                      </div>
-                      <div class="text-caption text-grey">
-                        {{ item.user }}
-                      </div>
-                    </div>
-                    <div class="text-caption text-grey">
-                      {{ formatDate(item.date) }}
-                    </div>
+                  <div
+                    class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
+                  >
+                    <span class="app-timeline-title">
+                      {{ statusItem[status].desc }}
+                    </span>
+                    <span class="app-timeline-meta">{{
+                      formatDate(tanggal)
+                    }}</span>
+                  </div>
+                  <div class="app-timeline-text mt-1">
+                    {{ username }}
+                  </div>
+                  <div v-if="comment" class="app-timeline-text mt-1">
+                    {{
+                      (comment as any).length > 38
+                        ? (comment as any).slice(0, 38) + "..."
+                        : (comment as any)
+                    }}
                   </div>
                 </VTimelineItem>
               </VTimeline>
@@ -1357,8 +1550,13 @@ const dibatalkan = async () => {
           </VExpandTransition>
         </VCard>
       </VCol>
-    </VRow>
+    </VContainer>
   </VContainer>
+
+  <VSkeletonLoader
+    type="table-heading, list-item-two-line, image, table-tfoot"
+    v-else
+  />
 </template>
 
 <style lang="scss">

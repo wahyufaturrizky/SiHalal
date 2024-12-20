@@ -156,6 +156,35 @@ const applyFilters = () => {
     pendamping: selectedFilters.value.pendamping,
     kabupaten: selectedFilters.value.kabupaten,
   });
+
+  showFilterMenu.value = false;
+};
+
+const resetFilters = () => {
+  selectedFilters.value = {
+    fasilitas: "",
+    jenisProduk: "",
+    provinsi: "",
+    lembaga: "",
+    pendamping: "",
+    kabupaten: "",
+  };
+
+  searchQuery.value = "";
+
+  loadItem({
+    page: page.value,
+    size: itemPerPage.value,
+    keyword: searchQuery.value,
+    fasilitas: selectedFilters.value.fasilitas,
+    jenis_produk: selectedFilters.value.jenisProduk,
+    provinsi: selectedFilters.value.provinsi,
+    lembaga: selectedFilters.value.lembaga,
+    pendamping: selectedFilters.value.pendamping,
+    kabupaten: selectedFilters.value.kabupaten,
+  });
+
+  showFilterMenu.value = false;
 };
 
 const isAllSelected = computed(
@@ -357,7 +386,7 @@ const openDialog = () => {
   </VBtn>
 
   <VDialog v-model="dialogVisible" width="1200">
-    <VCard v-if="!loadingAll" variant="flat" class="pa-4">
+    <VCard variant="flat" class="pa-4">
       <VCardTitle>
         <VRow>
           <VCol cols="10"><h3>Data Permohonan Sertifikasi</h3></VCol>
@@ -370,7 +399,7 @@ const openDialog = () => {
           </VCol>
         </VRow>
       </VCardTitle>
-      <VCardText>
+      <VCardText v-if="!loadingAll">
         <VRow>
           <VCol>
             <VBtn
@@ -461,6 +490,14 @@ const openDialog = () => {
                 <VBtn block color="primary" class="mt-3" @click="applyFilters">
                   Apply Filters
                 </VBtn>
+                <VBtn
+                  block
+                  color="secondary"
+                  class="mt-3"
+                  @click="resetFilters"
+                >
+                  Reset Filters
+                </VBtn>
               </VCard>
             </VMenu>
           </VCol>
@@ -531,6 +568,7 @@ const openDialog = () => {
           </VDataTableServer>
         </VRow>
       </VCardText>
+      <VSkeletonLoader type="card" v-else />
     </VCard>
   </VDialog>
 </template>
