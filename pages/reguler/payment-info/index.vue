@@ -46,18 +46,9 @@ const invoiceData = [
   },
 ]
 
-const showFilterMenu = ref(false)
-
-const selectedFilters = ref({
-  jenisLayanan: 'Semua',
-  jenisProduk: 'Semua',
-  provinsi: 'Semua',
-  lph: 'Semua',
-})
-
 const loadItem = async (pageNumber: number, sizeData: number, search: string = '', path: string) => {
   try {
-    const response: any = await $api('/lph/list', {
+    const response: any = await $api('/reguler/lph/list', {
       method: 'get',
       params: {
         pageNumber,
@@ -91,9 +82,18 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="d-flex align-center cursor-pointer" @click="router.go(-1)">
-    <VIcon icon="mdi-chevron-left" size="40px" color="primary" />
-    <div class="text-primary">Kembali</div>
+  <div
+    class="d-flex align-center cursor-pointer"
+    @click="router.go(-1)"
+  >
+    <VIcon
+      icon="mdi-chevron-left"
+      size="40px"
+      color="primary"
+    />
+    <div class="text-primary">
+      Kembali
+    </div>
   </div>
   <VRow no-gutters>
     <VCol>
@@ -125,6 +125,22 @@ onMounted(async () => {
             :items="dataTable"
             :page="1"
           >
+            <template #no-data>
+              <div class="w-full mt-2">
+                <div
+                  class="pt-2"
+                  style="justify-items: center"
+                >
+                  <img
+                    src="~/assets/images/empty-data.png"
+                    alt="empty_data"
+                  >
+                  <div class="pt-2 pb-2 font-weight-bold">
+                    Data Kosong
+                  </div>
+                </div>
+              </div>
+            </template>
             <template #item.index="{ index }">
               {{ index + 1 }}
             </template>

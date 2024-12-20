@@ -42,6 +42,7 @@ export default defineEventHandler(async (event: any) => {
       params,
     },
   ).catch((err: NuxtError) => {
+    console.log(err, 'ini error nya <<<<<<')
     setResponseStatus(event, 400)
 
     return err.data
