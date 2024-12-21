@@ -192,7 +192,7 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <div style="max-height: 50svh; overflow-y: auto">
+  <div>
     <VRow>
       <VCol cols="12">
         <VCard>
