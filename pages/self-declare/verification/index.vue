@@ -9,41 +9,20 @@ const loading = ref(false);
 const loadingAll = ref(true);
 const page = ref(1);
 const searchQuery = ref("");
-const status = ref("");
+const status = ref("Semua");
 const itemsStatus = ref<any[]>([]);
-
-const defaultStatus = { color: "error", desc: "Unknown Status" };
-
-const statusItem: any = new Proxy(
-  {
-    OF1: { color: "grey-300", desc: "Draft" },
-    OF10: { color: "success", desc: "Submitted" },
-    OF15: { color: "success", desc: "Verified" },
-    OF2: { color: "error", desc: "Returned" },
-    OF290: { color: "error", desc: "Rejected" },
-    OF5: { color: "success", desc: "Invoice issued" },
-    OF320: { color: "success", desc: "Code Issued" },
-    OF11: { color: "success", desc: "Verification" },
-  },
-  {
-    get(target: any, prop: any) {
-      return prop in target ? target[prop] : defaultStatus;
-    },
-  }
-);
 
 // Table headers
 const headers: any = [
-  { title: "No", key: "id", align: "center" },
-  { title: "ID Registrasi", key: "id_registrasi" },
-  { title: "Nomor Daftar", key: "nomor_daftar" },
-  { title: "Tanggal Daftar", key: "TanggalDaftar" },
-  { title: "Nama PU", key: "Nama" },
-  { title: "Alamat", key: "Alamat" },
-  { title: "Jenis Produk", key: "JenisProduk" },
-  { title: "Merk Dagang", key: "MerkDagang" },
-  { title: "Nama Pendamping", key: "nama_pendamping" },
-  { title: "Status", key: "Status" },
+  { title: "No", key: "no", align: "center" },
+  { title: "ID Registrasi", key: "id" },
+  { title: "Nomor Daftar", key: "no_daftar" },
+  { title: "Tanggal Daftar", key: "tgl_daftar" },
+  { title: "Nama PU", key: "nama_pu" },
+  { title: "Alamat", key: "alamat_pu" },
+  { title: "Jenis Produk", key: "jenis_product" },
+  { title: "Merk Dagang", key: "merek_dagang" },
+  { title: "Status", key: "status_reg" },
   { title: "Action", key: "action" },
 ];
 
@@ -57,7 +36,7 @@ const handleInput = () => {
 };
 
 const navigateAction = (id: string) => {
-  navigateTo(`/sertifikasi-halal/luar-negeri/verification/${id}`);
+  navigateTo(`/self-declare/verification/${id}`);
 };
 
 const loadItem = async (
@@ -79,8 +58,8 @@ const loadItem = async (
       },
     });
 
-    items.value = response.data;
-    totalItems.value = response.total_item;
+    items.value = response.data || [];
+    totalItems.value = response.total_item || 0;
     loading.value = false;
     return response;
   } catch (error) {
@@ -96,7 +75,7 @@ const loadItemStatusApplication = async () => {
     });
 
     if (response.length) {
-      itemsStatus.value = response;
+      itemsStatus.value = [{ code: "Semua", name: "Semua" }, ...response];
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -110,7 +89,7 @@ const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
   const res = await Promise.all([
-    loadItem(1, itemPerPage.value, "", status.value),
+    loadItem(page.value, itemPerPage.value, searchQuery.value, status.value),
     loadItemStatusApplication(),
   ]);
 
@@ -127,18 +106,20 @@ onMounted(async () => {
 </script>
 
 <template>
-  <VCard v-if="!loadingAll" variant="flat" class="pa-4">
+  <VCard variant="flat" class="pa-4">
     <VCardTitle>
       <VRow>
         <VCol cols="10">
           <h3>Data Pengajuan</h3>
         </VCol>
         <VCol cols="2" style="display: flex; justify-content: end">
-          <DataPermohonanSertifikasi />
+          <DataPermohonanSertifikasi
+            @refresh="loadItem(1, itemPerPage, searchQuery, status)"
+          />
         </VCol>
       </VRow>
     </VCardTitle>
-    <VCardText>
+    <VCardText v-if="!loadingAll">
       <VRow>
         <VCol />
       </VRow>
@@ -175,11 +156,11 @@ onMounted(async () => {
           loading-text="Loading..."
           @update:options="loadItem(page, itemPerPage, searchQuery, status)"
         >
-          <template #item.id="{ index }">
+          <template #item.no="{ index }">
             {{ index + 1 + (page - 1) * itemPerPage }}
           </template>
           <template #item.tgl_daftar="{ item }">
-            {{ formatDateIntl(new Date((item as any).TanggalDaftar)) }}
+            {{ formatDate(item.tgl_daftar) }}
           </template>
           <template #item.action="{ item }">
             <div class="d-flex gap-1">
@@ -192,14 +173,10 @@ onMounted(async () => {
               </IconBtn>
             </div>
           </template>
-          <template #item.status_code="{ item }">
-            <VChip label :color="statusItem[(item as any).status_code].color">
-              {{ statusItem[(item as any).status_code].desc }}
-            </VChip>
-          </template>
         </VDataTableServer>
       </VRow>
     </VCardText>
+    <VSkeletonLoader type="card" v-else />
   </VCard>
 </template>
 

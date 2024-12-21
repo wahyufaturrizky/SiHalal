@@ -1,12 +1,15 @@
 <script setup lang="ts">
+const props = defineProps<{
+  data?: object
+}>()
 const productNameHeader: any[] = [
   { title: "No", key: "index" },
-  { title: "Layanan Produk", key: "service", nowrap: true },
-  { title: "Jenis Produk", key: "type", nowrap: true },
-  { title: "Kelas Produk", key: "class", nowrap: true },
-  { title: "Rincian Produk", key: "detail", nowrap: true },
-  { title: "Nama Produk", key: "name", nowrap: true },
-  { title: "Publikasi", key: "isPublished" },
+  { title: "Layanan Produk", key: "layanan_produk", nowrap: true },
+  { title: "Jenis Produk", key: "jenis_produk", nowrap: true },
+  { title: "Kelas Produk", key: "kelas_produk", nowrap: true },
+  { title: "Rincian Produk", key: "rincian_produk", nowrap: true },
+  { title: "Nama Produk", key: "nama_produk", nowrap: true },
+  { title: "Publikasi", key: "publikasi_produk" },
 ];
 const productNameData = ref([
   {
@@ -39,14 +42,15 @@ const productNameData = ref([
 <template>
   <VDataTable
     :headers="productNameHeader"
-    :items="productNameData"
+    :items="props?.data"
     hide-default-footer
+    class="border rounded"
   >
     <template #item.index="{ index }">
       {{ index + 1 }}
     </template>
-    <template #item.isPublished="{ item }">
-      <VCheckbox :model-value="item.isPublished" />
+    <template #item.publikasi_produk="{ item }">
+      <VCheckbox :model-value="item.publikasi_produk" />
     </template>
     <template #bottom>
       <VDataTableFooter

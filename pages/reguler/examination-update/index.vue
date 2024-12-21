@@ -1,18 +1,33 @@
 <script setup lang="ts">
-const router = useRouter();
+import { isOlderThan15Days } from '@/utils/isOlderThanFifteenDays'
+
+const router = useRouter()
+
+const dataTable = ref<any[]>([])
+const listChannel = ref<any[]>([])
+const skalaUsaha = ref<any[]>([])
+const provinceData = ref<any[]>([])
+const loading = ref<boolean>(false)
+const getWithFilter = ref<boolean>(false)
+const page = ref<number>(1)
+const size = ref<number>(10)
+const searchQuery = ref<string>('')
+const showFilterMenu = ref(false)
+const detailStatus = ref<any>(null)
 
 const invoiceHeader: any[] = [
   { title: "No", value: "index" },
-  { title: "Nomor Daftar", value: "regisNumber", nowrap: true },
-  { title: "Tanggal", value: "date", nowrap: true },
-  { title: "Nama PU", value: "businessName", nowrap: true },
-  { title: "Janis Daftar", value: "regisType", nowrap: true },
-  { title: "Jenis Produk", value: "productType", nowrap: true },
+  { title: "Nomor Daftar", value: "no_daftar", nowrap: true },
+  { title: "Tanggal", value: "tanggal_daftar", nowrap: true },
+  { title: "Nama PU", value: "nama_pu", nowrap: true },
+  { title: "Jenis Daftar", value: "jenis_daftar", nowrap: true },
+  { title: "Jenis Produk", value: "jenis_produk", nowrap: true },
   { title: "Jenis Usaha dan Jumlah", value: "businessType", nowrap: true },
   { title: "Status", value: "status", nowrap: true },
-  { title: "Tanggal Dikirim Oleh BPJPH", value: "sentDate", nowrap: true },
+  { title: "Tanggal Dikirim Oleh BPJPH", value: "tgl_dikirim", nowrap: true },
   { title: "Action", value: "actions", align: "center" },
-];
+]
+
 const invoiceData = [
   {
     regisNumber: "SH2024-225-29480",
@@ -36,13 +51,175 @@ const invoiceData = [
   },
 ];
 
-const isInfoModalOpen = ref(false);
+const isInfoModalOpen = ref(false)
+
+const selectedFilters = ref({
+  jenisLayanan: 'Semua',
+  jenisProduk: 'Semua',
+  provinsi: 'Semua',
+  lph: 'Semua',
+})
+
 const handleOpenInfoModal = () => {
-  isInfoModalOpen.value = !isInfoModalOpen.value;
-};
+  isInfoModalOpen.value = !isInfoModalOpen.value
+}
+
+const onStatusClicked = (item: string) => {
+  isInfoModalOpen.value = !isInfoModalOpen.value
+  detailStatus.value = item
+}
+
+const loadItem = async (pageNumber: number, sizeData: number, search: string = '', path: string) => {
+  try {
+    let params = {
+      pageNumber,
+      sizeData,
+      search,
+      url: path,
+    }
+    if (getWithFilter.value) {
+      params = {
+        ...params,
+        skala_code: selectedFilters.value.jenisProduk.replace('Semua', ''),
+        provinsi_code: selectedFilters.value.provinsi.replace('Semua', ''),
+        channel_code: selectedFilters.value.jenisLayanan.replace('Semua', ''),
+      }
+    }
+
+    const response: any = await $api('/lph/list', {
+      method: 'get',
+      params,
+    })
+
+    if (response?.code === 2000) {
+      if (path === LIST_CHANNEL_PATH) {
+        const newData: any = [{ name: 'Semua', code: '' }]
+
+        response?.data.map((item: any) => {
+          return newData.push(item)
+        })
+
+        return newData
+      }
+
+      return response.data
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const handleSearch = async (pageNumber: number, sizeData: number, search: string = '', path: string) => {
+  try {
+    let params = {
+      pageNumber,
+      sizeData,
+      search,
+      url: path,
+    }
+    if (getWithFilter.value) {
+      params = {
+        ...params,
+        skala_code: selectedFilters.value.jenisProduk.replace('Semua', ''),
+        provinsi_code: selectedFilters.value.provinsi.replace('Semua', ''),
+        channel_code: selectedFilters.value.jenisLayanan.replace('Semua', ''),
+      }
+    }
+
+    const response: any = await $api('/lph/list', {
+      method: 'get',
+      params,
+    })
+
+    if (response?.code === 2000) {
+      return dataTable.value = response.data
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const getMasterSkalaUsaha = async () => {
+  const response: any[] = await $api('/master/business-entity-scale',
+    { method: 'get' },
+  )
+
+  const newData: any = { name: 'Semua', code: '' }
+
+  response.unshift(newData)
+
+  return response
+}
+
+const getMasterProvinsi = async () => {
+  const response: any[] = await $api('/master/province',
+    { method: 'get' },
+  )
+
+  const newData: any = { name: 'Semua', code: '' }
+
+  response.unshift(newData)
+
+  return response
+}
+
+const applyFilters = async () => {
+  showFilterMenu.value = false
+  getWithFilter.value = true
+  handleSearch(page.value, size.value, searchQuery.value, LIST_PEMERIKSAAN_PATH)
+}
+
+const handleInput = (e: any) => {
+  debounce(handleSearch(page.value, size.value, e.target.value, LIST_PEMERIKSAAN_PATH), 500)
+}
+
+onMounted(async () => {
+  loading.value = true
+
+  const responseData = await Promise.allSettled([
+    loadItem(page.value, size.value, searchQuery.value, LIST_PEMERIKSAAN_PATH),
+    loadItem(page.value, size.value, searchQuery.value, LIST_CHANNEL_PATH),
+    getMasterSkalaUsaha(),
+    getMasterProvinsi(),
+  ])
+
+  if (responseData) {
+    dataTable.value = responseData?.[0]?.value || []
+    listChannel.value = responseData?.[1]?.value || []
+    skalaUsaha.value = responseData?.[2]?.value || []
+    provinceData.value = responseData?.[3]?.value || []
+  }
+  loading.value = false
+})
+
+watch(dataTable, () => {
+  dataTable?.value.length > 0 && dataTable.value.map((item: any) => {
+    const dateData = item?.tgl_dikirim?.split(' ')[0] || ''
+    const dayCount = item?.tgl_dikirim?.split(' ')[2] || ''
+
+    if (dateData) {
+      const isFifteenDay = isOlderThan15Days(dateData)
+      if (isFifteenDay) {
+        detailStatus.value = dayCount
+        return isInfoModalOpen.value = true
+      }
+    }
+
+    return false
+  })
+})
 </script>
 
 <template>
+  {{ detailStatus }}
   <div class="d-flex align-center cursor-pointer" @click="router.go(-1)">
     <VIcon icon="mdi-chevron-left" size="40px" color="primary" />
     <div class="text-primary">Kembali</div>
@@ -61,22 +238,113 @@ const handleOpenInfoModal = () => {
         <VCardText>
           <VRow class="mb-4">
             <VCol cols="2">
-              <TableFilterInputMenu />
+              <VMenu
+                v-model="showFilterMenu"
+                :close-on-content-click="false"
+                offset-y
+              >
+              <template #activator="{ props }">
+                <VBtn
+                  color="primary"
+                  variant="outlined"
+                  v-bind="props"
+                  append-icon="ri-filter-fill"
+                >
+                  Filter
+                </VBtn>
+              </template>
+              <VCard
+                class="pa-3"
+                width="300"
+              >
+                <VSelect
+                  v-model="selectedFilters.jenisLayanan"
+                  label="Jenis Layanan"
+                  :items="listChannel"
+                  item-title="name"
+                  item-value="code"
+                />
+                <VSelect
+                  v-model="selectedFilters.jenisProduk"
+                  label="Skala Usaha"
+                  :items="skalaUsaha"
+                  class="mt-3"
+                  item-title="name"
+                  item-value="code"
+                />
+                <VSelect
+                  v-model="selectedFilters.provinsi"
+                  label="Pusat"
+                  :items="provinceData"
+                  item-title="name"
+                  item-value="code"
+                  class="mt-3"
+                />
+                <VBtn
+                  block
+                  color="primary"
+                  class="mt-3"
+                  @click="applyFilters"
+                >
+                  Apply Filters
+                </VBtn>
+              </VCard>
+            </VMenu>
             </VCol>
             <VSpacer />
             <VCol cols="9">
               <VTextField
+                v-model="searchQuery"
                 placeholder="Cari Nama Pengajuan"
                 density="compact"
-                rounded="xl"
-                append-inner-icon="mdi-magnify"
+                append-inner-icon="ri-search-line"
+                style="max-inline-size: 100%"
+                @input="handleInput"
               />
             </VCol>
           </VRow>
-          <TablePemeriksaanProduk
-            @show:modal-info="handleOpenInfoModal"
-            detail-path="/reguler/examination-update/detail"
-          />
+          <VDataTable
+            class="examination-table"
+            :headers="invoiceHeader"
+            :items="dataTable"
+            :page="1"
+            hover
+          >
+            <template #item.index="{ index }">
+              {{ index + 1 }}
+            </template>
+            <template #item.businessType="{ item }">
+              <div class="d-flex">
+                <div v-for="el in item.businessType" class="green-box py-1 px-3 me-3">
+                  {{ el }}
+                </div>
+              </div>
+            </template>
+            <template #item.status="{ item }">
+              <div
+                class="status-box py-1 px-3 cursor-pointer"
+                @click="() => onStatusClicked(item)"
+              >
+                {{ item.status }}
+              </div>
+            </template>
+            <template #item.actions="{ item }">
+              <VIcon
+                icon="mdi-arrow-right"
+                color="primary"
+                size="x-large"
+                @click="router.push(`/reguler/examination-update/${item.id_reg}`)"
+              />
+            </template>
+            <template #bottom>
+              <VDataTableFooter
+                v-if="invoiceData.length > 10"
+                first-icon="mdi-chevron-double-left"
+                last-icon="mdi-chevron-double-right"
+                show-current-page
+              />
+            </template>
+          </VDataTable>
         </VCardText>
       </VCard>
     </VCol>
@@ -89,7 +357,7 @@ const handleOpenInfoModal = () => {
       </VCardTitle>
       <VCardText>
         <VRow>
-          <VCol> SLA sudah melebihi 15 hari (433 hari) </VCol>
+          <VCol> SLA sudah melebihi 15 hari {{ detailStatus }} hari) </VCol>
         </VRow>
       </VCardText>
       <VCardActions class="px-4">

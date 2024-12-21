@@ -1,48 +1,62 @@
 <script setup lang="ts">
+const dataTable = ref<any[]>([])
+const loading = ref<boolean>(false)
+const page = ref<number>(1)
+const size = ref<number>(10)
+const searchQuery = ref<string>('')
+
 const tableHeader = [
-  { title: "No", value: "no" },
-  { title: "No. Daftar", value: "regist_no" },
-  { title: "Tanggal", value: "date" },
-  { title: "Nama PU", value: "pu_name" },
-  { title: "Jenis Daftar", value: "regist_kind" },
-  { title: "Jenis Produk", value: "product_kind" },
-  { title: "Status", value: "status" },
-  { title: "Action", value: "action" },
-];
-
-const items = [
-  {
-    no: "xx",
-    regist_no: "xx",
-    date: "xx",
-    pu_name: "xx",
-    regist_kind: "xx",
-    product_kind: "xx",
-    status: "xx",
-  },
-];
-
-const getStatusColor = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "lunas":
-      return "success";
-    case "pending":
-      return "warning";
-    case "telat":
-      return "error";
-    default:
-      return "grey";
-  }
-};
+  { title: 'No', value: 'no' },
+  { title: 'No. Daftar', value: 'no_daftar' },
+  { title: 'Tanggal', value: 'tgl_daftar' },
+  { title: 'Nama PU', value: 'nama_pu' },
+  { title: 'Jenis Daftar', value: 'jenis_daftar' },
+  { title: 'Jenis Produk', value: 'jenis_produk' },
+  { title: 'Status', value: 'status' },
+  { title: 'Action', value: 'action' },
+]
 
 const navigateToDetail = (id: string) => {
-  navigateTo(`/sh-domestic/status/2`);
-};
+  navigateTo(`/sh-domestic/status/${id}`)
+}
+
+const loadItem = async (pageNumber: number, sizeData: number, keyword: string = '', path: string) => {
+  try {
+    const response: any = await $api('/reguler/list', {
+      method: 'get',
+      params: {
+        pageNumber,
+        sizeData,
+        keyword,
+        url: path,
+      },
+    })
+
+    if (response?.code === 2000)
+      dataTable.value = response?.data
+    else
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const handleInput = (e: any) => {
+  debounce(loadItem(page.value, size.value, e.target.value, LIST_MENU_STATUS), 500)
+}
+
+onMounted(async () => {
+  loading.value = true
+  loadItem(page.value, size.value, searchQuery.value, LIST_MENU_STATUS)
+  loading.value = false
+})
 </script>
+
 <template>
   <VRow>
     <VCol cols="12">
-      <KembaliButton></KembaliButton>
+      <KembaliButton />
     </VCol>
   </VRow>
   <VRow>
@@ -55,55 +69,111 @@ const navigateToDetail = (id: string) => {
       <VCard>
         <VCardTitle><h3>Data Pengajuan</h3></VCardTitle>
         <VCardItem>
-          <VRow
-            ><VCol cols="12"
-              ><VTextField
-                placeholder="Search"
-                append-inner-icon="mdi-magnify"
+          <VRow>
+            <VCol cols="12">
+              <VTextField
+                v-model="searchQuery"
+                placeholder="Cari data"
                 density="compact"
-              ></VTextField></VCol
-          ></VRow>
-          <VRow
-            ><VCol cols="12">
-              <VDataTable :headers="tableHeader" :items="items">
+                append-inner-icon="ri-search-line"
+                style="max-inline-size: 100%"
+                @input="handleInput"
+              />
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol cols="12">
+              <VDataTable
+                :headers="tableHeader"
+                :items="dataTable"
+                :hide-default-footer="dataTable.length === 0"
+                class="border rounded"
+              >
+                <template #no-data>
+                  <div class="w-full mt-2">
+                    <div class="pt-2">
+                      <img
+                        src="~/assets/images/empty-data.png"
+                        alt="empty_data"
+                      >
+                      <div class="pt-2 pb-2 font-weight-bold">
+                        Data Kosong
+                      </div>
+                    </div>
+                  </div>
+                </template>
+                <template #item.no="{ index }">
+                  {{ index + 1 }}
+                </template>
                 <template #item.status="{ item }">
-                  <VChip
-                    color="success"
-                    text-color="white"
-                    small
-                    variant="outlined"
-                    style="margin-right: 1svw; background-color: #edf6ed"
+                  <div style="min-width: 14rem !important">
+                    <VChip
+                      color="success"
+                      text-color="white"
+                      small
+                      variant="outlined"
+                      style="margin-right: 1svw; background-color: #edf6ed"
+                    >
+                      {{ item?.jenis_usaha }}
+                    </VChip>
+                    <VChip
+                      color="success"
+                      text-color="white"
+                      small
+                      variant="outlined"
+                      style="margin-right: 1svw; background-color: #edf6ed"
+                    >
+                      {{ item?.jumlah_produk }}
+                    </VChip>
+                    <VChip
+                      color="primary"
+                      text-color="white"
+                      small
+                      variant="outlined"
+                      style="margin-right: 1svw; background-color: #f0e9f1"
+                    >
+                      {{ item.status }}
+                    </VChip>
+                  </div>
+                </template>
+                <template #item.jenis_produk="{ item }">
+                  <div style="min-width: 40rem !important">
+                    {{ item.jenis_produk }}
+                  </div>
+                </template>
+                <template #item.no_daftar="{ item }">
+                  <div style="min-width: 8rem !important">
+                    {{ item.no_daftar }}
+                  </div>
+                </template>
+                <template #item.tgl_daftar="{ item }">
+                  <div
+                    v-if="item?.tgl_daftar"
+                    style="min-width: 5rem !important"
                   >
-                    1
-                  </VChip>
-                  <VChip
-                    color="success"
-                    text-color="white"
-                    small
-                    variant="outlined"
-                    style="margin-right: 1svw; background-color: #edf6ed"
-                  >
-                    3
-                  </VChip>
-                  <VChip
-                    color="primary"
-                    text-color="white"
-                    small
-                    variant="outlined"
-                    style="margin-right: 1svw; background-color: #f0e9f1"
-                  >
-                    {{ item.status }}
-                  </VChip>
+                    {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+                  </div>
+                </template>
+                <template #item.nama_pu="{ item }">
+                  <div style="min-width: 8rem !important">
+                    {{ item.nama_pu }}
+                  </div>
+                </template>
+                <template #item.jenis_daftar="{ item }">
+                  <div style="min-width: 8rem !important">
+                    {{ item.jenis_daftar }}
+                  </div>
                 </template>
                 <template #item.action="{ item }">
                   <VIcon
-                    @click="navigateToDetail(item.regist_no)"
                     color="primary"
                     icon="mdi-arrow-right"
-                  ></VIcon>
+                    @click="navigateToDetail(item.regist_no)"
+                  />
                 </template>
-              </VDataTable> </VCol
-          ></VRow>
+              </VDataTable>
+            </VCol>
+          </VRow>
         </VCardItem>
       </VCard>
     </VCol>

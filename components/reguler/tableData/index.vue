@@ -2,36 +2,52 @@
 const props = defineProps({
   onSubmit: {
     type: Function,
-    default: () => { },
+    default: () => {},
     required: false,
   },
   onAdd: {
     type: Function,
-    default: () => { },
+    default: () => {},
     required: false,
   },
   onEdit: {
     type: Function,
-    default: () => { },
+    default: () => {},
+    required: false,
+  },
+  onDelete: {
+    type: Function,
+    default: () => {},
     required: false,
   },
   title: {
     type: String,
-    required: true,
+    required: false,
   },
   data: {
     type: Array,
-    required: true,
+    required: false,
   },
   withAddButton: {
     type: Boolean,
-    required: true,
+    required: false,
+  },
+  withSaveButton: {
+    type: Boolean,
+    required: false,
   },
   withApproveButton: {
     type: Boolean,
-    required: true,
+    required: false,
   },
 })
+
+const handleCheck = (item: any) => {
+  if (item.checked)
+    item.checked = false
+  else
+    item.checked = true
+}
 </script>
 
 <template>
@@ -49,17 +65,18 @@ const props = defineProps({
             Tambah
           </VBtn>
           <VBtn
+            v-if="withSaveButton"
             variant="flat"
             @click="props.onSubmit"
           >
-            {{ withApproveButton ? 'Saya Setuju' : 'Simpan' }}
+            {{ withApproveButton ? "Saya Setuju" : "Simpan" }}
           </VBtn>
         </div>
       </div>
       <slot name="headerDialog" />
     </VCardTitle>
     <VCardText>
-      <br>
+      <br />
       <VRow>
         <VDataTable
           class="border rounded"
@@ -68,6 +85,11 @@ const props = defineProps({
           :headers="props.data.label"
           :items="props.data.value"
         >
+          <template #item.no="{ index }">
+            <div>
+              {{ index + 1 }}
+            </div>
+          </template>
           <template #item.productType="{ item }">
             <div>
               {{ item.productType }}
@@ -84,12 +106,18 @@ const props = defineProps({
             </div>
           </template>
           <template #item.publication="{ item }">
-            <VCheckbox true-value="true" />
+            <!-- <VCheckbox true-value="true" /> -->
+            <VCheckbox
+              v-model="item.checked"
+              @change="() => handleCheck(item)"
+            />
           </template>
           <template #item.action="{ item }">
             <DialogDeleteAuditPengajuan
               title="Hapus Bahan"
               button-text="Ya, Hapus"
+              :content="props?.title"
+              :on-delete="() => props?.onDelete(item)"
             >
               <template #contentDelete>
                 <p>Apakah anda yakin menghapus data ini?</p>
@@ -97,16 +125,8 @@ const props = defineProps({
             </DialogDeleteAuditPengajuan>
           </template>
           <template #item.actionEdit="{ item }">
-            <Vbtn
-              variant="plain"
-              class="cursor-pointer"
-              @click="props.onEdit"
-            >
-              <VIcon
-                end
-                icon="ri-pencil-line"
-                color="#652672"
-              />
+            <Vbtn variant="plain" class="cursor-pointer" @click="props.onEdit">
+              <VIcon end icon="ri-pencil-line" color="#652672" />
             </Vbtn>
           </template>
           <template #item.actionPopOver2="{ item }">
@@ -128,14 +148,10 @@ const props = defineProps({
                     >
                       <VRow>
                         <VCol sm="4">
-                          <VIcon
-                            end
-                            icon="ri-pencil-line"
-                          />
+                          <VIcon end icon="ri-pencil-line" />
                         </VCol>
                         <VCol>
-                          <label class="cursor-pointer">Ubah
-                          </label>
+                          <label class="cursor-pointer">Ubah </label>
                         </VCol>
                       </VRow>
                     </Vbtn>
@@ -143,10 +159,7 @@ const props = defineProps({
                 </VListItem>
                 <VListItem class="p0">
                   <VListItemTitle>
-                    <Vbtn
-                      variant="plain"
-                      class="cursor-pointer"
-                    >
+                    <Vbtn variant="plain" class="cursor-pointer">
                       <VRow>
                         <VCol sm="4">
                           <VIcon
@@ -157,8 +170,7 @@ const props = defineProps({
                           />
                         </VCol>
                         <VCol>
-                          <label class="cursor-pointer textRed">Hapus
-                          </label>
+                          <label class="cursor-pointer textRed">Hapus </label>
                         </VCol>
                       </VRow>
                     </Vbtn>
@@ -186,14 +198,10 @@ const props = defineProps({
                     >
                       <VRow>
                         <VCol sm="4">
-                          <VIcon
-                            end
-                            icon="ri-arrow-right-line"
-                          />
+                          <VIcon end icon="ri-arrow-right-line" />
                         </VCol>
                         <VCol>
-                          <label class="cursor-pointer">Detail
-                          </label>
+                          <label class="cursor-pointer">Detail </label>
                         </VCol>
                       </VRow>
                     </Vbtn>
@@ -208,14 +216,10 @@ const props = defineProps({
                     >
                       <VRow>
                         <VCol sm="4">
-                          <VIcon
-                            end
-                            icon="ri-pencil-line"
-                          />
+                          <VIcon end icon="ri-pencil-line" />
                         </VCol>
                         <VCol>
-                          <label class="cursor-pointer">Ubah
-                          </label>
+                          <label class="cursor-pointer">Ubah </label>
                         </VCol>
                       </VRow>
                     </Vbtn>
@@ -223,10 +227,7 @@ const props = defineProps({
                 </VListItem>
                 <VListItem class="p0">
                   <VListItemTitle>
-                    <Vbtn
-                      variant="plain"
-                      class="cursor-pointer"
-                    >
+                    <Vbtn variant="plain" class="cursor-pointer">
                       <VRow>
                         <VCol sm="4">
                           <VIcon
@@ -237,8 +238,7 @@ const props = defineProps({
                           />
                         </VCol>
                         <VCol>
-                          <label class="cursor-pointer textRed">Hapus
-                          </label>
+                          <label class="cursor-pointer textRed">Hapus </label>
                         </VCol>
                       </VRow>
                     </Vbtn>
@@ -260,12 +260,12 @@ const props = defineProps({
 }
 .p0 {
   padding-left: 2px !important;
-};
+}
 .ml5 {
   margin-left: 5px;
 }
 .textRed {
-  color: #E1442E;
+  color: #e1442e;
 }
 .h-20 {
   height: 20px;

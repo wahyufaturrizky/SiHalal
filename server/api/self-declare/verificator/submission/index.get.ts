@@ -36,17 +36,35 @@ export default defineEventHandler(async (event) => {
   const params: any = {
     page: isNaN(Number.parseInt(page, 10)) ? 1 : Number.parseInt(page, 10),
     size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
-    fasilitas,
-    jenis_produk,
-    provinsi,
-    lembaga,
-    pendamping,
-    kabupaten,
   };
 
   if (keyword != "") {
+    params["keyword"] = keyword;
   }
-  params["keyword"] = keyword;
+
+  if (fasilitas != "") {
+    params["fasilitas"] = fasilitas;
+  }
+
+  if (jenis_produk != "") {
+    params["jenis_produk"] = jenis_produk;
+  }
+
+  if (provinsi != "") {
+    params["provinsi"] = provinsi;
+  }
+
+  if (lembaga != "") {
+    params["lembaga"] = lembaga;
+  }
+
+  if (pendamping != "") {
+    params["pendamping"] = pendamping;
+  }
+
+  if (kabupaten != "") {
+    params["kabupaten"] = kabupaten;
+  }
 
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/verificator/halal-certificate-reguler/self-declare/search`,

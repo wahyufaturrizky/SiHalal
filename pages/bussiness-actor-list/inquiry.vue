@@ -51,8 +51,8 @@ const loadItem = async ({
     });
 
     if (response.code === 2000) {
-      items.value = response.data;
-      totalItems.value = response.total_item;
+      items.value = response.data || [];
+      totalItems.value = response.total_item || 0;
       loading.value = false;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -72,23 +72,6 @@ const loadItemStatusApplication = async () => {
 
     if (response.length) {
       itemsStatus.value = response;
-      return response;
-    } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
-
-const loadSOF = async () => {
-  try {
-    const response = await $api("/master/source-of-fund", {
-      method: "get",
-    });
-
-    if (response.length) {
-      dataSOF.value = response;
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");

@@ -1,331 +1,705 @@
-<template>
-  <VContainer>
-    <KembaliButton />
-    <VRow class="d-flex justify-space-between align-center">
-      <VCol class="">
-        <h3 class="text-h3">
-          Detail Pengajuan Reguler
-        </h3>
-      </VCol>
-      <VCol cols="3">
-        <VRow class="d-flex justify-end align-center ga-2">
-          <VBtn variant="outlined" color="error"><VIcon icon="ri-delete-bin-5-line"></VIcon></VBtn>
-          <VBtn variant="outlined" append-icon="ri-edit-line" @click="navigateTo(`/sh-domestic/submission/reguler/${id}/edit`)">Ubah</VBtn>
-          <VBtn>Kirim</VBtn>
-        </VRow>
-      </VCol>
-    </VRow>
-
-    <VRow>
-      <VCol cols="8">
-        <VExpansionPanels
-          v-model="panelSubmission"
-        >
-          <VExpansionPanel class="pa-4">
-            <VExpansionPanelTitle class="text-h4">Pengajuan Sertifikasi Halal</VExpansionPanelTitle>
-            <VExpansionPanelText>
-              <InfoRow name="No.ID">{{detailSubmission.id}}</InfoRow>
-              <InfoRow name="Tanggal">{{detailSubmission.date}}</InfoRow>
-              <ThinLine :thickness=1 />
-              <InfoRow name="No Surat Permohonan">{{detailSubmission.requestNumber}}</InfoRow>
-              <InfoRow name="Tanggal Permohonan">{{detailSubmission.requestDate}}</InfoRow>
-              <InfoRow name="Jenis Layanan">{{detailSubmission.serviceType}}</InfoRow>
-              <InfoRow name="Jenis Produk">{{detailSubmission.productType}}</InfoRow>
-              <InfoRow name="Merk Dagang">{{detailSubmission.brand}}</InfoRow>
-              <InfoRow name="Area Pemasaran">{{detailSubmission.marketingArea}}</InfoRow>
-              <InfoRow name="LPH">{{detailSubmission.lph}}</InfoRow>
-              <ThinLine :thickness=1 />
-              <InfoRow name="Nama Perusahaan ">{{detailSubmission.companyName}}</InfoRow>
-              <InfoRow name="Nama Perusahaan tertera di SH ">{{detailSubmission.shCompanyName}}</InfoRow>
-              <InfoRow name="Nama KBLI">{{detailSubmission.kbliName}}</InfoRow>
-              <InfoRow name="Alamat">{{detailSubmission.address}}</InfoRow>
-              <InfoRow name="Kota / Kab ">{{detailSubmission.district}}</InfoRow>
-              <InfoRow name="Provinsi">{{detailSubmission.province}}</InfoRow>
-              <InfoRow name="Kode Pos">{{detailSubmission.zipCode}}</InfoRow>
-              <InfoRow name="Country">{{detailSubmission.country}}</InfoRow>
-              <InfoRow name="Telepon">{{detailSubmission.phone}}</InfoRow>
-              <InfoRow name="Email">{{detailSubmission.email}}</InfoRow>
-              <ThinLine :thickness=1 />
-              <InfoRow name="Jenis Badan Usaha">{{detailSubmission.businessType}}</InfoRow>
-              <InfoRow name="Skala Usaha">{{detailSubmission.businessScale}}</InfoRow>
-              <InfoRow name="Tingkat Usaha">{{detailSubmission.businessLevel}}</InfoRow>
-              <InfoRow name="Modal Dasar">{{detailSubmission.authorizedCapital}}</InfoRow>
-              <InfoRow name="Asal Usaha">{{detailSubmission.businessOrigin}}</InfoRow>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-
-        </VExpansionPanels>
-
-        <br>
-        <VExpansionPanels
-          v-model="panelPic"
-        >
-          <VExpansionPanel class="pa-4">
-            <VExpansionPanelTitle class="text-h4">Penanggung Jawab</VExpansionPanelTitle>
-            <VExpansionPanelText>
-              <InfoRow name="Nama">{{pic.name}}</InfoRow>
-              <InfoRow name="Nomor Kontak">{{pic.phoneNumber}}</InfoRow>
-              <InfoRow name="Email">{{pic.email}}</InfoRow>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-
-        </VExpansionPanels>
-
-        <br>
-        <VExpansionPanels
-          v-model="panelAspectLegal"
-        >
-          <VExpansionPanel class="pa-4">
-            <VExpansionPanelTitle class="text-h4">Aspek Legal</VExpansionPanelTitle>
-            <VExpansionPanelText>
-              <VDataTable :headers="aspectLegalHeader" :items="aspectLegalItems">
-              </VDataTable>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-
-        </VExpansionPanels>
-
-        <br>
-        <VExpansionPanels
-          v-model="panelFactory"
-        >
-          <VExpansionPanel class="pa-4">
-            <VExpansionPanelTitle class="text-h4">Pabrik</VExpansionPanelTitle>
-            <VExpansionPanelText>
-              <VDataTable :headers="factoryHeader" :items="factoryItems">
-              </VDataTable>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-
-        </VExpansionPanels>
-
-        <br>
-        <VExpansionPanels
-          v-model="panelOutlet"
-        >
-          <VExpansionPanel class="pa-4">
-            <VExpansionPanelTitle class="text-h4">Outlet</VExpansionPanelTitle>
-            <VExpansionPanelText>
-              <VDataTable :headers="outletHeader" :items="outletItems">
-              </VDataTable>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-
-        </VExpansionPanels>
-
-        <br>
-        <VExpansionPanels
-          v-model="panelSupervisor"
-        >
-          <VExpansionPanel class="pa-4">
-            <VExpansionPanelTitle class="text-h4">Penyelia Halal</VExpansionPanelTitle>
-            <VExpansionPanelText>
-              <VDataTable :headers="supervisorHeader" :items="supervisorItems">
-              </VDataTable>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-
-        </VExpansionPanels>
-
-        <br>
-        <VExpansionPanels
-          v-model="panelProduct"
-        >
-          <VExpansionPanel class="pa-4">
-            <VExpansionPanelTitle class="text-h4">Daftar Nama Produk</VExpansionPanelTitle>
-            <VExpansionPanelText class="d-flex align-center">
-              <VDataTable :headers="productHeader" :items="productItems" class="elevation-1" fixed-header >
-                <template #item.foto="{ item }">
-                  <VIcon
-                    color="primary"
-                    style="cursor: pointer;"
-                  >
-                    ri-download-2-fill
-                  </VIcon>
-                </template>
-              </VDataTable>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-        </VExpansionPanels>
-
-      </VCol>
-      <VCol cols="4">
-        <VExpansionPanels
-          v-model="panelDownloadFormulir"
-        >
-          <VExpansionPanel class="pa-4">
-            <VExpansionPanelTitle class="text-h4">Formulir Unduhan</VExpansionPanelTitle>
-            <VExpansionPanelText class="d-flex align-center">
-              <InfoRowV2 class="d-flex align-center" name="STTD"><VBtn color="primary" style="cursor: pointer;" icon="ri-download-line"></VBtn></InfoRowV2>
-              <InfoRowV2 class="d-flex align-center" name="Sertifikasi Halal"><VBtn color="primary" style="cursor: pointer;" icon="ri-download-line"></VBtn></InfoRowV2>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-        </VExpansionPanels>
-        <br />
-        <VExpansionPanels
-          v-model="panelRegistration"
-        >
-          <VExpansionPanel class="pa-4">
-            <VExpansionPanelTitle class="text-h4">Pendaftaran</VExpansionPanelTitle>
-            <VExpansionPanelText class="d-flex align-center">
-              <InfoRowV2 class="d-flex align-center" name="Nomor Daftar">-</InfoRowV2>
-              <InfoRowV2 class="d-flex align-center" name="Tanggal">-</InfoRowV2>
-              <InfoRowV2 class="d-flex align-center" name="Tempat Pendaftaran">-</InfoRowV2>
-              <InfoRowV2 class="d-flex align-center" name="Jenis Daftar">-</InfoRowV2>
-              <InfoRowV2 class="d-flex align-center" name="Status"><v-chip
-                class="ma-2"
-                color="primary"
-                label
-              >
-                Draft PU
-              </v-chip></InfoRowV2>
-              <InfoRowV2 class="d-flex align-center" name="Channel">-</InfoRowV2>
-              <InfoRowV2 class="d-flex align-center" name="Fasilitator">-</InfoRowV2>
-
-            </VExpansionPanelText>
-          </VExpansionPanel>
-        </VExpansionPanels>
-
-        <br />
-        <VExpansionPanels
-          v-model="panelHalalCertificate"
-        >
-          <VExpansionPanel class="pa-4">
-            <VExpansionPanelTitle class="text-h4">Sertifikat Halal</VExpansionPanelTitle>
-            <VExpansionPanelText class="d-flex align-center">
-              <InfoRowV2 class="d-flex align-center" name="Nomor Sertifikat">-</InfoRowV2>
-              <InfoRowV2 class="d-flex align-center" name="Tanggal Sertifikat">-</InfoRowV2>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-        </VExpansionPanels>
-
-        <br />
-        <VExpansionPanels
-          v-model="panelTracking"
-        >
-          <VExpansionPanel class="pa-4">
-            <VExpansionPanelTitle class="text-h4">Melacak</VExpansionPanelTitle>
-            <VExpansionPanelText class="d-flex align-center">
-              <HalalTimeLine :timeline-data ="[
-                             { title: 'Draft PU', date: '2024/10/05', description: 'Samsul' },]"/>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-        </VExpansionPanels>
-      </VCol>
-    </VRow>
-
-  </VContainer>
-</template>
-
 <script setup lang="ts">
+import { ref } from 'vue'
 
 const route = useRoute()
-const id = route.params.id
-
+const id = route?.params?.id
 const panelSubmission = ref([0, 1])
 const panelPic = ref([0, 1])
 const panelAspectLegal = ref([0, 1])
-const panelFactory = ref([0,1])
-const panelOutlet = ref([0,1])
-const panelSupervisor = ref([0,1])
-const panelProduct = ref([0,1])
-const panelDownloadFormulir =  ref([0,1])
-const panelRegistration = ref([0,1])
-const panelHalalCertificate = ref([0,1])
-const panelTracking = ref([0,1])
-
-const detailSubmission = ref({
-  id: id,
-  date: '10/10/2024',
-  requestNumber: '389392924',
-  requestDate: '10/10/2024',
-  serviceType: 'PNB',
-  productType: 'Minuman',
-  brand: '-',
-  marketingArea: '-',
-  lph: '-',
-  companyName: 'Kopi Susu Samsul',
-  shCompanyName: 'PT. GIMASE SETIA SEJAHTERA',
-  kbliName: 'INDUSTRI PENGOLAHAN KOPI',
-  address: 'Sumbawa Banget, RT002/RW002, Sumbang, Curio',
-  district: 'Kab. Enrekang',
-  province: 'Sulawesi Selatan',
-  zipCode: '-',
-  country: 'Indonesia',
-  phone: '081231123213',
-  email: 'kopisususamsul@gmail.com',
-  businessType: 'Lainnya',
-  businessScale: 'Mikro',
-  businessLevel: 'UMK',
-  authorizedCapital: 'Rp. 5.000.000',
-  businessOrigin: 'Domestik'
-})
-
-const pic = ref({
-  name: 'Sumayah',
-  phoneNumber: '0899999999',
-  email: 'rasarasa@gmail.com'
-})
-
+const panelFactory = ref([0, 1])
+const panelOutlet = ref([0, 1])
+const panelSupervisor = ref([0, 1])
+const panelDownloadFormulir = ref([0, 1])
+const panelTracking = ref([0, 1])
+const data = ref<any>({})
+const loading = ref(false)
 
 const aspectLegalHeader = [
-  {title : 'No.', key: 'no', nowrap:true},
-  {title : 'Jenis', key: 'type', nowrap:true},
-  {title : 'No. Document', key: 'documentNumber', nowrap:true},
-  {title : 'Tanggal', key: 'date', nowrap:true},
-  {title : 'Masa Berlaku', key: 'validDate', nowrap:true},
-  {title : 'Instansi Penerbit', key: 'issuer', nowrap:true},
+  { title: 'No.', key: 'id_reg_legal', nowrap: true },
+  { title: 'Jenis', key: 'jenis_surat', nowrap: true },
+  { title: 'No. Dokumen', key: 'no_surat', nowrap: true },
+  { title: 'Tanggal', key: 'tanggal_surat', nowrap: true },
+  { title: 'Masa Berlaku', key: 'masa_berlaku', nowrap: true },
+  { title: 'Instansi Penerbit', key: 'instansi_penerbit', nowrap: true },
 ]
-
-const aspectLegalItems = ref([
-  {no: 1, type : 'SIUP', documentNumber: '2131421421411', date: '09/10/2024', validDate: '09/10/2024', issuer: 'DITJEN PAJAK'},
-  {no: 2, type : 'NPWP', documentNumber: '2131421421411', date: '09/10/2024', validDate: '09/10/2024', issuer: 'DITJEN PAJAK'}])
 
 const factoryHeader = [
-  {title : 'No.', key: 'no', nowrap:true},
-  {title : 'Nama.', key: 'name', nowrap:true},
-  {title : 'Alamat.', key: 'address', nowrap:true}
+  { title: 'No.', key: 'no', nowrap: true },
+  { title: 'Nama', key: 'priceDetail', nowrap: true },
+  { title: 'Alamat', key: 'total', nowrap: true },
 ]
 
-const factoryItems = ref([
-  {no: 1, name : 'My Drink Oke', address: 'Jakarta'}]
-)
-
-const outletHeader = [
-  {title : 'No.', key: 'no', nowrap:true},
-  {title : 'Nama.', key: 'name', nowrap:true},
-  {title : 'Alamat.', key: 'address', nowrap:true}
+const penyeliaHalalHeaders = [
+  { title: 'No.', key: 'no', nowrap: true },
+  { title: 'Nama', key: 'penyelia_nama', nowrap: true },
+  { title: 'No. KTP', key: 'no_ktp', nowrap: true },
+  { title: 'No. Kontak', key: 'no_kontak', nowrap: true },
+  {
+    title: 'No/Tgl Sertif Penyelia Halal',
+    key: 'tgl_penyelia_halal',
+    nowrap: true,
+  },
+  { title: 'No/Tgl SK', key: 'tanggal_sk', nowrap: true },
 ]
 
-const outletItems = ref([
-  {no: 1, name : 'Maya', address: 'Jakarta'},
-  {no: 2, name : 'Rahmi', address: 'Bandung'}]
-)
+const getChipColor = (status: string) => {
+  if (status === 'Draf')
+    return 'primary'
+  else if (status === 'Micre')
+    return 'success'
 
-const supervisorHeader = [
-  {title : 'No.', key: 'no', nowrap:true},
-  {title : 'Nama.', key: 'name', nowrap:true},
-  {title : 'No. KTP.', key: 'idNo', nowrap:true},
-  {title : 'No. Kontak', key: 'phoneNumber', nowrap:true},
-  {title : 'No/Tgl Sertif Penyelia Halal', key: 'sertificateDate', nowrap:true},
-  {title : 'No/Tgl SK', key: 'skDate', nowrap:true},
-]
+  return 'success'
+}
 
-const supervisorItems = ref([
-  {no: 1, name : 'Maya', idNo: '2131421421411', phoneNumber: '0899999999', sertificateDate: '09/10/2024', skDate: 'DITJEN PAJAK'},
-  {no: 2, name : 'Rahmi', idNo: '2131421421411', phoneNumber: '0899999999', sertificateDate: '09/10/2024', skDate: 'DITJEN PAJAK'}])
+const getDetailData = async () => {
+  try {
+    const response: any = await $api('/reguler/pelaku-usaha/detail', {
+      method: 'get',
+      params: { id },
+    })
 
+    if (response?.code === 2000)
+      data.value = response.data
+    else
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
 
-const productHeader = [
-  {title : 'No.', key: 'no', nowrap:true},
-  {title : 'Nama Produk ', key: 'name', nowrap:true},
-  {title : 'Merk ', key: 'brand', nowrap:true},
-  {title: "Foto", value: "foto", sortable: false , nowrap: true},
-  {title : 'Jumlah Bahan Digunakan', key: 'totalUsage', nowrap:true}
-]
+const handleDownload = (type: string, url: string) => {
+  if (type === 'STTD')
+    window.open(url, '_blank')
+}
 
-const productItems = ref([
-  {no: 1, name : 'Jus Mangga Rez', brand: 'Rez Juice', totalUsage: '1000'}])
+onMounted(() => {
+  loading.value = true
+  getDetailData()
+  loading.value = false
+})
 
-
+const navigateTo = (url: string) => {
+  window.location.href = url
+}
 </script>
+
+<template>
+  <div v-if="!loading">
+    <VContainer>
+      <VRow>
+        <KembaliButton />
+      </VRow>
+      <VRow class="d-flex justify-space-between align-center">
+        <VCol class="">
+          <h3 class="text-h3">
+            Detail Audit Produk
+          </h3>
+        </VCol>
+        <VCol cols="8">
+          <VRow class="d-flex justify-end align-center ga-2">
+            <VBtn
+              variant="outlined"
+              olor="#E1442E"
+              class="delete-container"
+            >
+              <VIcon color="red">
+                fa-trash
+              </VIcon>
+            </VBtn>
+            <VBtn
+              variant="outlined"
+              append-icon="ri-edit-line"
+              @click="navigateTo(`/sh-domestic/submission/reguler/${id}/edit`)"
+            >
+              Ubah Laporan
+            </VBtn>
+            <VBtn append-icon="fa-paper-plane"> Kirim </VBtn>
+          </VRow>
+        </VCol>
+      </VRow>
+  
+      <VRow class="d-flex justify-space-between">
+        <VCol cols="8">
+          <VExpansionPanels v-model="panelSubmission">
+            <VExpansionPanel class="pa-4">
+              <VExpansionPanelTitle class="text-h4 font-weight-bold">
+                Pengajuan Sertifikasi Halal
+              </VExpansionPanelTitle>
+              <VExpansionPanelText>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="No.ID"
+                >
+                  {{ data?.certificate_halal?.id_reg || "-" }}
+                </InfoRow>
+                <InfoRow
+                  v-if="data?.certificate_halal?.tanggal_buat"
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Tanggal"
+                >
+                  {{ formatDateIntl(new Date(data?.certificate_halal?.tanggal_buat)) || "-" }}
+                </InfoRow>
+                <ThinLine :thickness="1" />
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="No. Surat Permohonan"
+                >
+                  {{ data?.certificate_halal?.no_mohon || "-" }}
+                </InfoRow>
+                <div>
+                  <InfoRow
+                    v-if="data?.certificate_halal?.tgl_mohon"
+                    cols-name="5"
+                    cols-separator="1"
+                    cols-value="6"
+                    name="Tanggal Permohonan"
+                  >
+                    {{ formatDateIntl(new Date(data?.certificate_halal?.tgl_mohon)) || "-" }}
+                  </InfoRow>
+                  <InfoRow
+                    v-else
+                    cols-name="5"
+                    cols-separator="1"
+                    cols-value="6"
+                    name="Tanggal Permohonan"
+                  >
+                    -
+                  </InfoRow>
+                </div>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Jenis Layanan"
+                >
+                  {{ data?.certificate_halal?.jenis_layanan || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Jenis Produk"
+                >
+                  {{ data?.certificate_halal?.jenis_produk || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Merk Dagang"
+                >
+                  {{ data?.certificate_halal?.merk_dagang || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Area Pemasaran"
+                >
+                  {{ data?.certificate_halal?.area_pemasaran || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="LPH"
+                >
+                  {{ data?.certificate_halal?.lembaga_pendamping || "-" }}
+                </InfoRow>
+                <ThinLine :thickness="1" />
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Nama Perusahaan"
+                >
+                  {{ data?.certificate_halal?.nama_pu || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Nama Perusahaan tertera di SH"
+                >
+                  {{ data?.certificate_halal?.nama_pu || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Nama KBLI"
+                >
+                  {{ data?.certificate_halal?.nama_kbli || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Alamat"
+                >
+                  {{ data?.certificate_halal?.alamat_pu || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Kota/Kab"
+                >
+                  {{ data?.certificate_halal?.kota_pu || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Provinsi"
+                >
+                  {{ data?.certificate_halal?.provinsi_pu || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Kode Pos"
+                >
+                  {{ data?.certificate_halal?.kode_pos_pu || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Negara"
+                >
+                  {{ data?.certificate_halal?.negara_pu || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Telepon"
+                >
+                  {{ data?.certificate_halal?.telp_pu || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Email"
+                >
+                  {{ data?.certificate_halal?.email || "-" }}
+                </InfoRow>
+                <ThinLine :thickness="1" />
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Jenis Badan Usaha"
+                >
+                  {{ data?.certificate_halal?.jenis_badan_usaha || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Sekala Usaha"
+                >
+                  {{ data?.certificate_halal?.skala_usaha || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Tingkat Usaha"
+                >
+                  {{ data?.certificate_halal?.tingkat_usaha || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Modal Dasar"
+                >
+                  {{ data?.certificate_halal?.modal_usaha || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Asal Usaha"
+                >
+                  {{ data?.certificate_halal?.asal_usaha || "-" }}
+                </InfoRow>
+              </VExpansionPanelText>
+            </VExpansionPanel>
+          </VExpansionPanels>
+  
+          <br>
+          <VExpansionPanels v-model="panelPic">
+            <VExpansionPanel class="pa-4">
+              <VExpansionPanelTitle class="text-h4 font-weight-bold">
+                Penanggung Jawab
+              </VExpansionPanelTitle>
+              <VExpansionPanelText>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Nama"
+                >
+                  {{ data?.penanggung_jawab?.nama_pj || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Nomor Kontak"
+                >
+                  {{ data?.penanggung_jawab?.nomor_kontak_pj || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="5"
+                  cols-separator="1"
+                  cols-value="6"
+                  name="Email"
+                >
+                  {{ data?.penanggung_jawab?.email_pj || "-" }}
+                </InfoRow>
+              </VExpansionPanelText>
+            </VExpansionPanel>
+          </VExpansionPanels>
+  
+          <br>
+          <VExpansionPanels v-model="panelAspectLegal">
+            <VExpansionPanel class="pa-4">
+              <VExpansionPanelTitle class="text-h4 font-weight-bold">
+                Aspek Legal
+              </VExpansionPanelTitle>
+              <VExpansionPanelText>
+                <VDataTable
+                  :headers="aspectLegalHeader"
+                  :items="data?.aspek_legal"
+                  class="border rounded"
+                  hide-default-footer
+                >
+                  <template #item.productType="{ item }">
+                    <div class="mw-170">
+                      {{ item.productType }}
+                    </div>
+                  </template>
+                  <template #item.productName="{ item }">
+                    <div class="mw-170">
+                      {{ item.productName }}
+                    </div>
+                  </template>
+                  <template #item.id_reg_legal="{ index }">
+                    <div class="mw-170">
+                      {{ index + 1 }}
+                    </div>
+                  </template>
+                </VDataTable>
+              </VExpansionPanelText>
+            </VExpansionPanel>
+          </VExpansionPanels>
+  
+          <br>
+          <VExpansionPanels v-model="panelFactory">
+            <VExpansionPanel class="pa-4">
+              <VExpansionPanelTitle class="text-h4 font-weight-bold">
+                Pabrik
+              </VExpansionPanelTitle>
+              <VExpansionPanelText>
+                <VDataTable
+                  :headers="factoryHeader"
+                  :items="data?.pabrik"
+                  hide-default-footer
+                  class="border rounded"
+                />
+              </VExpansionPanelText>
+            </VExpansionPanel>
+          </VExpansionPanels>
+  
+          <br>
+          <VExpansionPanels v-model="panelOutlet">
+            <VExpansionPanel class="pa-4">
+              <VExpansionPanelTitle class="text-h4 font-weight-bold">
+                Outlet
+              </VExpansionPanelTitle>
+              <VExpansionPanelText>
+                <div
+                  class="border rounded w-100"
+                  style="justify-items: center"
+                >
+                  <div
+                    v-if="data?.outlet?.length === 0"
+                    class="pt-2"
+                  >
+                    <img
+                      src="~/assets/images/empty-data.png"
+                      alt="empty_data"
+                    >
+                    <div class="pt-2 pb-2 font-weight-bold">
+                      Data Kosong
+                    </div>
+                  </div>
+                </div>
+              </VExpansionPanelText>
+            </VExpansionPanel>
+          </VExpansionPanels>
+  
+          <br>
+          <VExpansionPanels v-model="panelSupervisor">
+            <VExpansionPanel class="pa-4">
+              <VExpansionPanelTitle class="text-h4 font-weight-bold">
+                Penyelia Halal
+              </VExpansionPanelTitle>
+              <VExpansionPanelText>
+                <VDataTable
+                  :headers="penyeliaHalalHeaders"
+                  :items="data?.penyelia_halal"
+                  hide-default-footer
+                  class="border rounded"
+                />
+              </VExpansionPanelText>
+            </VExpansionPanel>
+          </VExpansionPanels>
+          <br>
+          <VExpansionPanels v-model="panelOutlet">
+            <VExpansionPanel class="pa-4">
+              <VExpansionPanelTitle class="text-h4 font-weight-bold">
+                Daftar Nama Produk
+              </VExpansionPanelTitle>
+              <VExpansionPanelText>
+                <div
+                  class="border rounded w-100"
+                  style="justify-items: center"
+                >
+                  <div
+                    v-if="data?.produk?.length === 0"
+                    class="pt-2"
+                  >
+                    <img
+                      src="~/assets/images/empty-data.png"
+                      alt="empty_data"
+                    >
+                    <div class="pt-2 pb-2 font-weight-bold">
+                      Data Kosong
+                    </div>
+                  </div>
+                </div>
+              </VExpansionPanelText>
+            </VExpansionPanel>
+          </VExpansionPanels>
+        </VCol>
+        <VCol
+          cols="4"
+          class="zero-padding"
+        >
+          <VExpansionPanels v-model="panelDownloadFormulir">
+            <VExpansionPanel class="pa-5">
+              <VExpansionPanelTitle class="text-h4 font-weight-bold">
+                Formulir Unduhan
+              </VExpansionPanelTitle>
+              <VExpansionPanelText class="d-flex align-center">
+                <VRow>
+                  <VCol cols="4">
+                    STTD
+                  </VCol>
+                  <VCol cols="1">
+                    :
+                  </VCol>
+                  <VCol cols="7">
+                    <VBtn
+                      icon="ri-download-fill"
+                      class="rounded"
+                      variant="flat"
+                      density="compact"
+                      @click="
+                        () =>
+                          handleDownload(
+                            'STTD',
+                            data?.certificate_halal?.url_sample_penyelia_sk,
+                          )
+                      "
+                    />
+                  </VCol>
+                </VRow>
+                <VRow>
+                  <VCol cols="4">
+                    Sertifikasi Halal
+                  </VCol>
+                  <VCol cols="1">
+                    :
+                  </VCol>
+                  <VCol cols="7">
+                    <VBtn
+                      icon="ri-download-fill"
+                      class="rounded"
+                      variant="flat"
+                      density="compact"
+                    />
+                  </VCol>
+                </VRow>
+              </VExpansionPanelText>
+            </VExpansionPanel>
+          </VExpansionPanels>
+          <br>
+          <VExpansionPanels v-model="panelDownloadFormulir">
+            <VExpansionPanel class="pa-5">
+              <VExpansionPanelTitle class="text-h4 font-weight-bold">
+                Pendaftaran
+              </VExpansionPanelTitle>
+              <VExpansionPanelText class="d-flex align-center">
+                <InfoRow
+                  cols-name="4"
+                  cols-separator="1"
+                  cols-value="7"
+                  name="Nomor Daftar"
+                >
+                  {{ data?.certificate_halal?.no_daftar || "-" }}
+                </InfoRow>
+                <div>
+                  <InfoRow
+                    v-if="data?.certificate_halal?.tgl_daftar"
+                    cols-name="4"
+                    cols-separator="1"
+                    cols-value="7"
+                    name="Tanggal"
+                  >
+                    {{ formatDateIntl(new Date(data?.certificate_halal?.tgl_daftar)) || "-" }}
+                  </InfoRow>
+                  <InfoRow
+                    v-else
+                    cols-name="4"
+                    cols-separator="1"
+                    cols-value="7"
+                    name="Tanggal"
+                  >
+                    -
+                  </InfoRow>
+                </div>
+                <InfoRow
+                  cols-name="4"
+                  cols-separator="1"
+                  cols-value="7"
+                  name="Tempat Pendaftaran"
+                >
+                  {{ data?.certificate_halal?.no_daftar || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="4"
+                  cols-separator="1"
+                  cols-value="7"
+                  name="Jenis Daftar"
+                >
+                  {{ data?.certificate_halal?.jenis_pengajuan || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="4"
+                  cols-separator="1"
+                  cols-value="7"
+                  name="Status"
+                >
+                  <VChip
+                    :color="getChipColor(data?.certificate_halal?.status || '-')"
+                    label
+                    class="ma-1"
+                  >
+                    {{ data?.certificate_halal?.status || "-" }}
+                  </VChip>
+                </InfoRow>
+                <InfoRow
+                  cols-name="4"
+                  cols-separator="1"
+                  cols-value="7"
+                  name="Channel"
+                >
+                  {{ data?.certificate_halal?.channel || "-" }}
+                </InfoRow>
+                <InfoRow
+                  cols-name="4"
+                  cols-separator="1"
+                  cols-value="7"
+                  name="Fasilitator"
+                >
+                  {{ data?.certificate_halal?.fasilitator_name || "-" }}
+                </InfoRow>
+              </VExpansionPanelText>
+            </VExpansionPanel>
+          </VExpansionPanels>
+          <br>
+          <VExpansionPanels v-model="panelDownloadFormulir">
+            <VExpansionPanel class="pa-5">
+              <VExpansionPanelTitle class="text-h4 font-weight-bold">
+                Sertifikasi Halal
+              </VExpansionPanelTitle>
+              <VExpansionPanelText class="d-flex align-center">
+                <InfoRow
+                  cols-name="4"
+                  cols-separator="1"
+                  cols-value="7"
+                  name="Nomor Sertifikat"
+                >
+                  {{ data?.sertifikat_halal_info?.nomor_sertifikat || "-" }}
+                </InfoRow>
+                <div>
+                  <InfoRow
+                    v-if="data?.sertifikat_halal_info?.tanggal_sertifikat"
+                    cols-name="4"
+                    cols-separator="1"
+                    cols-value="7"
+                    name="Tanggal Sertifikat"
+                  >
+                    {{ formatDateIntl(new Date(data?.sertifikat_halal_info?.tanggal_sertifikat)) || "-" }}
+                  </InfoRow>
+                  <InfoRow
+                    v-else
+                    cols-name="4"
+                    cols-separator="1"
+                    cols-value="7"
+                    name="Tanggal Sertifikat"
+                  >
+                    -
+                  </InfoRow>
+                </div>
+              </VExpansionPanelText>
+            </VExpansionPanel>
+          </VExpansionPanels>
+          <br>
+  
+          <br>
+          <VExpansionPanels v-model="panelTracking">
+            <VExpansionPanel class="pa-4">
+              <VExpansionPanelTitle class="text-h4">
+                Melacak
+              </VExpansionPanelTitle>
+              <VExpansionPanelText class="d-flex align-center">
+                <HalalTimeLine :event="data?.tracking" />
+              </VExpansionPanelText>
+            </VExpansionPanel>
+          </VExpansionPanels>
+        </VCol>
+      </VRow>
+    </VContainer>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.mw-170 {
+  max-width: 170px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-wrap: wrap;
+}
+.delete-container {
+  border-color: #e1442e !important;
+}
+.zero-padding {
+  padding-right: 0px !important;
+}
+</style>

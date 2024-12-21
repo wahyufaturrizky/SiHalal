@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 
 // Props untuk menerima data dari parent
@@ -7,22 +7,23 @@ const props = defineProps({
     type: String,
     default: 'Default Title',
   },
-  content: {
-    type: String,
-    default: 'Default Content',
-  },
   buttonText: {
     type: String,
     default: 'Hapus',
     required: false,
   },
+  content: {
+    type: String,
+    required: false,
+  },
+  onDelete: {
+    type: Function,
+    default: () => {},
+    required: false,
+  },
 })
 
 const dialog = ref(false)
-
-const confirmAction = () => {
-  dialog.value = false
-}
 </script>
 
 <template>
@@ -56,7 +57,10 @@ const confirmAction = () => {
           text
           variant="elevated"
           color="#E1442E"
-          @click="confirmAction"
+          @click="() => {
+            dialog = false
+            props.onDelete()
+          }"
         >
           {{ props.buttonText }}
         </VBtn>

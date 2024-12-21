@@ -1,23 +1,24 @@
 <script setup lang="ts">
+const props = defineProps<{
+  data: object
+}>()
+
 const auditorHeader: any[] = [
-  { title: "No", key: "index" },
-  { title: "Nama", key: "name", nowrap: true },
-  { title: "Tanggal Lahir", key: "birthDate", nowrap: true },
-  { title: "JK", key: "jk" },
-  { title: "No. Pendaftaran", key: "regisNumber", nowrap: true },
-];
-const auditorData = ref([
-  {
-    name: "Bambang",
-    birthDate: "20/10/2000",
-    jk: "-",
-    regisNumber: "REG RI AHA 10102134",
-  },
-]);
+  { title: 'No', key: 'index' },
+  { title: 'Nama', key: 'nama', nowrap: true },
+  { title: 'Tanggal Lahir', key: 'tanggal_lahir', nowrap: true },
+  { title: 'JK', key: 'jk' },
+  { title: 'No. Pendaftaran', key: 'no_reg', nowrap: true },
+]
 </script>
 
 <template>
-  <VDataTable :headers="auditorHeader" :items="auditorData" hide-default-footer>
+  <VDataTable
+    :headers="auditorHeader"
+    :items="props?.data"
+    hide-default-footer
+    class="border rounded"
+  >
     <template #item.index="{ index }">
       {{ index + 1 }}
     </template>

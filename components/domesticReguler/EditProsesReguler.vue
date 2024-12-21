@@ -6,8 +6,8 @@ const props = defineProps({
     default: true,
   },
 });
-// TODO -> PERLU HIT API, APAKAH SUDAH MENYETUJUI PERNYTAAN BEBAS BABI
-const isAgree = ref(false)
+// TODO -> PERLU HIT API, APAKAH SUDAH MENYETUJUI PERNYTAAN BEBAS BABI (default nya false)
+const isAgree = ref(false || !props.isEditable)
 
 const confirm = check => isAgree.value = check
 
