@@ -63,7 +63,7 @@ const navigateAction = (id: string) => {
 };
 onMounted(async () => {
   const response = await $api("/master/source-of-fund");
-  sourceOfFund.value = response.data;
+  sourceOfFund.value = response;
 });
 </script>
 
