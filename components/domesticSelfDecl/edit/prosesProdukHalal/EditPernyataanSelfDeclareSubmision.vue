@@ -31,16 +31,8 @@ const handleAgree = async () => {
   }
 };
 
-const handleDownload = () => {
-  if (pledgeFile.value.length) {
-    const link = document.createElement("a");
-    link.href = pledgeFile.value;
-    link.download = pledgeFile.value;
-    link.target = "_blank";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
+const handleDownload = async () => {
+  return await downloadDocument(pledgeFile.value);
 };
 
 const route = useRoute<"">();
