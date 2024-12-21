@@ -4,118 +4,226 @@ const id = route?.params?.id
 
 const snackbar = useSnackbar()
 
-const panelSubmission = ref([0, 1])
-const panelPic = ref([0, 1])
-const panelAspectLegal = ref([0, 1])
-const panelFactory = ref([0, 1])
-const panelOutlet = ref([0, 1])
-const panelSupervisor = ref([0, 1])
-const panelDownloadFormulir = ref([0, 1])
+const panelPengajuan = ref([0, 1])
+const panelSertifikasi = ref([0, 1])
+const panelDaftarProduk = ref([0, 1])
+const panelBiayaPemekrisaan = ref([0, 1])
+const panelJadwalAudit = ref([0, 1])
+const panelHasilPemeriksaan = ref([0, 1])
+const panelAudit = ref([0, 1])
+const panelNomorPendaftaran = ref([0, 1])
 const panelTracking = ref([0, 1])
 
-const detailSubmission = ref({
-  id,
-  date: '10/10/2024',
-  requestNumber: '389392924',
-  requestDate: 'Sumbawa Banget, RT002/RW002, Sumbang, Curio',
-  serviceType: 'PNB',
-  productType: 'Minuman',
-  brand: '-',
-  marketingArea: '-',
-  companion: '-',
-  companionInstitution: '-',
-  kbli: 'Minuman',
-  companyName: 'Kopi Susu Samsul',
-  address: 'Sumbawa Banget, RT002/RW002, Sumbang, Curio',
-  district: 'Kab. Enrekang',
-  province: 'Sulawesi Selatan',
-  zipCode: '-',
-  country: 'Indonesia',
-  phone: '081231123213',
-  email: 'kopisususamsul@gmail.com',
-  businessType: 'Lainnya',
-  businessScale: 'Mikro',
-  businessLevel: 'UMK',
-  authorizedCapital: 'Rp. 5.000.000',
-  businessOrigin: 'Domestik',
+const detailPengajuan = ref({
+  alamat: null,
+  email: null,
+  jenis_pendaftaran: null,
+  jenis_produk: null,
+  jenis_usaha: null,
+  kodepos: null,
+  kota: null,
+  nama_pu: null,
+  negara: null,
+  nomor_id: id,
+  provinsi: null,
+  skala_usaha: null,
+  status: null,
+  tanggal_buat: null,
+  telepon: null,
 })
 
-const pic = ref({
-  name: 'Sumayah',
-  phoneNumber: '0899999999',
-  email: 'rasarasa@gmail.com',
+const typeSkalaUsaha = [
+  { title: 'Besar', value: 'Besar' },
+  { title: 'UMK', value: 'UMK' },
+]
+
+const detailSertifikasi = ref({
+  area_pemasaran: null,
+  jenis_layanan: null,
+  jenis_pengajuan: null,
+  jenis_produk: null,
+  merek_dagang: null,
+  no_permohonan: null,
+  tanggal_permohonan: null,
 })
 
-const aspectLegalHeader = [
+const daftarProdukHeader = [
   { title: 'No.', key: 'no', nowrap: true },
-  { title: 'Layanan Produk', key: 'productService', nowrap: true },
-  { title: 'Jenis Produk', key: 'productType', nowrap: true },
-  { title: 'Kelas Produk', key: 'productClass', nowrap: true },
-  { title: 'Rincian Produk', key: 'productDetail', nowrap: true },
-  { title: 'Nama Produk', key: 'productName', nowrap: true },
-  { title: 'Publikasi', key: 'publication', nowrap: true },
+  { title: 'Layanan Produk', key: 'layanan_produk', nowrap: true },
+  { title: 'Jenis Produk', key: 'jenis_produk', nowrap: true },
+  { title: 'Kelas Produk', key: 'kelas_produk', nowrap: true },
+  { title: 'Rincian Produk', key: 'rincian_produk', nowrap: true },
+  { title: 'Nama Produk', key: 'nama_produk', nowrap: true },
+  { title: 'Publikasi', key: 'publikasi_produk', nowrap: true },
 ]
 
-const aspectLegalItems = ref([
-  { no: 1, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 2, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 3, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 4, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 5, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 6, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 7, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 8, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 9, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 10, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-  { no: 11, productService: 'Makanan', productType: 'Penyedia minuman dan makanan dengan pengolahan', productClass: 'Resto', productDetail: 'Makanan Mie', productName: 'Ramen Double Spicy lvl 2', publictaion: true },
-])
+const daftarProdukItems = ref([])
 
-const factoryHeader = [
+const biayaPemeriksaanHeader = [
   { title: 'No.', key: 'no', nowrap: true },
-  { title: 'Keterangan Biaya', key: 'priceDetail', nowrap: true },
-  { title: 'Jumlah', key: 'total', nowrap: true },
-  { title: 'Harga', key: 'price', nowrap: true },
-  { title: 'Sub Total', key: 'subTotal', nowrap: true },
+  { title: 'Keterangan Biaya', key: 'keterangan', nowrap: true },
+  { title: 'Jumlah', key: 'qty', nowrap: true },
+  { title: 'Harga', key: 'harga', nowrap: true },
+  { title: 'Sub Total', key: 'total', nowrap: true },
 ]
 
-const factoryItems = ref([
-  { no: 1, priceDetail: 'Biaya Pemeriksaan', total: '1', price: 'Rp 6.000.000', subTotal: 'Rp 6.000.000' },
-  { no: 2, priceDetail: 'Biaya Audit', total: '1', price: 'Rp 6.000.000', subTotal: 'Rp 6.000.000' },
-],
-)
+const biayaPemeriksaanItems = ref([])
 
-const outletHeader = [
+const jadwalAudit = ref({
+  tanggal_mulai: null,
+  tanggal_selesai: null,
+})
+
+const auditHeader = [
   { title: 'No.', key: 'no', nowrap: true },
-  { title: 'Nama.', key: 'name', nowrap: true },
-  { title: 'Alamat.', key: 'address', nowrap: true },
+  { title: 'Nama', key: 'nama', nowrap: true },
+  { title: 'Tanggal Lahir', key: 'tanggal_lahir', nowrap: true },
+  { title: 'JK', key: 'jk', nowrap: true },
+  { title: 'No. Pendaftaran', key: 'no_reg', nowrap: true },
 ]
 
-const outletItems = ref([
-  { no: 1, name: 'Maya', address: 'Jakarta' },
-  { no: 2, name: 'Rahmi', address: 'Bandung' },
-],
-)
+const auditItems = ref([])
 
-const supervisorHeader = [
-  { title: 'No.', key: 'no', nowrap: true },
-  { title: 'Nama', key: 'name', nowrap: true },
-  { title: 'Tanggal Lahir', key: 'birthdate', nowrap: true },
-  { title: 'JK', key: 'gender', nowrap: true },
-  { title: 'No. Pendaftaran', key: 'registrationNo', nowrap: true },
-]
+const hasilPemeriksaan = ref({
+  dokumen: null,
+  hasil: null,
+  tanggal_selesai: null,
+})
 
-const supervisorItems = ref([
-  { no: 1, name: 'Maya', birthdate: '20/10/2000', gender: '-', registrationNo: 'REG RI AHA 10102134' },
-  { no: 2, name: 'Bambang', birthdate: '20/10/2000', gender: '-', registrationNo: 'REG RI AHA 10102134' },
-])
+const nomorPendaftaran = ref({
+  no_daftar: null,
+  provinsi: null,
+  tanggal_daftar: null,
+})
 
-const updateKbli = () => {
+const totalBiaya = ref(null)
+
+const tracking = ref([])
+
+const updateSkalaUsaha = () => {
   snackbar.sendSnackbar('KBLI Successfully Updated', 'success')
 }
 
 const navigateTo = (url: string) => {
   window.location.href = url
 }
+
+// API METHOD
+const loadDetailPengajuan = async (): void => {
+  try {
+    const response = await $api(`/reguler/auditor/${id}/pengajuan`, {
+      method: 'GET',
+    })
+
+    if (response.code === 2000) {
+      const data = response.data
+
+      detailPengajuan.value = {
+        alamat: data?.alamat,
+        email: data?.email,
+        jenis_pendaftaran: data?.jenis_pendaftaran,
+        jenis_produk: data?.jenis_produk,
+        jenis_usaha: data?.jenis_usaha,
+        kodepos: data?.kodepos,
+        kota: data?.kota,
+        nama_pu: data?.nama_pu,
+        negara: data?.negara,
+        nomor_id: data?.nomor_id,
+        provinsi: data?.provinsi,
+        skala_usaha: data?.skala_usaha,
+        status: data?.status,
+        tanggal_buat: data?.tanggal_buat,
+        telepon: data?.telepon,
+      }
+    }
+  }
+  catch (e) {
+    snackBar.sendSnackbar('Terjadi Kesalahan ', 'error')
+  }
+}
+
+const loadDetailSertifikasi = async (): void => {
+  try {
+    const response = await $api(`/reguler/auditor/${id}/sertifikasi`, {
+      method: 'GET',
+    })
+
+    if (response.code === 2000) {
+      const data = response.data
+
+      detailSertifikasi.value = {
+        area_pemasaran: data.area_pemasaran,
+        jenis_layanan: data.jenis_layanan,
+        jenis_pengajuan: data.jenis_pengajuan,
+        jenis_produk: data.jenis_produk,
+        merek_dagang: data.merek_dagang,
+        no_permohonan: data.no_permohonan,
+        tanggal_permohonan: data.tanggal_permohonan,
+      }
+    }
+  }
+  catch (e) {
+    snackBar.sendSnackbar('Terjadi Kesalahan ', 'error')
+  }
+}
+
+const loadDaftarProduk = async (): void => {
+  try {
+    const response = await $api(`/reguler/auditor/${id}/produk`, {
+      method: 'GET',
+    })
+
+    if (response.code === 2000)
+      daftarProdukItems.value = response.data
+  }
+  catch (e) {
+    snackBar.sendSnackbar('Terjadi Kesalahan ', 'error')
+  }
+}
+
+const loadPemeriksaanProduk = async (): void => {
+  try {
+    const response = await $api(`/reguler/auditor/${id}/pemeriksaanproduk`, {
+      method: 'GET',
+    })
+
+    if (response.code === 2000) {
+      biayaPemeriksaanItems.value = response.data.biaya
+      jadwalAudit.value = response.data.jadwal_audit
+      auditItems.value = response.data.auditor
+      hasilPemeriksaan.value = {
+        dokumen: response.data.hasil_pemeriksaan?.dokumen,
+        hasil: response.data.hasil_pemeriksaan?.hasil,
+        tanggal_selesai: response.data.hasil_pemeriksaan?.tanggal_selesai,
+      }
+      nomorPendaftaran.value = {
+        no_daftar: response.data.no_pendaftaran?.no_daftar,
+        provinsi: response.data.no_pendaftaran?.provinsi,
+        tanggal_daftar: response.data.no_pendaftaran?.tanggal_daftar,
+      }
+
+      tracking.value = response.data.tracking.map(
+        i => ({
+          status: i.status,
+          createdAt: i.date,
+          username: i.username,
+        }),
+      )
+    }
+  }
+  catch (e) {
+    snackBar.sendSnackbar('Terjadi Kesalahan ', 'error')
+  }
+}
+
+onMounted(async () => {
+  await Promise.all([
+    loadDetailPengajuan(),
+    loadDetailSertifikasi(),
+    loadDaftarProduk(),
+    loadPemeriksaanProduk(),
+  ])
+})
 </script>
 
 <template>
@@ -153,7 +261,7 @@ const navigateTo = (url: string) => {
 
     <VRow class="d-flex justify-space-between">
       <VCol cols="8">
-        <VExpansionPanels v-model="panelSubmission">
+        <VExpansionPanels v-model="panelPengajuan">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Data Pengajuan
@@ -165,7 +273,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="No.ID"
               >
-                {{ detailSubmission.id }}
+                {{ detailPengajuan.nomor_id }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -173,15 +281,15 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Status"
               >
-                {{ detailSubmission.date }}
+                {{ detailPengajuan.status }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
                 cols-separator="1"
                 cols-value="6"
-                name="Tanggal"
+                name="Tanggal Buat"
               >
-                {{ detailSubmission.date }}
+                {{ detailPengajuan.tanggal_buat }}
               </InfoRow>
               <ThinLine :thickness="1" />
               <InfoRow
@@ -190,7 +298,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Nama Perusahaan"
               >
-                {{ detailSubmission.requestNumber }}
+                {{ detailPengajuan.nama_pu }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -198,7 +306,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Alamat"
               >
-                {{ detailSubmission.requestDate }}
+                {{ detailPengajuan.alamat }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -206,7 +314,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Kota/Kab"
               >
-                {{ detailSubmission.serviceType }}
+                {{ detailPengajuan.kota }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -214,7 +322,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Provinsi"
               >
-                {{ detailSubmission.productType }}
+                {{ detailPengajuan.provinsi }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -222,7 +330,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Kode Pos"
               >
-                {{ detailSubmission.brand }}
+                {{ detailPengajuan.kodepos }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -230,7 +338,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Negara"
               >
-                {{ detailSubmission.marketingArea }}
+                {{ detailPengajuan.negara }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -238,7 +346,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Telepon"
               >
-                {{ detailSubmission.companion }}
+                {{ detailPengajuan.telepon }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -246,7 +354,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Email"
               >
-                {{ detailSubmission.companionInstitution }}
+                {{ detailPengajuan.email }}
               </InfoRow>
               <ThinLine :thickness="1" />
               <InfoRow
@@ -255,7 +363,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Jenis Badan Usaha"
               >
-                {{ detailSubmission.companionInstitution }}
+                {{ detailPengajuan.jenis_usaha }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -267,8 +375,8 @@ const navigateTo = (url: string) => {
                 <VRow class="d-flex align-center">
                   <VCol cols="8">
                     <VSelect
-                      v-model="detailSubmission.K"
-                      :items="['Minuman', 'Makanan']"
+                      v-model="detailPengajuan.skala_usaha"
+                      :items="typeSkalaUsaha"
                       label="Choose an option"
                       outlined
                     />
@@ -276,7 +384,7 @@ const navigateTo = (url: string) => {
                   <VCol cols="4">
                     <VBtn
                       variant="outlined"
-                      @click="updateKbli"
+                      @click="updateSkalaUsaha"
                     >
                       Update
                     </VBtn>
@@ -288,7 +396,7 @@ const navigateTo = (url: string) => {
         </VExpansionPanels>
 
         <br>
-        <VExpansionPanels v-model="panelPic">
+        <VExpansionPanels v-model="panelSertifikasi">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Pengajuan Sertifikasi
@@ -300,7 +408,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="No / Tanggal Permohonan"
               >
-                {{ pic.name }}
+                {{ detailSertifikasi.no_permohonan }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -308,7 +416,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Jenis Layanan"
               >
-                {{ pic.phoneNumber }}
+                {{ detailSertifikasi.no_permohonan }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -316,7 +424,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Jenis Pengajuan"
               >
-                {{ pic.email }}
+                {{ detailSertifikasi.jenis_pengajuan }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -324,7 +432,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Jenis Produk"
               >
-                {{ pic.email }}
+                {{ detailSertifikasi.jenis_produk }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -332,7 +440,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Merek Dagang"
               >
-                {{ pic.email }}
+                {{ detailSertifikasi.merek_dagang }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -340,22 +448,22 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Area Pemasaran"
               >
-                {{ pic.email }}
+                {{ detailSertifikasi.area_pemasaran }}
               </InfoRow>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
 
         <br>
-        <VExpansionPanels v-model="panelAspectLegal">
+        <VExpansionPanels v-model="panelDaftarProduk">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Daftar Nama Produk
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
-                :headers="aspectLegalHeader"
-                :items="aspectLegalItems"
+                :headers="daftarProdukHeader"
+                :items="daftarProdukItems"
               >
                 <template #item.productType="{ item }">
                   <div class="mw-170">
@@ -370,28 +478,35 @@ const navigateTo = (url: string) => {
                 <template #item.publication="{ item }">
                   <VCheckbox true-value="true" />
                 </template>
+                <template #[`item.no`]="{ index }">
+                  <span>{{ index + 1 }}</span>
+                </template>
               </VDataTable>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
 
         <br>
-        <VExpansionPanels v-model="panelFactory">
+        <VExpansionPanels v-model="panelBiayaPemekrisaan">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Biaya Pemeriksaan
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
-                :headers="factoryHeader"
-                :items="factoryItems"
-              />
+                :headers="biayaPemeriksaanHeader"
+                :items="biayaPemeriksaanItems"
+              >
+                <template #[`item.no`]="{ index }">
+                  <span>{{ index + 1 }}</span>
+                </template>
+              </VDataTable>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
 
         <br>
-        <VExpansionPanels v-model="panelOutlet">
+        <VExpansionPanels v-model="panelJadwalAudit">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Jadwal Audit
@@ -403,7 +518,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Tanggal Mulai"
               >
-                {{ detailSubmission.companionInstitution }}
+                {{ jadwalAudit.tanggal_mulai }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -411,28 +526,32 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Tanggal Selesai"
               >
-                {{ detailSubmission.companionInstitution }}
+                {{ jadwalAudit.tanggal_selesai }}
               </InfoRow>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
 
         <br>
-        <VExpansionPanels v-model="panelSupervisor">
+        <VExpansionPanels v-model="panelAudit">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Auditor
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
-                :headers="supervisorHeader"
-                :items="supervisorItems"
-              />
+                :headers="auditHeader"
+                :items="auditItems"
+              >
+                <template #[`item.no`]="{ index }">
+                  <span>{{ index + 1 }}</span>
+                </template>
+              </VDataTable>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
         <br>
-        <VExpansionPanels v-model="panelOutlet">
+        <VExpansionPanels v-model="panelHasilPemeriksaan">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Hasil Pemeriksaan
@@ -444,7 +563,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Tanggal Selesai LPH"
               >
-                {{ detailSubmission.companionInstitution }}
+                {{ hasilPemeriksaan.tanggal_selesai }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -452,7 +571,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Hasil"
               >
-                {{ detailSubmission.companionInstitution }}
+                {{ hasilPemeriksaan.hasil }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -460,7 +579,7 @@ const navigateTo = (url: string) => {
                 cols-value="6"
                 name="Dokumen"
               >
-                {{ detailSubmission.companionInstitution }}
+                {{ hasilPemeriksaan.dokumen }}
               </InfoRow>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -468,35 +587,35 @@ const navigateTo = (url: string) => {
       </VCol>
       <VCol
         cols="4"
-        class="pr-0"
+        class=""
       >
-        <VExpansionPanels v-model="panelDownloadFormulir">
+        <VExpansionPanels v-model="panelNomorPendaftaran">
           <VExpansionPanel class="pa-5">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               No. Pendaftaran
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
               <p class="font-weight-bold text-black">
-                SH2023-1-582897
+                {{ nomorPendaftaran.no_daftar }}
               </p>
               <p class="font-weight-bold text-black">
-                13/10/2024
+                {{ nomorPendaftaran.tanggal_daftar }}
               </p>
               <p class="font-weight-bold text-black">
-                Jawa Tengah
+                {{ nomorPendaftaran.provinsi }}
               </p>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
         <br>
-        <VExpansionPanels v-model="panelDownloadFormulir">
+        <VExpansionPanels v-model="panelNomorPendaftaran">
           <VExpansionPanel class="pa-5">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Biaya Pemeriksaan
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
               <p class="font-weight-bold text-black">
-                Rp 7.000.000
+                Rp {{ totalBiaya }}
               </p>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -511,8 +630,7 @@ const navigateTo = (url: string) => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
               <HalalTimeLine
-                :event="[
-                  { status: 'Draft PU', created_at: '2024/10/05', username: 'Samsul' }]"
+                :event="tracking"
               />
             </VExpansionPanelText>
           </VExpansionPanel>

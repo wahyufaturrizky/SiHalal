@@ -1,48 +1,62 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+const snackBar = useSnackbar()
 
-const searchQuery = ref('')
+interface AuditPengajuan {
+  id_reg: string
+  jenis_daftar: string
+  jenis_produk: string
+  jenis_usaha: string
+  jumlah_produk: number
+  nama_pu: string
+  nomor_daftar: string
+  status: string
+  tanggal: string
+  tgl_dikirim: string
+}
+
+interface ApiResponse {
+  code: number
+  data: AuditPengajuan[]
+  message: string
+}
+
+interface Payload {
+  page: number
+  size: number
+  search?: string
+}
 
 const headers = [
-  { title: 'No', key: 'no' },
-  { title: 'No. Daftar', key: 'registrationNo', nowrap: true },
-  { title: 'Tanggal', key: 'date', nowrap: true },
-  { title: 'Nama PU', key: 'puName', nowrap: true },
-  { title: 'Jenis Daftar', key: 'registrationType', nowrap: true },
-  { title: 'Jenis Produk', key: 'productType', nowrap: true },
+  { title: 'No', value: 'no' },
+  { title: 'No. Daftar', key: 'nomor_daftar', nowrap: true },
+  { title: 'Tanggal', key: 'tanggal', nowrap: true },
+  { title: 'Nama PU', key: 'nama_pu', nowrap: true },
+  { title: 'Jenis Daftar', key: 'jenis_daftar', nowrap: true },
+  { title: 'Jenis Produk', key: 'jenis_produk', nowrap: true },
   { title: 'Status', key: 'status', nowrap: true },
   { title: 'Action', value: 'action', sortable: false, nowrap: true },
 ]
 
-const items = [
-  {
-    no: 1,
-    registrationNo: 'SIUP',
-    date: '10/10/2024',
-    puName: 'Testing',
-    registrationType: 'Baru',
-    productType: 'Minuman Bahagia',
-    status: [1, 3, 'Proses di LPH'],
-  },
-  {
-    no: 2,
-    registrationNo: 'SIUP',
-    date: '10/10/2024',
-    puName: 'Testing',
-    registrationType: 'Baru',
-    productType: 'Minuman Bahagia',
-    status: [1, 3, 'Proses di LPH'],
-  },
-  {
-    no: 3,
-    registrationNo: 'SIUP',
-    date: '10/10/2024',
-    puName: 'Testing',
-    registrationType: 'Baru',
-    productType: 'Minuman Bahagia',
-    status: [1, 3, 'Proses di LPH'],
-  },
-]
+const items = ref([])
+
+const searchQuery = ref('')
+const page = ref(1)
+const size = ref(20)
+
+const loadItem = async (page: number, size: number, search: string): void => {
+  try {
+    const response = await $api('/reguler/auditor', {
+      method: 'GET',
+      params: {page, size, search},
+    })
+
+    if (response.code === 2000)
+      items.value = response.data
+  }
+  catch (e) {
+    snackBar.sendSnackbar('Terjadi Kesalahan ', 'error')
+  }
+}
 
 // TODO -> BIKIN LOGIC BUAT SET CHIP COLOR
 const getChipColor = (status: string) => {
@@ -54,9 +68,13 @@ const getChipColor = (status: string) => {
   return 'success'
 }
 
-const navigateTo = (url: string) => {
-  window.location.href = url
-}
+
+const debouncedFetch = debounce(loadItem, 500)
+const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
+
+// onMounted(
+//   await loadItem(1, size.value)
+// )
 </script>
 
 <template>
@@ -82,22 +100,24 @@ const navigateTo = (url: string) => {
         />
       </VCardItem>
       <VCardItem>
-        <VDataTable
+        <VDataTableServer
+          v-model:items-per-page="size"
+          v-model:page="page"
           :headers="headers"
           :items="items"
           item-value="no"
           class="elevation-1"
+          @update:options="loadItem(page, size, searchQuery)"
         >
           <template #[`item.status`]="{ item }">
             <div class="d-flex">
               <VChip
-                v-for="(status, index) in item.status"
                 :key="index"
-                :color="getChipColor(status)"
+                :color="getChipColor(item.status)"
                 label
                 class="ma-1"
               >
-                {{ status }}
+                {{ item.status }}
               </VChip>
             </div>
           </template>
@@ -106,12 +126,15 @@ const navigateTo = (url: string) => {
               color="primary"
               style="cursor: pointer;"
               class="ic-center"
-              @click="navigateTo(`/audit-pengajuan/${item.no}`)"
+              @click="navigateTo(`/audit-pengajuan/${item.id_reg}`)"
             >
               ri-arrow-right-line
             </VIcon>
           </template>
-        </VDataTable>
+          <template #[`item.no`]="{ index }">
+            <span>{{ index + 1 }}</span>
+          </template>
+        </VDataTableServer>
       </VCardItem>
     </VCard>
   </VContainer>

@@ -18,10 +18,7 @@ export default defineEventHandler(async (event) => {
       headers: { Authorization: authorizationHeader },
     }
   ).catch((err: NuxtError) => {
-    throw createError({
-      statusCode: err.statusCode,
-      statusMessage: JSON.stringify(err.data),
-    });
+    return null;
   });
 
   return data || null;
