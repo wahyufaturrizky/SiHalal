@@ -1175,13 +1175,9 @@ const handleDownload = () => {
     link.href = fileUrl;
     link.download = String(fileUrl.split("/").pop());
     link.target = "_blank";
-    console.log(link, "< link");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   }
-
-  // link.href = window.URL.createObjectURL(resBlob)
-  // link.download = `Transaction-History.${payload.export_type}`
 };
 </script>
