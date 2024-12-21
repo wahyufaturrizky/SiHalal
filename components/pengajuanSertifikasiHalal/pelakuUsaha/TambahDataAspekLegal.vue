@@ -3,6 +3,8 @@ import { ref } from "vue";
 import { useDisplay } from "vuetify";
 import { VTextField } from "vuetify/components";
 
+const selfDeclareId = (useRoute().params as any).id;
+
 const emit = defineEmits(["refresh"]);
 
 const addDialog = ref(false);
@@ -17,31 +19,46 @@ const { dokumen } = props || {};
 const loadingAdd = ref(false);
 
 const formData = ref({
-  dokumen: "",
-  nomor_dokumen: "",
-  tanggal_dokumen: "",
+  jenis_surat: "",
+  no_surat: "",
+  tanggal_surat: "",
   masa_berlaku: "",
   instansi_penerbit: "",
+  id_legal: "",
 });
 
 const resetForm = () => {
   formData.value = {
-    dokumen: "",
-    nomor_dokumen: "",
-    tanggal_dokumen: "",
+    jenis_surat: "",
+    no_surat: "",
+    tanggal_surat: "",
     masa_berlaku: "",
     instansi_penerbit: "",
+    id_legal: "",
   };
+};
+
+const isFormError = ref(false);
+
+const checkIsFieldEMpty = (data: any) => {
+  return Object.keys(data)?.find((key: any) => {
+    if (key !== "id_legal") {
+      return !data[key];
+    }
+  });
 };
 
 const addDataAspekLegal = async () => {
   try {
     loadingAdd.value = true;
 
-    const res: any = await $api("/self-declare/verificator/aspek-legal/add", {
-      method: "post",
-      body: formData.value,
-    });
+    const res: any = await $api(
+      `/self-declare/verificator/aspek-legal/add/${selfDeclareId}`,
+      {
+        method: "post",
+        body: formData.value,
+      }
+    );
 
     if (res?.code === 2000) {
       loadingAdd.value = false;
@@ -92,7 +109,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
             <VItemGroup>
               <VLabel>Jenis Dokumen</VLabel>
               <VSelect
-                v-model="formData.dokumen"
+                v-model="formData.jenis_surat"
                 :items="dokumen"
                 item-title="name"
                 item-value="code"
@@ -108,9 +125,10 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
             <VItemGroup>
               <VLabel>Nomor Dokumen</VLabel>
               <VTextField
-                v-model="formData.nomor_dokumen"
+                v-model="formData.no_surat"
                 placeholder="Isi Nomor Dokumen"
                 density="compact"
+                :rules="[requiredValidator]"
               />
             </VItemGroup>
           </VCol>
@@ -119,9 +137,10 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
           <VCol cols="12">
             <VLabel>Tanggal Dokumen</VLabel>
             <VTextField
-              v-model="formData.tanggal_dokumen"
+              v-model="formData.tanggal_surat"
               placeholder="Tanggal Dokumen"
               type="date"
+              :rules="[requiredValidator]"
             />
           </VCol>
         </VRow>
@@ -132,6 +151,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               v-model="formData.masa_berlaku"
               placeholder="Masa Berlaku"
               type="date"
+              :rules="[requiredValidator]"
             />
           </VCol>
         </VRow>
@@ -144,6 +164,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
                 placeholder="Isi Instansi Penerbit"
                 density="compact"
                 v-model="formData.instansi_penerbit"
+                :rules="[requiredValidator]"
               />
             </VItemGroup>
           </VCol>
@@ -160,7 +181,11 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
           >
             Batal
           </VBtn>
-          <VBtn :loading="loadingAdd" @click="addDataAspekLegal" variant="flat"
+          <VBtn
+            :disabled="checkIsFieldEMpty(formData) || isFormError"
+            :loading="loadingAdd"
+            @click="addDataAspekLegal"
+            variant="flat"
             >Tambah</VBtn
           >
         </div>
