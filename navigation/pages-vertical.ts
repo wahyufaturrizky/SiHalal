@@ -13,7 +13,7 @@ export default [
       "Komite Fatwa",
       "Komisi Fatwa",
       "Pendamping",
-      "Lembaga Penjamin Halal",
+      "Lembaga Pemeriksa Halal",
       "Auditor",
       "Admin",
     ],
@@ -33,7 +33,7 @@ export default [
       "Komite Fatwa",
       "Komisi Fatwa",
       "Pendamping",
-      "Lembaga Penjamin Halal",
+      "Lembaga Pemeriksa Halal",
       "Auditor",
       "Admin",
     ],
@@ -205,37 +205,37 @@ export default [
   //PROSES DI LPH
   {
     heading: "navbar.process_on_lph.title",
-    roles: ["Lembaga Penjamin Halal", "Admin"],
+    roles: ["Lembaga Pemeriksa Halal", "Admin"],
   },
   {
     title: "navbar.process_on_lph.menu.list_submission",
     icon: { icon: "fa-check-circle" },
     to: "lph-list-register",
-    roles: ["Lembaga Penjamin Halal", "Admin"],
+    roles: ["Lembaga Pemeriksa Halal", "Admin"],
   },
   {
     title: "navbar.process_on_lph.menu.list_acc_submission",
     icon: { icon: "fa-check-circle" },
     to: "lph-list-accepted",
-    roles: ["Lembaga Penjamin Halal", "Admin"],
+    roles: ["Lembaga Pemeriksa Halal", "Admin"],
   },
   {
     title: "navbar.process_on_lph.menu.payment_info",
     icon: { icon: "fa-check-circle" },
     to: "reguler-payment-info",
-    roles: ["Lembaga Penjamin Halal", "Admin"],
+    roles: ["Lembaga Pemeriksa Halal", "Admin"],
   },
   {
     title: "navbar.process_on_lph.menu.update_check",
     icon: { icon: "fa-check-circle" },
     to: "reguler-examination-update",
-    roles: ["Lembaga Penjamin Halal", "Admin"],
+    roles: ["Lembaga Pemeriksa Halal", "Admin"],
   },
   {
     title: "navbar.process_on_lph.menu.settlement_data",
     icon: { icon: "fa-check-circle" },
     to: "reguler-post-audit",
-    roles: ["Lembaga Penjamin Halal", "Admin"],
+    roles: ["Lembaga Pemeriksa Halal", "Admin"],
   },
 
   //Data Pengajuan Pelaku Usaha
