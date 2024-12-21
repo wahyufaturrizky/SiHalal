@@ -404,8 +404,8 @@
                   append-icon="fa-download"
                   variant="outlined"
                   class="float-end mt-6"
-                  :href="submissionDetail.url_sample_penyelia_sk"
                   target="_blank"
+                  :download="submissionDetail.url_sample_penyelia_sk"
                 />
               </div>
             </VExpansionPanelText>
@@ -523,13 +523,16 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.surat_permohonan
+                      ? handleDownloadForm(downloadForms.surat_permohonan)
+                      : null
+                  "
                   :color="
                     downloadForms.surat_permohonan ? 'primary' : '#A09BA1'
                   "
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.surat_permohonan"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -542,13 +545,16 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.surat_pernyataan
+                      ? handleDownloadForm(downloadForms.surat_pernyataan)
+                      : null
+                  "
                   :color="
                     downloadForms.surat_pernyataan ? 'primary' : '#A09BA1'
                   "
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.surat_pernyataan"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -561,11 +567,14 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.ikrar
+                      ? handleDownloadForm(downloadForms.ikrar)
+                      : null
+                  "
                   :color="downloadForms.ikrar ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.ikrar"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -578,11 +587,14 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.hasil_verval
+                      ? handleDownloadForm(downloadForms.hasil_verval)
+                      : null
+                  "
                   :color="downloadForms.hasil_verval ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.hasil_verval"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -595,11 +607,14 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.rekomendasi
+                      ? handleDownloadForm(downloadForms.rekomendasi)
+                      : null
+                  "
                   :color="downloadForms.rekomendasi ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.rekomendasi"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -612,11 +627,14 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.sjph
+                      ? handleDownloadForm(downloadForms.sjph)
+                      : null
+                  "
                   :color="downloadForms.sjph ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.sjph"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -629,11 +647,14 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.laporan
+                      ? handleDownloadForm(downloadForms.laporan)
+                      : null
+                  "
                   :color="downloadForms.laporan ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.laporan"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -646,11 +667,14 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.sttd
+                      ? handleDownloadForm(downloadForms.sttd)
+                      : null
+                  "
                   :color="downloadForms.sttd ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.sttd"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -663,13 +687,16 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.sertifikasi_halal
+                      ? handleDownloadForm(downloadForms.sertifikasi_halal)
+                      : null
+                  "
                   :color="
                     downloadForms.sertifikasi_halal ? 'primary' : '#A09BA1'
                   "
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.sertifikasi_halal"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -1185,5 +1212,9 @@ const getDownloadForm = async (docName: string, propName: string) => {
   if (result.code === 2000) {
     downloadForms[propName] = result.data.file;
   }
+};
+
+const handleDownloadForm = async (fileName: string) => {
+  return await downloadDocument(fileName);
 };
 </script>

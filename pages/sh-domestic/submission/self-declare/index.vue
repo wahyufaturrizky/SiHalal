@@ -3,30 +3,25 @@ import { ref } from "vue";
 
 const searchQuery = ref("");
 
-const headers = [
-  { title: "No", key: "no" },
-  { title: "ID Reg", key: "idReg" },
-  { title: "No. Daftar", key: "regNo" },
-  { title: "Tanggal", key: "date" },
-  { title: "Nama PU", key: "name" },
-  { title: "Jenis Produk", key: "productType" },
-  { title: "Status", key: "status" },
-  { title: "Merk Dagang", key: "brand" },
-  { title: "Action", value: "action", sortable: false, nowrap: true },
+const headers: any = [
+  { title: "No", key: "no", nowrap: true },
+  { title: "ID Reg", key: "id_reg", nowrap: true },
+  { title: "No. Daftar", key: "no_daftar", nowrap: true },
+  { title: "Tanggal", key: "tgl_daftar", nowrap: true },
+  { title: "Nama PU", key: "nama_pu", nowrap: true },
+  { title: "Jenis Produk", key: "jenis_produk", nowrap: true },
+  { title: "Status", key: "status", nowrap: true },
+  { title: "Merk Dagang", key: "merk_dagang", nowrap: true },
+  {
+    title: "Action",
+    value: "action",
+    sortable: false,
+    nowrap: true,
+    align: "center",
+  },
 ];
 
-const submission = ref([
-  // {
-  //   no: 1,
-  //   idReg: 159,
-  //   regNo: "FY-00001",
-  //   date: "2024-10-10",
-  //   name: "Yogurt Halal ",
-  //   productType: "Fermentasi",
-  //   status: "Pending",
-  //   brand: "SipalingHalal",
-  // },
-]);
+const submission = ref([]);
 const tablePageData = ref({
   total_item: 0,
   total_page: 0,
@@ -229,12 +224,29 @@ onMounted(() => {
             fixed-header
             :hide-default-footer="!submission.length"
           >
+            <template #item.no="{ index }">
+              {{ index + 1 }}
+            </template>
+            <template #item.no_daftar="{ item }: any">
+              {{ item.no_daftar ? item.no_daftar : "-" }}
+            </template>
+            <template #item.tgl_daftar="{ item }: any">
+              {{ item.tgl_daftar ? item.tgl_daftar : "-" }}
+            </template>
+            <template #item.jenis_produk="{ item }: any">
+              {{ item.jenis_produk ? item.jenis_produk : "-" }}
+            </template>
+            <template #item.merk_dagang="{ item }: any">
+              {{ item.merk_dagang ? item.merk_dagang : "-" }}
+            </template>
             <template #item.action="{ item }: any">
               <VIcon
                 color="success"
                 style="cursor: pointer"
                 @click="
-                  router.push(`/sh-domestic/submission/self-declare/${item.no}`)
+                  router.push(
+                    `/sh-domestic/submission/self-declare/${item.id_reg}`
+                  )
                 "
               >
                 ri-arrow-right-line
