@@ -404,7 +404,8 @@
                   append-icon="fa-download"
                   variant="outlined"
                   class="float-end mt-6"
-                  @click="handleDownload"
+                  target="_blank"
+                  :download="submissionDetail.url_sample_penyelia_sk"
                 />
               </div>
             </VExpansionPanelText>
@@ -522,6 +523,11 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.surat_permohonan
+                      ? handleDownloadForm(downloadForms.surat_permohonan)
+                      : null
+                  "
                   :color="
                     downloadForms.surat_permohonan ? 'primary' : '#A09BA1'
                   "
@@ -539,6 +545,11 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.surat_pernyataan
+                      ? handleDownloadForm(downloadForms.surat_pernyataan)
+                      : null
+                  "
                   :color="
                     downloadForms.surat_pernyataan ? 'primary' : '#A09BA1'
                   "
@@ -556,6 +567,11 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.ikrar
+                      ? handleDownloadForm(downloadForms.ikrar)
+                      : null
+                  "
                   :color="downloadForms.ikrar ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
@@ -571,6 +587,11 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.hasil_verval
+                      ? handleDownloadForm(downloadForms.hasil_verval)
+                      : null
+                  "
                   :color="downloadForms.hasil_verval ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
@@ -586,6 +607,11 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.rekomendasi
+                      ? handleDownloadForm(downloadForms.rekomendasi)
+                      : null
+                  "
                   :color="downloadForms.rekomendasi ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
@@ -601,6 +627,11 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.sjph
+                      ? handleDownloadForm(downloadForms.sjph)
+                      : null
+                  "
                   :color="downloadForms.sjph ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
@@ -616,6 +647,11 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.laporan
+                      ? handleDownloadForm(downloadForms.laporan)
+                      : null
+                  "
                   :color="downloadForms.laporan ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
@@ -631,6 +667,11 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.sttd
+                      ? handleDownloadForm(downloadForms.sttd)
+                      : null
+                  "
                   :color="downloadForms.sttd ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
@@ -646,6 +687,11 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  @click="
+                    downloadForms.sertifikasi_halal
+                      ? handleDownloadForm(downloadForms.sertifikasi_halal)
+                      : null
+                  "
                   :color="
                     downloadForms.sertifikasi_halal ? 'primary' : '#A09BA1'
                   "
@@ -1168,16 +1214,7 @@ const getDownloadForm = async (docName: string, propName: string) => {
   }
 };
 
-const handleDownload = () => {
-  const fileUrl = submissionDetail.url_sample_penyelia_sk;
-  if (fileUrl.length) {
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.download = String(fileUrl.split("/").pop());
-    link.target = "_blank";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
+const handleDownloadForm = async (fileName: string) => {
+  return await downloadDocument(fileName);
 };
 </script>
