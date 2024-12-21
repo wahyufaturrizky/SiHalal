@@ -115,19 +115,19 @@ const requirementDocArray = ref([
     file: "",
     notes: "",
     status: "",
-    tracking: "",
+    tracking: null,
   },
   {
     documentTypes: "Business License Number (NIB)",
     file: "",
     notes: "",
     status: "",
-    tracking: "",
+    tracking: null,
   },
 ]);
 const reqTracking = ref(null);
 const reqTrackingModal = ref(false);
-const reqFile = ref();
+const reqFile = ref([]);
 const getRequirementDocument = async () => {
   try {
     const response = await $api(
@@ -283,8 +283,8 @@ const saveReqDocument = async () => {
       },
     });
     loadReqDialog.value = false;
-    refReqDocForm.value?.resetValidation();
     refReqDocForm.value?.reset();
+    refReqDocForm.value?.resetValidation();
 
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
@@ -362,19 +362,6 @@ function dateddmmyyy(date: Date) {
   const yyyy = date.getFullYear();
   return `${dd}/${mm}/${yyyy}`;
 }
-const downloadDOcument = async (filename: string) => {
-  try {
-    const response = await $api("/shln/submission/document/download", {
-      method: "post",
-      body: {
-        filename,
-      },
-    });
-    window.open(response.url, "_blank", "noopener,noreferrer");
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
 onMounted(async () => {
   await Promise.allSettled([
     getLoa(),
@@ -465,7 +452,7 @@ watch(loaFile, (newValue, oldValue) => {
           </VCol>
           <VCol cols="12" class="d-flex align-center gap-5 justify-center">
             <VBtn
-              @click="downloadDOcument(loa.loa_document)"
+              @click="downloadDocument(loa.loa_document)"
               v-if="loa.loa_document != ''"
               color="primary"
             >
@@ -627,6 +614,7 @@ watch(loaFile, (newValue, oldValue) => {
                   :rules="[
                     requiredValidator,
                     fileExtensionValidator,
+                    fileNameLengthValidator,
                     (value) => {
                       return (
                         !value ||
