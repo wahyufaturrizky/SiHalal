@@ -404,8 +404,7 @@
                   append-icon="fa-download"
                   variant="outlined"
                   class="float-end mt-6"
-                  :href="submissionDetail.url_sample_penyelia_sk"
-                  target="_blank"
+                  @click="handleDownload"
                 />
               </div>
             </VExpansionPanelText>
@@ -528,8 +527,6 @@
                   "
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.surat_permohonan"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -547,8 +544,6 @@
                   "
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.surat_pernyataan"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -564,8 +559,6 @@
                   :color="downloadForms.ikrar ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.ikrar"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -581,8 +574,6 @@
                   :color="downloadForms.hasil_verval ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.hasil_verval"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -598,8 +589,6 @@
                   :color="downloadForms.rekomendasi ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.rekomendasi"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -615,8 +604,6 @@
                   :color="downloadForms.sjph ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.sjph"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -632,8 +619,6 @@
                   :color="downloadForms.laporan ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.laporan"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -649,8 +634,6 @@
                   :color="downloadForms.sttd ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.sttd"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -668,8 +651,6 @@
                   "
                   density="compact"
                   class="px-2"
-                  :href="downloadForms.sertifikasi_halal"
-                  target="_blank"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -1185,5 +1166,22 @@ const getDownloadForm = async (docName: string, propName: string) => {
   if (result.code === 2000) {
     downloadForms[propName] = result.data.file;
   }
+};
+
+const handleDownload = () => {
+  const fileUrl = submissionDetail.url_sample_penyelia_sk;
+  if (fileUrl.length) {
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    link.download = String(fileUrl.split("/").pop());
+    link.target = "_blank";
+    console.log(link, "< link");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // link.href = window.URL.createObjectURL(resBlob)
+  // link.download = `Transaction-History.${payload.export_type}`
 };
 </script>

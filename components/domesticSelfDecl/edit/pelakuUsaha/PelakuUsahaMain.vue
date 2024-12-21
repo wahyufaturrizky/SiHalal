@@ -44,7 +44,11 @@ const halalSupervisorHeader: any[] = [
 ];
 const halalSupervisorData = ref([]);
 
-const { refresh } = await useAsyncData("", async () => {
+const { refresh } = await useAsyncData("data-pelaku-usaha", async () => {
+  return await handleDetailPelakuUsaha();
+});
+
+const handleDetailPelakuUsaha = async () => {
   try {
     const response: any = await $api(
       `/self-declare/submission/${submissionId}/detail`,
@@ -60,23 +64,69 @@ const { refresh } = await useAsyncData("", async () => {
       legalData.value = response.data.aspek_legal;
       halalSupervisorData.value = response.data.penyelia_halal;
     }
+    return response;
   } catch (error) {
     console.log(error);
   }
-});
-const getLegalList = async () => {
+};
+
+const handleUpdatePIC = async () => {
   try {
     const response: any = await $api(
-      `/self-declare/business-actor/legal/list`,
+      `/self-declare/business-actor/pic/update`,
       {
-        method: "get",
-        query: {
-          page: 1,
-          size: 10,
+        method: "put",
+        body: {
           id_reg: submissionId,
+          nama_pj: picDetail.nama_pj,
+          no_kontak_pj: picDetail.nomor_kontak_pj,
+          email_pj: picDetail.email_pj,
         },
       }
     );
+    if (response.code === 2000) {
+      refresh();
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const handleAddLegal = async (selectedLegal: string[]) => {
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/legal/create`,
+      {
+        method: "post",
+        body: {
+          id_reg: submissionId,
+          id_legal: selectedLegal,
+        },
+      }
+    );
+    if (response.code === 2000) {
+      refresh();
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const handleAddSupervisor = async (selectedSupervisor: string[]) => {
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/supervisor/create`,
+      {
+        method: "post",
+        body: {
+          id_reg: submissionId,
+          id_penyelia: selectedSupervisor,
+        },
+      }
+    );
+    if (response.code === 2000) {
+      refresh();
+    }
   } catch (error) {
     console.log(error);
   }
@@ -92,8 +142,8 @@ const handleOpenDelete = (type: string, id: string) => {
 
 const confirmDeleteItem = async () => {
   return deleteType.value === "LEGAL"
-    ? confirmDeleteLegal()
-    : confirmDeleteSupervisor();
+    ? await confirmDeleteLegal()
+    : await confirmDeleteSupervisor();
 };
 
 const confirmDeleteLegal = async () => {
@@ -103,11 +153,12 @@ const confirmDeleteLegal = async () => {
       {
         method: "delete",
         query: {
-          legalId: selectedDelete.value,
+          legal_id: selectedDelete.value,
         },
       }
     );
     if (result.code === 2000) {
+      refresh();
       snackbar.sendSnackbar("Berhasil menghapus data", "success");
     }
   } catch (error) {
@@ -134,8 +185,8 @@ const confirmDeleteSupervisor = async () => {
   }
 };
 
-onMounted(async () => {
-  await Promise.all([getLegalList()]);
+onMounted(() => {
+  handleDetailPelakuUsaha();
 });
 </script>
 
@@ -155,11 +206,42 @@ onMounted(async () => {
   <VRow>
     <VCol :cols="12" class="mb-3">
       <VCard class="py-3 px-2">
-        <VCardTitle class="font-weight-bold text-h4 mb-5">
-          Penanggung Jawab
+        <VCardTitle
+          class="d-flex justify-space-between align-center font-weight-bold text-h4 mb-5"
+        >
+          <div>Penanggung Jawab</div>
+          <VBtn
+            color="primary"
+            variant="flat"
+            text="Simpan Perubahan"
+            @click="handleUpdatePIC"
+          />
         </VCardTitle>
         <VCardText>
           <PenanggungJawab :data="picDetail" />
+          <!-- <VRow>
+            <VCol cols="12">
+              <VItemGroup>
+                <VLabel class="text-h6 font-weight-bold">Nama</VLabel>
+                <VTextField density="compact" v-model="picDetail.nama_pj" />
+              </VItemGroup>
+              <br />
+              <VItemGroup>
+                <VLabel class="text-h6 font-weight-bold"
+                  >Nomor Handphone</VLabel
+                >
+                <VTextFields
+                  density="compact"
+                  v-model="picDetail.nomor_kontak_pj"
+                />
+              </VItemGroup>
+              <br />
+              <VItemGroup>
+                <VLabel class="text-h6 font-weight-bold">Email</VLabel>
+                <VTextField density="compact" v-model="picDetail.email_pj" />
+              </VItemGroup>
+            </VCol>
+          </VRow> -->
         </VCardText>
       </VCard>
     </VCol>
@@ -171,7 +253,7 @@ onMounted(async () => {
           <VRow align="center">
             <VCol class="font-weight-bold text-h4"> Aspek Legal </VCol>
             <VCol justify="end" class="d-flex justify-end">
-              <TambahAspekLegalByTable />
+              <TambahAspekLegalByTable @submit="handleAddLegal" />
             </VCol>
           </VRow>
         </VCardTitle>
@@ -212,7 +294,7 @@ onMounted(async () => {
           <VRow align="center">
             <VCol class="font-weight-bold text-h4"> Penyelia Halal </VCol>
             <VCol class="d-flex justify-end">
-              <TambahPenyeliaByTable />
+              <TambahPenyeliaByTable @submit="handleAddSupervisor" />
             </VCol>
           </VRow>
         </VCardTitle>

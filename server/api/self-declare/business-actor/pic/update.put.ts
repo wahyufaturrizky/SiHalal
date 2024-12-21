@@ -12,23 +12,14 @@ export default defineEventHandler(async (event: any) => {
 
   try {
     const runtimeConfig = useRuntimeConfig();
-    const query: any = await getQuery(event);
-    const params = {
-      id_reg: query.id_reg,
-      page: isNaN(Number.parseInt(query.page, 10))
-        ? 1
-        : Number.parseInt(query.page, 10),
-      size: isNaN(Number.parseInt(query.size, 10))
-        ? 1
-        : Number.parseInt(query.size, 10),
-    };
+    const payload = await readBody(event);
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/list-legal`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/halal-certificate-reguler/penanggung-jawab/update`,
       {
-        method: "get",
+        method: "put",
         headers: { Authorization: authHeader },
-        params,
+        body: payload,
       } as any
     );
 
