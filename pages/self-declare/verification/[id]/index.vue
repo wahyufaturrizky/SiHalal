@@ -758,7 +758,7 @@ const dibatalkan = async () => {
         <p class="text-h4">Detail Pengajuan</p>
       </VCol>
       <VCol class="d-flex justify-end align-center" cols="4" md="5">
-        <VBtn variant="outlined" class="mx-2"> Lihat Laporan </VBtn>
+        <!-- <VBtn variant="outlined" class="mx-2"> Lihat Laporan </VBtn> -->
         <VBtn
           :loading="loadingTandaiOK"
           @click="tandaiOK"
