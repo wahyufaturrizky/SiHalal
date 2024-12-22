@@ -25,10 +25,11 @@ const selectedItems = ref<any[]>([]);
 
 const headers: any = [
   { title: "No", key: "no", align: "center" },
-  { title: "ID Daftar", key: "no_daftar" },
+  { title: "ID Daftar", key: "id_daftar" },
+  { title: "No Daftar", key: "no_daftar" },
   { title: "Pilih", key: "pilih" },
   { title: "Tanggal Daftar", key: "tgl_daftar" },
-  { title: "Nama", key: "nama" },
+  { title: "Nama PU", key: "nama" },
   { title: "Alamat", key: "alamat" },
   { title: "Jenis Produk", key: "jenis_produk" },
   { title: "Merk Dagang", key: "merek_dagang" },

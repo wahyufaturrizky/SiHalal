@@ -1,30 +1,77 @@
 <script setup lang="ts">
+import { ref } from "vue";
 
-import {ref} from 'vue'
+const typedProcess = ref("");
+const processArray = ref<Array<string>>([]);
+const prosesProduction = ref("");
 
+const snackbar = useSnackbar();
 
-const typedProcess = ref("")
-const prosesProduction = ref("")
+const route = useRoute<"">();
+const submissionId = route.params?.id;
 
+const { refresh } = await useAsyncData("get-narration", async () => {
+  try {
+    const response: any = await $api(`/self-declare/business-actor/narration`, {
+      method: "get",
+      query: {
+        id_reg: submissionId,
+      },
+    });
+    if (response.code === 2000) {
+      prosesProduction.value = response.data.narasi;
+      if (response.data.narasi.length > 0) {
+        Object.assign(processArray.value, response.data.narasi.split("\n"));
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+const handleAddSave = async () => {
+  // console.log("PROSES PRODUCTION ", prosesProduction.value)
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/narration/update`,
+      {
+        method: "put",
+        body: {
+          id_reg: submissionId,
+          narasi: prosesProduction.value,
+        },
+      }
+    );
 
-const snackbar = useSnackbar()
+    if (response.code === 2000) {
+      snackbar.sendSnackbar("Berhasil Mengubah Data ", "success");
+      refresh();
+    }
+  } catch (error) {
+    snackbar.sendSnackbar("Gagal Mengubah Data ", "success");
+  }
+};
 
-const save = () => {
-  console.log("PROSES PRODUCTION ", prosesProduction.value)
-  snackbar.sendSnackbar("Berhasil Mengubah Data ", "success")
-}
+const handleAddProcess = () => {
+  if (!typedProcess.value.length) return;
 
-const add = () => {
-  prosesProduction.value = prosesProduction.value != '' ? `${prosesProduction.value  }\n${  typedProcess.value}` : typedProcess.value
-}
+  processArray.value.push(typedProcess.value);
+  typedProcess.value = "";
 
+  if (processArray.value.length > 1) {
+    const lastIndex = processArray.value.length - 1;
+    prosesProduction.value +=
+      `\n${lastIndex + 1}.` + `${processArray.value[lastIndex]}`;
+  } else {
+    prosesProduction.value = `1. ${processArray.value[0]}`;
+  }
+};
 </script>
 
 <template>
   <VCard>
     <VCardTitle class="pa-4 d-flex justify-space-between align-center">
       <h4 class="text-h4">Proses Produksi Halal</h4>
-      <VBtn @click="save" >Simpan Perubahan</VBtn>
+      <VBtn @click="handleAddSave">Simpan Perubahan</VBtn>
     </VCardTitle>
     <VCardItem>
       <VRow class="d-flex justify-space-between align-center">
@@ -37,9 +84,7 @@ const add = () => {
             outlined
             class="mr-3"
           />
-          <VBtn dense outlined @click="add">
-            Tambah
-          </VBtn>
+          <VBtn dense outlined @click="handleAddProcess"> Tambah </VBtn>
         </VCol>
       </VRow>
     </VCardItem>
@@ -53,10 +98,7 @@ const add = () => {
         dense
       />
     </VCardText>
-
   </VCard>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

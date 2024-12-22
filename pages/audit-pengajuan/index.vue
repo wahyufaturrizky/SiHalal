@@ -47,7 +47,7 @@ const loadItem = async (page: number, size: number, search: string): void => {
   try {
     const response = await $api('/reguler/auditor', {
       method: 'GET',
-      params: {page, size, search},
+      params: { page, size, search },
     })
 
     if (response.code === 2000)
@@ -67,7 +67,6 @@ const getChipColor = (status: string) => {
 
   return 'success'
 }
-
 
 const debouncedFetch = debounce(loadItem, 500)
 const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
@@ -95,7 +94,7 @@ const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
           density="compact"
           placeholder="Cari Tagihan"
           append-inner-icon="ri-search-line"
-          style="max-width: 100%"
+          style="max-inline-size: 100%;"
           @input="handleInput"
         />
       </VCardItem>
@@ -142,7 +141,7 @@ const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
 
 <style lang="scss" scoped>
 .ic-center {
-    place-self: center;
-    display: flex;
+  display: flex;
+  place-self: center;
 }
 </style>
