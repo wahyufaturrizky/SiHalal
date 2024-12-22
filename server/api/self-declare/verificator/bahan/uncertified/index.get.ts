@@ -1,11 +1,8 @@
 import type { NuxtError } from "nuxt/app";
-import type { NewAccountGovernment } from "~/server/interface/new-account.iface";
 
 const runtimeConfig = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
-  const id = getRouterParam(event, "id");
-
   if (typeof authorizationHeader === "undefined") {
     throw createError({
       statusCode: 403,
@@ -14,20 +11,29 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const body: NewAccountGovernment = await readBody(event);
-  console.log("@id", id);
-  console.log("@body", body);
+  const { page, size, name } = (await getQuery(event)) as {
+    page: string;
+    size: string;
+    name: string;
+  };
+
+  const params: any = {
+    page: isNaN(Number.parseInt(page, 10)) ? 1 : Number.parseInt(page, 10),
+    size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
+  };
+
+  if (name !== "") {
+    params["name"] = name;
+  }
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/halal-certificate-reguler/self-declare/${id}/legal`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/ingredients/uncertified`,
     {
-      method: "post",
+      method: "get",
       headers: { Authorization: authorizationHeader },
-      body,
+      params,
     }
   ).catch((err: NuxtError) => {
-    setResponseStatus(event, 400);
-
     return err.data;
   });
 
