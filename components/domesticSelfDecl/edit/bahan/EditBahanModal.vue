@@ -197,16 +197,6 @@ const insertBahan = async () => {
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal menambahkan bahan", "error");
   } finally {
-    form.value = {
-      id: null,
-      typeBahan: null,
-      jenis_bahan: null,
-      nama_bahan: "",
-      kelompok: "",
-      merek: "",
-      produsen: "",
-      no_sertifikat: "",
-    };
     submitAddBahanButton.value = false;
     modalAddBahan.value = false;
   }
