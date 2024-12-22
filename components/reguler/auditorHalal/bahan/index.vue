@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+const route = useRoute()
+
 const props = defineProps({
   onComplete: {
     type: Function,
@@ -9,12 +11,16 @@ const props = defineProps({
   },
 })
 
+const id = route.params.id
+
 const addDialog = ref(false)
 const confirmSaveDialog = ref(false)
 const titleDialog = ref('')
 const labelSaveBtn = ref('')
 const tabs = ref(-1)
+const listBahan = ref<any[]>([])
 const file = ref<File | null>(null)
+const loading = ref(false)
 
 const documentList = ref([
   { nama: 'Izin Edar', fileName: 'Surat Izin Usaha.pdf', file: null },
@@ -27,22 +33,17 @@ onMounted(() => {
 
 const pengisianValue = ref('Unggah Foto')
 
-const materialName = ref(
-  {
-    label: [
-      { title: 'No.', key: 'no', nowrap: true },
-      { title: 'Jenis Bahan', key: 'materialType', nowrap: true },
-      { title: 'Nama Bahan', key: 'materialName', nowrap: true },
-      { title: 'Produsen', key: 'produsen', nowrap: true },
-      { title: 'Nomor Sertifikat Halal', key: 'certificateNo', nowrap: true },
-      { title: 'Action', value: 'actionPopOver3', sortable: false, nowrap: true, popOver: true },
-    ],
-    value: [
-      { no: 1, materialType: 'SIUP', materialName: '0128749286836', produsen: '-', certificateNo: '1231' },
-      { no: 2, materialType: 'NPWP', materialName: '0128749286836', produsen: '11/11/2024', certificateNo: '1231' },
-    ],
-  },
-)
+const materialName = ref<any>({
+  label: [
+    { title: 'No.', key: 'no', nowrap: true },
+    { title: 'Jenis Bahan', key: 'jenis_bahan', nowrap: true },
+    { title: 'Nama Bahan', key: 'nama_bahan', nowrap: true },
+    { title: 'Produsen', key: 'produsen', nowrap: true },
+    { title: 'Nomor Sertifikat Halal', key: 'no_sertifikat', nowrap: true },
+    { title: 'Action', value: 'actionPopOver3', sortable: false, nowrap: true, popOver: true },
+  ],
+  value: [],
+})
 
 const productName = ref(
   {
@@ -121,10 +122,41 @@ const handleSubmit = () => {
 
   // submit simpan
 }
+
+const handleListIngredient = async () => {
+  try {
+    const response: any = await $api(
+      '/self-declare/business-actor/ingredient/list',
+      {
+        method: 'get',
+        query: {
+          id_reg: id,
+        },
+      },
+    )
+
+    if (response.code === 2000) {
+      console.log(response?.data)
+      materialName.value = {
+        ...materialName.value,
+        value: response?.data,
+      }
+    }
+    return response
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+onMounted(async () => {
+  loading.value = true
+  await handleListIngredient()
+  loading.value = false
+})
 </script>
 
 <template>
-  <div>
+  <div v-if="!loading">
     <DialogSaveDataPengajuan
       title="Simpan Perubahan"
       :is-open="confirmSaveDialog"
@@ -375,7 +407,7 @@ const handleSubmit = () => {
       :on-edit="() => toggleEdit('Data Bahan')"
       :data="materialName"
       title="Daftar Nama Bahan dan Kemasan"
-      with-add-button
+      with-add-button-bahan
     >
       <template #headerDialog>
         <div class="d-flex w-100 mt-5">

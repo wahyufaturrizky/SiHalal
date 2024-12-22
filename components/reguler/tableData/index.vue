@@ -40,6 +40,10 @@ const props = defineProps({
     type: Boolean,
     required: false,
   },
+  withAddButtonBahan: {
+    type: Boolean,
+    required: false,
+  },
 })
 
 const handleCheck = (item: any) => {
@@ -56,6 +60,9 @@ const handleCheck = (item: any) => {
       <div class="d-flex justify-space-between align-center">
         <span class="text-h5 font-weight-bold">{{ props.title }}</span>
         <div class="d-flex justify-space-between gap-4">
+          <div v-if="withAddButtonBahan">
+            <TambahBahanModalHalal mode="add" />
+          </div>
           <VBtn
             v-if="withAddButton"
             variant="outlined"

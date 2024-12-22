@@ -34,16 +34,13 @@ const props = defineProps({
     type: Object,
     required: false,
   },
-  product_type: {
-    type: Array,
-    required: false,
-  },
   list_channel: {
     type: Array,
     required: false,
   },
 })
 
+const itemsProduct = ref<any>(null)
 const confirmSaveDialog = ref(false)
 const addDialog = ref(false)
 const titleAddDialog = ref('')
@@ -172,7 +169,7 @@ const getDetailData = async () => {
       },
       {
         title: 'Tanggal Surat Pemohon',
-        value: certificateHalal.tgl_mohon || '',
+        value: certificateHalal.tgl_daftar || '',
         type: 'text',
         required: true,
         key: 'tgl_mohon',
@@ -210,7 +207,7 @@ const getDetailData = async () => {
       },
       {
         title: 'LPH',
-        value: certificateHalal.lembaga_pendamping || '',
+        value: certificateHalal.nama_lph || '',
         type: 'select',
         disabled: false,
         required: true,
@@ -225,7 +222,7 @@ const getDetailData = async () => {
       },
       {
         title: 'Jenis Pendaftaran',
-        value: certificateHalal.jenis_produk || '',
+        value: certificateHalal.fac_id || '',
         type: 'select',
         disabled: false,
         required: true,
@@ -234,7 +231,7 @@ const getDetailData = async () => {
 
       responsibility.value = [
       {
-        title: 'Jenis Badan Usaha',
+        title: 'Nama',
         value: responsibilityData.nama_pj || '',
         type: 'text',
         required: false,
@@ -379,8 +376,16 @@ const handleAddOrEdit = async () => {
       url = '/reguler/pelaku-usaha/add-factory'
       method = 'post'
       break
-    case 'Tambah Data Aspek Legalr':
+    case 'Tambah Data Penyelia Halal':
       //
+      url = '/self-declare/business-actor/supervisor/create'
+      body = {
+        ...body,
+        id_penyelia: [
+            '90b107ef-8c16-41e7-84ba-25339bf244ce',
+        ],
+      }
+      method = 'post'
       break
 
     default:
@@ -650,7 +655,7 @@ onMounted(async () => {
       area_pemasaran="'Internasional'"
       :on-submit="(payload: any) => triggerSaveModal(payload, 'Pengajuan Sertifikasi Halal')"
       :data="requestCertificateData"
-      :product_type="props?.product_type"
+      :product_type="itemsProduct"
       :service_type="props?.list_channel"
       title="Pengajuan Sertifikasi Halal"
     />

@@ -59,26 +59,6 @@ const getListPenyelia = async () => {
   }
 }
 
-const loadItemProduct = async () => {
-  try {
-    const response: any = await $api('/master/products', {
-      method: 'get',
-    })
-
-    if (response.length) {
-      itemsProduct.value = response
-
-      return response
-    }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
-  }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
-
 const getChannel = async (path: string) => {
   try {
     const params = {
@@ -140,7 +120,6 @@ onMounted(async () => {
     getFactoryAndOutlet('FAOUT'),
     getListLegal(),
     getListPenyelia(),
-    loadItemProduct(),
     getChannel(LIST_CHANNEL_PATH_JNLAY),
   ])
   loading.value = false
@@ -205,7 +184,6 @@ onMounted(async () => {
               :list_factory="listFactory"
               :list_outlet="listOutlet"
               :list_penyelia="listPenyelia"
-              :product_type="itemsProduct"
               :list_channel="itemsChannel"
             />
           </div>
@@ -214,7 +192,9 @@ onMounted(async () => {
               <KomitmenDanTanggungJawab :on-complete="() => (approveRequirements = true)" />
             </div>
             <div v-else>
-              <ListKomitmenDanTanggungJawab />
+              <ListKomitmenDanTanggungJawab
+                :id="id"
+              />
             </div>
           </div>
           <div v-if="activeTab === 2">

@@ -1,5 +1,8 @@
 <!-- eslint-disable vue/prop-name-casing -->
 <script setup lang="ts">
+import VueDatePicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
+
 const props = defineProps({
   id: {
     type: String,
@@ -40,10 +43,17 @@ const props = defineProps({
   },
 })
 
-console.log(props.jenis_layanan, props.area_pemasaran, props.id)
+const itemsLph = ref<any>([])
+const searchRegisType = ref<string>('')
+const messageFasilitator = ref<string>('')
+const productList = ref<any[]>([])
 
-const itemsLph = ref<any>({})
-const localData = ref(props?.data)
+const listAreaPemasaran = [
+  { name: 'Kabupaten/Kota', code: 'Kabupaten/Kota' },
+  { name: 'Provinsi', code: 'Provinsi' },
+  { name: 'Nasional', code: 'Nasional' },
+  { name: 'Internasional', code: 'Internasional' },
+]
 
 const getSelectOptions = (field: string): string => {
   let data: string[] = []
@@ -52,13 +62,19 @@ const getSelectOptions = (field: string): string => {
       data = props?.service_type
       break
     case 'Jenis Produk':
-      data = props?.product_type
+      data = productList.value || []
       break
     case 'Skala Usaha':
       data = ['Mikro', 'Kecil', 'Menengah', 'Besar']
       break
     case 'Jenis Pendaftaran':
-      data = ['Self Declare', 'Lainnya']
+      data = [
+        { name: 'Pendaftaran Mandiri/Reguler ', code: '' },
+        { name: 'Pendaftaran Melalui Fasilitasi', code: 'CH002' },
+      ]
+      break
+    case 'Jenis Pengajuan':
+      data = [{ name: 'baru', code: 'baru' }]
       break
     case 'Nama Fasilitas':
       data = ['Es Cream', 'Minuman', 'Snack', 'Lainnya']
@@ -69,12 +85,7 @@ const getSelectOptions = (field: string): string => {
     case 'Hasil Audit':
       data = ['Lulus', 'Tidak Lulus']
     case 'Area Pemasaran':
-      data = [
-        { name: 'Kabupaten/Kota', code: '1' },
-        { name: 'Provinsi', code: '2' },
-        { name: 'Nasional', code: '3' },
-        { name: 'Internasional', code: '4' },
-      ]
+      data = listAreaPemasaran || []
       break
     default:
       break
@@ -83,10 +94,10 @@ const getSelectOptions = (field: string): string => {
   return data
 }
 
-const getLph = async (path: string) => {
+const getLph = async (path: string, layanan: string, area: string) => {
   try {
     const params = {
-      url: `${path}/${props?.id}/lph?jenis_layanan=A0000&area_pemasaran=Internasional`,
+      url: `${path}/${props?.id}/lph?jenis_layanan=${layanan}&area_pemasaran=${area}`,
       page: 1,
       size: 10,
       keyword: '',
@@ -109,26 +120,72 @@ const getLph = async (path: string) => {
 }
 
 const onSubmit = async () => {
+  const jenisLayanan = props?.service_type?.find((item: any) => props.data?.[3]?.value === item.name || props.data?.[3]?.value === item.code)
+  const jenisProduk = props?.product_type?.find((item: any) => props.data?.[4]?.value === item.name || props.data?.[4]?.value === item.code)
+  const tanggalDaftar = formatDateIntl(new Date(props.data[2]?.value))
+  const lphId = itemsLph.value?.find((item: any) => props.data[7]?.value === item.nama_lph || props.data[7]?.value === item.lph_id)
+
   const payload = {
     id_reg: props?.id,
-    nama_pu: props.data[0].value,
-    no_mohon: props.data[1].value,
-    tgl_daftar: props.data[2].value,
-    jenis_layanan: props.data[3].value,
-    jenis_produk: props.data[4].value,
-    merk_dagang: props.data[5].value,
-    area_pemasaran: props.data[6].value,
-    lph_id: props.data[7].value,
-    channel_id: props.data[8].value,
-    fac_id: props.data[9].value,
+    nama_pu: props.data[0]?.value,
+    no_mohon: props.data[1]?.value,
+    tgl_daftar: `${tanggalDaftar?.split('/')?.[2]}-${tanggalDaftar?.split('/')?.[1]}-${tanggalDaftar?.split('/')?.[0]}`,
+    jenis_layanan: jenisLayanan?.code || props.data?.[3]?.value,
+    jenis_produk: jenisProduk?.code || props.data?.[4]?.value,
+    merk_dagang: props.data[5]?.value,
+    area_pemasaran: props.data?.[6]?.value,
+    lph_id: lphId.lph_id || props.data[7]?.value,
+    channel_id: '',
+    fac_id: props.data[9]?.value,
   }
 
   props.onSubmit(payload)
 }
 
+const getProductType = async (id: string) => {
+  try {
+    const response: any = await $api('/master/product-filter', {
+      method: 'get',
+      params: { id },
+    })
+
+    if (response.length) {
+      productList.value = response
+
+      return response
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const lphValidation = async (title: string, value: string) => {
+  console.log(title, value, '><<<<<===', props.data[3], props.data[6])
+
+  const jenisLayanan = props?.service_type?.find((item: any) => props.data?.[3]?.value === item.name || props.data?.[3]?.value === item.code)
+
+  if (title === 'Jenis Layanan')
+    await getProductType(value)
+  else if (title === 'Area Pemasaran')
+    await getLph(LIST_BUSINESS_ACTOR, jenisLayanan?.code, value)
+}
+
+const checkCodeFasilitas = async () => {
+  messageFasilitator.value = 'Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada fasilitator sebagai kode untuk mendaftarkan sertifikasi halal gratis'
+}
+
 onMounted(async () => {
-  if (props.title === 'Pengajuan Sertifikasi Halal')
-    await getLph(LIST_BUSINESS_ACTOR)
+  setTimeout(async () => {
+    const jenisLayanan = props?.service_type?.find((item: any) => props.data?.[3]?.value === item.name || props.data?.[3]?.value === item.code)
+    if (props.data?.[3]?.value)
+      await getProductType(jenisLayanan?.code || props.data?.[3]?.value)
+    if (jenisLayanan && props.data[6])
+      await getLph(LIST_BUSINESS_ACTOR, jenisLayanan?.code, props.data?.[6]?.value)
+  }, 1000)
 })
 </script>
 
@@ -142,7 +199,7 @@ onMounted(async () => {
       <VRow>
         <VCol
           v-for="(item, index) in props.data"
-          :key="item.title"
+          :key="index"
           :value="item.value"
           cols="12"
         >
@@ -151,7 +208,21 @@ onMounted(async () => {
               {{ item.title }}
               <span v-if="item.required" class="required">*</span>
             </p>
-            <VTextField v-model="item.value" class="-mt-10" />
+            <div v-if="item.title.includes('Tanggal')">
+              <VueDatePicker
+                id="tanggal_daftar"
+                v-model="item.value"
+                teleport-center
+                :enable-time-picker="false"
+                format="dd-MM-yyyy"
+              />
+            </div>
+            <div v-else>
+              <VTextField
+                v-model="item.value"
+                class="-mt-10"
+              />
+            </div>
           </div>
           <div v-if="item.type === 'select'">
             <p class="label-pengajuan">
@@ -161,7 +232,7 @@ onMounted(async () => {
             <VSelect
               v-if="item.disabled"
               v-model="item.value"
-              :items="getSelectOptions(item.title)"
+              :items="getSelectOptions(item.title) || []"
               outlined
               class="-mt-10"
               disabled
@@ -176,6 +247,7 @@ onMounted(async () => {
               class="-mt-10"
               :item-value="item.title === 'LPH' ? 'lph_id' : 'code'"
               :item-title="item.title === 'LPH' ? 'nama_lph' : 'name'"
+              @update:model-value="() => lphValidation(item.title, item.value)"
             />
           </div>
           <VCol
@@ -211,6 +283,37 @@ onMounted(async () => {
               <VTextarea v-model="item.value" class="-mt-10" />
             </div>
           </div>
+        </VCol>
+        <VCol
+          v-if="props.data?.[9]?.value === 'CH002'"
+          cols="12"
+        >
+          <label>Kode Daftar/Fasilitasi</label>
+          <div class="d-flex gap-10 mt-3">
+            <VTextField
+              v-model="searchRegisType"
+              value="tes"
+              style="max-width: 10rem"
+            />
+            <VBtn
+              variant="outlined"
+              style="height: 45px;"
+              @click="checkCodeFasilitas"
+            >
+              Cari Kode
+            </VBtn>
+          </div>
+          <VAlert
+            v-if="messageFasilitator"
+            type="warning"
+            variant="tonal"
+            color="#652672"
+            class="mt-3"
+          >
+            Kode unik yang diterbitkan oleh BPJPH yang diberikan
+            kepada fasilitator sebagai kode untuk mendaftarkan
+            sertifikasi halal gratis
+          </VAlert>
         </VCol>
       </VRow>
       <br />

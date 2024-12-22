@@ -1,7 +1,11 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 
 const props = defineProps({
+  id: {
+    type: String,
+    required: false,
+  },
   onComplete: {
     type: Function,
     default: () => { },
@@ -38,6 +42,23 @@ const toggleEdit = () => {
   addDialog.value = true
   titleDialog.value = 'Ubah Anggota Komitmen'
 }
+
+// const getDetailData: any = async () => {
+//   try {
+//     const response = await $api('/reguler/pelaku-usaha/detail-tab', {
+//       method: 'get',
+//       params: { id: props?.id, type: 'tim-manajemen-halal' },
+//     })
+//     console.log(response, '<<<<===')
+//   }
+//   catch (error) {
+//     useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+//   }
+// }
+
+// onMounted(async () => {
+//   await getDetailData()
+// })
 </script>
 
 <template>
