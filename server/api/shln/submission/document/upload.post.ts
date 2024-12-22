@@ -46,8 +46,6 @@ export default defineEventHandler(async (event) => {
       body: formData,
     }
   ).catch((err: NuxtError) => {
-    console.log(err);
-    setResponseStatus(event, 400);
     return err.data;
   });
 
