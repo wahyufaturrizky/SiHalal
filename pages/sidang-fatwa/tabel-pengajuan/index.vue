@@ -2,13 +2,14 @@
 import { onMounted, ref } from "vue";
 import { VDataTableServer } from "vuetify/components";
 
+const items = ref([]);
 const loadingAll = ref(true);
 
-const items = ref([]);
 const itemPerPage = ref(10);
-const totalItems = ref(0);
+const totalItems = ref(0); // Total dummy data
 const loading = ref(false);
 const page = ref(1);
+
 const searchQuery = ref("");
 
 const loadItem = async ({
@@ -23,7 +24,7 @@ const loadItem = async ({
   try {
     loading.value = true;
 
-    const response: any = await $api("/sidang-fatwa/entri-ketetapan-halal", {
+    const response: any = await $api("/sidang-fatwa/proses-sidang-fatwa", {
       method: "get",
       params: {
         page,
@@ -49,14 +50,6 @@ const loadItem = async ({
 
 const debouncedFetch = debounce(loadItem, 500);
 
-const handleInput = () => {
-  debouncedFetch({
-    page: page.value,
-    size: itemPerPage.value,
-    keyword: searchQuery.value,
-  });
-};
-
 onMounted(async () => {
   const res = await Promise.all([
     loadItem({
@@ -78,7 +71,7 @@ onMounted(async () => {
 });
 
 const verifikatorTableHeader = [
-  { title: "No", key: "no" },
+  { title: "No", key: "id" },
   { title: "Nomor Daftar", key: "no_daftar" },
   { title: "Tanggal Daftar", key: "tgl_daftar" },
   { title: "Nama PU", key: "nama_pu" },
@@ -90,14 +83,22 @@ const verifikatorTableHeader = [
   { title: "Action", key: "action" },
 ];
 
+const handleInput = () => {
+  debouncedFetch({
+    page: page.value,
+    size: itemPerPage.value,
+    keyword: searchQuery.value,
+  });
+};
+
 const navigateAction = (id: string) => {
-  navigateTo(`/sidang-fatwa/entri-ketetapan-halal/${id}`);
+  navigateTo(`/sidang-fatwa/tabel-pengajuan/${id}`);
 };
 </script>
 
 <template>
   <div>
-    <p class="text-h4">Tabel Pengajuan Ketetapan Halal</p>
+    <p class="text-h4">Tabel Pengajuan Proses Sidang</p>
     <VCard class="pa-4">
       <VRow v-if="!loadingAll">
         <VCol>
@@ -153,6 +154,7 @@ const navigateAction = (id: string) => {
           </VDataTableServer>
         </VCol>
       </VRow>
+
       <VSkeletonLoader type="card" v-else />
     </VCard>
   </div>
