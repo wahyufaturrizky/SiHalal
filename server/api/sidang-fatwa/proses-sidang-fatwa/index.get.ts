@@ -11,11 +11,10 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { page, size, keyword, status } = (await getQuery(event)) as {
+  const { page, size, keyword } = (await getQuery(event)) as {
     page: string;
     size: string;
     keyword: string;
-    status: string;
   };
 
   const params: any = {
@@ -27,12 +26,8 @@ export default defineEventHandler(async (event) => {
     params["keyword"] = keyword;
   }
 
-  if (status !== "" && status !== "Semua") {
-    params["status"] = status;
-  }
-
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/sidang-fatwa/entri-ketetapan-halal/search`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/sidang-fatwa/proses/search`,
     {
       method: "get",
       headers: { Authorization: authorizationHeader },

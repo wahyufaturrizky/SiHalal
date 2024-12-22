@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/sidang-fatwa/entri-ketetapan-halal/${id}`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/sidang-fatwa/sidang-fatwa/${id}`,
     {
       method: "get",
       headers: { Authorization: authorizationHeader },
