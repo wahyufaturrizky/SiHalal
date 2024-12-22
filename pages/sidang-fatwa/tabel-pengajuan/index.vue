@@ -1,62 +1,79 @@
 <script setup lang="ts">
-import { formatDateIntl } from "#imports";
 import { onMounted, ref } from "vue";
 import { VDataTableServer } from "vuetify/components";
 
-const items = ref([
-  {
-    id: 1,
-    nomor_daftar: "SH2024-225-29480",
-    tanggal_daftar: "2024-11-01",
-    nama_pu: "John Doe",
-    alamat: "Sumbawa Banget RT002/ RW002",
-    skala_usaha: "Mikro",
-    jenis_produk: "Makanan",
-    merek_dagang: "BrandX",
-    laporan_sph: true,
-    action: true,
-  },
-  {
-    id: 2,
-    nomor_daftar: "SH2024-225-29481",
-    tanggal_daftar: "2024-11-02",
-    nama_pu: "Jane Smith",
-    alamat: "Surabaya, Jl. Mawar No. 5",
-    skala_usaha: "Kecil",
-    jenis_produk: "Minuman",
-    merek_dagang: "BrandY",
-    laporan_sph: true,
-    action: true,
-  },
-  {
-    id: 3,
-    nomor_daftar: "SH2024-225-29482",
-    tanggal_daftar: "2024-11-03",
-    nama_pu: "Robert Johnson",
-    alamat: "Jakarta Selatan, Blok C",
-    skala_usaha: "Menengah",
-    jenis_produk: "Elektronik",
-    merek_dagang: "BrandZ",
-    laporan_sph: false,
-    action: true,
-  },
-]);
+const items = ref([]);
+const loadingAll = ref(true);
 
 const itemPerPage = ref(10);
-const totalItems = ref(items.value.length); // Total dummy data
+const totalItems = ref(0); // Total dummy data
 const loading = ref(false);
 const page = ref(1);
 
-const debouncedFetch = debounce(() => {}, 500); // Tidak digunakan untuk dummy data
+const searchQuery = ref("");
 
-onMounted(() => {
-  // Dummy data tidak memerlukan pemanggilan API
+const loadItem = async ({
+  page,
+  size,
+  keyword,
+}: {
+  page: number;
+  size: number;
+  keyword: string;
+}) => {
+  try {
+    loading.value = true;
+
+    const response: any = await $api("/sidang-fatwa/proses-sidang-fatwa", {
+      method: "get",
+      params: {
+        page,
+        size,
+        keyword,
+      },
+    });
+
+    if (response.code === 2000) {
+      items.value = response.data || [];
+      totalItems.value = response.total_item || 0;
+      loading.value = false;
+      return response;
+    } else {
+      loading.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
+  }
+};
+
+const debouncedFetch = debounce(loadItem, 500);
+
+onMounted(async () => {
+  const res = await Promise.all([
+    loadItem({
+      page: page.value,
+      size: itemPerPage.value,
+      keyword: searchQuery.value,
+    }),
+  ]);
+
+  const checkResIfUndefined = res.every((item: any) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
 });
 
 const verifikatorTableHeader = [
   { title: "No", key: "id" },
   { title: "Nomor Daftar", key: "nomor_daftar" },
-  { title: "Tanggal Daftar", key: "tanggal_daftar" },
+  { title: "Tanggal Daftar", key: "tgl_daftar" },
   { title: "Nama PU", key: "nama_pu" },
   { title: "Alamat", key: "alamat" },
   { title: "Skala Usaha", key: "skala_usaha" },
@@ -66,14 +83,16 @@ const verifikatorTableHeader = [
   { title: "Action", key: "action" },
 ];
 
-const searchQuery = ref("");
-
 const handleInput = () => {
-  console.log("Search:", searchQuery.value);
+  debouncedFetch({
+    page: page.value,
+    size: itemPerPage.value,
+    keyword: searchQuery.value,
+  });
 };
 
 const navigateAction = (id: string) => {
-  alert(`Navigating to detail page for ID: ${id}`);
+  navigateTo(`/sidang-fatwa/tabel-pengajuan/${id}`);
 };
 </script>
 
@@ -81,12 +100,12 @@ const navigateAction = (id: string) => {
   <div>
     <p class="text-h4">Tabel Pengajuan Proses Sidang</p>
     <VCard class="pa-4">
-      <VRow>
+      <VRow v-if="!loadingAll">
         <VCol>
           <p class="text-h5">Data Pengajuan</p>
         </VCol>
       </VRow>
-      <VRow>
+      <VRow v-if="!loadingAll">
         <VCol class="d-flex justify-sm-space-between align-center">
           <VTextField
             v-model="searchQuery"
@@ -97,7 +116,7 @@ const navigateAction = (id: string) => {
           />
         </VCol>
       </VRow>
-      <VRow>
+      <VRow v-if="!loadingAll">
         <VCol>
           <VDataTableServer
             v-model:items-per-page="itemPerPage"
@@ -108,15 +127,19 @@ const navigateAction = (id: string) => {
             :items-length="totalItems"
             loading-text="Loading..."
           >
-            <template #item.id="{ index }">
+            <template #item.no="{ index }">
               {{ index + 1 + (page - 1) * itemPerPage }}
             </template>
-            <template #item.tanggal_daftar="{ item }">
-              {{ formatDateIntl(new Date(item.tanggal_daftar)) }}
+            <template #item.tgl_daftar="{ item }">
+              {{ formatDate((item as any).tgl_daftar) }}
             </template>
             <template #item.laporan_sph="{ item }">
-              <VBtn color="primary" @click="navigateAction(item.id)">
-                {{ item.laporan_sph ? "Lihat Dokumen" : "Tidak Ada Dokumen" }}
+              <VBtn color="primary" @click="navigateAction((item as any).id)">
+                {{
+                  (item as any).laporan_sph
+                    ? "Lihat Dokumen"
+                    : "Tidak Ada Dokumen"
+                }}
               </VBtn>
             </template>
             <template #item.action="{ item }">
@@ -124,13 +147,15 @@ const navigateAction = (id: string) => {
                 <VIcon
                   icon="ri-arrow-right-line"
                   color="primary"
-                  @click="navigateAction(item.id)"
+                  @click="navigateAction((item as any).id)"
                 />
               </div>
             </template>
           </VDataTableServer>
         </VCol>
       </VRow>
+
+      <VSkeletonLoader type="card" v-else />
     </VCard>
   </div>
 </template>
