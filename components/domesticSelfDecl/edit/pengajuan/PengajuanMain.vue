@@ -20,7 +20,7 @@ const formData = reactive({
   tgl_surat_permohonan: null,
   jenis_layanan: null,
   jenis_produk: null,
-  nama_usaha: submissionDetail?.nama_pu || null,
+  nama_usaha: null,
   area_pemasaran: null,
   lokasi_pendamping: null,
   lembaga_pendamping: null,
@@ -45,14 +45,12 @@ const lembagaPendamping = ref([]);
 const listPendamping = ref([]);
 
 const loadDataPendamping = async (lokasi: string | null) => {
-  console.log(formData, "< formData");
   if (lokasi) {
     await handleGetLembagaPendamping(lokasi);
-    await handleGetPendamping(lokasi);
   }
 };
 
-const handleDetailPengajuan = async () => {
+await useAsyncData("get-detail-submission", async () => {
   try {
     const response: any = await $api(
       `/self-declare/submission/${submissionId}/detail`,
@@ -63,13 +61,13 @@ const handleDetailPengajuan = async () => {
 
     if (response.code === 2000) {
       Object.assign(submissionDetail, response.data.certificate_halal);
-      Object.assign(formData, response.data.certificate_halal);
+      // Object.assign(formData, response.data.certificate_halal);
     }
     return response;
   } catch (error) {
     console.log(error);
   }
-};
+});
 const handleGetListPendaftaran = async () => {
   try {
     listPendaftaran.value = await $api(`/master/jenis-pendaftaran`, {
@@ -142,14 +140,15 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
     console.log(error);
   }
 };
-const handleGetPendamping = async (lokasi: string) => {
+const handleGetPendamping = async (idLembaga: string | null) => {
+  if (!idLembaga) return;
   try {
     const response: any = await $api(
       `/self-declare/business-actor/submission/list-pendamping`,
       {
         method: "get",
         query: {
-          id_reg: submissionId,
+          id_lembaga: idLembaga,
         },
       }
     );
@@ -166,6 +165,7 @@ const handleGetPendamping = async (lokasi: string) => {
 };
 
 const handleUpdateSubmission = async () => {
+  console.log(formData, "< form data");
   try {
     const response: any = await $api(
       `/self-declare/business-actor/submission/update`,
@@ -189,7 +189,7 @@ const handleUpdateSubmission = async () => {
 onMounted(() => {
   // await Promise.all([
   handleGetListPendaftaran();
-  handleDetailPengajuan();
+  // handleDetailPengajuan();
   handleGetFasilitator();
   handleGetJenisLayanan();
   handleGetJenisProduk();
@@ -393,6 +393,7 @@ onMounted(() => {
               item-title="name"
               item-value="id"
               v-model="formData.lembaga_pendamping"
+              @update:model-value="handleGetPendamping"
             ></VSelect>
           </VItemGroup>
           <br />
