@@ -1453,7 +1453,7 @@ const dibatalkan = async () => {
               </ol>
             </VCol>
             <VCol class="d-flex justify-end align-center" cols="6" md="2">
-              <TambahProduk
+              <TambahProdukSelfDeclareVerifikator
                 @refresh="
                   loadItemProdukById({
                     page: pageTableProduk,
