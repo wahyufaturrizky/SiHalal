@@ -26,6 +26,7 @@ const textSubmitButton = computed(() => {
 
 const closeDialog = () => {
   localDialogVisible.value = false;
+  emit("update:dialogVisible", false);
 };
 const resetForm = () => {
   uploadedFile.value.name = null;
@@ -33,6 +34,7 @@ const resetForm = () => {
   formData.foto_produk = null;
   formData.kode_rincian = null;
   formData.nama_produk = null;
+  formData.product_grade = null;
   formData.merek = null;
   productDetail.value = null;
 };
