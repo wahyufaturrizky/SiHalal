@@ -34,6 +34,14 @@ const props = defineProps({
     type: Object,
     required: false,
   },
+  product_type: {
+    type: Array,
+    required: false,
+  },
+  list_channel: {
+    type: Array,
+    required: false,
+  },
 })
 
 const confirmSaveDialog = ref(false)
@@ -51,7 +59,7 @@ const aspectLegalData = ref<any>({})
 const factoryData = ref({})
 const outletData = ref({})
 const halalData = ref({})
-const addData = ref<any>([])
+const payloadData = ref({})
 
 const listFactory = ref<any>({
   label: [
@@ -119,8 +127,9 @@ const uploadFile = (event: Event, index: string | number) => {
   }
 }
 
-const triggerSaveModal = (type: string) => {
+const triggerSaveModal = (payload: any, type: string) => {
   submitContentType.value = type
+  payloadData.value = payload
   confirmSaveDialog.value = true
 }
 
@@ -129,30 +138,6 @@ const triggerAddModal = (type: string) => {
   addDialog.value = true
   titleAddDialog.value = `Tambah Data ${type}`
   labelSaveBtn.value = 'Tambah'
-}
-
-const handleSubmit = () => {
-  let payload: any = {}
-  switch (submitContentType.value) {
-  case 'Penanggung Jawab':
-    payload = {
-        nama_pj: responsibility?.value?.[0]?.value,
-        no_kontak_pj: responsibility?.value?.[1]?.value,
-      email_pj: responsibility?.value?.[2]?.value,
-    }
-    editResponsibility({
-      ...payload,
-      id_reg: props?.id,
-    })
-    break
-    case '2':
-      break
-    case '3':
-      break
-    default:
-      break
-  }
-  confirmSaveDialog.value = false
 }
 
 const getDetailData = async () => {
@@ -329,7 +314,13 @@ const getDetailData = async () => {
 
 const editResponsibility = async (body: PayloadPenanggungJawab) => {
   try {
-    const response: any = await $api('/reguler/pelaku-usaha/penanggung-jawab', {
+    let url = ''
+    if (submitContentType.value === 'Pengajuan Sertifikasi Halal')
+      url = '/reguler/pelaku-usaha/certificate'
+    else
+      url = '/reguler/pelaku-usaha/penanggung-jawab'
+
+    const response: any = await $api(url, {
       method: 'put',
       body,
     })
@@ -451,6 +442,29 @@ const deleteFactoryOrOutlet = async (type: string, el: any) => {
   catch (error) {
     useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
   }
+}
+
+const handleSubmit = () => {
+  let payload: any = {}
+  if (submitContentType.value === 'Pengajuan Sertifikasi Halal') {
+    payload = payloadData.value
+    editResponsibility({
+      ...payload,
+    })
+  }
+  else if (submitContentType.value === 'Penanggung Jawab') {
+    payload = {
+        nama_pj: responsibility?.value?.[0]?.value,
+        no_kontak_pj: responsibility?.value?.[1]?.value,
+      email_pj: responsibility?.value?.[2]?.value,
+    }
+
+    editResponsibility({
+      ...payload,
+      id_reg: props?.id,
+    })
+  }
+  confirmSaveDialog.value = false
 }
 
 onMounted(async () => {
@@ -631,18 +645,23 @@ onMounted(async () => {
   </DialogWithAction>
   <div v-if="!loading">
     <FormData
-      :on-submit="() => triggerSaveModal('Pengajuan Sertifikasi Halal')"
+      :id="props?.id"
+      jenis_layanan="'A0000'"
+      area_pemasaran="'Internasional'"
+      :on-submit="(payload: any) => triggerSaveModal(payload, 'Pengajuan Sertifikasi Halal')"
       :data="requestCertificateData"
+      :product_type="props?.product_type"
+      :service_type="props?.list_channel"
       title="Pengajuan Sertifikasi Halal"
     />
     <br>
     <FormData
-      :on-submit="() => triggerSaveModal('Penanggung Jawab')"
+      :on-submit="() => triggerSaveModal(null, 'Penanggung Jawab')"
       :data="responsibility" title="Penanggung Jawab"
     />
     <br>
     <TableData
-      :on-submit="() => triggerSaveModal('Aspek Legal')"
+      :on-submit="() => triggerSaveModal(null, 'Aspek Legal')"
       :on-add="() => triggerAddModal('Aspek Legal')"
       :on-delete="(el: any) => deleteFactoryOrOutlet('aspek legal', el)"
       :data="aspectLegalData"
@@ -652,7 +671,7 @@ onMounted(async () => {
     <br>
 
     <TableData
-      :on-submit="() => triggerSaveModal('Pabrik')"
+      :on-submit="() => triggerSaveModal(null, 'Pabrik')"
       :on-add="() => triggerAddModal('Pabrik')"
       :on-delete="(el: any) => deleteFactoryOrOutlet('pabrik', el)"
       :data="factoryData"
@@ -661,7 +680,7 @@ onMounted(async () => {
     />
     <br>
     <TableData
-      :on-submit="() => triggerSaveModal('Outlet')"
+      :on-submit="() => triggerSaveModal(null, 'Outlet')"
       :on-add="() => triggerAddModal('Outlet')"
       :on-delete="(el: any) => deleteFactoryOrOutlet('outlet', el)"
       :data="outletData"
@@ -670,7 +689,7 @@ onMounted(async () => {
     />
     <br>
     <TableData
-      :on-submit="() => triggerSaveModal('Penyelia Halal')"
+      :on-submit="() => triggerSaveModal(null, 'Penyelia Halal')"
       :on-add="() => triggerAddModal('Penyelia Halal')"
       :data="halalData"
       :on-delete="(el: any) => deleteFactoryOrOutlet('halal data', el)"

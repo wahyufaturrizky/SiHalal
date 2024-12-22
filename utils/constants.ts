@@ -11,3 +11,5 @@ export const POST_AUDIT_DETAIL = 'api/v1/halal-certificate-reguler/lph/post-audi
 
 // REGULER - PELAKU USAHA
 export const LIST_MENU_STATUS = 'api/v1/halal-certificate-reguler/business-actor/submission'
+export const LIST_BUSINESS_ACTOR = 'api/v1/halal-certificate-reguler/business-actor'
+export const LIST_CHANNEL_PATH_JNLAY = 'api/list/ref/JNLAY'
