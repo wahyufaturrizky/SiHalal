@@ -133,6 +133,7 @@ interface editBahan {
                     produsen: item.produsen,
                     no_sertifikat: item.no_sertifikat,
                   }"
+                  @loadList="loadBahan()"
                 />
                 <IconBtn size="small" @click="deleteItem(item.id)">
                   <VIcon color="error" icon="ri-delete-bin-line" />
