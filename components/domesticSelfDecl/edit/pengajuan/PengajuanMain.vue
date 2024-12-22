@@ -120,6 +120,27 @@ const handleGetPendamping = async () => {
   }
 };
 
+const handleUpdateSubmission = async () => {
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/submission/update`,
+      {
+        method: "put",
+        body: formData,
+      }
+    );
+
+    if (response.code === 2000) {
+      if (response.data !== null) {
+        listPendamping.value = response.data;
+      }
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 onMounted(() => {
   // await Promise.all([
   handleGetListPendaftaran();
@@ -134,8 +155,16 @@ onMounted(() => {
 
 <template>
   <VCard class="pa-3" variant="elevated" elevation="9">
-    <VCardTitle class="mb-5">
-      <div class="font-weight-bold text-h4">Data Pengajuan</div>
+    <VCardTitle
+      class="d-flex justify-space-between align-center font-weight-bold text-h4 mb-5"
+    >
+      <div>Data Pengajuan</div>
+      <VBtn
+        color="primary"
+        variant="flat"
+        text="Simpan Perubahan"
+        @click="handleUpdateSubmission"
+      />
     </VCardTitle>
     <VCardTitle>
       <VRow>
