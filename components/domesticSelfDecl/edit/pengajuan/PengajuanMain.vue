@@ -6,16 +6,21 @@ const submissionDetail = reactive({
   id_reg: null,
   jenis_pengajuan: null,
   tanggal_buat: null,
+  nama_pj: null,
+  alamat_pu: null,
+  jabatan_pj: null,
+  telp_pu: null,
+  nama_pu: null,
 });
 const formData = reactive({
-  id_reg: submissionDetail.id_reg,
+  id_reg: submissionId,
   jenis_pendaftaran: null,
   kode_daftar: null,
   no_surat_permohonan: null,
   tgl_surat_permohonan: null,
   jenis_layanan: null,
   jenis_produk: null,
-  nama_usaha: null,
+  nama_usaha: submissionDetail?.nama_pu || null,
   area_pemasaran: null,
   lokasi_pendamping: null,
   lembaga_pendamping: null,
@@ -26,10 +31,26 @@ const listPendaftaran = ref([]);
 const listFasilitasi = ref([]);
 const listLayanan = ref([]);
 const listProduk = ref([]);
-const listAreaPemasaran = ref([]);
-const lokasiPendamping = ref([]);
+const listAreaPemasaran = ref([
+  { title: "Kabupaten/Kota", value: "Kabupaten" },
+  { title: "Provinsi", value: "Provinsi" },
+  { title: "Nasional", value: "Nasional" },
+  { title: "Internasional", value: "Internasional" },
+]);
+const lokasiPendamping = ref([
+  { title: "Kabupaten", value: "Kabupaten" },
+  { title: "Provinsi", value: "Provinsi" },
+]);
 const lembagaPendamping = ref([]);
 const listPendamping = ref([]);
+
+const loadDataPendamping = async (lokasi: string | null) => {
+  console.log(formData, "< formData");
+  if (lokasi) {
+    await handleGetLembagaPendamping(lokasi);
+    await handleGetPendamping(lokasi);
+  }
+};
 
 const handleDetailPengajuan = async () => {
   try {
@@ -42,6 +63,7 @@ const handleDetailPengajuan = async () => {
 
     if (response.code === 2000) {
       Object.assign(submissionDetail, response.data.certificate_halal);
+      Object.assign(formData, response.data.certificate_halal);
     }
     return response;
   } catch (error) {
@@ -97,7 +119,30 @@ const handleGetJenisProduk = async () => {
   }
 };
 
-const handleGetPendamping = async () => {
+const handleGetLembagaPendamping = async (lokasi: string) => {
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/submission/list-lembaga-pendamping`,
+      {
+        method: "get",
+        query: {
+          id_reg: submissionId,
+          lokasi: lokasi,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      if (response.data !== null) {
+        lembagaPendamping.value = response.data;
+      }
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+const handleGetPendamping = async (lokasi: string) => {
   try {
     const response: any = await $api(
       `/self-declare/business-actor/submission/list-pendamping`,
@@ -148,7 +193,6 @@ onMounted(() => {
   handleGetFasilitator();
   handleGetJenisLayanan();
   handleGetJenisProduk();
-  handleGetPendamping();
   // ]);
 });
 </script>
@@ -325,8 +369,6 @@ onMounted(() => {
               placeholder="Pilih Area Pemasaran"
               density="compact"
               :items="listAreaPemasaran"
-              item-title="name"
-              item-value="id"
               v-model="formData.area_pemasaran"
             ></VSelect>
           </VItemGroup>
@@ -334,19 +376,18 @@ onMounted(() => {
           <VItemGroup>
             <VLabel>Lokasi Pendamping</VLabel>
             <VSelect
-              placeholder="Pilih Lokasi Pendamping"
+              placeholder="Pilih Area Pemasaran"
               density="compact"
               :items="lokasiPendamping"
-              item-title="name"
-              item-value="id"
               v-model="formData.lokasi_pendamping"
+              @update:model-value="loadDataPendamping"
             ></VSelect>
           </VItemGroup>
           <br />
           <VItemGroup>
             <VLabel>Lembaga Pendamping</VLabel>
             <VSelect
-              placeholder="Pilih Lembaga Pendamping"
+              placeholder="Pilih Area Pemasarang"
               density="compact"
               :items="lembagaPendamping"
               item-title="name"
@@ -371,9 +412,9 @@ onMounted(() => {
       <br />
       <div style="display: flex; justify-content: end">
         <VItemGroup style="display: inline-flex">
-          <SuratPermohonanModal></SuratPermohonanModal>
+          <SuratPermohonanModal :data="submissionDetail" />
           <div style="margin-left: 1svw"></div>
-          <SuratPernyataanModal></SuratPernyataanModal>
+          <SuratPernyataanModal :data="submissionDetail" />
         </VItemGroup>
       </div>
     </VCardTitle>
