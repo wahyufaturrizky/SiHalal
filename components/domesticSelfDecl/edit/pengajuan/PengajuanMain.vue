@@ -322,7 +322,7 @@ onMounted(() => {
                 <Vuepicdatepicker
                   v-model:model-value="formData.tgl_surat_permohonan"
                   auto-apply
-                  model-type="dd/MM/yyyy"
+                  model-type="yyyy-MM-dddd"
                   :enable-time-picker="false"
                   teleport
                   clearable
