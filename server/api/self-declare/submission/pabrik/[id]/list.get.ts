@@ -1,10 +1,7 @@
-import type { NuxtError } from "nuxt/app";
-import type { NewAccountGovernment } from "~/server/interface/new-account.iface";
-
+import { NuxtError } from "nuxt/app";
 const runtimeConfig = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
-
   if (typeof authorizationHeader === "undefined") {
     throw createError({
       statusCode: 403,
@@ -12,21 +9,25 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-
-  const body: NewAccountGovernment = await readBody(event);
+  const id = getRouterParam(event, "id");
+  const { fas_id } = (await getQuery(event)) as {
+    fas_id: string;
+  };
+  let params = {};
+  if (fas_id != "") {
+  }
+  params["fas_id"] = fas_id;
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/fasilitator/lembaga/add`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/halal-certificate-reguler/${id}/pabrik`,
     {
-      method: "post",
+      method: "get",
       headers: { Authorization: authorizationHeader },
-      body,
+      params,
     }
   ).catch((err: NuxtError) => {
     setResponseStatus(event, 400);
-
     return err.data;
   });
-
   return data || null;
 });

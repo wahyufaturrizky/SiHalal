@@ -43,6 +43,14 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
     loading.value = false;
   }
 };
+const sourceOfFund = ref<{ code: string; name: string; name_eng: string }[]>();
+const getSourceOfFund = (code: string) => {
+  const data = sourceOfFund.value?.find((fund) => fund.code == code);
+  if (data == undefined) {
+    return code;
+  }
+  return data.name;
+};
 const searchQuery = ref("");
 
 const debouncedFetch = debounce(loadItem, 500);
@@ -53,6 +61,10 @@ const handleInput = () => {
 const navigateAction = (id: string) => {
   navigateTo(`/facilitation/entry/${id}`);
 };
+onMounted(async () => {
+  const response = await $api("/master/source-of-fund");
+  sourceOfFund.value = response;
+});
 </script>
 
 <template>
@@ -86,6 +98,9 @@ const navigateAction = (id: string) => {
           >
             <template #item.index="{ index }">
               {{ index + 1 + (page - 1) * itemPerPage }}
+            </template>
+            <template #item.sumber_biaya="{ item }">
+              {{ getSourceOfFund(item.sumber_biaya) }}
             </template>
             <template #item.status_code="{ item }">
               <VChip

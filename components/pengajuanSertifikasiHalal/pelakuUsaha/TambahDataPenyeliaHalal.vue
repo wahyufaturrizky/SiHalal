@@ -3,60 +3,138 @@ import { ref } from "vue";
 import { useDisplay } from "vuetify";
 import { VTextField } from "vuetify/components";
 
+const route = useRoute();
+
+const selfDeclareId = (route.params as any).id;
+const isFormError = ref(false);
+
 const emit = defineEmits(["refresh"]);
+
+const fileExtensionValidator = (value: any) => {
+  let file = value;
+  if (Array.isArray(value)) {
+    file = value[0];
+  }
+  console.log("file attribute = ", value[0].type);
+  const allowedFileExtensionList = [
+    "image/jpg",
+    "image/jpeg",
+    "image/png",
+    "application/pdf",
+  ];
+  const result = useArrayIncludes(allowedFileExtensionList, file.type).value;
+  if (result) {
+    isFormError.value = false;
+    return true;
+  }
+  isFormError.value = true;
+  return "File extension not allowed";
+};
+
+const uploadDocument = async (file: any) => {
+  try {
+    const formData = new FormData();
+    formData.append("id", selfDeclareId);
+    formData.append("file", file);
+    formData.append("type", "sample");
+    const response: any = await $api("/shln/submission/document/upload", {
+      method: "post",
+      body: formData,
+    });
+
+    if (response?.code === 2000) {
+      return response;
+    } else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
+      loadingAdd.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      "ada kesalahan saat upload file, gagal menyimpan!",
+      "error"
+    );
+    loadingAdd.value = false;
+  }
+};
+
+const props = defineProps({
+  listagama: {
+    type: Array,
+  },
+});
+
+const { listagama } = props || {};
 
 const addDialog = ref(false);
 const loadingAdd = ref(false);
 
-const downloadDOcument = async (filename: string) => {
-  try {
-    const response = await $api("/shln/submission/document/download", {
-      method: "post",
-      body: {
-        filename,
-      },
-    });
-    window.open(response.url, "_blank", "noopener,noreferrer");
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
-
 const formData = ref({
   no_ktp: "",
   no_kontak: "",
-  nama_penyelia: "",
-  agama_penyelia: "",
+  nama: "",
+  agama: "",
   nomor_sertifikat: "",
-  tanggal_sertifikat: "",
-  nomor_sk: "",
-  tanggal_sk: "",
-  file: null,
+  tgl_sertifikat: "",
+  no_sk: "",
+  tgl_sk: "",
+  file_spph: null,
+  file_skph: null,
+  file_ktp: null,
+  id_penyelia: "",
 });
 
 const resetForm = () => {
   formData.value = {
     no_ktp: "",
     no_kontak: "",
-    nama_penyelia: "",
-    agama_penyelia: "",
+    nama: "",
+    agama: "",
     nomor_sertifikat: "",
-    tanggal_sertifikat: "",
-    nomor_sk: "",
-    tanggal_sk: "",
-    file: null,
+    tgl_sertifikat: "",
+    no_sk: "",
+    tgl_sk: "",
+    file_spph: null,
+    file_skph: null,
+    file_ktp: null,
+    id_penyelia: "",
   };
 };
 
 const addDataPenyeliaHalal = async () => {
   try {
-    console.log("formData", formData.value);
     loadingAdd.value = true;
 
-    const res: any = await $api("/self-declare/penyelia-halal/add", {
-      method: "post",
-      body: formData.value,
-    });
+    const { file_spph, file_skph, file_ktp } = formData.value;
+
+    const fileSpph = await uploadDocument(file_spph);
+    if (fileSpph.code !== 2000) {
+      return;
+    }
+    const fileSkph = await uploadDocument(file_skph);
+    if (fileSkph.code !== 2000) {
+      return;
+    }
+    const fileKtp = await uploadDocument(file_ktp);
+    if (fileKtp.code !== 2000) {
+      return;
+    }
+
+    const res: any = await $api(
+      `/self-declare/verificator/penyelia/add/${selfDeclareId}`,
+      {
+        method: "post",
+        body: {
+          ...formData.value,
+          file_spph: fileSpph.data.file_url,
+          file_skph: fileSkph.data.file_url,
+          file_ktp: fileKtp.data.file_url,
+        },
+      }
+    );
+    console.log("@res", res);
 
     if (res?.code === 2000) {
       loadingAdd.value = false;
@@ -65,43 +143,36 @@ const addDataPenyeliaHalal = async () => {
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
       emit("refresh");
     } else {
-      useSnackbar().sendSnackbar("Gagal update data", "error");
+      useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
       loadingAdd.value = false;
       resetForm();
-      addDialog.value = false;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loadingAdd.value = false;
     resetForm();
-    addDialog.value = false;
   }
 };
 
-const AgamaOptions = [
-  { name: "Islam", value: "islam" },
-  { name: "Hindu", value: "hindu" },
-  { name: "Kristen", value: "kristen" },
-];
-
-const file = ref<File | null>(null);
-
-// Mock data for document list
-const documentList = ref([
-  { nama: "Izin Edar", fileName: "Surat Izin Usaha.pdf", file: null },
-  { nama: "Izin Masuk", fileName: "", file: null },
-]);
-
-// Handle file removal
-const removeFile = (index: number) => {
-  documentList.value[0].fileName = "";
-  documentList.value[0].file = null;
-
-  file.value = null;
+const checkIsFieldEMpty = (data: any) => {
+  return Object.keys(data)?.find((key: any) => {
+    if (key !== "id_penyelia") {
+      return !data[key];
+    }
+  });
 };
 
 const { mdAndUp } = useDisplay();
 const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
+
+const limitCharKtp = (v: string) => {
+  if (v.length > 16) {
+    isFormError.value = true;
+    return "Maksimal 16 karakter";
+  } else {
+    isFormError.value = false;
+  }
+};
 </script>
 
 <template>
@@ -134,6 +205,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
                   v-model="formData.no_ktp"
                   placeholder="Isi Nomor KTP"
                   type="number"
+                  :rules="[requiredValidator, limitCharKtp]"
                 />
               </VCol>
               <VCol cols="6">
@@ -153,7 +225,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               <VCol cols="6">
                 <VLabel>Nama Penyelia</VLabel>
                 <VTextField
-                  v-model="formData.nama_penyelia"
+                  v-model="formData.nama"
                   placeholder="Isi Nama Penyelia"
                 />
               </VCol>
@@ -161,10 +233,10 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
                 <VItemGroup>
                   <VLabel>Agama Penyelia</VLabel>
                   <VSelect
-                    v-model="formData.agama_penyelia"
-                    :items="AgamaOptions"
+                    v-model="formData.agama"
+                    :items="listagama"
                     item-title="name"
-                    item-value="value"
+                    item-value="name"
                     placeholder="Isi Agama Penyelia"
                   />
                 </VItemGroup>
@@ -185,7 +257,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               <VCol cols="6">
                 <VLabel>Tanggal Surat Pemohon</VLabel>
                 <VTextField
-                  v-model="formData.tanggal_sertifikat"
+                  v-model="formData.tgl_sertifikat"
                   placeholder="Isi Tanggal Sertifikat"
                   type="date"
                 />
@@ -199,14 +271,14 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               <VCol cols="6">
                 <VLabel>Nomor SK</VLabel>
                 <VTextField
-                  v-model="formData.nomor_sk"
+                  v-model="formData.no_sk"
                   placeholder="Isi Nomor SK"
                 />
               </VCol>
               <VCol cols="6">
                 <VLabel>Tanggal SK</VLabel>
                 <VTextField
-                  v-model="formData.tanggal_sk"
+                  v-model="formData.tgl_sk"
                   placeholder="Isi Tanggal Sertifikat"
                   type="date"
                 />
@@ -222,20 +294,74 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               </VCol>
               <VCol cols="4">
                 <HalalFileInput
-                  :modelValue="formData.file"
+                  :modelValue="formData.file_spph"
                   :rules="[
                       requiredValidator,
                       fileExtensionValidator,
                       (value: any) => {
-                        return (
-                          !value ||
-                          !value.length ||
-                          value[0].size < 2000000 ||
-                          'file maksimum 2MB'
-                        );
+                        if (value && value.length && value[0].size > 2000000) {
+                          isFormError = true
+                          return 'file maksimum 2MB'
+                        } else {
+                          isFormError = false
+                        }
                       },
                     ]"
-                  @update:modelValue="formData.file = $event"
+                  @update:modelValue="formData.file_spph = $event"
+                />
+              </VCol>
+            </VRow>
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol cols="12">
+            <VRow>
+              <VCol cols="8">
+                <h3>Unggahan (SKPH)</h3>
+              </VCol>
+              <VCol cols="4">
+                <HalalFileInput
+                  :modelValue="formData.file_skph"
+                  :rules="[
+                      requiredValidator,
+                      fileExtensionValidator,
+                      (value: any) => {
+                        if (value && value.length && value[0].size > 2000000) {
+                          isFormError = true
+                          return 'file maksimum 2MB'
+                        } else {
+                          isFormError = false
+                        }
+                      },
+                    ]"
+                  @update:modelValue="formData.file_skph = $event"
+                />
+              </VCol>
+            </VRow>
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol cols="12">
+            <VRow>
+              <VCol cols="8">
+                <h3>Unggahan (SKPH)</h3>
+              </VCol>
+              <VCol cols="4">
+                <HalalFileInput
+                  :modelValue="formData.file_ktp"
+                  :rules="[
+                      requiredValidator,
+                      fileExtensionValidator,
+                      (value: any) => {
+                        if (value && value.length && value[0].size > 2000000) {
+                          isFormError = true
+                          return 'file maksimum 2MB'
+                        } else {
+                          isFormError = false
+                        }
+                      },
+                    ]"
+                  @update:modelValue="formData.file_ktp = $event"
                 />
               </VCol>
             </VRow>
@@ -255,6 +381,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
           </VBtn>
           <VBtn
             :loading="loadingAdd"
+            :disabled="checkIsFieldEMpty(formData) || isFormError"
             @click="addDataPenyeliaHalal"
             variant="flat"
             >Tambah</VBtn

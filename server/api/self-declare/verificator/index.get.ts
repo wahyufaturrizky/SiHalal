@@ -23,11 +23,11 @@ export default defineEventHandler(async (event) => {
     size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
   };
 
-  if (keyword != "") {
+  if (keyword !== "") {
     params["keyword"] = keyword;
   }
 
-  if (status != "") {
+  if (status !== "" && status !== "Semua") {
     params["status"] = status;
   }
 
