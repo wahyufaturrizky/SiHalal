@@ -1,7 +1,10 @@
 <script setup lang="ts">
-const route = useRoute();
+const route = useRoute<"">();
+const router = useRouter();
 
 const tabs = ref("1");
+const submissionId = route.params?.id;
+
 onMounted(() => {
   tabs.value = route.query?.tab ? String(route.query.tab) : "1";
 });
@@ -9,7 +12,15 @@ onMounted(() => {
 
 <template>
   <VContainer>
-    <KembaliButton />
+    <div
+      class="d-flex align-center cursor-pointer"
+      @click="
+        router.push(`/sh-domestic/submission/self-declare/${submissionId}`)
+      "
+    >
+      <VIcon icon="mdi-chevron-left" size="40px" color="primary" />
+      <div class="text-primary">Kembali</div>
+    </div>
     <VRow align="center">
       <VCol>
         <div class="text-h3 font-weight-bold">Ubah Pengajuan Self Declare</div>

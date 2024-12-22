@@ -1,6 +1,12 @@
 <template>
   <VContainer>
-    <KembaliButton />
+    <div
+      class="d-flex align-center cursor-pointer"
+      @click="router.push(`/sh-domestic/submission/self-declare`)"
+    >
+      <VIcon icon="mdi-chevron-left" size="40px" color="primary" />
+      <div class="text-primary">Kembali</div>
+    </div>
     <VRow align="center">
       <VCol cols="8">
         <h3 class="text-h3 font-weight-bold">Detail Pengajuan Self Declare</h3>

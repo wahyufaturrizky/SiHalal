@@ -220,7 +220,7 @@ onMounted(() => {
           <VDataTable
             :headers="headers"
             :items="submission"
-            class="elevation-1"
+            class="elevation-1 custom-table"
             fixed-header
             :hide-default-footer="!submission.length"
           >
@@ -298,5 +298,21 @@ onMounted(() => {
 }
 .table-width-20 {
   width: 20%;
+}
+
+:deep(.v-data-table.custom-table > .v-table__wrapper) {
+  table {
+    thead > tr > th:last-of-type {
+      right: 0;
+      position: sticky;
+      border-left: 1px solid rgba(#000000, 0.12);
+    }
+    tbody > tr > td:last-of-type {
+      right: 0;
+      position: sticky;
+      border-left: 1px solid rgba(#000000, 0.12);
+      background: white;
+    }
+  }
 }
 </style>
