@@ -580,7 +580,7 @@
                 <VBtn
                   @click="
                     downloadForms.ikrar
-                      ? handleDownloadForm(downloadForms.ikrar)
+                      ? handleDownload(downloadForms.ikrar)
                       : null
                   "
                   :color="downloadForms.ikrar ? 'primary' : '#A09BA1'"
@@ -1176,7 +1176,7 @@ onMounted(async () => {
     handleGetNarration(),
     getDownloadForm("surat-permohonan", "surat_permohonan"),
     getDownloadForm("surat-pernyataan", "surat_pernyataan"),
-    getDownloadForm("ikrar", "ikrar"),
+    getIkrarFile(),
     getDownloadForm("surat-verval", "surat_verval"),
     getDownloadForm("rekomendasi", "rekomendasi"),
     getDownloadForm("sjph", "sjph"),
@@ -1227,6 +1227,27 @@ const getKbli = async () => {
   kbliDropdown.value = response3;
 };
 
+const getIkrarFile = async () => {
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/statement/agree`,
+      {
+        method: "get",
+        query: {
+          id_reg: submissionId,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      downloadForms.ikrar = response.data.url_download;
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const getDownloadForm = async (docName: string, propName: string) => {
   const result: any = await $api(
     `/self-declare/submission/${submissionId}/file`,
@@ -1258,7 +1279,7 @@ const handleSentSubmission = async () => {
       },
     });
     if (response.code === 2000) {
-      snackbar.sendSnackbar("Berhasil mengirim pengajuan", "error");
+      snackbar.sendSnackbar("Berhasil mengirim pengajuan", "success");
     } else {
       snackbar.sendSnackbar(response.errors.list_error[0], "error");
     }

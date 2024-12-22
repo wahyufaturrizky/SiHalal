@@ -20,7 +20,7 @@ const formData = reactive({
   tgl_surat_permohonan: null,
   jenis_layanan: null,
   jenis_produk: null,
-  nama_usaha: null,
+  nama_pu: null,
   area_pemasaran: null,
   lokasi_pendamping: null,
   lembaga_pendamping: null,
@@ -50,7 +50,7 @@ const loadDataPendamping = async (lokasi: string | null) => {
   }
 };
 
-await useAsyncData("get-detail-submission", async () => {
+const { refresh } = await useAsyncData("get-detail-submission", async () => {
   try {
     const response: any = await $api(
       `/self-declare/submission/${submissionId}/detail`,
@@ -61,7 +61,7 @@ await useAsyncData("get-detail-submission", async () => {
 
     if (response.code === 2000) {
       Object.assign(submissionDetail, response.data.certificate_halal);
-      // Object.assign(formData, response.data.certificate_halal);
+      Object.assign(formData, response.data.certificate_halal);
     }
     return response;
   } catch (error) {
@@ -165,24 +165,37 @@ const handleGetPendamping = async (idLembaga: string | null) => {
 };
 
 const handleUpdateSubmission = async () => {
-  console.log(formData, "< form data");
   try {
     const response: any = await $api(
       `/self-declare/business-actor/submission/update`,
       {
         method: "put",
-        body: formData,
+        body: {
+          id_reg: submissionId,
+          jenis_pendaftaran: formData.jenis_pendaftaran,
+          kode_daftar: formData.kode_daftar,
+          no_surat_permohonan: formData.no_surat_permohonan,
+          tgl_surat_permohonan: formData.tgl_surat_permohonan,
+          jenis_layanan: formData.jenis_layanan,
+          jenis_produk: formData.jenis_produk,
+          nama_usaha: formData.nama_pu,
+          area_pemasaran: formData.area_pemasaran,
+          lokasi_pendamping: formData.lokasi_pendamping,
+          lembaga_pendamping: formData.lembaga_pendamping,
+          pendamping: formData.pendamping,
+        },
       }
     );
 
     if (response.code === 2000) {
       if (response.data !== null) {
-        listPendamping.value = response.data;
+        useSnackbar().sendSnackbar("Berhasil mengubah data", "success");
+        refresh();
       }
     }
     return response;
   } catch (error) {
-    console.log(error);
+    useSnackbar().sendSnackbar("Gagal mengubah data", "error");
   }
 };
 
@@ -359,7 +372,7 @@ onMounted(() => {
             <VTextField
               placeholder="Isi Nama Usaha"
               density="compact"
-              v-model="formData.nama_usaha"
+              v-model="formData.nama_pu"
             ></VTextField>
           </VItemGroup>
           <br />
