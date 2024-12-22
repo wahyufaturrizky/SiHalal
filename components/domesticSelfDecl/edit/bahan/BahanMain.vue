@@ -1,29 +1,99 @@
 <script setup lang="ts">
 const tableHeader = [
-  { title: "No", value: "no" },
-  { title: "Jenis Bahan", value: "ingr_kind" },
-  { title: "Nama Bahan", value: "ingr_name" },
-  { title: "Kelompok", value: "group" },
-  { title: "Merk", value: "brand" },
-  { title: "Produsen", value: "manufacturer" },
-  { title: "No. Sertifikat Halal", value: "sh_number" },
-  { title: "Tanggal Berlaku", value: "effective_date" },
-  { title: "Verifikasi Pendamping", value: "verification_comp" },
+  { title: "No", value: "index" },
+  { title: "Jenis Bahan", value: "jenis_bahan" },
+  { title: "Nama Bahan", value: "nama_bahan" },
+  { title: "Kelompok", value: "kelompok" },
+  { title: "Merk", value: "merek" },
+  { title: "Produsen", value: "produsen" },
+  { title: "No. Sertifikat Halal", value: "no_sertifikat" },
+  { title: "Tanggal Berlaku", value: "tgl_berlaku_sertifikat" },
+  { title: "Verifikasi Pendamping", value: "vefified" },
   { title: "Action", value: "action" },
 ];
+interface Bahan {
+  id: string;
+  jenis_bahan: string;
+  kelompok: string;
+  merek: string;
+  nama_bahan: string;
+  no_sertifikat: string;
+  produsen: string;
+  tgl_berlaku_sertifikat: string;
+  vefified: boolean;
+}
 
-const items = [
-  {
-    ingr_kind: "xx",
-    ingr_name: "xx",
-    group: "xx",
-    brand: "xx",
-    manufacturer: "xx",
-    sh_number: "xx",
-    effective_date: "xx",
-    verification_comp: "xx",
-  },
-];
+const items = ref<Bahan[]>([]);
+const route = useRoute();
+
+const loadBahan = async () => {
+  try {
+    const options = {
+      method: "get",
+    };
+    const response = await $api(
+      `/self-declare/submission/bahan/${route.params.id}/list`,
+      options
+    );
+    items.value = response.data;
+  } catch (error) {
+    console.log(error);
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+const editItem = (item) => {};
+const deleteDialog = ref(false);
+const deleteButton = ref(false);
+const deletedId = ref();
+const deleteItem = async (id: string) => {
+  deletedId.value = id;
+  deleteDialog.value = true;
+};
+const closeDelete = () => {
+  deletedId.value = null;
+  deleteDialog.value = false;
+  deleteButton.value = false;
+};
+const deleteBahan = async () => {
+  try {
+    deleteButton.value = true;
+    const response = await $api(
+      `/self-declare/submission/bahan/${route.params.id}/delete`,
+      {
+        method: "post",
+        body: {
+          id_bahan: deletedId.value,
+        },
+      }
+    );
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("Gagal Menghapus bahan", "error");
+      return;
+    }
+    deleteDialog.value = false;
+    useSnackbar().sendSnackbar("Berhasil Menghapus bahan", "success");
+  } catch (error) {
+    deleteDialog.value = false;
+    useSnackbar().sendSnackbar("Gagal Menghapus bahan", "error");
+  } finally {
+    deleteButton.value = false;
+    await loadBahan();
+  }
+};
+
+onMounted(async () => {
+  await loadBahan();
+});
+
+interface editBahan {
+  typeBahan: 0 | 1;
+  jenis_bahan: string[] | null;
+  nama_bahan: string;
+  kelompok: string;
+  merek: string;
+  produsen: string;
+  no_sertifikat: string;
+}
 </script>
 <template>
   <VCard>
@@ -33,8 +103,7 @@ const items = [
           ><h3>Daftar Nama Bahan dan Kemasan</h3></VCol
         >
         <VCol cols="6" style="display: flex; justify-content: end">
-          <AjukanBahanModal></AjukanBahanModal>
-          <TambahBahanModal></TambahBahanModal>
+          <TambahBahanModal @loadList="loadBahan()"></TambahBahanModal>
         </VCol>
       </VRow>
     </VCardTitle>
@@ -45,18 +114,29 @@ const items = [
       <VRow>
         <VCol cols="12">
           <VDataTable :headers="tableHeader" :items="items">
-            <template #item.action>
-              <div style="display: flex; justify-content: center">
-                <VMenu>
-                  <template #activator="{ props }">
-                    <VIcon icon="fa-ellipsis-v" v-bind="props"></VIcon>
-                  </template>
-
-                  <VList>
-                    <VListItem>Edit</VListItem>
-                    <VListItem>Hapus</VListItem>
-                  </VList>
-                </VMenu>
+            <template #item.index="{ index }"> {{ index + 1 }} </template>
+            <template #item.vefified="{ item }">
+              <v-chip :color="item.vefified ? 'success' : 'error'">{{
+                item.vefified ? "Sudah" : "Belum"
+              }}</v-chip>
+            </template>
+            <template #item.action="{ item }">
+              <div class="d-flex gap-1">
+                <EditBahanModal
+                  :data="{
+                    id: item.id,
+                    typeBahan: item.kelompok != '' ? 1 : 0,
+                    jenis_bahan: item.jenis_bahan,
+                    nama_bahan: item.nama_bahan,
+                    kelompok: item.kelompok,
+                    merek: item.merek,
+                    produsen: item.produsen,
+                    no_sertifikat: item.no_sertifikat,
+                  }"
+                />
+                <IconBtn size="small" @click="deleteItem(item.id)">
+                  <VIcon color="error" icon="ri-delete-bin-line" />
+                </IconBtn>
               </div>
             </template>
           </VDataTable>
@@ -64,4 +144,27 @@ const items = [
       </VRow>
     </VCardItem>
   </VCard>
+  <VDialog
+    v-model="deleteDialog"
+    max-width="500px"
+    @update:model-value="closeDelete"
+  >
+    <VCard title="Apakah anda yakin akan menghapus data ini?">
+      <VCardText>
+        <div class="d-flex justify-center gap-4">
+          <VBtn color="primary" variant="outlined" @click="closeDelete">
+            Cancel
+          </VBtn>
+          <VBtn
+            color="primary"
+            variant="elevated"
+            @click="deleteBahan"
+            :disabled="deleteButton"
+          >
+            OK
+          </VBtn>
+        </div>
+      </VCardText>
+    </VCard>
+  </VDialog>
 </template>
