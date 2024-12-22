@@ -22,11 +22,8 @@ const headers: any = [
 ];
 
 const submission = ref([]);
-const tablePageData = ref({
-  total_item: 0,
-  total_page: 0,
-  current_page: 1,
-});
+const currentPage = ref(1);
+const itemPerPage = ref(10);
 
 // const filteredSubmissions = computed(() => {
 //   if (!searchQuery.value) return submission.value;
@@ -120,15 +117,15 @@ const handleLoadList = async () => {
     const response: any = await $api("/self-declare/submission/list", {
       method: "get",
       params: {
-        page: tablePageData.value.current_page,
-        size: 10,
+        page: currentPage.value,
+        size: itemPerPage.value,
         keyword: searchQuery.value,
       },
     });
 
     if (response.code === 2000) {
       submission.value = response.data;
-      Object.assign(tablePageData.value, response);
+      currentPage.value = response.current_page;
     }
     return response;
   } catch (error) {
@@ -140,13 +137,13 @@ const { refresh } = await useAsyncData(
   "self-declare-list",
   async () => handleLoadList(),
   {
-    // watch: [tablePageData.value.current_page],
+    watch: [currentPage, itemPerPage],
   }
 );
 
 const handleSearchSubmission = useDebounceFn((val: string) => {
   searchQuery.value = val;
-  tablePageData.value.current_page = 1;
+  currentPage.value = 1;
 
   refresh();
 }, 350);
@@ -223,6 +220,9 @@ onMounted(() => {
             class="elevation-1 custom-table"
             fixed-header
             :hide-default-footer="!submission.length"
+            :page="currentPage"
+            :items-per-page-options="[10, 25, 50, 100]"
+            @update:items-per-page="(v) => (itemPerPage = v)"
           >
             <template #item.no="{ index }">
               {{ index + 1 }}
