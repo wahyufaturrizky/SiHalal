@@ -13,14 +13,11 @@ export default defineEventHandler(async (event: any) => {
   try {
     const runtimeConfig = useRuntimeConfig();
     const query: any = await getQuery(event);
-    const payload = await readBody(event);
-
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/self-declare/${query.id_reg}/products/${query.product_id}/ingredients`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/${query.id_reg}/narasi`,
       {
-        method: "post",
+        method: "get",
         headers: { Authorization: authHeader },
-        body: payload,
       } as any
     );
 

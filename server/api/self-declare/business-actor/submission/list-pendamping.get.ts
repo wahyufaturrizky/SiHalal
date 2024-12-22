@@ -15,7 +15,7 @@ export default defineEventHandler(async (event: any) => {
     const query: any = await getQuery(event);
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/halal-certificate-reguler/lembaga/${query.id_reg}/pendamping`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/halal-certificate-reguler/lembaga/${query.id_lembaga}/pendamping`,
       {
         method: "get",
         headers: { Authorization: authHeader },
