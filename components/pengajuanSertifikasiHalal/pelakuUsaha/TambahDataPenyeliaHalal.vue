@@ -76,14 +76,13 @@ const formData = ref({
   no_kontak: "",
   nama: "",
   agama: "",
-  nomor_sertifikat: "",
+  no_sertifikat: "",
   tgl_sertifikat: "",
   no_sk: "",
   tgl_sk: "",
   file_spph: null,
   file_skph: null,
   file_ktp: null,
-  id_penyelia: "",
 });
 
 const resetForm = () => {
@@ -92,14 +91,13 @@ const resetForm = () => {
     no_kontak: "",
     nama: "",
     agama: "",
-    nomor_sertifikat: "",
+    no_sertifikat: "",
     tgl_sertifikat: "",
     no_sk: "",
     tgl_sk: "",
     file_spph: null,
     file_skph: null,
     file_ktp: null,
-    id_penyelia: "",
   };
 };
 
@@ -155,11 +153,7 @@ const addDataPenyeliaHalal = async () => {
 };
 
 const checkIsFieldEMpty = (data: any) => {
-  return Object.keys(data)?.find((key: any) => {
-    if (key !== "id_penyelia") {
-      return !data[key];
-    }
-  });
+  return Object.keys(data)?.find((key: any) => !data[key]);
 };
 
 const { mdAndUp } = useDisplay();
@@ -250,7 +244,7 @@ const limitCharKtp = (v: string) => {
               <VCol cols="6">
                 <VLabel>Nomor Sertifikat</VLabel>
                 <VTextField
-                  v-model="formData.nomor_sertifikat"
+                  v-model="formData.no_sertifikat"
                   placeholder="Isi Nomor Sertifikat"
                 />
               </VCol>

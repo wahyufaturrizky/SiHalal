@@ -287,7 +287,7 @@ const loadItemProdukById = async ({
     );
 
     if (response.code === 2000) {
-      listTableProduk.value = response.data;
+      listTableProduk.value = response.data || [];
       totalItemsTableProduk.value = response.total;
       loadingTableProduk.value = false;
       return response;
@@ -1359,7 +1359,12 @@ const dibatalkan = async () => {
               <p class="text-h3">Daftar Nama Bahan dan Kemasan</p>
             </VCol>
             <VCol class="d-flex justify-end align-center" cols="0" md="2">
-              <TambahBahanModalHalal mode="add" />
+              <TambahBahanModalHalal
+                @refresh="
+                  loadItemBahanById({ page: pageBahan, size: itemPerPageBahan })
+                "
+                mode="add"
+              />
               <!-- <VContainer>
                 <VBtn
                   color="primary"
@@ -1448,7 +1453,15 @@ const dibatalkan = async () => {
               </ol>
             </VCol>
             <VCol class="d-flex justify-end align-center" cols="6" md="2">
-              <TambahProduk mode="add" />
+              <TambahProdukSelfDeclareVerifikator
+                @refresh="
+                  loadItemProdukById({
+                    page: pageTableProduk,
+                    size: itemPerPageTableProduk,
+                  })
+                "
+                mode="add"
+              />
             </VCol>
           </VRow>
           <VRow>
