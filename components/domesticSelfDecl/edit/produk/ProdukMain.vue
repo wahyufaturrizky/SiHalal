@@ -42,7 +42,60 @@ const handleListProduct = async () => {
   }
 };
 
+const handleSubmit = (payload: any) => {
+  if (modalUse.value === "CREATE") handleAddProduct(payload);
+  if (modalUse.value === "UPDATE") handleUpdateProduct(payload);
+};
 const handleAddProduct = async (payload: any) => {
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/product/create`,
+      {
+        method: "post",
+        body: payload,
+        query: {
+          id_reg: submissionId,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+      refresh();
+    }
+    return response;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+    console.log(error);
+  }
+};
+
+const handleUpdateProduct = async (payload: any) => {
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/product/update`,
+      {
+        method: "put",
+        body: payload,
+        query: {
+          id_reg: submissionId,
+          product_id: selectedProduct.value,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar("Berhasil mengubah data", "success");
+      refresh();
+    }
+    return response;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Gagal mengubah data", "error");
+    console.log(error);
+  }
+};
+
+const handleAddIngredient = async (payload: any) => {
   try {
     const response: any = await $api(
       `/self-declare/business-actor/product/create`,
@@ -81,9 +134,10 @@ const modalTitle = computed(() => {
 
 const isFormModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
-const handleOpenModal = (type: string, id?: string) => {
+const handleOpenModal = async (type: string, id?: string) => {
   modalUse.value = type;
   if (id) selectedProduct.value = id;
+
   if (type === "DELETE") {
     isDeleteModalOpen.value = true;
   } else {
@@ -91,6 +145,33 @@ const handleOpenModal = (type: string, id?: string) => {
   }
 };
 
+const detailProduct = reactive({
+  id: null,
+  koderincian: null,
+  merek: null,
+  nama: null,
+});
+const handleDetailProduct = async (id: string) => {
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/product/detail`,
+      {
+        method: "get",
+        query: {
+          id_reg: submissionId,
+          product_id: id,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      Object.assign(detailProduct, response.data);
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
 const handleDeleteProduct = async () => {
   try {
     const response: any = await $api(
@@ -159,6 +240,7 @@ onMounted(() => {
           <VMenu>
             <template #activator="{ props }">
               <VIcon
+                @click="handleDetailProduct(item.id)"
                 icon="fa-ellipsis-v"
                 color="primary"
                 v-bind="props"
@@ -166,7 +248,10 @@ onMounted(() => {
             </template>
 
             <VList>
-              <InputBahan />
+              <InputBahan
+                :product-name="detailProduct.nama"
+                @submit="handleAddIngredient"
+              />
               <VListItem
                 prepend-icon="mdi-pencil"
                 title="Ubah"
@@ -194,7 +279,8 @@ onMounted(() => {
     :dialog-visible="isFormModalOpen"
     :dialog-use="modalUse"
     @update:dialog-visible="isFormModalOpen = $event"
-    @submit:commit-action="handleAddProduct"
+    @submit:commit-action="handleSubmit"
+    :data="detailProduct"
   />
   <ShSubmissionDetailFormModal
     dialog-title="Menghapus Data"

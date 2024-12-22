@@ -11,6 +11,9 @@ const emit = defineEmits(["update:dialogVisible", "submit:commitAction"]);
 const localDialogVisible = ref(props.dialogVisible);
 const localDialogUse = ref(props.dialogUse);
 
+const modalUse = computed(() => props.dialogUse);
+const detailData = computed(() => props.data);
+
 const textSubmitButton = computed(() => {
   switch (localDialogUse.value) {
     case "EDIT":
@@ -37,7 +40,7 @@ watch(
   }
 );
 watch(localDialogVisible, (newVal, oldValue) => {
-  if (oldValue === false) resetForm();
+  if (oldValue === false && modalUse.value === "CREATE") resetForm();
   emit("update:dialogVisible", newVal);
 });
 
@@ -53,14 +56,15 @@ const resetForm = () => {
 
 const productDetail = ref(null);
 const formData = reactive({
-  kode_rincian: props?.data?.koderincian || null,
-  nama_produk: props?.data?.nama || null,
-  merek: props?.data?.merek || null,
-  foto_produk: null,
+  product_grade: null,
+  kode_rincian: detailData?.value?.koderincian || null,
+  nama_produk: detailData?.value?.nama || null,
+  merek: detailData?.value?.merek || null,
+  foto_produk: detailData?.value?.fotoproduk || null,
 });
 
 const uploadedFile = ref({
-  name: null,
+  name: props?.data?.fotoproduk || null,
   file: null,
 });
 
@@ -160,17 +164,8 @@ onMounted(() => {
           <VSelect
             density="compact"
             placeholder="Pilih Klasifikasi Produk"
-            :model-value="productDetail"
-            :items="listClassification"
-            item-title="name"
-            item-value="code"
-            return-object
-            @update:model-value="
-                (v: any) => [
-                  (formData.kode_rincian = v.code),
-                  (productDetail = v.name),
-                ]
-              "
+            v-model="formData.product_grade"
+            :items="[]"
           ></VSelect>
         </VItemGroup>
         <br />
@@ -179,8 +174,10 @@ onMounted(() => {
           <VSelect
             density="compact"
             placeholder="Pilih Rincian Produk"
-            :model-value="productDetail"
+            v-model="formData.kode_rincian"
+            :items="listClassification"
             item-title="name"
+            item-value="code"
           ></VSelect>
         </VItemGroup>
         <br />

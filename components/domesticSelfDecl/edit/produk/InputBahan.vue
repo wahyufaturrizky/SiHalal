@@ -1,13 +1,8 @@
 <script setup lang="ts">
-const listBahan = ref([
-  // { id: 1, label: "Air", value: "1" },
-  // { id: 2, label: "Es Batu", value: "2" },
-  // { id: 3, label: "Buah Mangga", value: "3" },
-  // { id: 4, label: "Buah Alpukat", value: "4" },
-  // { id: 5, label: "Gula Pasir 1Kg", value: "5" },
-  // { id: 6, label: "Gula Aren 1Kg", value: "6" },
-  // { id: 7, label: "Gelas Plastik", value: "7" },
-]);
+const props = defineProps<{
+  productName?: string | null;
+}>();
+const listBahan: any = ref([]);
 
 const selectedBahan = ref([]);
 
@@ -37,6 +32,18 @@ const handleListIngredient = async () => {
 onMounted(async () => {
   await handleListIngredient();
 });
+
+const addText = computed(() => {
+  return selectedBahan.value.length
+    ? `Tambah (${selectedBahan.value.length})`
+    : "Tambah";
+});
+
+const emit = defineEmits(["submit"]);
+const handleSubmit = () => {
+  emit("submit", selectedBahan.value);
+  selectedBahan.value = [];
+};
 </script>
 
 <template>
@@ -71,19 +78,21 @@ onMounted(async () => {
           <VRow>
             <VCol cols="2">Nama Produk</VCol>
             <VCol cols="1">:</VCol>
-            <VCol cols="7">Jus Mangga RezQ</VCol>
+            <VCol cols="7">{{
+              props.productName ? props.productName : "-"
+            }}</VCol>
           </VRow>
           <VRow>
             <VCol cols="12">
               <div>
                 <p>Pilih bahan-bahan yang diperlukan untuk produk tersebut:</p>
-                <!-- <VCheckbox
+                <VCheckbox
                   v-for="item in listBahan"
                   :key="item.id"
-                  :label="item.label"
-                  :value="item.value"
+                  :label="item.nama_bahan"
+                  :value="item.id"
                   v-model="selectedBahan"
-                ></VCheckbox> -->
+                ></VCheckbox>
               </div>
             </VCol>
           </VRow>
@@ -96,8 +105,16 @@ onMounted(async () => {
           >
             Batal</VBtn
           >
-          <VBtn variant="flat" density="compact"
-            >Simpan ({{ selectedBahan.length }})</VBtn
+          <VBtn
+            variant="flat"
+            density="compact"
+            :color="selectedBahan.length ? 'primary' : '#A09BA1'"
+            @click="
+              selectedBahan.length
+                ? [handleSubmit(), (isActive.value = false)]
+                : null
+            "
+            >{{ addText }}</VBtn
           >
         </VCardActions>
       </VCard>
