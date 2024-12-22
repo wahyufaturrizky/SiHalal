@@ -17,7 +17,6 @@ const listRincian = ref([]);
 
 const formData = ref({
   kode_rincian: "",
-  rincian: "",
   nama_produk: "",
   merek: "",
   foto_produk: null,
@@ -26,7 +25,6 @@ const formData = ref({
 const resetForm = () => {
   formData.value = {
     kode_rincian: "",
-    rincian: "",
     nama_produk: "",
     merek: "",
     foto_produk: null,
@@ -72,17 +70,14 @@ const addData = async () => {
     if (fotoProduk.code !== 2000) {
       return;
     }
-
-    const { kode_rincian, nama_produk, merek } = formData.value;
+    console.log("@formData.value", formData.value);
 
     const res: any = await $api(
-      `/self-declare/verificator/penyelia/add/${selfDeclareId}`,
+      `/self-declare/verificator/produk/add/${selfDeclareId}`,
       {
         method: "post",
         body: {
-          kode_rincian,
-          nama_produk,
-          merek,
+          ...formData.value,
           foto_produk: fotoProduk.data.file_url,
         },
       }
@@ -144,10 +139,6 @@ const loadItemProductRincian = async (kode_rincian: string) => {
     );
 
     if (response.code === 2000) {
-      formData.value = {
-        ...formData.value,
-        kode_rincian: "",
-      };
       listRincian.value = response.data;
       loadingRincian.value = false;
     } else {
@@ -219,13 +210,13 @@ onMounted(async () => {
           ></VSelect>
         </VItemGroup>
         <br />
-        <VItemGroup>
+        <VItemGroup v-if="!loadingRincian">
           <VLabel><b>Rincian Produk</b></VLabel>
 
           <VSelect
             density="compact"
             placeholder="Pilih Rincian Produk"
-            v-mode="formData.kode_rincian"
+            v-model="formData.kode_rincian"
             :loading="loadingRincian"
             item-title="name"
             item-value="code"
@@ -238,12 +229,17 @@ onMounted(async () => {
           <VTextField
             density="compact"
             placeholder="Isi Nama Produk"
+            v-model="formData.nama_produk"
           ></VTextField>
         </VItemGroup>
         <br />
         <VItemGroup>
           <VLabel><b>Merk</b></VLabel>
-          <VTextField density="compact" placeholder="Isi Merk"></VTextField>
+          <VTextField
+            density="compact"
+            v-model="formData.merek"
+            placeholder="Isi Merk"
+          ></VTextField>
         </VItemGroup>
         <br />
         <VItemGroup>

@@ -14,6 +14,7 @@ const loadingTandaiNotOK = ref(false);
 const loadingPengembalian = ref(false);
 const itemsPabrik = ref([]);
 const itemsOutlet = ref([]);
+const listKodeDaftarFasilitasi = ref([]);
 
 const tabs = ref([
   { text: "Pelaku Usaha", value: "pelaku_usaha" },
@@ -510,6 +511,24 @@ const loadJenisProduk = async () => {
   }
 };
 
+const loadListFasilitasi = async () => {
+  try {
+    const response: any = await $api(
+      "/self-declare/business-actor/submission/list-fasilitator",
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) {
+      listKodeDaftarFasilitasi.value = response.data || [];
+      return response;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
 onMounted(async () => {
   const res: any = await Promise.all([
     loadItemById(),
@@ -518,6 +537,7 @@ onMounted(async () => {
     loadJenisPendaftaran(),
     loadJenisLayanan(),
     loadJenisProduk(),
+    loadListFasilitasi(),
     loadItemBahanById({ page: pageBahan.value, size: itemPerPageBahan.value }),
     loadItemPabrik(pagePabrik.value, itemPerPagePabrik.value),
     loadItemOutlet(pageOutlet.value, itemPerPageOutlet.value),
@@ -615,26 +635,6 @@ const itemsDokumenPersyaratanFasilitas = ref([
     doc: "Dokumen 2",
   },
 ]);
-
-const searchFasilitator = ref("");
-
-const fasilitators = ref([
-  { id: 1, name: "Fasilitator A" },
-  { id: 2, name: "Fasilitator B" },
-  { id: 3, name: "Fasilitator C" },
-]);
-
-const filteredFasilitators = computed(() => {
-  return fasilitators.value.filter((fasilitator) =>
-    fasilitator.name
-      .toLowerCase()
-      .includes(searchFasilitator.value.toLowerCase())
-  );
-});
-
-const onFasilitatorSearchInput = debounce((input: any) => {
-  searchFasilitator.value = input;
-}, 500);
 
 const tandaiOK = async () => {
   try {
@@ -985,7 +985,7 @@ const dibatalkan = async () => {
           </VCard>
         </VCol>
       </VRow>
-      <VRow>
+      <!-- <VRow>
         <VCol>
           <VCard variant="flat" class="pa-4">
             <VRow>
@@ -1042,7 +1042,7 @@ const dibatalkan = async () => {
             </VRow>
           </VCard>
         </VCol>
-      </VRow>
+      </VRow> -->
     </VContainer>
 
     <!-- Tab Content Pengajuan -->
@@ -1101,19 +1101,14 @@ const dibatalkan = async () => {
                         <VCol cols="5.5">
                           <VSelect
                             v-model="dataFormPengajuan.kodeDaftarFasilitasi"
-                            :items="filteredFasilitators"
+                            :items="listKodeDaftarFasilitasi"
                             item-title="name"
                             item-value="id"
-                            :search-input="searchFasilitator"
-                            clearable
-                            required
-                            @update:search-input="onFasilitatorSearchInput"
                           />
                         </VCol>
                         <span>Atau</span>
                         <VCol cols="5.5">
                           <VTextField
-                            v-model="searchFasilitator"
                             append-inner-icon="mdi-magnify"
                             required
                           />
@@ -1244,8 +1239,8 @@ const dibatalkan = async () => {
               <!-- Action Buttons -->
               <VCardActions>
                 <VSpacer />
-                <Permohonan />
-                <Pernyataan />
+                <PermohonanSelfDeclareVerifikator :detaildata="detailData" />
+                <PernyataanSelfDeclareVerifikator :detaildata="detailData" />
               </VCardActions>
             </div>
           </VExpandTransition>
