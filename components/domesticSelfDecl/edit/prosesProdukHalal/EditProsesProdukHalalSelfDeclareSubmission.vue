@@ -9,6 +9,25 @@ const snackbar = useSnackbar();
 
 const route = useRoute<"">();
 const submissionId = route.params?.id;
+
+const { refresh } = await useAsyncData("get-narration", async () => {
+  try {
+    const response: any = await $api(`/self-declare/business-actor/narration`, {
+      method: "get",
+      query: {
+        id_reg: submissionId,
+      },
+    });
+    if (response.code === 2000) {
+      prosesProduction.value = response.data.narasi;
+      if (response.data.narasi.length > 0) {
+        Object.assign(processArray.value, response.data.narasi.split("\n"));
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
 const handleAddSave = async () => {
   // console.log("PROSES PRODUCTION ", prosesProduction.value)
   try {
@@ -25,6 +44,7 @@ const handleAddSave = async () => {
 
     if (response.code === 2000) {
       snackbar.sendSnackbar("Berhasil Mengubah Data ", "success");
+      refresh();
     }
   } catch (error) {
     snackbar.sendSnackbar("Gagal Mengubah Data ", "success");
@@ -39,11 +59,10 @@ const handleAddProcess = () => {
 
   if (processArray.value.length > 1) {
     const lastIndex = processArray.value.length - 1;
-    prosesProduction.value += `${lastIndex + 1}. ${
-      processArray.value[lastIndex]
-    }\n`;
+    prosesProduction.value +=
+      `\n${lastIndex + 1}.` + `${processArray.value[lastIndex]}`;
   } else {
-    prosesProduction.value = `1. ${processArray.value[0]}\n`;
+    prosesProduction.value = `1. ${processArray.value[0]}`;
   }
 };
 </script>
