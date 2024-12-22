@@ -3,8 +3,6 @@ import type { NuxtError } from "nuxt/app";
 const runtimeConfig = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
-  const id = getRouterParam(event, "id");
-
   if (typeof authorizationHeader === "undefined") {
     throw createError({
       statusCode: 403,
@@ -12,25 +10,18 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
+  const id = getRouterParam(event, "id");
 
-  const { page, size } = (await getQuery(event)) as {
-    page: string;
-    size: string;
-  };
-
-  const params: any = {
-    page: isNaN(Number.parseInt(page, 10)) ? 1 : Number.parseInt(page, 10),
-    size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
-  };
+  const { id_bahan } = await readBody(event);
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/halal-certificate-reguler/self-declare/${id}/legal`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/self-declare/${id}/ingredients/${id_bahan}`,
     {
-      method: "get",
+      method: "delete",
       headers: { Authorization: authorizationHeader },
-      params,
     }
   ).catch((err: NuxtError) => {
+    setResponseStatus(event, 400);
     return err.data;
   });
 

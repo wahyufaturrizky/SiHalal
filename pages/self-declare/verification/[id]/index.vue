@@ -607,34 +607,13 @@ const legalTableHeader = [
 
 const penyeliaTableHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "penyelia_nama" },
+  { title: "Nama", key: "nama" },
   { title: "No. KTP", key: "no_ktp" },
   { title: "No. Kontak", key: "no_kontak" },
-  { title: "No/Tgl Sertif Penyelia Halal", key: "no_penyelia_halal" },
-  { title: "Tgl SK", key: "tanggal_sk" },
-  { title: "Tgl Penyelia Halal", key: "tgl_penyelia_halal" },
-  { title: "No SK", key: "no_sk" },
+  { title: "Tgl SK", key: "tgl_sk" },
+  { title: "No Sertifikat", key: "no_sertikat" },
   { title: "Action", key: "action" },
 ];
-
-const headersDokumenPersyaratanFasilitas = [
-  { title: "No", key: "id" },
-  { title: "Nama", key: "nama" },
-  { title: "Dokumen", key: "doc" },
-];
-
-const itemsDokumenPersyaratanFasilitas = ref([
-  {
-    id: 1,
-    nama: "Dokumen 1",
-    doc: "Dokumen 1",
-  },
-  {
-    id: 2,
-    nama: "Dokumen 2",
-    doc: "Dokumen 2",
-  },
-]);
 
 const tandaiOK = async () => {
   try {
@@ -921,6 +900,9 @@ const dibatalkan = async () => {
                       index + 1 + (pageAspekLegal - 1) * itemPerPageAspekLegal
                     }}
                   </template>
+                  <template #item.tanggal_surat="{ item }">
+                    {{ formatDate((item as any).tanggal_surat) }}
+                  </template>
                 </VDataTableServer>
               </VCol>
             </VRow>
@@ -968,7 +950,10 @@ const dibatalkan = async () => {
                   <template #item.no="{ index }">
                     {{ index + 1 + (pagePenyelia - 1) * itemPerPagePenyelia }}
                   </template>
-                  <template #item.action="{ item }">
+                  <template #item.tgl_sk="{ item }">
+                    {{ formatDate((item as any).tgl_sk) }}
+                  </template>
+                  <!-- <template #item.action="{ item }">
                     <div class="d-flex gap-1">
                       <VBtn variant="text" elevation="0">
                         <VIcon
@@ -978,7 +963,7 @@ const dibatalkan = async () => {
                         />
                       </VBtn>
                     </div>
-                  </template>
+                  </template> -->
                 </VDataTableServer>
               </VCol>
             </VRow>

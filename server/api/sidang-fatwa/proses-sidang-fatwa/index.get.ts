@@ -3,8 +3,6 @@ import type { NuxtError } from "nuxt/app";
 const runtimeConfig = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
-  const id = getRouterParam(event, "id");
-
   if (typeof authorizationHeader === "undefined") {
     throw createError({
       statusCode: 403,
@@ -13,9 +11,10 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { page, size } = (await getQuery(event)) as {
+  const { page, size, keyword } = (await getQuery(event)) as {
     page: string;
     size: string;
+    keyword: string;
   };
 
   const params: any = {
@@ -23,14 +22,20 @@ export default defineEventHandler(async (event) => {
     size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
   };
 
+  if (keyword !== "") {
+    params["keyword"] = keyword;
+  }
+
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/halal-certificate-reguler/self-declare/${id}/legal`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/sidang-fatwa/proses/search`,
     {
       method: "get",
       headers: { Authorization: authorizationHeader },
       params,
     }
   ).catch((err: NuxtError) => {
+    setResponseStatus(event, 400);
+
     return err.data;
   });
 

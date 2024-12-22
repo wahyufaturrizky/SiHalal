@@ -27,14 +27,27 @@ const typeBahan = [
     name: "Bahan Tidak Bersertifikat",
   },
 ];
+const props = defineProps<{
+  data: {
+    id: string | null;
+    typeBahan: 0 | 1;
+    jenis_bahan: string | null;
+    nama_bahan: string;
+    kelompok: string;
+    merek: string;
+    produsen: string;
+    no_sertifikat: string;
+  };
+}>();
 const form = ref({
-  typeBahan: null,
-  jenis_bahan: null,
-  nama_bahan: "",
-  kelompok: "",
-  merek: "",
-  produsen: "",
-  no_sertifikat: "",
+  id: props.data.id,
+  typeBahan: props.data.typeBahan,
+  jenis_bahan: props.data.jenis_bahan,
+  nama_bahan: props.data.nama_bahan,
+  kelompok: props.data.kelompok,
+  merek: props.data.merek,
+  produsen: props.data.produsen,
+  no_sertifikat: props.data.no_sertifikat,
 });
 
 const isBahanSertifikat = () => {
@@ -159,10 +172,11 @@ const insertBahan = async () => {
 
   try {
     const response = await $api(
-      `/self-declare/submission/bahan/${route.params.id}/add`,
+      `/self-declare/submission/bahan/${route.params.id}/edit`,
       {
         method: "post",
         body: {
+          id: form.value.id,
           jenis_bahan: `${
             form.value.typeBahan == 0 ? "certified" : "uncertified"
           }|${form.value.jenis_bahan}`,
@@ -184,6 +198,7 @@ const insertBahan = async () => {
     useSnackbar().sendSnackbar("Gagal menambahkan bahan", "error");
   } finally {
     form.value = {
+      id: null,
       typeBahan: null,
       jenis_bahan: null,
       nama_bahan: "",
@@ -201,19 +216,15 @@ const insertBahan = async () => {
 <template>
   <VDialog max-width="60svw" v-model="modalAddBahan">
     <template #activator="{ props: openModal }">
-      <VBtn
-        variant="outlined"
-        prepend-icon="fa-plus"
-        style="margin: 1svw"
-        v-bind="openModal"
-        >Tambah</VBtn
-      >
+      <IconBtn size="small" v-bind="openModal">
+        <VIcon icon="ri-pencil-line" />
+      </IconBtn>
     </template>
     <template #default="{ isActive }">
       <VCard>
         <VCardTitle>
           <VRow>
-            <VCol cols="10"><h3>Tambah Data Bahan</h3></VCol>
+            <VCol cols="10"><h3>Edit Data Bahan</h3></VCol>
             <VCol cols="2" style="display: flex; justify-content: end"
               ><VIcon
                 size="small"
@@ -374,7 +385,7 @@ const insertBahan = async () => {
                 type="submit"
                 :disabled="submitAddBahanButton"
                 variant="flat"
-                >Tambah</VBtn
+                >Ubah</VBtn
               >
             </div>
           </VCardActions>
