@@ -53,23 +53,10 @@ onMounted(async () => {
         <VCol cols="12">
           <h2 class="font-weight-bold">Detail Data Pengajuan</h2>
         </VCol>
-        <VCol cols="auto">
-          <VBtn
-            color="primary"
-            outlined
-            class="text-capitalize"
-            @click="updateStatus"
-          >
-            Update Status Selesai Sidang Fatwa
-          </VBtn>
-          <VBtn
-            color="primary"
-            class="text-capitalize ml-4"
-            @click="unggahKetetapanHalal"
-          >
-            Unggah Ketetapan Halal
-          </VBtn>
-        </VCol>
+        <!-- <VCol cols="auto">
+          <UpdateSidangFatwaEntriKetetapanHalal />
+          <TambahDataSidangFatwaEntriKetetapanHalal />
+        </VCol> -->
       </VRow>
     </template>
 
