@@ -4,7 +4,7 @@ import type { NewAccountGovernment } from "~/server/interface/new-account.iface"
 const runtimeConfig = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
-  const id = getQuery(event).id;
+  const id = getRouterParam(event, "id");
 
   if (typeof authorizationHeader === "undefined") {
     throw createError({
@@ -15,6 +15,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const body: NewAccountGovernment = await readBody(event);
+  console.log("@id", id);
+  console.log("@body", body);
 
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/verificator/halal-certificate-reguler/self-declare/${id}/legal`,

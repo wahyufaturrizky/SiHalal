@@ -6,23 +6,21 @@ const tableHeader = [
   { title: "No. Sertifikat", value: "sh_number" },
   { title: "Action", value: "action" },
 ];
+
+const showDialog = ref(false);
 </script>
 <template>
+  <VIcon icon="mdi-magnify"></VIcon>
   <VDialog>
-    <template #activator="{ props: openModal }">
-      <VIcon v-bind="openModal" icon="mdi-magnify"></VIcon>
-    </template>
-    <template #default>
-      <VCard>
-        <VCardTitle>Cari Bahan</VCardTitle>
-        <VCardItem>
-          <VDataTable :headers="tableHeader">
-            <template #item.action="{ item }">
-              <VIcon icon="fa-arrow-right"></VIcon>
-            </template>
-          </VDataTable>
-        </VCardItem>
-      </VCard>
-    </template>
+    <VCard>
+      <VCardTitle>Cari Bahan</VCardTitle>
+      <VCardItem>
+        <VDataTable :headers="tableHeader">
+          <template #item.action="{ item }">
+            <VIcon icon="fa-arrow-right"></VIcon>
+          </template>
+        </VDataTable>
+      </VCardItem>
+    </VCard>
   </VDialog>
 </template>

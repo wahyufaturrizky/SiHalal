@@ -31,7 +31,7 @@
             "
             >Ubah</VBtn
           >
-          <VBtn :color="!isComplete ? 'primary' : '#A09BA1'">Kirim</VBtn>
+          <VBtn @click="handleSentSubmission">Kirim</VBtn>
         </div>
       </VCol>
     </VRow>
@@ -473,8 +473,12 @@
                 <template #item.no="{ index }">
                   {{ index + 1 }}
                 </template>
-                <template #item.foto="{ item }">
-                  <VIcon color="primary" style="cursor: pointer">
+                <template #item.photo="{ item }: any">
+                  <VIcon
+                    color="primary"
+                    style="cursor: pointer"
+                    @click="handleDownload(item.photo)"
+                  >
                     ri-download-2-fill
                   </VIcon>
                 </template>
@@ -504,9 +508,10 @@
             <VExpansionPanelText class="d-flex align-center">
               <VTextarea
                 ref="processProduction"
-                v-model="submissionDetail.narasi"
+                v-model="productionProcesss"
                 rounded="xl"
                 outlined
+                readonly
               />
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -575,7 +580,7 @@
                 <VBtn
                   @click="
                     downloadForms.ikrar
-                      ? handleDownloadForm(downloadForms.ikrar)
+                      ? handleDownload(downloadForms.ikrar)
                       : null
                   "
                   :color="downloadForms.ikrar ? 'primary' : '#A09BA1'"
@@ -1067,10 +1072,10 @@ const substanceItems = ref([
 
 const productHeader = [
   { title: "No.", key: "no", nowrap: true, sortable: false },
-  { title: "Nama Produk ", key: "name", nowrap: true },
-  { title: "Merk ", key: "brand", nowrap: true },
-  { title: "Foto", value: "foto", sortable: false, nowrap: true },
-  { title: "Jumlah Bahan Digunakan", key: "totalUsage", nowrap: true },
+  { title: "Nama Produk ", key: "nama_produk", nowrap: true },
+  // { title: "Merk ", key: "brand", nowrap: true },
+  { title: "Foto", key: "photo", sortable: false, nowrap: true },
+  { title: "Jumlah Bahan Digunakan", key: "jumlah_bahan", nowrap: true },
 ];
 const productItems = ref([
   // { no: 1, name: "Jus Mangga Rez", brand: "Rez Juice", totalUsage: "1000" },
@@ -1146,15 +1151,32 @@ const handleDeleteSubmission = async () => {
     snackbar.sendSnackbar("Gagal menghapus data", "error");
   }
 };
+const productionProcesss = ref("");
+const handleGetNarration = async () => {
+  try {
+    const response: any = await $api(`/self-declare/business-actor/narration`, {
+      method: "get",
+      query: {
+        id_reg: submissionId,
+      },
+    });
+    if (response.code === 2000) {
+      productionProcesss.value = response.data.narasi;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 onMounted(async () => {
   await Promise.all([
     getSubmissionDetail(),
     getKbli(),
     getExistKbli(),
+    handleGetNarration(),
     getDownloadForm("surat-permohonan", "surat_permohonan"),
     getDownloadForm("surat-pernyataan", "surat_pernyataan"),
-    getDownloadForm("ikrar", "ikrar"),
+    getIkrarFile(),
     getDownloadForm("surat-verval", "surat_verval"),
     getDownloadForm("rekomendasi", "rekomendasi"),
     getDownloadForm("sjph", "sjph"),
@@ -1205,6 +1227,27 @@ const getKbli = async () => {
   kbliDropdown.value = response3;
 };
 
+const getIkrarFile = async () => {
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/statement/agree`,
+      {
+        method: "get",
+        query: {
+          id_reg: submissionId,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      downloadForms.ikrar = response.data.url_download;
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const getDownloadForm = async (docName: string, propName: string) => {
   const result: any = await $api(
     `/self-declare/submission/${submissionId}/file`,
@@ -1222,5 +1265,26 @@ const getDownloadForm = async (docName: string, propName: string) => {
 
 const handleDownloadForm = async (fileName: string) => {
   return await downloadDocument(fileName);
+};
+const handleDownload = async (productId: string) => {
+  return await downloadDocument(productId);
+};
+
+const handleSentSubmission = async () => {
+  try {
+    const response: any = await $api(`/self-declare/submission/send`, {
+      method: "post",
+      body: {
+        id_reg: submissionId,
+      },
+    });
+    if (response.code === 2000) {
+      snackbar.sendSnackbar("Berhasil mengirim pengajuan", "success");
+    } else {
+      snackbar.sendSnackbar(response.errors.list_error[0], "error");
+    }
+  } catch (error) {
+    snackbar.sendSnackbar("Gagal mengirim pengajuan", "error");
+  }
 };
 </script>
