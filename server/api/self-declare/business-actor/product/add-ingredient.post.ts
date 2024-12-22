@@ -18,9 +18,9 @@ export default defineEventHandler(async (event: any) => {
     const response = await $fetch(
       `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/self-declare/${query.id_reg}/products/${query.product_id}/ingredients`,
       {
-        method: "get",
+        method: "post",
         headers: { Authorization: authHeader },
-        body: [...payload.data],
+        body: payload,
       } as any
     );
 

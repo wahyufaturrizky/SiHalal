@@ -98,12 +98,13 @@ const handleUpdateProduct = async (payload: any) => {
 const handleAddIngredient = async (payload: any) => {
   try {
     const response: any = await $api(
-      `/self-declare/business-actor/product/create`,
+      `/self-declare/business-actor/product/add-ingredient`,
       {
         method: "post",
         body: payload,
         query: {
           id_reg: submissionId,
+          product_id: selectedProduct.value,
         },
       }
     );
@@ -152,6 +153,7 @@ const detailProduct = reactive({
   nama: null,
 });
 const handleDetailProduct = async (id: string) => {
+  selectedProduct.value = id;
   try {
     const response: any = await $api(
       `/self-declare/business-actor/product/detail`,
