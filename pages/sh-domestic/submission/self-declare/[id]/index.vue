@@ -215,8 +215,12 @@
               </InfoRow>
               <InfoRow name="Tingkat Usaha" :name-style="{ fontWeight: '600' }">
                 {{
-                  submissionDetail.tingkat_usaha
-                    ? submissionDetail.tingkat_usaha
+                  skalaUsaha.find(
+                    (data) => data.code == submissionDetail.tingkat_usaha
+                  ) != undefined
+                    ? skalaUsaha.find(
+                        (data) => data.code == submissionDetail.tingkat_usaha
+                      ).name
                     : "-"
                 }}
               </InfoRow>
@@ -437,20 +441,6 @@
               >
                 <template #item.no="{ index }">
                   {{ index + 1 }}
-                </template>
-                <!-- <template #item.jenis_bahan="{ item }: any">
-                  {{ item.jenis_bahan ? item.jenis_bahan : "-" }}
-                </template> -->
-                <template #item.nama_bahan="{ item }: any">
-                  {{ item.nama_bahan ? item.nama_bahan : "-" }}
-                </template>
-                <template #item.produsen="{ item }: any">
-                  {{ item.produsen ? item.produsen : "-" }}
-                </template>
-                <template #item.no_sertifikat_halal="{ item }: any">
-                  {{
-                    item.no_sertifikat_halal ? item.no_sertifikat_halal : "-"
-                  }}
                 </template>
               </VDataTable>
               <VCard v-else variant="outlined" class="py-2">
@@ -793,13 +783,11 @@
               >
                 <v-chip
                   style="background: #f0e9f1"
-                  color="primary"
+                  :color="statusItem[registrationDetail.status].color"
                   variant="outlined"
                   rounded="lg"
                 >
-                  {{
-                    registrationDetail.status ? registrationDetail.status : "-"
-                  }}
+                  {{ statusItem[registrationDetail.status].desc }}
                 </v-chip>
               </InfoRowV2>
               <InfoRowV2
@@ -953,6 +941,25 @@
 
 <script setup lang="ts">
 import { formatCurrency } from "@/utils/conversionIntl";
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+const statusItem = new Proxy(
+  {
+    OF1: { color: "primary", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF11: { color: "success", desc: "Verification" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF300: { color: "success", desc: "Halal Certified Issued" },
+  },
+  {
+    get(target, prop) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
+const skalaUsaha = ref([]);
 
 const router = useRouter();
 const route = useRoute<"">();
@@ -1069,10 +1076,10 @@ const supervisorItems = ref([]);
 
 const substanceHeader = [
   { title: "No", key: "no", nowrap: true, sortable: false },
-  // { title: "Jenis Bahan ", key: "jenis_bahan", nowrap: true },
-  { title: "Nama Bahan", key: "nama_bahan", nowrap: true },
+  { title: "Jenis Bahan ", key: "type", nowrap: true },
+  { title: "Nama Bahan", key: "name", nowrap: true },
   { title: "Produsen", key: "produsen", nowrap: true },
-  { title: "No. Sertifikat Halal", key: "no_sertifikat_halal", nowrap: true },
+  { title: "No. Sertifikat Halal", key: "sertificateNumber", nowrap: true },
 ];
 const substanceItems = ref([
   // {
@@ -1181,9 +1188,15 @@ const handleGetNarration = async () => {
     console.log(error);
   }
 };
-
+const getSkalaUsaha = async () => {
+  const response = await $api("/master/business-entity-scale", {
+    method: "get",
+  });
+  skalaUsaha.value = response;
+};
 onMounted(async () => {
   await Promise.all([
+    getSkalaUsaha(),
     getSubmissionDetail(),
     getKbli(),
     getExistKbli(),
@@ -1230,7 +1243,6 @@ const getSubmissionDetail = async () => {
       Object.assign(trackingDetail, response.data.tracking);
     }
   } catch (error) {
-    console.log(error);
     router.push("/sh-domestic/submission/self-declare");
   }
 };
