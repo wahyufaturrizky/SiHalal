@@ -32,6 +32,25 @@ const formatDate = (date: string): string => {
     year: "numeric",
   });
 };
+
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+const statusItem = new Proxy(
+  {
+    OF1: { color: "primary", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF11: { color: "success", desc: "Verification" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF300: { color: "success", desc: "Halal Certified Issued" },
+  },
+  {
+    get(target: any, prop: string) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
 </script>
 
 <template>
@@ -49,7 +68,7 @@ const formatDate = (date: string): string => {
           <div class="d-flex justify-space-between align-start">
             <div>
               <div class="text-subtitle-2 font-weight-bold">
-                {{ item.title }}
+                {{ statusItem[item.title].desc }}
               </div>
               <div class="text-caption text-grey">
                 {{ item.user }}
