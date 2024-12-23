@@ -9,7 +9,7 @@ const submissionDetail = reactive({
   nama_pj: null,
   alamat_pu: null,
   jabatan_pj: null,
-  telp_pu: null,
+  nomor_kontak_pj: null,
   nama_pu: null,
 });
 const formData = reactive({
@@ -61,6 +61,10 @@ const { refresh } = await useAsyncData("get-detail-submission", async () => {
 
     if (response.code === 2000) {
       Object.assign(submissionDetail, response.data.certificate_halal);
+      submissionDetail.tanggal_buat = response.data.pendaftaran.tgl_daftar;
+      submissionDetail.nama_pj = response.data.penanggung_jawab.nama_pj;
+      submissionDetail.nomor_kontak_pj =
+        response.data.penanggung_jawab.nomor_kontak_pj;
       Object.assign(formData, response.data.certificate_halal);
     }
     return response;
@@ -267,37 +271,39 @@ onMounted(() => {
       <br />
       <VRow>
         <VCol cols="12">
-          <VItemGroup>
-            <VLabel>Kode Daftar / Fasilitasi</VLabel>
-            <VRow>
-              <VCol cols="5">
-                <VSelect
-                  density="compact"
-                  :items="listFasilitasi"
-                  item-title="name"
-                  item-value="id"
-                  placeholder="Pilih Fasilitator"
-                  v-model="formData.kode_daftar"
-                />
-              </VCol>
+          <VLabel>Kode Daftar / Fasilitasi</VLabel>
+          <VRow>
+            <VCol cols="5">
+              <VSelect
+                density="compact"
+                :items="listFasilitasi"
+                item-title="name"
+                item-value="id"
+                placeholder="Pilih Fasilitator"
+                v-model="formData.kode_daftar"
+              />
+            </VCol>
 
-              <VSpacer
-                style="
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-                "
-                ><p>Atau</p></VSpacer
-              >
-              <VCol cols="5">
-                <VTextField
-                  placeholder="Cari Fasilitator"
-                  append-inner-icon="mdi-magnify"
-                  density="compact"
-                ></VTextField>
-              </VCol>
-            </VRow>
-          </VItemGroup>
+            <VSpacer
+              style="
+                display: flex;
+                justify-content: center;
+                align-items: center;
+              "
+              ><p>Atau</p></VSpacer
+            >
+            <VCol cols="5">
+              <VTextField
+                placeholder="Cari Fasilitator"
+                append-inner-icon="mdi-magnify"
+                density="compact"
+              ></VTextField>
+            </VCol>
+          </VRow>
+          <VAlert type="warning" variant="tonal" color="#652672" class="mt-5">
+            Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada
+            fasilitator sebagai kode untuk mendaftarkan sertifikasi halal gratis
+          </VAlert>
         </VCol>
       </VRow>
       <br />
