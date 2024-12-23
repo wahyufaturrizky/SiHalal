@@ -203,16 +203,14 @@ const checkNib = async () => {
     nibAlamat.value = await getAddress(
       nibData.value.pelaku_usaha.daerah_id_user_proses
     );
-    daftarUsaha.value = nibData.value.pelaku_usaha.DataProyek.map(
-      async (data) => {
-        return {
-          kbli: data.kbli,
-          namausaha: data.business_name,
-          address: data.address,
-          modalUsaha: data.investment_amount,
-        };
-      }
-    );
+    daftarUsaha.value = nibData.value.pelaku_usaha.DataProyek.map((data) => {
+      return {
+        kbli: data.kbli,
+        namausaha: data.business_name,
+        address: data.address,
+        modalUsaha: data.investment_amount,
+      };
+    });
     domesticForm.value = {
       nib: nibData.value.pelaku_usaha.nib,
       date_release_nib: nibData.value.pelaku_usaha.date_release_nib,
