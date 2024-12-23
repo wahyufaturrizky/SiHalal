@@ -137,6 +137,26 @@ const triggerAddModal = (type: string) => {
   labelSaveBtn.value = 'Tambah'
 }
 
+const loadItemProduct = async () => {
+  try {
+    const response: any = await $api('/master/products', {
+      method: 'get',
+    })
+
+    if (response.length) {
+      itemsProduct.value = response
+
+      return response
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
 const getDetailData = async () => {
   try {
     const response: any = await $api('/reguler/pelaku-usaha/detail', {
@@ -461,7 +481,7 @@ const handleSubmit = () => {
     payload = {
         nama_pj: responsibility?.value?.[0]?.value,
         no_kontak_pj: responsibility?.value?.[1]?.value,
-      email_pj: responsibility?.value?.[2]?.value,
+        email_pj: responsibility?.value?.[2]?.value,
     }
 
     editResponsibility({
@@ -473,7 +493,11 @@ const handleSubmit = () => {
 }
 
 onMounted(async () => {
-  await getDetailData()
+  // await getDetailData()
+  await Promise.allSettled([
+    getDetailData(),
+    loadItemProduct(),
+  ])
 })
 </script>
 
@@ -651,8 +675,6 @@ onMounted(async () => {
   <div v-if="!loading">
     <FormData
       :id="props?.id"
-      jenis_layanan="'A0000'"
-      area_pemasaran="'Internasional'"
       :on-submit="(payload: any) => triggerSaveModal(payload, 'Pengajuan Sertifikasi Halal')"
       :data="requestCertificateData"
       :product_type="itemsProduct"
@@ -662,7 +684,8 @@ onMounted(async () => {
     <br>
     <FormData
       :on-submit="() => triggerSaveModal(null, 'Penanggung Jawab')"
-      :data="responsibility" title="Penanggung Jawab"
+      :data="responsibility"
+      title="Penanggung Jawab"
     />
     <br>
     <TableData

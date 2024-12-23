@@ -120,26 +120,31 @@ const getLph = async (path: string, layanan: string, area: string) => {
 }
 
 const onSubmit = async () => {
-  const jenisLayanan = props?.service_type?.find((item: any) => props.data?.[3]?.value === item.name || props.data?.[3]?.value === item.code)
-  const jenisProduk = props?.product_type?.find((item: any) => props.data?.[4]?.value === item.name || props.data?.[4]?.value === item.code)
-  const tanggalDaftar = formatDateIntl(new Date(props.data[2]?.value))
-  const lphId = itemsLph.value?.find((item: any) => props.data[7]?.value === item.nama_lph || props.data[7]?.value === item.lph_id)
+  if (props?.title === 'Pengajuan Sertifikasi Halal') {
+    const jenisLayanan = props?.service_type?.find((item: any) => props.data?.[3]?.value === item.name || props.data?.[3]?.value === item.code)
+    const jenisProduk = props?.product_type?.find((item: any) => props.data?.[4]?.value === item.name || props.data?.[4]?.value === item.code)
+    const tanggalDaftar = props.data[2]?.value && formatDateIntl(new Date(props.data[2]?.value))
+    const lphId = itemsLph.value?.find((item: any) => props.data[7]?.value === item.nama_lph || props.data[7]?.value === item.lph_id)
 
-  const payload = {
-    id_reg: props?.id,
-    nama_pu: props.data[0]?.value,
-    no_mohon: props.data[1]?.value,
-    tgl_daftar: `${tanggalDaftar?.split('/')?.[2]}-${tanggalDaftar?.split('/')?.[1]}-${tanggalDaftar?.split('/')?.[0]}`,
-    jenis_layanan: jenisLayanan?.code || props.data?.[3]?.value,
-    jenis_produk: jenisProduk?.code || props.data?.[4]?.value,
-    merk_dagang: props.data[5]?.value,
-    area_pemasaran: props.data?.[6]?.value,
-    lph_id: lphId.lph_id || props.data[7]?.value,
-    channel_id: '',
-    fac_id: props.data[9]?.value,
+    const payload = {
+      id_reg: props?.id,
+      nama_pu: props.data[0]?.value,
+      no_mohon: props.data[1]?.value,
+      tgl_daftar: `${tanggalDaftar?.split('/')?.[2]}-${tanggalDaftar?.split('/')?.[1]}-${tanggalDaftar?.split('/')?.[0]}`,
+      jenis_layanan: jenisLayanan?.code || props.data?.[3]?.value,
+      jenis_produk: jenisProduk?.code || props.data?.[4]?.value,
+      merk_dagang: props.data[5]?.value,
+      area_pemasaran: props.data?.[6]?.value,
+      lph_id: lphId.lph_id || props.data[7]?.value,
+      channel_id: '',
+      fac_id: props.data[9]?.value,
+    }
+
+    props.onSubmit(payload)
   }
-
-  props.onSubmit(payload)
+  else {
+    props.onSubmit()
+  }
 }
 
 const getProductType = async (id: string) => {
@@ -164,8 +169,6 @@ const getProductType = async (id: string) => {
 }
 
 const lphValidation = async (title: string, value: string) => {
-  console.log(title, value, '><<<<<===', props.data[3], props.data[6])
-
   const jenisLayanan = props?.service_type?.find((item: any) => props.data?.[3]?.value === item.name || props.data?.[3]?.value === item.code)
 
   if (title === 'Jenis Layanan')

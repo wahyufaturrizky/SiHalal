@@ -192,9 +192,7 @@ onMounted(async () => {
               <KomitmenDanTanggungJawab :on-complete="() => (approveRequirements = true)" />
             </div>
             <div v-else>
-              <ListKomitmenDanTanggungJawab
-                :id="id"
-              />
+              <ListKomitmenDanTanggungJawab />
             </div>
           </div>
           <div v-if="activeTab === 2">

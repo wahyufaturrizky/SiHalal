@@ -1,5 +1,9 @@
 <script setup lang="ts">
 const props = defineProps({
+  id: {
+    type: String,
+    required: false,
+  },
   onSubmit: {
     type: Function,
     default: () => {},
@@ -46,12 +50,69 @@ const props = defineProps({
   },
 })
 
+const route = useRoute()
+
+const id = route.params.id
+
+const ingredientItems = ref<Bahan[]>(props?.data?.value || [])
+const productItems = ref<any[]>([])
+
 const handleCheck = (item: any) => {
   if (item.checked)
     item.checked = false
   else
     item.checked = true
 }
+
+const getListIngredients = async () => {
+  try {
+    const response: any = await $api(
+      '/self-declare/business-actor/ingredient/list',
+      {
+        method: 'get',
+        query: {
+          id_reg: id,
+        },
+      },
+    )
+
+    if (response.code === 2000)
+      ingredientItems.value = response.data
+
+    return response
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
+const getListProducts = async () => {
+  try {
+    const response: any = await $api(
+      '/reguler/pelaku-usaha/tab-bahan/products/list',
+      {
+        method: 'get',
+        query: {
+          id_reg: id,
+        },
+      },
+    )
+
+    if (response.code === 2000) {
+      productItems.value = response.data
+    }
+    return response
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+onMounted(() => {
+  if (props?.title === 'Daftar Nama Bahan dan Kemasan')
+    getListIngredients()
+  else if (props?.title === 'Daftar Nama Produk')
+    getListProducts()
+})
 </script>
 
 <template>
@@ -61,7 +122,7 @@ const handleCheck = (item: any) => {
         <span class="text-h5 font-weight-bold">{{ props.title }}</span>
         <div class="d-flex justify-space-between gap-4">
           <div v-if="withAddButtonBahan">
-            <TambahBahanModalHalal mode="add" />
+            <TambahBahanModal @loadList="getListIngredients()"></TambahBahanModal>
           </div>
           <VBtn
             v-if="withAddButton"
@@ -90,7 +151,12 @@ const handleCheck = (item: any) => {
           :items-per-page="-1"
           hide-default-footer=""
           :headers="props.data.label"
-          :items="props.data.value"
+          :items="
+            props?.title === 'Daftar Nama Bahan dan Kemasan'
+              ? ingredientItems
+              : props.title === 'Daftar Nama Produk'
+                ? productItems : props?.data.value
+          "
         >
           <template #item.no="{ index }">
             <div>

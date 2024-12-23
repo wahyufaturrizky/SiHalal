@@ -1,3 +1,4 @@
+<!-- eslint-disable camelcase -->
 <script setup lang="ts">
 import { ref } from 'vue'
 
@@ -18,18 +19,22 @@ const confirmSaveDialog = ref(false)
 const titleDialog = ref('')
 const labelSaveBtn = ref('')
 const tabs = ref(-1)
-const listBahan = ref<any[]>([])
 const file = ref<File | null>(null)
+const dataProductClasification = ref([])
+const listRincian = ref([])
 const loading = ref(false)
+const loadingRincian = ref(false)
+
+const formData = ref({
+  kode_rincian: '',
+  nama_produk: '',
+  foto_produk: null,
+})
 
 const documentList = ref([
   { nama: 'Izin Edar', fileName: 'Surat Izin Usaha.pdf', file: null },
   { nama: 'Izin Masuk', fileName: '', file: null },
 ])
-
-onMounted(() => {
-  tabs.value = 0
-})
 
 const pengisianValue = ref('Unggah Foto')
 
@@ -49,8 +54,8 @@ const productName = ref(
   {
     label: [
       { title: 'No.', key: 'no', nowrap: true },
-      { title: 'Nama Produk', key: 'materialType', nowrap: true },
-      { title: 'Foto Produk', key: 'materialName', nowrap: true },
+      { title: 'Nama Produk', key: 'nama', nowrap: true },
+      { title: 'Foto Produk', key: 'foto', nowrap: true },
       { title: 'Action', value: 'actionPopOver3', sortable: false, nowrap: true, popOver: true },
     ],
     value: [
@@ -123,34 +128,60 @@ const handleSubmit = () => {
   // submit simpan
 }
 
-const handleListIngredient = async () => {
+const loadItemProductClasifications = async () => {
   try {
     const response: any = await $api(
-      '/self-declare/business-actor/ingredient/list',
+      `/self-declare/verificator/produk/clasification/${id}`,
       {
-        method: 'get',
-        query: {
-          id_reg: id,
-        },
-      },
-    )
+        method: "get",
+      }
+    );
 
     if (response.code === 2000) {
-      console.log(response?.data)
-      materialName.value = {
-        ...materialName.value,
-        value: response?.data,
-      }
+      dataProductClasification.value = response.data;
+
+      return response;
+    } else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
     }
-    return response
   } catch (error) {
-    console.log(error)
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-}
+};
+
+const loadItemProductRincian = async (kode_rincian: string) => {
+  loadingRincian.value = true;
+  try {
+    const response: any = await $api(
+      `/self-declare/verificator/produk/rincian/${kode_rincian}`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) {
+      listRincian.value = response.data;
+      loadingRincian.value = false;
+    } else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
+      loadingRincian.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan aaa", "error");
+    loadingRincian.value = false;
+  }
+};
 
 onMounted(async () => {
   loading.value = true
-  await handleListIngredient()
+  tabs.value = 0
+  await loadItemProductClasifications()
   loading.value = false
 })
 </script>
@@ -275,6 +306,23 @@ onMounted(async () => {
                         </VBtn>
                       </template>
                     </VFileInput>
+                    <VFileInput
+                      v-model="file"
+                      class="custom-file-input"
+                      density="compact"
+                      rounded="xl"
+                      label="No file choosen"
+                      max-width="400"
+                      dense
+                      prepend-icon=""
+                      hide-details
+                      style="max-inline-size: 300px;"
+                      @change="uploadFile"
+                    >
+                      <template #append-inner>
+                        <VBtn rounded="s-0 e-xl" text="Choose" />
+                      </template>
+                    </VFileInput>
                   </div>
                 </div>
               </div>
@@ -327,26 +375,38 @@ onMounted(async () => {
           <div>
             <label>Kualitas Produk</label>
             <VSelect
-              :items="['1', '2']"
               outlined
               placeholder="pilih kualitas produk"
+              density="compact"
+              :loading="loadingRincian"
+              item-title="name"
+              item-value="code"
+              :items="dataProductClasification"
+              @update:modelValue="loadItemProductRincian"
             />
             <br>
             <label>Rincian Produk</label>
             <VSelect
-              :items="['1', '2']"
+              v-model="formData.kode_rincian"
               outlined
               placeholder="pilih rincian produk"
+              density="compact"
+              :loading="loadingRincian"
+              item-title="name"
+              item-value="code"
+              :items="listRincian"
             />
             <br>
             <label>Nama Produk</label>
             <VTextField
+              v-model="formData.nama_produk"
               class="-mt-10"
-              placeholder="isi nama produk"
+              density="compact"
+              placeholder="Isi Nama Produk"
             />
             <div class="d-flex justify-space-between mt-5">
               <label>
-                Unggah Bahan
+                Upload Foto
               </label>
               <VFileInput
                 v-model="file"
@@ -402,6 +462,7 @@ onMounted(async () => {
       </template>
     </DialogWithAction>
     <TableData
+      :id="props?.id"
       :on-submit="() => confirmSaveDialog = true"
       :on-add="() => toggleAdd('Data Bahan')"
       :on-edit="() => toggleEdit('Data Bahan')"

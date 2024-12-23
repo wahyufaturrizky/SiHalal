@@ -76,11 +76,6 @@ const getDetailData = async () => {
   }
 }
 
-const handleDownload = (type: string, url: string) => {
-  if (type === 'STTD')
-    window.open(url, '_blank')
-}
-
 const handleKirim = (type: string) => {
   if (type === 'kirim')
     dialogData.value = { title: 'Mengirim Pengajuan', description: 'Apakah yakin ingin mengirimkan pengajuan data ini?', label: 'Ya, Kirim' }
@@ -154,10 +149,6 @@ onMounted(async () => {
   ])
   loading.value = false
 })
-
-const navigateTo = (url: string) => {
-  window.location.href = url
-}
 </script>
 
 <template>
