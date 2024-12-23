@@ -11,31 +11,18 @@ export default defineEventHandler(async (event: any) => {
     })
   }
 
-  // eslint-disable-next-line camelcase
-  const { url, page, size, search, skala_code, provinsi_code, channel_code } = (await getQuery(event)) as {
-    url: string
-    page: string
-    size: string
-    search: string
-    skala_code: string
-    provinsi_code: string
-    channel_code: string
+  const { id, type } = (await getQuery(event)) as {
+    id: string
+    type: string
   }
 
   const params = {
-    page: Number.isNaN(Number.parseInt(page, 10)) ? 1 : Number.parseInt(page, 1),
-    size: Number.isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
-    search,
-    // eslint-disable-next-line camelcase
-    skala_code,
-    // eslint-disable-next-line camelcase
-    provinsi_code,
-    // eslint-disable-next-line camelcase
-    channel_code,
+    id,
+    type,
   }
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/${url}`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/business-actor/${id}/${type}`,
     {
       method: 'get',
       headers: { Authorization: authorizationHeader },

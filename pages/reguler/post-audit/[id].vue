@@ -2,7 +2,6 @@
 import LPHDetailLayout from '@/layouts/LPHDetailLayout.vue'
 
 const route = useRoute()
-const router = useRouter()
 const id = route?.params?.id
 
 const openedLeftPanels = ref([0, 1, 2, 3, 4, 5])
@@ -12,21 +11,63 @@ const dataPengajuan = ref<any>({})
 const dataProduk = ref<any>([])
 const dataPemeriksaanProduk = ref<any>(null)
 
-const isSendModalOpen = ref(false)
+const assignAuditorHeader: any[] = [
+  { title: 'No', key: 'index' },
+  { title: 'Nama', key: 'name' },
+  { title: 'Tanggal Lahir', key: 'birthDate' },
+  { title: 'No Reg', key: 'regisNumber' },
+  { title: 'Action', key: 'actions', align: 'center', sortable: false },
+]
 
-const handleOpenSendModal = () => {
-  isSendModalOpen.value = !isSendModalOpen.value
+const assignAuditorData = ref([
+  { name: 'Idris', birthDate: '02/10/2000', regisNumber: 'SK-896376-3028' },
+])
+
+const newAuditorData = {
+  name: 'Aliando Syakir',
+  birthDate: '02/10/2000',
+  regisNumber: 'SK-896376-3028',
+}
+
+const assignedAuditor = ref(null)
+const isAssignModalOpen = ref(false)
+const isUpdateModalOpen = ref(false)
+
+const handleOpenAssignModal = () => {
+  isAssignModalOpen.value = !isAssignModalOpen.value
+}
+
+const handleOpenUpdateModal = () => {
+  isUpdateModalOpen.value = !isUpdateModalOpen.value
+}
+
+const handleAddAuditor = () => {
+  assignAuditorData.value.push(newAuditorData)
+}
+
+const handleDeleteAuditor = (index: number) => {
+  assignAuditorData.value.splice(index, 1)
+}
+
+const handleSaveAuditor = () => {
+  useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
 }
 
 const handleUpdateStatus = () => {
-  useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
+  const snackbarMessage = assignedAuditor.value
+    ? 'Berhasil mengupdate status data'
+    : 'Gagal mengupdate status, silahkan assign auditor'
+
+  const snackbarType = assignedAuditor.value ? 'success' : 'error'
+
+  useSnackbar().sendSnackbar(snackbarMessage, snackbarType)
 }
 
 const getDetailData = async (type: string) => {
   try {
     const response: any = await $api('/reguler/lph/detail-payment', {
       method: 'get',
-      params: { url: `${LIST_DAFTAR_AJUAN_DITERIMA}/${id}/${type}` },
+      params: { url: `${POST_AUDIT_DETAIL}/${id}/${type}` },
     })
 
     if (response?.code === 2000)
@@ -49,8 +90,8 @@ onMounted(async () => {
   ])
 
   dataPengajuan.value = responseData?.[0]?.value || {}
-  dataProduk.value = responseData?.[1]?.value || []
-  dataPemeriksaanProduk.value = responseData?.[2]?.value || {}
+  dataPemeriksaanProduk.value = responseData?.[1]?.value || {}
+  dataProduk.value = responseData?.[2]?.value || []
   loading.value = false
 })
 </script>
@@ -61,17 +102,28 @@ onMounted(async () => {
       <template #page-title>
         <VRow no-gutters>
           <VCol>
-            <h1>Detail Ajuan Diterima</h1>
+            <h1>Detail Post Audit</h1>
           </VCol>
-          <VCol class="d-flex justify-end">
-            <VBtn text="STTD" variant="outlined" class="me-4" disabled />
-            <VBtn
-              text="Update Biaya"
-              variant="outlined"
-              class="me-4"
-              @click="router.push(`/lph/list-accepted/detail/update-cost`)"
-            />
-            <VBtn text="Kirim" @click="handleOpenSendModal" />
+          <VCol cols="8">
+            <VRow class="d-flex justify-end align-center ga-2">
+              <VBtn
+                variant="outlined"
+                color="#E1442E"
+                style="border-color: #E1442E;"
+                @click="() => toggle('return')"
+              >
+                Pengembalian
+              </VBtn>
+              <VBtn variant="outlined">
+                Lihat Draft Sertif
+              </VBtn>
+              <VBtn variant="outlined">
+                Cetak Data
+              </VBtn>
+              <VBtn @click="() => toggle('add')">
+                Kirim
+              </VBtn>
+            </VRow>
           </VCol>
         </VRow>
       </template>
@@ -84,7 +136,7 @@ onMounted(async () => {
         >
           <VExpansionPanel :value="0" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Data Pengajuan
+              Daftar Pengajuan
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <PanelDaftarPengajuan
@@ -130,7 +182,10 @@ onMounted(async () => {
               Hasil Pemeriksaan
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelHasilPemeriksaan :data="dataPemeriksaanProduk?.hasil_pemeriksaan" />
+              <PanelHasilPemeriksaan
+                type="EDIT"
+                :data="dataPemeriksaanProduk?.hasil_pemeriksaan"
+              />
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -144,27 +199,20 @@ onMounted(async () => {
         >
           <VExpansionPanel :value="0" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              No. Pendaftaran
+              Dokumen Unduhan
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelNoPendaftaran :data="dataPemeriksaanProduk?.no_pendaftaran" />
-            </VExpansionPanelText>
-          </VExpansionPanel>
-          <VExpansionPanel :value="1" class="pt-3">
-            <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Biaya Pemeriksaan
-            </VExpansionPanelTitle>
-            <VExpansionPanelText class="mt-5">
-              <VRow>
-                <VCol>{{ formatToIDR(dataPemeriksaanProduk?.total_biaya) }}</VCol>
+              <VRow align="center">
+                <VCol cols="5" class="text-h6"> Hasil Audit </VCol>
+                <VCol class="d-flex align-center">
+                  <div class="me-1">:</div>
+                  <VBtn rounded="xl" density="compact" class="px-2">
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn>
+                </VCol>
               </VRow>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-          <VExpansionPanel :value="2" class="pt-3">
-            <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Dokumen
-            </VExpansionPanelTitle>
-            <VExpansionPanelText class="mt-5">
               <VRow align="center">
                 <VCol cols="5" class="text-h6"> File KH </VCol>
                 <VCol class="d-flex align-center">
@@ -189,38 +237,122 @@ onMounted(async () => {
               </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
+          <VExpansionPanel :value="1" class="pt-3">
+            <VExpansionPanelTitle class="font-weight-bold text-h4">
+              No. Pendaftaran
+            </VExpansionPanelTitle>
+            <VExpansionPanelText class="mt-5">
+              <PanelNoPendaftaran :data="dataPemeriksaanProduk?.no_pendaftaran" />
+            </VExpansionPanelText>
+          </VExpansionPanel>
+          <VExpansionPanel :value="2" class="pt-3">
+            <VExpansionPanelTitle class="font-weight-bold text-h4">
+              Biaya Pemeriksaan
+            </VExpansionPanelTitle>
+            <VExpansionPanelText class="mt-5">
+              <VRow>
+                <VCol>{{ formatToIDR(dataPemeriksaanProduk?.total_biaya) }}</VCol>
+              </VRow>
+            </VExpansionPanelText>
+          </VExpansionPanel>
         </VExpansionPanels>
         <div class="mt-10">
           <PanelTracking :data="dataPemeriksaanProduk?.tracking" />
         </div>
       </template>
     </LPHDetailLayout>
-    <VDialog v-model="isSendModalOpen" max-width="840px" persistent>
+    <VDialog v-model="isAssignModalOpen" max-width="840px" persistent>
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
-          <div class="text-h3 font-weight-bold">Kirim Pengajuan</div>
-          <VIcon @click="handleOpenSendModal"> fa-times </VIcon>
+          <div class="text-h3 font-weight-bold">Update Status</div>
+          <VIcon @click="handleOpenAssignModal"> fa-times </VIcon>
         </VCardTitle>
         <VCardText>
-          <VRow>
+          <VRow class="mb-1">
             <VCol>
-              Pastikan dokumen persyaratan lengkap dan semua biaya pemeriksaan
-              sudah dimasukkan. Invoice akan diterbitkan saat Anda klik tombol
-              ”kirim” dan invoice tidak dapat diedit kembali
+              <div class="text-h6 mb-1">Auditor</div>
+              <VSelect
+                placeholder="Masukkan Auditor"
+                density="compact"
+                class="mb-3"
+                :items="[{ title: 'Aliando Syakir', value: 'Aliando Syakir' }]"
+                @update:model-value="(v) => (assignedAuditor = v)"
+                menu-icon="fa-chevron-down"
+              />
+              <div class="d-flex justify-end">
+                <VBtn
+                  :disabled="!assignedAuditor"
+                  text="Tambah"
+                  @click="handleAddAuditor"
+                />
+              </div>
+            </VCol>
+          </VRow>
+          <VRow class="mb-5">
+            <VCol>
+              <VDataTable
+                class="auditor-table"
+                :headers="assignAuditorHeader"
+                :items="assignAuditorData"
+                hide-default-footer
+              >
+                <template #item.index="{ index }">
+                  {{ index + 1 }}
+                </template>
+                <template #item.actions>
+                  <VIcon
+                    icon="mdi-delete"
+                    color="error"
+                    @click="handleDeleteAuditor"
+                  />
+                </template>
+              </VDataTable>
             </VCol>
           </VRow>
         </VCardText>
         <VCardActions class="px-4">
-          <VBtn variant="outlined" class="px-4 me-3" @click="handleOpenSendModal"
+          <VBtn
+            variant="outlined"
+            class="px-4 me-3"
+            @click="handleOpenAssignModal"
             >Batal</VBtn
           >
           <VBtn
             variant="flat"
             class="px-4"
             color="primary"
-            @click="[handleUpdateStatus(), handleOpenSendModal()]"
+            @click="[handleSaveAuditor(), handleOpenAssignModal()]"
           >
-            Ya, Kirim
+            Simpan
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+    <VDialog v-model="isUpdateModalOpen" max-width="840px" persistent>
+      <VCard class="pa-4">
+        <VCardTitle class="d-flex justify-space-between align-center">
+          <div class="text-h3 font-weight-bold">Update Status</div>
+          <VIcon @click="handleOpenUpdateModal"> fa-times </VIcon>
+        </VCardTitle>
+        <VCardText>
+          <VRow>
+            <VCol> Pastikan sudah memilih auditor untuk pengajuan ini. </VCol>
+          </VRow>
+        </VCardText>
+        <VCardActions class="px-4">
+          <VBtn
+            variant="outlined"
+            class="px-4 me-3"
+            @click="handleOpenUpdateModal"
+            >Batal</VBtn
+          >
+          <VBtn
+            variant="flat"
+            class="px-4"
+            color="primary"
+            @click="[handleUpdateStatus(), handleOpenUpdateModal()]"
+          >
+            Ya, Update
           </VBtn>
         </VCardActions>
       </VCard>
