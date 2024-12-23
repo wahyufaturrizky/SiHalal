@@ -31,7 +31,7 @@
             "
             >Ubah</VBtn
           >
-          <VBtn @click="handleSentSubmission">Kirim</VBtn>
+          <VBtn @click="isSendModalOpen = true">Kirim</VBtn>
         </div>
       </VCol>
     </VRow>
@@ -224,7 +224,7 @@
                 {{
                   submissionDetail.modal_usaha
                     ? formatCurrency(String(submissionDetail.modal_usaha))
-                    : "-"
+                    : "Rp 0"
                 }}
               </InfoRow>
               <InfoRow name="Asal Usaha" :name-style="{ fontWeight: '600' }">
@@ -949,6 +949,17 @@
       <div>Apakah yakin ingin menghapus data pengajuan ini</div>
     </VCardText>
   </ShSubmissionDetailFormModal>
+  <ShSubmissionDetailFormModal
+    dialog-title="Kirim Pengajuan"
+    :dialog-visible="isSendModalOpen"
+    dialog-use="SEND"
+    @update:dialog-visible="isSendModalOpen = $event"
+    @submit:commit-action="handleSentSubmission"
+  >
+    <VCardText>
+      <div>Apakah yakin ingin mengirim pengajuan ini</div>
+    </VCardText>
+  </ShSubmissionDetailFormModal>
 </template>
 
 <script setup lang="ts">
@@ -961,6 +972,8 @@ const submissionId = route.params?.id;
 const snackbar = useSnackbar();
 
 const isDeleteModalOpen = ref(false);
+const isSendModalOpen = ref(false);
+
 const panelSubmission = ref([0, 1]);
 const panelPic = ref([0, 1]);
 const panelAspectLegal = ref([0, 1]);
@@ -1190,6 +1203,7 @@ onMounted(async () => {
     handleGetNarration(),
     getDownloadForm("surat-permohonan", "surat_permohonan"),
     getDownloadForm("surat-pernyataan", "surat_pernyataan"),
+    // getDownloadForm("ikrar", "ikrar"),
     getIkrarFile(),
     getDownloadForm("surat-verval", "surat_verval"),
     getDownloadForm("rekomendasi", "rekomendasi"),
