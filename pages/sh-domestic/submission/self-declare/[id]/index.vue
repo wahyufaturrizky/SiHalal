@@ -31,7 +31,7 @@
             "
             >Ubah</VBtn
           >
-          <VBtn @click="handleSentSubmission">Kirim</VBtn>
+          <VBtn @click="isSendModalOpen = true">Kirim</VBtn>
         </div>
       </VCol>
     </VRow>
@@ -228,7 +228,7 @@
                 {{
                   submissionDetail.modal_usaha
                     ? formatCurrency(String(submissionDetail.modal_usaha))
-                    : "-"
+                    : "Rp 0"
                 }}
               </InfoRow>
               <InfoRow name="Asal Usaha" :name-style="{ fontWeight: '600' }">
@@ -919,7 +919,7 @@
               >Melacak</VExpansionPanelTitle
             >
             <VExpansionPanelText class="d-flex align-center">
-              <Melacak :data="trackingDetail" />
+              <Tracking :data="trackingDetail" />
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -935,6 +935,17 @@
   >
     <VCardText>
       <div>Apakah yakin ingin menghapus data pengajuan ini</div>
+    </VCardText>
+  </ShSubmissionDetailFormModal>
+  <ShSubmissionDetailFormModal
+    dialog-title="Kirim Pengajuan"
+    :dialog-visible="isSendModalOpen"
+    dialog-use="SEND"
+    @update:dialog-visible="isSendModalOpen = $event"
+    @submit:commit-action="handleSentSubmission"
+  >
+    <VCardText>
+      <div>Apakah yakin ingin mengirim pengajuan ini</div>
     </VCardText>
   </ShSubmissionDetailFormModal>
 </template>
@@ -968,6 +979,8 @@ const submissionId = route.params?.id;
 const snackbar = useSnackbar();
 
 const isDeleteModalOpen = ref(false);
+const isSendModalOpen = ref(false);
+
 const panelSubmission = ref([0, 1]);
 const panelPic = ref([0, 1]);
 const panelAspectLegal = ref([0, 1]);
@@ -981,7 +994,7 @@ const panelDownloadFormulir = ref([0, 1]);
 const panelRegistration = ref([0, 1]);
 const panelFatwaHearing = ref([0, 1]);
 const panelHalalCertificate = ref([0, 1]);
-const panelTracking = ref([0, 1]);
+const panelTracking = ref([]);
 
 const submissionDetail = reactive({
   id_reg: "",
@@ -1081,15 +1094,7 @@ const substanceHeader = [
   { title: "Produsen", key: "produsen", nowrap: true },
   { title: "No. Sertifikat Halal", key: "sertificateNumber", nowrap: true },
 ];
-const substanceItems = ref([
-  // {
-  //   no: 1,
-  //   type: "Bahan",
-  //   name: "Air Matang",
-  //   produsen: "PT ACEN ",
-  //   sertificateNumber: "3123821093821093821",
-  // },
-]);
+const substanceItems = ref([]);
 
 const productHeader = [
   { title: "No.", key: "no", nowrap: true, sortable: false },
@@ -1098,9 +1103,7 @@ const productHeader = [
   { title: "Foto", key: "photo", sortable: false, nowrap: true },
   { title: "Jumlah Bahan Digunakan", key: "jumlah_bahan", nowrap: true },
 ];
-const productItems = ref([
-  // { no: 1, name: "Jus Mangga Rez", brand: "Rez Juice", totalUsage: "1000" },
-]);
+const productItems = ref([]);
 
 const downloadForms = reactive({
   surat_permohonan: "",
@@ -1136,7 +1139,7 @@ const halalCertificateDetail = reactive({
   nomor_sertifikat: "",
   tanggal_sertifikat: "",
 });
-const trackingDetail = reactive([]);
+const trackingDetail = ref([]);
 
 const handleUpdateKbli = async () => {
   try {
@@ -1203,6 +1206,7 @@ onMounted(async () => {
     handleGetNarration(),
     getDownloadForm("surat-permohonan", "surat_permohonan"),
     getDownloadForm("surat-pernyataan", "surat_pernyataan"),
+    // getDownloadForm("ikrar", "ikrar"),
     getIkrarFile(),
     getDownloadForm("surat-verval", "surat_verval"),
     getDownloadForm("rekomendasi", "rekomendasi"),
@@ -1240,7 +1244,8 @@ const getSubmissionDetail = async () => {
         halalCertificateDetail,
         response.data.sertifikat_halal_info
       );
-      Object.assign(trackingDetail, response.data.tracking);
+      trackingDetail.value = response.data.tracking;
+      Object.assign(panelTracking.value, [0, 1]);
     }
   } catch (error) {
     router.push("/sh-domestic/submission/self-declare");

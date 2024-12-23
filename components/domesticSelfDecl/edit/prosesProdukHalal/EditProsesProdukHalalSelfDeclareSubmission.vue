@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+const form = ref();
+const formStatus = ref(false);
 const typedProcess = ref("");
+const processRules = ref([(v: string) => !!v || "Proses produksi harus diisi"]);
 const processArray = ref<Array<string>>([]);
 const prosesProduction = ref("");
 
@@ -74,19 +77,27 @@ const handleAddProcess = () => {
       <VBtn @click="handleAddSave">Simpan Perubahan</VBtn>
     </VCardTitle>
     <VCardItem>
-      <VRow class="d-flex justify-space-between align-center">
-        <VCol cols="6" class="text-h6">Ketik Proses</VCol>
-        <VCol cols="6" class="d-flex justify-space-between align-center ga-4">
-          <VTextField
-            v-model="typedProcess"
-            placeholder="Isi Ketik Proses"
-            dense
-            outlined
-            class="mr-3"
-          />
-          <VBtn dense outlined @click="handleAddProcess"> Tambah </VBtn>
-        </VCol>
-      </VRow>
+      <VForm ref="form" v-model="formStatus" @submit.prevent="handleAddProcess">
+        <VRow class="d-flex justify-space-between align-center">
+          <VCol cols="6" class="text-h6">Ketik Proses</VCol>
+          <VCol cols="6" class="d-flex justify-space-between align-center ga-4">
+            <VTextField
+              v-model="typedProcess"
+              :rules="processRules"
+              placeholder="Isi Ketik Proses"
+              density="compact"
+              outlined
+              class="mr-3"
+              :hide-details="false"
+              autofocus
+            >
+              <template #append>
+                <VBtn dense outlined @click="handleAddProcess"> Tambah </VBtn>
+              </template>
+            </VTextField>
+          </VCol>
+        </VRow>
+      </VForm>
     </VCardItem>
     <br />
     <VCardText>
