@@ -16,7 +16,7 @@ const formData = reactive({
   id_reg: submissionId,
   jenis_pendaftaran: null,
   kode_daftar: null,
-  no_surat_permohonan: null,
+  no_mohon: null,
   tgl_surat_permohonan: null,
   jenis_layanan: null,
   jenis_produk: null,
@@ -178,7 +178,7 @@ const handleUpdateSubmission = async () => {
           id_reg: submissionId,
           jenis_pendaftaran: formData.jenis_pendaftaran,
           kode_daftar: formData.kode_daftar,
-          no_surat_permohonan: formData.no_surat_permohonan,
+          no_surat_permohonan: formData.no_mohon,
           tgl_surat_permohonan: formData.tgl_surat_permohonan,
           jenis_layanan: formData.jenis_layanan,
           jenis_produk: formData.jenis_produk,
@@ -316,7 +316,7 @@ onMounted(() => {
             <VTextField
               placeholder="Isi Nomor Surat Permohonan"
               density="compact"
-              v-model="formData.no_surat_permohonan"
+              v-model="formData.no_mohon"
             ></VTextField>
           </VItemGroup>
           <br />
