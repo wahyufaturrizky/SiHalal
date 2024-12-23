@@ -8,7 +8,7 @@ const props = defineProps({
 const { detaildata } = props || {};
 const { sidang_fatwa } = detaildata || {};
 const { SertifikatHalalReguler } = sidang_fatwa || {};
-const { tgl_mohon } = SertifikatHalalReguler || {};
+const { tgl_mohon, no_mohon } = SertifikatHalalReguler || {};
 
 const listData = [
   {
