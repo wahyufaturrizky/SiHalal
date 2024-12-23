@@ -438,6 +438,20 @@
                 <template #item.no="{ index }">
                   {{ index + 1 }}
                 </template>
+                <!-- <template #item.jenis_bahan="{ item }: any">
+                  {{ item.jenis_bahan ? item.jenis_bahan : "-" }}
+                </template> -->
+                <template #item.nama_bahan="{ item }: any">
+                  {{ item.nama_bahan ? item.nama_bahan : "-" }}
+                </template>
+                <template #item.produsen="{ item }: any">
+                  {{ item.produsen ? item.produsen : "-" }}
+                </template>
+                <template #item.no_sertifikat_halal="{ item }: any">
+                  {{
+                    item.no_sertifikat_halal ? item.no_sertifikat_halal : "-"
+                  }}
+                </template>
               </VDataTable>
               <VCard v-else variant="outlined" class="py-2">
                 <VRow>
@@ -1055,10 +1069,10 @@ const supervisorItems = ref([]);
 
 const substanceHeader = [
   { title: "No", key: "no", nowrap: true, sortable: false },
-  { title: "Jenis Bahan ", key: "type", nowrap: true },
-  { title: "Nama Bahan", key: "name", nowrap: true },
+  // { title: "Jenis Bahan ", key: "jenis_bahan", nowrap: true },
+  { title: "Nama Bahan", key: "nama_bahan", nowrap: true },
   { title: "Produsen", key: "produsen", nowrap: true },
-  { title: "No. Sertifikat Halal", key: "sertificateNumber", nowrap: true },
+  { title: "No. Sertifikat Halal", key: "no_sertifikat_halal", nowrap: true },
 ];
 const substanceItems = ref([
   // {
@@ -1216,6 +1230,7 @@ const getSubmissionDetail = async () => {
       Object.assign(trackingDetail, response.data.tracking);
     }
   } catch (error) {
+    console.log(error);
     router.push("/sh-domestic/submission/self-declare");
   }
 };
