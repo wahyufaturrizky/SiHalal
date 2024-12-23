@@ -931,7 +931,7 @@
               >Melacak</VExpansionPanelTitle
             >
             <VExpansionPanelText class="d-flex align-center">
-              <Melacak :data="trackingDetail" />
+              <Tracking :data="trackingDetail" />
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -987,7 +987,7 @@ const panelDownloadFormulir = ref([0, 1]);
 const panelRegistration = ref([0, 1]);
 const panelFatwaHearing = ref([0, 1]);
 const panelHalalCertificate = ref([0, 1]);
-const panelTracking = ref([0, 1]);
+const panelTracking = ref([]);
 
 const submissionDetail = reactive({
   id_reg: "",
@@ -1087,15 +1087,7 @@ const substanceHeader = [
   { title: "Produsen", key: "produsen", nowrap: true },
   { title: "No. Sertifikat Halal", key: "no_sertifikat_halal", nowrap: true },
 ];
-const substanceItems = ref([
-  // {
-  //   no: 1,
-  //   type: "Bahan",
-  //   name: "Air Matang",
-  //   produsen: "PT ACEN ",
-  //   sertificateNumber: "3123821093821093821",
-  // },
-]);
+const substanceItems = ref([]);
 
 const productHeader = [
   { title: "No.", key: "no", nowrap: true, sortable: false },
@@ -1104,9 +1096,7 @@ const productHeader = [
   { title: "Foto", key: "photo", sortable: false, nowrap: true },
   { title: "Jumlah Bahan Digunakan", key: "jumlah_bahan", nowrap: true },
 ];
-const productItems = ref([
-  // { no: 1, name: "Jus Mangga Rez", brand: "Rez Juice", totalUsage: "1000" },
-]);
+const productItems = ref([]);
 
 const downloadForms = reactive({
   surat_permohonan: "",
@@ -1142,7 +1132,7 @@ const halalCertificateDetail = reactive({
   nomor_sertifikat: "",
   tanggal_sertifikat: "",
 });
-const trackingDetail = reactive([]);
+const trackingDetail = ref([]);
 
 const handleUpdateKbli = async () => {
   try {
@@ -1241,7 +1231,8 @@ const getSubmissionDetail = async () => {
         halalCertificateDetail,
         response.data.sertifikat_halal_info
       );
-      Object.assign(trackingDetail, response.data.tracking);
+      trackingDetail.value = response.data.tracking;
+      Object.assign(panelTracking.value, [0, 1]);
     }
   } catch (error) {
     console.log(error);
