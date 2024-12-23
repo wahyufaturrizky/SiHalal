@@ -60,6 +60,9 @@ const managementData = ref(
   },
 )
 
+
+
+
 const uploadFile = (event: any) => {
   const fileUpload = event?.target?.files[0]
   if (fileUpload) {
@@ -329,7 +332,7 @@ const handleSubmit = () => {
       :on-add="() => toggleAdd('Dokumen')"
       :on-edit="() => toggleEdit('Dokumen')"
       :data="comitmentData"
-      title="Pemetaan Produk dan Pabrik"
+      title="Upload Dokumen Lain nya "
       with-add-button
     >
       <template #headerDialog>
