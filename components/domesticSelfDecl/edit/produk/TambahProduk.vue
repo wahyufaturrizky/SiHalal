@@ -13,8 +13,6 @@ const localDialogUse = ref(props.dialogUse);
 
 const modalUse = computed(() => props.dialogUse);
 const detailData = ref(props.data);
-// console.log(detailData.value);
-
 const textSubmitButton = computed(() => {
   switch (localDialogUse.value) {
     case "EDIT":
@@ -118,6 +116,7 @@ const handleRemoveFile = () => {
   uploadedFile.value.file = null;
   formData.foto_produk = null;
 };
+
 const handleUploadFile = async (event: any) => {
   if (event?.target?.files.length) {
     const fileData = event.target.files[0];

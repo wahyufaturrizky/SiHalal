@@ -1,22 +1,22 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 
+const route = useRoute()
 const addDialog = ref(false)
 const confirmSaveDialog = ref(false)
+const loading = ref(false)
 const titleDialog = ref('')
+const id = route.params.id
 
 const comitmentData = ref(
   {
     label: [
       { title: 'No.', key: 'no', nowrap: true },
-      { title: 'Nama Produk', key: 'productName', nowrap: true },
-      { title: 'Nama Pabrik', key: 'factoryName', nowrap: true },
+      { title: 'Nama Produk', key: 'nama_produk', nowrap: true },
+      { title: 'Nama Pabrik', key: 'nama_pabrik', nowrap: true },
       { title: 'Action', value: 'action', sortable: false, nowrap: true, popOver: true },
     ],
-    value: [
-      { no: 1, productName: 'Kopi Luak Ciater', factoryName: 'Kopi Luakuy' },
-      { no: 2, productName: 'Kopi Luak Lembang', factoryName: 'Kopi Lembang' },
-    ],
+    value: [],
   },
 )
 
@@ -33,10 +33,42 @@ const toggleEdit = () => {
 const handleSubmit = () => {
   // submit
 }
+
+const getListData = async () => {
+  try {
+    const response: any = await $api(
+      '/reguler/pelaku-usaha/tab-produk/list',
+      {
+        method: 'get',
+        query: {
+          url: `${LIST_TAB_PRODUK}${id}/list`,
+        },
+      },
+    )
+
+    if (response.code === 2000) {
+      comitmentData.value = {
+        ...comitmentData.value,
+        value: response.data,
+      }
+    }
+
+    return response.data
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
+onMounted(async () => {
+  loading.value = true
+  await getListData()
+  loading.value = false
+})
 </script>
 
 <template>
-  <div>
+  <div v-if="!loading">
     <DialogSaveDataPengajuan
       title="Simpan Perubahan"
       :is-open="confirmSaveDialog"
@@ -52,33 +84,7 @@ const handleSubmit = () => {
     >
       <template #content>
         <div v-if="titleDialog === 'Tambah Pemetaan Produk dan Pabrik'">
-          <VRow class="mb-1">
-            <VCol>
-              <label>Nomor</label>
-              <VSelect
-                :items="['1', '2']"
-                outlined
-                class="-mt-5"
-                placeholder="pilih nomor"
-              />
-            </VCol>
-            <VCol>
-              <label>Sampai</label>
-              <VSelect
-                :items="['1', '2']"
-                outlined
-                class="-mt-5"
-                placeholder="pilih sampai"
-              />
-            </VCol>
-          </VRow>
-          <label>
-            Pabrik
-          </label>
-          <VTextField
-            class="-mt-10"
-            placeholder="isi Nama Pabrik"
-          />
+          <ProductModalContent />
         </div>
       </template>
     </DialogWithAction>

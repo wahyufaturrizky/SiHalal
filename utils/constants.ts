@@ -14,3 +14,4 @@ export const LIST_MENU_STATUS = 'api/v1/halal-certificate-reguler/business-actor
 export const LIST_BUSINESS_ACTOR = 'api/v1/halal-certificate-reguler/business-actor'
 export const LIST_CHANNEL_PATH_JNLAY = 'api/list/ref/JNLAY'
 export const LIST_TAB_KOMITMEN_DAN_TANGGUNG_JAWAB = 'api/v1/halal-certificate-reguler/business-actor'
+export const LIST_TAB_PRODUK = 'api/v1/halal-certificate-reguler/lph/produk-mappabrik/'

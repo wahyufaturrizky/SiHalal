@@ -71,6 +71,11 @@ const props = defineProps({
             :headers="item.label"
             :items="item.value"
           >
+            <template #item.no="{ index }">
+              <div>
+                {{ index + 1 }}
+              </div>
+            </template>
             <template #item.productType="{ item }">
               <div>
                 {{ item.productType }}
