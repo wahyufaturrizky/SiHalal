@@ -181,6 +181,12 @@ const { refresh } = await useAsyncData("get-detail-submission", async () => {
   }
 });
 const formLembagaPendamping = ref<{}>();
+const refVForm = ref<VForm>();
+const onSubmitSubmission = () => {
+  refVForm.value?.validate().then(({ valid: isValid }) => {
+    if (isValid) handleUpdateSubmission();
+  });
+};
 const handleUpdateSubmission = async () => {
   try {
     const response: any = await $api(
@@ -235,221 +241,235 @@ onMounted(() => {
 
 <template>
   <VCard class="pa-3" variant="elevated" elevation="9">
-    <VCardTitle
-      class="d-flex justify-space-between align-center font-weight-bold text-h4 mb-5"
-    >
-      <div>Data Pengajuan</div>
-      <VBtn
-        color="primary"
-        variant="flat"
-        text="Simpan Perubahan"
-        @click="handleUpdateSubmission"
-      />
-    </VCardTitle>
-    <VCardTitle>
-      <VRow>
-        <VCol cols="2">Tanggal</VCol>
-        <VCol cols="1">:</VCol>
-        <VCol cols="9">{{
-          submissionDetail.tanggal_buat ? submissionDetail.tanggal_buat : "-"
-        }}</VCol>
-      </VRow>
-      <VRow>
-        <VCol cols="2">Jenis Pengajuan</VCol>
-        <VCol cols="1">:</VCol>
-        <VCol cols="9">{{
-          findListDaftar(submissionDetail.id_jenis_pengajuan).name
-        }}</VCol>
-      </VRow>
-      <br />
-      <br />
-      <VRow>
-        <VCol cols="12">
-          <VItemGroup>
-            <VLabel>Jenis Pendaftaran</VLabel>
-            <VSelect
-              density="compact"
-              :items="listPendaftaran"
-              item-title="name"
-              item-value="code"
-              v-model="formData.id_jenis_pengajuan"
-              disabled
-              placeholder="Pilih Jenis Pendaftaran"
-            />
-          </VItemGroup>
-        </VCol>
-      </VRow>
-      <br />
-      <VRow>
-        <VCol cols="12">
-          <VLabel>Kode Daftar / Fasilitasi</VLabel>
-          <VRow>
-            <VCol cols="5">
+    <v-form ref="refVForm" @submit.prevent="onSubmitSubmission">
+      <VCardTitle
+        class="d-flex justify-space-between align-center font-weight-bold text-h4 mb-5"
+      >
+        <div>Data Pengajuan</div>
+        <VBtn
+          type="submit"
+          color="primary"
+          variant="flat"
+          text="Simpan Perubahan"
+        />
+      </VCardTitle>
+      <VCardTitle>
+        <VRow>
+          <VCol cols="2">Tanggal</VCol>
+          <VCol cols="1">:</VCol>
+          <VCol cols="9">{{
+            submissionDetail.tanggal_buat ? submissionDetail.tanggal_buat : "-"
+          }}</VCol>
+        </VRow>
+        <VRow>
+          <VCol cols="2">Jenis Pengajuan</VCol>
+          <VCol cols="1">:</VCol>
+          <VCol cols="9">{{
+            findListDaftar(submissionDetail.id_jenis_pengajuan).name
+          }}</VCol>
+        </VRow>
+        <br />
+        <br />
+        <VRow>
+          <VCol cols="12">
+            <VItemGroup>
+              <VLabel>Jenis Pendaftaran</VLabel>
               <VSelect
                 density="compact"
-                :items="listFasilitasi"
+                :items="listPendaftaran"
                 item-title="name"
-                item-value="id"
-                placeholder="Pilih Fasilitator"
-                v-model="formData.id_fasilitator"
+                item-value="code"
+                v-model="formData.id_jenis_pengajuan"
+                disabled
+                placeholder="Pilih Jenis Pendaftaran"
               />
-            </VCol>
+            </VItemGroup>
+          </VCol>
+        </VRow>
+        <br />
+        <VRow>
+          <VCol cols="12">
+            <VLabel>Kode Daftar / Fasilitasi</VLabel>
+            <VRow>
+              <VCol cols="5">
+                <VSelect
+                  density="compact"
+                  :items="listFasilitasi"
+                  item-title="name"
+                  :rules="[requiredValidator]"
+                  item-value="id"
+                  placeholder="Pilih Fasilitator"
+                  v-model="formData.id_fasilitator"
+                />
+              </VCol>
 
-            <VSpacer
-              style="
-                display: flex;
-                justify-content: center;
-                align-items: center;
-              "
-              ><p>Atau</p></VSpacer
-            >
-            <VCol cols="5">
+              <VSpacer
+                style="
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                "
+                ><p>Atau</p></VSpacer
+              >
+              <VCol cols="5">
+                <VTextField
+                  placeholder="Cari Fasilitator"
+                  append-inner-icon="mdi-magnify"
+                  density="compact"
+                ></VTextField>
+              </VCol>
+            </VRow>
+            <VAlert type="warning" variant="tonal" color="#652672" class="mt-5">
+              Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada
+              fasilitator sebagai kode untuk mendaftarkan sertifikasi halal
+              gratis
+            </VAlert>
+          </VCol>
+        </VRow>
+        <br />
+        <VDivider></VDivider>
+        <br />
+        <VRow>
+          <VCol cols="6">
+            <VItemGroup>
+              <VLabel>Nomor Surat Permohonan</VLabel>
               <VTextField
-                placeholder="Cari Fasilitator"
-                append-inner-icon="mdi-magnify"
+                :rules="[requiredValidator]"
+                placeholder="Isi Nomor Surat Permohonan"
                 density="compact"
+                v-model="formData.no_mohon"
               ></VTextField>
-            </VCol>
-          </VRow>
-          <VAlert type="warning" variant="tonal" color="#652672" class="mt-5">
-            Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada
-            fasilitator sebagai kode untuk mendaftarkan sertifikasi halal gratis
-          </VAlert>
-        </VCol>
-      </VRow>
-      <br />
-      <VDivider></VDivider>
-      <br />
-      <VRow>
-        <VCol cols="6">
-          <VItemGroup>
-            <VLabel>Nomor Surat Permohonan</VLabel>
-            <VTextField
-              placeholder="Isi Nomor Surat Permohonan"
-              density="compact"
-              v-model="formData.no_mohon"
-            ></VTextField>
+            </VItemGroup>
+            <br />
+          </VCol>
+          <VCol cols="6">
+            <VItemGroup>
+              <Vuepicdatepicker>
+                <template #trigger>
+                  <Vuepicdatepicker
+                    v-model:model-value="formData.tgl_surat_permohonan"
+                    auto-apply
+                    model-type="yyyy-MM-dd"
+                    :enable-time-picker="false"
+                    :rules="[requiredValidator]"
+                    teleport
+                    clearable
+                  >
+                    <template #trigger>
+                      <VLabel class="required"> Tanggal Surat Pemohon </VLabel>
+                      <VTextField
+                        placeholder="Pilih Tanggal Surat Pemohon"
+                        :rules="[requiredValidator]"
+                        append-inner-icon="fa-calendar"
+                        :model-value="formData.tgl_surat_permohonan"
+                        color="#757575"
+                        readonly
+                      />
+                    </template>
+                  </Vuepicdatepicker>
+                </template>
+              </Vuepicdatepicker>
+            </VItemGroup>
+          </VCol>
+          <VCol cols="12">
+            <VItemGroup>
+              <VLabel>Jenis Layanan</VLabel>
+              <VSelect
+                placeholder="Pilih Jenis Layanan"
+                density="compact"
+                :items="listLayanan"
+                item-title="name"
+                :rules="[requiredValidator]"
+                item-value="code"
+                v-model="formData.id_jenis_layanan"
+              ></VSelect>
+            </VItemGroup>
+            <br />
+            <VItemGroup>
+              <VLabel>Jenis Produk</VLabel>
+              <VSelect
+                placeholder="Pilih Jenis Produk"
+                density="compact"
+                :items="listProduk"
+                item-title="name"
+                :rules="[requiredValidator]"
+                item-value="code"
+                v-model="formData.id_jenis_produk"
+              ></VSelect>
+            </VItemGroup>
+            <br />
+            <VItemGroup>
+              <VLabel>Nama Usaha</VLabel>
+              <VTextField
+                :rules="[requiredValidator]"
+                placeholder="Isi Nama Usaha"
+                density="compact"
+                v-model="formData.nama_pu"
+              ></VTextField>
+            </VItemGroup>
+            <br />
+            <VItemGroup>
+              <VLabel>Area Pemasaran</VLabel>
+              <VSelect
+                placeholder="Pilih Area Pemasaran"
+                :rules="[requiredValidator]"
+                density="compact"
+                :items="listAreaPemasaran"
+                v-model="formData.area_pemasaran"
+              ></VSelect>
+            </VItemGroup>
+            <br />
+            <VItemGroup>
+              <VLabel>Lokasi Pendamping</VLabel>
+              <VSelect
+                placeholder="Pilih Area Pemasaran"
+                density="compact"
+                :rules="[requiredValidator]"
+                :items="lokasiPendamping"
+                v-model="formData.lokasi_pendamping"
+                @update:model-value="loadDataPendamping"
+              ></VSelect>
+            </VItemGroup>
+            <br />
+            <VItemGroup>
+              <VLabel>Lembaga Pendamping</VLabel>
+              <VSelect
+                placeholder="Pilih Area Pemasarang"
+                density="compact"
+                :items="lembagaPendamping"
+                item-title="name"
+                :rules="[requiredValidator]"
+                item-value="id"
+                :disabled="formData.lokasi_pendamping == null"
+                v-model="formData.id_lembaga_pendamping"
+                @update:model-value="handleGetPendamping"
+              ></VSelect>
+            </VItemGroup>
+            <br />
+            <VItemGroup>
+              <VLabel>Pendamping</VLabel>
+              <VSelect
+                placeholder="Pilih Pendamping"
+                density="compact"
+                :items="listPendamping"
+                :rules="[requiredValidator]"
+                item-title="name"
+                :disabled="formData.lokasi_pendamping == null"
+                item-value="id"
+                v-model="formData.id_pendamping"
+              ></VSelect>
+            </VItemGroup>
+          </VCol>
+        </VRow>
+        <br />
+        <div style="display: flex; justify-content: end">
+          <VItemGroup style="display: inline-flex">
+            <SuratPermohonanModal :data="submissionDetail" />
+            <div style="margin-left: 1svw"></div>
+            <SuratPernyataanModal :data="submissionDetail" />
           </VItemGroup>
-          <br />
-        </VCol>
-        <VCol cols="6">
-          <VItemGroup>
-            <Vuepicdatepicker>
-              <template #trigger>
-                <Vuepicdatepicker
-                  v-model:model-value="formData.tgl_surat_permohonan"
-                  auto-apply
-                  model-type="yyyy-MM-dd"
-                  :enable-time-picker="false"
-                  teleport
-                  clearable
-                >
-                  <template #trigger>
-                    <VLabel class="required"> Tanggal Surat Pemohon </VLabel>
-                    <VTextField
-                      placeholder="Pilih Tanggal Surat Pemohon"
-                      append-inner-icon="fa-calendar"
-                      :model-value="formData.tgl_surat_permohonan"
-                      color="#757575"
-                      readonly
-                    />
-                  </template>
-                </Vuepicdatepicker>
-              </template>
-            </Vuepicdatepicker>
-          </VItemGroup>
-        </VCol>
-        <VCol cols="12">
-          <VItemGroup>
-            <VLabel>Jenis Layanan</VLabel>
-            <VSelect
-              placeholder="Pilih Jenis Layanan"
-              density="compact"
-              :items="listLayanan"
-              item-title="name"
-              item-value="code"
-              v-model="formData.id_jenis_layanan"
-            ></VSelect>
-          </VItemGroup>
-          <br />
-          <VItemGroup>
-            <VLabel>Jenis Produk</VLabel>
-            <VSelect
-              placeholder="Pilih Jenis Produk"
-              density="compact"
-              :items="listProduk"
-              item-title="name"
-              item-value="code"
-              v-model="formData.id_jenis_produk"
-            ></VSelect>
-          </VItemGroup>
-          <br />
-          <VItemGroup>
-            <VLabel>Nama Usaha</VLabel>
-            <VTextField
-              placeholder="Isi Nama Usaha"
-              density="compact"
-              v-model="formData.nama_pu"
-            ></VTextField>
-          </VItemGroup>
-          <br />
-          <VItemGroup>
-            <VLabel>Area Pemasaran</VLabel>
-            <VSelect
-              placeholder="Pilih Area Pemasaran"
-              density="compact"
-              :items="listAreaPemasaran"
-              v-model="formData.area_pemasaran"
-            ></VSelect>
-          </VItemGroup>
-          <br />
-          <VItemGroup>
-            <VLabel>Lokasi Pendamping</VLabel>
-            <VSelect
-              placeholder="Pilih Area Pemasaran"
-              density="compact"
-              :items="lokasiPendamping"
-              v-model="formData.lokasi_pendamping"
-              @update:model-value="loadDataPendamping"
-            ></VSelect>
-          </VItemGroup>
-          <br />
-          <VItemGroup>
-            <VLabel>Lembaga Pendamping</VLabel>
-            <VSelect
-              placeholder="Pilih Area Pemasarang"
-              density="compact"
-              :items="lembagaPendamping"
-              item-title="name"
-              item-value="id"
-              :disabled="formData.lokasi_pendamping == null"
-              v-model="formData.id_lembaga_pendamping"
-              @update:model-value="handleGetPendamping"
-            ></VSelect>
-          </VItemGroup>
-          <br />
-          <VItemGroup>
-            <VLabel>Pendamping</VLabel>
-            <VSelect
-              placeholder="Pilih Pendamping"
-              density="compact"
-              :items="listPendamping"
-              item-title="name"
-              :disabled="formData.lokasi_pendamping == null"
-              item-value="id"
-              v-model="formData.id_pendamping"
-            ></VSelect>
-          </VItemGroup>
-        </VCol>
-      </VRow>
-      <br />
-      <div style="display: flex; justify-content: end">
-        <VItemGroup style="display: inline-flex">
-          <SuratPermohonanModal :data="submissionDetail" />
-          <div style="margin-left: 1svw"></div>
-          <SuratPernyataanModal :data="submissionDetail" />
-        </VItemGroup>
-      </div>
-    </VCardTitle>
+        </div>
+      </VCardTitle>
+    </v-form>
   </VCard>
 </template>
