@@ -85,8 +85,8 @@ const verifikatorTableHeader = [
   { title: "Alamat", key: "alamat" },
   { title: "Skala Usaha", key: "skala_usaha" },
   { title: "Jenis Produk", key: "jenis_produk" },
-  { title: "Merek Dagang", key: "merek_dagang" },
-  { title: "Lihat Laporan SPH", key: "laporan_sph" },
+  { title: "Merek Dagang", key: "merk_dagang" },
+  // { title: "Lihat Laporan SPH", key: "laporan_sph" },
   { title: "Action", key: "action" },
 ];
 
@@ -133,7 +133,10 @@ const navigateAction = (id: string) => {
               {{ formatDate((item as any).tgl_daftar) }}
             </template>
             <template #item.laporan_sph="{ item }">
-              <VBtn color="primary" @click="navigateAction((item as any).id)">
+              <VBtn
+                color="primary"
+                @click="navigateAction((item as any).id_reg)"
+              >
                 {{
                   (item as any).laporan_sph
                     ? "Lihat Dokumen"
@@ -146,7 +149,7 @@ const navigateAction = (id: string) => {
                 <VIcon
                   icon="ri-arrow-right-line"
                   color="primary"
-                  @click="navigateAction((item as any).id)"
+                  @click="navigateAction((item as any).id_reg)"
                 />
               </div>
             </template>

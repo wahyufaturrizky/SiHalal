@@ -79,7 +79,7 @@ const verifikatorTableHeader = [
   { title: "Skala Usaha", key: "skala_usaha" },
   { title: "Jenis Produk", key: "jenis_produk" },
   { title: "Merek Dagang", key: "merek_dagang" },
-  { title: "Lihat Laporan SPH", key: "laporan_sph" },
+  // { title: "Lihat Laporan SPH", key: "laporan_sph" },
   { title: "Action", key: "action" },
 ];
 
