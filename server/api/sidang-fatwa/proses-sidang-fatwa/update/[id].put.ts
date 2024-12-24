@@ -12,11 +12,12 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
+  console.log("@id", id);
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/sidang-fatwa/entri-ketetapan-halal/update${id}`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/sidang-fatwa/entri-ketetapan-halal/update/${id}`,
     {
-      method: "post",
+      method: "put",
       headers: { Authorization: authorizationHeader },
     }
   ).catch((err: NuxtError) => {
