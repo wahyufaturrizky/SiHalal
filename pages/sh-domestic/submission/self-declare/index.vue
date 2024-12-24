@@ -44,6 +44,15 @@ const questions = [
   "Proses pengawetan produk sederhana dan tidak menggunakan kombinasi lebih dari 1 metode pengawetan ",
   "Proses produksi menggunakan peralatan manual/ semi otomatis",
 ];
+const questionResponse = [
+  "Anda sudah pernah mendapatkan fasilitas self declare",
+  "Aktivitas produksi yang dilakukan bukan merupakan usaha rumahan",
+  "Tidak semua proses produksi menggunakan bahan-bahan halal",
+  "Proses produksi produk lain yang menggunakan bahan non-halal tidak dilakukan pada tempat terpisah dan tidak menggunakan alat yang berbeda.",
+  "Proses produksi menggunakan bahan berbahaya",
+  "Proses pengawetan produk tidak sederhana atau menggunakan kombinasi lebih dari 1 metode pengawetan",
+  "Proses produksi tidak menggunakan peralatan manual/semi otomatis",
+];
 
 const questionareDialogVisible = ref(false);
 const infoDialogVisible = ref(false);
@@ -58,7 +67,7 @@ const handleSubmitQuestionare = (answers: Array<string>) => {
   let unfulfilledCount = 0;
   answers.map((item, idx) => {
     if (item == "no") {
-      const data = questions.find((el, index) => index === idx);
+      const data = questionResponse.find((el, index) => index === idx);
       if (data) {
         isUnfulfilled.value.push(data);
         unfulfilledCount++;
