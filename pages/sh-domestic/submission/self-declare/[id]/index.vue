@@ -125,7 +125,7 @@
                 class="d-flex align-center"
                 :name-style="{ fontWeight: '600' }"
               >
-                <VRow class="d-flex align-center">
+                <!-- <VRow class="d-flex align-center">
                   <VCol cols="12">
                     <VSelect
                       :items="kbliDropdown"
@@ -153,7 +153,10 @@
                       </template>
                     </VSelect>
                   </VCol>
-                </VRow>
+                </VRow> -->
+                {{
+                  submissionDetail.nama_kbli ? submissionDetail.nama_kbli : "-"
+                }}
               </InfoRow>
               <ThinLine :thickness="1" />
               <InfoRow
@@ -216,10 +219,13 @@
               <InfoRow name="Tingkat Usaha" :name-style="{ fontWeight: '600' }">
                 {{
                   skalaUsaha.find(
-                    (data) => data.code == submissionDetail.tingkat_usaha
+                    (data: any) => data.code == submissionDetail.tingkat_usaha
                   ) != undefined
-                    ? skalaUsaha.find(
-                        (data) => data.code == submissionDetail.tingkat_usaha
+                    ? (
+                        skalaUsaha.find(
+                          (data: any) =>
+                            data.code == submissionDetail.tingkat_usaha
+                        ) as any
                       ).name
                     : "-"
                 }}
@@ -441,6 +447,15 @@
               >
                 <template #item.no="{ index }">
                   {{ index + 1 }}
+                </template>
+                <template #item.type="{ item }">
+                  {{ item.jenis_bahan }}
+                </template>
+                <template #item.name="{ item }">
+                  {{ item.nama_bahan }}
+                </template>
+                <template #item.sertificateNumber="{ item }">
+                  {{ item.no_sertifikat }}
                 </template>
               </VDataTable>
               <VCard v-else variant="outlined" class="py-2">
@@ -750,7 +765,7 @@
               >
                 {{
                   registrationDetail.tgl_daftar
-                    ? registrationDetail.tgl_daftar
+                    ? formatToISOString(registrationDetail.tgl_daftar)
                     : "-"
                 }}
               </InfoRowV2>
@@ -965,7 +980,7 @@ const statusItem = new Proxy(
     OF300: { color: "success", desc: "Halal Certified Issued" },
   },
   {
-    get(target, prop) {
+    get(target: any, prop: string) {
       return prop in target ? target[prop] : defaultStatus;
     },
   }
@@ -1092,6 +1107,7 @@ const substanceHeader = [
   { title: "Jenis Bahan ", key: "type", nowrap: true },
   { title: "Nama Bahan", key: "name", nowrap: true },
   { title: "Produsen", key: "produsen", nowrap: true },
+  { title: "Kelompok", key: "kelompok", nowrap: true },
   { title: "No. Sertifikat Halal", key: "sertificateNumber", nowrap: true },
 ];
 const substanceItems = ref([]);
@@ -1197,8 +1213,23 @@ const getSkalaUsaha = async () => {
   });
   skalaUsaha.value = response;
 };
+const loadBahan = async () => {
+  try {
+    const options = {
+      method: "get",
+    };
+    const response = await $api(
+      `/self-declare/submission/bahan/${submissionId}/list`,
+      options
+    );
+    substanceItems.value = response.data;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 onMounted(async () => {
   await Promise.all([
+    loadBahan(),
     getSkalaUsaha(),
     getSubmissionDetail(),
     getKbli(),
@@ -1234,7 +1265,6 @@ const getSubmissionDetail = async () => {
       factoryItems.value = response.data.pabrik;
       outletItems.value = response.data.outlet;
       supervisorItems.value = response.data.penyelia_halal;
-      substanceItems.value = response.data.bahan;
       productItems.value = response.data.produk;
 
       // data for right side
@@ -1313,7 +1343,11 @@ const handleSentSubmission = async () => {
     if (response.code === 2000) {
       snackbar.sendSnackbar("Berhasil mengirim pengajuan", "success");
     } else {
-      snackbar.sendSnackbar(response.errors.list_error[0], "error");
+      if (response.errors.list_error.length > 0) {
+        for (const element of response.errors.list_error) {
+          snackbar.sendSnackbar(element, "error");
+        }
+      }
     }
   } catch (error) {
     snackbar.sendSnackbar("Gagal mengirim pengajuan", "error");

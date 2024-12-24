@@ -46,6 +46,7 @@ const submissionDetail = reactive({
   email: null,
   jenis_produk: null,
   nama_pj: null,
+  file: null,
 });
 
 const handleGetDeclare = async () => {
@@ -59,6 +60,11 @@ const handleGetDeclare = async () => {
 
     if (response.code === 2000) {
       Object.assign(submissionDetail, response.data);
+      pledgeFile.value = response.data.file;
+      if (pledgeFile) {
+        aggreButtonDisable.value = true;
+        showDownloadButton.value = true;
+      }
     }
     return response;
   } catch (error) {
@@ -149,10 +155,11 @@ onMounted(() => {
         >Download ikrar</VBtn
       >
       <VBtn
-        @click="handleAgree"
+        @click="aggreButtonDisable ? handleAgree : null"
         variant="flat"
         min-width="120px"
-        :disabled="aggreButtonDisable"
+        class="text-white"
+        :color="aggreButtonDisable ? '#A09BA1' : 'primary'"
         :loading="loadingAgree"
         >Setuju</VBtn
       >
