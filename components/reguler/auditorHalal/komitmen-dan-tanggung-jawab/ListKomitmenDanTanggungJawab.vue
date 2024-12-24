@@ -15,13 +15,23 @@ const loading = ref(false)
 
 const addDialog = ref(false)
 const titleDialog = ref('')
+
 const formAdd = ref<any>({
-  name: '',
+  nama: '',
   jabatan: '',
   posisi: '',
 })
 
+const resetForm = () => {
+  formAdd.value = {
+    nama: '',
+    jabatan: '',
+    posisi: '',
+  }
+}
+
 const labelSaveDialog = ref('')
+const editItem = ref<any>({})
 
 const comitmentData = ref(
   {
@@ -41,7 +51,12 @@ const toggleAdd = () => {
   titleDialog.value = 'Tambah Anggota Komitmen'
 }
 
-const toggleEdit = () => {
+const toggleEdit = (item: any) => {
+  formAdd.value = {
+    nama: item?.nama,
+    jabatan: item?.jabatan,
+    posisi: item?.posisi,
+  }
   addDialog.value = true
   titleDialog.value = 'Ubah Anggota Komitmen'
 }
@@ -70,10 +85,17 @@ const handleAddOrEdit = async () => {
     body: formAdd.value,
   })
 
-  if (response?.code === 2000)
+  if (response?.code === 2000) {
+    formAdd.value = {
+      name: '',
+      jabatan: '',
+      posisi: '',
+    }
     useSnackbar().sendSnackbar('Sukses menambah data', 'success')
-  else
+  }
+  else {
     useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
   addDialog.value = false
   await getDetailData()
 }
@@ -119,7 +141,7 @@ onMounted(async () => {
           </p>
           <VSelect
             v-model="formAdd.posisi"
-            :items="[{ name: 'Ketua', value: 'Ketua' }, { name: 'Lainnya', value: 'Lainnya' }]"
+            :items="[{ name: 'Ketua', value: 'Ketua' }, { name: 'Anggota', value: 'Anggota' }]"
             item-value="value"
             item-title="name"
             density="compact"

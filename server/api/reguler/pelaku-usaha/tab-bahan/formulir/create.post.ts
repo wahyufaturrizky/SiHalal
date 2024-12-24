@@ -16,7 +16,7 @@ export default defineEventHandler(async (event: any) => {
     const payload = await readBody(event);
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/business-actor/${query.id_reg}/products`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/business-actor/${query.id_reg}/catatan`,
       {
         method: "post",
         headers: { Authorization: authHeader },

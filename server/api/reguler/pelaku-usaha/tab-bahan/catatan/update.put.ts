@@ -16,16 +16,13 @@ export default defineEventHandler(async (event: any) => {
     const payload = await readBody(event);
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/business-actor/${query.id_reg}/products`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/self-declare/${query.id_reg}/products/${query.product_id}`,
       {
-        method: "post",
+        method: "put",
         headers: { Authorization: authHeader },
         body: payload,
       } as any
     );
-
-    console.log(response, '<<<<');
-    
 
     return response || null;
   } catch (error) {
