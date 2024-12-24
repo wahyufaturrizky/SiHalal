@@ -445,6 +445,15 @@
                 <template #item.no="{ index }">
                   {{ index + 1 }}
                 </template>
+                <template #item.type="{ item }">
+                  {{ item.jenis_bahan }}
+                </template>
+                <template #item.name="{ item }">
+                  {{ item.nama_bahan }}
+                </template>
+                <template #item.sertificateNumber="{ item }">
+                  {{ item.no_sertifikat }}
+                </template>
               </VDataTable>
               <VCard v-else variant="outlined" class="py-2">
                 <VRow>
@@ -1095,6 +1104,7 @@ const substanceHeader = [
   { title: "Jenis Bahan ", key: "type", nowrap: true },
   { title: "Nama Bahan", key: "name", nowrap: true },
   { title: "Produsen", key: "produsen", nowrap: true },
+  { title: "Kelompok", key: "kelompok", nowrap: true },
   { title: "No. Sertifikat Halal", key: "sertificateNumber", nowrap: true },
 ];
 const substanceItems = ref([]);
@@ -1200,8 +1210,23 @@ const getSkalaUsaha = async () => {
   });
   skalaUsaha.value = response;
 };
+const loadBahan = async () => {
+  try {
+    const options = {
+      method: "get",
+    };
+    const response = await $api(
+      `/self-declare/submission/bahan/${submissionId}/list`,
+      options
+    );
+    substanceItems.value = response.data;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 onMounted(async () => {
   await Promise.all([
+    loadBahan(),
     getSkalaUsaha(),
     getSubmissionDetail(),
     getKbli(),
@@ -1237,7 +1262,6 @@ const getSubmissionDetail = async () => {
       factoryItems.value = response.data.pabrik;
       outletItems.value = response.data.outlet;
       supervisorItems.value = response.data.penyelia_halal;
-      substanceItems.value = response.data.bahan;
       productItems.value = response.data.produk;
 
       // data for right side
