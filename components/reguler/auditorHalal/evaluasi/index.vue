@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+const route = useRoute()
+const id = route.params.id
 const addDialog = ref(false)
 const confirmSaveDialog = ref(false)
 const titleDialog = ref('')
 const file = ref<File | null>(null)
+const loading = ref(false)
+
+const formAdd = ref({
+  nama_dokumen: '',
+  file_dok: '',
+})
 
 const documentList = ref([
   { nama: 'Izin Edar', fileName: 'Surat Izin Usaha.pdf', file: null },
@@ -26,6 +34,18 @@ const comitmentData = ref(
     ],
   },
 )
+
+const dokumenLainnya = ref(
+  {
+    label: [
+      { title: 'No.', key: 'no', nowrap: true },
+      { title: 'Nama Dokumen', key: 'nama_dokumen', nowrap: true },
+      { title: 'File Dokumen', key: 'file_dok', nowrap: true },
+      { title: 'Dokumen Pendukung', key: 'docSupport', nowrap: true },
+      { title: 'Action', value: 'actionEdit', sortable: false, nowrap: true, popOver: true },
+    ],
+    value: [],
+  })
 
 const auditInternal = ref(
   {
@@ -81,10 +101,86 @@ const toggleEdit = (type: string) => {
 const handleSubmit = () => {
   // submit
 }
+
+const uploadedFile = ref({
+  name: '',
+  file: null,
+})
+
+const handleRemoveFile = () => {
+  uploadedFile.value.name = '';
+  uploadedFile.value.file = null;
+  formData.value.foto_produk = '';
+};
+
+const handleUploadFile = async (event: any) => {
+  if (event?.target?.files.length) {
+    const fileData = event.target.files[0];
+    uploadedFile.value.name = fileData.name;
+    uploadedFile.value.file = fileData;
+    try {
+      const response = await uploadDocument(fileData);
+      if (response.code === 2000) {
+        formAdd.value.file_dok = response.data.file_url;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+};
+
+const getDokumenLainnya = async () => {
+  try {
+    const response = await $api('/reguler/pelaku-usaha/tab-evaluasi/list-dokumen', {
+      method: 'get',
+      params: { id },
+    })
+
+    if (response.code === 2000) {
+      dokumenLainnya.value = {
+        ...dokumenLainnya.value,
+        value: response.data,
+      }
+    }
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
+const handleAddOrEdit = async () => {
+  try {
+    const response = await $api('/reguler/pelaku-usaha/tab-evaluasi/add-dokumen', {
+      method: 'post',
+      query: { id },
+      body: {
+        nama_dokumen: formAdd.value.nama_dokumen,
+        file_dok: formAdd.value.file_dok,
+      },
+    })
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar('Sukses menambah data', 'success')
+      addDialog.value = false
+      getDokumenLainnya()
+    }
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
+onMounted(async () => {
+  loading.value = true
+  await Promise.allSettled([
+    getDokumenLainnya(),
+  ])
+  loading.value = false
+})
 </script>
 
 <template>
-  <div>
+  <div v-if="!loading">
     <DialogSaveDataPengajuan
       title="Simpan Perubahan"
       :is-open="confirmSaveDialog"
@@ -104,39 +200,49 @@ const handleSubmit = () => {
             Nama Dokumen
           </label>
           <VTextField
+            v-model="formAdd.nama_dokumen"
             class="-mt-10"
             placeholder="isi nama dokumen"
           />
           <br>
           <div class="d-flex justify-space-between mt-5">
             <label>
-              Unggah Dokumen
+              Upload Foto
             </label>
-            <VFileInput
-              v-model="file"
-              dense
-              prepend-icon=""
-              label="No File Chosen"
-              hide-details
-              style="max-inline-size: 300px;"
-              class="input-file-izin"
-              @change="uploadFile"
-            >
-              <!-- Button upload input -->
-              <template
-                v-if="file === null"
-                #append-inner
+            <VCol cols="6">
+              <VTextField
+                v-if="uploadedFile.file"
+                :model-value="uploadedFile.name"
+                density="compact"
+                placeholder="No file choosen"
+                rounded="xl"
+                max-width="400"
               >
-                <VBtn
-                  color="primary"
-                  variant="flat"
-                  class="choose-file"
-                  style="block-size: 100%; inline-size: 150px;"
-                >
-                  Choose File
-                </VBtn>
-              </template>
-            </VFileInput>
+                <template #append-inner>
+                  <VIcon
+                    icon="fa-trash"
+                    color="error"
+                    class="cursor-pointer"
+                    @click="handleRemoveFile"
+                  />
+                </template>
+              </VTextField>
+              <VFileInput
+                v-else
+                :model-value="uploadedFile.file"
+                class="custom-file-input"
+                density="compact"
+                rounded="xl"
+                label="No file choosen"
+                max-width="400"
+                prepend-icon=""
+                @change="handleUploadFile"
+              >
+                <template #append-inner>
+                  <VBtn rounded="s-0 e-xl" text="Choose" />
+                </template>
+              </VFileInput>
+            </VCol>
           </div>
         </div>
         <div v-if="titleDialog === 'Tambah Tanda Tangan'">
@@ -328,8 +434,8 @@ const handleSubmit = () => {
       :on-submit="() => confirmSaveDialog = true"
       :on-add="() => toggleAdd('Dokumen')"
       :on-edit="() => toggleEdit('Dokumen')"
-      :data="comitmentData"
-      title="Pemetaan Produk dan Pabrik"
+      :data="dokumenLainnya"
+      title="Upload Dokumen Lainnya"
       with-add-button
     >
       <template #headerDialog>

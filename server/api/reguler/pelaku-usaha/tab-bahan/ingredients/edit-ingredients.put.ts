@@ -14,9 +14,11 @@ export default defineEventHandler(async (event: any) => {
     const runtimeConfig = useRuntimeConfig();
     const query: any = await getQuery(event);
     const payload = await readBody(event);
+    console.log(payload, 'payload nya<<<', query);
+    
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/business-actor/${query.id_reg}/catatan/${query.product_id}`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/self-declare/${query.id_reg}/ingredients/${query.product_id}`,
       {
         method: "put",
         headers: { Authorization: authHeader },

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { VForm } from "vuetify/components";
+import { VForm } from 'vuetify/components';
 
 const props = defineProps({
   dialogType: {
@@ -8,6 +8,11 @@ const props = defineProps({
   },
   data: {
     type: Object,
+    required: false,
+  },
+  toggle: {
+    type: Function,
+    default: () => {},
     required: false,
   },
 })
@@ -28,15 +33,15 @@ interface BahanDataUncertified {
   nama_bahan: string;
 }
 const modalAddBahan = ref(false);
-const jenisBahan = ["Bahan", "Cleaning Agent", "Kemasan"];
+const jenisBahan = ['Bahan', 'Cleaning Agent', 'Kemasan'];
 const typeBahan = [
   {
     id: 0,
-    name: "Bahan Bersertifikat",
+    name: 'Bahan Bersertifikat',
   },
   {
     id: 1,
-    name: "Bahan Tidak Bersertifikat",
+    name: 'Bahan Tidak Bersertifikat',
   },
 ];
 
@@ -55,17 +60,17 @@ const isBahanSertifikat = () => {
 };
 
 const tableHeaderCertified = [
-  { title: "No", value: "index" },
-  { title: "Nama Bahan", value: "nama_bahan" },
-  { title: "Produsen", value: "produsen" },
-  { title: "No. Sertifikat", value: "no_sertifikat" },
-  { title: "Action", value: "action" },
+  { title: 'No', value: 'index' },
+  { title: 'Nama Bahan', value: 'nama_bahan' },
+  { title: 'Produsen', value: 'produsen' },
+  { title: 'No. Sertifikat', value: 'no_sertifikat' },
+  { title: 'Action', value: 'action' },
 ];
 const tableHeaderUncertified = [
-  { title: "No", value: "index" },
-  { title: "Nama Bahan", value: "nama_bahan" },
-  { title: "Kelompok", value: "kelompok" },
-  { title: "Action", value: "action" },
+  { title: 'No', value: 'index' },
+  { title: 'Nama Bahan', value: 'nama_bahan' },
+  { title: 'Kelompok', value: 'kelompok' },
+  { title: 'Action', value: 'action' },
 ];
 
 // Uncertified Dialog
@@ -81,7 +86,7 @@ const totalItemsCertified = ref(0);
 const loadingCertified = ref(true);
 const pageCertified = ref(1);
 
-const loadItemBahan = async (page: number, size: number, name: string = "") => {
+const loadItemBahan = async (page: number, size: number, name: string = '') => {
   try {
     if (form.value.typeBahan == 0) {
       loadingCertified.value = true;
@@ -91,10 +96,10 @@ const loadItemBahan = async (page: number, size: number, name: string = "") => {
 
     const response = await $api(
       `/self-declare/submission/bahan/${
-        form.value.typeBahan == 0 ? "certified" : "uncertified"
+        form.value.typeBahan == 0 ? 'certified' : 'uncertified'
       }`,
       {
-        method: "get",
+        method: 'get',
         params: {
           page,
           size,
@@ -111,14 +116,14 @@ const loadItemBahan = async (page: number, size: number, name: string = "") => {
     itemsUncertified.value = response.data != null ? response.data : [];
     totalItemsUncertified.value = response.total_item;
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error');
   } finally {
     loadingUncertified.value = false;
     loadingCertified.value = false;
   }
 };
-const searchQueryUncertified = ref("");
-const searchQueryCertified = ref("");
+const searchQueryUncertified = ref('');
+const searchQueryCertified = ref('');
 
 const debouncedFetchCertified = debounce(loadItemBahan, 500);
 const debouncedFetchUncertified = debounce(loadItemBahan, 500);
@@ -169,18 +174,20 @@ const onSubmitBahanCertified = async () => {
   });
 };
 
-const emits = defineEmits(["loadList"]);
+const emits = defineEmits(['loadList', 'formChange']);
+
 const insertBahan = async () => {
   submitAddBahanButton.value = true;
 
   try {
     const response = await $api(
-      `/self-declare/submission/bahan/${route.params.id}/add`,
+      '/reguler/pelaku-usaha/tab-bahan/ingredients/edit-ingredients',
       {
-        method: "post",
+        method: 'put',
+        query: { id_reg: route.params.id, product_id: props.data?.id },
         body: {
           jenis_bahan: `${
-            form.value.typeBahan == 0 ? "certified" : "uncertified"
+            form.value.typeBahan === 0 ? 'certified' : 'uncertified'
           }|${form.value.jenis_bahan}`,
           nama_bahan: form.value.nama_bahan,
           kelompok: form.value.kelompok,
@@ -191,22 +198,25 @@ const insertBahan = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("Gagal menambahkan bahan", "error");
+      useSnackbar().sendSnackbar('Gagal menambahkan bahan', 'error');
       return;
     }
-    emits("loadList", true);
-    useSnackbar().sendSnackbar("Berhasil menambahkan bahan", "success");
+    props.toggle()
+    emits('loadList', true);
+    useSnackbar().sendSnackbar('Berhasil menambahkan bahan', 'success');
   } catch (error) {
-    useSnackbar().sendSnackbar("Gagal menambahkan bahan", "error");
+    console.log(error);
+    
+    useSnackbar().sendSnackbar('Gagal menambahkan bahan', 'error');
   } finally {
     form.value = {
       typeBahan: null,
       jenis_bahan: null,
-      nama_bahan: "",
-      kelompok: "",
-      merek: "",
-      produsen: "",
-      no_sertifikat: "",
+      nama_bahan: '',
+      kelompok: '',
+      merek: '',
+      produsen: '',
+      no_sertifikat: '',
     };
     submitAddBahanButton.value = false;
     modalAddBahan.value = false;
@@ -216,6 +226,10 @@ const insertBahan = async () => {
 watch(props?.dialogType, () => {
   if (props?.dialogType === 'edit')
     modalAddBahan.value = true
+})
+
+watch(form.value, () => {
+  emits('formChange', form.value)
 })
 </script>
 
@@ -551,6 +565,20 @@ watch(props?.dialogType, () => {
             </VCol>
           </VRow>
         </VCardItem>
+        <VCardActions
+            style="display: flex; justify-content: end; padding: 1.5svw"
+          >
+            <div>
+              <VBtn @click="props.toggle" variant="outlined"
+                >Batal</VBtn
+              >
+              <VBtn
+                variant="flat"
+                @click="insertBahan"
+                >Ubah</VBtn
+              >
+            </div>
+          </VCardActions>
       </VForm>
     </div>
   </div>
