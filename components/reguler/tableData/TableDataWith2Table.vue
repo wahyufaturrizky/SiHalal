@@ -32,6 +32,23 @@ const props = defineProps({
     required: true,
   },
 })
+
+const handleDownload = async (item: any) => {
+  try {
+    const response = await $api('/shln/submission/document/download', {
+      method: 'post',
+      body: {
+        filename: item,
+      },
+    })
+
+    if (response.url)
+      window.open(response.url, '_blank', 'noopener,noreferrer')
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
 </script>
 
 <template>
@@ -48,12 +65,12 @@ const props = defineProps({
           >
             Tambah
           </VBtn>
-          <VBtn
+          <!-- <VBtn
             variant="flat"
             @click="props.onSubmit"
           >
             {{ withApproveButton ? 'Saya Setuju' : 'Simpan' }}
-          </VBtn>
+          </VBtn> -->
         </div>
       </div>
     </VCardTitle>
@@ -81,6 +98,38 @@ const props = defineProps({
                 {{ item.productType }}
               </div>
             </template>
+            <template #item.tanggal_masuk="{ item }">
+              <div v-if="item.tanggal_masuk">
+                {{ formatDateIntl(new Date(item.tanggal_masuk)) }}
+              </div>
+              <div v-else>
+                -
+              </div>
+            </template>
+            <template #item.tanggal_keluar="{ item }">
+              <div v-if="item.tanggal_keluar">
+                {{ formatDateIntl(new Date(item.tanggal_keluar)) }}
+              </div>
+              <div v-else>
+                -
+              </div>
+            </template>
+            <template #item.file_dok="{ item }">
+              <Vbtn
+                v-if="item.file_dok"
+                class="d-flex gap-3 cursor-pointer"
+                style="margin-left: -10px"
+                @click="() => handleDownload(item.file_dok)"
+              >
+                <div>
+                  <VIcon end icon="ri-file-3-line" color="#652672" />
+                </div>
+                <label class="cursor-pointer">file</label>
+              </Vbtn>
+              <div v-else>
+                <label>-</label>
+              </div>
+            </template>
             <template #item.productName="{ item }">
               <div>
                 {{ item.productName }}
@@ -104,7 +153,7 @@ const props = defineProps({
               <Vbtn
                 variant="plain"
                 class="cursor-pointer"
-                @click="() => props.onEdit(index)"
+                @click="() => props.onEdit(item, index)"
               >
                 <VIcon
                   end
