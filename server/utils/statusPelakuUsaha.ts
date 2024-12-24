@@ -6,6 +6,8 @@ export const statusItemPelakuUsaha = new Proxy(
     OF11: { color: "success", desc: "Verification" },
     OF15: { color: "success", desc: "Verified" },
     OF2: { color: "error", desc: "Returned" },
+    OF280: { color: "error", desc: "Returned to PU" },
+    OF285: { color: "error", desc: "Returned By KF" },
     OF290: { color: "error", desc: "Rejected" },
     OF5: { color: "success", desc: "Invoice issued" },
     OF300: { color: "success", desc: "Halal Certified Issued" },
