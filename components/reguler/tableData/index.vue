@@ -14,6 +14,11 @@ const props = defineProps({
     default: () => {},
     required: false,
   },
+  onDetail: {
+    type: Function,
+    default: () => {},
+    required: false,
+  },
   onEdit: {
     type: Function,
     default: () => {},
@@ -48,6 +53,15 @@ const props = defineProps({
     type: Boolean,
     required: false,
   },
+  reRender: {
+    type: Boolean,
+    required: false,
+  },
+  refresh: {
+    type: Function,
+    default: () => {},
+    required: false,
+  },
 })
 
 const route = useRoute()
@@ -65,6 +79,7 @@ const handleCheck = (item: any) => {
 }
 
 const getListIngredients = async () => {
+  props.refresh()
   try {
     const response: any = await $api(
       '/self-declare/business-actor/ingredient/list',
@@ -99,7 +114,7 @@ const getListProducts = async () => {
     )
 
     if (response.code === 2000) {
-      productItems.value = response.data
+      productItems.value = response.data || []
     }
     return response
   } catch (error) {
@@ -112,6 +127,10 @@ onMounted(() => {
     getListIngredients()
   else if (props?.title === 'Daftar Nama Produk')
     getListProducts()
+})
+
+watch(() => props.reRender, () => {
+  getListProducts()
 })
 </script>
 
@@ -163,6 +182,14 @@ onMounted(() => {
               {{ index + 1 }}
             </div>
           </template>
+          <template #item.addType="{ item }">
+            <div>
+              {{ item?.FileDok !== '' ? 'Unggah' : 'Manual' }}
+            </div>
+          </template>
+          <template #item.religion>
+            <label>Islam</label>
+          </template>
           <template #item.productType="{ item }">
             <div>
               {{ item.productType }}
@@ -198,7 +225,7 @@ onMounted(() => {
             </DialogDeleteAuditPengajuan>
           </template>
           <template #item.actionEdit="{ item }">
-            <Vbtn variant="plain" class="cursor-pointer" @click="props.onEdit">
+            <Vbtn variant="plain" class="cursor-pointer" @click="() => props.onEdit(item)">
               <VIcon end icon="ri-pencil-line" color="#652672" />
             </Vbtn>
           </template>
@@ -217,7 +244,7 @@ onMounted(() => {
                     <Vbtn
                       variant="plain"
                       class="cursor-pointer"
-                      @click="props.onEdit"
+                      @click="() => props.onEdit(item)"
                     >
                       <VRow>
                         <VCol sm="4">
@@ -267,7 +294,7 @@ onMounted(() => {
                     <Vbtn
                       variant="plain"
                       class="cursor-pointer"
-                      @click="props.onEdit"
+                      @click="() => props.onDetail(item)"
                     >
                       <VRow>
                         <VCol sm="4">
@@ -285,7 +312,7 @@ onMounted(() => {
                     <Vbtn
                       variant="plain"
                       class="cursor-pointer"
-                      @click="props.onEdit"
+                      @click="() => props.onEdit(item)"
                     >
                       <VRow>
                         <VCol sm="4">

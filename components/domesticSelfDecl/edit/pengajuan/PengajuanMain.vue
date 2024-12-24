@@ -20,6 +20,7 @@ const formData = reactive({
   kode_daftar: null,
   no_mohon: null,
   tgl_surat_permohonan: null,
+  tgl_mohon: null,
   jenis_layanan: null,
   jenis_produk: null,
   id_jenis_layanan: null,
@@ -168,6 +169,8 @@ const { refresh } = await useAsyncData("get-detail-submission", async () => {
       submissionDetail.nomor_kontak_pj =
         response.data.penanggung_jawab.nomor_kontak_pj;
       Object.assign(formData, response.data.certificate_halal);
+      formData.tgl_surat_permohonan =
+        formData.tgl_mohon != "" ? formatToISOString(formData.tgl_mohon) : null;
       if (formData.id_lembaga_pendamping != "") {
         await handleGetPendamping(formData.id_lembaga_pendamping);
       }
@@ -189,7 +192,7 @@ const handleUpdateSubmission = async () => {
           jenis_pendaftaran: formData.id_jenis_pengajuan,
           kode_daftar: formData.id_fasilitator,
           no_surat_permohonan: formData.no_mohon,
-          tgl_surat_permohonan: formData.tgl_surat_permohonan,
+          tgl_surat_permohonan: new Date(formData.tgl_surat_permohonan),
           jenis_layanan: formData.id_jenis_layanan,
           jenis_produk: formData.id_jenis_produk,
           nama_usaha: formData.nama_pu,

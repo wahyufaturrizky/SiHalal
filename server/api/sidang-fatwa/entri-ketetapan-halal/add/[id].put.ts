@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
   const body: NewAccountGovernment = await readBody(event);
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/sidang-fatwa/entri-ketetapan-halal/update${id}`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/sidang-fatwa/entri-ketetapan-halal/update/${id}`,
     {
       method: "post",
       headers: { Authorization: authorizationHeader },
