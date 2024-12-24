@@ -5,26 +5,34 @@ const submissionId = route.params?.id;
 const submissionDetail = reactive({
   id_reg: null,
   jenis_pengajuan: null,
+  id_jenis_pengajuan: null,
   tanggal_buat: null,
   nama_pj: null,
   alamat_pu: null,
   jabatan_pj: null,
-  telp_pu: null,
+  nomor_kontak_pj: null,
   nama_pu: null,
 });
 const formData = reactive({
   id_reg: submissionId,
   jenis_pendaftaran: null,
+  id_jenis_pengajuan: null,
   kode_daftar: null,
-  no_surat_permohonan: null,
+  no_mohon: null,
   tgl_surat_permohonan: null,
+  tgl_mohon: null,
   jenis_layanan: null,
   jenis_produk: null,
+  id_jenis_layanan: null,
+  id_jenis_produk: null,
+  id_fasilitator: null,
   nama_pu: null,
   area_pemasaran: null,
-  lokasi_pendamping: null,
+  lokasi_pendamping: "Provinsi",
   lembaga_pendamping: null,
+  id_lembaga_pendamping: null,
   pendamping: null,
+  id_pendamping: null,
 });
 
 const listPendaftaran = ref([]);
@@ -50,24 +58,6 @@ const loadDataPendamping = async (lokasi: string | null) => {
   }
 };
 
-const { refresh } = await useAsyncData("get-detail-submission", async () => {
-  try {
-    const response: any = await $api(
-      `/self-declare/submission/${submissionId}/detail`,
-      {
-        method: "get",
-      }
-    );
-
-    if (response.code === 2000) {
-      Object.assign(submissionDetail, response.data.certificate_halal);
-      Object.assign(formData, response.data.certificate_halal);
-    }
-    return response;
-  } catch (error) {
-    console.log(error);
-  }
-});
 const handleGetListPendaftaran = async () => {
   try {
     listPendaftaran.value = await $api(`/master/jenis-pendaftaran`, {
@@ -163,7 +153,34 @@ const handleGetPendamping = async (idLembaga: string | null) => {
     console.log(error);
   }
 };
+const { refresh } = await useAsyncData("get-detail-submission", async () => {
+  try {
+    const response: any = await $api(
+      `/self-declare/submission/${submissionId}/detail`,
+      {
+        method: "get",
+      }
+    );
 
+    if (response.code === 2000) {
+      Object.assign(submissionDetail, response.data.certificate_halal);
+      submissionDetail.tanggal_buat = response.data.pendaftaran.tgl_daftar;
+      submissionDetail.nama_pj = response.data.penanggung_jawab.nama_pj;
+      submissionDetail.nomor_kontak_pj =
+        response.data.penanggung_jawab.nomor_kontak_pj;
+      Object.assign(formData, response.data.certificate_halal);
+      formData.tgl_surat_permohonan =
+        formData.tgl_mohon != "" ? formatToISOString(formData.tgl_mohon) : null;
+      if (formData.id_lembaga_pendamping != "") {
+        await handleGetPendamping(formData.id_lembaga_pendamping);
+      }
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+});
+const formLembagaPendamping = ref<{}>();
 const handleUpdateSubmission = async () => {
   try {
     const response: any = await $api(
@@ -172,17 +189,17 @@ const handleUpdateSubmission = async () => {
         method: "put",
         body: {
           id_reg: submissionId,
-          jenis_pendaftaran: formData.jenis_pendaftaran,
-          kode_daftar: formData.kode_daftar,
-          no_surat_permohonan: formData.no_surat_permohonan,
-          tgl_surat_permohonan: formData.tgl_surat_permohonan,
-          jenis_layanan: formData.jenis_layanan,
-          jenis_produk: formData.jenis_produk,
+          jenis_pendaftaran: formData.id_jenis_pengajuan,
+          kode_daftar: formData.id_fasilitator,
+          no_surat_permohonan: formData.no_mohon,
+          tgl_surat_permohonan: new Date(formData.tgl_surat_permohonan),
+          jenis_layanan: formData.id_jenis_layanan,
+          jenis_produk: formData.id_jenis_produk,
           nama_usaha: formData.nama_pu,
           area_pemasaran: formData.area_pemasaran,
           lokasi_pendamping: formData.lokasi_pendamping,
-          lembaga_pendamping: formData.lembaga_pendamping,
-          pendamping: formData.pendamping,
+          lembaga_pendamping: formData.id_lembaga_pendamping,
+          pendamping: formData.id_pendamping,
         },
       }
     );
@@ -198,6 +215,11 @@ const handleUpdateSubmission = async () => {
     useSnackbar().sendSnackbar("Gagal mengubah data", "error");
   }
 };
+const findListDaftar = (kode: string) => {
+  const data = listPendaftaran.value.find((code) => kode == code.code);
+  if (data == undefined) return { code: null, name: "-" };
+  return data;
+};
 
 onMounted(() => {
   // await Promise.all([
@@ -206,6 +228,7 @@ onMounted(() => {
   handleGetFasilitator();
   handleGetJenisLayanan();
   handleGetJenisProduk();
+  loadDataPendamping(formData.lokasi_pendamping);
   // ]);
 });
 </script>
@@ -242,9 +265,7 @@ onMounted(() => {
         <VCol cols="2">Jenis Pengajuan</VCol>
         <VCol cols="1">:</VCol>
         <VCol cols="9">{{
-          submissionDetail.jenis_pengajuan
-            ? submissionDetail.jenis_pengajuan
-            : "-"
+          findListDaftar(submissionDetail.id_jenis_pengajuan).name
         }}</VCol>
       </VRow>
       <br />
@@ -258,7 +279,7 @@ onMounted(() => {
               :items="listPendaftaran"
               item-title="name"
               item-value="code"
-              v-model="formData.jenis_pendaftaran"
+              v-model="formData.id_jenis_pengajuan"
               placeholder="Pilih Jenis Pendaftaran"
             />
           </VItemGroup>
@@ -267,37 +288,39 @@ onMounted(() => {
       <br />
       <VRow>
         <VCol cols="12">
-          <VItemGroup>
-            <VLabel>Kode Daftar / Fasilitasi</VLabel>
-            <VRow>
-              <VCol cols="5">
-                <VSelect
-                  density="compact"
-                  :items="listFasilitasi"
-                  item-title="name"
-                  item-value="id"
-                  placeholder="Pilih Fasilitator"
-                  v-model="formData.kode_daftar"
-                />
-              </VCol>
+          <VLabel>Kode Daftar / Fasilitasi</VLabel>
+          <VRow>
+            <VCol cols="5">
+              <VSelect
+                density="compact"
+                :items="listFasilitasi"
+                item-title="name"
+                item-value="id"
+                placeholder="Pilih Fasilitator"
+                v-model="formData.id_fasilitator"
+              />
+            </VCol>
 
-              <VSpacer
-                style="
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-                "
-                ><p>Atau</p></VSpacer
-              >
-              <VCol cols="5">
-                <VTextField
-                  placeholder="Cari Fasilitator"
-                  append-inner-icon="mdi-magnify"
-                  density="compact"
-                ></VTextField>
-              </VCol>
-            </VRow>
-          </VItemGroup>
+            <VSpacer
+              style="
+                display: flex;
+                justify-content: center;
+                align-items: center;
+              "
+              ><p>Atau</p></VSpacer
+            >
+            <VCol cols="5">
+              <VTextField
+                placeholder="Cari Fasilitator"
+                append-inner-icon="mdi-magnify"
+                density="compact"
+              ></VTextField>
+            </VCol>
+          </VRow>
+          <VAlert type="warning" variant="tonal" color="#652672" class="mt-5">
+            Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada
+            fasilitator sebagai kode untuk mendaftarkan sertifikasi halal gratis
+          </VAlert>
         </VCol>
       </VRow>
       <br />
@@ -310,7 +333,7 @@ onMounted(() => {
             <VTextField
               placeholder="Isi Nomor Surat Permohonan"
               density="compact"
-              v-model="formData.no_surat_permohonan"
+              v-model="formData.no_mohon"
             ></VTextField>
           </VItemGroup>
           <br />
@@ -322,7 +345,7 @@ onMounted(() => {
                 <Vuepicdatepicker
                   v-model:model-value="formData.tgl_surat_permohonan"
                   auto-apply
-                  model-type="yyyy-MM-dddd"
+                  model-type="yyyy-MM-dd"
                   :enable-time-picker="false"
                   teleport
                   clearable
@@ -351,7 +374,7 @@ onMounted(() => {
               :items="listLayanan"
               item-title="name"
               item-value="code"
-              v-model="formData.jenis_layanan"
+              v-model="formData.id_jenis_layanan"
             ></VSelect>
           </VItemGroup>
           <br />
@@ -363,7 +386,7 @@ onMounted(() => {
               :items="listProduk"
               item-title="name"
               item-value="code"
-              v-model="formData.jenis_produk"
+              v-model="formData.id_jenis_produk"
             ></VSelect>
           </VItemGroup>
           <br />
@@ -405,7 +428,8 @@ onMounted(() => {
               :items="lembagaPendamping"
               item-title="name"
               item-value="id"
-              v-model="formData.lembaga_pendamping"
+              :disabled="formData.lokasi_pendamping == null"
+              v-model="formData.id_lembaga_pendamping"
               @update:model-value="handleGetPendamping"
             ></VSelect>
           </VItemGroup>
@@ -417,8 +441,9 @@ onMounted(() => {
               density="compact"
               :items="listPendamping"
               item-title="name"
+              :disabled="formData.lokasi_pendamping == null"
               item-value="id"
-              v-model="formData.pendamping"
+              v-model="formData.id_pendamping"
             ></VSelect>
           </VItemGroup>
         </VCol>

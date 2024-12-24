@@ -21,7 +21,9 @@ const dataPermohonan = [
   {
     id: 4,
     key: "Nomor Kontak",
-    value: businessActor.value.telp_pu ? businessActor.value.telp_pu : "-",
+    value: businessActor.value.nomor_kontak_pj
+      ? businessActor.value.nomor_kontak_pj
+      : "-",
   },
   {
     id: 5,
