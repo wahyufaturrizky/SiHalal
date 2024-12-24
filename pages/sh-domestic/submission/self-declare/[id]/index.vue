@@ -1264,18 +1264,15 @@ const getKbli = async () => {
 
 const getIkrarFile = async () => {
   try {
-    const response: any = await $api(
-      `/self-declare/business-actor/statement/agree`,
-      {
-        method: "get",
-        query: {
-          id_reg: submissionId,
-        },
-      }
-    );
+    const response: any = await $api(`/self-declare/business-actor/statement`, {
+      method: "get",
+      query: {
+        id_reg: submissionId,
+      },
+    });
 
     if (response.code === 2000) {
-      downloadForms.ikrar = response.data.url_download;
+      downloadForms.ikrar = response.data.file;
     }
     return response;
   } catch (error) {
