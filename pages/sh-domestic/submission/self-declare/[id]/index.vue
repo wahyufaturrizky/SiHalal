@@ -125,7 +125,7 @@
                 class="d-flex align-center"
                 :name-style="{ fontWeight: '600' }"
               >
-                <VRow class="d-flex align-center">
+                <!-- <VRow class="d-flex align-center">
                   <VCol cols="12">
                     <VSelect
                       :items="kbliDropdown"
@@ -153,7 +153,10 @@
                       </template>
                     </VSelect>
                   </VCol>
-                </VRow>
+                </VRow> -->
+                {{
+                  submissionDetail.nama_kbli ? submissionDetail.nama_kbli : "-"
+                }}
               </InfoRow>
               <ThinLine :thickness="1" />
               <InfoRow
@@ -750,7 +753,7 @@
               >
                 {{
                   registrationDetail.tgl_daftar
-                    ? registrationDetail.tgl_daftar
+                    ? formatToISOString(registrationDetail.tgl_daftar)
                     : "-"
                 }}
               </InfoRowV2>

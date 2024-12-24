@@ -67,6 +67,8 @@ const itemPerPageCertified = ref(5);
 const totalItemsCertified = ref(0);
 const loadingCertified = ref(true);
 const pageCertified = ref(1);
+const searchQueryUncertified = ref("");
+const searchQueryCertified = ref("");
 const loadItemBahan = async (page: number, size: number, name: string = "") => {
   try {
     if (form.value.typeBahan == 0) {
@@ -103,8 +105,6 @@ const loadItemBahan = async (page: number, size: number, name: string = "") => {
     loadingCertified.value = false;
   }
 };
-const searchQueryUncertified = ref("");
-const searchQueryCertified = ref("");
 
 const debouncedFetchCertified = debounce(loadItemBahan, 500);
 const debouncedFetchUncertified = debounce(loadItemBahan, 500);
@@ -118,11 +118,12 @@ const handleInputUncertified = () => {
   );
 };
 const handleInputCertified = () => {
-  pageUncertified.value = 1;
-  debouncedFetchUncertified(
-    pageUncertified.value,
-    itemPerPageUncertified.value,
-    searchQueryUncertified.value
+  console.log(searchQueryCertified.value);
+  pageCertified.value = 1;
+  debouncedFetchCertified(
+    pageCertified.value,
+    itemPerPageCertified.value,
+    searchQueryCertified.value
   );
 };
 
@@ -130,16 +131,25 @@ const searchBahanDialogUncertified = ref(false);
 const searchBahanDialogCertified = ref(false);
 
 const setDataFormUncertified = (item: BahanDataUncertified) => {
+  searchQueryUncertified.value = "";
   form.value.nama_bahan = item.nama_bahan;
   form.value.kelompok = item.kelompok;
   searchBahanDialogUncertified.value = false;
 };
 const setDataFormCertified = (item: BahanDataCertified) => {
+  searchQueryCertified.value = "";
   form.value.nama_bahan = item.nama_bahan;
   form.value.produsen = item.produsen;
   form.value.merek = item.merek;
   form.value.no_sertifikat = item.no_sertifikat;
   searchBahanDialogCertified.value = false;
+};
+const clickOutside = () => {
+  console.log("keluar");
+  pageCertified.value = 1;
+  pageUncertified.value = 1;
+  searchQueryUncertified.value = "";
+  searchQueryCertified.value = "";
 };
 const refVForm = ref<VForm>();
 const submitAddBahanButton = ref(false);
@@ -383,7 +393,11 @@ const insertBahan = async () => {
     </template>
   </VDialog>
 
-  <VDialog v-model="searchBahanDialogCertified" max-width="60svw">
+  <VDialog
+    @after-leave="clickOutside"
+    v-model="searchBahanDialogUncertified"
+    max-width="60svw"
+  >
     <VCard>
       <VCardTitle>Cari Bahan</VCardTitle>
       <VCardText>
@@ -438,15 +452,18 @@ const insertBahan = async () => {
       </VCardItem>
     </VCard>
   </VDialog>
-
-  <VDialog v-model="searchBahanDialogUncertified" max-width="60svw">
+  <VDialog
+    @after-leave="clickOutside"
+    v-model="searchBahanDialogCertified"
+    max-width="60svw"
+  >
     <VCard>
       <VCardTitle>Cari Bahan</VCardTitle>
       <VCardText>
         <VRow>
           <VCol cols="12" md="4">
             <VTextField
-              v-model="searchQueryUncertified"
+              v-model="searchQueryCertified"
               label="Search"
               placeholder="Search ..."
               append-inner-icon="ri-search-line"
@@ -454,62 +471,7 @@ const insertBahan = async () => {
               hide-details
               dense
               outlined
-              @input="handleInputUncertified"
-            />
-          </VCol>
-        </VRow>
-      </VCardText>
-      <VCardItem>
-        <VDataTableServer
-          v-model:items-per-page="itemPerPageUncertified"
-          v-model:page="pageUncertified"
-          :items-length="totalItemsUncertified"
-          :loading="loadingUncertified"
-          loading-text="Loading..."
-          :items="itemsUncertified"
-          @update:options="
-            loadItemBahan(
-              pageUncertified,
-              itemPerPageUncertified,
-              searchQueryUncertified
-            )
-          "
-          :headers="tableHeaderUncertified"
-        >
-          <template #item.index="{ index }">
-            {{ index + 1 + (pageUncertified - 1) * itemPerPageUncertified }}
-          </template>
-          <template #item.action="{ item }">
-            <div class="d-flex gap-1">
-              <IconBtn size="small" @click="">
-                <VIcon
-                  @click="setDataFormUncertified(item)"
-                  icon="ri-arrow-right-line"
-                  color="primary"
-                />
-              </IconBtn>
-            </div>
-          </template>
-        </VDataTableServer>
-      </VCardItem>
-    </VCard>
-  </VDialog>
-  <VDialog v-model="searchBahanDialogCertified" max-width="60svw">
-    <VCard>
-      <VCardTitle>Cari Bahan</VCardTitle>
-      <VCardText>
-        <VRow>
-          <VCol cols="12" md="4">
-            <VTextField
-              v-model="searchQueryUncertified"
-              label="Search"
-              placeholder="Search ..."
-              append-inner-icon="ri-search-line"
-              single-line
-              hide-details
-              dense
-              outlined
-              @input="handleInputUncertified"
+              @input="handleInputCertified"
             />
           </VCol>
         </VRow>

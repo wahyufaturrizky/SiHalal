@@ -248,13 +248,6 @@ onMounted(() => {
     </VCardTitle>
     <VCardTitle>
       <VRow>
-        <VCol cols="2">No.Id</VCol>
-        <VCol cols="1">:</VCol>
-        <VCol cols="9">{{
-          submissionDetail.id_reg ? submissionDetail.id_reg : "-"
-        }}</VCol>
-      </VRow>
-      <VRow>
         <VCol cols="2">Tanggal</VCol>
         <VCol cols="1">:</VCol>
         <VCol cols="9">{{
@@ -280,6 +273,7 @@ onMounted(() => {
               item-title="name"
               item-value="code"
               v-model="formData.id_jenis_pengajuan"
+              disabled
               placeholder="Pilih Jenis Pendaftaran"
             />
           </VItemGroup>
