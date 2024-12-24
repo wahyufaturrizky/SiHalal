@@ -219,10 +219,13 @@
               <InfoRow name="Tingkat Usaha" :name-style="{ fontWeight: '600' }">
                 {{
                   skalaUsaha.find(
-                    (data) => data.code == submissionDetail.tingkat_usaha
+                    (data: any) => data.code == submissionDetail.tingkat_usaha
                   ) != undefined
-                    ? skalaUsaha.find(
-                        (data) => data.code == submissionDetail.tingkat_usaha
+                    ? (
+                        skalaUsaha.find(
+                          (data: any) =>
+                            data.code == submissionDetail.tingkat_usaha
+                        ) as any
                       ).name
                     : "-"
                 }}
@@ -977,7 +980,7 @@ const statusItem = new Proxy(
     OF300: { color: "success", desc: "Halal Certified Issued" },
   },
   {
-    get(target, prop) {
+    get(target: any, prop: string) {
       return prop in target ? target[prop] : defaultStatus;
     },
   }
@@ -1340,7 +1343,11 @@ const handleSentSubmission = async () => {
     if (response.code === 2000) {
       snackbar.sendSnackbar("Berhasil mengirim pengajuan", "success");
     } else {
-      snackbar.sendSnackbar(response.errors.list_error[0], "error");
+      if (response.errors.list_error.length > 0) {
+        for (const element of response.errors.list_error) {
+          snackbar.sendSnackbar(element, "error");
+        }
+      }
     }
   } catch (error) {
     snackbar.sendSnackbar("Gagal mengirim pengajuan", "error");
