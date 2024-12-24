@@ -70,6 +70,9 @@ const id = route.params.id
 
 const ingredientItems = ref<Bahan[]>(props?.data?.value || [])
 const productItems = ref<any[]>([])
+const dialogEdit = ref(false)
+const loading = ref(false)
+const itemDetail = ref<any>({})
 
 const handleCheck = (item: any) => {
   if (item.checked)
@@ -122,6 +125,64 @@ const getListProducts = async () => {
   }
 }
 
+const handleDownload = async (item: any) => {
+  try {
+    const response = await $api('/shln/submission/document/download', {
+      method: 'post',
+      body: {
+        filename: item.foto,
+      },
+    })
+
+    if (response.url)
+      window.open(response.url, '_blank', 'noopener,noreferrer')
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
+const editDaftarBahan = async () => {
+  const payload = {
+    jenis_bahan: itemDetail.value?.jenis_bahan,
+    nama_bahan: itemDetail.value?.nama_bahan,
+    kelompok: itemDetail.value?.kelompok,
+    merek: itemDetail.value?.merek,
+    produsen: itemDetail.value?.produsen,
+    no_sertifikat: '',
+  }
+
+  const response: any = await $api(
+    '/reguler/pelaku-usaha/tab-bahan/ingredients/edit-ingredients',
+    {
+      method: 'put',
+      query: { id_reg: id, product_id: itemDetail?.value.id },
+      body: payload,
+    },
+  )
+
+  if (response.code === 2000) {
+    formData.value = {
+      kode_rincian: '',
+      nama_produk: '',
+      foto_produk: null,
+    }
+    useSnackbar().sendSnackbar('Sukses menambah data', 'success')
+    getListIngredients()
+    dialogEdit.value = false
+  }
+}
+
+const detailClicked = (item: any) => {
+  if (props?.title === 'Daftar Nama Produk') {
+    props.onEdit(item)
+  }
+  else {
+    dialogEdit.value = true
+    itemDetail.value = item
+  }
+}
+
 onMounted(() => {
   if (props?.title === 'Daftar Nama Bahan dan Kemasan')
     getListIngredients()
@@ -129,13 +190,35 @@ onMounted(() => {
     getListProducts()
 })
 
-watch(() => props.reRender, () => {
-  getListProducts()
+watch(() => props.reRender, async () => {
+  loading.value = true
+  await Promise.allSettled([
+    getListIngredients(),
+    getListProducts(),
+  ])
+  loading.value = false
 })
 </script>
 
 <template>
-  <VCard class="pa-4">
+  <VDialog
+    v-model="dialogEdit"
+    max-width="60svw"
+  >
+    <VCard>
+      <ContentDialogDataBahan
+        dialog-type="edit"
+        :data="itemDetail"
+        :re-render="reRender"
+        :toggle="() => dialogEdit = false"
+        @loadList="getListIngredients()"
+      />
+    </VCard>
+  </VDialog>
+  <VCard
+    v-if="!loading"
+    class="pa-4"
+  >
     <VCardTitle>
       <div class="d-flex justify-space-between align-center">
         <span class="text-h5 font-weight-bold">{{ props.title }}</span>
@@ -258,23 +341,19 @@ watch(() => props.reRender, () => {
                   </VListItemTitle>
                 </VListItem>
                 <VListItem class="p0">
-                  <VListItemTitle>
-                    <Vbtn variant="plain" class="cursor-pointer">
-                      <VRow>
-                        <VCol sm="4">
-                          <VIcon
-                            end
-                            icon="fa-trash"
-                            color="#E1442E"
-                            size="15px"
-                          />
-                        </VCol>
-                        <VCol>
-                          <label class="cursor-pointer textRed">Hapus </label>
-                        </VCol>
-                      </VRow>
-                    </Vbtn>
-                  </VListItemTitle>
+                  <div class="d-flex -ml10">
+                    <DialogDeleteAuditPengajuan
+                      title="Hapus Bahan"
+                      button-text="Ya, Hapus"
+                      :content="props?.title"
+                      :on-delete="() => props?.onDelete(item)"
+                      with-label-header="true"
+                    >
+                      <template #contentDelete>
+                        <p>Apakah anda yakin menghapus data ini?</p>
+                      </template>
+                    </DialogDeleteAuditPengajuan>
+                  </div>
                 </VListItem>
               </VList>
             </VMenu>
@@ -312,7 +391,7 @@ watch(() => props.reRender, () => {
                     <Vbtn
                       variant="plain"
                       class="cursor-pointer"
-                      @click="() => props.onEdit(item)"
+                      @click="() => detailClicked(item)"
                     >
                       <VRow>
                         <VCol sm="4">
@@ -325,27 +404,39 @@ watch(() => props.reRender, () => {
                     </Vbtn>
                   </VListItemTitle>
                 </VListItem>
-                <VListItem class="p0">
-                  <VListItemTitle>
-                    <Vbtn variant="plain" class="cursor-pointer">
-                      <VRow>
-                        <VCol sm="4">
-                          <VIcon
-                            end
-                            icon="fa-trash"
-                            color="#E1442E"
-                            size="15px"
-                          />
-                        </VCol>
-                        <VCol>
-                          <label class="cursor-pointer textRed">Hapus </label>
-                        </VCol>
-                      </VRow>
-                    </Vbtn>
-                  </VListItemTitle>
+                <VListItem class="p0 d-flex">
+                  <div class="d-flex -ml10">
+                    <DialogDeleteAuditPengajuan
+                      title="Hapus Bahan"
+                      button-text="Ya, Hapus"
+                      :content="props?.title"
+                      :on-delete="() => props?.onDelete(item)"
+                      with-label-header="true"
+                    >
+                      <template #contentDelete>
+                        <p>Apakah anda yakin menghapus data ini?</p>
+                      </template>
+                    </DialogDeleteAuditPengajuan>
+                  </div>
                 </VListItem>
               </VList>
             </VMenu>
+          </template>
+          <template #item.foto="{ item }">
+            <Vbtn
+              v-if="item.foto"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-left: -10px"
+              @click="() => handleDownload(item)"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>Kosong</label>
+            </div>
           </template>
         </VDataTable>
       </VRow>
@@ -372,5 +463,8 @@ watch(() => props.reRender, () => {
 }
 .mw30 {
   min-width: 20rem !important;
+}
+.-ml10 {
+  margin-left: -10px;
 }
 </style>

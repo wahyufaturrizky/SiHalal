@@ -45,6 +45,8 @@ const formDataCatatan = ref({
   file_dok: '',
 })
 
+const formBahandanKemasan = ref({})
+
 const uploadedFile = ref({
   name: '',
   file: null,
@@ -88,10 +90,7 @@ const productName = ref(
       { title: 'Foto Produk', key: 'foto', nowrap: true },
       { title: 'Action', value: 'actionPopOver3', sortable: false, nowrap: true, popOver: true },
     ],
-    value: [
-      { no: 1, materialType: 'SIUP', materialName: '0128749286836', produsen: '-', certificateNo: '1231' },
-      { no: 2, materialType: 'NPWP', materialName: '0128749286836', produsen: '11/11/2024', certificateNo: '1231' },
-    ],
+    value: [],
   },
 )
 
@@ -145,14 +144,6 @@ const toggleDetail = (item: any, type: string) => {
   labelSaveBtn.value = 'Detail'
 }
 
-const uploadFile = (event: Event, index: string | number) => {
-  const fileUpload = event.target.files[0]
-  if (fileUpload) {
-    documentList.value[0].fileName = fileUpload.name
-    documentList.value[0].file = fileUpload
-  }
-}
-
 const uploadDocument = async (file: any) => {
   try {
     const formData = new FormData();
@@ -194,8 +185,6 @@ const toggle = () => {
 
 const handleSubmit = () => {
   confirmSaveDialog.value = false
-
-  // submit simpan
 }
 
 const getListCatatan = async () => {
@@ -211,7 +200,7 @@ const getListCatatan = async () => {
     if (response.code === 2000) {
       payNote.value = {
         ...payNote.value,
-        value: response.data
+        value: response.data,
       }
 
       return response;
@@ -237,7 +226,6 @@ const getListFormulir = async () => {
     )
 
     if (response.code === 2000) {
-      console.log(response.data);
       materialCheck.value = {
         ...materialCheck.value,
         value: response.data
@@ -305,6 +293,13 @@ const loadItemProductRincian = async (kode_rincian: string) => {
   }
 };
 
+const refresh = async () => {
+  await Promise.allSettled([
+    getListCatatan(),
+    getListFormulir(),
+  ])
+}
+
 const addProduct = async () => {
   if (titleDialog.value === 'Tambah Nama Produk') {
     const response: any = await $api(
@@ -348,6 +343,122 @@ const addProduct = async () => {
       useSnackbar().sendSnackbar('Sukses menambah data', 'success')
     }
   }
+  else if (titleDialog.value === 'Ubah Pembelian Bahan') {
+    let body: any = {}
+    if (tabBahan.value === 0) {
+      body = {
+        id_reg_bahan: itemDetail.value.id_reg_bahan,
+        nama: itemDetail.value.nama,
+        jumlah: +itemDetail.value.jumlah,
+        tgl_pembelian: formatToISOString(itemDetail.value.tgl_pembelian),
+        file_dok: formData.value.foto_produk,
+      }
+    }
+    else {
+      body = {
+        id_reg_bahan: itemDetail.value.id_reg_bahan,
+        nama: itemDetail.value.nama,
+        jumlah: +itemDetail.value.jumlah,
+        tgl_pembelian: formatToISOString(itemDetail.value.tgl_pembelian),
+        file_dok: itemDetail.value.FileDok || '',
+      }
+    }
+
+    const response: any = await $api(
+      '/reguler/pelaku-usaha/tab-bahan/catatan/update',
+      {
+        method: 'put',
+        params: { id_reg: id, product_id: itemDetail.value?.id_reg_bahan },
+        body,
+      },
+    )
+
+    if (response.code === 2000) {
+      formDataCatatan.value = {
+        kode_rincian: '',
+        nama_produk: '',
+        foto_produk: null,
+      }
+      addDialog.value = false
+      reRender.value = !reRender.value
+      refresh()
+      useSnackbar().sendSnackbar('Sukses menambah data', 'success')
+    }
+  }
+  else if (titleDialog.value === 'Ubah Formulir Pemeriksaan Bahan') {
+    let body: any = {}
+    if (tabBahan.value === 0) {
+      body = {
+        id_reg_bahan: itemDetail.value.id_reg_bahan,
+        nama: itemDetail.value.nama,
+        jumlah: +itemDetail.value.jumlah,
+        tgl_pembelian: formatToISOString(itemDetail.value.tgl_pembelian),
+        file_dok: formData.value.foto_produk,
+      }
+    }
+    else {
+      body = {
+        id_reg_bahan: itemDetail.value.id_reg_bahan,
+        nama: itemDetail.value.nama,
+        jumlah: +itemDetail.value.jumlah,
+        tgl_pembelian: formatToISOString(itemDetail.value.tgl_pembelian),
+        file_dok: itemDetail.value.FileDok || '',
+      }
+    }
+
+    const response: any = await $api(
+      '/reguler/pelaku-usaha/tab-bahan/formulir/update',
+      {
+        method: 'put',
+        params: { id_reg: id, product_id: itemDetail.value?.id_reg_bahan },
+        body,
+      },
+    )
+
+    if (response.code === 2000) {
+      formDataCatatan.value = {
+        kode_rincian: '',
+        nama_produk: '',
+        foto_produk: null,
+      }
+      addDialog.value = false
+      reRender.value = !reRender.value
+      refresh()
+      useSnackbar().sendSnackbar('Sukses menambah data', 'success')
+    }
+  }
+}
+
+const getDetailProduk = async (productId: string) => {
+  const response: any = await $api(
+    '/reguler/pelaku-usaha/tab-bahan/products/detail',
+    {
+      method: 'get',
+      params: { id_reg: id, product_id: productId },
+    },
+  )
+
+  if (response.code === 2000) {
+    itemDetail.value = response.data
+    addDialog.value = true
+    titleDialog.value = 'Ubah Nama Produk'
+    labelSaveBtn.value = 'Ubah'
+  }
+}
+
+const deleteProduct = async (productId: string) => {
+  const response: any = await $api(
+    '/reguler/pelaku-usaha/tab-bahan/products/remove',
+    {
+      method: 'delete',
+      params: { id_reg: id, product_id: productId },
+    },
+  )
+
+  if (response.code === 2000) {
+    reRender.value = !reRender.value
+    useSnackbar().sendSnackbar('Sukses menghapus data', 'success')
+  }
 }
 
 const getListIngredients = async () => {
@@ -362,21 +473,19 @@ const getListIngredients = async () => {
       },
     )
 
-    if (response.code === 2000)
-      ingredientItems.value = response.data
+    if (response.code === 2000) {
+      materialName.value = {
+        ...materialName.value,
+        value: response.data,
+      }
+      reRender.value = !reRender.value
+    }
 
     return response
   }
   catch (error) {
     console.log(error)
   }
-}
-
-const refresh = async () => {
-  await Promise.allSettled([
-    getListCatatan(),
-    getListFormulir(),
-  ])
 }
 
 onMounted(async () => {
@@ -386,6 +495,7 @@ onMounted(async () => {
     loadItemProductClasifications(),
     getListCatatan(),
     getListFormulir(),
+    getListIngredients(),
   ])
   loading.value = false
 })
@@ -407,188 +517,10 @@ onMounted(async () => {
       :on-save="addProduct"
     >
       <template #content>
-        <div v-if="titleDialog === 'Tambah Data Bahan'">
-          <div class="d-flex justify-center">
-            <VTabs
-              v-model="tabs"
-              align-tabs="center"
-              bg-color="#f0dcf5"
-              class="border pa-2"
-              style="border-radius: 40px"
-              height="auto"
-            >
-              <VTab
-                value="1"
-                base-color="#f0dcf5"
-                active-color="primary"
-                style="border-radius: 40px;"
-                hide-slider
-                color="primary"
-                variant="flat"
-                height="40px"
-              >
-                <span>Unggah File </span>
-              </VTab>
-              <VTab
-                value="2"
-                active-color="primary"
-                base-color="#f0dcf5"
-                style="border-radius: 40px;"
-                hide-slider
-                variant="flat"
-                height="40px"
-              >
-                <span> Tambah Manual  </span>
-              </VTab>
-            </VTabs>
-          </div>
-          <VTabsItems v-model="tabs">
-            <VTabItem>
-              <div
-                v-if="tabs === '2'"
-                class="mt-5"
-              >
-                <div>
-                  <label>Tipe Bahan</label>
-                  <VSelect
-                    :items="['1', '2']"
-                    outlined
-                    placeholder="pilih tipe bahan"
-                  />
-                  <VDivider class="my-5" />
-                  <br>
-                  <label>Tipe Bahan</label>
-                  <VTextField
-                    class="-mt-10"
-                    placeholder="pilih jenis bahan"
-                  />
-                  <br>
-                  <label>Nama Bahan</label>
-                  <VTextField
-                    class="-mt-10"
-                    value="Isi Nama Bahan, automatis terisi dengan cari bahan"
-                    disabled
-                    bg-color="#F6F6F6"
-                  />
-                  <br>
-                  <label>Produsen</label>
-                  <VTextField
-                    class="-mt-10"
-                    placeholder="isi nama produsen"
-                  />
-                  <br>
-                  <label>Nomor Sertifikasi Halal</label>
-                  <VTextField
-                    class="-mt-10"
-                    placeholder="isi nama Nomor Sertifikasi Halal"
-                  />
-                  <br>
-                  <div class="d-flex justify-space-between mt-5">
-                    <label>
-                      Unggah Bahan
-                    </label>
-                    <VFileInput
-                      v-model="file"
-                      dense
-                      prepend-icon=""
-                      label="No File Chosen"
-                      hide-details
-                      style="max-inline-size: 300px;"
-                      class="input-file-izin"
-                      @change="uploadFile"
-                    >
-                      <!-- Button upload input -->
-                      <template
-                        v-if="file === null"
-                        #append-inner
-                      >
-                        <VBtn
-                          color="primary"
-                          variant="flat"
-                          class="choose-file"
-                          style="block-size: 100%; inline-size: 150px;"
-                        >
-                          Choose File
-                        </VBtn>
-                      </template>
-                    </VFileInput>
-                    <VFileInput
-                      v-model="file"
-                      class="custom-file-input"
-                      density="compact"
-                      rounded="xl"
-                      label="No file choosen"
-                      max-width="400"
-                      dense
-                      prepend-icon=""
-                      hide-details
-                      style="max-inline-size: 300px;"
-                      @change="uploadFile"
-                    >
-                      <template #append-inner>
-                        <VBtn rounded="s-0 e-xl" text="Choose" />
-                      </template>
-                    </VFileInput>
-                  </div>
-                </div>
-              </div>
-              <div v-else>
-                <VRow
-                  no-gutters
-                  class="my-5 download-template"
-                >
-                  <VCol class="d-flex align-center">
-                    <VBtn append-icon="mdi-download">
-                      Unduh template acuan "unggah bahan"
-                    </VBtn>
-                  </VCol>
-                </VRow>
-                <div class="d-flex justify-space-between mt-5">
-                  <label>
-                    Unggah Bahan
-                  </label>
-                  <VFileInput
-                    v-model="file"
-                    dense
-                    prepend-icon=""
-                    label="No File Chosen"
-                    hide-details
-                    style="max-inline-size: 300px;"
-                    class="input-file-izin"
-                    @change="uploadFile"
-                  >
-                    <!-- Button upload input -->
-                    <template
-                      v-if="file === null"
-                      #append-inner
-                    >
-                      <VBtn
-                        color="primary"
-                        variant="flat"
-                        class="choose-file"
-                        style="block-size: 100%; inline-size: 150px;"
-                      >
-                        Choose File
-                      </VBtn>
-                    </template>
-                  </VFileInput>
-                </div>
-              </div>
-            </VTabItem>
-          </VTabsItems>
-        </div>
-        <div v-if="titleDialog === 'Ubah Data Bahan'">
-          <ContentDialogDataBahan
-            dialog-type="edit"
-            :data="itemDetail"
-            @loadList="getListIngredients()"
-          />
-        </div>
         <div v-if="titleDialog === 'Detail Data Bahan'">
           <ContentDialogDataBahan
             dialog-type="detail"
             :data="itemDetail"
-            @loadList="getListIngredients()"
           />
         </div>
         <div v-else-if="titleDialog === 'Tambah Nama Produk'">
@@ -620,6 +552,81 @@ onMounted(async () => {
             <label>Nama Produk</label>
             <VTextField
               v-model="formData.nama_produk"
+              class="-mt-10"
+              density="compact"
+              placeholder="Isi Nama Produk"
+            />
+            <div class="d-flex justify-space-between mt-5">
+              <label>
+                Upload Foto
+              </label>
+              <VCol cols="6">
+                <VTextField
+                  v-if="uploadedFile.file"
+                  :model-value="uploadedFile.name"
+                  density="compact"
+                  placeholder="No file choosen"
+                  rounded="xl"
+                  max-width="400"
+                >
+                  <template #append-inner>
+                    <VIcon
+                      icon="fa-trash"
+                      color="error"
+                      class="cursor-pointer"
+                      @click="handleRemoveFile"
+                    />
+                  </template>
+                </VTextField>
+                <VFileInput
+                  v-else
+                  :model-value="uploadedFile.file"
+                  class="custom-file-input"
+                  density="compact"
+                  rounded="xl"
+                  label="No file choosen"
+                  max-width="400"
+                  prepend-icon=""
+                  @change="handleUploadFile"
+                >
+                  <template #append-inner>
+                    <VBtn rounded="s-0 e-xl" text="Choose" />
+                  </template>
+                </VFileInput>
+              </VCol>
+            </div>
+          </div>
+        </div>
+        <div v-else-if="titleDialog === 'Ubah Nama Produk'">
+          <div>
+            <label>Kualitas Produk</label>
+            <VSelect
+              v-model="itemDetail.koderincian"
+              outlined
+              placeholder="pilih kualitas produk"
+              density="compact"
+              :loading="loadingRincian"
+              item-title="name"
+              item-value="code"
+              :items="dataProductClasification"
+              @update:modelValue="loadItemProductRincian"
+            />
+            <br>
+            <label>Rincian Produk</label>
+            <VSelect
+              v-model="itemDetail.koderincian"
+              outlined
+              placeholder="pilih rincian produk"
+              density="compact"
+              :loading="loadingRincian"
+              item-title="name"
+              item-value="code"
+              :items="listRincian"
+            />
+            <br>
+            <label>Nama Produk</label>
+            <VTextField
+              v-model="itemDetail.nama"
               class="-mt-10"
               density="compact"
               placeholder="Isi Nama Produk"
@@ -915,6 +922,235 @@ onMounted(async () => {
             </VTabsWindowItem>
           </VTabsWindow>
         </div>
+        <div v-else-if="titleDialog === 'Ubah Pembelian Bahan'">
+          <div class="d-flex justify-center align-center">
+            <VTabs
+              v-model="tabBahan"
+              align-tabs="center"
+              bg-color="#f0dcf5"
+              class="border pa-2"
+              style="border-radius: 40px"
+              height="auto"
+            >
+              <VTab
+                value="1"
+                base-color="#f0dcf5"
+                active-color="primary"
+                style="border-radius: 40px"
+                hide-slider
+                color="primary"
+                variant="flat"
+                height="40px"
+              >
+                <span>Unggah File </span>
+              </VTab>
+              <VTab
+                value="2"
+                active-color="primary"
+                base-color="#f0dcf5"
+                style="border-radius: 40px"
+                hide-slider
+                variant="flat"
+                height="40px"
+              >
+                <span> Tambah Manual </span>
+              </VTab>
+            </VTabs>
+          </div>
+          <VTabsWindow v-model="tabBahan">
+            <VTabsWindowItem value="1">
+              <div class="d-flex justify-space-between mt-5">
+                <label style="align-self: center;">
+                  Unggah Bahan
+                </label>
+                <VCol cols="6">
+                  <VTextField
+                    v-if="uploadedFileBahan.file"
+                    :model-value="uploadedFileBahan.name"
+                    density="compact"
+                    placeholder="No file choosen"
+                    rounded="xl"
+                    max-width="400"
+                  >
+                    <template #append-inner>
+                      <VIcon
+                        icon="fa-trash"
+                        color="error"
+                        class="cursor-pointer"
+                        @click="handleRemoveFile"
+                      />
+                    </template>
+                  </VTextField>
+                  <VFileInput
+                    v-else
+                    :model-value="uploadedFileBahan.file"
+                    class="custom-file-input"
+                    density="compact"
+                    rounded="xl"
+                    label="No file choosen"
+                    max-width="400"
+                    prepend-icon=""
+                    @change="handleUploadFile"
+                  >
+                    <template #append-inner>
+                      <VBtn rounded="s-0 e-xl" text="Choose" />
+                    </template>
+                  </VFileInput>
+                </VCol>
+              </div>
+            </VTabsWindowItem>
+            <VTabsWindowItem value="2">
+              <div class="mt-5">
+                <label>Nama</label>
+                <VTextField
+                  v-model="itemDetail.nama"
+                  class="mt-2"
+                  density="compact"
+                  placeholder="Isi Nama"
+                  disabled
+                />
+              </div>
+              <div class="mt-5">
+                <label>Jumlah</label>
+                <VTextField
+                  v-model="itemDetail.jumlah"
+                  class="mt-2"
+                  density="compact"
+                  placeholder="Isi Nama"
+                />
+              </div>
+              <div class="mt-5">
+                <label>Tanggal Pembelian</label>
+                <VueDatePicker
+                  id="tanggal_daftar"
+                  v-model="itemDetail.tgl_pembelian"
+                  teleport-center
+                  :enable-time-picker="false"
+                  format="dd-MM-yyyy"
+                />
+              </div>
+            </VTabsWindowItem>
+          </VTabsWindow>
+        </div>
+        <div v-else-if="titleDialog === 'Ubah Formulir Pemeriksaan Bahan'">
+          <div class="d-flex justify-center align-center">
+            <VTabs
+              v-model="tabBahan"
+              align-tabs="center"
+              bg-color="#f0dcf5"
+              class="border pa-2"
+              style="border-radius: 40px"
+              height="auto"
+            >
+              <VTab
+                value="1"
+                base-color="#f0dcf5"
+                active-color="primary"
+                style="border-radius: 40px"
+                hide-slider
+                color="primary"
+                variant="flat"
+                height="40px"
+              >
+                <span>Unggah File </span>
+              </VTab>
+              <VTab
+                value="2"
+                active-color="primary"
+                base-color="#f0dcf5"
+                style="border-radius: 40px"
+                hide-slider
+                variant="flat"
+                height="40px"
+              >
+                <span> Tambah Manual </span>
+              </VTab>
+            </VTabs>
+          </div>
+          <VTabsWindow v-model="tabBahan">
+            <VTabsWindowItem value="1">
+              <div class="d-flex justify-space-between mt-5">
+                <label style="align-self: center;">
+                  Unggah Bahan
+                </label>
+                <VCol cols="6">
+                  <VTextField
+                    v-if="uploadedFileBahan.file"
+                    :model-value="uploadedFileBahan.name"
+                    density="compact"
+                    placeholder="No file choosen"
+                    rounded="xl"
+                    max-width="400"
+                  >
+                    <template #append-inner>
+                      <VIcon
+                        icon="fa-trash"
+                        color="error"
+                        class="cursor-pointer"
+                        @click="handleRemoveFile"
+                      />
+                    </template>
+                  </VTextField>
+                  <VFileInput
+                    v-else
+                    :model-value="uploadedFileBahan.file"
+                    class="custom-file-input"
+                    density="compact"
+                    rounded="xl"
+                    label="No file choosen"
+                    max-width="400"
+                    prepend-icon=""
+                    @change="handleUploadFile"
+                  >
+                    <template #append-inner>
+                      <VBtn rounded="s-0 e-xl" text="Choose" />
+                    </template>
+                  </VFileInput>
+                </VCol>
+              </div>
+            </VTabsWindowItem>
+            <VTabsWindowItem value="2">
+              <div class="mt-5">
+                <label>Nama</label>
+                <VTextField
+                  v-model="itemDetail.nama"
+                  class="mt-2"
+                  density="compact"
+                  placeholder="Isi Nama"
+                  disabled
+                />
+              </div>
+              <div class="mt-5">
+                <label>Lokasi</label>
+                <VTextField
+                  v-model="itemDetail.lokasi"
+                  class="mt-2"
+                  density="compact"
+                  placeholder="Isi Lokasi"
+                />
+              </div>
+              <div class="mt-5">
+                <label>Jumlah</label>
+                <VTextField
+                  v-model="itemDetail.jumlah"
+                  class="mt-2"
+                  density="compact"
+                  placeholder="Isi Nama"
+                />
+              </div>
+              <div class="mt-5">
+                <label>Tanggal Pembelian</label>
+                <VueDatePicker
+                  id="tanggal_daftar"
+                  v-model="itemDetail.tgl_pembelian"
+                  teleport-center
+                  :enable-time-picker="false"
+                  format="dd-MM-yyyy"
+                />
+              </div>
+            </VTabsWindowItem>
+          </VTabsWindow>
+        </div>
       </template>
     </DialogWithAction>
     <TableData
@@ -932,7 +1168,8 @@ onMounted(async () => {
     <TableData
       :on-submit="() => confirmSaveDialog = true"
       :on-add="() => toggleAdd('Nama Produk')"
-      :on-edit="() => toggleEdit(null, 'Nama Produk')"
+      :on-edit="(item: any) => getDetailProduk(item.id)"
+      :on-delete="(item: any) => deleteProduct(item.id)"
       :on-detail="(el: any) => toggleDetail(el, 'Nama Produk')"
       :data="productName"
       :re-render="reRender"
@@ -955,7 +1192,7 @@ onMounted(async () => {
     <TableData
       :on-submit="() => confirmSaveDialog = true"
       :on-add="() => toggleAdd('Pembelian Bahan')"
-      :on-edit="() => toggleEdit(null, 'Pembelian Bahan')"
+      :on-edit="(item: any) => toggleEdit(item, 'Pembelian Bahan')"
       :data="payNote"
       title="Catatan Pembelian Bahan"
     />
@@ -963,7 +1200,7 @@ onMounted(async () => {
     <TableData
       :on-submit="() => confirmSaveDialog = true"
       :on-add="() => toggleAdd('Formulir Pemeriksaan Bahan')"
-      :on-edit="() => toggleEdit(null, 'Formulir Pemeriksaan Bahan')"
+      :on-edit="(item:any) => toggleEdit(item, 'Formulir Pemeriksaan Bahan')"
       :data="materialCheck"
       title="Formulir Pemeriksaan Bahan"
     />
