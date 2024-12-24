@@ -60,42 +60,32 @@ const uploadDocument = async (file: any) => {
   }
 };
 
-const props = defineProps({
-  listagama: {
-    type: Array,
-  },
-});
-
-const { listagama } = props || {};
-
 const addDialog = ref(false);
 const loadingAdd = ref(false);
 
 const formData = ref({
   no_penetapan: "",
   penetapan: "",
-  no_sertifikat: "",
-  tgl_pemohon: "",
-  file: null,
+  tgl_penetapan: "",
+  dokumen: null,
 });
 
 const resetForm = () => {
   formData.value = {
     no_penetapan: "",
     penetapan: "",
-    no_sertifikat: "",
-    tgl_pemohon: "",
-    file: null,
+    tgl_penetapan: "",
+    dokumen: null,
   };
 };
 
-const addDataPenyeliaHalal = async () => {
+const updateData = async () => {
   try {
     loadingAdd.value = true;
 
-    const { file } = formData.value;
+    const { dokumen } = formData.value;
 
-    const fileSpph = await uploadDocument(file);
+    const fileSpph = await uploadDocument(dokumen);
     if (fileSpph.code !== 2000) {
       return;
     }
@@ -103,10 +93,10 @@ const addDataPenyeliaHalal = async () => {
     const res: any = await $api(
       `/sidang-fatwa/proses-sidang-fatwa/add/${selfDeclareId}`,
       {
-        method: "post",
+        method: "put",
         body: {
           ...formData.value,
-          file: fileSpph.data.file_url,
+          dokumen: fileSpph.data.file_url,
         },
       }
     );
@@ -172,7 +162,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
             <VItemGroup>
               <VLabel>Tanggal Surat Pemohon</VLabel>
               <VTextField
-                v-model="formData.tgl_pemohon"
+                v-model="formData.tgl_penetapan"
                 placeholder="Isi Tanggal Sertifikat"
                 type="date"
               />
@@ -186,9 +176,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               <VLabel>Penetapan</VLabel>
               <VSelect
                 v-model="formData.penetapan"
-                :items="[]"
-                item-title="name"
-                item-value="code"
+                :items="['Ditetapkan Halal']"
                 placeholder="Pilih Jenis Dokumen"
                 density="compact"
               />
@@ -204,7 +192,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               </VCol>
               <VCol cols="4">
                 <HalalFileInput
-                  :modelValue="formData.file"
+                  :modelValue="formData.dokumen"
                   :rules="[
                       requiredValidator,
                       fileExtensionValidator,
@@ -217,7 +205,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
                         }
                       },
                     ]"
-                  @update:modelValue="formData.file = $event"
+                  @update:modelValue="formData.dokumen = $event"
                 />
               </VCol>
             </VRow>
@@ -238,7 +226,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
           <VBtn
             :loading="loadingAdd"
             :disabled="checkIsFieldEMpty(formData) || isFormError"
-            @click="addDataPenyeliaHalal"
+            @click="updateData"
             variant="flat"
             >Tambah</VBtn
           >
