@@ -117,27 +117,31 @@ const onSelectFasilitator = (selectedId: string) => {
   }
 }
 
+const responseMessage = ref('')
+const responseId = ref('')
+
 const onSearchFasilitator = async () => {
   try {
-    if (querySearch.value.toLowerCase() === '') {
-      isKodeFound.value = false
-      isKodeNotFound.value = false
-    }
+    const kode = querySearch.value
 
     const response: any = await $api(
-      `/self-declare/submission/kode/${querySearch.value}`,
+      '/self-declare/submission/kode',
       {
-        method: 'get',
+        method: 'post',
+        body: {
+          kode,
+        },
       },
     )
 
-    console.log(response, 'ini response')
-
-    if (querySearch.value.toLowerCase() === 'ayam-goreng') {
+    if (responseMessage.value === 'Kode Fasilitasi dapat digunakan') {
       isKodeFound.value = true
       isKodeNotFound.value = false
+      responseMessage.value = ''
+      responseId.value = response.id
     }
     else {
+      responseMessage.value = response.message
       isKodeFound.value = false
       isKodeNotFound.value = true
     }
@@ -146,6 +150,14 @@ const onSearchFasilitator = async () => {
     console.log(error)
   }
 }
+
+const responseType = computed(() => {
+  return responseMessage.value === 'Kode Fasilitasi dapat digunakan' ? 'success' : 'error'
+})
+
+const responseColor = computed(() => {
+  return responseMessage.value === 'Kode Fasilitasi dapat digunakan' ? '#5CB338' : '#FB4141'
+})
 
 const handleGetJenisLayanan = async () => {
   try {
@@ -254,15 +266,28 @@ const refVForm = ref<VForm>()
 
 const onSubmitSubmission = () => {
   refVForm.value?.validate().then(({ valid: isValid }) => {
-    if (isValid)
-      handleUpdateSubmission()
+    console.log('ini submit')
+    if (formData.id_fasilitator.value === 'Lainnya') {
+      if (isValid && isKodeFound.value === true) {
+        console.log(' check isvalid', isValid)
+        handleUpdateSubmission()
+      }
+    }
+    else {
+      if (isValid) {
+        console.log(' check isvalid', isValid)
+        handleUpdateSubmission()
+      }
+    }
   })
 }
 
 const handleUpdateSubmission = async () => {
   try {
-    if (querySearch.value != '')
-      formData.id_fasilitator.value = querySearch.value
+    console.log('update Submission')
+
+    if (isKodeFound.value === true)
+      formData.id_fasilitator.value = responseId.value
 
     const response: any = await $api(
       '/self-declare/business-actor/submission/update',
@@ -329,8 +354,9 @@ onMounted(() => {
   >
     <VForm
       ref="refVForm"
-      @submit.prevent="onSubmitSubmission"
+      @submit.prevent="() => {}"
     >
+      <!-- @submit.prevent="onSubmitSubmission" -->
       <VCardTitle class="d-flex justify-space-between align-center font-weight-bold text-h4 mb-5">
         <div>Data Pengajuan</div>
         <VBtn
@@ -338,6 +364,7 @@ onMounted(() => {
           color="primary"
           variant="flat"
           text="Simpan Perubahan"
+          @click="onSubmitSubmission"
         />
       </VCardTitle>
       <VCardTitle>
@@ -430,12 +457,12 @@ onMounted(() => {
 
             <VAlert
               v-if="isKodeNotFound"
-              type="error"
+              :type="responseType"
               variant="tonal"
-              color="#FB4141"
+              :color="responseColor"
               class="mt-5"
             >
-              Kode di Inputkan tidak ditemukan
+              {{ responseMessage }}
             </VAlert>
 
             <VAlert
@@ -445,7 +472,7 @@ onMounted(() => {
               color="#5CB338"
               class="mt-5"
             >
-              Kode dapat digunakan
+              Kode Fasilitasi dapat digunakan
             </VAlert>
 
             <VAlert

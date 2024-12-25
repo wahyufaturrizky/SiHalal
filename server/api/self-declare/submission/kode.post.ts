@@ -12,7 +12,7 @@ export default defineEventHandler(async (event: any) => {
 
   try {
     const runtimeConfig = useRuntimeConfig()
-    const kode = await readBody(event)
+    const { kode } = await readBody(event)
 
     const response = await $fetch(
       `${runtimeConfig.coreBaseUrl}/api/v1/verificator/self-declare/filter/search-fasilitasi?fac_code=${kode}`,
