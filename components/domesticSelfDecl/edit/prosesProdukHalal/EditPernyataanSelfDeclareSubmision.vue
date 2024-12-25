@@ -5,7 +5,7 @@ const showDownloadButton = ref(false);
 const loadingAgree = ref(false);
 const pledgeFile = ref("");
 const handleAgree = async () => {
-  // console.log("agree.........");
+  console.log("agree.........");
   try {
     loadingAgree.value = true;
     const response: any = await $api(
@@ -212,7 +212,7 @@ onMounted(() => {
         >Download ikrar</VBtn
       >
       <VBtn
-        @click="aggreButtonDisable ? handleAgree : null"
+        @click="handleAgree"
         variant="flat"
         min-width="120px"
         class="text-white"
