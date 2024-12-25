@@ -390,21 +390,9 @@
                   append-icon="fa-download"
                   variant="outlined"
                   class="float-end mt-6"
+                  @click="handleDownloadSk(submissionId)"
                 >
-                  <template #default>
-                    <NuxtLink
-                      rel="noopener"
-                      :to="submissionDetail.url_sample_penyelia_sk"
-                      target="_blank"
-                      >Download SK Penyelia</NuxtLink
-                    >
-                    <!-- <a
-                      :href="submissionDetail.url_sample_penyelia_sk"
-                      target="_blank"
-                      rel="noopener"
-                      >Download SK Penyelia</a
-                    > -->
-                  </template>
+                  Download SK Penyelia
                 </VBtn>
               </div>
             </VExpansionPanelText>
@@ -974,7 +962,7 @@ const skalaUsaha = ref([]);
 
 const router = useRouter();
 const route = useRoute<"">();
-const submissionId = route.params?.id;
+const submissionId = route.params?.id as string;
 
 const snackbar = useSnackbar();
 
@@ -1312,6 +1300,25 @@ const handleDownloadForm = async (fileName: string) => {
 };
 const handleDownload = async (productId: string) => {
   return await downloadDocument(productId);
+};
+
+const handleDownloadSk = async (id: string) => {
+  try {
+    const response = await $api("download-sk-selfdeclare", {
+      method: "post",
+      body: {
+        id,
+      },
+    });
+
+    if (response.data.file) {
+      await handleDownload(response.data?.file);
+    } else {
+      useSnackbar().sendSnackbar("Download gagal", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
 };
 
 const handleOpenBlankWindow = (fileUri: string) => {
