@@ -65,13 +65,24 @@ const ttdData = ref(
   },
 )
 
+function removeUUID(fileName) {
+  try {
+    const updatedFileName = fileName.replace(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}__/, '')
+
+    return updatedFileName || 'file'
+  }
+  catch (error) {
+    return 'file'
+  }
+}
+
 const dokumenLainnya = ref(
   {
     label: [
       { title: 'No.', key: 'no', nowrap: true },
       { title: 'Nama Dokumen', key: 'nama_dokumen', nowrap: true },
       { title: 'File Dokumen', value: 'foto2', nowrap: true },
-      { title: 'Dokumen Pendukung', value: 'foto3', nowrap: true },
+      { title: 'Dokumen Pendukung ', key: 'nama_file', nowrap: true },
       { title: 'Action', value: 'actionV2', sortable: false, nowrap: true, popOver: true },
     ],
     value: [],
@@ -172,8 +183,6 @@ const getTtd = async () => {
   }
 }
 
-
-
 const uploadFile = async file => {
   const form = new FormData()
 
@@ -190,7 +199,6 @@ const uploadFile = async file => {
 
   return response
 }
-
 
 const deleteTtd = async item => {
   try {
@@ -353,8 +361,15 @@ const getDokumenLainnya = async () => {
     if (response.code === 2000) {
       dokumenLainnya.value = {
         ...dokumenLainnya.value,
-        value: response.data,
+        value: response.data?.map(i => ({
+          id_reg_dok: i.id_reg_dok,
+          id_reg: i.id_reg,
+          nama_dokumen: i.nama_dokumen,
+          nama_file: removeUUID(i.file_dok),
+        })),
       }
+
+      console.log('dokumen lain nya : ', dokumenLainnya.value)
     }
   }
   catch (error) {

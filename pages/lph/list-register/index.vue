@@ -1,79 +1,81 @@
 <!-- eslint-disable array-callback-return -->
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
 
-const totalItems = ref<number>(0)
-const data = ref<any[]>([])
-const loading = ref<boolean>(false)
-const page = ref<number>(1)
-const size = ref<number>(10)
-const searchQuery = ref<string>('')
+const totalItems = ref<number>(0);
+const data = ref<any[]>([]);
+const loading = ref<boolean>(false);
+const page = ref<number>(1);
+const size = ref<number>(10);
+const searchQuery = ref<string>("");
 
 const tableHeader = [
-  { title: 'No', value: 'no' },
-  { title: 'No. Daftar', value: 'nomor_daftar' },
-  { title: 'Tanggal', value: 'tanggal' },
-  { title: 'Nama PU', value: 'nama_pu' },
-  { title: 'Jenis Daftar', value: 'jenis_daftar' },
-  { title: 'Jenis Produk', value: 'jenis_produk' },
-  { title: 'Jenis Usaha dan Jumlah', value: 'typeAndTotal' },
-  { title: 'Status', value: 'status' },
-  { title: 'Tanggal Dikirim oleh BPJPH', value: 'tgl_dikirim' },
-  { title: 'Action', value: 'action' },
-]
+  { title: "No", value: "no" },
+  { title: "No. Daftar", value: "nomor_daftar" },
+  { title: "Tanggal", value: "tanggal" },
+  { title: "Nama PU", value: "nama_pu" },
+  { title: "Jenis Daftar", value: "jenis_daftar" },
+  { title: "Jenis Produk", value: "jenis_produk" },
+  { title: "Jenis Usaha dan Jumlah", value: "typeAndTotal" },
+  { title: "Status", value: "status" },
+  { title: "Tanggal Dikirim oleh BPJPH", value: "tgl_dikirim" },
+  { title: "Action", value: "action" },
+];
 
 const getChipColor = (status: string) => {
-  if (status === 'Diterima')
-    return 'primary'
-  else if (status === 'Micre')
-    return 'success'
+  if (status === "Diterima") return "primary";
+  else if (status === "Micre") return "success";
 
-  return 'success'
-}
+  return "success";
+};
 
-const loadItem = async (pageNumber: number, sizeData: number, search: string = '') => {
+const loadItem = async (
+  pageNumber: number,
+  sizeData: number,
+  search: string = ""
+) => {
   try {
-    const response: any = await $api('/reguler/lph/list', {
-      method: 'get',
+    const response: any = await $api("/reguler/lph/list", {
+      method: "get",
       params: {
         pageNumber,
         sizeData,
         search,
         url: LPH_LIST_REGISTER_PATH,
       },
-    })
+    });
 
     if (response?.code === 2000) {
       response?.data?.map((item: any) => {
-        item.typeAndTotal = [item?.jenis_usaha, item?.jumlah_produk]
-      })
-      data.value = response.data
-      totalItems.value = response.total_item
+        item.typeAndTotal = [item?.jenis_usaha, item?.jumlah_produk];
+      });
+      data.value = response.data;
+      totalItems.value = response.total_item;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const navigateToDetail = (id: string) => {
-  navigateTo(`/lph/list-register/detail/${id}`)
-}
+  navigateTo(`/lph/list-register/detail/${id}`);
+};
 
 const handleInput = (e: any) => {
-  loading.value = true
-  debounce(loadItem(page.value, size.value, e.target.value), 500)
-  loading.value = false
-}
+  loading.value = true;
+  debounce(loadItem(page.value, size.value, e.target.value), 500);
+  loading.value = false;
+};
 
 onMounted(async () => {
-  loading.value = true
-  await Promise.allSettled([loadItem(page.value, size.value, searchQuery.value), getListOss()])
-  loading.value = false
-})
+  loading.value = true;
+  await Promise.allSettled([
+    loadItem(page.value, size.value, searchQuery.value),
+  ]);
+  loading.value = false;
+});
 </script>
 
 <template>
@@ -114,17 +116,12 @@ onMounted(async () => {
               >
                 <template #no-data>
                   <div class="w-full mt-2">
-                    <div
-                      class="pt-2"
-                      style="justify-items: center"
-                    >
+                    <div class="pt-2" style="justify-items: center">
                       <img
                         src="~/assets/images/empty-data.png"
                         alt="empty_data"
-                      >
-                      <div class="pt-2 pb-2 font-weight-bold">
-                        Data Kosong
-                      </div>
+                      />
+                      <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
                     </div>
                   </div>
                 </template>
@@ -157,10 +154,7 @@ onMounted(async () => {
                   </div>
                 </template>
                 <template #item.typeAndTotal="{ item }">
-                  <div
-                    class="d-flex"
-                    style="min-width: 12rem !important"
-                  >
+                  <div class="d-flex" style="min-width: 12rem !important">
                     <VChip
                       v-for="(status, index) in item.typeAndTotal"
                       :key="index"
@@ -173,12 +167,8 @@ onMounted(async () => {
                   </div>
                 </template>
                 <template #item.status="{ item }">
-                  <div
-                    class="d-flex"
-                    style="min-width: 12rem !important"
-                  >
+                  <div class="d-flex" style="min-width: 12rem !important">
                     <VChip
-                      :key="index"
                       :color="getChipColor(item.status)"
                       label
                       class="ma-1"
