@@ -500,8 +500,7 @@ onMounted(() => {
         >
           Pastikan anda melengkapi isian pengajuan sertifikasi halal dan mengirimkan pengajuan untuk memperoleh fasilitasi sertifikat halal.
         </VAlert>
-        </VCol>
-        </VRow>
+
         <br>
         <VDivider />
         <br>
