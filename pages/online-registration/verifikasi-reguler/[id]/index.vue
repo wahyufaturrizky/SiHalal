@@ -7,6 +7,89 @@ import ProfilPengajuan from "@/components/selfDeclare/verifikasi/ProfilPengajuan
 import SertifikatHalal from "@/components/selfDeclare/verifikasi/SertifikatHalal.vue";
 import SHLNVerfikasiLayout from "@/layouts/SHLNVerfikasiLayout.vue";
 
+interface DetailVerifikatorReguler {
+  aspek_legal: any[];
+  melacak: any[];
+  outlet: Outlet;
+  pabrik: Pabrik;
+  pemeriksaan: Pemeriksaan;
+  penanggung_jawab: PenanggungJawab;
+  pendaftaran: Pendaftaran;
+  penyelia: any[];
+  produk: any[];
+  sertifikasi_halal: SertifikasiHalal;
+  sertifikat: Sertifikat;
+  sidang_fatwa: SidangFatwa;
+}
+
+interface Outlet {
+  alamat: string;
+  nama: string;
+}
+
+interface Pabrik {
+  alamat: string;
+  nama: string;
+}
+
+interface Pemeriksaan {
+  dokumen: string;
+  hasil: string;
+  lph: string;
+  tgl_selesai_lph: string;
+}
+
+interface PenanggungJawab {
+  email_pj: string;
+  nama_pj: string;
+  no_kontak_pj: string;
+}
+
+interface Pendaftaran {
+  channel_pendaftaran: string;
+  fasilitator: string;
+  jenis_pengajuan: string;
+  nomor_daftar: string;
+  status: string;
+  tanggal: any;
+  tempat_pendaftaran: string;
+}
+
+interface SertifikasiHalal {
+  alamat_pu: string;
+  asal_usaha: string;
+  email: string;
+  id_reg: string;
+  jenis_layanan: string;
+  jenis_produk: string;
+  jenis_usaha: string;
+  kode_pos_pu: string;
+  kota_pu: string;
+  modal_usaha: number;
+  nama_pu: string;
+  "nama_pu_sh ": string;
+  negara_pu: string;
+  no_mohon: string;
+  no_telp: string;
+  prov_pu: string;
+  skala_usaha: string;
+  tanggal: string;
+  tgl_daftar: any;
+  tingkat_usaha: string;
+}
+
+interface Sertifikat {
+  no_sertifikat: string;
+  tgl_sertifikat: string;
+}
+
+interface SidangFatwa {
+  dokumen: string;
+  nomor_penetapan: string;
+  penetapan: string;
+  tanggal_penetapan: string;
+}
+
 const panelOpenPengajuan = ref(0);
 const panelOpenPenanggungJawab = ref(0);
 const panelOpenAspekLegal = ref(0);
@@ -43,15 +126,103 @@ const returnDocument = () => {
   closeReturn();
 };
 
-const router = useRouter()
+const router = useRouter();
 const route = useRoute();
-const navigateAction = () => router.push(`${route.path}/detail`)
+const navigateAction = () => router.push(`${route.path}/detail`);
 
+const dataDetail = ref<DetailVerifikatorReguler>({
+  aspek_legal: [],
+  melacak: [],
+  outlet: {
+    alamat: "",
+    nama: "",
+  },
+  pabrik: {
+    alamat: "",
+    nama: "",
+  },
+  pemeriksaan: {
+    dokumen: "",
+    hasil: "",
+    lph: "",
+    tgl_selesai_lph: "",
+  },
+  penanggung_jawab: {
+    email_pj: "",
+    nama_pj: "",
+    no_kontak_pj: "",
+  },
+  pendaftaran: {
+    channel_pendaftaran: "",
+    fasilitator: "",
+    jenis_pengajuan: "",
+    nomor_daftar: "",
+    status: "",
+    tanggal: null,
+    tempat_pendaftaran: "",
+  },
+  penyelia: [],
+  produk: [],
+  sertifikasi_halal: {
+    alamat_pu: "",
+    asal_usaha: "",
+    email: "",
+    id_reg: "",
+    jenis_layanan: "",
+    jenis_produk: "",
+    jenis_usaha: "",
+    kode_pos_pu: "-",
+    kota_pu: "",
+    modal_usaha: 0,
+    nama_pu: " ",
+    "nama_pu_sh ": "",
+    negara_pu: "",
+    no_mohon: "",
+    no_telp: "-",
+    prov_pu: "",
+    skala_usaha: "",
+    tanggal: "",
+    tgl_daftar: null,
+    tingkat_usaha: "",
+  },
+  sertifikat: {
+    no_sertifikat: "",
+    tgl_sertifikat: "",
+  },
+  sidang_fatwa: {
+    dokumen: "",
+    nomor_penetapan: "",
+    penetapan: "",
+    tanggal_penetapan: "",
+  },
+});
+const getDetail = async () => {
+  try {
+    const response = await $api("/reguler/verifikator/detail", {
+      method: "post",
+      body: {
+        id_reg: route.params.id,
+      },
+    });
+    if (response.code != 2000) {
+      navigateTo("/online-registration/verifikasi-reguler");
+      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      return;
+    }
+    dataDetail.value = response.data;
+  } catch {
+    navigateTo("/online-registration/verifikasi-reguler");
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    return;
+  }
+};
+onMounted(async () => {
+  await getDetail();
+});
 </script>
 
 <template>
   <SHLNVerfikasiLayout
-    v-if="!loading && !loadingTracking && !loadingDetailRegistration"
   >
     <template #pageTitle>
       <VRow>
@@ -59,17 +230,13 @@ const navigateAction = () => router.push(`${route.path}/detail`)
           ><h2>Verifikasi Dokumen Pengajuan: Detail</h2></VCol
         >
         <VCol class="d-flex justify-end ga-4">
-          <VBtn
-            text="Pengembalian"
-            color="#e1442e"
-            @click="openConfirmation"
-          />
+          <VBtn text="Pengembalian" color="#e1442e" @click="openConfirmation" />
           <VBtn
             variant="outlined"
             text="Cek Detail"
             color="primary"
             @click="navigateAction"
-            />
+          />
           <VBtn text="Verifikasi" @click="openReturn" />
         </VCol>
       </VRow>
@@ -86,7 +253,7 @@ const navigateAction = () => router.push(`${route.path}/detail`)
               </VExpansionPanelTitle>
 
               <VExpansionPanelText>
-                <ProfilPengajuan :data="data" />
+                <ProfilPengajuan :data="dataDetail.sertifikasi_halal" />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -100,7 +267,7 @@ const navigateAction = () => router.push(`${route.path}/detail`)
                 <h2>Penanggung Jawab</h2>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <PenanggungJawabUsaha :data="data" />
+                <PenanggungJawabUsaha :data="dataDetail.penanggung_jawab" />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -229,7 +396,7 @@ const navigateAction = () => router.push(`${route.path}/detail`)
                 <h2>Pendaftaran</h2>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <Pendaftaran :data="dataDetailRegistration" />
+                <Pendaftaran :data="dataDetail.pendaftaran" />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -243,7 +410,7 @@ const navigateAction = () => router.push(`${route.path}/detail`)
                 <h2>Sertifikat Halal</h2>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <SertifikatHalal :data="dataDetailRegistration" />
+                <SertifikatHalal :data="dataDetail.sertifikat" />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -257,7 +424,7 @@ const navigateAction = () => router.push(`${route.path}/detail`)
                 <h2>Pemeriksaan</h2>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <RegisterDataShln :data="dataDetailRegistration" />
+                <Pemeriksaan :data="dataDetail.pemeriksaan" />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -271,7 +438,7 @@ const navigateAction = () => router.push(`${route.path}/detail`)
                 <h2>Sidang Fatwa</h2>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <SidangFatwa :data="dataDetailRegistration" />
+                <SidangFatwa :data="dataDetail.sidang_fatwa" />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -283,24 +450,9 @@ const navigateAction = () => router.push(`${route.path}/detail`)
           <VCard>
             <VCardTitle><h3>Melacak</h3></VCardTitle>
             <VCardText>
-              <Melacak :data="dataTracking" />
+              <Melacak :data="dataDetail.melacak" />
             </VCardText>
           </VCard>
-        </VCol>
-      </VRow>
-
-      <VRow>
-        <VCol :cols="12">
-          <VExpansionPanels v-model="openPanelRegisterData">
-            <VExpansionPanel>
-              <VExpansionPanelTitle>
-                <h2>Pengawasan</h2>
-              </VExpansionPanelTitle>
-              <VExpansionPanelText>
-                <Pengawasan :data="dataDetailRegistration" />
-              </VExpansionPanelText>
-            </VExpansionPanel>
-          </VExpansionPanels>
         </VCol>
       </VRow>
       <VDialog v-model="showConfirmation" max-width="600px">
