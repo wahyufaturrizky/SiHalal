@@ -429,24 +429,13 @@ onMounted(() => {
                   @update:model-value="onSelectFasilitator"
                 />
               </VCol>
+            </VRow>
 
-              <VSpacer
-                v-if="isFasilitator"
-                style="
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-"
-              >
-                <p>Atau</p>
-              </VSpacer>
-              <VCol
-                v-if="isFasilitator"
-                cols="5"
-              >
+            <VRow v-if="isFasilitator">
+              <VCol cols="5">
                 <VTextField
                   v-model="querySearch"
-                  placeholder="Cari Fasilitator"
+                  placeholder="Masukan Kode Fasilitasi"
                   append-inner-icon="mdi-magnify"
                   density="compact"
                   :rules="[requiredValidator]"
@@ -476,6 +465,7 @@ onMounted(() => {
             </VAlert>
 
             <VAlert
+              v-if="!isKodeFound"
               type="warning"
               variant="tonal"
               color="#652672"
@@ -484,6 +474,16 @@ onMounted(() => {
               Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada
               fasilitator sebagai kode untuk mendaftarkan sertifikasi halal
               gratis
+            </VAlert>
+
+            <VAlert
+              v-if="isKodeFound"
+              type="warning"
+              variant="tonal"
+              color="#652672"
+              class="mt-5"
+            >
+              Pastikan anda melengkapi isian pengajuan sertifikasi halal dan mengirimkan pengajuan untuk memperoleh fasilitasi sertifikat halal.
             </VAlert>
           </VCol>
         </VRow>
