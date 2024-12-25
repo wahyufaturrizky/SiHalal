@@ -86,10 +86,10 @@ const handleReturn = async () => {
 const handleSend = async () => {
   loadingModal.value = true;
   try {
-    const response: any = await $api(`/reguler/lph/return`, {
-      method: "post",
-      data: {
-        keterangan: inputValueReturn.value,
+    const response: any = await $api(`/reguler/lph/kirim`, {
+      method: "put",
+      body: {
+        keterangan: "Kirin",
         id_reg: id,
       },
     });
