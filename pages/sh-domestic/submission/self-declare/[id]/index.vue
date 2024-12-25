@@ -387,13 +387,25 @@
               </VCard>
               <div>
                 <VBtn
-                  text="Download SK Penyelia"
                   append-icon="fa-download"
                   variant="outlined"
                   class="float-end mt-6"
-                  target="_blank"
-                  :download="submissionDetail.url_sample_penyelia_sk"
-                />
+                >
+                  <template #default>
+                    <NuxtLink
+                      rel="noopener"
+                      :to="submissionDetail.url_sample_penyelia_sk"
+                      target="_blank"
+                      >Download SK Penyelia</NuxtLink
+                    >
+                    <!-- <a
+                      :href="submissionDetail.url_sample_penyelia_sk"
+                      target="_blank"
+                      rel="noopener"
+                      >Download SK Penyelia</a
+                    > -->
+                  </template>
+                </VBtn>
               </div>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -1300,6 +1312,10 @@ const handleDownloadForm = async (fileName: string) => {
 };
 const handleDownload = async (productId: string) => {
   return await downloadDocument(productId);
+};
+
+const handleOpenBlankWindow = (fileUri: string) => {
+  window.open(fileUri, "_blank", "noopener,noreferrer");
 };
 
 const handleSentSubmission = async () => {
