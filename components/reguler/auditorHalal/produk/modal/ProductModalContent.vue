@@ -9,6 +9,14 @@ const props = defineProps({
     type: Array,
     required: false,
   },
+  start: {
+    type: Number,
+    required: false,
+  },
+  end: {
+    type: Number,
+    required: false,
+  },
 })
 
 const tableHeader = [
@@ -47,7 +55,10 @@ const selected = ref([]);
       <VCol cols="6">
         <VItemGroup>
           <VLabel>Nomor</VLabel>
-          <VSelect placeholder="Pilih Nomor"></VSelect>
+          <VSelect
+            v-model="props?.start"
+            placeholder="Pilih Nomor"
+          />
         </VItemGroup>
       </VCol>
       <VCol cols="6">
