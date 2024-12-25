@@ -6,6 +6,7 @@ const route = useRoute();
 const id = (route?.params as any)?.id;
 
 const dialogToggle = ref(false);
+const loadingModal = ref(false);
 const titleDialog = ref("");
 const labelSaveBtn = ref("");
 const inputValueReturn = ref("");
@@ -32,12 +33,6 @@ const itemPerPageAuditor = ref(10);
 const pageAuditor = ref(1);
 const totalItemsAuditor = ref(0);
 
-const pic = ref({
-  name: "Sumayah",
-  phoneNumber: "0899999999",
-  email: "rasarasa@gmail.com",
-});
-
 const aspectLegalHeader = [
   { title: "No.", key: "no", nowrap: true },
   { title: "Nama Produk", key: "nama_produk", nowrap: true },
@@ -60,6 +55,58 @@ const toggle = (type: string) => {
   titleDialog.value =
     type === "add" ? "Mengirim Pengajuan" : "Pengembalian Dokumen";
   labelSaveBtn.value = type === "add" ? "Ya, Kirim" : "Kembalikan";
+};
+
+const handleReturn = async () => {
+  loadingModal.value = true;
+  try {
+    const response: any = await $api(`/reguler/lph/return`, {
+      method: "put",
+      body: {
+        keterangan: inputValueReturn.value,
+        id_reg: id,
+      },
+    });
+
+    if (response.code === 2000) {
+      loadingModal.value = false;
+      useSnackbar().sendSnackbar("Berhasil Mengembalikan", "success");
+      dialogToggle.value = false;
+    } else {
+      loadingModal.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    loadingModal.value = false;
+
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const handleSend = async () => {
+  loadingModal.value = true;
+  try {
+    const response: any = await $api(`/reguler/lph/return`, {
+      method: "post",
+      data: {
+        keterangan: inputValueReturn.value,
+        id_reg: id,
+      },
+    });
+
+    if (response.code === 2000) {
+      loadingModal.value = false;
+      useSnackbar().sendSnackbar("Berhasil Mengembalikan", "success");
+      dialogToggle.value = false;
+    } else {
+      loadingModal.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    loadingModal.value = false;
+
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
 };
 
 const loadItemById = async () => {
@@ -505,8 +552,12 @@ onMounted(async () => {
     :title="titleDialog"
     :is-open="dialogToggle"
     :toggle="() => (dialogToggle = false)"
-    :on-save="() => (dialogToggle = false)"
+    :on-save="
+      () =>
+        titleDialog === 'Mengirim Pengajuan' ? handleSend() : handleReturn()
+    "
     :label-save-btn="labelSaveBtn"
+    :loadingmodal="loadingModal"
   >
     <template #content>
       <div v-if="titleDialog === 'Mengirim Pengajuan'">
