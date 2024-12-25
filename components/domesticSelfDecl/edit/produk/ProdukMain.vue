@@ -17,7 +17,7 @@ const tableHeader: any[] = [
 const productData = ref([]);
 
 const route = useRoute<"">();
-const submissionId = route.params?.id;
+const submissionId = route.params?.id as string;
 const { refresh } = await useAsyncData("list-product", async () => {
   return handleListProduct();
 });
@@ -44,7 +44,7 @@ const handleListProduct = async () => {
 
 const handleSubmit = async (payload: any) => {
   if (modalUse.value === "CREATE") await handleAddProduct(payload);
-  if (modalUse.value === "UPDATE") await handleUpdateProduct(payload);
+  // if (modalUse.value === "UPDATE") await handleUpdateProduct(payload);
 };
 const handleAddProduct = async (payload: any) => {
   try {
@@ -70,7 +70,7 @@ const handleAddProduct = async (payload: any) => {
   }
 };
 
-const handleUpdateProduct = async (payload: any) => {
+const handleUpdateProduct = async (payload: any, productId: string) => {
   try {
     const response: any = await $api(
       `/self-declare/business-actor/product/update`,
@@ -79,7 +79,7 @@ const handleUpdateProduct = async (payload: any) => {
         body: payload,
         query: {
           id_reg: submissionId,
-          product_id: selectedProduct.value,
+          product_id: productId,
         },
       }
     );
@@ -142,6 +142,9 @@ const handleOpenModal = async (type: string, id?: string) => {
   if (type === "DELETE") {
     isDeleteModalOpen.value = true;
   } else {
+    if (type === "EDIT") {
+      console.log("data on edit = ", detailProduct.value);
+    }
     isFormModalOpen.value = true;
   }
 };
@@ -241,8 +244,13 @@ onMounted(() => {
         <template #item.action="{ item }: any">
           <VMenu>
             <template #activator="{ props }">
-              <VIcon
+              <!-- <VIcon
                 @click="handleDetailProduct(item.id)"
+                icon="fa-ellipsis-v"
+                color="primary"
+                v-bind="props"
+              ></VIcon> -->
+              <VIcon
                 icon="fa-ellipsis-v"
                 color="primary"
                 v-bind="props"
@@ -250,16 +258,23 @@ onMounted(() => {
             </template>
 
             <VList>
+              <VListItem>
+                <UbahProduk
+                  :submission-id="submissionId"
+                  :id-produk="item.id"
+                  @confirm-edit="handleUpdateProduct"
+                ></UbahProduk>
+              </VListItem>
               <InputBahan
                 :product-name="detailProduct.nama"
                 @submit="handleAddIngredient"
               />
-              <VListItem
+              <!-- <VListItem
                 prepend-icon="mdi-pencil"
                 title="Ubah"
                 class="cursor-pointer"
                 @click="handleOpenModal('EDIT', item.id)"
-              />
+              /> -->
               <VListItem @click="handleOpenModal('DELETE', item.id)">
                 <template #prepend>
                   <VIcon

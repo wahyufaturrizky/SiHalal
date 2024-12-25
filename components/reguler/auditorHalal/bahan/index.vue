@@ -100,9 +100,9 @@ const payNote = ref(
       { title: 'No.', key: 'no', nowrap: true },
       { title: 'Nama', key: 'nama', nowrap: true },
       { title: 'Tipe Penambahan', key: 'addType', nowrap: true },
-      { title: 'Jumlah', key: 'materialName', nowrap: true },
-      { title: 'Tanggal Pembelian', key: 'materialName', nowrap: true },
-      { title: 'File Dokumen', key: 'materialName', nowrap: true },
+      { title: 'Jumlah', key: 'jumlah', nowrap: true },
+      { title: 'Tanggal Pembelian', key: 'tgl_pembelian', nowrap: true },
+      { title: 'File Dokumen', key: 'FileDok', nowrap: true },
       { title: 'Action', value: 'actionEdit', sortable: false, nowrap: true, popOver: true },
     ],
     value: [],
@@ -115,9 +115,9 @@ const materialCheck = ref(
       { title: 'No.', key: 'no', nowrap: true },
       { title: 'Nama', key: 'nama', nowrap: true },
       { title: 'Tipe Penambahan', key: 'addType', nowrap: true },
-      { title: 'Lokasi', key: 'location', nowrap: true },
-      { title: 'Tanggal Pembelian', key: 'buyData', nowrap: true },
-      { title: 'File Dokumen', key: 'file', nowrap: true },
+      { title: 'Lokasi', key: 'lokasi', nowrap: true },
+      { title: 'Tanggal Pembelian', key: 'tgl_pembelian', nowrap: true },
+      { title: 'File Dokumen', key: 'FileDok', nowrap: true },
       { title: 'Action', value: 'actionEdit', sortable: false, nowrap: true, popOver: true },
     ],
     value: [],
@@ -200,7 +200,7 @@ const getListCatatan = async () => {
     if (response.code === 2000) {
       payNote.value = {
         ...payNote.value,
-        value: response.data,
+        value: response.data || [],
       }
 
       return response;
@@ -228,7 +228,7 @@ const getListFormulir = async () => {
     if (response.code === 2000) {
       materialCheck.value = {
         ...materialCheck.value,
-        value: response.data
+        value: response.data || []
       }
 
       return response;
@@ -253,7 +253,7 @@ const loadItemProductClasifications = async () => {
     );
 
     if (response.code === 2000) {
-      dataProductClasification.value = response.data;
+      dataProductClasification.value = response.data || [];
 
       return response;
     } else {
@@ -315,7 +315,41 @@ const addProduct = async () => {
       formData.value = {
         kode_rincian: '',
         nama_produk: '',
+        foto_produk: uploadedFile.value.file || null,
+      }
+      uploadedFile.value = {
+        name: '',
+        file: '',
+      }
+      addDialog.value = false
+      reRender.value = !reRender.value
+      useSnackbar().sendSnackbar('Sukses menambah data', 'success')
+    }
+  }
+  else if (titleDialog.value === 'Ubah Nama Produk') {
+    const response: any = await $api(
+      '/reguler/pelaku-usaha/tab-bahan/products/update',
+        {
+        method: 'put',
+        params: { id_reg: id, product_id: itemDetail.value.id },
+        body: {
+          kode_rincian: formData.value.kode_rincian || itemDetail.value.koderincian,
+          nama_produk: itemDetail.value.nama,
+          foto_produk: formData.value.foto_produk ? formData.value.foto_produk : uploadedFile.value.file,
+          merek: itemDetail.value.merek,
+        },
+      },
+    )
+
+    if (response.code === 2000) {
+      formData.value = {
+        kode_rincian: '',
+        nama_produk: '',
         foto_produk: null,
+      }
+      uploadedFile.value = {
+        name: '',
+        file: '',
       }
       addDialog.value = false
       reRender.value = !reRender.value
@@ -345,6 +379,8 @@ const addProduct = async () => {
   }
   else if (titleDialog.value === 'Ubah Pembelian Bahan') {
     let body: any = {}
+    let url = ''
+    let method = ''
     if (tabBahan.value === 0) {
       body = {
         id_reg_bahan: itemDetail.value.id_reg_bahan,
@@ -364,11 +400,20 @@ const addProduct = async () => {
       }
     }
 
+    if (itemDetail.value.id_reg_bahan_pembelian !== '') {
+      method = 'put'
+      url = '/reguler/pelaku-usaha/tab-bahan/catatan/update'
+    }
+    else {
+      method = 'post'
+      url = '/reguler/pelaku-usaha/tab-bahan/catatan/create'
+    }
+
     const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-bahan/catatan/update',
+      url,
       {
-        method: 'put',
-        params: { id_reg: id, product_id: itemDetail.value?.id_reg_bahan },
+        method,
+        params: { id_reg: id, product_id: itemDetail.value?.id_reg_bahan_pembelian },
         body,
       },
     )
@@ -387,11 +432,13 @@ const addProduct = async () => {
   }
   else if (titleDialog.value === 'Ubah Formulir Pemeriksaan Bahan') {
     let body: any = {}
+    let url = ''
+    let method = ''
     if (tabBahan.value === 0) {
       body = {
         id_reg_bahan: itemDetail.value.id_reg_bahan,
         nama: itemDetail.value.nama,
-        jumlah: +itemDetail.value.jumlah,
+        lokasi: itemDetail.value.lokasi,
         tgl_pembelian: formatToISOString(itemDetail.value.tgl_pembelian),
         file_dok: formData.value.foto_produk,
       }
@@ -400,17 +447,27 @@ const addProduct = async () => {
       body = {
         id_reg_bahan: itemDetail.value.id_reg_bahan,
         nama: itemDetail.value.nama,
-        jumlah: +itemDetail.value.jumlah,
+        lokasi: itemDetail.value.lokasi,
         tgl_pembelian: formatToISOString(itemDetail.value.tgl_pembelian),
         file_dok: itemDetail.value.FileDok || '',
       }
     }
 
+
+    if (itemDetail.value.id_reg_bahan_cek !== '') {
+      method = 'put'
+      url = '/reguler/pelaku-usaha/tab-bahan/formulir/update'
+    }
+    else {
+      method = 'post'
+      url = '/reguler/pelaku-usaha/tab-bahan/formulir/create'
+    }
+
     const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-bahan/formulir/update',
+      url,
       {
-        method: 'put',
-        params: { id_reg: id, product_id: itemDetail.value?.id_reg_bahan },
+        method,
+        params: { id_reg: id, product_id: itemDetail.value?.id_reg_bahan_cek },
         body,
       },
     )
@@ -429,7 +486,7 @@ const addProduct = async () => {
   }
 }
 
-const getDetailProduk = async (productId: string) => {
+const getDetailProduk = async (productId: string, type: string) => {
   const response: any = await $api(
     '/reguler/pelaku-usaha/tab-bahan/products/detail',
     {
@@ -439,10 +496,29 @@ const getDetailProduk = async (productId: string) => {
   )
 
   if (response.code === 2000) {
-    itemDetail.value = response.data
+    itemDetail.value = response.data || {}
+    uploadedFile.value = {
+      name: response?.data?.foto_produk,
+      file: response?.data?.foto_produk,
+    }
     addDialog.value = true
-    titleDialog.value = 'Ubah Nama Produk'
-    labelSaveBtn.value = 'Ubah'
+    titleDialog.value = type === 'edit' ? 'Ubah Nama Produk' : 'Detail Nama Produk'
+    labelSaveBtn.value = type === 'edit' ? 'Ubah' : 'Detail'
+  }
+}
+
+const deleteIngredient = async (productId: string) => {
+  const response: any = await $api(
+    '/reguler/pelaku-usaha/tab-bahan/ingredients/remove',
+    {
+      method: 'delete',
+      params: { id_reg: id, product_id: productId },
+    },
+  )
+
+  if (response.code === 2000) {
+    reRender.value = !reRender.value
+    useSnackbar().sendSnackbar('Sukses menghapus data', 'success')
   }
 }
 
@@ -476,7 +552,7 @@ const getListIngredients = async () => {
     if (response.code === 2000) {
       materialName.value = {
         ...materialName.value,
-        value: response.data,
+        value: response.data || [],
       }
       reRender.value = !reRender.value
     }
@@ -601,7 +677,7 @@ onMounted(async () => {
           <div>
             <label>Kualitas Produk</label>
             <VSelect
-              v-model="itemDetail.koderincian"
+              v-model="itemDetail.klasifikasi"
               outlined
               placeholder="pilih kualitas produk"
               density="compact"
@@ -614,7 +690,7 @@ onMounted(async () => {
             <br>
             <label>Rincian Produk</label>
             <VSelect
-              v-model="itemDetail.koderincian"
+              v-model="itemDetail.koderincian_desc"
               outlined
               placeholder="pilih rincian produk"
               density="compact"
@@ -653,6 +729,72 @@ onMounted(async () => {
                     />
                   </template>
                 </VTextField>
+                <VFileInput
+                  v-else
+                  :model-value="uploadedFile.file"
+                  class="custom-file-input"
+                  density="compact"
+                  rounded="xl"
+                  label="No file choosen"
+                  max-width="400"
+                  prepend-icon=""
+                  @change="handleUploadFile"
+                >
+                  <template #append-inner>
+                    <VBtn rounded="s-0 e-xl" text="Choose" />
+                  </template>
+                </VFileInput>
+              </VCol>
+            </div>
+          </div>
+        </div>
+        <div v-else-if="titleDialog === 'Detail Nama Produk'">
+          <div>
+            <label>Kualitas Produk</label>
+            <VSelect
+              v-model="itemDetail.klasifikasi"
+              outlined
+              placeholder="pilih kualitas produk"
+              density="compact"
+              :loading="loadingRincian"
+              item-title="name"
+              item-value="code"
+              :items="dataProductClasification"
+              @update:modelValue="loadItemProductRincian"
+            />
+            <br>
+            <label>Rincian Produk</label>
+            <VSelect
+              v-model="itemDetail.koderincian_desc"
+              outlined
+              placeholder="pilih rincian produk"
+              density="compact"
+              :loading="loadingRincian"
+              item-title="name"
+              item-value="code"
+              :items="listRincian"
+            />
+            <br>
+            <label>Nama Produk</label>
+            <VTextField
+              v-model="itemDetail.nama"
+              class="-mt-10"
+              density="compact"
+              placeholder="Isi Nama Produk"
+            />
+            <div class="d-flex justify-space-between mt-5">
+              <label>
+                Upload Foto
+              </label>
+              <VCol cols="6">
+                <VTextField
+                  v-if="uploadedFile.file"
+                  :model-value="uploadedFile.name"
+                  density="compact"
+                  placeholder="No file choosen"
+                  rounded="xl"
+                  max-width="400"
+                />
                 <VFileInput
                   v-else
                   :model-value="uploadedFile.file"
@@ -1130,15 +1272,6 @@ onMounted(async () => {
                 />
               </div>
               <div class="mt-5">
-                <label>Jumlah</label>
-                <VTextField
-                  v-model="itemDetail.jumlah"
-                  class="mt-2"
-                  density="compact"
-                  placeholder="Isi Nama"
-                />
-              </div>
-              <div class="mt-5">
                 <label>Tanggal Pembelian</label>
                 <VueDatePicker
                   id="tanggal_daftar"
@@ -1159,6 +1292,7 @@ onMounted(async () => {
       :on-add="() => toggleAdd('Data Bahan')"
       :on-edit="(el: any) => toggleEdit(el, 'Data Bahan')"
       :on-detail="(el: any) => toggleDetail(el, 'Data Bahan')"
+      :on-delete="(item: any) => deleteIngredient(item.id)"
       :data="materialName"
       :refresh="refresh"
       title="Daftar Nama Bahan dan Kemasan"
@@ -1168,9 +1302,9 @@ onMounted(async () => {
     <TableData
       :on-submit="() => confirmSaveDialog = true"
       :on-add="() => toggleAdd('Nama Produk')"
-      :on-edit="(item: any) => getDetailProduk(item.id)"
+      :on-edit="(item: any) => getDetailProduk(item.id, 'edit')"
       :on-delete="(item: any) => deleteProduct(item.id)"
-      :on-detail="(el: any) => toggleDetail(el, 'Nama Produk')"
+      :on-detail="(el: any) => getDetailProduk(el.id, 'detail')"
       :data="productName"
       :re-render="reRender"
       title="Daftar Nama Produk"

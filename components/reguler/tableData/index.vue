@@ -1,9 +1,5 @@
 <script setup lang="ts">
 const props = defineProps({
-  id: {
-    type: String,
-    required: false,
-  },
   onSubmit: {
     type: Function,
     default: () => {},
@@ -130,7 +126,24 @@ const handleDownload = async (item: any) => {
     const response = await $api('/shln/submission/document/download', {
       method: 'post',
       body: {
-        filename: item.foto,
+        filename: item,
+      },
+    })
+
+    if (response.url)
+      window.open(response.url, '_blank', 'noopener,noreferrer')
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
+const handleDownloadV2 = async (filename: string) => {
+  try {
+    const response = await $api('/shln/submission/document/download', {
+      method: 'post',
+      body: {
+        filename: filename,
       },
     })
 
@@ -171,6 +184,28 @@ const editDaftarBahan = async () => {
     getListIngredients()
     dialogEdit.value = false
   }
+}
+
+const deleteIngredient = async (productId: string) => {
+  const response: any = await $api(
+    '/reguler/pelaku-usaha/tab-bahan/ingredients/remove',
+    {
+      method: 'delete',
+      params: { id_reg: id, product_id: productId },
+    },
+  )
+
+  if (response.code === 2000) {
+    getListIngredients()
+    useSnackbar().sendSnackbar('Sukses menghapus data', 'success')
+  }
+}
+
+const handleDelete = (item: any) => {
+  if (props.title === 'Daftar Nama Bahan dan Kemasan')
+    deleteIngredient(item?.id)
+  else
+    props.onDelete(item)
 }
 
 const detailClicked = (item: any) => {
@@ -281,6 +316,35 @@ watch(() => props.reRender, async () => {
           <template #item.productName="{ item }">
             <div>
               {{ item.productName }}
+            </div>
+          </template>
+          <template #item.tgl_pembelian="{ item }">
+            <div>
+              {{ formatDateIntl(new Date(item.tgl_pembelian)) }}
+            </div>
+          </template>
+          <template #item.tanggal_produksi="{ item }">
+            <div v-if="item.tanggal_produksi">
+              {{ formatDateIntl(new Date(item.tanggal_produksi)) }}
+            </div>
+            <div v-else>
+              -
+            </div>
+          </template>
+          <template #item.tanggal_kadaluarsa="{ item }">
+            <div v-if="item.tanggal_kadaluarsa">
+              {{ formatDateIntl(new Date(item.tanggal_kadaluarsa)) }}
+            </div>
+            <div v-else>
+              -
+            </div>
+          </template>
+          <template #item.tanggal="{ item }">
+            <div v-if="item.tanggal">
+              {{ formatDateIntl(new Date(item.tanggal)) }}
+            </div>
+            <div v-else>
+              -
             </div>
           </template>
           <template #item.materialTypeLong="{ item }">
@@ -410,7 +474,7 @@ watch(() => props.reRender, async () => {
                       title="Hapus Bahan"
                       button-text="Ya, Hapus"
                       :content="props?.title"
-                      :on-delete="() => props?.onDelete(item)"
+                      :on-delete="() => handleDelete(item)"
                       with-label-header="true"
                     >
                       <template #contentDelete>
@@ -427,7 +491,119 @@ watch(() => props.reRender, async () => {
               v-if="item.foto"
               class="d-flex gap-3 cursor-pointer"
               style="margin-left: -10px"
-              @click="() => handleDownload(item)"
+              @click="() => handleDownload(item.foto)"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>-</label>
+            </div>
+          </template>
+          <template #item.file_dok="{ item }">
+            <Vbtn
+              v-if="item.file_dok"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-left: -10px"
+              @click="() => handleDownload(item.file_dok)"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>-</label>
+            </div>
+          </template>
+          <template #item.file_skph="{ item }">
+            <Vbtn
+              v-if="item.file_skph"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-left: -10px"
+              @click="() => handleDownload(item.file_skph)"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>-</label>
+            </div>
+          </template>
+          <template #item.file_spph="{ item }">
+            <Vbtn
+              v-if="item.file_spph"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-left: -10px"
+              @click="() => handleDownload(item.file_spph)"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>-</label>
+            </div>
+          </template>
+          <template #item.file_ktp="{ item }">
+            <Vbtn
+              v-if="item.file_ktp"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-left: -10px"
+              @click="() => handleDownload(item.file_ktp)"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>-</label>
+            </div>
+          </template>
+          <template #item.file_layout="{ item }">
+            <Vbtn
+              v-if="item.file_layout"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-left: -10px"
+              @click="() => handleDownload(item.file_layout)"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>-</label>
+            </div>
+          </template>
+          <template #item.FileDok="{ item }">
+            <Vbtn
+              v-if="item.FileDok"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-left: -10px"
+              @click="() => handleDownload(item.FileDok)"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>-</label>
+            </div>
+          </template>
+          <template #item.foto2="{ item }">
+            <Vbtn
+              v-if="item.id_reg"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-left: -10px"
+              @click="() => handleDownloadV2(item)"
             >
               <div>
                 <VIcon end icon="ri-file-3-line" color="#652672" />
@@ -437,6 +613,81 @@ watch(() => props.reRender, async () => {
             <div v-else>
               <label>Kosong</label>
             </div>
+          </template>
+          <template #item.foto3="{ item }">
+            <Vbtn
+              v-if="item.file_dok"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-left: -10px"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" @click="() => handleDownloadV2(item.file_dok)"/>
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>Kosong</label>
+            </div>
+          </template>
+
+          <template #item.foto4="{ item }">
+            <Vbtn
+              v-if="item.ttd_pj"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-left: -10px"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" @click="() => handleDownloadV2(item.ttd_pj)"/>
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>Kosong</label>
+            </div>
+          </template>
+
+          <template #item.foto5="{ item }">
+            <Vbtn
+              v-if="item.ttd_ph"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-left: -10px"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" @click="() => handleDownloadV2(item.ttd_ph)"/>
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>Kosong</label>
+            </div>
+          </template>
+
+          <template #item.actionV2="{ item }">
+            <v-btn color="primary" variant="plain">
+              <VIcon>mdi-dots-vertical</VIcon>
+              <VMenu activator="parent" :close-on-content-click="true">
+                <VCard>
+                  <VBtn
+                    variant="text"
+                    color=primary
+                    prepend-icon="ri-pencil-line"
+                    @click="() => props.onEdit(item)"
+                    block
+                  >
+                    Edit
+                  </VBtn>
+                  <VBtn
+                    variant="text"
+                    color="error"
+                    prepend-icon="ri-delete-bin-6-line"
+                    @click="() => props.onDelete(item)"
+                    block
+                  >
+                    Hapus
+                  </VBtn>
+                </VCard>
+              </VMenu>
+            </v-btn>
           </template>
         </VDataTable>
       </VRow>

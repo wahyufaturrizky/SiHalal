@@ -16,7 +16,7 @@ export default defineEventHandler(async (event: any) => {
   }
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/business-actor/${id}/pabrik`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/business-actor/${id}/ttdlist`,
     {
       method: 'get',
       headers: { Authorization: authorizationHeader },

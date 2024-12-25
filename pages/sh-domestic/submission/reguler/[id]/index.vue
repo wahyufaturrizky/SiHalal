@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { statusItemFacilitator } from '@/server/utils/statusFasilitator'
 
 const router = useRouter()
 const route = useRoute()
@@ -9,6 +10,7 @@ const panelPic = ref([0, 1])
 const panelAspectLegal = ref([0, 1])
 const panelFactory = ref([0, 1])
 const panelOutlet = ref([0, 1])
+const panelProduk = ref([0, 1])
 const panelSupervisor = ref([0, 1])
 const panelDownloadFormulir = ref([0, 1])
 const panelTracking = ref([0, 1])
@@ -28,8 +30,24 @@ const aspectLegalHeader = [
 
 const factoryHeader = [
   { title: 'No.', key: 'no', nowrap: true },
-  { title: 'Nama', key: 'priceDetail', nowrap: true },
-  { title: 'Alamat', key: 'total', nowrap: true },
+  { title: 'Nama', key: 'nama_pabrik', nowrap: true },
+  { title: 'Alamat', key: 'alamat_pabrik', nowrap: true },
+  { title: 'Status', key: 'status_milik', nowrap: true },
+
+]
+
+const outletHeader = [
+  { title: 'No.', key: 'no', nowrap: true },
+  { title: 'Nama', key: 'nama_outlet', nowrap: true },
+  { title: 'Alamat', key: 'alamat_outlet', nowrap: true },
+  { title: 'Status', key: 'status_milik', nowrap: true },
+
+]
+
+const produkHeader = [
+  { title: 'No.', key: 'no', nowrap: true },
+  { title: 'Nama Produk', key: 'nama_produk', nowrap: true },
+  { title: 'Publikasi', key: 'reg_publish', nowrap: true }
 ]
 
 const penyeliaHalalHeaders = [
@@ -220,7 +238,7 @@ onMounted(async () => {
           </VRow>
         </VCol>
       </VRow>
-  
+
       <VRow class="d-flex justify-space-between">
         <VCol cols="8">
           <VExpansionPanels v-model="panelSubmission">
@@ -440,7 +458,7 @@ onMounted(async () => {
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
-  
+
           <br>
           <VExpansionPanels v-model="panelPic">
             <VExpansionPanel class="pa-4">
@@ -475,7 +493,7 @@ onMounted(async () => {
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
-  
+
           <br>
           <VExpansionPanels v-model="panelAspectLegal">
             <VExpansionPanel class="pa-4">
@@ -508,7 +526,7 @@ onMounted(async () => {
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
-  
+
           <br>
           <VExpansionPanels v-model="panelFactory">
             <VExpansionPanel class="pa-4">
@@ -521,11 +539,17 @@ onMounted(async () => {
                   :items="data?.pabrik"
                   hide-default-footer
                   class="border rounded"
-                />
+                >
+                  <template #item.no="{ index }">
+                    <div class="mw-170">
+                      {{ index + 1 }}
+                    </div>
+                  </template>
+                </VDataTable>
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
-  
+
           <br>
           <VExpansionPanels v-model="panelOutlet">
             <VExpansionPanel class="pa-4">
@@ -537,23 +561,35 @@ onMounted(async () => {
                   class="border rounded w-100"
                   style="justify-items: center"
                 >
-                  <div
-                    v-if="data?.outlet?.length === 0"
-                    class="pt-2"
+                  <!--                  <div -->
+                  <!--                    v-if="data?.outlet?.length === 0" -->
+                  <!--                    class="pt-2" -->
+                  <!--                  > -->
+                  <!--                    <img -->
+                  <!--                      src="~/assets/images/empty-data.png" -->
+                  <!--                      alt="empty_data" -->
+                  <!--                    > -->
+                  <!--                    <div class="pt-2 pb-2 font-weight-bold"> -->
+                  <!--                      Data Kosong -->
+                  <!--                    </div> -->
+                  <!--                  </div> -->
+                  <VDataTable
+                    :headers="outletHeader"
+                    :items="data?.outlet"
+                    hide-default-footer
+                    class="border rounded"
                   >
-                    <img
-                      src="~/assets/images/empty-data.png"
-                      alt="empty_data"
-                    >
-                    <div class="pt-2 pb-2 font-weight-bold">
-                      Data Kosong
-                    </div>
-                  </div>
+                    <template #item.no="{ index }">
+                      <div class="mw-170">
+                        {{ index + 1 }}
+                      </div>
+                    </template>
+                  </VDataTable>
                 </div>
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
-  
+
           <br>
           <VExpansionPanels v-model="panelSupervisor">
             <VExpansionPanel class="pa-4">
@@ -566,34 +602,52 @@ onMounted(async () => {
                   :items="data?.penyelia_halal"
                   hide-default-footer
                   class="border rounded"
-                />
+                >
+                  <template #item.no="{ index }">
+                    <div class="mw-170">
+                      {{ index + 1 }}
+                    </div>
+                  </template>
+                </VDataTable>
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
           <br>
-          <VExpansionPanels v-model="panelOutlet">
+          <VExpansionPanels v-model="panelProduk">
             <VExpansionPanel class="pa-4">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
                 Daftar Nama Produk
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <div
-                  class="border rounded w-100"
-                  style="justify-items: center"
+                <VDataTable
+                  :headers="produkHeader"
+                  :items="data?.produk"
+                  hide-default-footer
+                  class="border rounded"
                 >
-                  <div
-                    v-if="data?.produk?.length === 0"
-                    class="pt-2"
-                  >
-                    <img
-                      src="~/assets/images/empty-data.png"
-                      alt="empty_data"
-                    >
-                    <div class="pt-2 pb-2 font-weight-bold">
-                      Data Kosong
+                  <template #item.no="{ index }">
+                    <div class="mw-170">
+                      {{ index + 1 }}
                     </div>
-                  </div>
-                </div>
+                  </template>
+                </VDataTable>
+<!--                <div-->
+<!--                  class="border rounded w-100"-->
+<!--                  style="justify-items: center"-->
+<!--                >-->
+<!--                  <div-->
+<!--                    v-if="data?.produk?.length === 0"-->
+<!--                    class="pt-2"-->
+<!--                  >-->
+<!--                    <img-->
+<!--                      src="~/assets/images/empty-data.png"-->
+<!--                      alt="empty_data"-->
+<!--                    >-->
+<!--                    <div class="pt-2 pb-2 font-weight-bold">-->
+<!--                      Data Kosong-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -780,7 +834,7 @@ onMounted(async () => {
             </VExpansionPanel>
           </VExpansionPanels>
           <br>
-  
+
           <br>
           <VExpansionPanels v-model="panelTracking">
             <VExpansionPanel class="pa-4">
@@ -788,7 +842,7 @@ onMounted(async () => {
                 Melacak
               </VExpansionPanelTitle>
               <VExpansionPanelText class="d-flex align-center">
-                <HalalTimeLine :event="data?.tracking" />
+                <HalalTimeLine :event="data?.tracking?.map(i => ({ status: statusItemFacilitator[i.status].desc, username: i.username, comment: i.comment, created_at: i.tanggal }))" />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>

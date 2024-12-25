@@ -1,22 +1,161 @@
-<script setup>
-const props = defineProps({
-  icon: { type: String, default: 'fa-pencil' }, // Default to existing icon
+<script setup lang="ts">
+const propsOutside = defineProps({
+  icon: { type: String, default: "fa-pencil" }, // Default to existing icon
   showLabel: { type: Boolean, default: true }, // Control label visibility
+  idProduk: { type: String, required: true },
+  submissionId: { type: String, required: true },
 });
 
-const emit = defineEmits(['confirm-edit', 'cancel']);
+const emit = defineEmits(["confirm-edit", "cancel"]);
+
+const formData = ref({
+  product_grade: null,
+  kode_rincian: null,
+  nama_produk: null,
+  merek: null,
+  foto_produk: null,
+});
+
+const listClassificationDetail = ref([]);
+const listClassification = ref([]);
+
+const resetForm = () => {
+  formData.value.product_grade = null;
+  formData.value.kode_rincian = null;
+  formData.value.nama_produk = null;
+  formData.value.merek = null;
+  formData.value.foto_produk = null;
+};
+
+const handleEdit = () => {
+  emit("confirm-edit", formData.value, propsOutside.idProduk);
+};
+
+const handleDetailProduct = async (submissionId: string, productId: string) => {
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/product/detail`,
+      {
+        method: "get",
+        query: {
+          id_reg: submissionId,
+          product_id: productId,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      // detailProduct.value = response.data;
+      console.log("response detail = ", response.data);
+      formData.value.product_grade = response.data?.klasifikasi;
+      formData.value.kode_rincian = response.data?.koderincian;
+      formData.value.nama_produk = response.data?.nama;
+      formData.value.merek = response.data?.merek;
+      formData.value.foto_produk = null;
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const handleListClassification = async () => {
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/product/classification`,
+      {
+        method: "get",
+        params: {
+          id_reg: propsOutside.submissionId,
+        },
+      }
+    );
+    if (response.code == 2000) {
+      listClassification.value = response.data;
+    }
+  } catch (error) {
+    console.error("error ubah = ", error);
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+  }
+};
+
+const handleListClassificationDetail = async (grade: string) => {
+  formData.value.kode_rincian = null;
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/product/classification-detail`,
+      {
+        method: "get",
+        params: {
+          code: grade,
+        },
+      }
+    );
+    if (response.code == 2000) {
+      listClassificationDetail.value = response.data;
+    }
+  } catch (error) {
+    console.error("error ubah = ", error);
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+  }
+};
+
+const uploadedFile = ref({
+  name: formData.value.foto_produk || null,
+  file: null,
+});
+
+const handleUploadFile = async (event: any) => {
+  if (event?.target?.files.length) {
+    const fileData = event.target.files[0];
+    uploadedFile.value.name = fileData.name;
+    uploadedFile.value.file = fileData;
+    try {
+      const response = await uploadDocument(fileData);
+      if (response.code === 2000) {
+        formData.value.foto_produk = response.data.file_url;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+};
+
+const uploadDocument = async (file: any) => {
+  try {
+    const formData = new FormData();
+    formData.append("id", String(propsOutside.submissionId));
+    formData.append("file", file);
+    formData.append("type", "produk");
+    const response = await $api("/shln/submission/document/upload", {
+      method: "post",
+      body: formData,
+    });
+    return response;
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      "ada kesalahan saat upload file, gagal menyimpan!",
+      "error"
+    );
+  }
+};
+
+const onOpenModal = async () => {
+  // resetForm();
+  await handleDetailProduct(propsOutside.submissionId, propsOutside.idProduk);
+  await handleListClassification();
+};
 </script>
 
 <template>
   <VDialog max-width="60svw">
     <template #activator="{ props }">
-      <VListItem v-bind="props"
-        ><VListItemTitle class="text-red" >
-          <VIcon class="mr-2"> {{ icon }} </VIcon>
-          <VListItem v-if="showLabel">Ubah</VListItem>
+      <VListItem v-bind="props" @click="onOpenModal()"
+        ><VListItemTitle>
+          <VIcon class="mr-2" icon="fa-pencil" v-if="showLabel" />
+          Ubah
         </VListItemTitle>
-        </VListItem
-      >
+      </VListItem>
     </template>
     <template #default="{ isActive }">
       <VCard>
@@ -30,8 +169,9 @@ const emit = defineEmits(['confirm-edit', 'cancel']);
                 ><VIcon
                   size="small"
                   icon="fa-times"
-                  @click="isActive.value = false">
-              </VIcon>
+                  @click="isActive.value = false"
+                >
+                </VIcon>
               </VCol>
             </VCol>
           </VRow>
@@ -42,6 +182,11 @@ const emit = defineEmits(['confirm-edit', 'cancel']);
             <VSelect
               density="compact"
               placeholder="Pilih Klasifikasi Produk"
+              v-model="formData.product_grade"
+              :items="listClassification"
+              item-title="name"
+              item-value="code"
+              v-on:update:model-value="handleListClassificationDetail"
             ></VSelect>
           </VItemGroup>
           <br />
@@ -50,6 +195,10 @@ const emit = defineEmits(['confirm-edit', 'cancel']);
             <VSelect
               density="compact"
               placeholder="Pilih Rincian Produk"
+              v-model="formData.kode_rincian"
+              :items="listClassificationDetail"
+              item-title="name"
+              item-value="code"
             ></VSelect>
           </VItemGroup>
           <br />
@@ -58,12 +207,17 @@ const emit = defineEmits(['confirm-edit', 'cancel']);
             <VTextField
               density="compact"
               placeholder="Isi Nama Produk"
+              v-model="formData.nama_produk"
             ></VTextField>
           </VItemGroup>
           <br />
           <VItemGroup>
             <VLabel><b>Merk</b></VLabel>
-            <VTextField density="compact" placeholder="Isi Merk"></VTextField>
+            <VTextField
+              density="compact"
+              placeholder="Isi Merk"
+              v-model="formData.merek"
+            ></VTextField>
           </VItemGroup>
           <br />
           <VItemGroup>
@@ -72,9 +226,17 @@ const emit = defineEmits(['confirm-edit', 'cancel']);
                 <b>Upload Produk</b>
               </VCol>
               <VCol cols="6">
-                <VFileInput prepend-icon="" density="compact" hide-details>
-                  <template #append>
-                    <VBtn>Upload</VBtn>
+                <VFileInput
+                  class="custom-file-input"
+                  density="compact"
+                  rounded="xl"
+                  label="No file choosen"
+                  max-width="400"
+                  prepend-icon=""
+                  @change="handleUploadFile"
+                >
+                  <template #append-inner>
+                    <VBtn rounded="s-0 e-xl" text="Choose" />
                   </template>
                 </VFileInput>
               </VCol>
@@ -84,9 +246,23 @@ const emit = defineEmits(['confirm-edit', 'cancel']);
         </VCardItem>
         <VCardActions>
           <VBtn variant="outlined" @click="isActive.value = false"> Batal</VBtn>
-          <VBtn variant="flat">Ubah</VBtn>
+          <VBtn
+            @click="
+              handleEdit();
+              isActive.value = false;
+            "
+            variant="flat"
+            >Ubah</VBtn
+          >
         </VCardActions>
       </VCard>
     </template>
   </VDialog>
 </template>
+<style lang="scss">
+.custom-file-input {
+  .v-field--appended {
+    padding-inline-end: 0 !important;
+  }
+}
+</style>

@@ -11,10 +11,44 @@ const props = defineProps({
 
 const agreed = ref(false)
 
+const penanggungJawabProfile = ref({
+  namaPerusahaan: null,
+  namaPenanggungJawab: null,
+  jabatan: 'Tim managemen Halal',
+  nib: null,
+})
+
+const getPelakuUsahaProfile = async () => {
+  const response = await $api(
+    '/pelaku-usaha-profile',
+    {
+      method: 'get',
+    },
+  )
+
+  if (response.code === 2000) {
+    const data = response.data?.business_actor
+
+    penanggungJawabProfile.value = {
+      namaPerusahaan: data.profile?.company_name,
+      namaPenanggungJawab: data.responsible_person?.name,
+      jabatan: 'Tim managemen Halal',
+      nib: data.legal?.filter(i => i.type === 'NIB')[0].doc_number,
+    }
+  }
+}
+
 const handleSubmit = () => {
   props.onComplete()
-  agreed.value = false
+  localStorage.setItem('pernyataanBebasBabiAgreement', true)
+  agreed.value = true
 }
+
+onMounted(() => {
+  if (localStorage.getItem('pernyataanBebasBabiAgreement'))
+    props.onComplete()
+  getPelakuUsahaProfile()
+})
 </script>
 
 <template>
@@ -43,31 +77,31 @@ const handleSubmit = () => {
             </VCol>
             <VCol>
               <p class="fs18">
-                : <span>Sumayah</span>
+                : <span>{{ penanggungJawabProfile.namaPenanggungJawab }}</span>
               </p>
             </VCol>
           </VRow>
           <VRow class="-mt30">
             <VCol cols="4">
               <p class="text-h5 fs18 font-weight-bold">
-                Nama
+                Jabatan
               </p>
             </VCol>
             <VCol>
               <p class="fs18">
-                : <span>Sumayah</span>
+                : <span>{{penanggungJawabProfile.jabatan}}</span>
               </p>
             </VCol>
           </VRow>
           <VRow class="-mt30">
             <VCol cols="4">
               <p class="text-h5 fs18 font-weight-bold">
-                Nama
+                NIB
               </p>
             </VCol>
             <VCol>
               <p class="fs18">
-                : <span>Sumayah</span>
+                : <span>{{ penanggungJawabProfile.nib }}</span>
               </p>
             </VCol>
           </VRow>
@@ -79,7 +113,7 @@ const handleSubmit = () => {
             </VCol>
             <VCol>
               <p class="fs18">
-                : <span>Samsul</span>
+                : <span>{{ penanggungJawabProfile.namaPerusahaan }}</span>
               </p>
             </VCol>
           </VRow>
