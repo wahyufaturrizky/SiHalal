@@ -195,7 +195,14 @@ onMounted(() => {
           <br />
           <br />
           <br />
-          <div class="dots">
+          <p>
+            {{
+              submissionDetail.nama_pemilik
+                ? submissionDetail.nama_pemilik
+                : "-"
+            }}
+          </p>
+          <div>
             <!-- {{ submissionDetail.nama_pj ? submissionDetail.nama_pj : "-" }} -->
             Pelaku Usaha
           </div>
