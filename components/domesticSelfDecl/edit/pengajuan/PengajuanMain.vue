@@ -111,10 +111,6 @@ const onSelectFasilitator = (selectedId: string) => {
     isKodeFound.value = false
     querySearch.value = ''
   }
-  else {
-    isKodeFound.value = true
-    isKodeNotFound.value = false
-  }
 }
 
 const responseMessage = ref('')
@@ -476,8 +472,7 @@ onMounted(() => {
           class="mt-5"
         >
           Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada
-          fasilitator sebagai kode untuk mendaftarkan sertifikasi halal
-          gratis
+          fasilitator sebagai kode untuk mendaftarkan sertifikasi halal gratis
         </VAlert>
 
         <VAlert
@@ -487,7 +482,8 @@ onMounted(() => {
           color="#652672"
           class="mt-5"
         >
-          Pastikan anda melengkapi isian pengajuan sertifikasi halal dan mengirimkan pengajuan untuk memperoleh fasilitasi sertifikat halal.
+          Pastikan anda melengkapi isian pengajuan sertifikasi halal dan
+          mengirimkan pengajuan untuk memperoleh fasilitasi sertifikat halal.
         </VAlert>
 
         <br>

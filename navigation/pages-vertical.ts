@@ -126,6 +126,12 @@ export default [
     roles: ["Pelaku Usaha", "Admin"],
   },
   {
+    title: "Status Permohonan",
+    icon: { icon: "ri-id-card-line" },
+    to: "sh-domestic-status",
+    roles: ["Pelaku Usaha", "Admin"],
+  },
+  {
     title: "navbar.sh_registration.menu.self_declare_submission",
     icon: { icon: "ri-id-card-line" },
     to: "sh-domestic-submission-self-declare",

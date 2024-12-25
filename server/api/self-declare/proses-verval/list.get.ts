@@ -25,7 +25,7 @@ export default defineEventHandler(async (event: any) => {
     }
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/search?page=1&size=10&status=OF10`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/pendamping/verval/search?page=1&size=10&status=OF10`,
       {
         method: 'get',
         headers: { Authorization: authHeader },

@@ -34,35 +34,7 @@ const headers = [
   { title: 'Action', value: 'action', sortable: false, nowrap: true },
 ]
 
-// const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
-
-// const items = [
-//   {
-//     id: 1,
-//     regist_no: 'ss',
-//     regist_date: 'xx',
-//     pu_name: 'xx',
-//     address: 'xx',
-//     kind: 'xx',
-//     scale: 'xx',
-//     brand: 'xx',
-//     status: 'success',
-//   },
-// ]
 const items = ref([])
-
-// const getStatusColor = (status: string) => {
-//   switch (status.toLowerCase()) {
-//     case 'lunas':
-//       return 'success'
-//   case 'pending':
-//       return 'warning'
-//   case 'telat':
-//       return 'error'
-//   default:
-//       return 'grey'
-//   }
-// }
 
 const loadItem = async (page: number, size: number, search: string): void => {
   try {
@@ -79,7 +51,6 @@ const loadItem = async (page: number, size: number, search: string): void => {
   }
 }
 
-// TODO -> BIKIN LOGIC BUAT SET CHIP COLOR
 const getChipColor = (status: string) => {
   if (status === '')
     return 'primary'
