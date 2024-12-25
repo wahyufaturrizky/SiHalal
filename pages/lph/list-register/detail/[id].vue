@@ -237,8 +237,13 @@ onMounted(async () => {
           >
             Pengembalian
           </VBtn>
-          <VBtn variant="outlined"> Lihat Draft Sertif </VBtn>
-          <VBtn variant="outlined"> Cetak Data </VBtn>
+          <!-- <VBtn variant="outlined"> Lihat Draft Sertif </VBtn> -->
+          <VBtn
+            @click="navigateTo(`/sh-domestic/submission/reguler/${id}/edit`)"
+            variant="outlined"
+          >
+            Ce; Data
+          </VBtn>
           <VBtn @click="() => toggle('add')"> Kirim </VBtn>
         </VRow>
       </VCol>
