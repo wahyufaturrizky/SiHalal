@@ -58,6 +58,11 @@ const props = defineProps({
     default: () => {},
     required: false,
   },
+  hideDefaultFooter: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },
 })
 
 const route = useRoute()
@@ -286,7 +291,7 @@ watch(() => props.reRender, async () => {
         <VDataTable
           class="border rounded"
           :items-per-page="-1"
-          hide-default-footer=""
+          :hide-default-footer="props?.hideDefaultFooter"
           :headers="props.data.label"
           :items="
             props?.title === 'Daftar Nama Bahan dan Kemasan'

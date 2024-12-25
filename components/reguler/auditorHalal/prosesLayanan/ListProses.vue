@@ -13,6 +13,9 @@ const tabs = ref<string | number>(-1)
 const file = ref<File | null>(null)
 const loading = ref(false)
 const listFactory = ref<any[]>([])
+const catatanProduk = ref<any[]>([])
+const selectedProduct = ref<any>({})
+const listProduk = ref<any>([])
 
 const formAddLayout = ref({
   file_layout: '',
@@ -77,6 +80,7 @@ const resetForm = () => {
     name: '',
     file: null,
   }
+  selectedProduct.value = {}
 }
 
 const handleRemoveFile = () => {
@@ -129,12 +133,12 @@ const materialAndProduct = ref(
     {
       label: [
         { title: 'No.', key: 'no', nowrap: true },
-        { title: 'Nama', key: 'name', nowrap: true },
-        { title: 'Tipe Penambahan', key: 'addType', nowrap: true },
-        { title: 'Lokasi', key: 'location', nowrap: true },
+        { title: 'Nama', key: 'nama_produk', nowrap: true },
+        { title: 'Tipe Penambahan', key: 'tipe_penambahan', nowrap: true },
+        { title: 'Jumlah', key: 'jumlah', nowrap: true },
         { title: 'Tanggal Masuk', key: 'tanggal_masuk', nowrap: true },
         { title: 'Tanggal Keluar', key: 'tanggal_keluar', nowrap: true },
-        { title: 'File Dokumen', key: 'document', nowrap: true },
+        { title: 'File Dokumen', key: 'file_dok', nowrap: true },
         { title: 'Action', value: 'actionEdit', sortable: false, nowrap: true, popOver: true },
       ],
       value: [],
@@ -230,6 +234,14 @@ const toggleEdit = (item: any, type: string) => {
     uploadedFile.value = {
       file: item?.file_dok,
       name: item?.file_dok,
+    }
+    selectedProduct.value = {
+      nama_produk: item?.nama_produk,
+      jumlah: item?.jumlah,
+      tanggal: item?.tanggal,
+      tujuan: item?.tujuan,
+      file_dok: item?.file_dok,
+      id_reg_prod: item?.id_reg_prod
     }
     detailItem.value = item
   }
@@ -393,6 +405,23 @@ const getListFactory = async () => {
   return response || []
 }
 
+const getListProduct = async () => {
+  const response: any = await $api(
+    '/reguler/pelaku-usaha/tab-proses/list-product',
+    {
+      method: 'get',
+      query: { id },
+    },
+  )
+
+  if (response.code === 2000) {
+    listProduk.value = response.data
+    selectedProduct.value = response.data?.[0]
+  }
+
+  return response || []
+}
+
 const getListCatatanBahan = async () => {
   const response: any = await $api(
     '/reguler/pelaku-usaha/tab-proses/list-catatan-bahan',
@@ -404,6 +433,23 @@ const getListCatatanBahan = async () => {
 
   if (response.code === 2000)
     materialAndProduct.value[0].value = response.data
+
+  return response || []
+}
+
+const getListCatatanProduk = async () => {
+  const response: any = await $api(
+    '/reguler/pelaku-usaha/tab-proses/list-catatan-produk',
+    {
+      method: 'get',
+      query: { id },
+    },
+  )
+
+  if (response.code === 2000) {
+    catatanProduk.value = response.data
+    materialAndProduct.value[1].value = response.data
+  }
 
   return response || []
 }
@@ -432,23 +478,75 @@ const formattedArray = computed({
 
 const handleAddOrEdit = async () => {
   if (titleDialog.value === 'Ubah Catatan Bahan') {
-    // wait api put
-    // const response: any = await $api(
-    //   '/reguler/pelaku-usaha/tab-proses/add-layout',
-    //   {
-    //     method: 'post',
-    //     query: { id },
-    //     body: formAddLayout.value,
-    //   },
-    // )
-  
-    // if (response.code === 2000) {
-    //   resetForm()
-    //   addDialog.value = false
-    //   getListLayout()
-    //   getListFactory()
-    //   useSnackbar().sendSnackbar('Sukses menambah data', 'success')
-    // }
+    let body: any = {}
+    if (tabs.value === '2') {
+      body = {
+        id_bahan: detailItem.value?.id_bahan,
+        jumlah: +detailItem.value.jumlah,
+        tanggal_masuk: formatDateId(detailItem.value.tanggal_masuk),
+        tanggal_keluar: formatDateId(detailItem.value.tanggal_keluar),
+      }
+    }
+    else {
+      body = {
+        nama_produk: detailItem.value.nama_bahan,
+        file_dok: formAddLayout.value.file_layout,
+      }
+    }
+
+    const response: any = await $api(
+      '/reguler/pelaku-usaha/tab-proses/update-product',
+      {
+        method: 'put',
+        query: { id, id_narasi: detailItem.value?.id_bahan_penyimpanan },
+        body,
+      },
+    )
+
+    if (response.code === 2000) {
+      resetForm()
+      addDialog.value = false
+      getListLayout()
+      getListFactory()
+      getListCatatanBahan()
+      useSnackbar().sendSnackbar('Sukses menambah data', 'success')
+    }
+  }
+  else if (titleDialog.value === 'Ubah Catatan Produk') {
+    let body: any = {}
+    if (tabs.value === '2') {
+      body = {
+        id_produk: selectedProduct.value.id,
+        jumlah: +detailItem.value.jumlah,
+        tanggal_masuk: formatDateId(detailItem.value.tanggal_masuk),
+        tanggal_keluar: formatDateId(detailItem.value.tanggal_keluar),
+      }
+    }
+    else {
+      body = {
+        nama_produk: detailItem.value.nama_produk,
+        file_dok: formAddLayout.value.file_layout,
+      }
+    }
+
+    const response: any = await $api(
+      '/reguler/pelaku-usaha/tab-proses/update',
+      {
+        method: 'put',
+        query: { id, id_narasi: detailItem.value?.id_prod_penyimpanan },
+        body,
+      },
+    )
+
+    if (response.code === 2000) {
+      resetForm()
+      addDialog.value = false
+      getListLayout()
+      getListFactory()
+      getListCatatanBahan()
+      getListCatatanProduk()
+      useSnackbar().sendSnackbar('Sukses menambah data', 'success')
+    }
   }
   else if (titleDialog.value === 'Tambah Diagram Alur Proses') {
     let body: any = {}
@@ -516,10 +614,10 @@ const handleAddOrEdit = async () => {
     let body: any = {}
     if (tabs.value === '2') {
       body = {
-        id_produk: '5a67d5d1-f9fb-4254-b169-b6222878a597',
-        jumlah: +payloadHasilProduksi.value?.jumlah,
-        tanggal_produksi: formatDateId(payloadHasilProduksi.value?.tanggal_produksi),
-        tanggal_kadaluarsa: formatDateId(payloadHasilProduksi.value?.tanggal_kadaluarsa),
+        id_produk: selectedProduct.value.id,
+        jumlah: +selectedProduct.value?.jumlah,
+        tanggal_produksi: formatDateId(selectedProduct.value?.tanggal_masuk),
+        tanggal_kadaluarsa: formatDateId(selectedProduct.value?.tanggal_keluar),
         // nama_produk: payloadHasilProduksi.value?.nama_produk,
       }
     }
@@ -550,10 +648,10 @@ const handleAddOrEdit = async () => {
     let body: any = {}
     if (tabs.value === '2') {
       body = {
-        id_produk: '5a67d5d1-f9fb-4254-b169-b6222878a597',
-        jumlah: +payloadHasilProduksi.value?.jumlah,
-        tanggal_produksi: formatDateId(payloadHasilProduksi.value?.tanggal_produksi),
-        tanggal_kadaluarsa: formatDateId(payloadHasilProduksi.value?.tanggal_kadaluarsa),
+        id_produk: selectedProduct.value.id,
+        jumlah: +selectedProduct.value?.jumlah,
+        tanggal_produksi: formatDateId(selectedProduct.value?.tanggal_masuk),
+        tanggal_kadaluarsa: formatDateId(selectedProduct.value?.tanggal_keluar),
         // nama_produk: payloadHasilProduksi.value?.nama_produk,
       }
     }
@@ -581,13 +679,14 @@ const handleAddOrEdit = async () => {
     }
   }
   else if (titleDialog.value === 'Tambah Catatan Distribusi') {
+
     let body: any = {}
     if (tabs.value === '2') {
       body = {
-        id_produk: '5a67d5d1-f9fb-4254-b169-b6222878a597',
-        jumlah: +payloadHasilDistribusi.value?.jumlah,
-        tanggal: formatDateId(payloadHasilDistribusi.value?.tanggal),
-        tujuan: payloadHasilDistribusi.value?.tujuan,
+        id_produk: selectedProduct.value.id,
+        jumlah: +selectedProduct.value?.jumlah,
+        tanggal: formatDateId(selectedProduct.value?.tanggal),
+        tujuan: selectedProduct.value?.tujuan,
         // nama_produk: payloadHasilProduksi.value?.nama_produk,
       }
     }
@@ -618,10 +717,10 @@ const handleAddOrEdit = async () => {
     let body: any = {}
     if (tabs.value === '2') {
       body = {
-        id_produk: '5a67d5d1-f9fb-4254-b169-b6222878a597',
-        jumlah: +payloadHasilDistribusi.value?.jumlah,
-        tanggal: formatDateId(payloadHasilDistribusi.value?.tanggal),
-        tujuan: payloadHasilDistribusi.value?.tujuan,
+        id_produk: selectedProduct.value.id,
+        jumlah: +selectedProduct.value?.jumlah,
+        tanggal: formatDateId(selectedProduct.value?.tanggal),
+        tujuan: selectedProduct.value?.tujuan,
         // nama_produk: payloadHasilProduksi.value?.nama_produk,
       }
     }
@@ -696,9 +795,11 @@ onMounted(async () => {
     getListLayout(),
     getListFactory(),
     getListCatatanBahan(),
+    getListCatatanProduk(),
     getListDigaramAlur(),
     getListHasilProduksi(),
     getListCatatanDistribusi(),
+    getListProduct(),
   ])
   loading.value = false
 })
@@ -738,7 +839,7 @@ watch(selectedFactory, () => {
             outlined
             placeholder="pilih pabrik"
             item-title="nama"
-            item-value="nama"
+            item-value="nama_pabrik"
             default-value="'pilih'"
             return-object
           />
@@ -784,82 +885,284 @@ watch(selectedFactory, () => {
           </div>
         </div>
         <div v-if="titleDialog === 'Ubah Catatan Bahan'">
-          <label class="label-pengajuan">
-            Nama Bahan
-          </label>
-          <VTextField
-            v-model="detailItem.nama_bahan"
-            class="-mt-10"
-            placeholder="isi nama bahan"
-          />
-          <br>
-          <label class="label-pengajuan">
-            Jumlah
-          </label>
-          <VTextField
-            v-model="detailItem.jumlah"
-            class="-mt-10"
-            placeholder="isi nama bahan"
-          />
-          <VRow class="mt-2">
-            <VCol>
-              <label>Tanggal Masuk</label>
-              <VueDatePicker
-                v-model="detailItem.tanggal_masuk"
-                teleport-center
-                id="tanggalDocument"
-                :enable-time-picker="false"
-                placeholder="tanggal masuk"
-                required
-              />
-            </VCol>
-            <VCol>
-              <label>Tanggal Keluar</label>
-              <VueDatePicker
-                v-model="detailItem.tanggal_keluar"
-                teleport-center
-                id="tanggalDocument"
-                :enable-time-picker="false"
-                placeholder="tanggal masuk"
-                required
-              />
-            </VCol>
-          </VRow>
+          <div class="d-flex justify-center">
+            <VTabs
+              v-model="tabs"
+              align-tabs="center"
+              bg-color="#f0dcf5"
+              class="border pa-2"
+              style="border-radius: 40px"
+              height="auto"
+            >
+              <VTab
+                value="1"
+                base-color="#f0dcf5"
+                active-color="primary"
+                style="border-radius: 40px;"
+                hide-slider
+                color="primary"
+                variant="flat"
+                height="40px"
+              >
+                <span>Unggah File </span>
+              </VTab>
+              <VTab
+                value="2"
+                active-color="primary"
+                base-color="#f0dcf5"
+                style="border-radius: 40px;"
+                hide-slider
+                variant="flat"
+                height="40px"
+              >
+                <span> Tambah Manual  </span>
+              </VTab>
+            </VTabs>
+          </div>
+          <VTabsItems v-model="tabs">
+            <VTabItem>
+              <div
+                v-if="tabs === '2'"
+                class="mt-5"
+              >
+                <label>Nama Produk</label>
+                <VSelect
+                  v-model="selectedProduct"
+                  :items="listProduk"
+                  outlined
+                  placeholder="pilih pabrik"
+                  item-title="nama"
+                  item-value="id"
+                  default-value="'pilih'"
+                  return-object
+                />
+                <br>
+                <label class="label-pengajuan">
+                  Jumlah
+                </label>
+                <VTextField
+                  v-model="selectedProduct.jumlah_bahan"
+                  class="-mt-10"
+                  placeholder="isi nama bahan"
+                />
+                <VRow class="mt-2">
+                  <VCol>
+                    <label>Tanggal Masuk</label>
+                    <VueDatePicker
+                      v-model="detailItem.tanggal_masuk"
+                      teleport-center
+                      id="tanggalDocument"
+                      :enable-time-picker="false"
+                      placeholder="tanggal masuk"
+                      required
+                    />
+                  </VCol>
+                  <VCol>
+                    <label>Tanggal Keluar</label>
+                    <VueDatePicker
+                      v-model="detailItem.tanggal_keluar"
+                      teleport-center
+                      id="tanggalDocument"
+                      :enable-time-picker="false"
+                      placeholder="tanggal masuk"
+                      required
+                    />
+                  </VCol>
+                </VRow>
+              </div>
+              <div
+                v-else
+                class="mt-10"
+              >
+                <label>Nama Bahan</label>
+                <VTextField
+                  v-model="detailItem.nama_bahan"
+                  class="-mt-10"
+                  placeholder="isi judul"
+                  disabled
+                />
+                <div class="d-flex justify-space-between mt-5">
+                  <label>
+                    Upload Foto
+                  </label>
+                  <VCol cols="6">
+                    <VTextField
+                      v-if="uploadedFile.file"
+                      :model-value="uploadedFile.name"
+                      density="compact"
+                      placeholder="No file choosen"
+                      rounded="xl"
+                      max-width="400"
+                    >
+                      <template #append-inner>
+                        <VIcon
+                          icon="fa-trash"
+                          color="error"
+                          class="cursor-pointer"
+                          @click="handleRemoveFile"
+                        />
+                      </template>
+                    </VTextField>
+                    <VFileInput
+                      v-else
+                      :model-value="uploadedFile.file"
+                      class="custom-file-input"
+                      density="compact"
+                      rounded="xl"
+                      label="No file choosen"
+                      max-width="400"
+                      prepend-icon=""
+                      @change="handleUploadFile"
+                    >
+                      <template #append-inner>
+                        <VBtn rounded="s-0 e-xl" text="Choose" />
+                      </template>
+                    </VFileInput>
+                  </VCol>
+                </div>
+              </div>
+            </VTabItem>
+          </VTabsItems>
         </div>
         <div v-if="titleDialog === 'Ubah Catatan Produk'">
-          <label class="label-pengajuan">
-            Nama Produk
-          </label>
-          <VTextField
-            class="-mt-10"
-            placeholder="isi nama produk"
-            value="Air mineral"
-          />
-          <br>
-          <label class="label-pengajuan">
-            Jumlah
-          </label>
-          <VTextField
-            class="-mt-10"
-            placeholder="isi nama produk"
-            value="12"
-          />
-          <VRow class="mt-2">
-            <VCol>
-              <label>Tanggal Masuk</label>
-              <AppDateTimePicker
-                placeholder="tanggal masuk"
-                required
-              />
-            </VCol>
-            <VCol>
-              <label>Tanggal Keluar</label>
-              <AppDateTimePicker
-                placeholder="tanggal keluar"
-                required
-              />
-            </VCol>
-          </VRow>
+          <div class="d-flex justify-center">
+            <VTabs
+              v-model="tabs"
+              align-tabs="center"
+              bg-color="#f0dcf5"
+              class="border pa-2"
+              style="border-radius: 40px"
+              height="auto"
+            >
+              <VTab
+                value="1"
+                base-color="#f0dcf5"
+                active-color="primary"
+                style="border-radius: 40px;"
+                hide-slider
+                color="primary"
+                variant="flat"
+                height="40px"
+              >
+                <span>Unggah File </span>
+              </VTab>
+              <VTab
+                value="2"
+                active-color="primary"
+                base-color="#f0dcf5"
+                style="border-radius: 40px;"
+                hide-slider
+                variant="flat"
+                height="40px"
+              >
+                <span> Tambah Manual  </span>
+              </VTab>
+            </VTabs>
+          </div>
+          <VTabsItems v-model="tabs">
+            <VTabItem>
+              <div
+                v-if="tabs === '2'"
+                class="mt-5"
+              >
+                <label>Nama Produk</label>
+                  <VSelect
+                    v-model="selectedProduct"
+                    :items="listProduk"
+                    outlined
+                    placeholder="pilih pabrik"
+                    item-title="nama"
+                    item-value="id"
+                    default-value="'pilih'"
+                    return-object
+                  />
+                <br>
+                <label class="label-pengajuan">
+                  Jumlah
+                </label>
+                <VTextField
+                  v-model="detailItem.jumlah"
+                  class="-mt-10"
+                  placeholder="isi nama bahan"
+                />
+                <VRow class="mt-2">
+                  <VCol>
+                    <label>Tanggal Masuk</label>
+                    <VueDatePicker
+                      v-model="detailItem.tanggal_masuk"
+                      teleport-center
+                      id="tanggalDocument"
+                      :enable-time-picker="false"
+                      placeholder="tanggal masuk"
+                      required
+                    />
+                  </VCol>
+                  <VCol>
+                    <label>Tanggal Keluar</label>
+                    <VueDatePicker
+                      v-model="detailItem.tanggal_keluar"
+                      teleport-center
+                      id="tanggalDocument"
+                      :enable-time-picker="false"
+                      placeholder="tanggal masuk"
+                      required
+                    />
+                  </VCol>
+                </VRow>
+              </div>
+              <div
+                v-else
+                class="mt-10"
+              >
+                <label>Nama</label>
+                <VTextField
+                  v-model="detailItem.nama_produk"
+                  class="-mt-10"
+                  placeholder="isi judul"
+                  disabled
+                />
+                <div class="d-flex justify-space-between mt-5">
+                  <label>
+                    Upload Foto
+                  </label>
+                  <VCol cols="6">
+                    <VTextField
+                      v-if="uploadedFile.file"
+                      :model-value="uploadedFile.name"
+                      density="compact"
+                      placeholder="No file choosen"
+                      rounded="xl"
+                      max-width="400"
+                    >
+                      <template #append-inner>
+                        <VIcon
+                          icon="fa-trash"
+                          color="error"
+                          class="cursor-pointer"
+                          @click="handleRemoveFile"
+                        />
+                      </template>
+                    </VTextField>
+                    <VFileInput
+                      v-else
+                      :model-value="uploadedFile.file"
+                      class="custom-file-input"
+                      density="compact"
+                      rounded="xl"
+                      label="No file choosen"
+                      max-width="400"
+                      prepend-icon=""
+                      @change="handleUploadFile"
+                    >
+                      <template #append-inner>
+                        <VBtn rounded="s-0 e-xl" text="Choose" />
+                      </template>
+                    </VFileInput>
+                  </VCol>
+                </div>
+              </div>
+            </VTabItem>
+          </VTabsItems>
         </div>
         <div v-if="titleDialog === 'Tambah Diagram Alur Proses' || titleDialog === 'Ubah Diagram Alur Proses'">
           <div class="d-flex justify-center">
@@ -1033,23 +1336,28 @@ watch(selectedFactory, () => {
                 <div>
                   <br>
                   <label>Nama Produk</label>
-                  <VTextField
-                    v-model="payloadHasilProduksi.nama_produk"
-                    class="-mt-10"
-                    placeholder="isi judul"
+                  <VSelect
+                    v-model="selectedProduct"
+                    :items="listProduk"
+                    outlined
+                    placeholder="pilih pabrik"
+                    item-title="nama"
+                    item-value="id"
+                    default-value="'pilih'"
+                    return-object
                   />
                   <br>
                   <label>Jumlah</label>
                   <VTextField
-                    v-model="payloadHasilProduksi.jumlah"
+                    v-model="selectedProduct.jumlah"
                     class="-mt-10"
                     placeholder="isi judul"
                   />
                   <VRow class="mt-2">
                     <VCol>
-                      <label>Tanggal Masuk</label>
+                      <label>Tanggal Produksi</label>
                       <VueDatePicker
-                        v-model="payloadHasilProduksi.tanggal_produksi"
+                        v-model="selectedProduct.tanggal_masuk"
                         teleport-center
                         id="tanggalDocument"
                         :enable-time-picker="false"
@@ -1059,9 +1367,9 @@ watch(selectedFactory, () => {
                       />
                     </VCol>
                     <VCol>
-                      <label>Tanggal Keluar</label>
+                      <label>Tanggal Kadaluarsa</label>
                       <VueDatePicker
-                        v-model="payloadHasilProduksi.tanggal_kadaluarsa"
+                        v-model="selectedProduct.tanggal_keluar"
                         teleport-center
                         id="tanggalDocument"
                         :enable-time-picker="false"
@@ -1170,22 +1478,27 @@ watch(selectedFactory, () => {
                 <div>
                   <br>
                   <label>Nama Produk</label>
-                  <VTextField
-                    v-model="payloadHasilDistribusi.nama_produk"
-                    class="-mt-10"
-                    placeholder="isi judul"
+                  <VSelect
+                    v-model="selectedProduct"
+                    :items="listProduk"
+                    outlined
+                    placeholder="pilih pabrik"
+                    item-title="nama"
+                    item-value="id"
+                    default-value="'pilih'"
+                    return-object
                   />
                   <br>
                   <label>Jumlah</label>
                   <VTextField
-                    v-model="payloadHasilDistribusi.jumlah"
+                    v-model="selectedProduct.jumlah"
                     class="-mt-10"
                     placeholder="isi judul"
                   />
                   <br>
                   <label>Tanggal</label>
                   <VueDatePicker
-                    v-model="payloadHasilDistribusi.tanggal"
+                    v-model="selectedProduct.tanggal"
                     teleport-center
                     id="tanggalDocument"
                     :enable-time-picker="false"
@@ -1196,7 +1509,7 @@ watch(selectedFactory, () => {
                   <br>
                   <label>Tujuan</label>
                   <VTextField
-                    v-model="payloadHasilDistribusi.tujuan"
+                    v-model="selectedProduct.tujuan"
                     class="-mt-10"
                     placeholder="isi judul"
                   />

@@ -8,13 +8,10 @@ const selfDeclareId = (route.params as any).id;
 
 const emit = defineEmits(["refresh"]);
 
-const props = defineProps({
-  listagama: {
-    type: Array,
-  },
+const formData = ref({
+  id: selfDeclareId,
+  status: "selesai",
 });
-
-const { listagama } = props || {};
 
 const addDialog = ref(false);
 const loadingAdd = ref(false);
@@ -27,10 +24,7 @@ const updateData = async () => {
       `/sidang-fatwa/proses-sidang-fatwa/update/${selfDeclareId}`,
       {
         method: "post",
-        body: {
-          ...formData.value,
-          file: fileSpph.data.file_url,
-        },
+        body: formData.value,
       }
     );
 

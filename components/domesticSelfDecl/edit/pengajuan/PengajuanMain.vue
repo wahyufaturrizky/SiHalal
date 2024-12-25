@@ -107,9 +107,6 @@ const onSelectFasilitator = (selectedId: string) => {
   if ((isFasilitator.value = selectedId === "Lainnya")) {
     isKodeFound.value = false;
     querySearch.value = "";
-  } else {
-    isKodeFound.value = true;
-    isKodeNotFound.value = false;
   }
 };
 
@@ -362,7 +359,9 @@ onMounted(() => {
           <VCol cols="2"> Jenis Pengajuan </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="9">
-            {{ findListDaftar(submissionDetail.id_jenis_pengajuan).name }}
+            {{
+              findListDaftar(submissionDetail.id_jenis_pengajuan as any).name
+            }}
           </VCol>
         </VRow>
         <br />
@@ -400,56 +399,68 @@ onMounted(() => {
                   @update:model-value="onSelectFasilitator"
                 />
               </VCol>
-
-              <VSpacer
-                v-if="isFasilitator"
-                style="
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                "
-              >
-                <p>Atau</p>
-              </VSpacer>
-              <VCol v-if="isFasilitator" cols="5">
-                <VTextField
-                  v-model="querySearch"
-                  placeholder="Cari Fasilitator"
-                  append-inner-icon="mdi-magnify"
-                  density="compact"
-                  :rules="[requiredValidator]"
-                  @input="onSearchFasilitator"
-                />
-              </VCol>
             </VRow>
 
-            <VAlert
-              v-if="isKodeNotFound"
-              :type="responseType"
-              variant="tonal"
-              :color="responseColor"
-              class="mt-5"
+            <VSpacer
+              v-if="isFasilitator"
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
             >
-              {{ responseMessage }}
-            </VAlert>
-
-            <VAlert
-              v-if="isKodeFound"
-              type="success"
-              variant="tonal"
-              color="#5CB338"
-              class="mt-5"
-            >
-              Kode Fasilitasi dapat digunakan
-            </VAlert>
-
-            <VAlert type="warning" variant="tonal" color="#652672" class="mt-5">
-              Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada
-              fasilitator sebagai kode untuk mendaftarkan sertifikasi halal
-              gratis
-            </VAlert>
+              <p>Atau</p>
+            </VSpacer>
+            <VCol v-if="isFasilitator" cols="5">
+              <VTextField
+                v-model="querySearch"
+                placeholder="Masukan Kode Fasilitasi"
+                append-inner-icon="mdi-magnify"
+                density="compact"
+                :rules="[requiredValidator]"
+                @input="onSearchFasilitator"
+              />
+            </VCol>
           </VCol>
         </VRow>
+
+        <VAlert
+          v-if="isKodeNotFound"
+          :type="responseType"
+          variant="tonal"
+          :color="responseColor"
+          class="mt-5"
+        >
+          {{ responseMessage }}
+        </VAlert>
+
+        <VAlert
+          v-if="isKodeFound"
+          type="success"
+          variant="tonal"
+          color="#5CB338"
+          class="mt-5"
+        >
+          Kode Fasilitasi dapat digunakan
+        </VAlert>
+
+        <VAlert type="warning" variant="tonal" color="#652672" class="mt-5">
+          Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada
+          fasilitator sebagai kode untuk mendaftarkan sertifikasi halal gratis
+        </VAlert>
+
+        <VAlert
+          v-if="isKodeFound"
+          type="warning"
+          variant="tonal"
+          color="#652672"
+          class="mt-5"
+        >
+          Pastikan anda melengkapi isian pengajuan sertifikasi halal dan
+          mengirimkan pengajuan untuk memperoleh fasilitasi sertifikat halal.
+        </VAlert>
+        <!-- </VCol>
+        </VRow> -->
         <br />
         <VDivider />
         <br />

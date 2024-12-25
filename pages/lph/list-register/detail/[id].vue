@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { VDataTableServer } from "vuetify/components";
 
 const route = useRoute();
 const id = (route?.params as any)?.id;
 
 const dialogToggle = ref(false);
+const loadingModal = ref(false);
 const titleDialog = ref("");
 const labelSaveBtn = ref("");
 const inputValueReturn = ref("");
@@ -27,11 +29,9 @@ const itemPerPageProduk = ref(10);
 const pageProduk = ref(1);
 const totalItemsProduk = ref(0);
 
-const pic = ref({
-  name: "Sumayah",
-  phoneNumber: "0899999999",
-  email: "rasarasa@gmail.com",
-});
+const itemPerPageAuditor = ref(10);
+const pageAuditor = ref(1);
+const totalItemsAuditor = ref(0);
 
 const aspectLegalHeader = [
   { title: "No.", key: "no", nowrap: true },
@@ -43,26 +43,70 @@ const aspectLegalHeader = [
 const supervisorHeader = [
   { title: "No.", key: "no", nowrap: true },
   { title: "Nama", key: "name", nowrap: true },
-  { title: "Tanggal Lahir", key: "birthdate", nowrap: true },
-  { title: "JK", key: "gender", nowrap: true },
-  { title: "No. Pendaftaran", key: "registrationNo", nowrap: true },
+  { title: "Tanggal Lahir", key: "tanggal_lahir", nowrap: true },
+  { title: "JK", key: "jk", nowrap: true },
+  { title: "No. Pendaftaran", key: "no_daftar", nowrap: true },
 ];
 
-const supervisorItems = ref([
-  {
-    no: 1,
-    name: "Maya",
-    birthdate: "20/10/2000",
-    gender: "-",
-    registrationNo: "REG RI AHA 10102134",
-  },
-]);
+const supervisorItems = ref();
 
 const toggle = (type: string) => {
   dialogToggle.value = true;
   titleDialog.value =
     type === "add" ? "Mengirim Pengajuan" : "Pengembalian Dokumen";
   labelSaveBtn.value = type === "add" ? "Ya, Kirim" : "Kembalikan";
+};
+
+const handleReturn = async () => {
+  loadingModal.value = true;
+  try {
+    const response: any = await $api(`/reguler/lph/return`, {
+      method: "put",
+      body: {
+        keterangan: inputValueReturn.value,
+        id_reg: id,
+      },
+    });
+
+    if (response.code === 2000) {
+      loadingModal.value = false;
+      useSnackbar().sendSnackbar("Berhasil Mengembalikan", "success");
+      dialogToggle.value = false;
+    } else {
+      loadingModal.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    loadingModal.value = false;
+
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const handleSend = async () => {
+  loadingModal.value = true;
+  try {
+    const response: any = await $api(`/reguler/lph/kirim`, {
+      method: "put",
+      body: {
+        keterangan: "Kirin",
+        id_reg: id,
+      },
+    });
+
+    if (response.code === 2000) {
+      loadingModal.value = false;
+      useSnackbar().sendSnackbar("Berhasil Mengembalikan", "success");
+      dialogToggle.value = false;
+    } else {
+      loadingModal.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    loadingModal.value = false;
+
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
 };
 
 const loadItemById = async () => {
@@ -72,7 +116,7 @@ const loadItemById = async () => {
     });
 
     if (response.code === 2000) {
-      const { certificate_halal, produk } = response.data || {};
+      const { certificate_halal, produk, auditor } = response.data || {};
 
       const {
         id_reg,
@@ -91,6 +135,9 @@ const loadItemById = async () => {
       } = certificate_halal || {};
 
       totalItemsProduk.value = produk.length;
+      totalItemsAuditor.value = auditor.length;
+
+      supervisorItems.value = auditor;
 
       dataPengajuan.value = [
         {
@@ -323,7 +370,7 @@ onMounted(async () => {
                 cols-value="6"
                 name="Tanggal Mulai"
               >
-                {{}}
+                {{ formatDate(detailSubmission.jadwal_audit.jadwal_awal) }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -331,7 +378,7 @@ onMounted(async () => {
                 cols-value="6"
                 name="Tanggal Selesai"
               >
-                {{}}
+                {{ formatDate(detailSubmission.jadwal_audit.jadwal_akhir) }}
               </InfoRow>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -344,11 +391,30 @@ onMounted(async () => {
               Auditor
             </VExpansionPanelTitle>
             <VExpansionPanelText>
-              <VDataTable
+              <VDataTableServer
                 :headers="supervisorHeader"
                 :items="supervisorItems"
+                :items-per-page="itemPerPageAuditor"
+                :page="pageAuditor"
+                :items-length="totalItemsAuditor"
                 class="border rounded"
-              />
+              >
+                <template #item.no="{ index }">
+                  {{ index + 1 + (pageProduk - 1) * itemPerPageProduk }}
+                </template>
+                <template #item.name="{ item }">
+                  {{ (item as any).Auditor.nama }}
+                </template>
+                <template #item.tanggal_lahir="{ item }">
+                  {{ (item as any).Auditor.tgl_lahir }}
+                </template>
+                <template #item.jk="{ item }">
+                  {{ (item as any).Auditor.jenkel }}
+                </template>
+                <template #item.no_daftar="{ item }">
+                  {{ (item as any).Auditor.no_registrasi }}
+                </template>
+              </VDataTableServer>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -365,7 +431,7 @@ onMounted(async () => {
                 cols-value="6"
                 name="Tanggal Selesai LPH"
               >
-                {{ detailSubmission.companionInstitution }}
+                {{ formatDate(detailSubmission.hasil_audit.tanggal_selesai) }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -373,7 +439,7 @@ onMounted(async () => {
                 cols-value="6"
                 name="Hasil"
               >
-                {{ detailSubmission.companionInstitution }}
+                {{ detailSubmission.hasil_audit.hasil_audit }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -381,7 +447,16 @@ onMounted(async () => {
                 cols-value="6"
                 name="Dokumen"
               >
-                {{ detailSubmission.companionInstitution }}
+                <VBtn
+                  append-icon="fa-download"
+                  variant="plain"
+                  style="align-content: start"
+                  @click="
+                    downloadDocument(
+                      detailSubmission.hasil_audit.Dokumen.filename
+                    )
+                  "
+                />
               </InfoRow>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -477,8 +552,12 @@ onMounted(async () => {
     :title="titleDialog"
     :is-open="dialogToggle"
     :toggle="() => (dialogToggle = false)"
-    :on-save="() => (dialogToggle = false)"
+    :on-save="
+      () =>
+        titleDialog === 'Mengirim Pengajuan' ? handleSend() : handleReturn()
+    "
     :label-save-btn="labelSaveBtn"
+    :loadingmodal="loadingModal"
   >
     <template #content>
       <div v-if="titleDialog === 'Mengirim Pengajuan'">

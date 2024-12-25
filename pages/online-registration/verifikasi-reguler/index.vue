@@ -269,7 +269,7 @@ const bahanType = ref(null);
                     <VIcon
                       icon="ri-arrow-right-line"
                       color="primary"
-                      @click="navigateAction(item.id)"
+                      @click="navigateAction(item.id_reg)"
                     />
                   </IconBtn>
                   <!-- Right arrow icon for action -->
@@ -320,7 +320,6 @@ const bahanType = ref(null);
               </template>
             </VDataTableServer>
           </VRow>
-          <VPagination v-model="page" :total-visible="7" :length="totalPages" />
         </VCardText>
       </VCard>
     </VRow>
