@@ -8,18 +8,26 @@ import SertifikatHalal from "@/components/selfDeclare/verifikasi/SertifikatHalal
 import SHLNVerfikasiLayout from "@/layouts/SHLNVerfikasiLayout.vue";
 
 interface DetailVerifikatorReguler {
-  aspek_legal: any[];
+  aspek_legal: AspekLegal[];
   melacak: any[];
   outlet: Outlet;
   pabrik: Pabrik;
   pemeriksaan: Pemeriksaan;
   penanggung_jawab: PenanggungJawab;
+  s;
   pendaftaran: Pendaftaran;
   penyelia: any[];
   produk: any[];
   sertifikasi_halal: SertifikasiHalal;
   sertifikat: Sertifikat;
   sidang_fatwa: SidangFatwa;
+}
+interface AspekLegal {
+  instansi_penerbit: string;
+  jenis: string;
+  masa_berlaku: any;
+  no_dokumen: string;
+  tanggal: string;
 }
 
 interface Outlet {
@@ -116,19 +124,57 @@ const closeConfirmation = () => (showConfirmation.value = false);
 const openReturn = () => (showReturn.value = true);
 const closeReturn = () => (showReturn.value = false);
 
-const submitData = () => {
-  console.log("Data submitted!");
-  closeConfirmation();
-};
+const submitData = async () => {
+  try {
+    const response = await $api("/reguler/verifikator/detail/approve", {
+      method: "post",
+      body: {
+        id_reg: route.params.id,
+        keterangan: "",
+      },
+    });
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("Ada kesalahan", "error");
+      return;
+    }
+    useSnackbar().sendSnackbar("Berhasil memverifikasi data", "success");
 
-const returnDocument = () => {
-  console.log("Return note:", returnNote.value);
-  closeReturn();
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada kesalahan", "error");
+  } finally {
+    closeConfirmation();
+  }
 };
-
 const router = useRouter();
 const route = useRoute();
-const navigateAction = () => router.push(`${route.path}/detail`);
+const navigateAction = () => navigateTo(`${route.path}/detail`);
+const returnDocument = async () => {
+  try {
+    const response = await $api("/reguler/verifikator/detail/decline", {
+      method: "post",
+      body: {
+        id_reg: route.params.id,
+        keterangan: returnNote.value,
+      },
+    });
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("Ada kesalahan", "error");
+      return;
+    }
+    useSnackbar().sendSnackbar("Berhasil mengembalikan data", "success");
+
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada kesalahan", "error");
+  } finally {
+    closeReturn();
+  }
+};
+const refVForm = ref<VForm>();
+const rejectSubmission = async () => {
+  refVForm.value?.validate().then(({ valid: isValid }) => {
+    if (isValid) returnDocument();
+  });
+};
 
 const dataDetail = ref<DetailVerifikatorReguler>({
   aspek_legal: [],
@@ -222,22 +268,21 @@ onMounted(async () => {
 </script>
 
 <template>
-  <SHLNVerfikasiLayout
-  >
+  <SHLNVerfikasiLayout>
     <template #pageTitle>
       <VRow>
         <VCol style="display: flex; justify-content: start"
           ><h2>Verifikasi Dokumen Pengajuan: Detail</h2></VCol
         >
         <VCol class="d-flex justify-end ga-4">
-          <VBtn text="Pengembalian" color="#e1442e" @click="openConfirmation" />
+          <VBtn text="Pengembalian" color="#e1442e" @click="openReturn" />
           <VBtn
             variant="outlined"
             text="Cek Detail"
             color="primary"
             @click="navigateAction"
           />
-          <VBtn text="Verifikasi" @click="openReturn" />
+          <VBtn text="Verifikasi" @click="openConfirmation" />
         </VCol>
       </VRow>
     </template>
@@ -281,7 +326,7 @@ onMounted(async () => {
                 <h2>Aspek Legal</h2>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <AspekLegal :data="data" />
+                <AspekLegal :data="dataDetail.aspek_legal" />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -300,7 +345,7 @@ onMounted(async () => {
                 </VCol>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <Pabrik :data="data" />
+                <!-- <Pabrik :data="dataDetail.pabrik" /> -->
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -480,35 +525,38 @@ onMounted(async () => {
 
       <!-- Document Return Modal -->
       <VDialog v-model="showReturn" max-width="600px">
-        <VCard>
-          <VCardTitle class="font-weight-bold d-flex justify-space-between"
-            ><h3>Pengembalian Dokumen</h3>
-            <VBtn icon variant="plain" @click="closeReturn">
-              <VIcon style="color: black">mdi-close</VIcon>
-            </VBtn>
-          </VCardTitle>
-          <VCardText>
-            <div class="mb-3 font-weight-medium text-caption text-grey">
-              <span style="color: black"
-                ><b>Masukan Keterangan Pengembalian</b></span
-              >(Max. 1000 Karakter)
-            </div>
-            <VTextarea
-              label="Masukan Keterangan Pengembalian (Max. 1000 Karakter)"
-              v-model="returnNote"
-              rows="4"
-              outlined
-            />
-          </VCardText>
-          <VCardActions class="d-flex justify-end">
-            <VBtn color="primary" variant="outlined" @click="closeReturn"
-              >Batal</VBtn
-            >
-            <VBtn color="primary" variant="flat" @click="returnDocument"
-              >Kembalikan</VBtn
-            >
-          </VCardActions>
-        </VCard>
+        <VForm ref="refVForm" @submit.prevent="rejectSubmission">
+          <VCard>
+            <VCardTitle class="font-weight-bold d-flex justify-space-between"
+              ><h3>Pengembalian Dokumen</h3>
+              <VBtn icon variant="plain" @click="closeReturn">
+                <VIcon style="color: black">mdi-close</VIcon>
+              </VBtn>
+            </VCardTitle>
+            <VCardText>
+              <div class="mb-3 font-weight-medium text-caption text-grey">
+                <span style="color: black"
+                  ><b>Masukan Keterangan Pengembalian</b></span
+                >(Max. 1000 Karakter)
+              </div>
+              <VTextarea
+                label="Masukan Keterangan Pengembalian (Max. 1000 Karakter)"
+                v-model="returnNote"
+                :rules="[requiredValidator]"
+                rows="4"
+                outlined
+              />
+            </VCardText>
+            <VCardActions class="d-flex justify-end">
+              <VBtn color="primary" variant="outlined" @click="closeReturn"
+                >Batal</VBtn
+              >
+              <VBtn type="submit" color="primary" variant="flat"
+                >Kembalikan</VBtn
+              >
+            </VCardActions>
+          </VCard>
+        </VForm>
       </VDialog>
     </template>
   </SHLNVerfikasiLayout>
