@@ -24,6 +24,7 @@ const headers: any = [
 const submission = ref([]);
 const currentPage = ref(1);
 const itemPerPage = ref(10);
+const totalItems = ref(0);
 
 // const filteredSubmissions = computed(() => {
 //   if (!searchQuery.value) return submission.value;
@@ -135,6 +136,7 @@ const handleLoadList = async () => {
     if (response.code === 2000) {
       submission.value = response.data;
       currentPage.value = response.current_page;
+      totalItems.value = response.total_item;
     }
     return response;
   } catch (error) {
@@ -223,18 +225,19 @@ onMounted(() => {
       </VRow>
       <VRow>
         <VCol>
-          <VDataTable
+          <VDataTableServer
+            class="elevation-1 custom-table"
             :headers="headers"
             :items="submission"
-            class="elevation-1 custom-table"
-            fixed-header
+            :items-length="totalItems"
+            v-model:page="currentPage"
+            v-model:items-per-page="itemPerPage"
+            :items-per-page-options="[5, 25, 50, 100]"
+            @update:options="handleLoadList"
             :hide-default-footer="!submission.length"
-            :page="currentPage"
-            :items-per-page-options="[10, 25, 50, 100]"
-            @update:items-per-page="(v) => (itemPerPage = v)"
           >
             <template #item.no="{ index }">
-              {{ index + 1 }}
+              {{ index + 1 + (currentPage - 1) * itemPerPage }}
             </template>
             <template #item.no_daftar="{ item }: any">
               {{ item.no_daftar ? item.no_daftar : "-" }}
@@ -271,7 +274,7 @@ onMounted(() => {
                 </VRow>
               </VCard>
             </template>
-          </VDataTable>
+          </VDataTableServer>
         </VCol>
       </VRow>
     </VContainer>

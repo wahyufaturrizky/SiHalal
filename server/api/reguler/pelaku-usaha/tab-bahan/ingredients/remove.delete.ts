@@ -13,19 +13,14 @@ export default defineEventHandler(async (event: any) => {
   try {
     const runtimeConfig = useRuntimeConfig();
     const query: any = await getQuery(event);
-    const payload = await readBody(event);
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/business-actor/${query.id_reg}/cekbahan`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/self-declare/${query.id_reg}/ingredients/${query.product_id}`,
       {
-        method: "post",
+        method: "delete",
         headers: { Authorization: authHeader },
-        body: payload,
       } as any
     );
-
-    console.log(response, '<<<<');
-    
 
     return response || null;
   } catch (error) {

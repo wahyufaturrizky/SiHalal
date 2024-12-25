@@ -8,10 +8,10 @@
       <div class="text-primary">Kembali</div>
     </div>
     <VRow align="center">
-      <VCol cols="8">
+      <VCol :cols="isCanEdit() ? 8 : 12">
         <h3 class="text-h3 font-weight-bold">Detail Pengajuan Self Declare</h3>
       </VCol>
-      <VCol cols="4">
+      <VCol cols="4" v-if="isCanEdit()">
         <div class="d-flex justify-end align-center ga-2">
           <VBtn
             variant="outlined"
@@ -125,35 +125,6 @@
                 class="d-flex align-center"
                 :name-style="{ fontWeight: '600' }"
               >
-                <!-- <VRow class="d-flex align-center">
-                  <VCol cols="12">
-                    <VSelect
-                      :items="kbliDropdown"
-                      :model-value="kbliData"
-                      @update:model-value="(v) => (selectedKbli = v)"
-                      item-title="uraian_usaha"
-                      item-value="id"
-                      placeholder="Pilih KBLI"
-                      density="compact"
-                      rounded="xl"
-                      outlined
-                      menu-icon="mdi-chevron-down"
-                    >
-                      <template #append>
-                        <VBtn
-                          v-if="!isEditButtonDisabled"
-                          variant="outlined"
-                          @click="handleUpdateKbli"
-                        >
-                          Update
-                        </VBtn>
-                        <VBtn v-else variant="outlined" color="#A09BA1">
-                          Update
-                        </VBtn>
-                      </template>
-                    </VSelect>
-                  </VCol>
-                </VRow> -->
                 {{
                   submissionDetail.nama_kbli ? submissionDetail.nama_kbli : "-"
                 }}
@@ -970,11 +941,13 @@ import { formatCurrency } from "@/utils/conversionIntl";
 const defaultStatus = { color: "error", desc: "Unknown Status" };
 const statusItem = new Proxy(
   {
-    OF1: { color: "primary", desc: "Draft" },
+    OF1: { color: "grey-300", desc: "Draft" },
     OF10: { color: "success", desc: "Submitted" },
     OF11: { color: "success", desc: "Verification" },
     OF15: { color: "success", desc: "Verified" },
     OF2: { color: "error", desc: "Returned" },
+    OF280: { color: "error", desc: "Returned to PU" },
+    OF285: { color: "error", desc: "Returned By KF" },
     OF290: { color: "error", desc: "Rejected" },
     OF5: { color: "success", desc: "Invoice issued" },
     OF300: { color: "success", desc: "Halal Certified Issued" },
@@ -1291,18 +1264,15 @@ const getKbli = async () => {
 
 const getIkrarFile = async () => {
   try {
-    const response: any = await $api(
-      `/self-declare/business-actor/statement/agree`,
-      {
-        method: "get",
-        query: {
-          id_reg: submissionId,
-        },
-      }
-    );
+    const response: any = await $api(`/self-declare/business-actor/statement`, {
+      method: "get",
+      query: {
+        id_reg: submissionId,
+      },
+    });
 
     if (response.code === 2000) {
-      downloadForms.ikrar = response.data.url_download;
+      downloadForms.ikrar = response.data.file;
     }
     return response;
   } catch (error) {
@@ -1352,5 +1322,12 @@ const handleSentSubmission = async () => {
   } catch (error) {
     snackbar.sendSnackbar("Gagal mengirim pengajuan", "error");
   }
+};
+const isCanEdit = () => {
+  return (
+    registrationDetail.status == "OF1" ||
+    registrationDetail.status == "OF280" ||
+    registrationDetail.status == "OF285"
+  );
 };
 </script>

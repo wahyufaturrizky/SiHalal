@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import type { NuxtError } from 'nuxt/app'
 
 const runtimeConfig = useRuntimeConfig()
@@ -10,16 +11,19 @@ export default defineEventHandler(async (event: any) => {
         'Need to pass valid Bearer-authorization header to access this endpoint',
     })
   }
+  const body: any = await readBody(event)
 
-  const { id } = (await getQuery(event)) as {
+  const { id, id_narasi } = (await getQuery(event)) as {
     id: string
+    id_narasi: string
   }
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/business-actor/${id}/pabrik`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/lph/proses/hasil-produksi/${id}/${id_narasi}`,
     {
-      method: 'get',
+      method: 'put',
       headers: { Authorization: authorizationHeader },
+      body,
     },
   ).catch((err: NuxtError) => {
     setResponseStatus(event, 400)
