@@ -72,6 +72,11 @@ const resetForm = () => {
     tujuan: '',
     file_dok: '',
   }
+  tabs.value = '1'
+  uploadedFile.value = {
+    name: '',
+    file: null,
+  }
 }
 
 const handleRemoveFile = () => {
@@ -555,7 +560,7 @@ const handleAddOrEdit = async () => {
     else {
       body = {
         nama_produk: payloadHasilProduksi.value?.nama_produk,
-        file_dok: uploadedFile.value?.file,
+        file_dok: formAddLayout.value.file_layout || uploadedFile.value?.file,
       }
     }
 
@@ -623,7 +628,7 @@ const handleAddOrEdit = async () => {
     else {
       body = {
         nama_produk: payloadHasilDistribusi.value?.nama_produk,
-        file_dok: uploadedFile.value?.file,
+        file_dok: formAddLayout.value.file_layout || payloadHasilDistribusi.value?.file,
       }
     }
 

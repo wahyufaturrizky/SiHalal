@@ -326,6 +326,36 @@ const addProduct = async () => {
       useSnackbar().sendSnackbar('Sukses menambah data', 'success')
     }
   }
+  else if (titleDialog.value === 'Ubah Nama Produk') {
+    const response: any = await $api(
+      '/reguler/pelaku-usaha/tab-bahan/products/update',
+        {
+        method: 'put',
+        params: { id_reg: id, product_id: itemDetail.value.id },
+        body: {
+          kode_rincian: formData.value.kode_rincian || itemDetail.value.koderincian,
+          nama_produk: itemDetail.value.nama,
+          foto_produk: formData.value.foto_produk ? formData.value.foto_produk : uploadedFile.value.file,
+          merek: itemDetail.value.merek,
+        },
+      },
+    )
+
+    if (response.code === 2000) {
+      formData.value = {
+        kode_rincian: '',
+        nama_produk: '',
+        foto_produk: null,
+      }
+      uploadedFile.value = {
+        name: '',
+        file: '',
+      }
+      addDialog.value = false
+      reRender.value = !reRender.value
+      useSnackbar().sendSnackbar('Sukses menambah data', 'success')
+    }
+  }
   else if (titleDialog.value === 'Tambah Pembelian Bahan') {
     const response: any = await $api(
       '/reguler/pelaku-usaha/tab-bahan/catatan/create',
