@@ -15,6 +15,7 @@ const tableHeader: any[] = [
 ];
 
 const productData = ref([]);
+const selectedIngredient = ref([]);
 
 const route = useRoute<"">();
 const submissionId = route.params?.id as string;
@@ -34,6 +35,7 @@ const handleListProduct = async () => {
     );
 
     if (response.code === 2000) {
+      console.log("product list = ", response.data);
       productData.value = response.data ? response.data : [];
     }
     return response;
@@ -95,7 +97,7 @@ const handleUpdateProduct = async (payload: any, productId: string) => {
   }
 };
 
-const handleAddIngredient = async (payload: any) => {
+const handleAddIngredient = async (payload: any, idProduct: string) => {
   try {
     const response: any = await $api(
       `/self-declare/business-actor/product/add-ingredient`,
@@ -104,7 +106,7 @@ const handleAddIngredient = async (payload: any) => {
         body: payload,
         query: {
           id_reg: submissionId,
-          product_id: selectedProduct.value,
+          product_id: idProduct,
         },
       }
     );
@@ -266,7 +268,9 @@ onMounted(() => {
                 ></UbahProduk>
               </VListItem>
               <InputBahan
-                :product-name="detailProduct.nama"
+                :product-name="item.nama"
+                :product-id="item.id"
+                :bahan-selected="item.bahan_selected"
                 @submit="handleAddIngredient"
               />
               <!-- <VListItem

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const props = defineProps<{
   productName?: string | null;
+  productId?: string | null;
+  bahanSelected: any;
 }>();
 const listBahan: any = ref([]);
 
@@ -22,6 +24,7 @@ const handleListIngredient = async () => {
 
     if (response.code === 2000) {
       listBahan.value = response.data ? response.data : [];
+      selectedBahan.value = props.bahanSelected;
     }
     return response;
   } catch (error) {
@@ -41,8 +44,8 @@ const addText = computed(() => {
 
 const emit = defineEmits(["submit"]);
 const handleSubmit = () => {
-  emit("submit", selectedBahan.value);
-  selectedBahan.value = [];
+  emit("submit", selectedBahan.value, props.productId);
+  // selectedBahan.value = [];
 };
 </script>
 
@@ -92,6 +95,7 @@ const handleSubmit = () => {
                   :label="item.nama_bahan"
                   :value="item.id"
                   v-model="selectedBahan"
+                  @change="console.log('selected bahan', selectedBahan)"
                 ></VCheckbox>
               </div>
             </VCol>
