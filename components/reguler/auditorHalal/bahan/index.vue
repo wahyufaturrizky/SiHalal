@@ -100,9 +100,9 @@ const payNote = ref(
       { title: 'No.', key: 'no', nowrap: true },
       { title: 'Nama', key: 'nama', nowrap: true },
       { title: 'Tipe Penambahan', key: 'addType', nowrap: true },
-      { title: 'Jumlah', key: 'materialName', nowrap: true },
-      { title: 'Tanggal Pembelian', key: 'materialName', nowrap: true },
-      { title: 'File Dokumen', key: 'materialName', nowrap: true },
+      { title: 'Jumlah', key: 'jumlah', nowrap: true },
+      { title: 'Tanggal Pembelian', key: 'tgl_pembelian', nowrap: true },
+      { title: 'File Dokumen', key: 'FileDok', nowrap: true },
       { title: 'Action', value: 'actionEdit', sortable: false, nowrap: true, popOver: true },
     ],
     value: [],
@@ -115,9 +115,9 @@ const materialCheck = ref(
       { title: 'No.', key: 'no', nowrap: true },
       { title: 'Nama', key: 'nama', nowrap: true },
       { title: 'Tipe Penambahan', key: 'addType', nowrap: true },
-      { title: 'Lokasi', key: 'location', nowrap: true },
-      { title: 'Tanggal Pembelian', key: 'buyData', nowrap: true },
-      { title: 'File Dokumen', key: 'file', nowrap: true },
+      { title: 'Lokasi', key: 'lokasi', nowrap: true },
+      { title: 'Tanggal Pembelian', key: 'tgl_pembelian', nowrap: true },
+      { title: 'File Dokumen', key: 'FileDok', nowrap: true },
       { title: 'Action', value: 'actionEdit', sortable: false, nowrap: true, popOver: true },
     ],
     value: [],
@@ -200,7 +200,7 @@ const getListCatatan = async () => {
     if (response.code === 2000) {
       payNote.value = {
         ...payNote.value,
-        value: response.data,
+        value: response.data || [],
       }
 
       return response;
@@ -228,7 +228,7 @@ const getListFormulir = async () => {
     if (response.code === 2000) {
       materialCheck.value = {
         ...materialCheck.value,
-        value: response.data
+        value: response.data || []
       }
 
       return response;
@@ -253,7 +253,7 @@ const loadItemProductClasifications = async () => {
     );
 
     if (response.code === 2000) {
-      dataProductClasification.value = response.data;
+      dataProductClasification.value = response.data || [];
 
       return response;
     } else {
@@ -345,6 +345,8 @@ const addProduct = async () => {
   }
   else if (titleDialog.value === 'Ubah Pembelian Bahan') {
     let body: any = {}
+    let url = ''
+    let method = ''
     if (tabBahan.value === 0) {
       body = {
         id_reg_bahan: itemDetail.value.id_reg_bahan,
@@ -364,11 +366,20 @@ const addProduct = async () => {
       }
     }
 
+    if (itemDetail.value.id_reg_bahan_pembelian !== '') {
+      method = 'put'
+      url = '/reguler/pelaku-usaha/tab-bahan/catatan/update'
+    }
+    else {
+      method = 'post'
+      url = '/reguler/pelaku-usaha/tab-bahan/catatan/create'
+    }
+
     const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-bahan/catatan/update',
+      url,
       {
-        method: 'put',
-        params: { id_reg: id, product_id: itemDetail.value?.id_reg_bahan },
+        method,
+        params: { id_reg: id, product_id: itemDetail.value?.id_reg_bahan_pembelian },
         body,
       },
     )
@@ -387,11 +398,13 @@ const addProduct = async () => {
   }
   else if (titleDialog.value === 'Ubah Formulir Pemeriksaan Bahan') {
     let body: any = {}
+    let url = ''
+    let method = ''
     if (tabBahan.value === 0) {
       body = {
         id_reg_bahan: itemDetail.value.id_reg_bahan,
         nama: itemDetail.value.nama,
-        jumlah: +itemDetail.value.jumlah,
+        lokasi: itemDetail.value.lokasi,
         tgl_pembelian: formatToISOString(itemDetail.value.tgl_pembelian),
         file_dok: formData.value.foto_produk,
       }
@@ -400,17 +413,27 @@ const addProduct = async () => {
       body = {
         id_reg_bahan: itemDetail.value.id_reg_bahan,
         nama: itemDetail.value.nama,
-        jumlah: +itemDetail.value.jumlah,
+        lokasi: itemDetail.value.lokasi,
         tgl_pembelian: formatToISOString(itemDetail.value.tgl_pembelian),
         file_dok: itemDetail.value.FileDok || '',
       }
     }
+    
+
+    if (itemDetail.value.id_reg_bahan_pembelian !== '') {
+      method = 'put'
+      url = '/reguler/pelaku-usaha/tab-bahan/formulir/update'
+    }
+    else {
+      method = 'post'
+      url = '/reguler/pelaku-usaha/tab-bahan/formulir/create'
+    }
 
     const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-bahan/formulir/update',
+      url,
       {
-        method: 'put',
-        params: { id_reg: id, product_id: itemDetail.value?.id_reg_bahan },
+        method,
+        params: { id_reg: id, product_id: itemDetail.value?.id_reg_bahan_cek },
         body,
       },
     )
@@ -439,10 +462,25 @@ const getDetailProduk = async (productId: string) => {
   )
 
   if (response.code === 2000) {
-    itemDetail.value = response.data
+    itemDetail.value = response.data || {}
     addDialog.value = true
     titleDialog.value = 'Ubah Nama Produk'
     labelSaveBtn.value = 'Ubah'
+  }
+}
+
+const deleteIngredient = async (productId: string) => {
+  const response: any = await $api(
+    '/reguler/pelaku-usaha/tab-bahan/ingredients/remove',
+    {
+      method: 'delete',
+      params: { id_reg: id, product_id: productId },
+    },
+  )
+
+  if (response.code === 2000) {
+    reRender.value = !reRender.value
+    useSnackbar().sendSnackbar('Sukses menghapus data', 'success')
   }
 }
 
@@ -476,7 +514,7 @@ const getListIngredients = async () => {
     if (response.code === 2000) {
       materialName.value = {
         ...materialName.value,
-        value: response.data,
+        value: response.data || [],
       }
       reRender.value = !reRender.value
     }
@@ -601,7 +639,7 @@ onMounted(async () => {
           <div>
             <label>Kualitas Produk</label>
             <VSelect
-              v-model="itemDetail.koderincian"
+              v-model="itemDetail.klasifikasi"
               outlined
               placeholder="pilih kualitas produk"
               density="compact"
@@ -614,7 +652,7 @@ onMounted(async () => {
             <br>
             <label>Rincian Produk</label>
             <VSelect
-              v-model="itemDetail.koderincian"
+              v-model="itemDetail.koderincian_desc"
               outlined
               placeholder="pilih rincian produk"
               density="compact"
@@ -1130,15 +1168,6 @@ onMounted(async () => {
                 />
               </div>
               <div class="mt-5">
-                <label>Jumlah</label>
-                <VTextField
-                  v-model="itemDetail.jumlah"
-                  class="mt-2"
-                  density="compact"
-                  placeholder="Isi Nama"
-                />
-              </div>
-              <div class="mt-5">
                 <label>Tanggal Pembelian</label>
                 <VueDatePicker
                   id="tanggal_daftar"
@@ -1159,6 +1188,7 @@ onMounted(async () => {
       :on-add="() => toggleAdd('Data Bahan')"
       :on-edit="(el: any) => toggleEdit(el, 'Data Bahan')"
       :on-detail="(el: any) => toggleDetail(el, 'Data Bahan')"
+      :on-delete="(item: any) => deleteIngredient(item.id)"
       :data="materialName"
       :refresh="refresh"
       title="Daftar Nama Bahan dan Kemasan"
