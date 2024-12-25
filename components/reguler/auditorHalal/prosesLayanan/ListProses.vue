@@ -984,6 +984,7 @@ watch(selectedFactory, () => {
                   Jumlah
                 </label>
                 <VTextField
+                  v-model="detailItem.jumlah"
                   class="-mt-10"
                   placeholder="isi nama bahan"
                 />
