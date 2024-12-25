@@ -7,6 +7,8 @@ const route = useRoute();
 
 const selfDeclareId = (route.params as any).id;
 const isFormError = ref(false);
+const loadingAll = ref(true);
+const listPenetapan = ref([]);
 
 const emit = defineEmits(["refresh"]);
 
@@ -100,7 +102,6 @@ const updateData = async () => {
         },
       }
     );
-    console.log("@res", res);
 
     if (res?.code === 2000) {
       loadingAdd.value = false;
@@ -126,6 +127,41 @@ const checkIsFieldEMpty = (data: any) => {
 
 const { mdAndUp } = useDisplay();
 const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
+
+const loadItemPenetapan = async () => {
+  try {
+    const response: any = await $api("/master/penetapan", {
+      method: "get",
+    });
+
+    if (response.length) {
+      listPenetapan.value = response;
+
+      return response;
+    } else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+onMounted(async () => {
+  const res = await Promise.all([loadItemPenetapan()]);
+
+  const checkResIfUndefined = res.every((item: any) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
+});
 </script>
 
 <template>
@@ -134,7 +170,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
   </VBtn>
 
   <VDialog v-model="addDialog" :max-width="dialogMaxWidth">
-    <VCard>
+    <VCard v-if="!loadingAll">
       <VCardTitle>
         <VRow>
           <VCol cols="10"><h3>Unggah Ketetapan Halal</h3></VCol>
@@ -176,7 +212,9 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               <VLabel>Penetapan</VLabel>
               <VSelect
                 v-model="formData.penetapan"
-                :items="['Ditetapkan Halal']"
+                :items="listPenetapan"
+                item-title="name"
+                item-value="code"
                 placeholder="Pilih Jenis Dokumen"
                 density="compact"
               />
@@ -233,5 +271,10 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
         </div>
       </VCardActions>
     </VCard>
+
+    <VSkeletonLoader
+      v-else
+      type="table-heading, list-item-two-line, image, table-tfoot"
+    />
   </VDialog>
 </template>
