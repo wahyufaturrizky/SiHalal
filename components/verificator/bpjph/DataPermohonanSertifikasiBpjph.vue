@@ -1,199 +1,255 @@
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits } from 'vue'
-import { VDataTableServer } from 'vuetify/components'
+import {
+  MasterBadanUsaha,
+  type MasterProvince,
+} from "@/server/interface/master.iface";
+import { computed, defineEmits, defineProps, ref } from "vue";
+import { VDataTableServer } from "vuetify/components";
 
 // Props and Emits
-defineProps({ mode: String })
+defineProps({ mode: String });
 
-const emit = defineEmits(['confirm-add', 'cancel']);
+const emit = defineEmits(["confirm-add", "cancel"]);
 
 // State variables
-const isModalOpen = ref(false)
+const isModalOpen = ref(false);
 interface DataItem {
-  id: number
-  id_daftar: string
-  TanggalDaftar: string
-  Nama: string
-  Alamat: string
-  JenisProduk: string
-  MerkDagang: string
-  Status: string
+  id: number;
+  id_daftar: string;
+  TanggalDaftar: string;
+  Nama: string;
+  Alamat: string;
+  JenisProduk: string;
+  MerkDagang: string;
+  Status: string;
+}
+interface ItemList {
+  id_reg: string;
+  jenis_daftar: string;
+  jenis_produk: string;
+  jenis_usaha: string;
+  provinsi: string;
+  jumlah_produk: number;
+  nama_pu: string;
+  no_daftar: string;
+  status: string;
+  id_status: string;
+  tgl_daftar: string;
 }
 
-const selectedItems = ref<DataItem[]>([])
+const selectedItems = ref<DataItem[]>([]);
 
 // Dummy data for table
 // Dummy data for the table
-const tableData = ref([
-  {
-    id: 1,
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-01',
-    TanggalSubmit: '2024-11-01 11:42:52',
-    Nama: 'Dapoer Boenda',
-    provinsi: 'Jawa Barat',
-    JenisDaftar: 'Baru',
-    JenisProduk: 'Produk Bakteri',
-    JenisUsaha: 'Micro',
-    Jumlah: 32,
-    Status: 'Verifikasi',
-  },
-  {
-    id: 2,
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-02',
-    TanggalSubmit: '2024-11-01 11:42:52',
-    Nama: 'Dapoer Boenda',
-    provinsi: 'Jawa Barat',
-    JenisDaftar: 'SIUP',
-    JenisProduk: 'Produk Bakteri',
-    JenisUsaha: 'Besar',
-    Jumlah: 32,
-    Status: 'Verifikasi',
-  },
-  {
-    id: 3,
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-03',
-    TanggalSubmit: '2024-11-01 11:42:52',
-    Nama: 'Dapoer Boenda',
-    provinsi: 'Jawa Barat',
-    JenisDaftar: 'Baru',
-    JenisProduk: 'Produk Bakteri',
-    JenisUsaha: 'Micro',
-    Jumlah: 32,
-    Status: 'Verifikasi',
-  },
-  {
-    id: 4,
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-04',
-    TanggalSubmit: '2024-11-01 11:42:52',
-    Nama: 'Dapoer Boenda',
-    provinsi: 'Jawa Barat',
-    JenisDaftar: 'SIUP',
-    JenisProduk: 'Produk Bakteri',
-    JenisUsaha: 'Besar',
-    Jumlah: 32,
-    Status: 'Verifikasi',
-  },
-  {
-    id: 5,
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-05',
-    TanggalSubmit: '2024-11-01 11:42:52',
-    Nama: 'Dapoer Boenda',
-    provinsi: 'Jawa Barat',
-    JenisDaftar: 'Baru',
-    JenisProduk: 'Produk Bakteri',
-    JenisUsaha: 'Micro',
-    Jumlah: 32,
-    Status: 'Verifikasi',
-  },
-])
+const tableData = ref<ItemList[]>([]);
 
-const itemPerPage = ref(10)
-const totalItems = ref(0)
-const loading = ref(false)
-const page = ref(1)
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const loading = ref(false);
+const page = ref(1);
 
 // Table headers
 const permohonanHeaders = [
-  { title: 'No', key: 'id', align: 'center' },
-  { title: 'Pilih', key: 'pilih' },
-  { title: 'Nomor Daftar', key: 'nomor_daftar' },
-  { title: 'Tanggal Daftar', key: 'TanggalDaftar' },
-  { title: 'Tanggal Submit', key: 'TanggalSubmit' },
-  { title: 'Nama PU', key: 'Nama' },
-  { title: 'Provinsi', key: 'provinsi' },
-  { title: 'Jenis Daftar', key: 'JenisDaftar' },
-  { title: 'Jenis Produk', key: 'JenisProduk' },
-  { title: 'Jenis Usaha dan Jumlah', key: 'jenis_usaha_jumlah' },
-  { title: 'Status', key: 'Status' },
-  { title: 'Action', key: 'action' },
-]
+  { title: "No", key: "index", align: "center" },
+  { title: "Pilih", key: "pilih" },
+  { title: "Nomor Daftar", key: "no_daftar" },
+  { title: "Tanggal Daftar", key: "tgl_daftar" },
+  { title: "Tanggal Submit", key: "tgl_submit" },
+  { title: "Nama PU", key: "nama_pu" },
+  { title: "Provinsi", key: "provinsi" },
+  { title: "Jenis Daftar", key: "jenis_daftar" },
+  { title: "Jenis Produk", key: "jenis_produk" },
+  { title: "Jenis Usaha dan Jumlah", key: "jenis_usaha_jumlah" },
+  { title: "Status", key: "status" },
+  { title: "Action", key: "action" },
+];
 
 // Methods
 const openModal = () => {
-  isModalOpen.value = true
-}
+  isModalOpen.value = true;
+};
 
 const closeModal = () => {
-  isModalOpen.value = false
-  emit('cancel')
-}
+  isModalOpen.value = false;
+  emit("cancel");
+};
 
-const searchQuery = ref('')
+const searchQuery = ref("");
 
 const handleInput = () => {
   debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
-}
+};
 
 const handleCancel = (message: string) => {
-  console.log('Cancel message:', message);
-}
+  console.log("Cancel message:", message);
+};
 
 const navigateAction = (id: string) => {
   navigateTo(`/sertifikasi-halal/luar-negeri/verification/${id}`);
-}
+};
 
-const loadItem = async (page, size) => {
+const loadItem = async (page, size, keyword) => {
   // Temporarily skip API call for dummy data testing
-  items.value = items.value.slice((page - 1) * size, page * size) // Paginate dummy data
-  totalItems.value = items.value.length
-}
+  try {
+    loading.value = true;
 
-const debouncedFetch = debounce(loadItem, 500)
+    const response = await $api("/reguler/verifikator/list-not-taken", {
+      method: "get",
+      params: {
+        page,
+        size,
+        keyword,
+      },
+    });
+
+    tableData.value = response.data;
+    totalItems.value = response.total_item;
+    loading.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
+  }
+};
+
+const debouncedFetch = debounce(loadItem, 500);
 // Filter state
 const showFilterMenu = ref(false);
 
 const selectedFilters = ref({
-  fasilitas: 'Semua',
-  jenisProduk: 'Semua',
-  provinsi: 'Semua',
-  lembaga: 'Semua',
-  pendamping: 'Semua',
-  kabupaten: 'Semua',
-  skalaUsaha: 'Semua',
-  jenisPengajuan: 'Semua',
-  fac: 'Semua'
-})
+  fasilitas: "Semua",
+  jenisProduk: "Semua",
+  provinsi: "",
+  lembaga: "Semua",
+  pendamping: "Semua",
+  kabupaten: "Semua",
+  skalaUsaha: "",
+  jenisPengajuan: "",
+  fac: "Semua",
+});
 
 const applyFilters = () => {
-  loadItem(page.value, itemPerPage.value, searchQuery.value, selectedFilters.value);
-}
+  loadItem(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    selectedFilters.value
+  );
+};
 
 // Check if all items are selected
-const isAllSelected = computed(() => selectedItems.value.length === tableData.value.length)
+const isAllSelected = computed(
+  () => selectedItems.value.length === tableData.value.length
+);
 
 // Toggle select all
 const toggleSelectAll = () => {
-  selectedItems.value = isAllSelected.value ? [] : tableData.value.slice()
-}
+  selectedItems.value = isAllSelected.value ? [] : tableData.value.slice();
+};
 
 // Adaptive button text
 const buttonText = computed(() =>
   selectedItems.value.length > 0
     ? `Pilih Data (${selectedItems.value.length})`
-    : 'Pilih Data',
-)
+    : "Pilih Data"
+);
 
 // Handle checkbox change
-const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaftar: string; Nama: string; Alamat: string; JenisProduk: string; MerkDagang: string; Status: string }, checked: any) => {
+const handleCheckboxChange = (
+  item: {
+    id: number;
+    id_daftar: string;
+    TanggalDaftar: string;
+    Nama: string;
+    Alamat: string;
+    JenisProduk: string;
+    MerkDagang: string;
+    Status: string;
+  },
+  checked: any
+) => {
   if (checked) {
     // Add item if not already selected
-    if (!selectedItems.value.includes(item))
-      selectedItems.value.push(item)
-  }
-  else {
+    if (!selectedItems.value.includes(item)) selectedItems.value.push(item);
+  } else {
     // Remove item by filtering out the current item
-    selectedItems.value = selectedItems.value.filter(selectedItem => selectedItem.id !== item.id)
+    selectedItems.value = selectedItems.value.filter(
+      (selectedItem) => selectedItem.id !== item.id
+    );
   }
-}
+};
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+const statusItem = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF11: { color: "success", desc: "Verification" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF280: { color: "error", desc: "Returned to PU" },
+    OF285: { color: "error", desc: "Returned By KF" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF300: { color: "success", desc: "Halal Certified Issued" },
+  },
+  {
+    get(target, prop) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
+const filterJenisPengajuan = [
+  { name: "Semua", value: "" },
+  { name: "Reguler", value: "CH001" },
+  { name: "Fasilitasi", value: "CH002" },
+];
+const filterSkalaUsaha = ref<MasterBadanUsaha[]>([]);
+const filterProvince = ref<MasterProvince[]>([]);
+const getSkalaUsaha = async () => {
+  const masterSkalaUsaha: MasterBadanUsaha[] = await $api(
+    "/master/business-entity-scale",
+    {
+      method: "get",
+    }
+  );
+  filterSkalaUsaha.value = [
+    { code: "", name: "Semua", name_eng: "All" },
+    ...masterSkalaUsaha,
+  ];
+};
+const getProvinsi = async () => {
+  const masterSkalaUsaha: MasterProvince[] = await $api("/master/province", {
+    method: "get",
+  });
+  filterProvince.value = [{ code: "", name: "Semua" }, ...masterSkalaUsaha];
+};
+const dialogVisible = ref(false);
+const selectVerifikasiItem = async (item) => {
+  try {
+    const response = await $api("/reguler/verifikator/take", {
+      method: "post",
+      body: {
+        id_reg: [item],
+      },
+    });
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("Ada kesalahan", "error");
+      return;
+    }
+    await loadItem(page.value, itemPerPage.value, searchQuery.value);
+    dialogVisible.value = false;
+    useSnackbar().sendSnackbar("Berhasil menyimpan data", "success");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada kesalahan", "error");
+  }
+};
+
+onMounted(async () => {
+  await Promise.all([getSkalaUsaha(), getProvinsi()]);
+});
 </script>
 
 <template>
-  <VDialog width="1200">
+  <VDialog width="1200" v-model="dialogVisible">
     <template #activator="{ props: openModal }">
       <VBtn
         variant="flat"
@@ -205,10 +261,7 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
       </VBtn>
     </template>
     <template #default="{ isActive }">
-      <VCard
-        variant="flat"
-        class="pa-4"
-      >
+      <VCard variant="flat" class="pa-4">
         <VCardTitle>
           <VRow>
             <VCol cols="10"><h3>Data Permohonan Sertifikasi</h3></VCol>
@@ -234,13 +287,26 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
           <VRow>
             <VCol cols="1">
               <div class="checkbox-container">
-                <VCheckbox v-model="isAllSelected" class="custom-checkbox" @click="toggleSelectAll" />
+                <VCheckbox
+                  v-model="isAllSelected"
+                  class="custom-checkbox"
+                  @click="toggleSelectAll"
+                />
               </div>
             </VCol>
             <VCol class="d-flex justify-start align-center" cols="2">
-              <VMenu v-model="showFilterMenu" :close-on-content-click="false" offset-y>
+              <VMenu
+                v-model="showFilterMenu"
+                :close-on-content-click="false"
+                offset-y
+              >
                 <template #activator="{ props }">
-                  <VBtn color="primary" variant="outlined" v-bind="props" append-icon="ri-filter-fill">
+                  <VBtn
+                    color="primary"
+                    variant="outlined"
+                    v-bind="props"
+                    append-icon="ri-filter-fill"
+                  >
                     Filter
                   </VBtn>
                 </template>
@@ -248,28 +314,39 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
                   <VSelect
                     v-model="selectedFilters.jenisPengajuan"
                     label="Jenis Pengajuan"
-                    :items="['Semua', 'Produk Y', 'Produk Z']"
+                    item-value="value"
+                    item-title="name"
+                    :items="filterJenisPengajuan"
                     class="mt-3"
                   />
                   <VSelect
                     v-model="selectedFilters.skalaUsaha"
                     label="Skala Usaha"
-                    :items="['Semua', 'Fasilitas A', 'Fasilitas AB']"
+                    item-value="code"
+                    item-title="name"
+                    :items="filterSkalaUsaha"
                     class="mt-3"
                   />
                   <VSelect
                     v-model="selectedFilters.provinsi"
                     label="Provinsi"
-                    :items="['Semua', 'Lembaga A', 'Lembaga B']"
+                    item-value="code"
+                    item-title="name"
+                    :items="filterProvince"
                     class="mt-3"
                   />
-                  <VSelect
+                  <!-- <VSelect
                     v-model="selectedFilters.fac"
                     label="Kode Fac"
                     :items="['Semua', 'Pendamping A', 'Pendamping B']"
                     class="mt-3"
-                  />
-                  <VBtn block color="primary" class="mt-3" @click="applyFilters">
+                  /> -->
+                  <VBtn
+                    block
+                    color="primary"
+                    class="mt-3"
+                    @click="applyFilters"
+                  >
                     Apply Filters
                   </VBtn>
                 </VCard>
@@ -291,18 +368,27 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
               :headers="permohonanHeaders"
-              style="white-space: nowrap;"
+              style="white-space: nowrap"
               :items="tableData"
               :loading="loading"
               :items-length="totalItems"
               loading-text="Loading..."
-              @update:options="loadItem(page, itemPerPage)"
+              @update:options="loadItem(page, itemPerPage, searchQuery)"
             >
-              <template #item.id="{ index }">
+              <template #item.index="{ index }">
                 {{ index + 1 + (page - 1) * itemPerPage }}
               </template>
               <template #item.tgl_daftar="{ item }">
-                {{ formatDateIntl(new Date(item.TanggalDaftar)) }}
+                {{
+                  item.tgl_daftar != undefined && item.tgl_daftar != ""
+                    ? formatDateIntl(new Date(item.tgl_daftar))
+                    : ""
+                }}
+              </template>
+              <template #item.status="{ item }">
+                <VChip :color="statusItem[item.id_status].color">
+                  {{ statusItem[item.id_status].desc }}
+                </VChip>
               </template>
               <template #item.action="{ item }">
                 <div class="d-flex gap-1">
@@ -310,70 +396,54 @@ const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaft
                     <VIcon
                       icon="ri-arrow-right-line"
                       color="primary"
-                      @click="navigateAction(item.id)"
+                      @click="selectVerifikasiItem(item.id_reg)"
                     />
-                  </IconBtn> <!-- Right arrow icon for action -->
+                  </IconBtn>
+                  <!-- Right arrow icon for action -->
                 </div>
               </template>
               <template #item.pilih="{ item }">
-                <VCheckbox
-                  v-model="selectedItems"
-                  :value="item"
-                />
+                <VCheckbox v-model="selectedItems" :value="item" />
               </template>
-              <template #item.Status="{ item }">
-                <div v-if="item.Status === 'OF74'">
-                  <div class="status-container">
-                    <VChip
-                      variant="outlined"
-                      style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
-                    >
-                      <span style="color: #49a84c;">
-                        {{ item.Status }}
-                      </span>
-                    </VChip>
-                  </div>
-                </div>
-                <div v-else>
-                  <div class="status-container">
-                    <VChip
-                      variant="outlined"
-                      style="border-color: #652672; border-radius: 8px; background-color: #f0e9f1;"
-                    >
-                      <span style="color: #652672;">
-                        {{ item.Status }}
-                      </span>
-                    </VChip>
-                  </div>
-                </div>
-              </template>
+
               <template #item.jenis_usaha_jumlah="{ item }">
-                <VContainer style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                <VContainer
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    white-space: nowrap;
+                  "
+                >
                   <VChip
                     variant="outlined"
-                    style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
+                    style="
+                      border-color: #49a84c;
+                      border-radius: 8px;
+                      background-color: #edf6ed;
+                    "
                   >
-                    <span style="color: #49a84c;">
-                      {{ item.JenisUsaha }}
+                    <span style="color: #49a84c">
+                      {{ item.jenis_usaha }}
                     </span>
                   </VChip>
                   <VChip
                     variant="outlined"
-                    style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
+                    style="
+                      border-color: #49a84c;
+                      border-radius: 8px;
+                      background-color: #edf6ed;
+                    "
                   >
-                    <span style="color: #49a84c;">
-                      {{ item.Jumlah }}
+                    <span style="color: #49a84c">
+                      {{ item.jumlah_produk }}
                     </span>
                   </VChip>
                 </VContainer>
               </template>
             </VDataTableServer>
           </VRow>
-          <VPagination
-            v-model="page"
-            :total-visible="7"
-            :length="totalPages"
-          />
+          <VPagination v-model="page" :total-visible="7" :length="totalPages" />
         </VCardText>
       </VCard>
     </template>
