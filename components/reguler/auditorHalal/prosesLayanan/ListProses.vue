@@ -415,8 +415,8 @@ const getListProduct = async () => {
   )
 
   if (response.code === 2000) {
-    listProduk.value = response.data
-    selectedProduct.value = response.data?.[0]
+    listProduk.value = response.data || []
+    selectedProduct.value = response.data?.[0] || {}
   }
 
   return response || []
@@ -494,22 +494,43 @@ const handleAddOrEdit = async () => {
       }
     }
 
-    const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-proses/update-product',
-      {
-        method: 'put',
-        query: { id, id_narasi: detailItem.value?.id_bahan_penyimpanan },
-        body,
-      },
-    )
+    if (detailItem.value?.id_bahan_penyimpanan !== '') {
+      const response: any = await $api(
+        '/reguler/pelaku-usaha/tab-proses/update-product',
+        {
+          method: 'put',
+          query: { id, id_narasi: detailItem.value?.id_bahan_penyimpanan },
+          body,
+        },
+      )
 
-    if (response.code === 2000) {
-      resetForm()
-      addDialog.value = false
-      getListLayout()
-      getListFactory()
-      getListCatatanBahan()
-      useSnackbar().sendSnackbar('Sukses menambah data', 'success')
+      if (response.code === 2000) {
+        resetForm()
+        addDialog.value = false
+        getListLayout()
+        getListFactory()
+        getListCatatanBahan()
+        useSnackbar().sendSnackbar('Sukses menambah data', 'success')
+      }
+    }
+    else {
+      const response: any = await $api(
+        '/reguler/pelaku-usaha/tab-proses/add-product',
+        {
+          method: 'post',
+          query: { id },
+          body,
+        },
+      )
+
+      if (response.code === 2000) {
+        resetForm()
+        addDialog.value = false
+        getListLayout()
+        getListFactory()
+        getListCatatanBahan()
+        useSnackbar().sendSnackbar('Sukses menambah data', 'success')
+      }
     }
   }
   else if (titleDialog.value === 'Ubah Catatan Produk') {
@@ -529,23 +550,45 @@ const handleAddOrEdit = async () => {
       }
     }
 
-    const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-proses/update',
-      {
-        method: 'put',
-        query: { id, id_narasi: detailItem.value?.id_prod_penyimpanan },
-        body,
-      },
-    )
+    if (detailItem.value?.id_prod_penyimpanan !== '') {
+      const response: any = await $api(
+        '/reguler/pelaku-usaha/tab-proses/update',
+        {
+          method: 'put',
+          query: { id, id_narasi: detailItem.value?.id_prod_penyimpanan },
+          body,
+        },
+      )
 
-    if (response.code === 2000) {
-      resetForm()
-      addDialog.value = false
-      getListLayout()
-      getListFactory()
-      getListCatatanBahan()
-      getListCatatanProduk()
-      useSnackbar().sendSnackbar('Sukses menambah data', 'success')
+      if (response.code === 2000) {
+        resetForm()
+        addDialog.value = false
+        getListLayout()
+        getListFactory()
+        getListCatatanBahan()
+        getListCatatanProduk()
+        useSnackbar().sendSnackbar('Sukses menambah data', 'success')
+      }
+    }
+    else {
+      const response: any = await $api(
+        '/reguler/pelaku-usaha/tab-proses/add-catatan-product',
+        {
+          method: 'post',
+          query: { id },
+          body,
+        },
+      )
+
+      if (response.code === 2000) {
+        resetForm()
+        addDialog.value = false
+        getListLayout()
+        getListFactory()
+        getListCatatanBahan()
+        getListCatatanProduk()
+        useSnackbar().sendSnackbar('Sukses menambah data', 'success')
+      }
     }
   }
   else if (titleDialog.value === 'Tambah Diagram Alur Proses') {
@@ -941,7 +984,6 @@ watch(selectedFactory, () => {
                   Jumlah
                 </label>
                 <VTextField
-                  v-model="selectedProduct.jumlah_bahan"
                   class="-mt-10"
                   placeholder="isi nama bahan"
                 />
