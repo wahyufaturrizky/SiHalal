@@ -237,7 +237,7 @@ onMounted(() => {
             :hide-default-footer="!submission.length"
           >
             <template #item.no="{ index }">
-              {{ index + 1 }}
+              {{ index + 1 + (currentPage - 1) * itemPerPage }}
             </template>
             <template #item.no_daftar="{ item }: any">
               {{ item.no_daftar ? item.no_daftar : "-" }}
