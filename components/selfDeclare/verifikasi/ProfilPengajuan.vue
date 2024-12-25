@@ -1,33 +1,32 @@
 <script lang="ts" setup>
-const props = defineProps({
-  data: {
-    type: Object,
-    required: true,
-  },
-});
+interface SertifikasiHalal {
+  alamat_pu: string;
+  asal_usaha: string;
+  email: string;
+  id_reg: string;
+  jenis_layanan: string;
+  jenis_produk: string;
+  jenis_usaha: string;
+  kode_pos_pu: string;
+  kota_pu: string;
+  modal_usaha: number;
+  nama_pu: string;
+  "nama_pu_sh ": string;
+  negara_pu: string;
+  no_mohon: string;
+  no_telp: string;
+  prov_pu: string;
+  skala_usaha: string;
+  tanggal: string;
+  tgl_daftar: any;
+  tingkat_usaha: string;
+}
+const props = defineProps<{data : SertifikasiHalal}>();
+const dataHalal = ref(props.data)
+watchEffect(() => {
+      dataHalal.value = props.data
+    });
 
-const { data } = props || {};
-const { importer, hcb, hcn, profile } = data || {};
-
-const dataDetail = {
-  name: importer?.name,
-  nib: profile?.nib,
-  api: profile?.api_type,
-  npwp: profile?.npwp,
-  address: importer?.address,
-  province: profile?.province,
-  regence: profile?.regency,
-  subDistrict: profile?.sub_district,
-  hcb: hcb?.hcb_id,
-  companyName: hcb?.company_name,
-  companyId: hcb?.corporate_id_number,
-  country: hcb?.country,
-  companyAddress: hcb?.address,
-  halalCertNumber: hcn?.hcn_number,
-  issuedDate: hcn?.issued_date,
-  expiredDate: hcn?.expired_date,
-  scope: hcn?.scope,
-};
 
 const selectedFilters = ref({
   fasilitas: 'Semua',
@@ -53,7 +52,7 @@ const selectedFilters = ref({
               <VListItemTitle class="font-weight-medium"> Nomor ID </VListItemTitle>
             </template>
             <VListItemSubtitle>
-              : {{ dataDetail?.name }}
+              : {{ dataHalal.id_reg }}
             </VListItemSubtitle>
           </VListItem>
 
@@ -63,7 +62,7 @@ const selectedFilters = ref({
                 Tanggal
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataDetail?.nib }}</VListItemSubtitle>
+            <VListItemSubtitle>: {{ dataHalal.tanggal }}</VListItemSubtitle>
           </VListItem>
 
           <!-- Address Information -->
@@ -74,7 +73,7 @@ const selectedFilters = ref({
                 No. Permohonan
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: Test</VListItemSubtitle>
+            <VListItemSubtitle>: {{dataHalal.no_mohon}}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -83,7 +82,7 @@ const selectedFilters = ref({
                 Tanggal Permohonan
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataDetail?.province }}</VListItemSubtitle>
+            <VListItemSubtitle>: {{ dataHalal.tgl_daftar }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -92,7 +91,7 @@ const selectedFilters = ref({
                 Jenis Layanan
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataDetail?.regence }}</VListItemSubtitle>
+            <VListItemSubtitle>: {{ dataHalal.jenis_layanan }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -101,7 +100,7 @@ const selectedFilters = ref({
                 Jenis Produk
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataDetail?.subDistrict }}</VListItemSubtitle>
+            <VListItemSubtitle>: {{ dataHalal.jenis_produk }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -110,7 +109,7 @@ const selectedFilters = ref({
                 Merek Dagang
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataDetail?.subDistrict }}</VListItemSubtitle>
+            <VListItemSubtitle>: tidak ada di backend</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -119,7 +118,7 @@ const selectedFilters = ref({
                 Area Pemasaran
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataDetail?.subDistrict }}</VListItemSubtitle>
+            <VListItemSubtitle>: tidak ada di backend</VListItemSubtitle>
           </VListItem>
           <!-- Company Information -->
           <VDivider class="my-2" />
@@ -129,7 +128,7 @@ const selectedFilters = ref({
                 Nama Perusahaan
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataDetail?.hcb }}</VListItemSubtitle>
+            <VListItemSubtitle>: {{ dataHalal.nama_pu }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -138,7 +137,7 @@ const selectedFilters = ref({
                 Nama Perusahaan tertera di SH
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataDetail?.hcb }}</VListItemSubtitle>
+            <VListItemSubtitle>: {{ dataHalal['nama_pu_sh '] }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -147,7 +146,7 @@ const selectedFilters = ref({
                 Nama KBLI
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataDetail?.companyName }}</VListItemSubtitle>
+            <VListItemSubtitle>:tidak ada di backend</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -156,7 +155,7 @@ const selectedFilters = ref({
                 Alamat
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataDetail?.companyId }}</VListItemSubtitle>
+            <VListItemSubtitle>: {{ dataHalal.alamat_pu}}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -165,7 +164,7 @@ const selectedFilters = ref({
                 Kota/Kab
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataDetail?.country }}</VListItemSubtitle>
+            <VListItemSubtitle>: {{ dataHalal.kota_pu }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -175,7 +174,7 @@ const selectedFilters = ref({
               </VListItemTitle>
             </template>
             <VListItemSubtitle>
-              : {{ dataDetail?.companyAddress }}
+              : {{ dataHalal.prov_pu }}
             </VListItemSubtitle>
           </VListItem>
 
@@ -186,7 +185,7 @@ const selectedFilters = ref({
               </VListItemTitle>
             </template>
             <VListItemSubtitle>
-              : {{ dataDetail?.companyAddress }}
+              : {{ dataHalal.kode_pos_pu }}
             </VListItemSubtitle>
           </VListItem>
 
@@ -197,7 +196,7 @@ const selectedFilters = ref({
               </VListItemTitle>
             </template>
             <VListItemSubtitle>
-              : {{ dataDetail?.companyAddress }}
+              : {{ dataHalal.negara_pu }}
             </VListItemSubtitle>
           </VListItem>
 
@@ -208,7 +207,7 @@ const selectedFilters = ref({
               </VListItemTitle>
             </template>
             <VListItemSubtitle>
-              : {{ dataDetail?.companyAddress }}
+              : {{ dataHalal.no_telp }}
             </VListItemSubtitle>
           </VListItem>
 
@@ -219,7 +218,7 @@ const selectedFilters = ref({
               </VListItemTitle>
             </template>
             <VListItemSubtitle>
-              : {{ dataDetail?.companyAddress }}
+              : {{ dataHalal.email }}
             </VListItemSubtitle>
           </VListItem>
 
@@ -232,7 +231,7 @@ const selectedFilters = ref({
               </VListItemTitle>
             </template>
             <VListItemSubtitle>
-              : {{ dataDetail?.halalCertNumber }}
+              : {{ dataHalal.jenis_usaha }}
             </VListItemSubtitle>
           </VListItem>
 
@@ -242,24 +241,8 @@ const selectedFilters = ref({
                 Skala Usaha
               </VListItemTitle>
             </template>
-            <VListItemSubtitle class="d-flex align-center">
-              <span class="mr-2">:</span>
-              <VSelect
-                v-model="selectedFilters.kabupaten"
-                :items="['Mikro', 'Makro', 'Maroco']"
-                density="compact"
-                outlined
-                style="max-width: 200px;"
-              />
-              <VBtn
-                color="primary"
-                variant="outlined"
-                dense
-                class="ml-2"
-                @click="applyFilters"
-              >
-                Update
-              </VBtn>
+            <VListItemSubtitle>
+              : {{ dataHalal.skala_usaha }}
             </VListItemSubtitle>
           </VListItem>
 
@@ -269,7 +252,7 @@ const selectedFilters = ref({
                 Modal Dasar
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataDetail?.expiredDate }}</VListItemSubtitle>
+            <VListItemSubtitle>: {{ dataHalal.modal_usaha }}</VListItemSubtitle>
           </VListItem>
         </VList>
       </VCol>

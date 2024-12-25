@@ -1,20 +1,14 @@
 <script lang="ts" setup>
-const props = defineProps({
-  data: {
-    type: Object,
-    required: true,
-  },
-});
-
-const { data } = props || {};
-const { importer, hcb, hcn, profile } = data || {};
-
-const dataDetail = {
-  name: "Sumayah",
-  contact: "081234567899",
-  email: "rasarasaa@gmail.com"
-};
-
+interface PenanggungJawab {
+  email_pj: string;
+  nama_pj: string;
+  no_kontak_pj: string;
+}
+const props = defineProps<{data : PenanggungJawab}>();
+const dataPenanggung = ref(props.data)
+watchEffect(() => {
+      dataPenanggung.value = props.data
+    });
 const selectedFilters = ref({
   fasilitas: 'Semua',
   jenisProduk: 'Semua',
@@ -39,7 +33,7 @@ const selectedFilters = ref({
               <VListItemTitle class="font-weight-medium"> Name </VListItemTitle>
             </template>
             <VListItemSubtitle>
-              : {{ dataDetail?.name }}
+              : {{ dataPenanggung.nama_pj }}
             </VListItemSubtitle>
           </VListItem>
 
@@ -49,7 +43,7 @@ const selectedFilters = ref({
                 Nomor Kontak
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataDetail?.contact }}</VListItemSubtitle>
+            <VListItemSubtitle>: {{ dataPenanggung.no_kontak_pj }}</VListItemSubtitle>
           </VListItem>
           <VListItem>
             <template #prepend>
@@ -57,7 +51,7 @@ const selectedFilters = ref({
                 Email
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataDetail?.email }}</VListItemSubtitle>
+            <VListItemSubtitle>: {{ dataPenanggung.email_pj }}</VListItemSubtitle>
           </VListItem>
         </VList>
       </VCol>

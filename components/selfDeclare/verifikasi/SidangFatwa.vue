@@ -1,45 +1,17 @@
 <script lang="ts" setup>
-const props = defineProps({
-  data: {
-    type: Object,
-    required: true,
-  },
-});
+interface SidangFatwa {
+  dokumen: string;
+  nomor_penetapan: string;
+  penetapan: string;
+  tanggal_penetapan: string;
+}
+const props = defineProps<{data :SidangFatwa}>();
+const dataDetail = ref(props.data);
+watchEffect(() =>{
+  dataDetail.value = props.data
+})
 
 const { data } = props || {};
-const { importer, hcb, hcn, profile } = data || {};
-
-const dataDetail = {
-  name: importer?.name,
-  nib: profile?.nib,
-  api: profile?.api_type,
-  npwp: profile?.npwp,
-  address: importer?.address,
-  province: profile?.province,
-  regence: profile?.regency,
-  subDistrict: profile?.sub_district,
-  hcb: hcb?.hcb_id,
-  companyName: hcb?.company_name,
-  companyId: hcb?.corporate_id_number,
-  country: hcb?.country,
-  companyAddress: hcb?.address,
-  halalCertNumber: hcn?.hcn_number,
-  issuedDate: hcn?.issued_date,
-  expiredDate: hcn?.expired_date,
-  scope: hcn?.scope,
-};
-
-const selectedFilters = ref({
-  fasilitas: 'Semua',
-  jenisProduk: 'Semua',
-  provinsi: 'Semua',
-  lembaga: 'Semua',
-  pendamping: 'Semua',
-  kabupaten: 'Semua',
-  skalaUsaha: 'Semua',
-  jenisPengajuan: 'Semua',
-  fac: 'Semua'
-})
 </script>
 
 <template>
@@ -47,22 +19,22 @@ const selectedFilters = ref({
   <VRow>
     <VCol cols="3"> Nomor Penetapan </VCol>
     <VCol cols="1"> : </VCol>
-    <VCol cols="8">-</VCol>
+    <VCol cols="8">{{dataDetail.nomor_penetapan}}</VCol>
   </VRow>
   <VRow>
     <VCol cols="3"> Tanggal Penetapan</VCol>
     <VCol cols="1"> : </VCol>
-    <VCol cols="8"> - </VCol>
+    <VCol cols="8"> {{dataDetail.tanggal_penetapan}} </VCol>
   </VRow>
   <VRow>
     <VCol cols="3"> Hasil Penetapan</VCol>
     <VCol cols="1"> : </VCol>
-    <VCol cols="8"> - </VCol>
+    <VCol cols="8"> {{dataDetail.penetapan}} </VCol>
   </VRow>
   <VRow>
     <VCol cols="3"> Dokumen </VCol>
     <VCol cols="1"> : </VCol>
-    <VCol cols="8"> - </VCol>
+    <VCol cols="8"> {{dataDetail.dokumen}} </VCol>
   </VRow>
 </VContainer>
 </template>
