@@ -490,7 +490,7 @@ const getDetail = async () => {
 
 const handleSubmitDokumen = async () => {
   if (titleDialog.value === 'Tambah Dokumen' || titleDialog.value === 'Ubah Dokumen')
-    await handleAddOrEditDokumenLainya
+    await handleAddOrEditDokumenLainya()
 
   if (titleDialog.value === 'Tambah Tanda Tangan' || titleDialog.value === 'Ubah Tanda Tangan')
     await addTtd()
