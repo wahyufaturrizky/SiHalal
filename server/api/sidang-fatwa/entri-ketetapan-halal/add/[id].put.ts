@@ -1,9 +1,10 @@
 import type { NuxtError } from "nuxt/app";
-import type { NewAccountGovernment } from "~/server/interface/new-account.iface";
+import { NewAccountGovernment } from "~/server/interface/new-account.iface";
 
 const runtimeConfig = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
+  const id = getRouterParam(event, "id");
 
   if (typeof authorizationHeader === "undefined") {
     throw createError({
@@ -16,7 +17,7 @@ export default defineEventHandler(async (event) => {
   const body: NewAccountGovernment = await readBody(event);
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/bahan/add`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/sidang-fatwa/entri-ketetapan-halal/update/${id}`,
     {
       method: "post",
       headers: { Authorization: authorizationHeader },

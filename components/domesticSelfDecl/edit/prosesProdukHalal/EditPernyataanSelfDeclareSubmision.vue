@@ -46,6 +46,7 @@ const submissionDetail = reactive({
   email: null,
   jenis_produk: null,
   nama_pj: null,
+  file: null,
 });
 
 const handleGetDeclare = async () => {
@@ -59,6 +60,11 @@ const handleGetDeclare = async () => {
 
     if (response.code === 2000) {
       Object.assign(submissionDetail, response.data);
+      pledgeFile.value = response.data.file;
+      if (pledgeFile) {
+        aggreButtonDisable.value = true;
+        showDownloadButton.value = true;
+      }
     }
     return response;
   } catch (error) {
@@ -80,46 +86,102 @@ onMounted(() => {
       <p>Yang bertandatangan di bawah ini sebagai Pelaku Usaha :</p>
       <VRow>
         <VCol cols="8">
-          <InfoRow name="Nama Pemilik Usaha">{{
-            submissionDetail.nama_pemilik ? submissionDetail.nama_pemilik : "-"
-          }}</InfoRow>
-          <InfoRow name="Nama Usaha">{{
+          <InfoRow
+            name="Nama Pemilik Usaha"
+            class="text"
+            :name-style="{ fontWeight: '700' }"
+            >{{
+              submissionDetail.nama_pemilik
+                ? submissionDetail.nama_pemilik
+                : "-"
+            }}</InfoRow
+          >
+          <InfoRow name="Nama Usaha" :name-style="{ fontWeight: '700' }">{{
             submissionDetail.nama_usaha ? submissionDetail.nama_usaha : "-"
           }}</InfoRow>
-          <InfoRow name="Alamat Usaha">{{
+          <InfoRow name="Alamat Usaha" :name-style="{ fontWeight: '700' }">{{
             submissionDetail.alamat_usaha ? submissionDetail.alamat_usaha : "-"
           }}</InfoRow>
-          <InfoRow name="Alamat Tempat Usaha">{{
-            submissionDetail.alamat_tempat_usaha
-              ? submissionDetail.alamat_tempat_usaha
-              : "-"
+          <InfoRow
+            name="Alamat Tempat Produksi"
+            :name-style="{ fontWeight: '700' }"
+            >{{
+              submissionDetail.alamat_tempat_usaha
+                ? submissionDetail.alamat_tempat_usaha
+                : "-"
+            }}</InfoRow
+          >
+          <InfoRow name="Telepon" :name-style="{ fontWeight: '700' }">{{
+            submissionDetail.no_telp ? submissionDetail.no_telp : "+"
           }}</InfoRow>
-          <InfoRow name="Nomor Handphone">{{
-            submissionDetail.no_telp ? submissionDetail.no_telp : "-"
-          }}</InfoRow>
-          <InfoRow name="Email">{{
+          <InfoRow name="Email" :name-style="{ fontWeight: '700' }">{{
             submissionDetail.email ? submissionDetail.email : "-"
           }}</InfoRow>
-          <InfoRow name="Jenis Produk">{{
+          <InfoRow name="Jenis Produksi" :name-style="{ fontWeight: '700' }">{{
             submissionDetail.jenis_produk ? submissionDetail.jenis_produk : "-"
           }}</InfoRow>
 
           <br />
           <p>Dengan ini menyatakan:</p>
-          <ol class="pl-4">
-            <li>Menggunakan bahan yang sudah dipastikan kehalalannya</li>
-            <li>
-              Memproduksi dan mengolah produk sesuai dengan persyaratan
-              kehalalan
-            </li>
-            <li>Menghasilkan produk yang dipastikan kehalalan nya; dan</li>
-          </ol>
-          <p>
-            Semua informasi yang disampaikan dalam akad/ikrar ini adalah benar,
-            Apabila ditemukan dan/atau dibuktikan adanya penipuan/pemalsuan atas
-            informasi yang kami sampaikan, maka kami bersedia dikenakan dan
-            menerima penetapan sangsi
-          </p>
+          <div class="ps-7">
+            <ol>
+              <li>Menggunakan bahan yang sudah dipastikan kehalalannya;</li>
+              <li>
+                Memproduksi dan mengolah produk sesuai dengan persyaratan
+                kehalalan; dan
+              </li>
+              <li>Menghasilkan produk yang dipastikan kehalalan nya;</li>
+              <li>
+                Memiliki Penyelia Halal sesuai ketentuan peraturan
+                perundang-undangan;
+              </li>
+              <li>
+                Apabila kami memperoleh/memperpanjang Sertifikat Halal akan:
+              </li>
+              <div class="ps-7">
+                <ol type="a">
+                  <li>
+                    Mencantumkan Label Halal terhadap Produk yang telah mendapat
+                    Sertifikat Halal;
+                  </li>
+                  <li>
+                    Menjaga kehalalan Produk yang telah memperoleh Sertifikat
+                    Halal;
+                  </li>
+                  <li>
+                    Memberikan informasi penyimpanan, distribusi, pengolahan,
+                    penyajian, pengemasan, dan/atau bahan yang digunakan kepada
+                    BPJPH dan/atau LPPOM MUI;
+                  </li>
+                  <li>
+                    Memisahkan lokasi, tempat, dan alat penyembelihan, alat
+                    pengolahan, penyimpanan, pengemasan, dan distribusi yang
+                    halal dengan yang tidak halal;
+                  </li>
+                  <li>
+                    Melaporkan perubahan komposisi bahan dan perubahan PPH
+                    kepada BPJPH.
+                  </li>
+                </ol>
+              </div>
+              <li>
+                Apabila ditemukan informasi dan/atau pernyataan dalam pernyataan
+                dalam pernyataan ini tidak benar, atau kami tidak memenuhi
+                kewajiban sesuai dengan ketentuan peraturan perundang-undangan,
+                bersedia dijatuhkan:
+              </li>
+              <div class="ps-7">
+                <ol type="a">
+                  <li>Sanksi administratif;</li>
+                  <li>Peringatan tertulis;</li>
+                  <li>Denda administratif;</li>
+                  <li>Pencabutan sertifikat Halal; dan/atau</li>
+                  <li>Pencabutan pernyataan pelaku usaha.</li>
+                </ol>
+              </div>
+            </ol>
+          </div>
+          <br />
           <p>
             Demikian akad/ikrar pernyataan Pelaku Usaha ini kami buat untuk
             digunakan secara semestinya
@@ -134,9 +196,10 @@ onMounted(() => {
           <br />
           <br />
           <div class="dots">
-            {{ submissionDetail.nama_pj ? submissionDetail.nama_pj : "-" }}
+            <!-- {{ submissionDetail.nama_pj ? submissionDetail.nama_pj : "-" }} -->
+            Pelaku Usaha
           </div>
-          <p>Penanggung Jawab Produk Halal</p>
+          <!-- <p>Penanggung Jawab Produk Halal</p> -->
         </VCol>
       </VRow>
     </VCardText>
@@ -149,10 +212,11 @@ onMounted(() => {
         >Download ikrar</VBtn
       >
       <VBtn
-        @click="handleAgree"
+        @click="aggreButtonDisable ? handleAgree : null"
         variant="flat"
         min-width="120px"
-        :disabled="aggreButtonDisable"
+        class="text-white"
+        :color="aggreButtonDisable ? '#A09BA1' : 'primary'"
         :loading="loadingAgree"
         >Setuju</VBtn
       >

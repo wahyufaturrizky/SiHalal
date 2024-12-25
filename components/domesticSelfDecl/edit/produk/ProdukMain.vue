@@ -17,7 +17,7 @@ const tableHeader: any[] = [
 const productData = ref([]);
 
 const route = useRoute<"">();
-const submissionId = route.params?.id;
+const submissionId = route.params?.id as string;
 const { refresh } = await useAsyncData("list-product", async () => {
   return handleListProduct();
 });
@@ -42,9 +42,9 @@ const handleListProduct = async () => {
   }
 };
 
-const handleSubmit = (payload: any) => {
-  if (modalUse.value === "CREATE") handleAddProduct(payload);
-  if (modalUse.value === "UPDATE") handleUpdateProduct(payload);
+const handleSubmit = async (payload: any) => {
+  if (modalUse.value === "CREATE") await handleAddProduct(payload);
+  // if (modalUse.value === "UPDATE") await handleUpdateProduct(payload);
 };
 const handleAddProduct = async (payload: any) => {
   try {
@@ -70,7 +70,7 @@ const handleAddProduct = async (payload: any) => {
   }
 };
 
-const handleUpdateProduct = async (payload: any) => {
+const handleUpdateProduct = async (payload: any, productId: string) => {
   try {
     const response: any = await $api(
       `/self-declare/business-actor/product/update`,
@@ -79,7 +79,7 @@ const handleUpdateProduct = async (payload: any) => {
         body: payload,
         query: {
           id_reg: submissionId,
-          product_id: selectedProduct.value,
+          product_id: productId,
         },
       }
     );
@@ -98,12 +98,13 @@ const handleUpdateProduct = async (payload: any) => {
 const handleAddIngredient = async (payload: any) => {
   try {
     const response: any = await $api(
-      `/self-declare/business-actor/product/create`,
+      `/self-declare/business-actor/product/add-ingredient`,
       {
         method: "post",
         body: payload,
         query: {
           id_reg: submissionId,
+          product_id: selectedProduct.value,
         },
       }
     );
@@ -141,17 +142,21 @@ const handleOpenModal = async (type: string, id?: string) => {
   if (type === "DELETE") {
     isDeleteModalOpen.value = true;
   } else {
+    if (type === "EDIT") {
+      console.log("data on edit = ", detailProduct.value);
+    }
     isFormModalOpen.value = true;
   }
 };
 
-const detailProduct = reactive({
+const detailProduct = ref({
   id: null,
   koderincian: null,
   merek: null,
   nama: null,
 });
 const handleDetailProduct = async (id: string) => {
+  selectedProduct.value = id;
   try {
     const response: any = await $api(
       `/self-declare/business-actor/product/detail`,
@@ -165,7 +170,7 @@ const handleDetailProduct = async (id: string) => {
     );
 
     if (response.code === 2000) {
-      Object.assign(detailProduct, response.data);
+      detailProduct.value = response.data;
     }
     return response;
   } catch (error) {
@@ -239,8 +244,13 @@ onMounted(() => {
         <template #item.action="{ item }: any">
           <VMenu>
             <template #activator="{ props }">
-              <VIcon
+              <!-- <VIcon
                 @click="handleDetailProduct(item.id)"
+                icon="fa-ellipsis-v"
+                color="primary"
+                v-bind="props"
+              ></VIcon> -->
+              <VIcon
                 icon="fa-ellipsis-v"
                 color="primary"
                 v-bind="props"
@@ -248,16 +258,23 @@ onMounted(() => {
             </template>
 
             <VList>
+              <VListItem>
+                <UbahProduk
+                  :submission-id="submissionId"
+                  :id-produk="item.id"
+                  @confirm-edit="handleUpdateProduct"
+                ></UbahProduk>
+              </VListItem>
               <InputBahan
                 :product-name="detailProduct.nama"
                 @submit="handleAddIngredient"
               />
-              <VListItem
+              <!-- <VListItem
                 prepend-icon="mdi-pencil"
                 title="Ubah"
                 class="cursor-pointer"
                 @click="handleOpenModal('EDIT', item.id)"
-              />
+              /> -->
               <VListItem @click="handleOpenModal('DELETE', item.id)">
                 <template #prepend>
                   <VIcon
@@ -280,7 +297,7 @@ onMounted(() => {
     :dialog-use="modalUse"
     @update:dialog-visible="isFormModalOpen = $event"
     @submit:commit-action="handleSubmit"
-    :data="detailProduct"
+    :data="detailProduct != null ? detailProduct : undefined"
   />
   <ShSubmissionDetailFormModal
     dialog-title="Menghapus Data"

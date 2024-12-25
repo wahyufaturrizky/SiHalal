@@ -1,96 +1,110 @@
 <script setup lang="ts">
-import { formatDateIntl } from '#imports';
-import { onMounted, ref } from 'vue';
-import { VDataTableServer } from 'vuetify/components';
+import { onMounted, ref } from "vue";
+import { VDataTableServer } from "vuetify/components";
 
-const items = ref([
-  {
-    id: 1,
-    nomor_daftar: 'SH2024-225-29480',
-    tanggal_daftar: '2024-11-01',
-    nama_pu: 'John Doe',
-    alamat: 'Sumbawa Banget RT002/ RW002',
-    skala_usaha: 'Mikro',
-    jenis_produk: 'Makanan',
-    merek_dagang: 'BrandX',
-    laporan_sph: true,
-    action: true,
-  },
-  {
-    id: 2,
-    nomor_daftar: 'SH2024-225-29481',
-    tanggal_daftar: '2024-11-02',
-    nama_pu: 'Jane Smith',
-    alamat: 'Surabaya, Jl. Mawar No. 5',
-    skala_usaha: 'Kecil',
-    jenis_produk: 'Minuman',
-    merek_dagang: 'BrandY',
-    laporan_sph: true,
-    action: true,
-  },
-  {
-    id: 3,
-    nomor_daftar: 'SH2024-225-29482',
-    tanggal_daftar: '2024-11-03',
-    nama_pu: 'Robert Johnson',
-    alamat: 'Jakarta Selatan, Blok C',
-    skala_usaha: 'Menengah',
-    jenis_produk: 'Elektronik',
-    merek_dagang: 'BrandZ',
-    laporan_sph: false,
-    action: true,
-  },
-])
+const loadingAll = ref(true);
 
-const itemPerPage = ref(10)
-const totalItems = ref(items.value.length) // Total dummy data
-const loading = ref(false)
-const page = ref(1)
+const items = ref([]);
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const loading = ref(false);
+const page = ref(1);
+const searchQuery = ref("");
 
-const debouncedFetch = debounce(() => {}, 500) // Tidak digunakan untuk dummy data
+const loadItem = async ({
+  page,
+  size,
+  keyword,
+}: {
+  page: number;
+  size: number;
+  keyword: string;
+}) => {
+  try {
+    loading.value = true;
 
-onMounted(() => {
-  // Dummy data tidak memerlukan pemanggilan API
-})
+    const response: any = await $api("/sidang-fatwa/entri-ketetapan-halal", {
+      method: "get",
+      params: {
+        page,
+        size,
+        keyword,
+      },
+    });
 
-const verifikatorTableHeader = [
-  { title: 'No', key: 'id' },
-  { title: 'Nomor Daftar', key: 'nomor_daftar' },
-  { title: 'Tanggal Daftar', key: 'tanggal_daftar' },
-  { title: 'Nama PU', key: 'nama_pu' },
-  { title: 'Alamat', key: 'alamat' },
-  { title: 'Skala Usaha', key: 'skala_usaha' },
-  { title: 'Jenis Produk', key: 'jenis_produk' },
-  { title: 'Merek Dagang', key: 'merek_dagang' },
-  { title: 'Lihat Laporan SPH', key: 'laporan_sph' },
-  { title: 'Action', key: 'action' },
-]
+    if (response.code === 2000) {
+      items.value = response.data || [];
+      totalItems.value = response.total_item || 0;
+      loading.value = false;
+      return response;
+    } else {
+      loading.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
+  }
+};
 
-const searchQuery = ref('')
+const debouncedFetch = debounce(loadItem, 500);
 
 const handleInput = () => {
-  console.log('Search:', searchQuery.value)
-}
+  debouncedFetch({
+    page: page.value,
+    size: itemPerPage.value,
+    keyword: searchQuery.value,
+  });
+};
+
+onMounted(async () => {
+  const res = await Promise.all([
+    loadItem({
+      page: page.value,
+      size: itemPerPage.value,
+      keyword: searchQuery.value,
+    }),
+  ]);
+
+  const checkResIfUndefined = res.every((item: any) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
+});
+
+const verifikatorTableHeader = [
+  { title: "No", key: "no" },
+  { title: "Nomor Daftar", key: "no_daftar" },
+  { title: "Tanggal Daftar", key: "tgl_daftar" },
+  { title: "Nama PU", key: "nama_pu" },
+  { title: "Alamat", key: "alamat" },
+  { title: "Skala Usaha", key: "skala_usaha" },
+  { title: "Jenis Produk", key: "jenis_produk" },
+  { title: "Merek Dagang", key: "merk_dagang" },
+  // { title: "Lihat Laporan SPH", key: "laporan_sph" },
+  { title: "Action", key: "action" },
+];
 
 const navigateAction = (id: string) => {
-  navigateTo(`/sidang-fatwa/entri-ketetapan-halal/${id}`)
-}
+  navigateTo(`/sidang-fatwa/entri-ketetapan-halal/${id}`);
+};
 </script>
 
 <template>
   <div>
-    <p class="text-h4">
-      Tabel Pengajuan Ketetapan Halal
-    </p>
+    <p class="text-h4">Tabel Pengajuan Ketetapan Halal</p>
     <VCard class="pa-4">
-      <VRow>
+      <VRow v-if="!loadingAll">
         <VCol>
-          <p class="text-h5">
-            Data Pengajuan
-          </p>
+          <p class="text-h5">Data Pengajuan</p>
         </VCol>
       </VRow>
-      <VRow>
+      <VRow v-if="!loadingAll">
         <VCol class="d-flex justify-sm-space-between align-center">
           <VTextField
             v-model="searchQuery"
@@ -101,7 +115,7 @@ const navigateAction = (id: string) => {
           />
         </VCol>
       </VRow>
-      <VRow>
+      <VRow v-if="!loadingAll">
         <VCol>
           <VDataTableServer
             v-model:items-per-page="itemPerPage"
@@ -112,18 +126,22 @@ const navigateAction = (id: string) => {
             :items-length="totalItems"
             loading-text="Loading..."
           >
-            <template #item.id="{ index }">
+            <template #item.no="{ index }">
               {{ index + 1 + (page - 1) * itemPerPage }}
             </template>
-            <template #item.tanggal_daftar="{ item }">
-              {{ formatDateIntl(new Date(item.tanggal_daftar)) }}
+            <template #item.tgl_daftar="{ item }">
+              {{ formatDate((item as any).tgl_daftar) }}
             </template>
             <template #item.laporan_sph="{ item }">
               <VBtn
                 color="primary"
-                @click="navigateAction(item.id)"
+                @click="navigateAction((item as any).id_reg)"
               >
-                {{ item.laporan_sph ? 'Lihat Dokumen' : 'Tidak Ada Dokumen' }}
+                {{
+                  (item as any).laporan_sph
+                    ? "Lihat Dokumen"
+                    : "Tidak Ada Dokumen"
+                }}
               </VBtn>
             </template>
             <template #item.action="{ item }">
@@ -131,13 +149,14 @@ const navigateAction = (id: string) => {
                 <VIcon
                   icon="ri-arrow-right-line"
                   color="primary"
-                  @click="navigateAction(item.id)"
+                  @click="navigateAction((item as any).id_reg)"
                 />
               </div>
             </template>
           </VDataTableServer>
         </VCol>
       </VRow>
+      <VSkeletonLoader type="card" v-else />
     </VCard>
   </div>
 </template>
