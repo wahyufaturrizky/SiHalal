@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const panelCertificateRequest = ref([0, 1])
+const route = useRoute()
+const id = route?.params?.id
 
 const requestDataHalal = ref([
   { title: 'Nama Perusahaan', value: 'PT Bahagia Sentosa', type: 'text' },
@@ -27,6 +29,101 @@ const requestDataHalal = ref([
   { title: 'Hasil Pengujian', value: 'Es Cream', type: 'textarea' },
   { title: 'Catatan', value: 'Es Cream', type: 'textarea' },
 ])
+
+const loadItem = async (): void => {
+  console.log("loaditem")
+  try {
+    const response = await $api(`/reguler/auditor/ubah-laporan/${id}`, {
+      method: 'GET',
+      params: {id},
+    })
+
+    if (response.code === 2000) {
+      // TODO -> MAPPING VALUE
+      const data = response.data
+
+      // REQUEST DATA HALAL
+      requestDataHalal.value = [
+        { title: 'Nama Perusahaan', value: data.pengajuan_sertifikat?.nama_pu, type: 'text' },
+        { title: 'Alamat Perusahaan', value: data.pengajuan_sertifikat?.alamat, type: 'text' },
+        { title: 'NIB', value: data.pengajuan_sertifikat?.nib, type: 'text' },
+        { title: 'Skala Usaha', value: data.pengajuan_sertifikat?.skala_usaha, type: 'select', disabled: false },
+        { title: 'Nama Pimpinan', value: data.pengajuan_sertifikat?.nama_pimpinan, type: 'text' },
+        { title: 'Nama Fasilitas', value: data.pengajuan_sertifikat?.nama_fasilitas , type: 'select', disabled: false },
+        { title: 'Alamat Fasilitas', value: data.pengajuan_sertifikat?.alamat_fasilitas , type: 'text' },
+        {
+          type: 'date',
+          data: [
+            {
+              title: 'Tanggal Mulai', value: data.pengajuan_sertifikat?.tanggal_mulai, type: 'date',
+            },
+            {
+              title: 'Tanggal Selesai', value: data.pengajuan_sertifikat?.tanggal_selesai, type: 'date',
+            },
+          ],
+        },
+        { title: 'Jenis Produk', value: data.pengajuan_sertifikat?.jenis_produk, type: 'select', disabled: true },
+        { title: 'Nama / Merk Produk', value: data.pengajuan_sertifikat?.nama_produk, type: 'select', disabled: true },
+        { title: 'Pengujian Laboratorium', value: 'Ada', type: 'select', disabled: false },
+        { title: 'Hasil Audit', value: 'Lulus', type: 'select', disabled: false },
+        { title: 'Hasil Pengujian', value: 'Es Cream', type: 'textarea' },
+        { title: 'Catatan', value: 'Es Cream', type: 'textarea' },
+      ]
+
+      materialData.value.value = data.bahan.map(
+        (v, i) => ({
+          no: i + 1,
+          materialName: v.nama_bahan,
+          priority: v.kriteria,
+          findings: v.temuan,
+          information: v.keterangan,
+        }))
+
+      // processData.value.value = data.proses_produk_halal.map(
+      //   (v, i) => ({
+      //     no: i + 1,
+      //     requirement: v.persyaratan,
+      //     explanation: v.penjelasan,
+      //   }))
+
+      registrationProductData.value.value = data.produk.map(
+        (v, i) => ({ no: i + 1, name: v.nama_produk, foto: v.photo }))
+
+
+      outletData.value.value = data.outlet.map(
+        (v, i) => ({
+          no: i + 1,
+          name: v.nama_outlet,
+          address: v.alamat_outlet,
+        }))
+
+      summaryData.value.value = data.kesimpulan.map(
+        (v, i) => ({
+          no: i + 1,
+          criteria: v.kriteria,
+          matcher: v.kesesuaian,
+          information: v.keterangan,
+        }))
+
+      auditorListData.value.value = data.auditor.map(
+        (v, i) => ({
+          no: i + 1,
+          name: v.nama_auditor,
+          birthdate: v.tgl_lahir,
+          registrationNo: v.no_reg,
+        }),
+      )
+    }
+  }
+  catch (e) {
+    console.log("ERROR : ", e)
+    useSnackbar().sendSnackbar('Terjadi Kesalahan ', 'error')
+  }
+}
+
+onMounted(async () => {
+  await loadItem()
+})
 
 const materialData = ref(
   {
@@ -123,6 +220,13 @@ const auditorListData = ref(
   },
 )
 
+const fasilityOptions = ref(
+  [
+    { title: 'facility 1', value: '1', alamat: 'alamat 2' },
+    { title: 'facility 2', value: '2', alamat: 'alamat 1' },
+  ],
+)
+
 const getSelectOptions = field => {
   let data = []
   switch (field) {
@@ -130,7 +234,7 @@ const getSelectOptions = field => {
     data = ['Mikro', 'Kecil', 'Menengah', 'Besar']
       break;
   case 'Nama Fasilitas':
-    data = ['Es Cream', 'Minuman', 'Snack', 'Lainnya']
+    data = fasilityOptions.value
       break;
   case 'Pengujian Laboratorium':
     data = ['Ada', 'Tidak Ada']
