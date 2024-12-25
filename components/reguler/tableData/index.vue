@@ -138,6 +138,23 @@ const handleDownload = async (item: any) => {
   }
 }
 
+const handleDownloadV2 = async (filename: string) => {
+  try {
+    const response = await $api('/shln/submission/document/download', {
+      method: 'post',
+      body: {
+        filename: filename,
+      },
+    })
+
+    if (response.url)
+      window.open(response.url, '_blank', 'noopener,noreferrer')
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
 const editDaftarBahan = async () => {
   const payload = {
     jenis_bahan: itemDetail.value?.jenis_bahan,
@@ -580,6 +597,97 @@ watch(() => props.reRender, async () => {
             <div v-else>
               <label>-</label>
             </div>
+          </template>
+          <template #item.foto2="{ item }">
+            <Vbtn
+              v-if="item.id_reg"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-left: -10px"
+              @click="() => handleDownloadV2(item)"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>Kosong</label>
+            </div>
+          </template>
+          <template #item.foto3="{ item }">
+            <Vbtn
+              v-if="item.file_dok"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-left: -10px"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" @click="() => handleDownloadV2(item.file_dok)"/>
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>Kosong</label>
+            </div>
+          </template>
+
+          <template #item.foto4="{ item }">
+            <Vbtn
+              v-if="item.ttd_pj"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-left: -10px"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" @click="() => handleDownloadV2(item.ttd_pj)"/>
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>Kosong</label>
+            </div>
+          </template>
+
+          <template #item.foto5="{ item }">
+            <Vbtn
+              v-if="item.ttd_ph"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-left: -10px"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" @click="() => handleDownloadV2(item.ttd_ph)"/>
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>Kosong</label>
+            </div>
+          </template>
+
+          <template #item.actionV2="{ item }">
+            <v-btn color="primary" variant="plain">
+              <VIcon>mdi-dots-vertical</VIcon>
+              <VMenu activator="parent" :close-on-content-click="true">
+                <VCard>
+                  <VBtn
+                    variant="text"
+                    color=primary
+                    prepend-icon="ri-pencil-line"
+                    @click="() => props.onEdit(item)"
+                    block
+                  >
+                    Edit
+                  </VBtn>
+                  <VBtn
+                    variant="text"
+                    color="error"
+                    prepend-icon="ri-delete-bin-6-line"
+                    @click="() => props.onDelete(item)"
+                    block
+                  >
+                    Hapus
+                  </VBtn>
+                </VCard>
+              </VMenu>
+            </v-btn>
           </template>
         </VDataTable>
       </VRow>

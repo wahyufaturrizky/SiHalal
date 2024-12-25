@@ -51,6 +51,7 @@
       "menu": {
         "fa_verification": "Verifikasi Fasilitator",
         "sd_verification": "Verifikasi Self Declare",
+        "sd_distribusi": "Distribusi Ke Komite",
         "rg_verification": "Verifikasi Reguler"
       }
     },
