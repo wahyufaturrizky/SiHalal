@@ -89,7 +89,7 @@ onMounted(() => {
             </VCol>
             <VCol>
               <p class="fs18">
-                : <span />
+                : <span>{{penanggungJawabProfile.jabatan}}</span>
               </p>
             </VCol>
           </VRow>
