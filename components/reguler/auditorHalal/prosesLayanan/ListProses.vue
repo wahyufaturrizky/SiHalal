@@ -13,8 +13,9 @@ const tabs = ref<string | number>(-1)
 const file = ref<File | null>(null)
 const loading = ref(false)
 const listFactory = ref<any[]>([])
-const productList = ref<any[]>([])
+const catatanProduk = ref<any[]>([])
 const selectedProduct = ref<any>({})
+const listProduk = ref<any>([])
 
 const formAddLayout = ref({
   file_layout: '',
@@ -79,6 +80,7 @@ const resetForm = () => {
     name: '',
     file: null,
   }
+  selectedProduct.value = {}
 }
 
 const handleRemoveFile = () => {
@@ -403,6 +405,23 @@ const getListFactory = async () => {
   return response || []
 }
 
+const getListProduct = async () => {
+  const response: any = await $api(
+    '/reguler/pelaku-usaha/tab-proses/list-product',
+    {
+      method: 'get',
+      query: { id },
+    },
+  )
+
+  if (response.code === 2000) {
+    listProduk.value = response.data
+    selectedProduct.value = response.data?.[0]
+  }
+
+  return response || []
+}
+
 const getListCatatanBahan = async () => {
   const response: any = await $api(
     '/reguler/pelaku-usaha/tab-proses/list-catatan-bahan',
@@ -428,7 +447,7 @@ const getListCatatanProduk = async () => {
   )
 
   if (response.code === 2000) {
-    productList.value = response.data
+    catatanProduk.value = response.data
     materialAndProduct.value[1].value = response.data
   }
 
@@ -497,7 +516,7 @@ const handleAddOrEdit = async () => {
     let body: any = {}
     if (tabs.value === '2') {
       body = {
-        id_bahan: detailItem.value?.id_bahan,
+        id_produk: selectedProduct.value.id,
         jumlah: +detailItem.value.jumlah,
         tanggal_masuk: formatDateId(detailItem.value.tanggal_masuk),
         tanggal_keluar: formatDateId(detailItem.value.tanggal_keluar),
@@ -505,16 +524,16 @@ const handleAddOrEdit = async () => {
     }
     else {
       body = {
-        nama_produk: detailItem.value.nama_bahan,
+        nama_produk: detailItem.value.nama_produk,
         file_dok: formAddLayout.value.file_layout,
       }
     }
 
     const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-proses/update-product',
+      '/reguler/pelaku-usaha/tab-proses/update',
       {
         method: 'put',
-        query: { id, id_narasi: detailItem.value?.id_reg_prod },
+        query: { id, id_narasi: detailItem.value?.id_prod_penyimpanan },
         body,
       },
     )
@@ -525,6 +544,7 @@ const handleAddOrEdit = async () => {
       getListLayout()
       getListFactory()
       getListCatatanBahan()
+      getListCatatanProduk()
       useSnackbar().sendSnackbar('Sukses menambah data', 'success')
     }
   }
@@ -594,7 +614,7 @@ const handleAddOrEdit = async () => {
     let body: any = {}
     if (tabs.value === '2') {
       body = {
-        id_produk: selectedProduct.value.id_reg_prod,
+        id_produk: selectedProduct.value.id,
         jumlah: +selectedProduct.value?.jumlah,
         tanggal_produksi: formatDateId(selectedProduct.value?.tanggal_masuk),
         tanggal_kadaluarsa: formatDateId(selectedProduct.value?.tanggal_keluar),
@@ -628,7 +648,7 @@ const handleAddOrEdit = async () => {
     let body: any = {}
     if (tabs.value === '2') {
       body = {
-        id_produk: selectedProduct.value.id_reg_prod,
+        id_produk: selectedProduct.value.id,
         jumlah: +selectedProduct.value?.jumlah,
         tanggal_produksi: formatDateId(selectedProduct.value?.tanggal_masuk),
         tanggal_kadaluarsa: formatDateId(selectedProduct.value?.tanggal_keluar),
@@ -659,11 +679,11 @@ const handleAddOrEdit = async () => {
     }
   }
   else if (titleDialog.value === 'Tambah Catatan Distribusi') {
-    
+
     let body: any = {}
     if (tabs.value === '2') {
       body = {
-        id_produk: selectedProduct.value.id_reg_prod,
+        id_produk: selectedProduct.value.id,
         jumlah: +selectedProduct.value?.jumlah,
         tanggal: formatDateId(selectedProduct.value?.tanggal),
         tujuan: selectedProduct.value?.tujuan,
@@ -697,7 +717,7 @@ const handleAddOrEdit = async () => {
     let body: any = {}
     if (tabs.value === '2') {
       body = {
-        id_produk: selectedProduct.value.id_reg_prod,
+        id_produk: selectedProduct.value.id,
         jumlah: +selectedProduct.value?.jumlah,
         tanggal: formatDateId(selectedProduct.value?.tanggal),
         tujuan: selectedProduct.value?.tujuan,
@@ -779,6 +799,7 @@ onMounted(async () => {
     getListDigaramAlur(),
     getListHasilProduksi(),
     getListCatatanDistribusi(),
+    getListProduct(),
   ])
   loading.value = false
 })
@@ -818,7 +839,7 @@ watch(selectedFactory, () => {
             outlined
             placeholder="pilih pabrik"
             item-title="nama"
-            item-value="nama"
+            item-value="nama_pabrik"
             default-value="'pilih'"
             return-object
           />
@@ -904,21 +925,23 @@ watch(selectedFactory, () => {
                 v-if="tabs === '2'"
                 class="mt-5"
               >
-                <label class="label-pengajuan">
-                  Nama Bahan
-                </label>
-                <VTextField
-                  v-model="detailItem.nama_bahan"
-                  class="-mt-10"
-                  placeholder="isi nama bahan"
-                  disabled
+                <label>Nama Produk</label>
+                <VSelect
+                  v-model="selectedProduct"
+                  :items="listProduk"
+                  outlined
+                  placeholder="pilih pabrik"
+                  item-title="nama"
+                  item-value="id"
+                  default-value="'pilih'"
+                  return-object
                 />
                 <br>
                 <label class="label-pengajuan">
                   Jumlah
                 </label>
                 <VTextField
-                  v-model="detailItem.jumlah"
+                  v-model="selectedProduct.jumlah_bahan"
                   class="-mt-10"
                   placeholder="isi nama bahan"
                 />
@@ -1042,15 +1065,17 @@ watch(selectedFactory, () => {
                 v-if="tabs === '2'"
                 class="mt-5"
               >
-                <label class="label-pengajuan">
-                  Nama
-                </label>
-                <VTextField
-                  v-model="detailItem.nama_produk"
-                  class="-mt-10"
-                  placeholder="isi nama bahan"
-                  disabled
-                />
+                <label>Nama Produk</label>
+                  <VSelect
+                    v-model="selectedProduct"
+                    :items="listProduk"
+                    outlined
+                    placeholder="pilih pabrik"
+                    item-title="nama"
+                    item-value="id"
+                    default-value="'pilih'"
+                    return-object
+                  />
                 <br>
                 <label class="label-pengajuan">
                   Jumlah
@@ -1313,11 +1338,11 @@ watch(selectedFactory, () => {
                   <label>Nama Produk</label>
                   <VSelect
                     v-model="selectedProduct"
-                    :items="productList"
+                    :items="listProduk"
                     outlined
                     placeholder="pilih pabrik"
-                    item-title="nama_produk"
-                    item-value="id_prod_penyimpanan"
+                    item-title="nama"
+                    item-value="id"
                     default-value="'pilih'"
                     return-object
                   />
@@ -1455,11 +1480,11 @@ watch(selectedFactory, () => {
                   <label>Nama Produk</label>
                   <VSelect
                     v-model="selectedProduct"
-                    :items="productList"
+                    :items="listProduk"
                     outlined
                     placeholder="pilih pabrik"
-                    item-title="nama_produk"
-                    item-value="id_prod_penyimpanan"
+                    item-title="nama"
+                    item-value="id"
                     default-value="'pilih'"
                     return-object
                   />
