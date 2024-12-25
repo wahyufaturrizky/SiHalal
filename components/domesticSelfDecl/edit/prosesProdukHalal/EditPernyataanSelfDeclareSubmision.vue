@@ -61,7 +61,7 @@ const handleGetDeclare = async () => {
     if (response.code === 2000) {
       Object.assign(submissionDetail, response.data);
       pledgeFile.value = response.data.file;
-      if (pledgeFile) {
+      if (pledgeFile.value) {
         aggreButtonDisable.value = true;
         showDownloadButton.value = true;
       }

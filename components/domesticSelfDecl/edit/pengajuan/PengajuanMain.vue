@@ -107,7 +107,7 @@ const handleGetFasilitator = async () => {
 const querySearch = ref('')
 
 const onSelectFasilitator = (selectedId: string) => {
-  if (isFasilitator.value = selectedId === 'Lainnya') {
+  if ((isFasilitator.value = selectedId === 'Lainnya')) {
     isKodeFound.value = false
     querySearch.value = ''
   }
@@ -124,15 +124,12 @@ const onSearchFasilitator = async () => {
   try {
     const kode = querySearch.value
 
-    const response: any = await $api(
-      '/self-declare/submission/kode',
-      {
-        method: 'post',
-        body: {
-          kode,
-        },
+    const response: any = await $api('/self-declare/submission/kode', {
+      method: 'post',
+      body: {
+        kode,
       },
-    )
+    })
 
     if (responseMessage.value === 'Kode Fasilitasi dapat digunakan') {
       isKodeFound.value = true
@@ -152,11 +149,15 @@ const onSearchFasilitator = async () => {
 }
 
 const responseType = computed(() => {
-  return responseMessage.value === 'Kode Fasilitasi dapat digunakan' ? 'success' : 'error'
+  return responseMessage.value === 'Kode Fasilitasi dapat digunakan'
+    ? 'success'
+    : 'error'
 })
 
 const responseColor = computed(() => {
-  return responseMessage.value === 'Kode Fasilitasi dapat digunakan' ? '#5CB338' : '#FB4141'
+  return responseMessage.value === 'Kode Fasilitasi dapat digunakan'
+    ? '#5CB338'
+    : '#FB4141'
 })
 
 const handleGetJenisLayanan = async () => {
@@ -377,7 +378,9 @@ onMounted(() => {
           </VCol>
           <VCol cols="9">
             {{
-              submissionDetail.tanggal_buat ? submissionDetail.tanggal_buat : "-"
+              submissionDetail.tanggal_buat
+                ? submissionDetail.tanggal_buat
+                : "-"
             }}
           </VCol>
         </VRow>
@@ -390,7 +393,7 @@ onMounted(() => {
           </VCol>
           <VCol cols="9">
             {{
-              findListDaftar(submissionDetail.id_jenis_pengajuan).name
+              findListDaftar(submissionDetail.id_jenis_pengajuan as any).name
             }}
           </VCol>
         </VRow>
@@ -431,61 +434,73 @@ onMounted(() => {
               </VCol>
             </VRow>
 
-            <VRow v-if="isFasilitator">
-              <VCol cols="5">
-                <VTextField
-                  v-model="querySearch"
-                  placeholder="Masukan Kode Fasilitasi"
-                  append-inner-icon="mdi-magnify"
-                  density="compact"
-                  :rules="[requiredValidator]"
-                  @input="onSearchFasilitator"
-                />
-              </VCol>
-            </VRow>
-
-            <VAlert
-              v-if="isKodeNotFound"
-              :type="responseType"
-              variant="tonal"
-              :color="responseColor"
-              class="mt-5"
+            <VSpacer
+              v-if="isFasilitator"
+              style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+"
             >
-              {{ responseMessage }}
-            </VAlert>
-
-            <VAlert
-              v-if="isKodeFound"
-              type="success"
-              variant="tonal"
-              color="#5CB338"
-              class="mt-5"
+              <p>Atau</p>
+            </VSpacer>
+            <VCol
+              v-if="isFasilitator"
+              cols="5"
             >
-              Kode Fasilitasi dapat digunakan
-            </VAlert>
+              <VTextField
+                v-model="querySearch"
+                placeholder="Masukan Kode Fasilitasi"
+                append-inner-icon="mdi-magnify"
+                density="compact"
+                :rules="[requiredValidator]"
+                @input="onSearchFasilitator"
+              />
+            </VCol>
+          </vcol>
+        </VRow>
 
-            <VAlert
-              v-if="!isKodeFound"
-              type="warning"
-              variant="tonal"
-              color="#652672"
-              class="mt-5"
-            >
-              Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada
-              fasilitator sebagai kode untuk mendaftarkan sertifikasi halal
-              gratis
-            </VAlert>
+        <VAlert
+          v-if="isKodeNotFound"
+          :type="responseType"
+          variant="tonal"
+          :color="responseColor"
+          class="mt-5"
+        >
+          {{ responseMessage }}
+        </VAlert>
 
-            <VAlert
-              v-if="isKodeFound"
-              type="warning"
-              variant="tonal"
-              color="#652672"
-              class="mt-5"
-            >
-              Pastikan anda melengkapi isian pengajuan sertifikasi halal dan mengirimkan pengajuan untuk memperoleh fasilitasi sertifikat halal.
-            </VAlert>
-          </VCol>
+        <VAlert
+          v-if="isKodeFound"
+          type="success"
+          variant="tonal"
+          color="#5CB338"
+          class="mt-5"
+        >
+          Kode Fasilitasi dapat digunakan
+        </VAlert>
+
+        <VAlert
+          type="warning"
+          variant="tonal"
+          color="#652672"
+          class="mt-5"
+        >
+          Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada
+          fasilitator sebagai kode untuk mendaftarkan sertifikasi halal
+          gratis
+        </VAlert>
+
+        <VAlert
+          v-if="isKodeFound"
+          type="warning"
+          variant="tonal"
+          color="#652672"
+          class="mt-5"
+        >
+          Pastikan anda melengkapi isian pengajuan sertifikasi halal dan mengirimkan pengajuan untuk memperoleh fasilitasi sertifikat halal.
+        </VAlert>
+        </VCol>
         </VRow>
         <br>
         <VDivider />
