@@ -135,7 +135,7 @@ const onSearchFasilitator = async () => {
       isKodeFound.value = true
       isKodeNotFound.value = false
       responseMessage.value = ''
-      responseId.value = response.id
+      responseId.value = response.data.id
     }
     else {
       responseMessage.value = response.message
@@ -285,8 +285,6 @@ const onSubmitSubmission = () => {
 
 const handleUpdateSubmission = async () => {
   try {
-    console.log('update Submission')
-
     if (isKodeFound.value === true)
       formData.id_fasilitator.value = responseId.value
 
@@ -433,33 +431,23 @@ onMounted(() => {
                 />
               </VCol>
             </VRow>
-
-            <VSpacer
-              v-if="isFasilitator"
-              style="
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-"
-            >
-              <p>Atau</p>
-            </VSpacer>
-            <VCol
-              v-if="isFasilitator"
-              cols="5"
-            >
-              <VTextField
-                v-model="querySearch"
-                placeholder="Masukan Kode Fasilitasi"
-                append-inner-icon="mdi-magnify"
-                density="compact"
-                :rules="[requiredValidator]"
-                @input="onSearchFasilitator"
-              />
-            </VCol>
           </vcol>
         </VRow>
-
+        <VRow>
+          <VCol
+            v-if="isFasilitator"
+            cols="5"
+          >
+            <VTextField
+              v-model="querySearch"
+              placeholder="Masukan Kode Fasilitasi"
+              append-inner-icon="mdi-magnify"
+              density="compact"
+              :rules="[requiredValidator]"
+              @input="onSearchFasilitator"
+            />
+          </VCol>
+        </VRow>
         <VAlert
           v-if="isKodeNotFound"
           :type="responseType"
@@ -481,6 +469,7 @@ onMounted(() => {
         </VAlert>
 
         <VAlert
+          v-if="!isKodeFound"
           type="warning"
           variant="tonal"
           color="#652672"
