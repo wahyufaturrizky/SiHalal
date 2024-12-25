@@ -1,196 +1,205 @@
 <script setup lang="ts">
-import DataPermohonanSertifikasiBpjph from '@/components/verificator/bpjph/DataPermohonanSertifikasiBpjph.vue';
-import { ref, computed, defineProps, defineEmits } from 'vue'
-import { VDataTableServer } from 'vuetify/components'
+import DataPermohonanSertifikasiBpjph from "@/components/verificator/bpjph/DataPermohonanSertifikasiBpjph.vue";
+import { computed, defineEmits, defineProps, ref } from "vue";
+import { VDataTableServer } from "vuetify/components";
 
 // Props and Emits
-defineProps({ mode: String })
+defineProps({ mode: String });
 
-const emit = defineEmits(['confirm-add', 'cancel']);
+const emit = defineEmits(["confirm-add", "cancel"]);
 
 // State variables
-const isModalOpen = ref(false)
+const isModalOpen = ref(false);
 interface DataItem {
-  id: number
-  id_daftar: string
-  TanggalDaftar: string
-  Nama: string
-  Provinsi: string
-  JenisDaftar: string
-  JenisProduk: string
-  MerkDagang: string
-  Status: string
+  id: number;
+  id_daftar: string;
+  TanggalDaftar: string;
+  Nama: string;
+  Provinsi: string;
+  JenisDaftar: string;
+  JenisProduk: string;
+  MerkDagang: string;
+  Status: string;
 }
 
-const selectedItems = ref<DataItem[]>([])
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+const statusItem = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF11: { color: "success", desc: "Verification" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF280: { color: "error", desc: "Returned to PU" },
+    OF285: { color: "error", desc: "Returned By KF" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF300: { color: "success", desc: "Halal Certified Issued" },
+  },
+  {
+    get(target, prop) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
+
+const selectedItems = ref<DataItem[]>([]);
+
+interface ItemList {
+  id_reg: string;
+  jenis_daftar: string;
+  jenis_produk: string;
+  jenis_usaha: string;
+  provinsi: string;
+  jumlah_produk: number;
+  nama_pu: string;
+  no_daftar: string;
+  status: string;
+  id_status: string;
+  tgl_daftar: string;
+}
 
 // Dummy data for table
 // Dummy data for the table
-const items = ref([
-  {
-    id: 1,
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '22/08/2024',
-    Nama: 'Dapoer Boenda',
-    provinsi: 'Jawa Barat',
-    JenisDaftar: 'Baru',
-    JenisProduk: 'Produk Bakteri',
-    JenisUsaha: 'Micro',
-    Jumlah: 32,
-    Status: 'OF74',
-  },
-  {
-    id: 2,
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '22/08/2024',
-    Nama: 'Dapoer Boenda',
-    provinsi: 'Jawa Barat',
-    JenisDaftar: 'SIUP',
-    JenisProduk: 'Produk Bakteri',
-    JenisUsaha: 'Besar',
-    Jumlah: 32,
-    Status: 'Verifikasi',
-  },
-  {
-    id: 3,
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '22/08/2024',
-    Nama: 'Dapoer Boenda',
-    provinsi: 'Jawa Barat',
-    JenisDaftar: 'Baru',
-    JenisProduk: 'Produk Bakteri',
-    JenisUsaha: 'Micro',
-    Jumlah: 32,
-    Status: 'Verifikasi',
-  },
-  {
-    id: 4,
-    id_registrasi: 'D004',
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '22/08/2024',
-    Nama: 'Dapoer Boenda',
-    provinsi: 'Jawa Barat',
-    JenisDaftar: 'SIUP',
-    JenisProduk: 'Produk Bakteri',
-    JenisUsaha: 'Besar',
-    Jumlah: 32,
-    Status: 'Verifikasi',
-  },
-  {
-    id: 5,
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '22/08/2024',
-    Nama: 'Dapoer Boenda',
-    provinsi: 'Jawa Barat',
-    JenisDaftar: 'Baru',
-    JenisProduk: 'Produk Bakteri',
-    JenisUsaha: 'Micro',
-    Jumlah: 32,
-    Status: 'OF74',
-  },
-])
+const items = ref<ItemList[]>([]);
 
-const itemPerPage = ref(10)
-const totalItems = ref(0)
-const loading = ref(false)
-const page = ref(1)
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const loading = ref(false);
+const page = ref(1);
 
 // Table headers
 const permohonanHeaders = [
-  { title: 'No', key: 'id', align: 'center' },
-  { title: 'Nomor Daftar', key: 'nomor_daftar' },
-  { title: 'Tanggal Daftar', key: 'TanggalDaftar' },
-  { title: 'Nama PU', key: 'Nama' },
-  { title: 'Provinsi', key: 'provinsi' },
-  { title: 'Jenis Daftar', key: 'JenisDaftar' },
-  { title: 'Jenis Produk', key: 'JenisProduk' },
-  { title: 'Jenis Usaha dan Jumlah', key: 'jenis_usaha_jumlah' },
-  { title: 'Status', key: 'Status' },
-  { title: 'Action', key: 'action' },
-]
+  { title: "No", key: "id", align: "center" },
+  { title: "Nomor Daftar", key: "no_daftar" },
+  { title: "Tanggal Daftar", key: "tgl_daftar" },
+  { title: "Nama PU", key: "nama_pu" },
+  { title: "Provinsi", key: "provinsi" },
+  { title: "Jenis Daftar", key: "jenis_daftar" },
+  { title: "Jenis Produk", key: "jenis_produk" },
+  { title: "Jenis Usaha dan Jumlah", key: "jenis_usaha_jumlah" },
+  { title: "Status", key: "status" },
+  { title: "Action", key: "action" },
+];
 
 // Methods
 const openModal = () => {
-  isModalOpen.value = true
-}
+  isModalOpen.value = true;
+};
 
 const closeModal = () => {
-  isModalOpen.value = false
-  emit('cancel')
-}
+  isModalOpen.value = false;
+  emit("cancel");
+};
 
-const searchQuery = ref('')
+const searchQuery = ref("");
 
 const handleInput = () => {
   debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
-}
+};
 
 const handleCancel = (message: string) => {
-  console.log('Cancel message:', message);
-}
+  console.log("Cancel message:", message);
+};
 
 const navigateAction = (id: string) => {
   navigateTo(`/online-registration/verifikasi-reguler/${id}`);
-}
+};
 
-const loadItem = async (page, size) => {
+const loadItem = async (page, size, keyword = "") => {
   // Temporarily skip API call for dummy data testing
-  items.value = items.value.slice((page - 1) * size, page * size) // Paginate dummy data
-  totalItems.value = items.value.length
-}
+  try {
+    loading.value = true;
 
-const debouncedFetch = debounce(loadItem, 500)
+    const response = await $api("/reguler/verifikator/list", {
+      method: "get",
+      params: {
+        page,
+        size,
+        keyword,
+      },
+    });
+
+    items.value = response.data;
+    totalItems.value = response.total_item;
+    loading.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
+  }
+};
+
+const debouncedFetch = debounce(loadItem, 500);
 // Filter state
 const showFilterMenu = ref(false);
 
 const selectedFilters = ref({
-  fasilitas: 'Semua',
-  jenisProduk: 'Semua',
-  provinsi: 'Semua',
-  lembaga: 'Semua',
-  pendamping: 'Semua',
-  kabupaten: 'Semua',
-})
+  fasilitas: "Semua",
+  jenisProduk: "Semua",
+  provinsi: "Semua",
+  lembaga: "Semua",
+  pendamping: "Semua",
+  kabupaten: "Semua",
+});
 
 const applyFilters = () => {
-  loadItem(page.value, itemPerPage.value, searchQuery.value, selectedFilters.value);
-}
+  loadItem(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    selectedFilters.value
+  );
+};
 
 // Check if all items are selected
-const isAllSelected = computed(() => selectedItems.value.length === tableData.value.length)
+const isAllSelected = computed(
+  () => selectedItems.value.length === tableData.value.length
+);
 
 // Toggle select all
 const toggleSelectAll = () => {
-  selectedItems.value = isAllSelected.value ? [] : tableData.value.slice()
-}
+  selectedItems.value = isAllSelected.value ? [] : tableData.value.slice();
+};
 
 // Adaptive button text
 const buttonText = computed(() =>
   selectedItems.value.length > 0
     ? `Pilih Data (${selectedItems.value.length})`
-    : 'Pilih Data',
-)
+    : "Pilih Data"
+);
 
 // Handle checkbox change
-const handleCheckboxChange = (item: { id: number; id_daftar: string; TanggalDaftar: string; Nama: string; Alamat: string; JenisProduk: string; MerkDagang: string; Status: string }, checked: any) => {
+const handleCheckboxChange = (
+  item: {
+    id: number;
+    id_daftar: string;
+    TanggalDaftar: string;
+    Nama: string;
+    Alamat: string;
+    JenisProduk: string;
+    MerkDagang: string;
+    Status: string;
+  },
+  checked: any
+) => {
   if (checked) {
     // Add item if not already selected
-    if (!selectedItems.value.includes(item))
-      selectedItems.value.push(item)
-  }
-  else {
+    if (!selectedItems.value.includes(item)) selectedItems.value.push(item);
+  } else {
     // Remove item by filtering out the current item
-    selectedItems.value = selectedItems.value.filter(selectedItem => selectedItem.id !== item.id)
+    selectedItems.value = selectedItems.value.filter(
+      (selectedItem) => selectedItem.id !== item.id
+    );
   }
-}
+};
 
 // Sample data for "Bahan Bersertifikat" and "Tidak Bersertifikat"
 const StatusOptions = [
-  { name: 'OF74', value: 'of74' },
-  { name: 'Verifikasi', value: 'verifikasi' },
-]
+  { name: "OF74", value: "of74" },
+  { name: "Verifikasi", value: "verifikasi" },
+];
 
-const bahanType = ref(null)
+const bahanType = ref(null);
 </script>
 
 <template>
@@ -207,10 +216,7 @@ const bahanType = ref(null)
       </VCol>
     </VRow>
     <VRow>
-      <VCard
-        variant="flat"
-        class="pa-4"
-      >
+      <VCard variant="flat" class="pa-4">
         <VCardTitle>
           <VRow>
             <VCol cols="10"><h2>Data Pengajuan</h2></VCol>
@@ -221,7 +227,10 @@ const bahanType = ref(null)
             <VCol />
           </VRow>
           <VRow>
-            <VCol class="d-flex justify-sm-space-between align-center" cols="12">
+            <VCol
+              class="d-flex justify-sm-space-between align-center"
+              cols="12"
+            >
               <VTextField
                 v-model="searchQuery"
                 density="compact"
@@ -240,15 +249,19 @@ const bahanType = ref(null)
               :items="items"
               :loading="loading"
               :items-length="totalItems"
-              style="white-space: nowrap;"
+              style="white-space: nowrap"
               loading-text="Loading..."
-              @update:options="loadItem(page, itemPerPage)"
+              @update:options="loadItem(page, itemPerPage, searchQuery)"
             >
               <template #item.id="{ index }">
                 {{ index + 1 + (page - 1) * itemPerPage }}
               </template>
               <template #item.tgl_daftar="{ item }">
-                {{ formatDateIntl(new Date(item.TanggalDaftar)) }}
+                {{
+                  item.tgl_daftar != undefined && item.tgl_daftar != ""
+                    ? formatDateIntl(new Date(item.tgl_daftar))
+                    : ""
+                }}
               </template>
               <template #item.action="{ item }">
                 <div class="d-flex gap-1">
@@ -256,70 +269,57 @@ const bahanType = ref(null)
                     <VIcon
                       icon="ri-arrow-right-line"
                       color="primary"
-                      @click="navigateAction(item.id)"
+                      @click="navigateAction(item.id_reg)"
                     />
-                  </IconBtn> <!-- Right arrow icon for action -->
+                  </IconBtn>
+                  <!-- Right arrow icon for action -->
                 </div>
               </template>
               <template #item.pilih="{ item }">
-                <VCheckbox
-                  v-model="selectedItems"
-                  :value="item"
-                />
+                <VCheckbox v-model="selectedItems" :value="item" />
               </template>
-              <template #item.Status="{ item }">
-                <div v-if="item.Status === 'OF74'">
-                  <div class="status-container">
-                    <VChip
-                      variant="outlined"
-                      style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
-                    >
-                      <span style="color: #49a84c;">
-                        {{ item.Status }}
-                      </span>
-                    </VChip>
-                  </div>
-                </div>
-                <div v-else>
-                  <div class="status-container">
-                    <VChip
-                      variant="outlined"
-                      style="border-color: #652672; border-radius: 8px; background-color: #f0e9f1;"
-                    >
-                      <span style="color: #652672;">
-                        {{ item.Status }}
-                      </span>
-                    </VChip>
-                  </div>
-                </div>
+              <template #item.status="{ item }">
+                <VChip :color="statusItem[item?.id_status].color">
+                  {{ statusItem[item?.id_status].desc }}
+                </VChip>
               </template>
               <template #item.jenis_usaha_jumlah="{ item }">
-                  <VContainer style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
-                    <VChip
-                      variant="outlined"
-                      style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
-                    >
-                      <span style="color: #49a84c;">
-                        {{ item.JenisUsaha }}
-                      </span>
-                    </VChip>
-                    <VChip
-                      variant="outlined"
-                      style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
-                    >
-                      <span style="color: #49a84c;">
-                        {{ item.Jumlah }}
-                      </span>
-                    </VChip>
-                  </VContainer>
+                <VContainer
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    white-space: nowrap;
+                  "
+                >
+                  <VChip
+                    variant="outlined"
+                    style="
+                      border-color: #49a84c;
+                      border-radius: 8px;
+                      background-color: #edf6ed;
+                    "
+                  >
+                    <span style="color: #49a84c">
+                      {{ item.jenis_usaha }}
+                    </span>
+                  </VChip>
+                  <VChip
+                    variant="outlined"
+                    style="
+                      border-color: #49a84c;
+                      border-radius: 8px;
+                      background-color: #edf6ed;
+                    "
+                  >
+                    <span style="color: #49a84c">
+                      {{ item.jumlah_produk }}
+                    </span>
+                  </VChip>
+                </VContainer>
               </template>
             </VDataTableServer>
           </VRow>
-          <VPagination
-            v-model="page"
-            :total-visible="7"
-            :length="totalPages"
-          />
         </VCardText>
       </VCard>
     </VRow>

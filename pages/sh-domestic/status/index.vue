@@ -168,7 +168,7 @@ onMounted(async () => {
                   <VIcon
                     color="primary"
                     icon="mdi-arrow-right"
-                    @click="navigateToDetail(item.regist_no)"
+                    @click="navigateToDetail(item.id_reg)"
                   />
                 </template>
               </VDataTable>

@@ -21,6 +21,10 @@ const props = defineProps({
     default: () => {},
     required: false,
   },
+  withLabelHeader: {
+    type: Boolean,
+    required: false,
+  },
 })
 
 const dialog = ref(false)
@@ -37,6 +41,12 @@ const dialog = ref(false)
         variant="plain"
         append-icon="fa-trash"
       />
+      <div
+        v-if="withLabelHeader"
+        v-bind="props"
+      >
+        <p class="mt-2 cursor-pointer">Hapus</p>
+      </div>
     </template>
 
     <!-- Konten di dalam dialog -->

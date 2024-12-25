@@ -86,7 +86,7 @@ const loadItem = async (pageNumber: number, sizeData: number, search: string = '
       }
     }
 
-    const response: any = await $api('/lph/list', {
+    const response: any = await $api('/reguler/lph/list', {
       method: 'get',
       params,
     })
@@ -130,17 +130,15 @@ const handleSearch = async (pageNumber: number, sizeData: number, search: string
       }
     }
 
-    const response: any = await $api('/lph/list', {
+    const response: any = await $api('/reguler/lph/list', {
       method: 'get',
       params,
     })
 
-    if (response?.code === 2000) {
+    if (response?.code === 2000)
       return dataTable.value = response.data
-    }
-    else {
+    else
       useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
   }
   catch (error) {
     useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
@@ -209,7 +207,9 @@ watch(dataTable, () => {
       const isFifteenDay = isOlderThan15Days(dateData)
       if (isFifteenDay) {
         detailStatus.value = dayCount
-        return isInfoModalOpen.value = true
+        setTimeout(() => {
+          return isInfoModalOpen.value = true
+        }, 1500)
       }
     }
 
@@ -219,7 +219,6 @@ watch(dataTable, () => {
 </script>
 
 <template>
-  {{ detailStatus }}
   <div class="d-flex align-center cursor-pointer" @click="router.go(-1)">
     <VIcon icon="mdi-chevron-left" size="40px" color="primary" />
     <div class="text-primary">Kembali</div>
@@ -243,53 +242,53 @@ watch(dataTable, () => {
                 :close-on-content-click="false"
                 offset-y
               >
-              <template #activator="{ props }">
-                <VBtn
-                  color="primary"
-                  variant="outlined"
-                  v-bind="props"
-                  append-icon="ri-filter-fill"
+                <template #activator="{ props }">
+                  <VBtn
+                    color="primary"
+                    variant="outlined"
+                    v-bind="props"
+                    append-icon="ri-filter-fill"
+                  >
+                    Filter
+                  </VBtn>
+                </template>
+                <VCard
+                  class="pa-3"
+                  width="300"
                 >
-                  Filter
-                </VBtn>
-              </template>
-              <VCard
-                class="pa-3"
-                width="300"
-              >
-                <VSelect
-                  v-model="selectedFilters.jenisLayanan"
-                  label="Jenis Layanan"
-                  :items="listChannel"
-                  item-title="name"
-                  item-value="code"
-                />
-                <VSelect
-                  v-model="selectedFilters.jenisProduk"
-                  label="Skala Usaha"
-                  :items="skalaUsaha"
-                  class="mt-3"
-                  item-title="name"
-                  item-value="code"
-                />
-                <VSelect
-                  v-model="selectedFilters.provinsi"
-                  label="Pusat"
-                  :items="provinceData"
-                  item-title="name"
-                  item-value="code"
-                  class="mt-3"
-                />
-                <VBtn
-                  block
-                  color="primary"
-                  class="mt-3"
-                  @click="applyFilters"
-                >
-                  Apply Filters
-                </VBtn>
-              </VCard>
-            </VMenu>
+                  <VSelect
+                    v-model="selectedFilters.jenisLayanan"
+                    label="Jenis Layanan"
+                    :items="listChannel"
+                    item-title="name"
+                    item-value="code"
+                  />
+                  <VSelect
+                    v-model="selectedFilters.jenisProduk"
+                    label="Skala Usaha"
+                    :items="skalaUsaha"
+                    class="mt-3"
+                    item-title="name"
+                    item-value="code"
+                  />
+                  <VSelect
+                    v-model="selectedFilters.provinsi"
+                    label="Pusat"
+                    :items="provinceData"
+                    item-title="name"
+                    item-value="code"
+                    class="mt-3"
+                  />
+                  <VBtn
+                    block
+                    color="primary"
+                    class="mt-3"
+                    @click="applyFilters"
+                  >
+                    Apply Filters
+                  </VBtn>
+                </VCard>
+              </VMenu>
             </VCol>
             <VSpacer />
             <VCol cols="9">
@@ -308,8 +307,25 @@ watch(dataTable, () => {
             :headers="invoiceHeader"
             :items="dataTable"
             :page="1"
+            :hide-default-footer="dataTable.length === 0"
             hover
           >
+            <template #no-data>
+              <div class="w-full mt-2">
+                <div
+                  class="pt-2"
+                  style="justify-items: center"
+                >
+                  <img
+                    src="~/assets/images/empty-data.png"
+                    alt="empty_data"
+                  >
+                  <div class="pt-2 pb-2 font-weight-bold">
+                    Data Kosong
+                  </div>
+                </div>
+              </div>
+            </template>
             <template #item.index="{ index }">
               {{ index + 1 }}
             </template>

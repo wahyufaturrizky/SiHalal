@@ -1,18 +1,71 @@
 <script setup lang="ts">
+import { VDataTableServer } from 'vuetify/components';
+import KomiteFatwaLayout from '@/layouts/komiteFatwaLayout.vue'
+
+const items = ref<
+  {
+    id: string
+    nama_pu: string
+    alamat: string
+    jenis_produk: string
+    merek_dagang: string
+    no_daftar: string
+    tgl_daftar: string
+  }[]
+>([])
+
 const tableHeader = [
   { title: 'No', value: 'no' },
-  { title: 'Jenis Bahan', value: 'ingr_kind' },
-  { title: 'Nama Bahan', value: 'ingr_name' },
-  { title: 'Kelompok', value: 'group' },
-  { title: 'Merk', value: 'brand' },
-  { title: 'Produsen', value: 'manufacturer' },
-  { title: 'No. Sertifikat Halal', value: 'sh_number' },
-  { title: 'Tanggal Berlaku', value: 'effective_date' },
-  { title: 'Verifikasi Pendamping', value: 'verification_comp' },
-  { title: 'Action', value: 'action' },
+  { title: 'Nomor Daftar', value: 'no_daftar' },
+  { title: 'Tanggal Daftar', value: 'tgl_daftar' },
+  { title: 'Nama PU', value: 'nama_pu' },
+  { title: 'Alamat', value: 'alamat' },
+  { title: 'Jenis Produk', value: 'jenis_produk' },
+  { title: 'Merek Dagang', value: 'merek_dagang' },
 ]
 
 const selectedFilterPermohonan = ref([])
+const itemPerPage = ref(10)
+const totalItems = ref(0)
+const loading = ref(false)
+const loadingAll = ref(true)
+const page = ref(1)
+
+const loadItem = async (
+  page: number,
+  size: number,
+
+) => {
+  try {
+    loading.value = true
+
+    const response: any = await $api('/self-declare/komite-fatwa/inquiry-1', {
+      method: 'get',
+      params: {
+        page,
+        size,
+      },
+    })
+
+    if (response.code === 2000) {
+      console.log(response.data, 'ini response data')
+      items.value = response.data || []
+      totalItems.value = response.total_item || 0
+      loading.value = false
+      console.log('Total Items:', totalItems.value)
+
+      return response
+    }
+    else {
+      loading.value = false
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    loading.value = false
+  }
+}
 
 const permohonanItems = [
   { name: 'X', value: 1 },
@@ -213,7 +266,20 @@ const layerItems = [
           </VRow>
           <VRow>
             <VCol>
-              <VDataTable :headers="tableHeader" />
+              <VDataTableServer
+                v-model:items-per-page="itemPerPage"
+                v-model:page="page"
+                :headers="tableHeader"
+                :items="items"
+                :loading="loading"
+                :items-length="totalItems"
+                loading-text="Loading..."
+                @update:options="loadItem(page, itemPerPage)"
+              >
+                <template #item.no="{ index }">
+                  {{ index + 1 + (page - 1) * itemPerPage }}
+                </template>
+              </VDataTableServer>
             </VCol>
           </VRow>
         </VCardItem>

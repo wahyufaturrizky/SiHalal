@@ -188,24 +188,26 @@ const loadPemeriksaanProduk = async (): void => {
     })
 
     if (response.code === 2000) {
-      biayaPemeriksaanItems.value = response.data.biaya
-      jadwalAudit.value = response.data.jadwal_audit
-      auditItems.value = response.data.auditor
+      const data = response.data
+      biayaPemeriksaanItems.value = data.biaya
+      totalBiaya.value = data.total_biaya
+      jadwalAudit.value = data.jadwal_audit
+      auditItems.value = data.auditor
       hasilPemeriksaan.value = {
-        dokumen: response.data.hasil_pemeriksaan?.dokumen,
-        hasil: response.data.hasil_pemeriksaan?.hasil,
-        tanggal_selesai: response.data.hasil_pemeriksaan?.tanggal_selesai,
+        dokumen: data.hasil_pemeriksaan?.dokumen,
+        hasil: data.hasil_pemeriksaan?.hasil,
+        tanggal_selesai: data.hasil_pemeriksaan?.tanggal_selesai,
       }
       nomorPendaftaran.value = {
-        no_daftar: response.data.no_pendaftaran?.no_daftar,
-        provinsi: response.data.no_pendaftaran?.provinsi,
-        tanggal_daftar: response.data.no_pendaftaran?.tanggal_daftar,
+        no_daftar: data.no_pendaftaran?.no_daftar,
+        provinsi: data.no_pendaftaran?.provinsi,
+        tanggal_daftar: data.no_pendaftaran?.tanggal_daftar,
       }
 
-      tracking.value = response.data.tracking.map(
+      tracking.value = data.tracking.map(
         i => ({
           status: i.status,
-          createdAt: i.date,
+          created_at: i.date,
           username: i.username,
         }),
       )
@@ -242,6 +244,7 @@ onMounted(async () => {
           <VBtn
             variant="outlined"
             append-icon="ri-edit-line"
+            @click="navigateTo(`/auditor-halal/layanan/${id}`)"
           >
             Ubah Data
           </VBtn>
