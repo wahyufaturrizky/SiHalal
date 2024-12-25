@@ -3,8 +3,13 @@ const props = defineProps({
   isEditable: {
     type: Boolean,
     default: true,
+    required: false,
   },
-});
+  data: {
+    type: Array,
+    required: false,
+  },
+})
 
 const tableHeader = [
   { title: "No", value: "no" },
@@ -29,7 +34,12 @@ const selected = ref([]);
       <VCol cols="12">
         <VItemGroup>
           <VLabel>Pabrik</VLabel>
-          <VSelect placeholder="Pilih Pabrik"></VSelect>
+          <VSelect
+            placeholder="Pilih Pabrik"
+            :items="props?.data"
+            item-title="nama"
+            item-value="id_pabrik"
+          />
         </VItemGroup>
       </VCol>
     </VRow>

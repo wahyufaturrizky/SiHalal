@@ -203,9 +203,9 @@ const deleteIngredient = async (productId: string) => {
 
 const handleDelete = (item: any) => {
   if (props.title === 'Daftar Nama Bahan dan Kemasan')
-    deleteIngredient(item.id)
+    deleteIngredient(item?.id)
   else
-    props.onDelete(item.id)
+    props.onDelete(item)
 }
 
 const detailClicked = (item: any) => {

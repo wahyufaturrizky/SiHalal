@@ -7,6 +7,7 @@ const confirmSaveDialog = ref(false)
 const loading = ref(false)
 const titleDialog = ref('')
 const id = route.params.id
+const lovPabrik = ref<any>([])
 
 const comitmentData = ref(
   {
@@ -60,9 +61,34 @@ const getListData = async () => {
   }
 }
 
+const getListPabrikLayout = async () => {
+  try {
+    const response: any = await $api(
+      '/reguler/pelaku-usaha/tab-produk/list',
+      {
+        method: 'get',
+        query: {
+          url: `${LIST_TAB_PRODUK}${id}/list-pabrik`,
+        },
+      },
+    )
+
+    if (response.code === 2000)
+      lovPabrik.value = response.data
+
+    return response.data
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
 onMounted(async () => {
   loading.value = true
-  await getListData()
+  await Promise.allSettled([
+    getListData(),
+    getListPabrikLayout(),
+  ])
   loading.value = false
 })
 </script>
@@ -84,7 +110,7 @@ onMounted(async () => {
     >
       <template #content>
         <div v-if="titleDialog === 'Tambah Pemetaan Produk dan Pabrik'">
-          <ProductModalContent />
+          <ProductModalContent :data="lovPabrik" />
         </div>
       </template>
     </DialogWithAction>

@@ -315,7 +315,11 @@ const addProduct = async () => {
       formData.value = {
         kode_rincian: '',
         nama_produk: '',
-        foto_produk: null,
+        foto_produk: uploadedFile.value.file || null,
+      }
+      uploadedFile.value = {
+        name: '',
+        file: '',
       }
       addDialog.value = false
       reRender.value = !reRender.value
@@ -418,9 +422,9 @@ const addProduct = async () => {
         file_dok: itemDetail.value.FileDok || '',
       }
     }
-    
 
-    if (itemDetail.value.id_reg_bahan_pembelian !== '') {
+
+    if (itemDetail.value.id_reg_bahan_cek !== '') {
       method = 'put'
       url = '/reguler/pelaku-usaha/tab-bahan/formulir/update'
     }
@@ -452,7 +456,7 @@ const addProduct = async () => {
   }
 }
 
-const getDetailProduk = async (productId: string) => {
+const getDetailProduk = async (productId: string, type: string) => {
   const response: any = await $api(
     '/reguler/pelaku-usaha/tab-bahan/products/detail',
     {
@@ -463,9 +467,13 @@ const getDetailProduk = async (productId: string) => {
 
   if (response.code === 2000) {
     itemDetail.value = response.data || {}
+    uploadedFile.value = {
+      name: response?.data?.foto_produk,
+      file: response?.data?.foto_produk,
+    }
     addDialog.value = true
-    titleDialog.value = 'Ubah Nama Produk'
-    labelSaveBtn.value = 'Ubah'
+    titleDialog.value = type === 'edit' ? 'Ubah Nama Produk' : 'Detail Nama Produk'
+    labelSaveBtn.value = type === 'edit' ? 'Ubah' : 'Detail'
   }
 }
 
@@ -691,6 +699,72 @@ onMounted(async () => {
                     />
                   </template>
                 </VTextField>
+                <VFileInput
+                  v-else
+                  :model-value="uploadedFile.file"
+                  class="custom-file-input"
+                  density="compact"
+                  rounded="xl"
+                  label="No file choosen"
+                  max-width="400"
+                  prepend-icon=""
+                  @change="handleUploadFile"
+                >
+                  <template #append-inner>
+                    <VBtn rounded="s-0 e-xl" text="Choose" />
+                  </template>
+                </VFileInput>
+              </VCol>
+            </div>
+          </div>
+        </div>
+        <div v-else-if="titleDialog === 'Detail Nama Produk'">
+          <div>
+            <label>Kualitas Produk</label>
+            <VSelect
+              v-model="itemDetail.klasifikasi"
+              outlined
+              placeholder="pilih kualitas produk"
+              density="compact"
+              :loading="loadingRincian"
+              item-title="name"
+              item-value="code"
+              :items="dataProductClasification"
+              @update:modelValue="loadItemProductRincian"
+            />
+            <br>
+            <label>Rincian Produk</label>
+            <VSelect
+              v-model="itemDetail.koderincian_desc"
+              outlined
+              placeholder="pilih rincian produk"
+              density="compact"
+              :loading="loadingRincian"
+              item-title="name"
+              item-value="code"
+              :items="listRincian"
+            />
+            <br>
+            <label>Nama Produk</label>
+            <VTextField
+              v-model="itemDetail.nama"
+              class="-mt-10"
+              density="compact"
+              placeholder="Isi Nama Produk"
+            />
+            <div class="d-flex justify-space-between mt-5">
+              <label>
+                Upload Foto
+              </label>
+              <VCol cols="6">
+                <VTextField
+                  v-if="uploadedFile.file"
+                  :model-value="uploadedFile.name"
+                  density="compact"
+                  placeholder="No file choosen"
+                  rounded="xl"
+                  max-width="400"
+                />
                 <VFileInput
                   v-else
                   :model-value="uploadedFile.file"
@@ -1198,9 +1272,9 @@ onMounted(async () => {
     <TableData
       :on-submit="() => confirmSaveDialog = true"
       :on-add="() => toggleAdd('Nama Produk')"
-      :on-edit="(item: any) => getDetailProduk(item.id)"
+      :on-edit="(item: any) => getDetailProduk(item.id, 'edit')"
       :on-delete="(item: any) => deleteProduct(item.id)"
-      :on-detail="(el: any) => toggleDetail(el, 'Nama Produk')"
+      :on-detail="(el: any) => getDetailProduk(el.id, 'detail')"
       :data="productName"
       :re-render="reRender"
       title="Daftar Nama Produk"
