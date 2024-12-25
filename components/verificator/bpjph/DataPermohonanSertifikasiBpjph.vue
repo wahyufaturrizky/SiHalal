@@ -443,7 +443,6 @@ onMounted(async () => {
               </template>
             </VDataTableServer>
           </VRow>
-          <VPagination v-model="page" :total-visible="7" :length="totalPages" />
         </VCardText>
       </VCard>
     </template>

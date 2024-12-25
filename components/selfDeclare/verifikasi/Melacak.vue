@@ -1,10 +1,5 @@
 <script setup lang="ts">
-const props = defineProps({
-  data: {
-    type: Object,
-    required: true,
-  },
-});
+const props = defineProps<{data : any[]}>();
 
 interface TimelineItem {
   title: string;
@@ -13,7 +8,10 @@ interface TimelineItem {
   color: string;
 }
 
-const timelineItems = ref<TimelineItem[]>([]);
+const timelineItems = ref<TimelineItem[]>(props.data);
+watchEffect(() => {
+  timelineItems.value = props.data
+})
 
 // const dummyData = [
 // { status: "Draft PU", username: "Ramen Grill Indonesia", created_at: "2024-11-01" },
@@ -22,12 +20,12 @@ const timelineItems = ref<TimelineItem[]>([]);
 // ];
 
 timelineItems.value = props.data?.map((item: any) => {
-  const { status, username, created_at } = item || {};
+  const { status, username, date } = item || {};
 
   return {
     title: status,
     user: username,
-    date: created_at,
+    date: date,
     color: "grey",
   };
 });
