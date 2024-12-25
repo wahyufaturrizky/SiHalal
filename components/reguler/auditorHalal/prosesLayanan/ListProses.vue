@@ -415,8 +415,8 @@ const getListProduct = async () => {
   )
 
   if (response.code === 2000) {
-    listProduk.value = response.data
-    selectedProduct.value = response.data?.[0]
+    listProduk.value = response.data || []
+    selectedProduct.value = response.data?.[0] || {}
   }
 
   return response || []
@@ -941,7 +941,6 @@ watch(selectedFactory, () => {
                   Jumlah
                 </label>
                 <VTextField
-                  v-model="selectedProduct.jumlah_bahan"
                   class="-mt-10"
                   placeholder="isi nama bahan"
                 />
