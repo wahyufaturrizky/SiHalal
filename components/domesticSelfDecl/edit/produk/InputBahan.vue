@@ -3,6 +3,10 @@ const props = defineProps<{
   productName?: string | null;
   productId?: string | null;
   bahanSelected: any;
+  embeddedInModule: {
+    type: string | null;
+    default: "pelakuSelfDec";
+  };
 }>();
 const listBahan: any = ref([]);
 
@@ -56,11 +60,23 @@ const onOpenModal = () => {
 <template>
   <VDialog max-width="60svw">
     <template #activator="{ props: openModal }">
-      <VListItem v-bind="openModal" @click="onOpenModal"
+      <VListItem
+        v-if="props.embeddedInModule === 'pelakuSelfDec'"
+        v-bind="openModal"
+        @click="onOpenModal"
         ><VListItemTitle>
           <VIcon class="mr-2" icon="ri-file-add-fill" />
           Input Bahan
         </VListItemTitle></VListItem
+      >
+      <VBtn
+        v-if="props.embeddedInModule === 'pendampingSelfDec'"
+        variant="outlined"
+        size="small"
+        rounded="lg"
+        v-bind="openModal"
+        @click="onOpenModal"
+        >Lihat</VBtn
       >
     </template>
     <template #default="{ isActive }">

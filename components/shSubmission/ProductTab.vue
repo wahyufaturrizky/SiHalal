@@ -231,6 +231,12 @@ const addVefified = (event: any) => {
   console.log("event = ", selectedIsVefified.value);
 };
 
+const handleDownload = async (filename: string) => {
+  if (filename) {
+    return await downloadDocument(filename);
+  }
+};
+
 onMounted(() => {
   handleListProduct();
 });
@@ -266,24 +272,24 @@ onMounted(() => {
         <template #item.index="{ index }">
           {{ index + 1 }}
         </template>
-        <template #item.image>
+        <template #item.foto="{ item }">
           <div class="d-flex">
-            <VIcon icon="mdi-file-download" size="small" color="primary" />
-            <div class="text-primary ms-3">file</div>
+            <VBtn variant="text" @click="handleDownload(item.foto)">
+              <template #default>
+                <VIcon icon="mdi-file-download" size="large" color="primary" />
+              </template>
+            </VBtn>
+            <!-- <div class="text-primary ms-3">file</div> -->
           </div>
         </template>
         <template #item.ingredientInput="{ item }">
-          <VBtn label="Lihat" variant="outlined" size="small" rounded="lg">
-            <template #default>
-              <InputBahan
-                :product-name="item.nama"
-                :product-id="item.id"
-                :bahan-selected="item.bahan_selected ? item.bahan_selected : []"
-                @submit="handleAddIngredient"
-              />
-              <p>Lihat</p>
-            </template>
-          </VBtn>
+          <InputBahan
+            :embedded-in-module="'pendampingSelfDec'"
+            :product-name="item.nama"
+            :product-id="item.id"
+            :bahan-selected="item.bahan_selected ? item.bahan_selected : []"
+            @submit="handleAddIngredient"
+          />
         </template>
         <template #item.vefified="{ item, index }">
           <!-- <VCheckboxBtn v-model="item.isVerified" /> -->
