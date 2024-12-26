@@ -14,6 +14,8 @@ export default defineEventHandler(async (event: any) => {
   const { url } = (await getQuery(event)) as {
     url: string
   }
+  console.log(url, 'url');
+  
 
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/${url}`,
