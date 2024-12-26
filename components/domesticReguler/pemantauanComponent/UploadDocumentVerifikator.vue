@@ -58,7 +58,7 @@ const download = async (item) => {
             color="primary"
             variant="plain"
             prepend-icon="mdi-file-download"
-            @click="download(item)"
+            @click="download(item.file_dok)"
           >
             File
           </v-btn>
