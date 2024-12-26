@@ -108,7 +108,6 @@ const getLph = async (path: string, layanan: string, area: string) => {
       params,
     })
 
-    console.log(response)
     if (response?.code === 2000)
       itemsLph.value = response.data
     else
@@ -135,12 +134,15 @@ const onSubmit = async () => {
       jenis_produk: jenisProduk?.code || props.data?.[4]?.value,
       merk_dagang: props.data[5]?.value,
       area_pemasaran: props.data?.[6]?.value,
-      lph_id: lphId.lph_id || props.data[7]?.value,
+      lph_id: lphId ? lphId.lph_id : props.data[7]?.value,
       channel_id: '',
       fac_id: props.data[9]?.value,
     }
-
-    props.onSubmit(payload)
+    if (lphId) {
+      props.onSubmit(payload)
+    } else {
+      props.onSubmit('error')
+    }
   }
   else {
     props.onSubmit()
@@ -168,13 +170,34 @@ const getProductType = async (id: string) => {
   }
 }
 
-const lphValidation = async (title: string, value: string) => {
+const lphValidation = async (title: string, value: string, index: number) => {
+  if (title === 'Jenis Layanan') {
+    props.data.map((el) => {
+      if (el.title === 'Jenis Produk') {
+        el.value = ''
+      }
+      else if (el.title === 'LPH') {
+        el.value = ''
+      }
+      else if (el.title === 'Area Pemasaran') {
+        el.value = ''
+      }
+    })
+  }
   const jenisLayanan = props?.service_type?.find((item: any) => props.data?.[3]?.value === item.name || props.data?.[3]?.value === item.code)
 
   if (title === 'Jenis Layanan')
     await getProductType(value)
   else if (title === 'Area Pemasaran')
     await getLph(LIST_BUSINESS_ACTOR, jenisLayanan?.code, value)
+
+  if (props.title === 'Pengajuan Sertifikasi Halal') {
+    const checkData = props.data.map((el: any) => {
+      if (el.required && el.value === '')
+        return false
+      return true
+    })
+  }
 }
 
 const checkCodeFasilitas = async () => {
@@ -189,6 +212,15 @@ onMounted(async () => {
     if (jenisLayanan && props.data[6])
       await getLph(LIST_BUSINESS_ACTOR, jenisLayanan?.code, props.data?.[6]?.value)
   }, 1000)
+})
+
+watchEffect(async () => {
+  // we need to check undefined because if we pass 0 as currentStep it will be falsy
+  const jenisLayanan = props?.service_type?.find((item: any) => props.data?.[3]?.value === item.name || props.data?.[3]?.value === item.code)
+  if (props.data?.[3]?.value)
+    await getProductType(jenisLayanan?.code || props.data?.[3]?.value)
+  if (jenisLayanan && props.data[6])
+    await getLph(LIST_BUSINESS_ACTOR, jenisLayanan?.code, props.data?.[6]?.value)
 })
 </script>
 
@@ -250,7 +282,7 @@ onMounted(async () => {
               class="-mt-10"
               :item-value="item.title === 'LPH' ? 'lph_id' : 'code'"
               :item-title="item.title === 'LPH' ? 'nama_lph' : 'name'"
-              @update:model-value="() => lphValidation(item.title, item.value)"
+              @update:model-value="() => lphValidation(item.title, item.value, index)"
             />
           </div>
           <VCol
