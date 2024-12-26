@@ -1,5 +1,8 @@
 <script setup lang="ts">
 const router = useRouter();
+const route = useRoute();
+const submissionId = route.params.id as string;
+
 const isPanelOpen = ref(0);
 
 const props = defineProps({
@@ -84,20 +87,6 @@ const confirmDeleteItem = () => {
   useSnackbar().sendSnackbar("Berhasil menghapus data", "success");
 };
 
-const handleUploadFile = (event: any, index: number) => {
-  if (event?.target?.files.length) {
-    const file = event.target.files[0];
-    if (file) {
-      return documentData.value.map((i: any, idx: number) => {
-        if (idx === index) {
-          i.filename = file.name;
-          i.document = file;
-          return i;
-        }
-      });
-    }
-  }
-};
 const confirmDeleteDoc = () => {
   documentData.value.map((i: any, idx: number) => {
     if (idx === selectedItem.value) {
@@ -125,6 +114,50 @@ const handleDetailPelakuUsaha = async () => {
       halalSupervisorData.value = response.data.penyelia_halal;
     }
     return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const refresh = async () => {
+  await handleDetailPelakuUsaha();
+};
+
+const handleAddLegal = async (selectedLegal: string[]) => {
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/legal/create`,
+      {
+        method: "post",
+        body: {
+          id_reg: submissionId,
+          id_legal: selectedLegal,
+        },
+      }
+    );
+    if (response.code === 2000) {
+      refresh();
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const handleAddSupervisor = async (selectedSupervisor: string[]) => {
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/supervisor/create`,
+      {
+        method: "post",
+        body: {
+          id_reg: submissionId,
+          id_penyelia: selectedSupervisor,
+        },
+      }
+    );
+    if (response.code === 2000) {
+      refresh();
+    }
   } catch (error) {
     console.log(error);
   }
@@ -203,14 +236,12 @@ onMounted(async () => {
   </VCard>
   <VCard class="mb-10">
     <VCardTitle class="my-5 d-flex justify-space-between align-center">
-      <div class="font-weight-bold text-h4">Aspek Legal</div>
-      <VBtn
-        variant="outlined"
-        @click="router.push('/sh-domestic/submission/self-declare/edit?tab=1')"
-      >
-        <div class="pe-3">Tambah</div>
-        <VIcon icon="fa-plus" />
-      </VBtn>
+      <VRow align="center">
+        <VCol class="font-weight-bold text-h4"> Aspek Legal </VCol>
+        <VCol justify="end" class="d-flex justify-end">
+          <TambahAspekLegalByTable @submit="handleAddLegal" />
+        </VCol>
+      </VRow>
     </VCardTitle>
     <VCardText>
       <VDataTable
@@ -237,14 +268,12 @@ onMounted(async () => {
   </VCard>
   <VCard class="mb-10">
     <VCardTitle class="my-5 d-flex justify-space-between align-center">
-      <div class="font-weight-bold text-h4">Penyelia Halal</div>
-      <VBtn
-        variant="outlined"
-        @click="router.push('/sh-domestic/submission/self-declare/edit?tab=1')"
-      >
-        <div class="pe-3">Tambah</div>
-        <VIcon icon="fa-plus" />
-      </VBtn>
+      <VRow align="center">
+        <VCol class="font-weight-bold text-h4"> Penyelia Halal </VCol>
+        <VCol class="d-flex justify-end">
+          <TambahPenyeliaByTable @submit="handleAddSupervisor" />
+        </VCol>
+      </VRow>
     </VCardTitle>
     <VCardText>
       <VDataTable
