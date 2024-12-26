@@ -16,8 +16,8 @@ interface DetailVerifikatorReguler {
   penanggung_jawab: PenanggungJawab;
   s;
   pendaftaran: Pendaftaran;
-  penyelia: any[];
-  produk: any[];
+  penyelia: Penyelia[];
+  produk: Produk[];
   sertifikasi_halal: SertifikasiHalal;
   sertifikat: Sertifikat;
   sidang_fatwa: SidangFatwa;
@@ -29,15 +29,50 @@ interface AspekLegal {
   no_dokumen: string;
   tanggal: string;
 }
+interface Penyelia {
+  nama: string;
+  no_kontak: string;
+  no_ktp: string;
+  no_sertifikat: string;
+  no_sk: string;
+  tgl_sertifikat: string;
+  tgl_sk: string;
+}
+interface Produk {
+  jenis_produk: string;
+  kelas_produk: string;
+  layanan_produk: string;
+  nama_produk: string;
+  publikasi: boolean;
+  rincian_prooduk: string;
+}
 
 interface Outlet {
-  alamat: string;
+  id_pabrik: string;
+  id_reg: string;
+  id_fas: string;
+  fasil_id: string;
   nama: string;
+  kab_kota: string;
+  provinsi: string;
+  negara: string;
+  kode_pos: string;
+  alamat: string;
+  status_milik: string;
 }
 
 interface Pabrik {
-  alamat: string;
+  id_pabrik: string;
+  id_reg: string;
+  id_fas: string;
+  fasil_id: string;
   nama: string;
+  kab_kota: string;
+  provinsi: string;
+  negara: string;
+  kode_pos: string;
+  alamat: string;
+  status_milik: string;
 }
 
 interface Pemeriksaan {
@@ -65,6 +100,7 @@ interface Pendaftaran {
 
 interface SertifikasiHalal {
   alamat_pu: string;
+  area_pemasaran: string;
   asal_usaha: string;
   email: string;
   id_reg: string;
@@ -73,7 +109,9 @@ interface SertifikasiHalal {
   jenis_usaha: string;
   kode_pos_pu: string;
   kota_pu: string;
+  merek_dagang: string;
   modal_usaha: number;
+  nama_kbli: string;
   nama_pu: string;
   "nama_pu_sh ": string;
   negara_pu: string;
@@ -82,7 +120,7 @@ interface SertifikasiHalal {
   prov_pu: string;
   skala_usaha: string;
   tanggal: string;
-  tgl_daftar: any;
+  tgl_daftar: string;
   tingkat_usaha: string;
 }
 
@@ -138,7 +176,6 @@ const submitData = async () => {
       return;
     }
     useSnackbar().sendSnackbar("Berhasil memverifikasi data", "success");
-
   } catch (error) {
     useSnackbar().sendSnackbar("Ada kesalahan", "error");
   } finally {
@@ -162,7 +199,6 @@ const returnDocument = async () => {
       return;
     }
     useSnackbar().sendSnackbar("Berhasil mengembalikan data", "success");
-
   } catch (error) {
     useSnackbar().sendSnackbar("Ada kesalahan", "error");
   } finally {
@@ -179,14 +215,8 @@ const rejectSubmission = async () => {
 const dataDetail = ref<DetailVerifikatorReguler>({
   aspek_legal: [],
   melacak: [],
-  outlet: {
-    alamat: "",
-    nama: "",
-  },
-  pabrik: {
-    alamat: "",
-    nama: "",
-  },
+  outlet: [],
+  pabrik: [],
   pemeriksaan: {
     dokumen: "",
     hasil: "",
@@ -211,6 +241,7 @@ const dataDetail = ref<DetailVerifikatorReguler>({
   produk: [],
   sertifikasi_halal: {
     alamat_pu: "",
+    area_pemasaran: "",
     asal_usaha: "",
     email: "",
     id_reg: "",
@@ -219,16 +250,18 @@ const dataDetail = ref<DetailVerifikatorReguler>({
     jenis_usaha: "",
     kode_pos_pu: "-",
     kota_pu: "",
+    merek_dagang: "",
     modal_usaha: 0,
-    nama_pu: " ",
+    nama_kbli: "",
+    nama_pu: "",
     "nama_pu_sh ": "",
     negara_pu: "",
     no_mohon: "",
-    no_telp: "-",
+    no_telp: "",
     prov_pu: "",
     skala_usaha: "",
     tanggal: "",
-    tgl_daftar: null,
+    tgl_daftar: "",
     tingkat_usaha: "",
   },
   sertifikat: {
@@ -244,6 +277,7 @@ const dataDetail = ref<DetailVerifikatorReguler>({
 });
 const getDetail = async () => {
   try {
+    loading.value = true;
     const response = await $api("/reguler/verifikator/detail", {
       method: "post",
       body: {
@@ -256,10 +290,12 @@ const getDetail = async () => {
       return;
     }
     dataDetail.value = response.data;
-  } catch {
+  } catch (error) {
     navigateTo("/online-registration/verifikasi-reguler");
     useSnackbar().sendSnackbar("ada kesalahan", "error");
     return;
+  } finally {
+    loading.value = false;
   }
 };
 onMounted(async () => {
@@ -268,7 +304,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <SHLNVerfikasiLayout>
+  <SHLNVerfikasiLayout v-if="!loading">
     <template #pageTitle>
       <VRow>
         <VCol style="display: flex; justify-content: start"
@@ -337,15 +373,11 @@ onMounted(async () => {
           <VExpansionPanels v-model="panelOpenPabrik">
             <VExpansionPanel>
               <VExpansionPanelTitle>
-                <VCol cols="9">
                   <h2>Pabrik</h2>
-                </VCol>
-                <VCol cols="3">
-                  <VBtn variant="outlined" text="Unduh" />
-                </VCol>
+
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <!-- <Pabrik :data="dataDetail.pabrik" /> -->
+                <Pabrik :data="dataDetail.pabrik" />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -356,15 +388,11 @@ onMounted(async () => {
           <VExpansionPanels v-model="panelOpenOutlet">
             <VExpansionPanel>
               <VExpansionPanelTitle>
-                <VCol cols="9">
                   <h2>Outlet</h2>
-                </VCol>
-                <VCol cols="3">
-                  <VBtn variant="outlined" text="Unduh" />
-                </VCol>
+
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <Outlet :data="data" />
+                <Outlet :data="dataDetail.outlet" />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -378,7 +406,7 @@ onMounted(async () => {
                 <h2>Penyelia Halal</h2>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <Penyelia :data="data" />
+                <Penyelia :data="dataDetail.penyelia" />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -389,15 +417,10 @@ onMounted(async () => {
           <VExpansionPanels v-model="panelOpenProduk">
             <VExpansionPanel>
               <VExpansionPanelTitle>
-                <VCol cols="9">
                   <h2>Daftar Nama Produk</h2>
-                </VCol>
-                <VCol cols="3">
-                  <VBtn variant="outlined" text="Unduh" />
-                </VCol>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <DaftarNamaProdukSelfDeclare :data="data" />
+                <DaftarNamaProdukSelfDeclare :data="dataDetail.produk" />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -500,64 +523,60 @@ onMounted(async () => {
           </VCard>
         </VCol>
       </VRow>
-      <VDialog v-model="showConfirmation" max-width="600px">
-        <VCard>
-          <VCardTitle class="font-weight-bold d-flex justify-space-between"
-            ><h3>Konfirmasi</h3>
-            <VBtn icon variant="plain" @click="closeConfirmation">
-              <VIcon style="color: black">mdi-close</VIcon>
-            </VBtn>
-          </VCardTitle>
-          <VCardText
-            >Data akan dikirim ke LPH, pastikan dokumen telah memenuhi
-            persyaratan!</VCardText
-          >
-          <VCardActions class="d-flex justify-end">
-            <VBtn color="primary" variant="outlined" @click="closeConfirmation"
-              >Batal</VBtn
-            >
-            <VBtn color="primary" variant="flat" @click="submitData"
-              >Kirim</VBtn
-            >
-          </VCardActions>
-        </VCard>
-      </VDialog>
-
-      <!-- Document Return Modal -->
-      <VDialog v-model="showReturn" max-width="600px">
-        <VForm ref="refVForm" @submit.prevent="rejectSubmission">
-          <VCard>
-            <VCardTitle class="font-weight-bold d-flex justify-space-between"
-              ><h3>Pengembalian Dokumen</h3>
-              <VBtn icon variant="plain" @click="closeReturn">
-                <VIcon style="color: black">mdi-close</VIcon>
-              </VBtn>
-            </VCardTitle>
-            <VCardText>
-              <div class="mb-3 font-weight-medium text-caption text-grey">
-                <span style="color: black"
-                  ><b>Masukan Keterangan Pengembalian</b></span
-                >(Max. 1000 Karakter)
-              </div>
-              <VTextarea
-                label="Masukan Keterangan Pengembalian (Max. 1000 Karakter)"
-                v-model="returnNote"
-                :rules="[requiredValidator]"
-                rows="4"
-                outlined
-              />
-            </VCardText>
-            <VCardActions class="d-flex justify-end">
-              <VBtn color="primary" variant="outlined" @click="closeReturn"
-                >Batal</VBtn
-              >
-              <VBtn type="submit" color="primary" variant="flat"
-                >Kembalikan</VBtn
-              >
-            </VCardActions>
-          </VCard>
-        </VForm>
-      </VDialog>
     </template>
   </SHLNVerfikasiLayout>
+  <VDialog v-model="showConfirmation" max-width="600px">
+    <VCard>
+      <VCardTitle class="font-weight-bold d-flex justify-space-between"
+        ><h3>Konfirmasi</h3>
+        <VBtn icon variant="plain" @click="closeConfirmation">
+          <VIcon style="color: black">mdi-close</VIcon>
+        </VBtn>
+      </VCardTitle>
+      <VCardText
+        >Data akan dikirim ke LPH, pastikan dokumen telah memenuhi
+        persyaratan!</VCardText
+      >
+      <VCardActions class="d-flex justify-end">
+        <VBtn color="primary" variant="outlined" @click="closeConfirmation"
+          >Batal</VBtn
+        >
+        <VBtn color="primary" variant="flat" @click="submitData">Kirim</VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
+
+  <!-- Document Return Modal -->
+  <VDialog v-model="showReturn" max-width="600px">
+    <VForm ref="refVForm" @submit.prevent="rejectSubmission">
+      <VCard>
+        <VCardTitle class="font-weight-bold d-flex justify-space-between"
+          ><h3>Pengembalian Dokumen</h3>
+          <VBtn icon variant="plain" @click="closeReturn">
+            <VIcon style="color: black">mdi-close</VIcon>
+          </VBtn>
+        </VCardTitle>
+        <VCardText>
+          <div class="mb-3 font-weight-medium text-caption text-grey">
+            <span style="color: black"
+              ><b>Masukan Keterangan Pengembalian</b></span
+            >(Max. 1000 Karakter)
+          </div>
+          <VTextarea
+            label="Masukan Keterangan Pengembalian (Max. 1000 Karakter)"
+            v-model="returnNote"
+            :rules="[requiredValidator]"
+            rows="4"
+            outlined
+          />
+        </VCardText>
+        <VCardActions class="d-flex justify-end">
+          <VBtn color="primary" variant="outlined" @click="closeReturn"
+            >Batal</VBtn
+          >
+          <VBtn type="submit" color="primary" variant="flat">Kembalikan</VBtn>
+        </VCardActions>
+      </VCard>
+    </VForm>
+  </VDialog>
 </template>
