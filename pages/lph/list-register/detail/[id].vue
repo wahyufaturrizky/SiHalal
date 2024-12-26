@@ -49,6 +49,7 @@ const panelSupervisor = ref([0, 1]);
 const panelDownloadFormulir = ref([0, 1]);
 const panelRegistration = ref([0, 1]);
 const panelTracking = ref([0, 1]);
+const panelPayment = ref([0, 1]);
 
 const detailSubmission = ref();
 const dataPengajuan = ref();
@@ -202,7 +203,7 @@ const loadItemById = async () => {
         },
         {
           label: "Negara",
-          value: negara_pu,
+          value: negara_pu || 'Indonesia',
         },
         {
           label: "Telepon",
@@ -253,7 +254,7 @@ onMounted(async () => {
     </VRow>
     <VRow class="d-flex justify-space-between align-center">
       <VCol class="">
-        <h3 class="text-h3 font-weight-bold">Detail Post Audit</h3>
+        <h3 class="text-h3 font-weight-bold">Detail Daftar Ajuan</h3>
       </VCol>
       <VCol cols="8">
         <VRow class="d-flex justify-end align-center ga-2">
@@ -331,7 +332,7 @@ onMounted(async () => {
                   },
                   {
                     label: 'Merek Dagang',
-                    value: detailSubmission.certificate_halal.merek_dagang,
+                    value: detailSubmission.certificate_halal.merk_dagang,
                   },
                   {
                     label: 'Area Pemasaran',
@@ -496,29 +497,6 @@ onMounted(async () => {
         </VExpansionPanels>
       </VCol>
       <VCol cols="4" class="pr-0">
-        <VExpansionPanels v-model="panelDownloadFormulir">
-          <VExpansionPanel class="pa-5">
-            <VExpansionPanelTitle class="text-h4 font-weight-bold">
-              Dokumen Unduhan
-            </VExpansionPanelTitle>
-            <VExpansionPanelText class="d-flex align-center">
-              <InfoRow
-                cols-name="8"
-                cols-separator="1"
-                cols-value="3"
-                name="Hasil Unduhan"
-              >
-                <VBtn
-                  append-icon="fa-download"
-                  variant="plain"
-                  style="align-content: start"
-                  @click="downloadDocument(detailSubmission.dokumen.sjph)"
-                />
-              </InfoRow>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-        </VExpansionPanels>
-        <br />
         <VExpansionPanels v-model="panelRegistration">
           <VExpansionPanel class="pa-5">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
@@ -538,7 +516,7 @@ onMounted(async () => {
           </VExpansionPanel>
         </VExpansionPanels>
         <br />
-        <!-- <VExpansionPanels v-model="panelPayment">
+        <VExpansionPanels v-model="panelPayment">
           <VExpansionPanel class="pa-5">
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Biaya Pemeriksaan
@@ -548,8 +526,29 @@ onMounted(async () => {
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
-        <br /> -->
-
+        <br />
+        <VExpansionPanels v-model="panelDownloadFormulir">
+          <VExpansionPanel class="pa-5">
+            <VExpansionPanelTitle class="text-h4 font-weight-bold">
+              Dokumen
+            </VExpansionPanelTitle>
+            <VExpansionPanelText class="d-flex align-center">
+              <InfoRow
+                cols-name="8"
+                cols-separator="1"
+                cols-value="3"
+                name="Hasil Unduhan"
+              >
+                <VBtn
+                  append-icon="fa-download"
+                  variant="plain"
+                  style="align-content: start"
+                  @click="downloadDocument(detailSubmission.dokumen.sjph)"
+                />
+              </InfoRow>
+            </VExpansionPanelText>
+          </VExpansionPanel>
+        </VExpansionPanels>
         <br />
         <VExpansionPanels v-model="panelTracking">
           <VExpansionPanel class="pa-4">
