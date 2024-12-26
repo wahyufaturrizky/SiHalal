@@ -56,10 +56,11 @@ const handleDetailProduct = async (submissionId: string, productId: string) => {
     );
 
     if (response.code === 2000) {
+      await handleListClassificationDetail(response.data?.klasifikasi);
       // detailProduct.value = response.data;
       console.log("response detail = ", response.data);
       formData.value.product_grade = response.data?.klasifikasi;
-      formData.value.kode_rincian = response.data?.koderincian_desc;
+      formData.value.kode_rincian = response.data?.koderincian;
       formData.value.nama_produk = response.data?.nama;
       formData.value.merek = response.data?.merek;
       formData.value.foto_produk = null;
