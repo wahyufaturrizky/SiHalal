@@ -24,7 +24,7 @@ const handleListIngredient = async () => {
 
     if (response.code === 2000) {
       listBahan.value = response.data ? response.data : [];
-      selectedBahan.value = props.bahanSelected;
+      // selectedBahan.value = props.bahanSelected ? props.bahanSelected : [];
     }
     return response;
   } catch (error) {
@@ -37,7 +37,7 @@ onMounted(async () => {
 });
 
 const addText = computed(() => {
-  return selectedBahan.value.length
+  return selectedBahan.value.length > 0
     ? `Tambah (${selectedBahan.value.length})`
     : "Tambah";
 });
@@ -47,12 +47,16 @@ const handleSubmit = () => {
   emit("submit", selectedBahan.value, props.productId);
   // selectedBahan.value = [];
 };
+
+const onOpenModal = () => {
+  selectedBahan.value = props.bahanSelected ? props.bahanSelected : [];
+};
 </script>
 
 <template>
   <VDialog max-width="60svw">
     <template #activator="{ props: openModal }">
-      <VListItem v-bind="openModal"
+      <VListItem v-bind="openModal" @click="onOpenModal"
         ><VListItemTitle>
           <VIcon class="mr-2" icon="ri-file-add-fill" />
           Input Bahan
