@@ -306,7 +306,7 @@ onMounted(async () => {
     </VTabsWindowItem>
 
     <VTabsWindowItem value="3">
-      <EditBahanReguler :is-editable="props.tabBahanEditable" />
+      <EditBahanRegulerVerifikator />
     </VTabsWindowItem>
 
     <!-- <VTabsWindowItem value="4">
