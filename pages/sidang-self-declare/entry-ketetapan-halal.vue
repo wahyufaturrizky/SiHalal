@@ -21,7 +21,7 @@ const items = ref<
   }[]
 >([])
 
-const itemPerPage = ref(100)
+const itemPerPage = ref(10)
 const totalItems = ref(0)
 const loading = ref(false)
 const loadingAll = ref(true)
