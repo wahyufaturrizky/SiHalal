@@ -28,7 +28,7 @@ const statusItem = new Proxy(
     OF1: { color: "grey-300", desc: "Draft" },
     OF10: { color: "success", desc: "Submitted" },
     OF11: { color: "success", desc: "Verification" },
-    OF15: { color: "success", desc: "Verified" },
+    OF15: { color: "success", desc: "Verification" },
     OF2: { color: "error", desc: "Returned" },
     OF280: { color: "error", desc: "Returned to PU" },
     OF285: { color: "error", desc: "Returned By KF" },
@@ -198,6 +198,11 @@ const StatusOptions = [
   { name: "OF74", value: "of74" },
   { name: "Verifikasi", value: "verifikasi" },
 ];
+const loadDataFromModal = async () => {
+  page.value = 1;
+  searchQuery.value = "";
+  await loadItem(page.value, itemPerPage.value, searchQuery.value);
+};
 
 const bahanType = ref(null);
 </script>
@@ -212,7 +217,7 @@ const bahanType = ref(null);
         </p>
       </VCol>
       <VCol cols="2" style="display: flex; justify-content: end">
-        <DataPermohonanSertifikasiBpjph />
+        <DataPermohonanSertifikasiBpjph @loadData="loadDataFromModal()" />
       </VCol>
     </VRow>
     <VRow>

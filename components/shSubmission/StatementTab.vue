@@ -2,13 +2,14 @@
 const isRead = ref(false);
 
 const guarantorData = ref({
-  name: "Sumayah",
-  businessName: "Minuman Rasarasa",
-  businessAddress: "Sumbangan, RT002/007, Jombang, Jawa Barat, Indonesia",
-  outletAddress: "Blok M, Jakarta Selatan",
-  phoneNumber: "081212121212",
-  email: "sumayahhhh@gmail.com",
-  productType: "Pilih...",
+  nama_pemilik: null,
+  nama_usaha: null,
+  alamat_usaha: null,
+  alamat_tempat_usaha: null,
+  no_telp: null,
+  email: null,
+  jenis_produk: null,
+  nama_pj: null,
 });
 
 const props = defineProps({
@@ -16,6 +17,42 @@ const props = defineProps({
     required: true,
     type: String,
   },
+});
+
+const route = useRoute();
+
+const aggreButtonDisable = ref(false);
+const showDownloadButton = ref(false);
+
+const loadingAgree = ref(false);
+const pledgeFile = ref("");
+
+const handleGetDeclare = async () => {
+  try {
+    const response: any = await $api(`/self-declare/business-actor/statement`, {
+      method: "get",
+      query: {
+        id_reg: route.params?.id,
+      },
+    });
+
+    if (response.code === 2000) {
+      Object.assign(guarantorData.value, response.data);
+      pledgeFile.value = response.data.file;
+      if (pledgeFile.value) {
+        aggreButtonDisable.value = true;
+        showDownloadButton.value = true;
+        isRead.value = true;
+      }
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+onMounted(() => {
+  handleGetDeclare();
 });
 </script>
 
@@ -40,7 +77,7 @@ const props = defineProps({
             </div>
           </VCol>
           <VCol cols="9" class="text-xl text-24 ps-2">{{
-            guarantorData.name
+            guarantorData.nama_pemilik
           }}</VCol>
         </VRow>
         <VRow no-gutters class="pb-4">
@@ -51,7 +88,7 @@ const props = defineProps({
             </div>
           </VCol>
           <VCol cols="9" class="text-xl text-24 ps-2">{{
-            guarantorData.businessName
+            guarantorData.nama_usaha
           }}</VCol>
         </VRow>
         <VRow no-gutters class="pb-4">
@@ -62,7 +99,7 @@ const props = defineProps({
             </div>
           </VCol>
           <VCol cols="9" class="text-xl text-24 ps-2">{{
-            guarantorData.businessAddress
+            guarantorData.alamat_usaha
           }}</VCol>
         </VRow>
         <VRow no-gutters class="pb-4">
@@ -73,7 +110,7 @@ const props = defineProps({
             </div>
           </VCol>
           <VCol cols="9" class="text-xl text-24 ps-2">{{
-            guarantorData.outletAddress
+            guarantorData.alamat_tempat_usaha
           }}</VCol>
         </VRow>
         <VRow no-gutters class="pb-4">
@@ -84,7 +121,7 @@ const props = defineProps({
             </div>
           </VCol>
           <VCol cols="9" class="text-xl text-24 ps-2">
-            {{ guarantorData.phoneNumber }}
+            {{ guarantorData.no_telp }}
           </VCol>
         </VRow>
         <VRow no-gutters class="pb-4">
@@ -106,7 +143,7 @@ const props = defineProps({
             </div>
           </VCol>
           <VCol cols="9" class="text-xl text-24 ps-2">{{
-            guarantorData.productType
+            guarantorData.jenis_produk
           }}</VCol>
         </VRow>
         <div class="text-xl pb-3 text-24">Dengan ini menyatakan:</div>
@@ -135,7 +172,7 @@ const props = defineProps({
         </VRow>
         <div class="mt-16 pt-5">
           <div>_________________________________</div>
-          <div class="text-xl text-24">SUMAYAH</div>
+          <div class="text-xl text-24">{{ guarantorData.nama_pj }}</div>
           <div class="text-xl text-24">Penanggung Jawab Produk Halal</div>
         </div>
       </VSheet>
@@ -157,6 +194,7 @@ const props = defineProps({
               class="px-4"
               size="large"
               text="Saya Setuju"
+              :disabled="aggreButtonDisable"
             >
             </VBtn>
           </div>

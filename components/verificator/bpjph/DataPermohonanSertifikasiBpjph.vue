@@ -9,8 +9,6 @@ import { VDataTableServer } from "vuetify/components";
 // Props and Emits
 defineProps({ mode: String });
 
-const emit = defineEmits(["confirm-add", "cancel"]);
-
 // State variables
 const isModalOpen = ref(false);
 interface DataItem {
@@ -223,6 +221,7 @@ const getProvinsi = async () => {
   filterProvince.value = [{ code: "", name: "Semua" }, ...masterSkalaUsaha];
 };
 const dialogVisible = ref(false);
+const emits = defineEmits(["loadData"]);
 const selectVerifikasiItem = async (item) => {
   try {
     const response = await $api("/reguler/verifikator/take", {
@@ -235,7 +234,8 @@ const selectVerifikasiItem = async (item) => {
       useSnackbar().sendSnackbar("Ada kesalahan", "error");
       return;
     }
-    await loadItem(page.value, itemPerPage.value, searchQuery.value);
+    emits("loadData");
+    // await loadItem(page.value, itemPerPage.value, searchQuery.value);
     dialogVisible.value = false;
     useSnackbar().sendSnackbar("Berhasil menyimpan data", "success");
   } catch (error) {
