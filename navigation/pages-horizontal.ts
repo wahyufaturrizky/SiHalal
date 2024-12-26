@@ -131,6 +131,12 @@ export default [
         to: "sh-domestic-submission-self-declare",
         roles: ["Pelaku Usaha", "Admin"],
       },
+      {
+        title: "Tagihan/Invoices",
+        icon: { icon: "ri-id-card-line" },
+        to: "sh-domestic-bill",
+        roles: ["Pelaku Usaha", "Admin"],
+      },
     ],
   },
   {
