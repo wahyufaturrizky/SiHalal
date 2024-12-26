@@ -129,6 +129,10 @@ const navigateToDetail = (id: string) => {
   navigateTo(`/lph/list-register/detail/${id}`);
 };
 
+const unduhFile = () => {
+  window.open('/files/Cara Bayar.pdf', '_blank')
+}
+
 const handleInput = (e: any) => {
   debounce(loadItem(page.value, size.value, status.value, outDated.value, e.target.value), 500);
 };
@@ -152,29 +156,17 @@ watch([status, outDated], () => {
   <div v-if="!loading">
     <VContainer>
       <KembaliButton class="pl-0" />
-      <h3 class="text-h3">Tagihan/Invoice</h3>
-      <br />
-
-      <VRow>
-        <VCol>
-          <VCard class="w-100">
-            <VCardTitle>Download Cara Bayar</VCardTitle>
-            <VCardItem>
-              <VRow>
-                <VCol class="v-col-3">
-                  <p>Dokumen Cara Bayar</p>
-                </VCol>
-                <VCol class="v-col-1">
-                  <p>:</p>
-                </VCol>
-                <VCol class="align-self-start ">
-                  <VBtn>Download</VBtn>
-                </VCol>
-              </VRow>
-            </VCardItem>
-          </VCard>
-        </VCol>
-      </VRow>
+      <div class="d-flex" style="justify-content: space-between">
+        <h3 class="text-h3">Tagihan/Invoice</h3>
+        <VBtn
+          v-if="!loading"
+          append-icon="fa-download"
+          variant="flat"
+          @click="() => unduhFile()"
+        >
+          Unduh Cara Bayar
+        </VBtn>
+      </div>
       <br />
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
