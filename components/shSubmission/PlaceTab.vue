@@ -180,6 +180,8 @@ const loadPabrik = async (type: string = "FAPAB") => {
       `/self-declare/submission/pabrik/${(route.params as any).id}/list`,
       options
     );
+    console.log("@response", response);
+
     if (type == "FAPAB") {
       itemsPabrik.value = response.data;
       return;
@@ -259,6 +261,10 @@ const deleteItem = async (
   console.log(deletedId.value);
   deleteDialog.value = true;
 };
+
+onMounted(async () => {
+  await Promise.all([loadPabrik("FAPAB"), loadPabrik("FAOUT")]);
+});
 </script>
 
 <template>
