@@ -120,7 +120,7 @@ const formData = reactive({
 const { refresh } = await useAsyncData("get-detail-submission", async () => {
   try {
     const response: any = await $api(
-      `/self-declare/submission/${props.idDetail}/detail`,
+      `/self-declare/submission/${props.idDetail}/detail-pengajuan`,
       {
         method: "get",
       }
