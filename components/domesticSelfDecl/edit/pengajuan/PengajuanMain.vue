@@ -5,6 +5,7 @@ const submissionId = route.params?.id
 const submissionDetail = reactive({
   id_reg: null,
   jenis_pengajuan: null,
+  id_fasilitator: null,
   id_jenis_pengajuan: null,
   tanggal_buat: null,
   nama_pj: null,
@@ -127,11 +128,16 @@ const onSearchFasilitator = async () => {
       },
     })
 
-    if (responseMessage.value === 'Kode Fasilitasi dapat digunakan') {
+    console.log(response.message === 'Kode Fasilitasi dapat digunakan', response.message)
+    if (response.message === 'Kode Fasilitasi dapat digunakan') {
       isKodeFound.value = true
       isKodeNotFound.value = false
       responseMessage.value = ''
-      responseId.value = response.data.id
+      responseId.value = response.data[0].id
+      console.log('ressponde id', response.data[0].id)
+      console.log('responseId ', responseId)
+      formData.id_fasilitator.value = responseId.value
+      console.log('id fasilitator ', formData.id_fasilitator)
     }
     else {
       responseMessage.value = response.message
@@ -145,13 +151,13 @@ const onSearchFasilitator = async () => {
 }
 
 const responseType = computed(() => {
-  return responseMessage.value === 'Kode Fasilitasi dapat digunakan'
+  return responseMessage.value == 'Kode Fasilitasi dapat digunakan'
     ? 'success'
     : 'error'
 })
 
 const responseColor = computed(() => {
-  return responseMessage.value === 'Kode Fasilitasi dapat digunakan'
+  return responseMessage.value == 'Kode Fasilitasi dapat digunakan'
     ? '#5CB338'
     : '#FB4141'
 })
@@ -229,34 +235,58 @@ const handleGetPendamping = async (idLembaga: string | null) => {
   }
 }
 
-const { refresh } = await useAsyncData('get-detail-submission', async () => {
+const getDetail = async () => {
   try {
     const response: any = await $api(
-      `/self-declare/submission/${submissionId}/detail`,
+      `/self-declare/pengajuan/${submissionId}/detail`,
       {
         method: 'get',
       },
     )
 
-    if (response.code === 2000) {
-      Object.assign(submissionDetail, response.data.certificate_halal)
-      submissionDetail.tanggal_buat = response.data.pendaftaran.tgl_daftar
-      submissionDetail.nama_pj = response.data.penanggung_jawab.nama_pj
-      submissionDetail.nomor_kontak_pj
-        = response.data.penanggung_jawab.nomor_kontak_pj
-      Object.assign(formData, response.data.certificate_halal)
-      formData.tgl_surat_permohonan
-        = formData.tgl_mohon != '' ? formatToISOString(formData.tgl_mohon) : null
-      if (formData.id_lembaga_pendamping != '')
-        await handleGetPendamping(formData.id_lembaga_pendamping)
-    }
+    console.log('response pengajuan detail', response, '')
+  }
+  catch (error: any) {
+    // Tangani error
+    console.error('Error fetching detail:', error.message || error)
+    throw error // Opsional: Lempar ulang error jika perlu
+  }
+}
 
-    return response
-  }
-  catch (error) {
-    console.log(error)
-  }
-})
+// const getDetail  =()=>({
+//   try {
+//     const response: any = await $api(
+//       `/self-declare/pengajuan/${submissionId}/detail`,
+//       {
+//         method: 'post',
+//       },
+//     )
+
+//     console.log(response, 'ini data response detail')
+
+// if (response.code === 2000) {
+//   Object.assign(submissionDetail, response.data.certificate_halal)
+//   submissionDetail.tanggal_buat = response.data.pendaftaran.tgl_daftar
+//   submissionDetail.nama_pj = response.data.penanggung_jawab.nama_pj
+//   submissionDetail.nomor_kontak_pj
+//     = response.data.penanggung_jawab.nomor_kontak_pj
+
+//   Object.assign(formData, response.data.certificate_halal)
+//   formData.tgl_surat_permohonan
+//     = formData.tgl_mohon != '' ? formatToISOString(formData.tgl_mohon) : null
+//   if (formData.id_lembaga_pendamping != '')
+//     await handleGetPendamping(formData.id_lembaga_pendamping)
+
+//   if (formData.id_fasilitator != '')
+//     onSelectFasilitator(formData.id_lembaga_pendamping)
+// }
+
+// return response
+//   }
+//   catch (error) {
+//     console.log(error)
+//   }
+// })
 
 const formLembagaPendamping = ref<{}>()
 const refVForm = ref<VForm>()
@@ -264,25 +294,21 @@ const refVForm = ref<VForm>()
 const onSubmitSubmission = () => {
   refVForm.value?.validate().then(({ valid: isValid }) => {
     console.log('ini submit')
-    if (formData.id_fasilitator.value === 'Lainnya') {
-      if (isValid && isKodeFound.value === true) {
-        console.log(' check isvalid', isValid)
-        handleUpdateSubmission()
-      }
-    }
-    else {
-      if (isValid) {
-        console.log(' check isvalid', isValid)
-        handleUpdateSubmission()
-      }
+
+    if (isValid) {
+      console.log(' check isvalid', isValid)
+      handleUpdateSubmission()
     }
   })
 }
 
 const handleUpdateSubmission = async () => {
   try {
-    if (isKodeFound.value === true)
-      formData.id_fasilitator.value = responseId.value
+    if (isKodeFound.value === true) {
+      formData.id_fasilitator = responseId.value
+      console.log('id fasilitator submit', formData.id_fasilitator)
+      console.log('responseid submit', responseId.value)
+    }
 
     const response: any = await $api(
       '/self-declare/business-actor/submission/update',
@@ -292,6 +318,7 @@ const handleUpdateSubmission = async () => {
           id_reg: submissionId,
           jenis_pendaftaran: formData.id_jenis_pengajuan,
           kode_daftar: formData.id_fasilitator,
+          fac_id: responseId.value,
           no_surat_permohonan: formData.no_mohon,
           tgl_surat_permohonan: new Date(formData.tgl_surat_permohonan),
           jenis_layanan: formData.id_jenis_layanan,
@@ -306,15 +333,14 @@ const handleUpdateSubmission = async () => {
     )
 
     if (response.code === 2000) {
-      if (response.data !== null) {
+      if (response.data !== null)
         useSnackbar().sendSnackbar('Berhasil mengubah data', 'success')
-        refresh()
-      }
     }
 
     return response
   }
   catch (error) {
+    console.log(error, 'error')
     useSnackbar().sendSnackbar('Gagal mengubah data', 'error')
   }
 }
@@ -336,6 +362,7 @@ onMounted(() => {
   handleGetJenisLayanan()
   handleGetJenisProduk()
   loadDataPendamping(formData.lokasi_pendamping)
+  getDetail()
 
   // ]);
 })
