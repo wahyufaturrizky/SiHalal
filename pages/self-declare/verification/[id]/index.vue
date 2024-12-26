@@ -1289,9 +1289,9 @@ const dibatalkan = async () => {
               <VCol>
                 <p class="text-h3">Pabrik</p>
               </VCol>
-              <VCol class="d-flex justify-end align-center" cols="6" md="2">
+              <!-- <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahPabrikOutlet mode="add" />
-              </VCol>
+              </VCol> -->
             </VRow>
             <VRow>
               <VCol>
@@ -1336,9 +1336,9 @@ const dibatalkan = async () => {
               <VCol>
                 <p class="text-h3">Outlet</p>
               </VCol>
-              <VCol class="d-flex justify-end align-center" cols="6" md="2">
+              <!-- <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahOutlet mode="add" />
-              </VCol>
+              </VCol> -->
             </VRow>
             <VRow>
               <VCol>
