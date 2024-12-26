@@ -73,6 +73,7 @@ const pagePenyelia = ref(1);
 
 const dataPengajuanSertifikasiHalal = ref();
 const jenisBadanUsahaPenanggungJawab = ref();
+const namaPenanggungJawab = ref();
 const dataPengajuan = ref();
 const dataFormPengajuan = ref();
 const nomorKontakPenanggungJawab = ref();
@@ -379,6 +380,7 @@ const loadItemById = async () => {
         lokasiPendamping: "",
         lembagaPendamping: lembaga_pendamping,
         pendamping: pendamping,
+        namaPenanggungJawab: nama_pj,
         tanggalSuratPermohon: formatToISOString(
           tgl_mohon || new Date(new Date().setDate(new Date().getDate() + 1))
         ),
@@ -400,6 +402,7 @@ const loadItemById = async () => {
       ];
 
       jenisBadanUsahaPenanggungJawab.value = jenis_badan_usaha;
+      namaPenanggungJawab.value = nama_pj;
       nomorKontakPenanggungJawab.value = nomor_kontak_pj;
       emailPenanggungJawab.value = email_pj;
 
@@ -569,7 +572,7 @@ const headersProduk = [
   { title: "Jumlah Bahan", key: "jumlah_bahan" },
   { title: "Merek", key: "merek" },
   { title: "Verified", key: "verified" },
-  { title: "Action", key: "action" },
+  // { title: "Action", key: "action" },
 ];
 
 const bahanTableHeader = [
@@ -867,12 +870,20 @@ const dibatalkan = async () => {
           <VCard variant="flat" class="pa-4">
             <p class="text-h4" style="font-weight: bold">Penanggung Jawab</p>
             <!-- Nama Usaha -->
-            <VCol cols="12">
+            <!-- <VCol cols="12">
               <VLabel class="required"> Jenis Badan Usaha </VLabel>
               <VTextField
                 v-model="jenisBadanUsahaPenanggungJawab"
                 required
                 placeholder="Jenis Badan Usaha"
+              />
+            </VCol> -->
+            <VCol cols="12">
+              <VLabel class="required"> Nama </VLabel>
+              <VTextField
+                v-model="namaPenanggungJawab"
+                required
+                placeholder="Nama"
               />
             </VCol>
             <VCol cols="12">
@@ -901,7 +912,7 @@ const dibatalkan = async () => {
               <VCol>
                 <p class="text-h3">Aspek Legal</p>
               </VCol>
-              <VCol class="d-flex justify-end align-center" cols="6" md="2">
+              <!-- <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahDataAspekLegal
                   mode="add"
                   :dokumen="dokumen"
@@ -912,7 +923,7 @@ const dibatalkan = async () => {
                     })
                   "
                 />
-              </VCol>
+              </VCol> -->
             </VRow>
             <VRow>
               <VCol>
@@ -1278,9 +1289,9 @@ const dibatalkan = async () => {
               <VCol>
                 <p class="text-h3">Pabrik</p>
               </VCol>
-              <VCol class="d-flex justify-end align-center" cols="6" md="2">
+              <!-- <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahPabrikOutlet mode="add" />
-              </VCol>
+              </VCol> -->
             </VRow>
             <VRow>
               <VCol>
@@ -1325,9 +1336,9 @@ const dibatalkan = async () => {
               <VCol>
                 <p class="text-h3">Outlet</p>
               </VCol>
-              <VCol class="d-flex justify-end align-center" cols="6" md="2">
+              <!-- <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahOutlet mode="add" />
-              </VCol>
+              </VCol> -->
             </VRow>
             <VRow>
               <VCol>
@@ -1375,12 +1386,12 @@ const dibatalkan = async () => {
               <p class="text-h3">Daftar Nama Bahan dan Kemasan</p>
             </VCol>
             <VCol class="d-flex justify-end align-center" cols="0" md="2">
-              <TambahBahanModalHalal
+              <!-- <TambahBahanModalHalal
                 @refresh="
                   loadItemBahanById({ page: pageBahan, size: itemPerPageBahan })
                 "
                 mode="add"
-              />
+              /> -->
               <!-- <VContainer>
                 <VBtn
                   color="primary"
@@ -1468,7 +1479,7 @@ const dibatalkan = async () => {
                 </li>
               </ol>
             </VCol>
-            <VCol class="d-flex justify-end align-center" cols="6" md="2">
+            <!-- <VCol class="d-flex justify-end align-center" cols="6" md="2">
               <TambahProdukSelfDeclareVerifikator
                 @refresh="
                   loadItemProdukById({
@@ -1478,7 +1489,7 @@ const dibatalkan = async () => {
                 "
                 mode="add"
               />
-            </VCol>
+            </VCol> -->
           </VRow>
           <VRow>
             <VCol>
