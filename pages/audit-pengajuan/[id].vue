@@ -138,7 +138,7 @@ const loadDetailPengajuan = async (): void => {
     }
   }
   catch (e) {
-    snackBar.sendSnackbar('Terjadi Kesalahan ', 'error')
+    snackbar.sendSnackbar('Terjadi Kesalahan ', 'error')
   }
 }
 
@@ -163,7 +163,7 @@ const loadDetailSertifikasi = async (): void => {
     }
   }
   catch (e) {
-    snackBar.sendSnackbar('Terjadi Kesalahan ', 'error')
+    snackbar.sendSnackbar('Terjadi Kesalahan ', 'error')
   }
 }
 
@@ -177,7 +177,7 @@ const loadDaftarProduk = async (): void => {
       daftarProdukItems.value = response.data
   }
   catch (e) {
-    snackBar.sendSnackbar('Terjadi Kesalahan ', 'error')
+    snackbar.sendSnackbar('Terjadi Kesalahan ', 'error')
   }
 }
 
@@ -214,7 +214,7 @@ const loadPemeriksaanProduk = async (): void => {
     }
   }
   catch (e) {
-    snackBar.sendSnackbar('Terjadi Kesalahan ', 'error')
+    snackbar.sendSnackbar('Terjadi Kesalahan ', 'error')
   }
 }
 
