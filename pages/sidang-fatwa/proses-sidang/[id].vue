@@ -1,27 +1,31 @@
 <script setup lang="ts">
-import HasilPemeriksaan from '@/components/sidangFatwa/HasilPemeriksaan.vue';
+import HasilPemeriksaan from "@/components/sidangFatwa/HasilPemeriksaan.vue";
 
-const route = useRoute()
-const detailData = ref()
-const loading = ref(true)
-const submissionId = (route.params as any).id
-const combinedNamaProduk = ref('')
-const formattedBahan = ref('')
-const formattedCleaning = ref('')
-const formattedKemasan = ref('')
-const sertifikatHalal = reactive({})
-const penanggungJawab = ref({})
+const route = useRoute();
+const detailData = ref();
+const loading = ref(true);
+const submissionId = (route.params as any).id;
+const combinedNamaProduk = ref("");
+const formattedBahan = ref("");
+const formattedCleaning = ref("");
+const formattedKemasan = ref("");
+const sertifikatHalal = ref({});
+const penanggungJawab = ref({});
 
 const loadItemById = async () => {
   try {
-    const response: any = await $api(`/self-declare/komite-fatwa/proses-sidang/${submissionId}/detail`, {
-      method: 'get',
-    })
+    const response: any = await $api(
+      `/self-declare/komite-fatwa/proses-sidang/${submissionId}/detail`,
+      {
+        method: "get",
+      }
+    );
 
     if (response.code === 2000) {
-      console.log(response.data, 'ini response detail sidang')
+      // console.log(response.data, "ini response detail sidang");
 
-      const { certificate_halal, penanggung_jawab, produk, bahan } = response.data || {}
+      const { certificate_halal, penanggung_jawab, produk, bahan } =
+        response.data || {};
 
       const {
         no_daftar,
@@ -35,25 +39,46 @@ const loadItemById = async () => {
         tgl_daftar,
         lembaga_pendamping,
         alamat_pu,
-      } = certificate_halal || {}
+      } = certificate_halal || {};
 
-      const {
-        nama_pj,
-      } = penanggung_jawab || {}
+      const { nama_pj } = penanggung_jawab || {};
 
-      sertifikatHalal.value = certificate_halal
+      sertifikatHalal.value = certificate_halal;
 
-      penanggungJawab.value = penanggung_jawab
+      penanggungJawab.value = penanggung_jawab;
 
-      combinedNamaProduk.value = produk.map((item: any, index: number) => `(${index + 1}) ${item.nama_bahan?.trim() ?? '-'}`).join(', ')
+      combinedNamaProduk.value = produk
+        .map(
+          (item: any, index: number) =>
+            `(${index + 1}) ${item.nama_bahan?.trim() ?? "-"}`
+        )
+        .join(", ");
 
-      formattedBahan.value = bahan.filter((item: any) => item.jenis_bahan === 'Bahan').map((item: any, index: number) => `(${index + 1}) ${item.nama_bahan?.trim() ?? '-'}`).join(', ')
+      formattedBahan.value = bahan
+        .filter((item: any) => item.jenis_bahan === "Bahan")
+        .map(
+          (item: any, index: number) =>
+            `(${index + 1}) ${item.nama_bahan?.trim() ?? "-"}`
+        )
+        .join(", ");
 
-      formattedCleaning.value = bahan.filter((item: any) => item.jenis_bahan === 'Cleaning Agent').map((item: any, index: number) => `(${index + 1}) ${item.nama_bahan?.trim() ?? '-'}`).join(', ')
+      formattedCleaning.value = bahan
+        .filter((item: any) => item.jenis_bahan === "Cleaning Agent")
+        .map(
+          (item: any, index: number) =>
+            `(${index + 1}) ${item.nama_bahan?.trim() ?? "-"}`
+        )
+        .join(", ");
 
-      formattedKemasan.value = bahan.filter((item: any) => item.jenis_bahan === 'Kemasan').map((item: any, index: number) => `(${index + 1}) ${item.nama_bahan?.trim() ?? '-'}`).join(', ')
+      formattedKemasan.value = bahan
+        .filter((item: any) => item.jenis_bahan === "Kemasan")
+        .map(
+          (item: any, index: number) =>
+            `(${index + 1}) ${item.nama_bahan?.trim() ?? "-"}`
+        )
+        .join(", ");
 
-      console.log(sertifikatHalal.value, 'ini sertifikat halal')
+      // console.log(sertifikatHalal.value, "ini sertifikat halal");
 
       // skalaUsaha.value = skala_usaha;
       // trackingData.value = tracking;
@@ -109,36 +134,37 @@ const loadItemById = async () => {
       //   },
       // ];
 
-      return response
-    }
-    else {
+      return response;
+    } else {
       useSnackbar().sendSnackbar(
-        response.errors.list_error.join(', '),
-        'error',
-      )
+        response.errors.list_error.join(", "),
+        "error"
+      );
     }
+  } catch (error) {
+    // console.log(error, "ini");
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    console.log(error, 'ini')
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
-// onMounted(async () => {
-//   loading.value = true
+onMounted(async () => {
+  loading.value = true;
 
-//   await loadItemById()
+  await loadItemById();
 
-//   loading.value = false
-// })
+  loading.value = false;
+});
+
+const newDataSertifikatHalal = ref();
 
 watch(
-  () => sertifikatHalal,
-  newData => {
-    console.log(newData, 'newdata')
+  () => sertifikatHalal.value,
+  (newData) => {
+    console.log(newData, "newdata");
+    newDataSertifikatHalal.value = newData;
   },
-  { immediate: true },
-)
+  { immediate: true }
+);
 
 // await loadItemById()
 </script>
@@ -161,7 +187,7 @@ watch(
       <VRow>
         <VCol cols="12">
           <ProfilPendampingan
-            :sertifikat="sertifikatHalal"
+            :sertifikat="newDataSertifikatHalal"
             :bahan="formattedBahan"
             :cleaning="formattedCleaning"
             :kemasan="formattedKemasan"
