@@ -10,6 +10,13 @@ const guarantorData = ref({
   email: "sumayahhhh@gmail.com",
   productType: "Pilih...",
 });
+
+const props = defineProps({
+  idDetail: {
+    required: true,
+    type: String,
+  },
+});
 </script>
 
 <template>
