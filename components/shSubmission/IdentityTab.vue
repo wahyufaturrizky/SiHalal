@@ -2,76 +2,51 @@
 const router = useRouter();
 const isPanelOpen = ref(0);
 
+const props = defineProps({
+  idDetail: {
+    required: true,
+    type: String,
+  },
+});
+
 const submissionData = ref({
-  name: "Sartiika/Industri Minuman Ringan",
-  address: "Sumbawa Banget, RT002/RW002, Sumbang, Curio, Jawa Barat",
-  businessEntity: "Lainnya",
-  businessScale: "Mikro",
-  guarantor: "Sumayah",
+  nama_pu: null,
+  alamat_pu: null,
+  jenis_badan_usaha: null,
+  skala_usaha: null,
+  nama_pj: null,
 });
 const guarantorData = ref({
-  name: "Sumayah",
-  phoneNumber: "081234567899",
-  email: "rasarasaa@gmail.com",
+  nama_pj: null,
+  nomor_kontak_pj: null,
+  email_pj: null,
 });
 
 const legalAspectHeader: any[] = [
-  { title: "No", value: "index" },
-  { title: "Jenis", value: "type" },
-  { title: "No. Dokumen", value: "docNumber" },
-  { title: "Tanggal", value: "date" },
-  { title: "Masa Berlaku", value: "validPeriod" },
-  { title: "Instansi Penerbit", value: "publisher" },
-  { title: "Action", value: "actions", align: "center" },
+  { title: "No", key: "index", sortable: false },
+  { title: "Jenis", key: "jenis_surat" },
+  { title: "No. Dokumen", key: "no_surat", nowrap: true },
+  { title: "Tanggal", key: "tanggal_surat", nowrap: true },
+  { title: "Masa Berlaku", key: "masa_berlaku", nowrap: true },
+  { title: "Instansi Penerbit", key: "instansi_penerbit", nowrap: true },
+  { title: "Action", key: "action", align: "center", sortable: false },
 ];
-const legalAspectData = ref([
-  {
-    type: "SIUP",
-    docNumber: "0128749286836",
-    date: "01/10/2024",
-    validPeriod: "09/10/2024",
-    publisher: "Testing",
-  },
-  {
-    type: "NPWP",
-    docNumber: "12312134989871345490",
-    date: "-",
-    validPeriod: "-",
-    publisher: "DITJEN PAJAK",
-  },
-  {
-    type: "NIB",
-    docNumber: "3947298572986",
-    date: "12/10/2019",
-    validPeriod: "30/09/2023",
-    publisher: "BKPM",
-  },
-]);
+const legalAspectData = ref([]);
 
-const halalSupervisorHeader = [
-  { title: "No", value: "index" },
-  { title: "Nama", value: "name" },
-  { title: "No. KTP", value: "ktpNumber" },
-  { title: "No. Kontak", value: "contactNumber" },
-  { title: "No/Tgl Sertif Penyelia Halal ", value: "certificateNumber" },
-  { title: "No/Tgl SK", value: "skDate" },
-];
-const halalSupervisorData = [
+const halalSupervisorHeader: any[] = [
+  { title: "No", key: "index", sortable: false },
+  { title: "Nama", key: "penyelia_nama", nowrap: true },
+  { title: "No. KTP", key: "no_ktp", nowrap: true },
+  { title: "No. Kontak", key: "no_kontak", nowrap: true },
   {
-    name: "Maya",
-    ktpNumber: "83628776293r6238976",
-    contactNumber: "081238365862",
-    certificateNumber: "09/10/2024",
-    skDate: "001/SKP/127/13/10/2024",
+    title: "No/Tgl Sertif Penyelia Halal",
+    key: "no_penyelia_halal",
+    nowrap: true,
   },
-  {
-    name: "Rahmi",
-    ktpNumber: "12312134989871345490",
-    contactNumber: "082798275829",
-    certificateNumber: "001/SKP/127/13/10/2024",
-    skDate: "001/SKP/127/13/10/2024",
-  },
+  { title: "No/Tanggal SK", key: "no_sk", nowrap: true },
+  { title: "Action", key: "action", align: "center", sortable: false },
 ];
+const halalSupervisorData = ref([]);
 
 const documentHeader = [
   { title: "No", value: "index" },
@@ -132,6 +107,32 @@ const confirmDeleteDoc = () => {
     }
   });
 };
+
+const handleDetailPelakuUsaha = async () => {
+  try {
+    const response: any = await $api(
+      `/self-declare/submission/${props.idDetail}/detail`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) {
+      submissionData.value.nama_pj = response.data.penanggung_jawab.nama_pj;
+      Object.assign(submissionData.value, response.data.certificate_halal);
+      Object.assign(guarantorData.value, response.data.penanggung_jawab);
+      legalAspectData.value = response.data.aspek_legal;
+      halalSupervisorData.value = response.data.penyelia_halal;
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+onMounted(async () => {
+  await handleDetailPelakuUsaha();
+});
 </script>
 
 <template>
@@ -147,24 +148,24 @@ const confirmDeleteDoc = () => {
       <VExpansionPanelText class="mt-5">
         <VRow>
           <VCol cols="3" class="font-weight-bold">Nama</VCol>
-          <VCol cols="9">: {{ submissionData.name }}</VCol>
+          <VCol cols="9">: {{ submissionData.nama_pu }}</VCol>
         </VRow>
         <VRow>
           <VCol cols="3" class="font-weight-bold">Alamat</VCol>
-          <VCol cols="9">: {{ submissionData.address }}</VCol>
+          <VCol cols="9">: {{ submissionData.alamat_pu }}</VCol>
         </VRow>
         <VRow>
           <VCol cols="3" class="font-weight-bold"> Jenis Badan Usaha </VCol>
-          <VCol cols="9">: {{ submissionData.businessEntity }}</VCol>
+          <VCol cols="9">: {{ submissionData.jenis_badan_usaha }}</VCol>
         </VRow>
         <VRow>
           <VCol cols="3" class="font-weight-bold">Sekala Usaha</VCol>
-          <VCol cols="9">: {{ submissionData.businessScale }}</VCol>
+          <VCol cols="9">: {{ submissionData.skala_usaha }}</VCol>
         </VRow>
         <VDivider class="my-5" />
         <VRow>
           <VCol cols="3" class="font-weight-bold">Penanggung Jawab</VCol>
-          <VCol cols="9">: {{ submissionData.guarantor }}</VCol>
+          <VCol cols="9">: {{ submissionData.nama_pj }}</VCol>
         </VRow>
       </VExpansionPanelText>
     </VExpansionPanel>
@@ -177,7 +178,7 @@ const confirmDeleteDoc = () => {
       <div class="mb-3">
         <div class="font-weight-bold mb-1">Jenis Badan Usaha</div>
         <VTextField
-          v-model="guarantorData.name"
+          v-model="guarantorData.nama_pj"
           density="compact"
           rounded="xl"
         />
@@ -185,7 +186,7 @@ const confirmDeleteDoc = () => {
       <div class="mb-3">
         <div class="font-weight-bold mb-1">Nomor Kontak</div>
         <VTextField
-          v-model="guarantorData.phoneNumber"
+          v-model="guarantorData.nomor_kontak_pj"
           density="compact"
           rounded="xl"
         />
@@ -193,7 +194,7 @@ const confirmDeleteDoc = () => {
       <div>
         <div class="font-weight-bold mb-1">Email</div>
         <VTextField
-          v-model="guarantorData.email"
+          v-model="guarantorData.email_pj"
           density="compact"
           rounded="xl"
         />
@@ -257,7 +258,8 @@ const confirmDeleteDoc = () => {
       </VDataTable>
     </VCardText>
   </VCard>
-  <VCard>
+  <!-- dokumen belom -->
+  <!-- <VCard>
     <VCardTitle class="my-3 d-flex justify-space-between align-center">
       <div class="font-weight-bold text-h4">Dokumen Persyaratan Fasilitas</div>
     </VCardTitle>
@@ -320,7 +322,7 @@ const confirmDeleteDoc = () => {
         </template>
       </VDataTable>
     </VCardText>
-  </VCard>
+  </VCard> -->
   <ShSubmissionDetailFormModal
     dialog-title="Menghapus Data"
     :dialog-visible="isModalOpen"
