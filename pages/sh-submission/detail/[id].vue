@@ -67,7 +67,8 @@ const id_detail = route.params.id as string;
           <ProcessTab :user-roles="userRoles" />
         </VTabsWindowItem>
         <VTabsWindowItem value="STATEMENT">
-          <StatementTab :id-detail="id_detail" />
+          <!-- <StatementTab :id-detail="id_detail" /> -->
+          <EditPernyataanSelfDeclareSubmision></EditPernyataanSelfDeclareSubmision>
         </VTabsWindowItem>
       </VTabsWindow>
     </VCol>
