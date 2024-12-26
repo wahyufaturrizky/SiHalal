@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/business-actor/goback`,
     {
-      method: "post",
+      method: "put",
       headers: { Authorization: authorizationHeader },
       body: {
         id_reg,
