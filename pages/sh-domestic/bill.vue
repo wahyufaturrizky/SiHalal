@@ -26,7 +26,7 @@ const headers = [
   { title: 'Jumlah Tagihan', key: 'total_inv', nowrap: true },
   { title: 'Status', key: 'status', nowrap: true },
   { title: 'Catatan', key: 'catatan', nowrap: true },
-  // { title: 'Action',  value: 'action', sortable: false, nowrap: true },
+  { title: 'Action', value: 'action', sortable: false, nowrap: true },
 
 ];
 
@@ -136,6 +136,13 @@ const unduhFile = () => {
 const handleInput = (e: any) => {
   debounce(loadItem(page.value, size.value, status.value, outDated.value, e.target.value), 500);
 };
+
+const downloadInvoice = (item: any) => {
+  console.log('a');
+  
+  if (item.file_inv)
+    window.open(item.file_inv, '_blank')
+}
 
 onMounted(async () => {
   loading.value = true
@@ -267,8 +274,16 @@ watch([status, outDated], () => {
                 <VIcon>mdi-dots-vertical</VIcon>
                 <VMenu activator="parent" :close-on-content-click="false">
                   <VCard>
-                    <TataCaraPembayaranDialog />
-                    <LihatInvoice />
+                    <VBtn
+                      variant="text"
+                      prepend-icon="mdi-download-box"
+                      @click="() => downloadInvoice(item)"
+                      block
+                      class="text-left"
+                      style="width: 100%; justify-content: flex-start;"
+                    >
+                      Lihat Invoice
+                    </VBtn>
                   </VCard>
                 </VMenu>
               </VBtn>
