@@ -198,6 +198,11 @@ const StatusOptions = [
   { name: "OF74", value: "of74" },
   { name: "Verifikasi", value: "verifikasi" },
 ];
+const loadDataFromModal = async () => {
+  page.value = 1;
+  searchQuery.value = "";
+  await loadItem(page.value, itemPerPage.value, searchQuery.value);
+};
 
 const bahanType = ref(null);
 </script>
@@ -212,7 +217,7 @@ const bahanType = ref(null);
         </p>
       </VCol>
       <VCol cols="2" style="display: flex; justify-content: end">
-        <DataPermohonanSertifikasiBpjph />
+        <DataPermohonanSertifikasiBpjph @loadData="loadDataFromModal()" />
       </VCol>
     </VRow>
     <VRow>

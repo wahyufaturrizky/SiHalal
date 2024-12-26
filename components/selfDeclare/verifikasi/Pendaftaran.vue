@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 interface Pendaftaran {
-  channel_pendaftaran: string;
-  fasilitator: string;
-  jenis_pengajuan: string;
-  nomor_daftar: string;
-  status: string;
-  tanggal: any;
-  tempat_pendaftaran: string;
+  channel_pendaftaran: string
+  fasilitator: string
+  jenis_pengajuan: string
+  kode_fac: string
+  nomor_daftar: string
+  status: string
+  tanggal: string
+  tempat_pendaftaran: string
 }
 const props = defineProps<{data : Pendaftaran}>();
 
@@ -78,7 +79,7 @@ const selectedFilters = ref({
   <VRow>
     <VCol cols="3"> Kode Fasilitasi </VCol>
     <VCol cols="1"> : </VCol>
-    <VCol cols="8"> tidak ada di backend </VCol>
+    <VCol cols="8"> {{dataDetail.kode_fac}} </VCol>
   </VRow>
 </VContainer>
 </template>

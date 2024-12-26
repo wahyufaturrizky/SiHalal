@@ -132,7 +132,7 @@ watchEffect(() => {
               </VListItemTitle>
             </template>
             <VListItemSubtitle
-              >: {{ dataHalal["nama_pu_sh "] }}</VListItemSubtitle
+              >: {{ dataHalal.nama_pu }}</VListItemSubtitle
             >
           </VListItem>
 
