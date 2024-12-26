@@ -10,11 +10,10 @@ import SHLNVerfikasiLayout from "@/layouts/SHLNVerfikasiLayout.vue";
 interface DetailVerifikatorReguler {
   aspek_legal: AspekLegal[];
   melacak: any[];
-  outlet: Outlet;
-  pabrik: Pabrik;
+  outlet: Outlet[];
+  pabrik: Pabrik[];
   pemeriksaan: Pemeriksaan;
   penanggung_jawab: PenanggungJawab;
-  s;
   pendaftaran: Pendaftaran;
   penyelia: Penyelia[];
   produk: Produk[];
