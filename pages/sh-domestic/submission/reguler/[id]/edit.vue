@@ -200,7 +200,7 @@ onMounted(async () => {
           </div>
           <div v-if="activeTab === 3">
             <div v-if="!approveRequirements">
-              <ProsesLayanan :on-complete="() => (approveRequirements = true)" />
+              <ProsesLayanan :id="id" :on-complete="() => (approveRequirements = true)" />
             </div>
             <div v-else>
               <ListProses />
