@@ -2,10 +2,10 @@
 const props = defineProps<{data : any[]}>();
 
 interface TimelineItem {
-  title: string;
-  user: string;
+  comment: string;
+  username: string;
   date: string;
-  color: string;
+  status: string;
 }
 
 const timelineItems = ref<TimelineItem[]>(props.data);
@@ -18,17 +18,6 @@ watchEffect(() => {
 // { status: "Submitted PU", username: "Ramen Grill Indonesia", created_at: "2024-11-02" },
 // { status: "Verifikasi", username: "Yuan", created_at: "2024-11-03" },
 // ];
-
-timelineItems.value = props.data?.map((item: any) => {
-  const { status, username, date } = item || {};
-
-  return {
-    title: status,
-    user: username,
-    date: date,
-    color: "grey",
-  };
-});
 
 const formatDate = (date: string): string => {
   return new Date(date).toLocaleDateString("en-GB", {
@@ -54,10 +43,10 @@ const formatDate = (date: string): string => {
           <div class="d-flex justify-space-between align-start">
             <div>
               <div class="text-subtitle-2 font-weight-bold">
-                {{ item.title }}
+                {{ item.status }}
               </div>
               <div class="text-caption text-grey">
-                {{ item.user }}
+                {{ item.username }}
               </div>
             </div>
             <div class="text-caption text-grey">

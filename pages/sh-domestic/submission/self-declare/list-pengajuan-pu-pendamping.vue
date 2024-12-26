@@ -34,7 +34,11 @@
             {{ index + 1 }}
           </template>
           <template #item.create_on="{ item }">
-            {{ new Date(item.create_on).toISOString().substring(0, 10) }}
+            {{
+              item.create_on
+                ? new Date(item.create_on)?.toISOString().substring(0, 10)
+                : "-"
+            }}
           </template>
           <template #item.status="{ item }">
             <v-chip

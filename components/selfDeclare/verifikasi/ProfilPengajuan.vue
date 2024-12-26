@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 interface SertifikasiHalal {
   alamat_pu: string;
+  area_pemasaran: string;
   asal_usaha: string;
   email: string;
   id_reg: string;
@@ -9,7 +10,9 @@ interface SertifikasiHalal {
   jenis_usaha: string;
   kode_pos_pu: string;
   kota_pu: string;
+  merek_dagang: string;
   modal_usaha: number;
+  nama_kbli: string;
   nama_pu: string;
   "nama_pu_sh ": string;
   negara_pu: string;
@@ -18,27 +21,14 @@ interface SertifikasiHalal {
   prov_pu: string;
   skala_usaha: string;
   tanggal: string;
-  tgl_daftar: any;
+  tgl_daftar: string;
   tingkat_usaha: string;
 }
-const props = defineProps<{data : SertifikasiHalal}>();
-const dataHalal = ref(props.data)
+const props = defineProps<{ data: SertifikasiHalal }>();
+const dataHalal = ref(props.data);
 watchEffect(() => {
-      dataHalal.value = props.data
-    });
-
-
-const selectedFilters = ref({
-  fasilitas: 'Semua',
-  jenisProduk: 'Semua',
-  provinsi: 'Semua',
-  lembaga: 'Semua',
-  pendamping: 'Semua',
-  kabupaten: 'Semua',
-  skalaUsaha: 'Semua',
-  jenisPengajuan: 'Semua',
-  fac: 'Semua'
-})
+  dataHalal.value = props.data;
+});
 </script>
 
 <template>
@@ -49,11 +39,11 @@ const selectedFilters = ref({
           <!-- Personal Information -->
           <VListItem>
             <template #prepend>
-              <VListItemTitle class="font-weight-medium"> Nomor ID </VListItemTitle>
+              <VListItemTitle class="font-weight-medium">
+                Nomor ID
+              </VListItemTitle>
             </template>
-            <VListItemSubtitle>
-              : {{ dataHalal.id_reg }}
-            </VListItemSubtitle>
+            <VListItemSubtitle> : {{ dataHalal.id_reg }} </VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -73,7 +63,7 @@ const selectedFilters = ref({
                 No. Permohonan
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{dataHalal.no_mohon}}</VListItemSubtitle>
+            <VListItemSubtitle>: {{ dataHalal.no_mohon }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -91,7 +81,9 @@ const selectedFilters = ref({
                 Jenis Layanan
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataHalal.jenis_layanan }}</VListItemSubtitle>
+            <VListItemSubtitle
+              >: {{ dataHalal.jenis_layanan }}</VListItemSubtitle
+            >
           </VListItem>
 
           <VListItem>
@@ -100,7 +92,9 @@ const selectedFilters = ref({
                 Jenis Produk
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataHalal.jenis_produk }}</VListItemSubtitle>
+            <VListItemSubtitle
+              >: {{ dataHalal.jenis_produk }}</VListItemSubtitle
+            >
           </VListItem>
 
           <VListItem>
@@ -109,7 +103,7 @@ const selectedFilters = ref({
                 Merek Dagang
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: tidak ada di backend</VListItemSubtitle>
+            <VListItemSubtitle>: {{dataHalal.merek_dagang}}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -118,7 +112,7 @@ const selectedFilters = ref({
                 Area Pemasaran
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: tidak ada di backend</VListItemSubtitle>
+            <VListItemSubtitle>: {{dataHalal.area_pemasaran}}</VListItemSubtitle>
           </VListItem>
           <!-- Company Information -->
           <VDivider class="my-2" />
@@ -137,7 +131,9 @@ const selectedFilters = ref({
                 Nama Perusahaan tertera di SH
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataHalal['nama_pu_sh '] }}</VListItemSubtitle>
+            <VListItemSubtitle
+              >: {{ dataHalal["nama_pu_sh "] }}</VListItemSubtitle
+            >
           </VListItem>
 
           <VListItem>
@@ -146,7 +142,7 @@ const selectedFilters = ref({
                 Nama KBLI
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>:tidak ada di backend</VListItemSubtitle>
+            <VListItemSubtitle>:{{dataHalal.nama_kbli}}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -155,7 +151,7 @@ const selectedFilters = ref({
                 Alamat
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataHalal.alamat_pu}}</VListItemSubtitle>
+            <VListItemSubtitle>: {{ dataHalal.alamat_pu }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -173,9 +169,7 @@ const selectedFilters = ref({
                 Provinsi
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>
-              : {{ dataHalal.prov_pu }}
-            </VListItemSubtitle>
+            <VListItemSubtitle> : {{ dataHalal.prov_pu }} </VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -195,9 +189,7 @@ const selectedFilters = ref({
                 Negara
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>
-              : {{ dataHalal.negara_pu }}
-            </VListItemSubtitle>
+            <VListItemSubtitle> : {{ dataHalal.negara_pu }} </VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -206,9 +198,7 @@ const selectedFilters = ref({
                 Telepon
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>
-              : {{ dataHalal.no_telp }}
-            </VListItemSubtitle>
+            <VListItemSubtitle> : {{ dataHalal.no_telp }} </VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -217,9 +207,7 @@ const selectedFilters = ref({
                 Email
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>
-              : {{ dataHalal.email }}
-            </VListItemSubtitle>
+            <VListItemSubtitle> : {{ dataHalal.email }} </VListItemSubtitle>
           </VListItem>
 
           <!-- Certification Information -->

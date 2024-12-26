@@ -243,7 +243,11 @@ onMounted(() => {
               {{ item.no_daftar ? item.no_daftar : "-" }}
             </template>
             <template #item.tgl_daftar="{ item }: any">
-              {{ item.tgl_daftar ? item.tgl_daftar : "-" }}
+              {{
+                item.tgl_daftar
+                  ? new Date(item.tgl_daftar).toISOString().substring(0, 10)
+                  : "-"
+              }}
             </template>
             <template #item.jenis_produk="{ item }: any">
               {{ item.jenis_produk ? item.jenis_produk : "-" }}
