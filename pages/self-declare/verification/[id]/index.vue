@@ -572,7 +572,7 @@ const headersProduk = [
   { title: "Jumlah Bahan", key: "jumlah_bahan" },
   { title: "Merek", key: "merek" },
   { title: "Verified", key: "verified" },
-  { title: "Action", key: "action" },
+  // { title: "Action", key: "action" },
 ];
 
 const bahanTableHeader = [
@@ -1479,7 +1479,7 @@ const dibatalkan = async () => {
                 </li>
               </ol>
             </VCol>
-            <VCol class="d-flex justify-end align-center" cols="6" md="2">
+            <!-- <VCol class="d-flex justify-end align-center" cols="6" md="2">
               <TambahProdukSelfDeclareVerifikator
                 @refresh="
                   loadItemProdukById({
@@ -1489,7 +1489,7 @@ const dibatalkan = async () => {
                 "
                 mode="add"
               />
-            </VCol>
+            </VCol> -->
           </VRow>
           <VRow>
             <VCol>
