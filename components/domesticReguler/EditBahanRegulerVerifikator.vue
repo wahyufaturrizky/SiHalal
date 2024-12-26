@@ -5,7 +5,7 @@
   <FormDaftarNamaBahanDanKemasanVerifikator/>
   <FormDaftarNamaProdukVerifikator/>
   <FormCatatanPembelianBahanVerifikator/>
-  <!-- <FormPemeriksaanBahan :is-editable="props.isEditable"/> -->
+  <FormPemeriksaanBahanVerifikator />
 </template>
 
 <style scoped lang="scss">
