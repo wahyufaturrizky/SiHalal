@@ -3,8 +3,14 @@ import HasilPemeriksaan from '@/components/sidangFatwa/HasilPemeriksaan.vue';
 
 const route = useRoute()
 const detailData = ref()
-const loadingAll = ref(true)
+const loading = ref(true)
 const submissionId = (route.params as any).id
+const combinedNamaProduk = ref('')
+const formattedBahan = ref('')
+const formattedCleaning = ref('')
+const formattedKemasan = ref('')
+const sertifikatHalal = reactive({})
+const penanggungJawab = ref({})
 
 const loadItemById = async () => {
   try {
@@ -13,30 +19,42 @@ const loadItemById = async () => {
     })
 
     if (response.code === 2000) {
-      detailData.value = response.data
+      console.log(response.data, 'ini response detail sidang')
 
-      console.log(response, 'ini response detail sidang')
+      const { certificate_halal, penanggung_jawab, produk, bahan } = response.data || {}
 
-      const { certificate_halal } = response.data || {};
+      const {
+        no_daftar,
+        status,
+        jenis_daftar,
+        nama_pu,
+        kota_pu,
+        jenis_layanan,
+        jenis_produk,
+        pendamping,
+        tgl_daftar,
+        lembaga_pendamping,
+        alamat_pu,
+      } = certificate_halal || {}
 
-      // const {
-      //   status,
-      //   jenis_daftar,
-      //   nama_pu,
-      //   kota_pu,
-      //   prov_pu,
-      //   alamat_pu,
-      //   kode_pos_pu,
-      //   negara_pu,
-      //   no_telp,
-      //   email,
-      //   jenis_usaha,
-      //   id_reg,
-      //   tgl_permohonan,
-      //   skala_usaha,
-      // } = sertifikat_halal_reguler || {};
+      const {
+        nama_pj,
+      } = penanggung_jawab || {}
 
-      // jenisUsaha.value = jenis_usaha;
+      sertifikatHalal.value = certificate_halal
+
+      penanggungJawab.value = penanggung_jawab
+
+      combinedNamaProduk.value = produk.map((item: any, index: number) => `(${index + 1}) ${item.nama_bahan?.trim() ?? '-'}`).join(', ')
+
+      formattedBahan.value = bahan.filter((item: any) => item.jenis_bahan === 'Bahan').map((item: any, index: number) => `(${index + 1}) ${item.nama_bahan?.trim() ?? '-'}`).join(', ')
+
+      formattedCleaning.value = bahan.filter((item: any) => item.jenis_bahan === 'Cleaning Agent').map((item: any, index: number) => `(${index + 1}) ${item.nama_bahan?.trim() ?? '-'}`).join(', ')
+
+      formattedKemasan.value = bahan.filter((item: any) => item.jenis_bahan === 'Kemasan').map((item: any, index: number) => `(${index + 1}) ${item.nama_bahan?.trim() ?? '-'}`).join(', ')
+
+      console.log(sertifikatHalal.value, 'ini sertifikat halal')
+
       // skalaUsaha.value = skala_usaha;
       // trackingData.value = tracking;
 
@@ -106,18 +124,23 @@ const loadItemById = async () => {
   }
 }
 
-onMounted(async () => {
-  const res = await Promise.all([loadItemById()])
+// onMounted(async () => {
+//   loading.value = true
 
-  const checkResIfUndefined = res.every((item: any) => {
-    return item !== undefined
-  })
+//   await loadItemById()
 
-  if (checkResIfUndefined)
-    loadingAll.value = false
-  else
-    loadingAll.value = false
-})
+//   loading.value = false
+// })
+
+watch(
+  () => sertifikatHalal,
+  newData => {
+    console.log(newData, 'newdata')
+  },
+  { immediate: true },
+)
+
+// await loadItemById()
 </script>
 
 <!-- role pendamping -->
@@ -138,7 +161,12 @@ onMounted(async () => {
       <VRow>
         <VCol cols="12">
           <ProfilPendampingan
-            :sertifikathalal="sertifikathalal"
+            :sertifikat="sertifikatHalal"
+            :bahan="formattedBahan"
+            :cleaning="formattedCleaning"
+            :kemasan="formattedKemasan"
+            :produk="combinedNamaProduk"
+            :penanggungjawab="penanggungJawab"
           />
         </VCol>
       </VRow>
