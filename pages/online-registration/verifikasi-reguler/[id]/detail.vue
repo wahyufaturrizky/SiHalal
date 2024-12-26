@@ -323,7 +323,7 @@ onMounted(async () => {
     </VTabsWindowItem>
 
     <VTabsWindowItem value="7">
-      <EditDokumenReguler :is-editable="props.tabDokumenEditable" />
+      <EditDokumenRegulerVerifikator/>
     </VTabsWindowItem>
   </VTabsWindow>
 </template>
