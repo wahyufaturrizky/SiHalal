@@ -28,7 +28,7 @@ const statusItem = new Proxy(
     OF1: { color: "grey-300", desc: "Draft" },
     OF10: { color: "success", desc: "Submitted" },
     OF11: { color: "success", desc: "Verification" },
-    OF15: { color: "success", desc: "Verified" },
+    OF15: { color: "success", desc: "Verification" },
     OF2: { color: "error", desc: "Returned" },
     OF280: { color: "error", desc: "Returned to PU" },
     OF285: { color: "error", desc: "Returned By KF" },
