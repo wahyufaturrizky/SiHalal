@@ -11,6 +11,7 @@ const detailData = ref();
 const loadingAll = ref(true);
 const loadingTandaiOK = ref(false);
 const loadingTandaiNotOK = ref(false);
+const loadingLihatLaporan = ref(false);
 const loadingPengembalian = ref(false);
 const itemsPabrik = ref([]);
 const itemsOutlet = ref([]);
@@ -643,6 +644,34 @@ const tandaiOK = async () => {
   }
 };
 
+const lihatLaporan = async () => {
+  try {
+    loadingLihatLaporan.value = true;
+
+    const res: any = await $api(
+      `/self-declare/verificator/lihat-laporan/${selfDeclareId}`,
+      {
+        method: "put",
+      }
+    );
+
+    if (res?.code === 2000) {
+      useSnackbar().sendSnackbar("Success", "success");
+      loadingLihatLaporan.value = false;
+
+      setTimeout(() => {
+        router.go(-1);
+      }, 1000);
+    } else {
+      useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
+      loadingLihatLaporan.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingLihatLaporan.value = false;
+  }
+};
+
 const batalkanStatusHijau = async () => {
   try {
     loadingTandaiNotOK.value = true;
@@ -737,7 +766,14 @@ const dibatalkan = async () => {
         <p class="text-h4">Detail Pengajuan</p>
       </VCol>
       <VCol class="d-flex justify-end align-center" cols="4" md="5">
-        <!-- <VBtn variant="outlined" class="mx-2"> Lihat Laporan </VBtn> -->
+        <VBtn
+          :loading="loadingLihatLaporan"
+          @click="lihatLaporan"
+          variant="outlined"
+          class="mx-2"
+        >
+          Lihat Laporan
+        </VBtn>
         <VBtn
           :loading="loadingTandaiOK"
           @click="tandaiOK"

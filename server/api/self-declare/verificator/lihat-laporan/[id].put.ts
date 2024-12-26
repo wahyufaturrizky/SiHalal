@@ -14,8 +14,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/halal-certificate-reguler/self-declare/${id}/not-ok`,
-    {
+    `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/${id}/download/laporan-pendamping
       method: "put",
       headers: { Authorization: authorizationHeader },
     }
