@@ -1386,12 +1386,12 @@ const dibatalkan = async () => {
               <p class="text-h3">Daftar Nama Bahan dan Kemasan</p>
             </VCol>
             <VCol class="d-flex justify-end align-center" cols="0" md="2">
-              <TambahBahanModalHalal
+              <!-- <TambahBahanModalHalal
                 @refresh="
                   loadItemBahanById({ page: pageBahan, size: itemPerPageBahan })
                 "
                 mode="add"
-              />
+              /> -->
               <!-- <VContainer>
                 <VBtn
                   color="primary"
