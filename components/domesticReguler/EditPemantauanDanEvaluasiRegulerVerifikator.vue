@@ -15,10 +15,10 @@ const props = defineProps({
     <VCol cols="12"><SignagePemantauanVerifikator></SignagePemantauanVerifikator></VCol>
   </VRow>
   <VRow>
-    <VCol cols="12"><FormulirAuditInternal :is-editable="props.isEditable"></FormulirAuditInternal></VCol>
+    <VCol cols="12"><FormulirAuditInternalVerifikator></FormulirAuditInternalVerifikator></VCol>
   </VRow>
   <VRow>
-    <VCol cols="12"><RisalahKajiUlang :is-editable="props.isEditable"></RisalahKajiUlang></VCol>
+    <VCol cols="12"><RisalahKajiUlangVerifikator></RisalahKajiUlangVerifikator></VCol>
   </VRow>
 </template>
 
