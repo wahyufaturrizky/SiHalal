@@ -41,7 +41,7 @@ const items = ref([])
 
 const searchQuery = ref('')
 const page = ref(1)
-const size = ref(20)
+const size = ref(10)
 
 const loadItem = async (page: number, size: number, search: string): void => {
   try {
@@ -71,9 +71,9 @@ const getChipColor = (status: string) => {
 const debouncedFetch = debounce(loadItem, 500)
 const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
 
-// onMounted(
-//   await loadItem(1, size.value)
-// )
+onMounted(
+  await loadItem(1, size.value)
+)
 </script>
 
 <template>
@@ -105,9 +105,16 @@ const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
           :headers="headers"
           :items="items"
           item-value="no"
-          class="elevation-1"
+          class="elevation-1 border rounded"
           @update:options="loadItem(page, size, searchQuery)"
+          :hide-default-footer="items.length < 10"
         >
+          <template #no-data>
+            <div class="pt-2">
+              <img src="~/assets/images/empty-data.png" alt="" />
+              <div class="pt-2 font-weight-bold">Data Kosong</div>
+            </div>
+          </template>
           <template #[`item.status`]="{ item }">
             <div class="d-flex">
               <VChip
