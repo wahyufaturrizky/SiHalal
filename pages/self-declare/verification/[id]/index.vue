@@ -212,8 +212,8 @@ const loadItemAspekLegalById = async ({
     );
 
     if (response.code === 2000) {
-      aspekLegal.value = response.data;
-      totalItemsAspekLegal.value = response.total;
+      aspekLegal.value = response.data || [];
+      totalItemsAspekLegal.value = response.total || 0;
       loadingAspekLegal.value = false;
       return response;
     } else {
@@ -289,7 +289,7 @@ const loadItemProdukById = async ({
 
     if (response.code === 2000) {
       listTableProduk.value = response.data || [];
-      totalItemsTableProduk.value = response.total;
+      totalItemsTableProduk.value = response.total || 0;
       loadingTableProduk.value = false;
       return response;
     } else {
@@ -323,8 +323,8 @@ const loadItemBahanById = async ({
     );
 
     if (response.code === 2000) {
-      listBahan.value = response.data;
-      totalItemsBahan.value = response.total;
+      listBahan.value = response.data || [];
+      totalItemsBahan.value = response.total || 0;
       loadingBahan.value = false;
       return response;
     } else {
@@ -365,7 +365,7 @@ const loadItemById = async () => {
         pendamping,
       } = certificate_halal || {};
 
-      dataTracking.value = tracking;
+      dataTracking.value = tracking || [];
 
       dataFormPengajuan.value = {
         jenisPendaftaran: "",
