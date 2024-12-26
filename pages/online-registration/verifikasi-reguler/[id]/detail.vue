@@ -313,18 +313,17 @@ onMounted(async () => {
       <EditProsesRegulerVerifikator />
     </VTabsWindowItem>
 
-    <!-- <VTabsWindowItem value="5">
-      <EditProdukReguler :is-editable="props.tabProdukEditable" />
+    <VTabsWindowItem value="5">
+      <EditProdukRegulerVerifikator />
     </VTabsWindowItem>
 
     <VTabsWindowItem value="6">
-      <EditPemantauanDanEvaluasiReguler
-        :is-editable="props.tabPemantauanEditable"
+      <EditPemantauanDanEvaluasiRegulerVerifikator
       />
     </VTabsWindowItem>
 
     <VTabsWindowItem value="7">
       <EditDokumenReguler :is-editable="props.tabDokumenEditable" />
-    </VTabsWindowItem> -->
+    </VTabsWindowItem>
   </VTabsWindow>
 </template>
