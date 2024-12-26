@@ -151,9 +151,7 @@ const handleGetListPendaftaran = async () => {
       method: "get",
     });
 
-    listPendaftaran.value = res;
-
-    if (res.code === 2000) {
+    if (res.length) {
       listPendaftaran.value = res;
       return res;
     }
@@ -162,7 +160,7 @@ const handleGetListPendaftaran = async () => {
 
 const listPendaftaran = ref([]);
 const findListDaftar = (kode: string) => {
-  const data = listPendaftaran.value.find((code) => kode == code.code);
+  const data = listPendaftaran.value.find((code: any) => kode == code.code);
   if (data == undefined) return { code: null, name: "-" };
   return data;
 };
@@ -328,7 +326,6 @@ onMounted(async () => {
           item-title="name"
           item-value="code"
           v-model="formData.id_jenis_pengajuan"
-          disabled
         />
       </VItemGroup>
       <br />
