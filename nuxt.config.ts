@@ -198,7 +198,7 @@ export default defineNuxtConfig({
     },
 
     optimizeDeps: {
-      // exclude: ["vuetify"],
+      exclude: ["vuetify"],
       entries: ["./**/*.vue"],
     },
 

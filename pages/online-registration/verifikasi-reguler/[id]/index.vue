@@ -92,9 +92,10 @@ interface Pendaftaran {
   channel_pendaftaran: string;
   fasilitator: string;
   jenis_pengajuan: string;
+  kode_fac: string;
   nomor_daftar: string;
   status: string;
-  tanggal: any;
+  tanggal: string;
   tempat_pendaftaran: string;
 }
 
@@ -175,11 +176,11 @@ const submitData = async () => {
       useSnackbar().sendSnackbar("Ada kesalahan", "error");
       return;
     }
+    closeConfirmation();
+    navigateTo("/online-registration/verifikasi-reguler");
     useSnackbar().sendSnackbar("Berhasil memverifikasi data", "success");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada kesalahan", "error");
-  } finally {
-    closeConfirmation();
   }
 };
 const router = useRouter();
@@ -198,11 +199,11 @@ const returnDocument = async () => {
       useSnackbar().sendSnackbar("Ada kesalahan", "error");
       return;
     }
+    closeReturn();
+    navigateTo("/online-registration/verifikasi-reguler");
     useSnackbar().sendSnackbar("Berhasil mengembalikan data", "success");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada kesalahan", "error");
-  } finally {
-    closeReturn();
   }
 };
 const refVForm = ref<VForm>();
@@ -232,9 +233,10 @@ const dataDetail = ref<DetailVerifikatorReguler>({
     channel_pendaftaran: "",
     fasilitator: "",
     jenis_pengajuan: "",
+    kode_fac: "",
     nomor_daftar: "",
     status: "",
-    tanggal: null,
+    tanggal: "",
     tempat_pendaftaran: "",
   },
   penyelia: [],
@@ -373,8 +375,7 @@ onMounted(async () => {
           <VExpansionPanels v-model="panelOpenPabrik">
             <VExpansionPanel>
               <VExpansionPanelTitle>
-                  <h2>Pabrik</h2>
-
+                <h2>Pabrik</h2>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <Pabrik :data="dataDetail.pabrik" />
@@ -388,8 +389,7 @@ onMounted(async () => {
           <VExpansionPanels v-model="panelOpenOutlet">
             <VExpansionPanel>
               <VExpansionPanelTitle>
-                  <h2>Outlet</h2>
-
+                <h2>Outlet</h2>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <Outlet :data="dataDetail.outlet" />
@@ -417,7 +417,7 @@ onMounted(async () => {
           <VExpansionPanels v-model="panelOpenProduk">
             <VExpansionPanel>
               <VExpansionPanelTitle>
-                  <h2>Daftar Nama Produk</h2>
+                <h2>Daftar Nama Produk</h2>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <DaftarNamaProdukSelfDeclare :data="dataDetail.produk" />
