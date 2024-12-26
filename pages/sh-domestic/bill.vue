@@ -137,11 +137,9 @@ const handleInput = (e: any) => {
   debounce(loadItem(page.value, size.value, status.value, outDated.value, e.target.value), 500);
 };
 
-const downloadInvoice = (item: any) => {
-  console.log('a');
-  
+const downloadInvoice = async(item: any) => {
   if (item.file_inv)
-    window.open(item.file_inv, '_blank')
+    await downloadDocument(item.file_inv)
 }
 
 onMounted(async () => {
