@@ -138,8 +138,6 @@ const handleInput = (e: any) => {
 };
 
 const downloadInvoice = async(item: any) => {
-  console.log('a');
-  
   if (item.file_inv)
     await downloadDocument(item.file_inv)
 }
