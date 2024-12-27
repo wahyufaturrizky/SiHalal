@@ -17,7 +17,7 @@ const tableHeader = [
   { title: "Nama PU", value: "nama_pu" },
   { title: "Jenis Daftar", value: "jenis_daftar" },
   { title: "Jenis Produk", value: "jenis_produk" },
-  { title: "Jenis Usaha dan Jumlah", value: "typeAndTotal" },
+  { title: "Skala Usaha dan Jumlah", value: "typeAndTotal" },
   { title: "Status", value: "status" },
   { title: "Tanggal Dikirim oleh BPJPH", value: "tgl_dikirim" },
   { title: "Action", value: "action" },
