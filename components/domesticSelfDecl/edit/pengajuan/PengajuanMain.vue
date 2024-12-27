@@ -1,6 +1,6 @@
 <script setup lang="ts">
-const route = useRoute<''>()
-const submissionId = route.params?.id
+const route = useRoute<"">();
+const submissionId = route.params?.id;
 
 const submissionDetail = reactive({
   id_reg: null,
@@ -8,11 +8,12 @@ const submissionDetail = reactive({
   id_jenis_pengajuan: null,
   tanggal_buat: null,
   nama_pj: null,
+  status: null,
   alamat_pu: null,
   jabatan_pj: null,
   nomor_kontak_pj: null,
   nama_pu: null,
-})
+});
 
 const formData = reactive({
   id_reg: submissionId,
@@ -29,278 +30,265 @@ const formData = reactive({
   id_fasilitator: null,
   nama_pu: null,
   area_pemasaran: null,
-  lokasi_pendamping: 'Provinsi',
+  lokasi_pendamping: "Provinsi",
   lembaga_pendamping: null,
   id_lembaga_pendamping: null,
   pendamping: null,
   id_pendamping: null,
-})
+});
 
-const listPendaftaran = ref([])
-const listFasilitasi = ref([])
-const listLayanan = ref([])
-const listProduk = ref([])
+const listPendaftaran = ref([]);
+const listFasilitasi = ref([]);
+const listLayanan = ref([]);
+const listProduk = ref([]);
 
 const listAreaPemasaran = ref([
-  { title: 'Kabupaten/Kota', value: 'Kabupaten' },
-  { title: 'Provinsi', value: 'Provinsi' },
-  { title: 'Nasional', value: 'Nasional' },
-  { title: 'Internasional', value: 'Internasional' },
-])
+  { title: "Kabupaten/Kota", value: "Kabupaten" },
+  { title: "Provinsi", value: "Provinsi" },
+  { title: "Nasional", value: "Nasional" },
+  { title: "Internasional", value: "Internasional" },
+]);
 
 const lokasiPendamping = ref([
-  { title: 'Kabupaten', value: 'Kabupaten' },
-  { title: 'Provinsi', value: 'Provinsi' },
-])
+  { title: "Kabupaten", value: "Kabupaten" },
+  { title: "Provinsi", value: "Provinsi" },
+]);
 
-const lembagaPendamping = ref([])
-const listPendamping = ref([])
+const lembagaPendamping = ref([]);
+const listPendamping = ref([]);
 
 const loadDataPendamping = async (lokasi: string | null) => {
-  if (lokasi)
-    await handleGetLembagaPendamping(lokasi)
-}
+  if (lokasi) await handleGetLembagaPendamping(lokasi);
+};
 
 const handleGetListPendaftaran = async () => {
   try {
-    listPendaftaran.value = await $api('/master/jenis-pendaftaran', {
-      method: 'get',
-    })
+    listPendaftaran.value = await $api("/master/jenis-pendaftaran", {
+      method: "get",
+    });
+  } catch (error) {
+    // console.log('listPendaftaran',listPendaftaran)
+    console.log(error);
   }
+};
 
-  // console.log('listPendaftaran',listPendaftaran)
-  catch (error) {
-    console.log(error)
-  }
-}
-
-const isFasilitator = ref<boolean>(false)
-const isKodeNotFound = ref<boolean>(false)
-const isKodeFound = ref<boolean>(false)
+const isFasilitator = ref<boolean>(false);
+const isKodeNotFound = ref<boolean>(false);
+const isKodeFound = ref<boolean>(false);
 
 const handleGetFasilitator = async () => {
   try {
     const response: any = await $api(
-      '/self-declare/business-actor/submission/list-fasilitator',
+      "/self-declare/business-actor/submission/list-fasilitator",
       {
-        method: 'get',
+        method: "get",
         query: {
           reg_id: submissionId,
-          lokasi: 'Kabupaten',
+          lokasi: "Kabupaten",
         },
-      },
-    )
+      }
+    );
 
     if (response.code === 2000) {
-      listFasilitasi.value = response.data
+      listFasilitasi.value = response.data;
       listFasilitasi.value.push({
-        id: 'Lainnya',
-        name: 'Lainnya',
-      })
+        id: "Lainnya",
+        name: "Lainnya",
+      });
     }
 
-    return response
+    return response;
+  } catch (error) {
+    console.log(error);
   }
-  catch (error) {
-    console.log(error)
-  }
-}
+};
 
-const querySearch = ref('')
+const querySearch = ref("");
 
 const onSelectFasilitator = (selectedId: string) => {
-  if ((isFasilitator.value = selectedId === 'Lainnya'))
-    isKodeFound.value = false
-}
+  if ((isFasilitator.value = selectedId === "Lainnya"))
+    isKodeFound.value = false;
+};
 
-const responseMessage = ref('')
-const responseId = ref('')
+const responseMessage = ref("");
+const responseId = ref("");
 
 const onSearchFasilitator = async () => {
   try {
-    const kode = querySearch.value
+    const kode = querySearch.value;
 
-    const response: any = await $api('/self-declare/submission/kode', {
-      method: 'post',
+    const response: any = await $api("/self-declare/submission/kode", {
+      method: "post",
       body: {
         kode,
       },
-    })
+    });
 
     console.log(
-      response.message === 'Kode Fasilitasi dapat digunakan',
-      response.message,
-    )
-    if (response.message === 'Kode Fasilitasi dapat digunakan') {
-      isKodeFound.value = true
-      isKodeNotFound.value = false
-      responseMessage.value = ''
-      responseId.value = response.data[0].id
-      console.log('ressponde id', response.data[0].id)
-      console.log('responseId ', responseId)
-      formData.id_fasilitator.value = responseId.value
-      console.log('id fasilitator ', formData.id_fasilitator)
+      response.message === "Kode Fasilitasi dapat digunakan",
+      response.message
+    );
+    if (response.message === "Kode Fasilitasi dapat digunakan") {
+      isKodeFound.value = true;
+      isKodeNotFound.value = false;
+      responseMessage.value = "";
+      responseId.value = response.data[0].id;
+      console.log("ressponde id", response.data[0].id);
+      console.log("responseId ", responseId);
+      formData.id_fasilitator.value = responseId.value;
+      console.log("id fasilitator ", formData.id_fasilitator);
+    } else {
+      responseMessage.value = response.message;
+      isKodeFound.value = false;
+      isKodeNotFound.value = true;
     }
-    else {
-      responseMessage.value = response.message
-      isKodeFound.value = false
-      isKodeNotFound.value = true
-    }
+  } catch (error) {
+    console.log(error);
   }
-  catch (error) {
-    console.log(error)
-  }
-}
+};
 
 const responseType = computed(() => {
-  return responseMessage.value == 'Kode Fasilitasi dapat digunakan'
-    ? 'success'
-    : 'error'
-})
+  return responseMessage.value == "Kode Fasilitasi dapat digunakan"
+    ? "success"
+    : "error";
+});
 
 const responseColor = computed(() => {
-  return responseMessage.value == 'Kode Fasilitasi dapat digunakan'
-    ? '#5CB338'
-    : '#FB4141'
-})
+  return responseMessage.value == "Kode Fasilitasi dapat digunakan"
+    ? "#5CB338"
+    : "#FB4141";
+});
 
 const handleGetJenisLayanan = async () => {
   try {
-    listLayanan.value = await $api('/master/jenis-layanan', {
-      method: 'get',
-    })
+    listLayanan.value = await $api("/master/jenis-layanan", {
+      method: "get",
+    });
+  } catch (error) {
+    console.log(error);
   }
-  catch (error) {
-    console.log(error)
-  }
-}
+};
 
 const handleGetJenisProduk = async () => {
   try {
-    listProduk.value = await $api('/master/products', {
-      method: 'get',
-    })
+    listProduk.value = await $api("/master/products", {
+      method: "get",
+    });
+  } catch (error) {
+    console.log(error);
   }
-  catch (error) {
-    console.log(error)
-  }
-}
+};
 
 const handleGetLembagaPendamping = async (lokasi: string) => {
   try {
     const response: any = await $api(
-      '/self-declare/business-actor/submission/list-lembaga-pendamping',
+      "/self-declare/business-actor/submission/list-lembaga-pendamping",
       {
-        method: 'get',
+        method: "get",
         query: {
           id_reg: submissionId,
           lokasi,
         },
-      },
-    )
+      }
+    );
 
     if (response.code === 2000) {
-      if (response.data !== null)
-        lembagaPendamping.value = response.data
+      if (response.data !== null) lembagaPendamping.value = response.data;
     }
 
-    return response
+    return response;
+  } catch (error) {
+    console.log(error);
   }
-  catch (error) {
-    console.log(error)
-  }
-}
+};
 
 const handleGetPendamping = async (idLembaga: string | null) => {
-  if (!idLembaga)
-    return
+  if (!idLembaga) return;
   try {
     const response: any = await $api(
-      '/self-declare/business-actor/submission/list-pendamping',
+      "/self-declare/business-actor/submission/list-pendamping",
       {
-        method: 'get',
+        method: "get",
         query: {
           id_lembaga: idLembaga,
         },
-      },
-    )
+      }
+    );
 
     if (response.code === 2000) {
-      if (response.data !== null)
-        listPendamping.value = response.data
-      console.log('isi list', listPendamping.value)
+      if (response.data !== null) listPendamping.value = response.data;
+      console.log("isi list", listPendamping.value);
     }
 
-    return response
+    return response;
+  } catch (error) {
+    console.log(error);
   }
-  catch (error) {
-    console.log(error)
-  }
-}
+};
 
 const getDetail = async () => {
   try {
-    console.log('endpoint ini')
+    console.log("endpoint ini");
 
     const response: any = await $api(
       `/self-declare/pengajuan/${submissionId}/detail`,
       {
-        method: 'get',
-      },
-    )
+        method: "get",
+      }
+    );
 
-    console.log('response pengajuan detail', response)
+    console.log("response pengajuan detail", response);
 
     if (response.code == 2000) {
-      submissionDetail.tanggal_buat = response.data.tgl_daftar.split('T')[0]
-      formData.tgl_surat_permohonan = response.data.tgl_surat_permohonan.split('T')[0]
-      formData.id_jenis_pengajuan = response.data.jenis_pendaftaran
+      submissionDetail.tanggal_buat = response.data.tgl_daftar.split("T")[0];
+      submissionDetail.status = response.data.status_reg;
+      formData.tgl_surat_permohonan =
+        response.data.tgl_surat_permohonan.split("T")[0];
+      formData.id_jenis_pengajuan = response.data.jenis_pendaftaran;
 
-      formData.id_fasilitator = response.data.fac_id
-      querySearch.value = response.data.kode_fac
-      formData.no_mohon = response.data.no_surat_permohonan
+      formData.id_fasilitator = response.data.fac_id;
+      querySearch.value = response.data.kode_fac;
+      formData.no_mohon = response.data.no_surat_permohonan;
       formData.id_jenis_layanan = listLayanan.value[0]?.find(
-        item => item.id === response.data.id_jenis_layanan,
-      )?.name
+        (item) => item.id === response.data.id_jenis_layanan
+      )?.name;
 
-      formData.lokasi_pendamping = response.data.lokasi_pendamping
-      formData.id_jenis_produk = response.data.id_product
-      formData.nama_pu = response.data.nama_usaha
-      formData.area_pemasaran = response.data.area_pemasaran
-      formData.lokasi_pendamping = 'Provinsi'
+      formData.lokasi_pendamping = response.data.lokasi_pendamping;
+      formData.id_jenis_produk = response.data.id_product;
+      formData.nama_pu = response.data.nama_usaha;
+      formData.area_pemasaran = response.data.area_pemasaran;
+      formData.lokasi_pendamping = "Provinsi";
 
-      formData.lembaga_pendamping = response.data.id_lembaga_pendamping
-      console('', listPendamping.value[0])
+      formData.lembaga_pendamping = response.data.id_lembaga_pendamping;
+      console("", listPendamping.value[0]);
       formData.id_pendamping = listPendamping.value[0].find(
-        item => item.id === response.data.id_pendamping,
-      )?.name
+        (item) => item.id === response.data.id_pendamping
+      )?.name;
 
-      console.log('ini sub det = ', Object.keys(submissionDetail))
-      console.log('ini form = ', Object.keys(formData))
+      console.log("ini sub det = ", Object.keys(submissionDetail));
+      console.log("ini form = ", Object.keys(formData));
 
-      Object.keys(response?.data).forEach(key => {
+      Object.keys(response?.data).forEach((key) => {
         // console.log('response = ', key)
         // console.log('response data= ', response.data[key])
         // submissionDetail[key] = response.data[key]
         // console.log('coba tes = ', key == 'tanggal_daftar')
         // console.log(key === 'tgl_daftar', 'keterangan', key)
-        if (key === 'tgl_daftar')
-          console.log('ini val', val)
+        if (key === "tgl_daftar") console.log("ini val", val);
 
-        formData[val] = response.data[val]
-        formData.id_fasilitator = 'Lainnya'
-      })
+        formData[val] = response.data[val];
+        formData.id_fasilitator = "Lainnya";
+      });
 
       // console.log("form = ", formData);
       // console.log("submission det = ", submissionDetail);
     }
-  }
-  catch (error: any) {
+  } catch (error: any) {
     // Tangani error
-    console.error('Error fetching detail:', error.message || error)
-    throw error // Opsional: Lempar ulang error jika perlu
+    console.error("Error fetching detail:", error.message || error);
+    throw error; // Opsional: Lempar ulang error jika perlu
   }
-}
+};
 
 // const getDetail  =()=>({
 //   try {
@@ -337,34 +325,33 @@ const getDetail = async () => {
 //   }
 // })
 
-const formLembagaPendamping = ref<{}>()
-const refVForm = ref<VForm>()
+const formLembagaPendamping = ref<{}>();
+const refVForm = ref<VForm>();
 
 const onSubmitSubmission = () => {
   refVForm.value?.validate().then(({ valid: isValid }) => {
-    console.log('ini submit')
+    console.log("ini submit");
 
     if (isValid) {
-      console.log(' check isvalid', isValid)
-      handleUpdateSubmission()
+      console.log(" check isvalid", isValid);
+      handleUpdateSubmission();
     }
-  })
-}
+  });
+};
 
 const handleUpdateSubmission = async () => {
   try {
     if (isKodeFound.value === true) {
-      console.log('id fasilitator submit', formData.id_fasilitator)
-      console.log('responseid submit', responseId.value)
-    }
-    else {
-      responseId.value = formData.id_fasilitator
+      console.log("id fasilitator submit", formData.id_fasilitator);
+      console.log("responseid submit", responseId.value);
+    } else {
+      responseId.value = formData.id_fasilitator;
     }
 
     const response: any = await $api(
-      '/self-declare/business-actor/submission/update',
+      "/self-declare/business-actor/submission/update",
       {
-        method: 'put',
+        method: "put",
         body: {
           id_reg: submissionId,
           jenis_pendaftaran: formData.id_jenis_pengajuan,
@@ -380,57 +367,50 @@ const handleUpdateSubmission = async () => {
           lembaga_pendamping: formData.id_lembaga_pendamping,
           pendamping: formData.id_pendamping,
         },
-      },
-    )
+      }
+    );
 
     if (response.code === 2000) {
       if (response.data !== null)
-        useSnackbar().sendSnackbar('Berhasil mengubah data', 'success')
+        useSnackbar().sendSnackbar("Berhasil mengubah data", "success");
     }
 
-    return response
+    return response;
+  } catch (error) {
+    console.log(error, "error");
+    useSnackbar().sendSnackbar("Gagal mengubah data", "error");
   }
-  catch (error) {
-    console.log(error, 'error')
-    useSnackbar().sendSnackbar('Gagal mengubah data', 'error')
-  }
-}
+};
 
 const findListDaftar = (kode: string) => {
-  const data = listPendaftaran.value.find(code => kode == code.code)
-  if (data == undefined)
-    return { code: null, name: '-' }
+  const data = listPendaftaran.value.find((code) => kode == code.code);
+  if (data == undefined) return { code: null, name: "-" };
 
-  return data
-}
+  return data;
+};
 
 onMounted(() => {
   // await Promise.all([
-  handleGetListPendaftaran()
+  handleGetListPendaftaran();
 
   // handleDetailPengajuan();
-  handleGetFasilitator()
-  handleGetJenisLayanan()
-  handleGetJenisProduk()
-  loadDataPendamping(formData.lokasi_pendamping)
-  getDetail()
+  handleGetFasilitator();
+  handleGetJenisLayanan();
+  handleGetJenisProduk();
+  loadDataPendamping(formData.lokasi_pendamping);
+  getDetail();
 
   // ]);
-})
+});
 </script>
 
 <template>
-  <VCard
-    class="pa-3"
-    variant="elevated"
-    elevation="9"
-  >
-    <VForm
-      ref="refVForm"
-      @submit.prevent="() => {}"
-    >
+  <VCard class="pa-3" variant="elevated" elevation="9">
+    <VForm ref="refVForm" @submit.prevent="() => {}">
       <!-- @submit.prevent="onSubmitSubmission" -->
-      <VCardTitle class="d-flex justify-space-between align-center font-weight-bold text-h4 mb-5">
+      <VCardTitle
+        class="d-flex justify-space-between align-center font-weight-bold text-h4 mb-5"
+      >
         <div>Data Pengajuan</div>
         <VBtn
           type="submit"
@@ -442,35 +422,29 @@ onMounted(() => {
       </VCardTitle>
       <VCardTitle>
         <VRow>
-          <VCol cols="2">
-            Tanggal
-          </VCol>
-          <VCol cols="1">
-            :
-          </VCol>
+          <VCol cols="2"> Tanggal </VCol>
+          <VCol cols="1"> : </VCol>
           <VCol cols="9">
             {{
-              submissionDetail.tanggal_buat
+              submissionDetail.status != "OF1"
                 ? submissionDetail.tanggal_buat
+                  ? submissionDetail.tanggal_buat
+                  : "-"
                 : "-"
             }}
           </VCol>
         </VRow>
         <VRow>
-          <VCol cols="2">
-            Jenis Pengajuan
-          </VCol>
-          <VCol cols="1">
-            :
-          </VCol>
+          <VCol cols="2"> Jenis Pengajuan </VCol>
+          <VCol cols="1"> : </VCol>
           <VCol cols="9">
             {{
               findListDaftar(submissionDetail.id_jenis_pengajuan as any).name
             }}
           </VCol>
         </VRow>
-        <br>
-        <br>
+        <br />
+        <br />
         <VRow>
           <VCol cols="12">
             <VItemGroup>
@@ -487,7 +461,7 @@ onMounted(() => {
             </VItemGroup>
           </VCol>
         </VRow>
-        <br>
+        <br />
         <VRow>
           <VCol cols="12">
             <VLabel>Kode Daftar / Fasilitasi</VLabel>
@@ -508,10 +482,7 @@ onMounted(() => {
           </VCol>
         </VRow>
         <VRow>
-          <VCol
-            v-if="isFasilitator"
-            cols="5"
-          >
+          <VCol v-if="isFasilitator" cols="5">
             <VTextField
               v-model="querySearch"
               placeholder="Masukan Kode Fasilitasi"
@@ -564,9 +535,9 @@ onMounted(() => {
           mengirimkan pengajuan untuk memperoleh fasilitasi sertifikat halal.
         </VAlert>
 
-        <br>
+        <br />
         <VDivider />
-        <br>
+        <br />
         <VRow>
           <VCol cols="6">
             <VItemGroup>
@@ -578,7 +549,7 @@ onMounted(() => {
                 density="compact"
               />
             </VItemGroup>
-            <br>
+            <br />
           </VCol>
           <VCol cols="6">
             <VItemGroup>
@@ -594,9 +565,7 @@ onMounted(() => {
                     clearable
                   >
                     <template #trigger>
-                      <VLabel class="required">
-                        Tanggal Surat Pemohon
-                      </VLabel>
+                      <VLabel class="required"> Tanggal Surat Pemohon </VLabel>
                       <VTextField
                         placeholder="Pilih Tanggal Surat Pemohon"
                         :rules="[requiredValidator]"
@@ -624,7 +593,7 @@ onMounted(() => {
                 item-value="code"
               />
             </VItemGroup>
-            <br>
+            <br />
             <VItemGroup>
               <VLabel>Jenis Produk</VLabel>
               <VSelect
@@ -637,7 +606,7 @@ onMounted(() => {
                 item-value="code"
               />
             </VItemGroup>
-            <br>
+            <br />
             <VItemGroup>
               <VLabel>Nama Usaha</VLabel>
               <VTextField
@@ -647,7 +616,7 @@ onMounted(() => {
                 density="compact"
               />
             </VItemGroup>
-            <br>
+            <br />
             <VItemGroup>
               <VLabel>Area Pemasaran</VLabel>
               <VSelect
@@ -658,7 +627,7 @@ onMounted(() => {
                 :items="listAreaPemasaran"
               />
             </VItemGroup>
-            <br>
+            <br />
             <VItemGroup>
               <VLabel>Lokasi Pendamping</VLabel>
               <VSelect
@@ -670,7 +639,7 @@ onMounted(() => {
                 @update:model-value="loadDataPendamping"
               />
             </VItemGroup>
-            <br>
+            <br />
             <VItemGroup>
               <VLabel>Lembaga Pendamping</VLabel>
               <VSelect
@@ -685,7 +654,7 @@ onMounted(() => {
                 @update:model-value="handleGetPendamping"
               />
             </VItemGroup>
-            <br>
+            <br />
             <VItemGroup>
               <VLabel>Pendamping</VLabel>
               <VSelect
@@ -701,11 +670,11 @@ onMounted(() => {
             </VItemGroup>
           </VCol>
         </VRow>
-        <br>
-        <div style="display: flex; justify-content: end;">
-          <VItemGroup style="display: inline-flex;">
+        <br />
+        <div style="display: flex; justify-content: end">
+          <VItemGroup style="display: inline-flex">
             <SuratPermohonanModal :data="submissionDetail" />
-            <div style="margin-inline-start: 1svw;" />
+            <div style="margin-inline-start: 1svw" />
             <SuratPernyataanModal :data="submissionDetail" />
           </VItemGroup>
         </div>
