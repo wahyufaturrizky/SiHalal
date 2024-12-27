@@ -18,8 +18,25 @@ const handleOpenSendModal = () => {
   isSendModalOpen.value = !isSendModalOpen.value
 }
 
-const handleUpdateStatus = () => {
-  useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
+const handleUpdateStatus = async () => {
+  // useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
+  try {
+    const response: any = await $api('/reguler/lph/kirim', {
+      method: 'put',
+      body: {
+        id_reg: id,
+        keterangan: 'latest up',
+      },
+    })
+
+    if (response?.code === 2000)
+      return response?.data
+    else
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
 }
 
 const getDetailData = async (type: string) => {
@@ -39,6 +56,21 @@ const getDetailData = async (type: string) => {
   }
 }
 
+// const getDownloadForm = async (docName: string, propName: string) => {
+//   const result: any = await $api(
+//     `/self-declare/submission/${id}/file`,
+//     {
+//       method: 'get',
+//       query: {
+//         document: docName,
+//       },
+//     },
+//   )
+
+//   if (result?.code === 2000)
+//     downloadForms[propName] = result?.data?.file || ''
+// }
+
 onMounted(async () => {
   loading.value = true
 
@@ -46,6 +78,8 @@ onMounted(async () => {
     getDetailData('pengajuan'),
     getDetailData('produk'),
     getDetailData('pemeriksaanproduk'),
+    // getDownloadForm('sttd', 'sttd'),
+    // getDownloadForm('setifikasi-halal', 'setifikasi_halal'),
   ])
 
   dataPengajuan.value = responseData?.[0]?.value || {}
@@ -69,7 +103,7 @@ onMounted(async () => {
               text="Update Biaya"
               variant="outlined"
               class="me-4"
-              @click="router.push(`/lph/list-accepted/detail/update-cost`)"
+              @click="router.push(`/lph/list-accepted/detail/update-cost/${id}`)"
             />
             <VBtn text="Kirim" @click="handleOpenSendModal" />
           </VCol>

@@ -11,12 +11,12 @@ export default defineEventHandler(async (event: any) => {
     })
   }
 
-  const { url } = (await getQuery(event)) as {
-    url: string
+  const { id } = (await getQuery(event)) as {
+    id: string
   }
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/${url}`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/lph/biaya/${id}/list-pabrik/biaya`,
     {
       method: 'get',
       headers: { Authorization: authorizationHeader },
