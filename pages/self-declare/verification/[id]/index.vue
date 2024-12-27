@@ -1609,7 +1609,7 @@ const dibatalkan = async () => {
     </VContainer>
 
     <VContainer v-if="tab === 'proses'">
-      <EditProsesProdukHalalSelfDeclareSubmission />
+      <EditProsesProdukHalalSelfDeclareSubmission :is-verificator="true" />
     </VContainer>
 
     <VContainer v-if="tab === 'pernyataan'">
