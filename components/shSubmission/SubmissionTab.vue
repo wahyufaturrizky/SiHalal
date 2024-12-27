@@ -140,6 +140,7 @@ const { refresh } = await useAsyncData("get-detail-submission", async () => {
         jenis_pendaftaran,
         fac_id,
         no_surat_permohonan,
+        id_pendamping,
       } = data || {};
 
       submissionDetail.tanggal_buat = tgl_daftar;
@@ -155,6 +156,8 @@ const { refresh } = await useAsyncData("get-detail-submission", async () => {
       formData.id_jenis_pengajuan = jenis_pendaftaran;
       formData.id_fasilitator = fac_id;
       formData.no_mohon = no_surat_permohonan;
+      formData.id_pendamping = id_pendamping;
+      formData.lokasi_pendamping = area_pemasaran;
     }
     return response;
   } catch (error) {}
@@ -521,6 +524,7 @@ onMounted(async () => {
               :items="['Provinsi', 'Kabupaten']"
               @update:model-value="loadDataPendamping"
               disabled
+              v-model="formData.lokasi_pendamping"
             />
           </VItemGroup>
         </VCol>
