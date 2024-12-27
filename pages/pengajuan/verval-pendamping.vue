@@ -1,67 +1,90 @@
 <script setup lang="ts">
-// const tableHeader = [
-//   { title: 'No', value: 'no' },
-//   { title: 'No. Daftar', value: 'regist_no' },
-//   { title: 'Tanggal Daftar', value: 'regist_date' },
-//   { title: 'Nama PU', value: 'pu_name' },
-//   { title: 'Alamat', value: 'address' },
-//   { title: 'Jenis Usaha', value: 'kind' },
-//   { title: 'Skala Usaha', value: 'scale' },
-//   { title: 'Merk Dagang', value: 'brand' },
-//   { title: 'Status', value: 'status' },
-//   { title: 'Action', value: 'action' },
-// ]
+const loadingAll = ref(true);
+const searchQuery = ref("");
+const page = ref(1);
+const size = ref(10);
 
-interface Payload {
-  page: number
-  size: number
-  search?: string
-}
-const searchQuery = ref('')
-const page = ref(1)
-const size = ref(10)
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+
+const statusItem: any = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+    OF11: { color: "success", desc: "Verification" },
+    OF50: { color: "success", desc: "Dikirim ke LPH" },
+    OF300: { color: "success", desc: "Halal Certified Issued" },
+    OF285: { color: "success", desc: "Dikembalikan Oleh Fatwa" },
+    OF74: { color: "success", desc: "Sent to Komite Fatwa" },
+    OF280: { color: "success", desc: "Dikembalikan Ke PU" },
+    OF100: { color: "success", desc: "Selesai Sidang Fatwa" },
+    OF120: { color: "success", desc: "Certificate Issued" },
+    OF900: { color: "error", desc: "Dibatalkan" },
+  },
+  {
+    get(target: any, prop: any) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
 
 const headers = [
-  { title: 'No', value: 'no' },
-  { title: 'No. Daftar', key: 'no_daftar', nowrap: true },
-  { title: 'Tanggal Daftar', key: 'tgl_daftar', nowrap: true },
-  { title: 'Nama PU', key: 'nama_pu', nowrap: true },
-  { title: 'Alamat', key: 'alamat_pu', nowrap: true },
-  { title: 'Jenis Usaha', key: 'jenis_usaha', nowrap: true },
-  { title: 'Skala Usaha', key: 'skala_usaha', nowrap: true },
-  { title: 'Merk Dagang', key: 'merek_dagang', nowrap: true },
-  { title: 'Status', key: 'status', nowrap: true },
-  { title: 'Action', value: 'action', sortable: false, nowrap: true },
-]
+  { title: "No", value: "no" },
+  { title: "No. Daftar", key: "no_daftar", nowrap: true },
+  { title: "Tanggal Daftar", key: "tgl_daftar", nowrap: true },
+  { title: "Nama PU", key: "nama_pu", nowrap: true },
+  { title: "Alamat", key: "alamat_pu", nowrap: true },
+  { title: "Jenis Usaha", key: "jenis_usaha", nowrap: true },
+  { title: "Skala Usaha", key: "skala_usaha", nowrap: true },
+  { title: "Merk Dagang", key: "merek_dagang", nowrap: true },
+  { title: "Status", key: "status", nowrap: true },
+  { title: "Action", value: "action", sortable: false, nowrap: true },
+];
 
-const items = ref([])
+const items = ref([]);
 
-const loadItem = async (page: number, size: number, search: string): void => {
+const loadItem = async (page: number, size: number, search: string) => {
   try {
-    const response = await $api('self-declare/proses-verval/list', {
-      method: 'GET',
+    const response: any = await $api("self-declare/proses-verval/list", {
+      method: "GET",
       params: { page, size, search },
-    })
+    });
 
-    if (response.code === 2000)
-      items.value = response.data
+    if (response.code === 2000) {
+      items.value = response.data;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar(response.message, "error");
+    }
+  } catch (e) {
+    useSnackbar().sendSnackbar("Terjadi Kesalahan ", "error");
   }
-  catch (e) {
-    snackBar.sendSnackbar('Terjadi Kesalahan ', 'error')
+};
+
+const debouncedFetch = debounce(loadItem, 500);
+
+const handleInput = () =>
+  debouncedFetch(page.value, size.value, searchQuery.value);
+
+onMounted(async () => {
+  const res = await Promise.all([
+    loadItem(page.value, size.value, searchQuery.value),
+  ]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
   }
-}
-
-const getChipColor = (status: string) => {
-  if (status === '')
-    return 'primary'
-  else if (status === 'Pengajuan')
-    return 'success'
-
-  return 'success'
-}
-
-const debouncedFetch = debounce(loadItem, 500)
-const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
+});
 </script>
 
 <template>
@@ -70,7 +93,7 @@ const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
       <h2>Proses Verval</h2>
     </VCol>
   </VRow>
-  <VRow>
+  <VRow v-if="!loadingAll">
     <VCol cols="12">
       <VCard>
         <VCardTitle><h3>Data Proses Verval</h3></VCardTitle>
@@ -82,7 +105,7 @@ const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
                 density="compact"
                 placeholder="Cari Tagihan"
                 append-inner-icon="ri-search-line"
-                style="max-inline-size: 100%;"
+                style="max-inline-size: 100%"
                 @input="handleInput"
               />
             </VCol>
@@ -102,25 +125,27 @@ const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
                   <span>{{ index + 1 }}</span>
                 </template>
 
-                <template #[`item.status`]="{ item }">
+                <template #[`item.status`]="{ item, index }">
                   <div class="d-flex">
                     <VChip
                       :key="index"
-                      :color="getChipColor(item.status)"
-                      label
+                      :color="statusItem[(item as any).status_code].color"
                       class="ma-1"
                     >
-                      <!-- {{ item.status }} -->
-                      OF10
+                      {{ statusItem[(item as any).status_code].desc }}
                     </VChip>
                   </div>
                 </template>
                 <template #item.action="{ item }">
                   <VIcon
                     color="primary"
-                    style="cursor: pointer;"
+                    style="cursor: pointer"
                     class="ic-center"
-                    @click="navigateTo(`/pengajuan/detail-verval/${item.id_reg}`)"
+                    @click="
+                      navigateTo(
+                        `/pengajuan/detail-verval/${(item as any).id_reg}`
+                      ) as any
+                    "
                   >
                     ri-arrow-right-line
                   </VIcon>
@@ -132,4 +157,6 @@ const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
       </VCard>
     </VCol>
   </VRow>
+
+  <VSkeletonLoader type="card" v-else />
 </template>
