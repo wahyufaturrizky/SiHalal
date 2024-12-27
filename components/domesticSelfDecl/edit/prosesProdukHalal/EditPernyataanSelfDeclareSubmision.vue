@@ -35,6 +35,13 @@ const handleDownload = async () => {
   return await downloadDocument(pledgeFile.value);
 };
 
+const props = defineProps({
+  isVerificator: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const route = useRoute<"">();
 const submissionId = route.params?.id;
 const submissionDetail = reactive({
@@ -212,6 +219,13 @@ onMounted(() => {
     </VCardText>
     <VCardActions class="d-flex justify-end">
       <VBtn
+        v-if="props.isVerificator"
+        @click="handleDownload"
+        variant="outlined"
+        append-icon="ri-download-line"
+        >Download ikrar</VBtn
+      >
+      <VBtn
         v-if="showDownloadButton"
         @click="handleDownload"
         variant="outlined"
@@ -220,6 +234,7 @@ onMounted(() => {
       >
       <VBtn
         @click="handleAgree"
+        :disabled="props.isVerificator"
         variant="flat"
         min-width="120px"
         class="text-white"

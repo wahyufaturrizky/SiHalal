@@ -24,6 +24,8 @@ const tabs = ref([
   { text: "Bahan", value: "bahan" },
   { text: "Produk", value: "produk" },
   { text: "Melacak", value: "melacak" },
+  { text: "Proses", value: "proses" },
+  { text: "Pernyataan", value: "pernyataan" },
 ]);
 
 const tab = ref("pelaku_usaha"); // Default selected tab
@@ -365,13 +367,15 @@ const loadItemById = async () => {
         area_pemasaran,
         lembaga_pendamping,
         pendamping,
+        jenis_daftar,
+        fac_id,
       } = certificate_halal || {};
 
       dataTracking.value = tracking || [];
 
       dataFormPengajuan.value = {
-        jenisPendaftaran: "",
-        kodeDaftarFasilitasi: "",
+        jenisPendaftaran: jenis_daftar,
+        kodeDaftarFasilitasi: fac_id,
         nomorSuratPermohonan: no_mohon,
         jenisLayanan: jenis_layanan,
         jenisProduk: jenis_produk,
@@ -884,6 +888,7 @@ const dibatalkan = async () => {
                 v-model="namaPenanggungJawab"
                 required
                 placeholder="Nama"
+                disabled
               />
             </VCol>
             <VCol cols="12">
@@ -892,6 +897,7 @@ const dibatalkan = async () => {
                 v-model="nomorKontakPenanggungJawab"
                 required
                 placeholder="Nomor Kontak"
+                disabled
               />
             </VCol>
             <VCol cols="12">
@@ -900,6 +906,7 @@ const dibatalkan = async () => {
                 v-model="emailPenanggungJawab"
                 required
                 placeholder="Email"
+                disabled
               />
             </VCol>
           </VCard>
@@ -965,7 +972,7 @@ const dibatalkan = async () => {
                 <p class="text-h3">Penyelia Halal</p>
               </VCol>
               <VCol class="d-flex justify-end align-center" cols="6" md="2">
-                <TambahDataPenyeliaHalal
+                <!-- <TambahDataPenyeliaHalal
                   @refresh="
                     loadItemPenyeliaById({
                       page: pagePenyelia,
@@ -974,7 +981,7 @@ const dibatalkan = async () => {
                   "
                   mode="add"
                   :listagama="listAgama"
-                />
+                /> -->
               </VCol>
             </VRow>
             <VRow>
@@ -1121,6 +1128,7 @@ const dibatalkan = async () => {
                         item-title="name"
                         item-value="code"
                         required
+                        disabled
                       />
                     </VCol>
 
@@ -1136,6 +1144,7 @@ const dibatalkan = async () => {
                             :items="listKodeDaftarFasilitasi"
                             item-title="name"
                             item-value="id"
+                            disabled
                           />
                         </VCol>
                         <span>Atau</span>
@@ -1143,6 +1152,7 @@ const dibatalkan = async () => {
                           <VTextField
                             append-inner-icon="mdi-magnify"
                             required
+                            disabled
                           />
                         </VCol>
                       </VRow>
@@ -1167,6 +1177,7 @@ const dibatalkan = async () => {
                         Nomor Surat Permohonan
                       </VLabel>
                       <VTextField
+                        disabled
                         required
                         placeholder="Isi Nomor Surat Permohonan"
                       />
@@ -1176,6 +1187,7 @@ const dibatalkan = async () => {
                       <VTextField
                         placeholder="Pilih Tanggal Surat Pemohon"
                         type="date"
+                        disabled
                         v-model="dataFormPengajuan.tanggalSuratPermohon"
                       />
                     </VCol>
@@ -1190,6 +1202,7 @@ const dibatalkan = async () => {
                         v-model="dataFormPengajuan.jenisLayanan"
                         item-title="name"
                         item-value="code"
+                        disabled
                       />
                     </VCol>
 
@@ -1203,6 +1216,7 @@ const dibatalkan = async () => {
                         v-model="dataFormPengajuan.jenisProduk"
                         item-title="name"
                         item-value="code"
+                        disabled
                       />
                     </VCol>
 
@@ -1213,6 +1227,7 @@ const dibatalkan = async () => {
                         v-model="dataFormPengajuan.jenisUsaha"
                         required
                         placeholder="Pilih Jenis Usaha"
+                        disabled
                       />
                     </VCol>
 
@@ -1229,6 +1244,7 @@ const dibatalkan = async () => {
                         ]"
                         required
                         v-model="dataFormPengajuan.areaPemasaran"
+                        disabled
                       />
                     </VCol>
 
@@ -1590,6 +1606,14 @@ const dibatalkan = async () => {
           </VExpandTransition>
         </VCard>
       </VCol>
+    </VContainer>
+
+    <VContainer v-if="tab === 'proses'">
+      <EditProsesProdukHalalSelfDeclareSubmission />
+    </VContainer>
+
+    <VContainer v-if="tab === 'pernyataan'">
+      <EditPernyataanSelfDeclareSubmision :is-verificator="true" />
     </VContainer>
   </VContainer>
 
