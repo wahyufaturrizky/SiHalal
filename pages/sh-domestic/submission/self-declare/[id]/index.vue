@@ -735,9 +735,11 @@
                 :style="{ fontWeight: '600' }"
               >
                 {{
-                  registrationDetail.tgl_daftar
-                    ? formatToISOString(registrationDetail.tgl_daftar)
-                    : "-"
+                  registrationDetail.status != "OF1"
+                    ? registrationDetail.tgl_daftar
+                      ? formatToISOString(registrationDetail.tgl_daftar)
+                      : "-"
+                    : ""
                 }}
               </InfoRowV2>
               <InfoRowV2
@@ -941,7 +943,7 @@ import { formatCurrency } from "@/utils/conversionIntl";
 const defaultStatus = { color: "error", desc: "Unknown Status" };
 const statusItem = new Proxy(
   {
-    OF1: { color: "grey-300", desc: "Draft" },
+    OF1: { color: "primary", desc: "Draft" },
     OF10: { color: "success", desc: "Submitted" },
     OF11: { color: "success", desc: "Verification" },
     OF15: { color: "success", desc: "Verified" },
@@ -1216,9 +1218,14 @@ onMounted(async () => {
     getDownloadForm("rekomendasi", "rekomendasi"),
     getDownloadForm("sjph", "sjph"),
     getDownloadForm("laporan", "laporan"),
-    getDownloadForm("sttd", "sttd"),
     getDownloadForm("setifikasi-halal", "setifikasi_halal"),
   ]);
+  if (registrationDetail.status == "") {
+    return;
+  }
+  if (Number(registrationDetail.status.split("OF")[1]) >= 71) {
+    getDownloadForm("sttd", "sttd");
+  }
 });
 
 const getSubmissionDetail = async () => {
