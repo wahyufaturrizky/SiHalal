@@ -102,7 +102,10 @@ const handleReturn = async () => {
       dialogToggle.value = false;
     } else {
       loadingModal.value = false;
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
     }
   } catch (error) {
     loadingModal.value = false;
@@ -128,7 +131,10 @@ const handleSend = async () => {
       dialogToggle.value = false;
     } else {
       loadingModal.value = false;
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
     }
   } catch (error) {
     loadingModal.value = false;
