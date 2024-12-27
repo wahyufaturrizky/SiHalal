@@ -129,6 +129,8 @@ onMounted(async () => {
           append-inner-icon="ri-search-line"
           style="max-width: 100%"
           @input="handleInput"
+          clearable
+          @click:clear="handleInput"
         />
       </v-card-item>
       <v-card-item>
