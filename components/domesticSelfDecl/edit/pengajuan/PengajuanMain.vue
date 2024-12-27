@@ -1,6 +1,62 @@
 <script setup lang="ts">
-const route = useRoute<"">();
-const submissionId = route.params?.id;
+const props = defineProps({
+  idDetail: {
+    required: true,
+    type: String,
+  },
+});
+
+const submissionData = ref({
+  id: "39886986",
+  date: "10/10/2024",
+  type: "Baru",
+});
+
+const responseId = ref("");
+
+const responseMessage = ref("");
+const isFasilitator = ref<boolean>(false);
+const isKodeNotFound = ref<boolean>(false);
+const isKodeFound = ref<boolean>(false);
+
+const querySearch = ref("");
+
+const route = useRoute();
+const submissionId = (route.params as any).id as string;
+
+const foundFasilitator = ref("");
+const loadingAll = ref(true);
+const suratPermohonan = ref(null);
+const suratPernyataan = ref(null);
+
+const onSelectFasilitator = (selectedId: string) => {
+  if ((isFasilitator.value = selectedId === "Lainnya")) {
+    isKodeFound.value = false;
+    querySearch.value = "";
+  }
+};
+
+const getDownloadForm = async (docName: string, propName: any) => {
+  const result: any = await $api(
+    `/self-declare/submission/${submissionId}/file`,
+    {
+      method: "get",
+      query: {
+        document: docName,
+      },
+    }
+  );
+
+  if (result.code === 2000) {
+    if (docName === "surat-permohonan") {
+      suratPermohonan.value = result.data.file;
+      return result;
+    } else {
+      suratPernyataan.value = result.data.file;
+      return result;
+    }
+  }
+};
 
 const submissionDetail = reactive({
   id_reg: null,
@@ -8,15 +64,38 @@ const submissionDetail = reactive({
   id_jenis_pengajuan: null,
   tanggal_buat: null,
   nama_pj: null,
-  status: null,
   alamat_pu: null,
   jabatan_pj: null,
   nomor_kontak_pj: null,
   nama_pu: null,
 });
 
+const onSearchFasilitator = async () => {
+  try {
+    const kode = querySearch.value;
+
+    const response: any = await $api("/self-declare/submission/kode", {
+      method: "post",
+      body: {
+        kode,
+      },
+    });
+
+    if (responseMessage.value === "Kode Fasilitasi dapat digunakan") {
+      isKodeFound.value = true;
+      isKodeNotFound.value = false;
+      responseMessage.value = "";
+      responseId.value = response.data.id;
+    } else {
+      responseMessage.value = response.message;
+      isKodeFound.value = false;
+      isKodeNotFound.value = true;
+    }
+  } catch (error) {}
+};
+
 const formData = reactive({
-  id_reg: submissionId,
+  id_reg: null,
   jenis_pendaftaran: null,
   id_jenis_pengajuan: null,
   kode_daftar: null,
@@ -35,55 +114,86 @@ const formData = reactive({
   id_lembaga_pendamping: null,
   pendamping: null,
   id_pendamping: null,
+  asal_usaha: null,
 });
 
-const listPendaftaran = ref([]);
-const listFasilitasi = ref([]);
-const listLayanan = ref([]);
-const listProduk = ref([]);
+const { refresh } = await useAsyncData("get-detail-submission", async () => {
+  try {
+    const response: any = await $api(
+      `/self-declare/submission/${props.idDetail}/detail-pengajuan`,
+      {
+        method: "get",
+      }
+    );
 
-const listAreaPemasaran = ref([
-  { title: "Kabupaten/Kota", value: "Kabupaten" },
-  { title: "Provinsi", value: "Provinsi" },
-  { title: "Nasional", value: "Nasional" },
-  { title: "Internasional", value: "Internasional" },
-]);
+    if (response.code === 2000) {
+      const { data } = response || {};
+      const {
+        tgl_daftar,
+        nama_pj,
+        nomor_kontak_pj,
+        id_jenis_layanan,
+        nama_pu,
+        area_pemasaran,
+        id_lembaga_pendamping,
+        id_product,
+        jenis_pendaftaran,
+        fac_id,
+        no_surat_permohonan,
+        id_pendamping,
+      } = data || {};
 
-const lokasiPendamping = ref([
-  { title: "Kabupaten", value: "Kabupaten" },
-  { title: "Provinsi", value: "Provinsi" },
-]);
+      submissionDetail.tanggal_buat = formatDate(tgl_daftar);
+      submissionDetail.nama_pj = nama_pj;
+      submissionDetail.nomor_kontak_pj = nomor_kontak_pj;
+      formData.tgl_surat_permohonan = formatToISOString(tgl_daftar) as any;
 
-const lembagaPendamping = ref([]);
-const listPendamping = ref([]);
-
-const loadDataPendamping = async (lokasi: string | null) => {
-  if (lokasi) await handleGetLembagaPendamping(lokasi);
-};
+      formData.id_jenis_layanan = id_jenis_layanan;
+      formData.id_jenis_produk = id_product;
+      formData.nama_pu = nama_pu;
+      formData.area_pemasaran = area_pemasaran;
+      formData.lembaga_pendamping = id_lembaga_pendamping;
+      formData.id_jenis_pengajuan = jenis_pendaftaran;
+      formData.id_fasilitator = fac_id;
+      formData.no_mohon = no_surat_permohonan;
+      formData.id_pendamping = id_pendamping;
+      formData.lokasi_pendamping = area_pemasaran;
+    }
+    return response;
+  } catch (error) {}
+});
 
 const handleGetListPendaftaran = async () => {
   try {
-    listPendaftaran.value = await $api("/master/jenis-pendaftaran", {
+    const res: any = await $api(`/master/jenis-pendaftaran`, {
       method: "get",
     });
-  } catch (error) {
-    // console.log('listPendaftaran',listPendaftaran)
-    console.log(error);
-  }
+
+    if (res.length) {
+      listPendaftaran.value = res;
+      return res;
+    }
+  } catch (err) {}
 };
 
-const isFasilitator = ref<boolean>(false);
-const isKodeNotFound = ref<boolean>(false);
-const isKodeFound = ref<boolean>(false);
+const listPendaftaran = ref([]);
+const findListDaftar = (kode: string) => {
+  const data = listPendaftaran.value.find((code: any) => kode == code.code);
+  if (data == undefined) return { code: null, name: "-" };
+  return data;
+};
 
+const listFasilitasi = ref([]);
+const listLayanan = ref([]);
+const listProduk = ref([]);
 const handleGetFasilitator = async () => {
   try {
     const response: any = await $api(
-      "/self-declare/business-actor/submission/list-fasilitator",
+      `/self-declare/business-actor/submission/list-fasilitator`,
       {
         method: "get",
         query: {
-          reg_id: submissionId,
+          reg_id: props.idDetail,
           lokasi: "Kabupaten",
         },
       }
@@ -91,117 +201,64 @@ const handleGetFasilitator = async () => {
 
     if (response.code === 2000) {
       listFasilitasi.value = response.data;
-      listFasilitasi.value.push({
-        id: "Lainnya",
-        name: "Lainnya",
-      });
+      return response;
     }
-
     return response;
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (err) {}
 };
-
-const querySearch = ref("");
-
-const onSelectFasilitator = (selectedId: string) => {
-  if ((isFasilitator.value = selectedId === "Lainnya"))
-    isKodeFound.value = false;
-};
-
-const responseMessage = ref("");
-const responseId = ref("");
-
-const onSearchFasilitator = async () => {
-  try {
-    const kode = querySearch.value;
-
-    const response: any = await $api("/self-declare/submission/kode", {
-      method: "post",
-      body: {
-        kode,
-      },
-    });
-
-    console.log(
-      response.message === "Kode Fasilitasi dapat digunakan",
-      response.message
-    );
-    if (response.message === "Kode Fasilitasi dapat digunakan") {
-      isKodeFound.value = true;
-      isKodeNotFound.value = false;
-      responseMessage.value = "";
-      responseId.value = response.data[0].id;
-      console.log("ressponde id", response.data[0].id);
-      console.log("responseId ", responseId);
-      formData.id_fasilitator.value = responseId.value;
-      console.log("id fasilitator ", formData.id_fasilitator);
-    } else {
-      responseMessage.value = response.message;
-      isKodeFound.value = false;
-      isKodeNotFound.value = true;
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const responseType = computed(() => {
-  return responseMessage.value == "Kode Fasilitasi dapat digunakan"
-    ? "success"
-    : "error";
-});
-
-const responseColor = computed(() => {
-  return responseMessage.value == "Kode Fasilitasi dapat digunakan"
-    ? "#5CB338"
-    : "#FB4141";
-});
 
 const handleGetJenisLayanan = async () => {
   try {
-    listLayanan.value = await $api("/master/jenis-layanan", {
+    const res: any = await $api(`/master/jenis-layanan`, {
       method: "get",
     });
-  } catch (error) {
-    console.log(error);
-  }
+
+    if (res.length) {
+      listLayanan.value = res;
+      return res;
+    }
+  } catch (err) {}
 };
 
 const handleGetJenisProduk = async () => {
   try {
-    listProduk.value = await $api("/master/products", {
+    const res: any = await $api(`/master/products`, {
       method: "get",
     });
-  } catch (error) {
-    console.log(error);
-  }
+
+    if (res.length) {
+      listProduk.value = res;
+      return res;
+    }
+  } catch (error) {}
 };
 
+const lembagaPendamping = ref([]);
+const listPendamping = ref([]);
 const handleGetLembagaPendamping = async (lokasi: string) => {
   try {
     const response: any = await $api(
-      "/self-declare/business-actor/submission/list-lembaga-pendamping",
+      `/self-declare/business-actor/submission/list-lembaga-pendamping`,
       {
         method: "get",
         query: {
-          id_reg: submissionId,
-          lokasi,
+          id_reg: props.idDetail,
+          lokasi: lokasi,
         },
       }
     );
 
     if (response.code === 2000) {
-      if (response.data !== null) lembagaPendamping.value = response.data;
+      lembagaPendamping.value = response.data || [];
+      return response;
     }
-
-    return response;
-  } catch (error) {
-    console.log(error);
+  } catch (error) {}
+};
+const loadDataPendamping = async (lokasi: string | null) => {
+  if (lokasi) {
+    await handleGetLembagaPendamping(lokasi);
   }
 };
-
 const handleGetPendamping = async (idLembaga: string | null) => {
   if (!idLembaga) return;
   try {
@@ -217,256 +274,83 @@ const handleGetPendamping = async (idLembaga: string | null) => {
 
     if (response.code === 2000) {
       if (response.data !== null) listPendamping.value = response.data;
-      console.log("isi list", listPendamping.value);
     }
 
     return response;
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 
-const getDetail = async () => {
-  try {
-    console.log("endpoint ini");
+onMounted(async () => {
+  const res = await Promise.all([
+    handleGetListPendaftaran(),
+    handleGetFasilitator(),
+    handleGetJenisLayanan(),
+    handleGetJenisProduk(),
+    loadDataPendamping(formData.lokasi_pendamping),
+    getDownloadForm("surat-permohonan", "suratPermohonan"),
+    getDownloadForm("surat-pernyataan", "suratPernyataan"),
+  ]);
 
-    const response: any = await $api(
-      `/self-declare/pengajuan/${submissionId}/detail`,
-      {
-        method: "get",
-      }
-    );
-
-    console.log("response pengajuan detail", response);
-
-    if (response.code == 2000) {
-      submissionDetail.tanggal_buat = response.data.tgl_daftar.split("T")[0];
-      submissionDetail.status = response.data.status_reg;
-      formData.tgl_surat_permohonan =
-        response.data.tgl_surat_permohonan.split("T")[0];
-      formData.id_jenis_pengajuan = response.data.jenis_pendaftaran;
-
-      formData.id_fasilitator = response.data.fac_id;
-      querySearch.value = response.data.kode_fac;
-      formData.no_mohon = response.data.no_surat_permohonan;
-      formData.id_jenis_layanan = listLayanan.value[0]?.find(
-        (item) => item.id === response.data.id_jenis_layanan
-      )?.name;
-
-      formData.lokasi_pendamping = response.data.lokasi_pendamping;
-      formData.id_jenis_produk = response.data.id_product;
-      formData.nama_pu = response.data.nama_usaha;
-      formData.area_pemasaran = response.data.area_pemasaran;
-      formData.lokasi_pendamping = "Provinsi";
-
-      formData.lembaga_pendamping = response.data.id_lembaga_pendamping;
-      console("", listPendamping.value[0]);
-      formData.id_pendamping = listPendamping.value[0].find(
-        (item) => item.id === response.data.id_pendamping
-      )?.name;
-
-      console.log("ini sub det = ", Object.keys(submissionDetail));
-      console.log("ini form = ", Object.keys(formData));
-
-      Object.keys(response?.data).forEach((key) => {
-        // console.log('response = ', key)
-        // console.log('response data= ', response.data[key])
-        // submissionDetail[key] = response.data[key]
-        // console.log('coba tes = ', key == 'tanggal_daftar')
-        // console.log(key === 'tgl_daftar', 'keterangan', key)
-        if (key === "tgl_daftar") console.log("ini val", val);
-
-        formData[val] = response.data[val];
-        formData.id_fasilitator = "Lainnya";
-      });
-
-      // console.log("form = ", formData);
-      // console.log("submission det = ", submissionDetail);
-    }
-  } catch (error: any) {
-    // Tangani error
-    console.error("Error fetching detail:", error.message || error);
-    throw error; // Opsional: Lempar ulang error jika perlu
-  }
-};
-
-// const getDetail  =()=>({
-//   try {
-//     const response: any = await $api(
-//       `/self-declare/pengajuan/${submissionId}/detail`,
-//       {
-//         method: 'post',
-//       },
-//     )
-
-//     console.log(response, 'ini data response detail')
-
-// if (response.code === 2000) {
-//   Object.assign(submissionDetail, response.data.certificate_halal)
-//   submissionDetail.tanggal_buat = response.data.pendaftaran.tgl_daftar
-//   submissionDetail.nama_pj = response.data.penanggung_jawab.nama_pj
-//   submissionDetail.nomor_kontak_pj
-//     = response.data.penanggung_jawab.nomor_kontak_pj
-
-//   Object.assign(formData, response.data.certificate_halal)
-//   formData.tgl_surat_permohonan
-//     = formData.tgl_mohon != '' ? formatToISOString(formData.tgl_mohon) : null
-//   if (formData.id_lembaga_pendamping != '')
-//     await handleGetPendamping(formData.id_lembaga_pendamping)
-
-//   if (formData.id_fasilitator != '')
-//     onSelectFasilitator(formData.id_lembaga_pendamping)
-// }
-
-// return response
-//   }
-//   catch (error) {
-//     console.log(error)
-//   }
-// })
-
-const formLembagaPendamping = ref<{}>();
-const refVForm = ref<VForm>();
-
-const onSubmitSubmission = () => {
-  refVForm.value?.validate().then(({ valid: isValid }) => {
-    console.log("ini submit");
-
-    if (isValid) {
-      console.log(" check isvalid", isValid);
-      handleUpdateSubmission();
-    }
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
   });
-};
 
-const handleUpdateSubmission = async () => {
-  try {
-    if (isKodeFound.value === true) {
-      console.log("id fasilitator submit", formData.id_fasilitator);
-      console.log("responseid submit", responseId.value);
-    } else {
-      responseId.value = formData.id_fasilitator;
-    }
-
-    const response: any = await $api(
-      "/self-declare/business-actor/submission/update",
-      {
-        method: "put",
-        body: {
-          id_reg: submissionId,
-          jenis_pendaftaran: formData.id_jenis_pengajuan,
-          kode_daftar: formData.id_fasilitator,
-          fac_id: responseId.value,
-          no_surat_permohonan: formData.no_mohon,
-          tgl_surat_permohonan: new Date(formData.tgl_surat_permohonan),
-          jenis_layanan: formData.id_jenis_layanan,
-          jenis_produk: formData.id_jenis_produk,
-          nama_usaha: formData.nama_pu,
-          area_pemasaran: formData.area_pemasaran,
-          lokasi_pendamping: formData.lokasi_pendamping,
-          lembaga_pendamping: formData.id_lembaga_pendamping,
-          pendamping: formData.id_pendamping,
-        },
-      }
-    );
-
-    if (response.code === 2000) {
-      if (response.data !== null)
-        useSnackbar().sendSnackbar("Berhasil mengubah data", "success");
-    }
-
-    return response;
-  } catch (error) {
-    console.log(error, "error");
-    useSnackbar().sendSnackbar("Gagal mengubah data", "error");
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
   }
-};
-
-const findListDaftar = (kode: string) => {
-  const data = listPendaftaran.value.find((code) => kode == code.code);
-  if (data == undefined) return { code: null, name: "-" };
-
-  return data;
-};
-
-onMounted(() => {
-  // await Promise.all([
-  handleGetListPendaftaran();
-
-  // handleDetailPengajuan();
-  handleGetFasilitator();
-  handleGetJenisLayanan();
-  handleGetJenisProduk();
-  loadDataPendamping(formData.lokasi_pendamping);
-  getDetail();
-
-  // ]);
 });
 </script>
 
 <template>
-  <VCard class="pa-3" variant="elevated" elevation="9">
-    <VForm ref="refVForm" @submit.prevent="() => {}">
-      <!-- @submit.prevent="onSubmitSubmission" -->
-      <VCardTitle
-        class="d-flex justify-space-between align-center font-weight-bold text-h4 mb-5"
-      >
-        <div>Data Pengajuan</div>
-        <VBtn
-          type="submit"
-          color="primary"
-          variant="flat"
-          text="Simpan Perubahan"
-          @click="onSubmitSubmission"
+  <VCard v-if="!loadingAll" class="mb-10 pt-3">
+    <VCardTitle class="mb-5">
+      <div class="font-weight-bold text-h4">Data Pengajuan</div>
+    </VCardTitle>
+    <VCardText>
+      <VRow>
+        <VCol cols="3" class="font-weight-bold mb-1">No. ID</VCol>
+        <VCol cols="9">: {{ submissionData.id }}</VCol>
+      </VRow>
+      <VRow>
+        <VCol cols="3" class="font-weight-bold mb-1">Tanggal</VCol>
+        <VCol cols="9"
+          >:
+          {{
+            submissionDetail.tanggal_buat ? submissionDetail.tanggal_buat : "-"
+          }}</VCol
+        >
+      </VRow>
+      <VRow>
+        <VCol cols="3" class="font-weight-bold mb-1">Jenis Pengajuan</VCol>
+        <VCol cols="9"
+          >:
+          {{ findListDaftar(submissionDetail.id_jenis_pengajuan).name }}</VCol
+        >
+      </VRow>
+      <VDivider class="my-5" />
+      <VItemGroup>
+        <div class="font-weight-bold mb-1">Jenis Pendaftaran</div>
+        <VSelect
+          density="compact"
+          placeholder="Pilih Jenis Pendaftaran"
+          rounded="xl"
+          menu-icon="fa-chevron-down"
+          :items="listPendaftaran"
+          item-title="name"
+          item-value="code"
+          v-model="formData.id_jenis_pengajuan"
         />
-      </VCardTitle>
-      <VCardTitle>
-        <VRow>
-          <VCol cols="2"> Tanggal </VCol>
-          <VCol cols="1"> : </VCol>
-          <VCol cols="9">
-            {{
-              submissionDetail.status != "OF1"
-                ? submissionDetail.tanggal_buat
-                  ? submissionDetail.tanggal_buat
-                  : "-"
-                : "-"
-            }}
-          </VCol>
-        </VRow>
-        <VRow>
-          <VCol cols="2"> Jenis Pengajuan </VCol>
-          <VCol cols="1"> : </VCol>
-          <VCol cols="9">
-            {{
-              findListDaftar(submissionDetail.id_jenis_pengajuan as any).name
-            }}
-          </VCol>
-        </VRow>
-        <br />
-        <br />
-        <VRow>
-          <VCol cols="12">
-            <VItemGroup>
-              <VLabel>Jenis Pendaftaran</VLabel>
-              <VSelect
-                v-model="formData.id_jenis_pengajuan"
-                density="compact"
-                :items="listPendaftaran"
-                item-title="name"
-                item-value="code"
-                disabled
-                placeholder="Pilih Jenis Pendaftaran"
-              />
-            </VItemGroup>
-          </VCol>
-        </VRow>
-        <br />
-        <VRow>
-          <VCol cols="12">
-            <VLabel>Kode Daftar / Fasilitasi</VLabel>
-            <VRow>
-              <VCol cols="5">
+      </VItemGroup>
+      <br />
+      <VCard>
+        <VCardText>
+          <VRow>
+            <VCol>
+              <VItemGroup>
+                <div class="font-weight-bold mb-1">Fasilitasi</div>
+
                 <VSelect
                   v-model="formData.id_fasilitator"
                   density="compact"
@@ -477,208 +361,215 @@ onMounted(() => {
                   placeholder="Pilih Fasilitator"
                   @update:model-value="onSelectFasilitator"
                 />
-              </VCol>
-            </VRow>
-          </VCol>
-        </VRow>
-        <VRow>
-          <VCol v-if="isFasilitator" cols="5">
-            <VTextField
-              v-model="querySearch"
-              placeholder="Masukan Kode Fasilitasi"
-              append-inner-icon="mdi-magnify"
-              density="compact"
-              :rules="[requiredValidator]"
-              @input="onSearchFasilitator"
-            />
-          </VCol>
-        </VRow>
-        <VAlert
-          v-if="isKodeNotFound"
-          :type="responseType"
-          variant="tonal"
-          :color="responseColor"
-          class="mt-5"
-        >
-          {{ responseMessage }}
-        </VAlert>
-
-        <VAlert
-          v-if="isKodeFound"
-          type="success"
-          variant="tonal"
-          color="#5CB338"
-          class="mt-5"
-        >
-          Kode Fasilitasi dapat digunakan
-        </VAlert>
-
-        <VAlert
-          v-if="!isKodeFound"
-          type="warning"
-          variant="tonal"
-          color="#652672"
-          class="mt-5"
-        >
-          Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada
-          fasilitator sebagai kode untuk mendaftarkan sertifikasi halal gratis
-        </VAlert>
-
-        <VAlert
-          v-if="isKodeFound"
-          type="warning"
-          variant="tonal"
-          color="#652672"
-          class="mt-5"
-        >
-          Pastikan anda melengkapi isian pengajuan sertifikasi halal dan
-          mengirimkan pengajuan untuk memperoleh fasilitasi sertifikat halal.
-        </VAlert>
-
-        <br />
-        <VDivider />
-        <br />
-        <VRow>
-          <VCol cols="6">
-            <VItemGroup>
-              <VLabel>Nomor Surat Permohonan</VLabel>
+              </VItemGroup>
+            </VCol>
+            <VCol v-if="isFasilitator">
+              <div class="font-weight-bold mb-1">Kode Fasilitasi</div>
               <VTextField
-                v-model="formData.no_mohon"
-                :rules="[requiredValidator]"
-                placeholder="Isi Nomor Surat Permohonan"
-                density="compact"
-              />
-            </VItemGroup>
-            <br />
-          </VCol>
-          <VCol cols="6">
-            <VItemGroup>
-              <Vuepicdatepicker>
-                <template #trigger>
-                  <Vuepicdatepicker
-                    v-model:model-value="formData.tgl_surat_permohonan"
-                    auto-apply
-                    model-type="yyyy-MM-dd"
-                    :enable-time-picker="false"
-                    :rules="[requiredValidator]"
-                    teleport
-                    clearable
-                  >
-                    <template #trigger>
-                      <VLabel class="required"> Tanggal Surat Pemohon </VLabel>
-                      <VTextField
-                        placeholder="Pilih Tanggal Surat Pemohon"
-                        :rules="[requiredValidator]"
-                        append-inner-icon="fa-calendar"
-                        :model-value="formData.tgl_surat_permohonan"
-                        color="#757575"
-                        readonly
-                      />
-                    </template>
-                  </Vuepicdatepicker>
-                </template>
-              </Vuepicdatepicker>
-            </VItemGroup>
-          </VCol>
-          <VCol cols="12">
-            <VItemGroup>
-              <VLabel>Jenis Layanan</VLabel>
-              <VSelect
-                v-model="formData.id_jenis_layanan"
-                placeholder="Pilih Jenis Layanan"
-                density="compact"
-                :items="listLayanan"
-                item-title="name"
-                :rules="[requiredValidator]"
-                item-value="code"
-              />
-            </VItemGroup>
-            <br />
-            <VItemGroup>
-              <VLabel>Jenis Produk</VLabel>
-              <VSelect
-                v-model="formData.id_jenis_produk"
-                placeholder="Pilih Jenis Produk"
-                density="compact"
-                :items="listProduk"
-                item-title="name"
-                :rules="[requiredValidator]"
-                item-value="code"
-              />
-            </VItemGroup>
-            <br />
-            <VItemGroup>
-              <VLabel>Nama Usaha</VLabel>
-              <VTextField
-                v-model="formData.nama_pu"
-                :rules="[requiredValidator]"
-                placeholder="Isi Nama Usaha"
-                density="compact"
-              />
-            </VItemGroup>
-            <br />
-            <VItemGroup>
-              <VLabel>Area Pemasaran</VLabel>
-              <VSelect
-                v-model="formData.area_pemasaran"
-                placeholder="Pilih Area Pemasaran"
-                :rules="[requiredValidator]"
-                density="compact"
-                :items="listAreaPemasaran"
-              />
-            </VItemGroup>
-            <br />
-            <VItemGroup>
-              <VLabel>Lokasi Pendamping</VLabel>
-              <VSelect
-                v-model="formData.lokasi_pendamping"
-                placeholder="Pilih Area Pemasaran"
+                v-model="querySearch"
+                placeholder="Masukan Kode Fasilitasi"
+                append-inner-icon="mdi-magnify"
                 density="compact"
                 :rules="[requiredValidator]"
-                :items="lokasiPendamping"
-                @update:model-value="loadDataPendamping"
+                @input="onSearchFasilitator"
               />
+            </VCol>
+          </VRow>
+          <VExpandTransition>
+            <VItemGroup v-if="foundFasilitator.length > 0">
+              <VRow>
+                <VCol class="text-center">
+                  <div>Fasilitator</div>
+                  <div class="font-weight-bold text-h3">
+                    {{ formData.id_fasilitator }}
+                  </div>
+                </VCol>
+              </VRow>
             </VItemGroup>
-            <br />
-            <VItemGroup>
-              <VLabel>Lembaga Pendamping</VLabel>
-              <VSelect
-                v-model="formData.id_lembaga_pendamping"
-                placeholder="Pilih Area Pemasarang"
-                density="compact"
-                :items="lembagaPendamping"
-                item-title="name"
-                :rules="[requiredValidator]"
-                item-value="id"
-                :disabled="formData.lokasi_pendamping == null"
-                @update:model-value="handleGetPendamping"
-              />
-            </VItemGroup>
-            <br />
-            <VItemGroup>
-              <VLabel>Pendamping</VLabel>
-              <VSelect
-                v-model="formData.id_pendamping"
-                placeholder="Pilih Pendamping"
-                density="compact"
-                :items="listPendamping"
-                :rules="[requiredValidator]"
-                item-title="name"
-                :disabled="formData.lokasi_pendamping == null"
-                item-value="id"
-              />
-            </VItemGroup>
-          </VCol>
-        </VRow>
+          </VExpandTransition>
+        </VCardText>
+      </VCard>
+      <VItemGroup v-if="foundFasilitator">
         <br />
-        <div style="display: flex; justify-content: end">
-          <VItemGroup style="display: inline-flex">
-            <SuratPermohonanModal :data="submissionDetail" />
-            <div style="margin-inline-start: 1svw" />
-            <SuratPernyataanModal :data="submissionDetail" />
-          </VItemGroup>
-        </div>
-      </VCardTitle>
-    </VForm>
+        <div class="font-weight-bold mb-1">Asal Pelaku Usaha</div>
+        <VSelect
+          density="compact"
+          placeholder="Pilih Asal Pelaku Usaha"
+          rounded="xl"
+          menu-icon="fa-chevron-down"
+          v-mode="formData.asal_usaha"
+        />
+      </VItemGroup>
+    </VCardText>
   </VCard>
+  <VCard v-if="!loadingAll" class="pt-3">
+    <VCardTitle class="mb-5">
+      <div class="font-weight-bold text-h4">Penanggung Jawab</div>
+    </VCardTitle>
+    <VCardText>
+      <div class="mb-10">
+        <VRow>
+          <VCol cols="3" class="font-weight-bold mb-1">Surat Permohonan</VCol>
+          <VCol cols="9">
+            :
+
+            <VBtn
+              color="primary"
+              density="comfortable"
+              append-icon="fa-download"
+              @click="downloadDocument(suratPermohonan)"
+              >Unduh</VBtn
+            >
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol cols="3" class="font-weight-bold mb-1">Surat Pernyataan</VCol>
+          <VCol cols="9">
+            :
+            <VBtn
+              color="primary"
+              density="comfortable"
+              append-icon="fa-download"
+              @click="downloadDocument(suratPernyataan)"
+              >Unduh</VBtn
+            >
+          </VCol>
+        </VRow>
+      </div>
+      <VRow>
+        <VCol cols="6">
+          <VItemGroup>
+            <div class="font-weight-bold mb-1">Nomor Surat Permohonan</div>
+            <VTextField
+              placeholder="Masukkan Nomor Surat"
+              density="compact"
+              rounded="xl"
+              v-model="formData.no_mohon"
+            />
+          </VItemGroup>
+        </VCol>
+        <VCol cols="6">
+          <VItemGroup>
+            <div class="font-weight-bold mb-1">Tanggal Surat Pemohon</div>
+            <VTextField
+              placeholder="Pilih Tanggal Surat Pemohon"
+              :model-value="formData.tgl_surat_permohonan"
+              density="compact"
+              type="date"
+            />
+          </VItemGroup>
+        </VCol>
+      </VRow>
+      <br />
+      <VItemGroup>
+        <div class="font-weight-bold mb-1">Jenis Layanan</div>
+        <VSelect
+          placeholder="Pilih Jenis Layanan"
+          density="compact"
+          rounded="xl"
+          menu-icon="fa-chevron-down"
+          :items="listLayanan"
+          item-title="name"
+          item-value="code"
+          v-model="formData.id_jenis_layanan"
+        />
+      </VItemGroup>
+      <br />
+      <VItemGroup>
+        <div class="font-weight-bold mb-1">Jenis Produk</div>
+        <VSelect
+          placeholder="Pilih Jenis Produk"
+          density="compact"
+          rounded="xl"
+          menu-icon="fa-chevron-down"
+          :items="listProduk"
+          item-title="name"
+          item-value="code"
+          v-model="formData.id_jenis_produk"
+        />
+      </VItemGroup>
+      <br />
+      <VItemGroup>
+        <div class="font-weight-bold mb-1">Nama Usaha</div>
+        <VTextField
+          placeholder="Masukkan Nama Usaha"
+          density="compact"
+          rounded="xl"
+          v-model="formData.nama_pu"
+        />
+      </VItemGroup>
+      <br />
+      <VRow>
+        <VCol cols="6">
+          <VItemGroup>
+            <div class="font-weight-bold mb-1">Asal Pemasaran</div>
+            <VSelect
+              placeholder="Pilih Asal Pemasaran"
+              density="compact"
+              rounded="xl"
+              menu-icon="fa-chevron-down"
+              v-model="formData.area_pemasaran"
+              disabled
+            />
+          </VItemGroup>
+        </VCol>
+        <VCol cols="6">
+          <VItemGroup>
+            <div class="font-weight-bold mb-1">Lokasi Pendamping</div>
+            <VSelect
+              placeholder="Pilih Area Pemasaran"
+              density="compact"
+              rounded="xl"
+              menu-icon="fa-chevron-down"
+              :items="['Provinsi', 'Kabupaten']"
+              @update:model-value="loadDataPendamping"
+              disabled
+              v-model="formData.lokasi_pendamping"
+            />
+          </VItemGroup>
+        </VCol>
+      </VRow>
+      <br />
+      <VRow>
+        <VCol cols="6">
+          <VItemGroup>
+            <VLabel>Lembaga Pendamping</VLabel>
+            <VSelect
+              v-model="formData.lembaga_pendamping"
+              placeholder="Pilih Area Pemasaran"
+              density="compact"
+              :items="lembagaPendamping"
+              item-title="name"
+              :rules="[requiredValidator]"
+              item-value="id"
+              disabled
+              @update:model-value="handleGetPendamping"
+            />
+          </VItemGroup>
+        </VCol>
+        <VCol cols="6">
+          <VItemGroup>
+            <div class="font-weight-bold mb-1">Pendamping</div>
+            <VSelect
+              placeholder="Pilih Pendamping"
+              density="compact"
+              rounded="xl"
+              menu-icon="fa-chevron-down"
+              :items="listPendamping"
+              :rules="[requiredValidator]"
+              item-title="name"
+              item-value="id"
+              v-model="formData.id_pendamping"
+              disabled
+            />
+          </VItemGroup>
+        </VCol>
+      </VRow>
+    </VCardText>
+  </VCard>
+
+  <VSkeletonLoader
+    type="table-heading, list-item-two-line, image, table-tfoot"
+    v-else
+  />
 </template>
