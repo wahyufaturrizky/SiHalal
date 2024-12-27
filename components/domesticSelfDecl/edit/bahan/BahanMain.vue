@@ -51,6 +51,7 @@ const deleteBahan = async () => {
         },
       }
     );
+
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("Gagal Menghapus bahan", "error");
       return;
