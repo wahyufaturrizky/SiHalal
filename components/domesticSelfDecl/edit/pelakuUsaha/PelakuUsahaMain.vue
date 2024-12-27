@@ -293,7 +293,7 @@ onMounted(() => {
               {{ item.masa_berlaku ? item.masa_berlaku : "-" }}
             </template>
             <template #item.action="{ item }: any">
-              <div>
+              <div v-if="item.jenis_surat != 'NIB'">
                 <VIcon
                   icon="mdi-delete"
                   color="error"
