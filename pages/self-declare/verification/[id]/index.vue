@@ -327,7 +327,7 @@ const loadItemBahanById = async ({
     );
 
     if (response.code === 2000) {
-      listBahan.value = response.data || [];
+      // listBahan.value = response.data || [];
       totalItemsBahan.value = response.total || 0;
       loadingBahan.value = false;
       return response;
@@ -352,7 +352,14 @@ const loadItemById = async () => {
 
     if (response.code === 2000) {
       const { data } = response || {};
-      const { certificate_halal, penanggung_jawab, tracking } = data || {};
+      const {
+        certificate_halal,
+        penanggung_jawab,
+        tracking,
+        bahan,
+        outlet,
+        pabrik,
+      } = data || {};
       const { nama_pj, nomor_kontak_pj, email_pj } = penanggung_jawab || {};
       const {
         nama_pu,
@@ -391,10 +398,10 @@ const loadItemById = async () => {
       };
 
       dataPengajuan.value = [
-        {
-          label: "No. ID",
-          value: no_mohon,
-        },
+        // {
+        //   label: "No. ID",
+        //   value: no_mohon,
+        // },
         {
           label: "Tanggal",
           value: formatDate(tgl_mohon),
@@ -404,6 +411,11 @@ const loadItemById = async () => {
           value: jenis_pengajuan,
         },
       ];
+
+      listBahan.value = bahan || [];
+
+      itemsPabrik.value = pabrik || [];
+      itemsOutlet.value = outlet || [];
 
       jenisBadanUsahaPenanggungJawab.value = jenis_badan_usaha;
       namaPenanggungJawab.value = nama_pj;
@@ -590,16 +602,17 @@ const bahanTableHeader = [
 
 const outletTableHeader = [
   { title: "No", key: "no" },
-  { title: "Jenis Bahan", key: "jenis_outlet" },
+  // { title: "Jenis Bahan", key: "jenis_outlet" },
   { title: "Nama Bahan", key: "nama_outlet" },
-  { title: "Status", key: "status_milik" },
+  { title: "Alamat", key: "alamat_outlet" },
+  // { title: "Status", key: "status_milik" },
   // { title: "Action", key: "action" },
 ];
 
 const pabrikTableHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "nama" },
-  { title: "Alamat", key: "alamat" },
+  { title: "Nama", key: "nama_pabrik" },
+  { title: "Alamat", key: "alamat_pabrik" },
   { title: "Status", key: "status_milik" },
   // { title: "Action", key: "action" },
 ];
