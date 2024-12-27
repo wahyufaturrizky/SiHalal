@@ -112,9 +112,11 @@ const onSelectFasilitator = (selectedId: string) => {
 
 const responseMessage = ref("");
 const responseId = ref("");
+const facName = ref("");
 
 const onSearchFasilitator = async () => {
   try {
+    facName.value = "";
     const kode = querySearch.value;
 
     const response: any = await $api("/self-declare/submission/kode", {
@@ -133,6 +135,7 @@ const onSearchFasilitator = async () => {
       isKodeNotFound.value = false;
       responseMessage.value = "";
       responseId.value = response.data[0].id;
+      facName.value = response.data[0].name;
       console.log("ressponde id", response.data[0].id);
       console.log("responseId ", responseId);
       formData.id_fasilitator.value = responseId.value;
@@ -238,6 +241,7 @@ const getDetail = async () => {
     );
 
     console.log("response pengajuan detail", response);
+    console.log("response pengajuan list layanan", listLayanan.value);
 
     if (response.code == 2000) {
       submissionDetail.tanggal_buat = response.data.tgl_daftar.split("T")[0];
@@ -245,13 +249,10 @@ const getDetail = async () => {
       formData.tgl_surat_permohonan =
         response.data.tgl_surat_permohonan.split("T")[0];
       formData.id_jenis_pengajuan = response.data.jenis_pendaftaran;
-
       formData.id_fasilitator = response.data.fac_id;
       querySearch.value = response.data.kode_fac;
       formData.no_mohon = response.data.no_surat_permohonan;
-      formData.id_jenis_layanan = listLayanan.value[0]?.find(
-        (item) => item.id === response.data.id_jenis_layanan
-      )?.name;
+      formData.id_jenis_layanan = response.data.id_jenis_layanan;
 
       formData.lokasi_pendamping = response.data.lokasi_pendamping;
       formData.id_jenis_produk = response.data.id_product;
@@ -260,25 +261,21 @@ const getDetail = async () => {
       formData.lokasi_pendamping = "Provinsi";
 
       formData.lembaga_pendamping = response.data.id_lembaga_pendamping;
-      console("", listPendamping.value[0]);
-      formData.id_pendamping = listPendamping.value[0].find(
-        (item) => item.id === response.data.id_pendamping
-      )?.name;
-
+      formData.id_pendamping = response.data.id_pendamping;
       console.log("ini sub det = ", Object.keys(submissionDetail));
       console.log("ini form = ", Object.keys(formData));
 
-      Object.keys(response?.data).forEach((key) => {
-        // console.log('response = ', key)
-        // console.log('response data= ', response.data[key])
-        // submissionDetail[key] = response.data[key]
-        // console.log('coba tes = ', key == 'tanggal_daftar')
-        // console.log(key === 'tgl_daftar', 'keterangan', key)
-        if (key === "tgl_daftar") console.log("ini val", val);
+      // Object.keys(response?.data).forEach((key) => {
+      //   // console.log('response = ', key)
+      //   // console.log('response data= ', response.data[key])
+      //   // submissionDetail[key] = response.data[key]
+      //   // console.log('coba tes = ', key == 'tanggal_daftar')
+      //   // console.log(key === 'tgl_daftar', 'keterangan', key)
+      //   if (key === "tgl_daftar") console.log("ini val", val);
 
-        formData[val] = response.data[val];
-        formData.id_fasilitator = "Lainnya";
-      });
+      //   formData[val] = response.data[val];
+      //   formData.id_fasilitator = "Lainnya";
+      // });
 
       // console.log("form = ", formData);
       // console.log("submission det = ", submissionDetail);
@@ -389,16 +386,24 @@ const findListDaftar = (kode: string) => {
   return data;
 };
 
-onMounted(() => {
+onMounted(async () => {
   // await Promise.all([
-  handleGetListPendaftaran();
+  await handleGetListPendaftaran();
+  await handleGetJenisLayanan();
+  await handleGetJenisProduk();
 
   // handleDetailPengajuan();
-  handleGetFasilitator();
-  handleGetJenisLayanan();
-  handleGetJenisProduk();
-  loadDataPendamping(formData.lokasi_pendamping);
-  getDetail();
+  await loadDataPendamping(formData.lokasi_pendamping);
+  await handleGetFasilitator();
+  await getDetail();
+  console.log(listFasilitasi.value, formData.id_fasilitator);
+  if (
+    !listFasilitasi.value.some((item) => item.id == formData.id_fasilitator)
+  ) {
+    formData.id_fasilitator = "Lainnya";
+    onSelectFasilitator("Lainnya");
+    onSearchFasilitator();
+  }
 
   // ]);
 });
@@ -466,7 +471,7 @@ onMounted(() => {
           <VCol cols="12">
             <VLabel>Kode Daftar / Fasilitasi</VLabel>
             <VRow>
-              <VCol cols="5">
+              <VCol cols="12">
                 <VSelect
                   v-model="formData.id_fasilitator"
                   density="compact"
@@ -482,7 +487,7 @@ onMounted(() => {
           </VCol>
         </VRow>
         <VRow>
-          <VCol v-if="isFasilitator" cols="5">
+          <VCol v-if="isFasilitator" cols="12">
             <VTextField
               v-model="querySearch"
               placeholder="Masukan Kode Fasilitasi"
@@ -493,47 +498,58 @@ onMounted(() => {
             />
           </VCol>
         </VRow>
-        <VAlert
-          v-if="isKodeNotFound"
-          :type="responseType"
-          variant="tonal"
-          :color="responseColor"
-          class="mt-5"
-        >
-          {{ responseMessage }}
-        </VAlert>
+        <VRow>
+          <VCol v-if="isFasilitator" cols="12">
+            <VTextField
+              v-model="facName"
+              placeholder="nama Fasilitator"
+              density="compact"
+              readonly
+            />
+          </VCol>
+        </VRow>
+        <div v-if="isFasilitator">
+          <VAlert
+            v-if="isKodeNotFound"
+            :type="responseType"
+            variant="tonal"
+            :color="responseColor"
+            class="mt-5"
+          >
+            {{ responseMessage }}
+          </VAlert>
+          <VAlert
+            v-if="isKodeFound"
+            type="success"
+            variant="tonal"
+            color="#5CB338"
+            class="mt-5"
+          >
+            Kode Fasilitasi dapat digunakan
+          </VAlert>
 
-        <VAlert
-          v-if="isKodeFound"
-          type="success"
-          variant="tonal"
-          color="#5CB338"
-          class="mt-5"
-        >
-          Kode Fasilitasi dapat digunakan
-        </VAlert>
+          <VAlert
+            v-if="!isKodeFound"
+            type="warning"
+            variant="tonal"
+            color="#652672"
+            class="mt-5"
+          >
+            Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada
+            fasilitator sebagai kode untuk mendaftarkan sertifikasi halal gratis
+          </VAlert>
 
-        <VAlert
-          v-if="!isKodeFound"
-          type="warning"
-          variant="tonal"
-          color="#652672"
-          class="mt-5"
-        >
-          Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada
-          fasilitator sebagai kode untuk mendaftarkan sertifikasi halal gratis
-        </VAlert>
-
-        <VAlert
-          v-if="isKodeFound"
-          type="warning"
-          variant="tonal"
-          color="#652672"
-          class="mt-5"
-        >
-          Pastikan anda melengkapi isian pengajuan sertifikasi halal dan
-          mengirimkan pengajuan untuk memperoleh fasilitasi sertifikat halal.
-        </VAlert>
+          <VAlert
+            v-if="isKodeFound"
+            type="warning"
+            variant="tonal"
+            color="#652672"
+            class="mt-5"
+          >
+            Pastikan anda melengkapi isian pengajuan sertifikasi halal dan
+            mengirimkan pengajuan untuk memperoleh fasilitasi sertifikat halal.
+          </VAlert>
+        </div>
 
         <br />
         <VDivider />
