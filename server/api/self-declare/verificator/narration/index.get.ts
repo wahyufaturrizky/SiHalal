@@ -12,10 +12,9 @@ export default defineEventHandler(async (event: any) => {
 
   try {
     const runtimeConfig = useRuntimeConfig();
-    const { id } = event.context.params;
-
+    const query: any = await getQuery(event);
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/${id}/detail`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/verificator/halal-certificate-reguler/self-declare/${query.id_reg}/narasi`,
       {
         method: "get",
         headers: { Authorization: authHeader },

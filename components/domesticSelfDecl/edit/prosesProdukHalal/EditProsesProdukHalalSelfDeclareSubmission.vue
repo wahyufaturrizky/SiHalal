@@ -8,6 +8,13 @@ const processRules = ref([(v: string) => !!v || "Proses produksi harus diisi"]);
 const processArray = ref<Array<string>>([]);
 const prosesProduction = ref("");
 
+const props = defineProps({
+  isVerificator: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const snackbar = useSnackbar();
 
 const route = useRoute<"">();
@@ -15,16 +22,31 @@ const submissionId = route.params?.id;
 
 const { refresh } = await useAsyncData("get-narration", async () => {
   try {
-    const response: any = await $api(`/self-declare/business-actor/narration`, {
+    const endpointBusActor = `/self-declare/business-actor/narration`;
+    const endpointVerificator = `/self-declare/verificator/narration`;
+    const finalUri = props.isVerificator
+      ? endpointVerificator
+      : endpointBusActor;
+    const response: any = await $api(finalUri, {
       method: "get",
       query: {
         id_reg: submissionId,
       },
     });
     if (response.code === 2000) {
-      prosesProduction.value = response.data.narasi;
-      if (response.data.narasi.length > 0) {
-        Object.assign(processArray.value, response.data.narasi.split("\n"));
+      if (props.isVerificator) {
+        prosesProduction.value = response.data?.narasi_pph;
+        if (response.data.narasi_pph != "") {
+          Object.assign(
+            processArray.value,
+            response.data.narasi_pph.split("\n")
+          );
+        }
+      } else {
+        prosesProduction.value = response.data.narasi;
+        if (response.data.narasi.length > 0) {
+          Object.assign(processArray.value, response.data.narasi.split("\n"));
+        }
       }
     }
   } catch (error) {
@@ -74,7 +96,9 @@ const handleAddProcess = () => {
   <VCard>
     <VCardTitle class="pa-4 d-flex justify-space-between align-center">
       <h4 class="text-h4">Proses Produksi Halal</h4>
-      <VBtn @click="handleAddSave">Simpan Perubahan</VBtn>
+      <VBtn v-if="!props.isVerificator" @click="handleAddSave"
+        >Simpan Perubahan</VBtn
+      >
     </VCardTitle>
     <VCardItem>
       <VForm ref="form" v-model="formStatus" @submit.prevent="handleAddProcess">
@@ -82,6 +106,7 @@ const handleAddProcess = () => {
           <VCol cols="6" class="text-h6">Ketik Proses</VCol>
           <VCol cols="6" class="d-flex justify-space-between align-center ga-4">
             <VTextField
+              :disabled="props.isVerificator"
               v-model="typedProcess"
               :rules="processRules"
               placeholder="Isi Ketik Proses"
@@ -92,7 +117,14 @@ const handleAddProcess = () => {
               autofocus
             >
               <template #append>
-                <VBtn dense outlined @click="handleAddProcess"> Tambah </VBtn>
+                <VBtn
+                  :disabled="props.isVerificator"
+                  dense
+                  outlined
+                  @click="handleAddProcess"
+                >
+                  Tambah
+                </VBtn>
               </template>
             </VTextField>
           </VCol>
