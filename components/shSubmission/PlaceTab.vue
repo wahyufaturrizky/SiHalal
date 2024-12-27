@@ -277,7 +277,7 @@ onMounted(async () => {
             density="compact"
             variant="outlined"
             @click="openModal('FAPAB')"
-            :disabled="itemsPabrik.length > 0"
+            disabled
             >Tambah</VBtn
           ></VCol
         >
@@ -291,7 +291,7 @@ onMounted(async () => {
         <template #item.action="{ item }">
           <div class="d-flex gap-1">
             <IconBtn size="small" @click="deleteItem(item, 'FAPAB')">
-              <VIcon icon="fa-trash-o" color="error" />
+              <VIcon disabled icon="fa-trash-o" color="error" />
             </IconBtn>
           </div>
         </template>
@@ -321,13 +321,14 @@ onMounted(async () => {
         <template #item.action="{ item }">
           <div class="d-flex gap-1">
             <IconBtn size="small" @click="deleteItem(item, 'FAOUT')">
-              <VIcon icon="fa-trash-o" color="error" />
+              <VIcon disabled icon="fa-trash-o" color="error" />
             </IconBtn>
           </div>
         </template>
       </VDataTable>
     </VCardText>
   </VCard>
+
   <ShSubmissionDetailFormModal
     :dialog-title="modalTitle"
     :dialog-visible="isFormModalOpen"
