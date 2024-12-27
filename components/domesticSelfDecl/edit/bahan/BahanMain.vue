@@ -23,24 +23,9 @@ interface Bahan {
   vefified: boolean;
 }
 
-const items = ref<Bahan[]>([]);
+const store = useMyTabEditRegulerStore();
+const { bahan } = storeToRefs(store);
 const route = useRoute();
-
-const loadBahan = async () => {
-  try {
-    const options = {
-      method: "get",
-    };
-    const response = await $api(
-      `/self-declare/submission/bahan/${route.params.id}/list`,
-      options
-    );
-    items.value = response.data;
-  } catch (error) {
-    console.log(error);
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
 const editItem = (item) => {};
 const deleteDialog = ref(false);
 const deleteButton = ref(false);
@@ -77,13 +62,9 @@ const deleteBahan = async () => {
     useSnackbar().sendSnackbar("Gagal Menghapus bahan", "error");
   } finally {
     deleteButton.value = false;
-    await loadBahan();
+    await store.getBahan(route.params.id);
   }
 };
-
-onMounted(async () => {
-  await loadBahan();
-});
 
 interface editBahan {
   typeBahan: 0 | 1;
@@ -103,7 +84,9 @@ interface editBahan {
           ><h3>Daftar Nama Bahan dan Kemasan</h3></VCol
         >
         <VCol cols="6" style="display: flex; justify-content: end">
-          <TambahBahanModal @loadList="loadBahan()"></TambahBahanModal>
+          <TambahBahanModal
+            @loadList="store.getBahan(route.params.id)"
+          ></TambahBahanModal>
         </VCol>
       </VRow>
     </VCardTitle>
@@ -113,7 +96,7 @@ interface editBahan {
       </VRow>
       <VRow>
         <VCol cols="12">
-          <VDataTable :headers="tableHeader" :items="items">
+          <VDataTable :headers="tableHeader" :items="bahan">
             <template #item.index="{ index }"> {{ index + 1 }} </template>
             <template #item.vefified="{ item }">
               <v-chip :color="item.vefified ? 'success' : 'error'">{{
@@ -133,7 +116,7 @@ interface editBahan {
                     produsen: item.produsen,
                     no_sertifikat: item.no_sertifikat,
                   }"
-                  @loadList="loadBahan()"
+                  @loadList="store.getBahan(route.params.id)"
                 />
                 <IconBtn size="small" @click="deleteItem(item.id)">
                   <VIcon color="error" icon="ri-delete-bin-line" />
