@@ -24,15 +24,15 @@ const headers = [
 const store =useMyVerifikatorRegulerStore();
 const { penyelia_halal } = storeToRefs(store)
 const donwloadSkph = (item) => {
-  console.log("donwloadSkph : ", item);
+  downloadDocument(item)
 };
 
 const donwloadSpph = (item) => {
-  console.log("donwloadSpph : ", item);
+  downloadDocument(item)
 };
 
 const donwloadKtp = (item) => {
-  console.log("donwloadKtp : ", item);
+  downloadDocument(item)
 };
 </script>
 
@@ -44,17 +44,17 @@ const donwloadKtp = (item) => {
     <VCardItem>
       <VDataTable :headers="headers" :items="penyelia_halal">
         <template #item.file_skph="{ item }">
-          <v-btn :disabled="item.file_skph == ''" color="primary" variant="plain" @click="donwloadSkph(item)">
+          <v-btn :disabled="item.file_skph == ''" color="primary" variant="plain" @click="donwloadSkph(item.file_skph)">
             <VIcon>mdi-download</VIcon>
           </v-btn>
         </template>
         <template #item.file_spph="{ item }">
-          <v-btn :disabled="item.file_spph == ''" color="primary" variant="plain" @click="donwloadSpph(item)">
+          <v-btn :disabled="item.file_spph == ''" color="primary" variant="plain" @click="donwloadSpph(item.file_spph)">
             <VIcon>mdi-download</VIcon>
           </v-btn>
         </template>
         <template #item.file_ktp="{ item }">
-          <v-btn :disabled="item.file_ktp == ''" color="primary" variant="plain" @click="donwloadKtp(item)">
+          <v-btn :disabled="item.file_ktp == ''" color="primary" variant="plain" @click="donwloadKtp(item.file_ktp)">
             <VIcon>mdi-download</VIcon>
           </v-btn>
         </template>

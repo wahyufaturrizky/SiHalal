@@ -245,7 +245,7 @@ const getDetailData = async () => {
         value: certificateHalal.fac_id || '',
         type: 'select',
         disabled: false,
-        required: true,
+        required: false,
       },
       ]
 
@@ -472,10 +472,15 @@ const deleteFactoryOrOutlet = async (type: string, el: any) => {
 const handleSubmit = () => {
   let payload: any = {}
   if (submitContentType.value === 'Pengajuan Sertifikasi Halal') {
-    payload = payloadData.value
-    editResponsibility({
-      ...payload,
-    })
+    if (payloadData.value === 'error') {
+      confirmSaveDialog.value = false
+      useSnackbar().sendSnackbar('Lengkapi semua data', 'error')
+    } else {
+      payload = payloadData.value
+      editResponsibility({
+        ...payload,
+      })
+    }
   }
   else if (submitContentType.value === 'Penanggung Jawab') {
     payload = {

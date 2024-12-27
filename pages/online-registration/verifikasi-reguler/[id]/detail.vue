@@ -297,37 +297,33 @@ onMounted(async () => {
     <br />
     <VTabsWindowItem value="1">
       <EditDataPengajuanRegulerVerifikator
-        :data="dataDetail"
-        :is-editable="false"
       />
     </VTabsWindowItem>
 
-    <!-- <VTabsWindowItem value="2">
-      <EditKomitmenDanTanggungJawabReguler
-        :is-editable="props.tabKomitmenEditable"
+    <VTabsWindowItem value="2">
+      <EditKomitmenDanTanggungJawabRegulerVerifikator
       />
     </VTabsWindowItem>
 
     <VTabsWindowItem value="3">
-      <EditBahanReguler :is-editable="props.tabBahanEditable" />
+      <EditBahanRegulerVerifikator />
     </VTabsWindowItem>
 
     <VTabsWindowItem value="4">
-      <EditProsesReguler :is-editable="props.tabProsesEditable" />
+      <EditProsesRegulerVerifikator />
     </VTabsWindowItem>
 
     <VTabsWindowItem value="5">
-      <EditProdukReguler :is-editable="props.tabProdukEditable" />
+      <EditProdukRegulerVerifikator />
     </VTabsWindowItem>
 
     <VTabsWindowItem value="6">
-      <EditPemantauanDanEvaluasiReguler
-        :is-editable="props.tabPemantauanEditable"
+      <EditPemantauanDanEvaluasiRegulerVerifikator
       />
     </VTabsWindowItem>
 
     <VTabsWindowItem value="7">
-      <EditDokumenReguler :is-editable="props.tabDokumenEditable" />
-    </VTabsWindowItem> -->
+      <EditDokumenRegulerVerifikator/>
+    </VTabsWindowItem>
   </VTabsWindow>
 </template>

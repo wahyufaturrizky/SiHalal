@@ -21,14 +21,20 @@ const totalItems = ref(0)
 const loading = ref(false)
 const searchQuery = ref('')
 const page = ref(1)
+const filterLembaga = ref([])
+const filterPendamping = ref([])
+const filterFasilitasi = ref([])
+const lembaga = ref('')
+const fasilitasi = ref('')
+const pendamping = ref('')
 
 const loadItem = async (
   page: number,
   size: number,
-  lembaga_pendamping_id: string = '',
-  pendamping_id: string = '',
-  fac_id: string = '',
-  nama_pengajuan: string = '',
+  lembaga: string = '73376711-e2d2-4523-8e83-28d327de926e',
+  fasilitasi: string = '',
+  pendamping: string = '',
+  namaPengajuan: string = '',
 ) => {
   try {
     loading.value = true
@@ -38,17 +44,17 @@ const loadItem = async (
       params: {
         page,
         size,
-        lembaga_pendamping_id,
-        pendamping_id,
-        fac_id,
-        nama_pengajuan,
+        lembaga,
+        fasilitasi,
+        pendamping,
+        namaPengajuan,
       },
     })
 
     items.value = response.data || []
     totalItems.value = response.total_item || 0
     loading.value = false
-    console.log(response.data, 'ini response data')
+    console.log(response.data, 'ini response data sidang fatwa')
 
     return response
   }
@@ -58,33 +64,59 @@ const loadItem = async (
   }
 }
 
+const loadFilter = async () => {
+  try {
+    loading.value = true
+
+    const response1: any = await $api('/self-declare/komite-fatwa/proses-sidang/filter-fasilitasi', {
+      method: 'get',
+    })
+
+    const response2: any = await $api('/self-declare/komite-fatwa/proses-sidang/filter-lembaga', {
+      method: 'get',
+    })
+
+    const response3: any = await $api('/self-declare/komite-fatwa/proses-sidang/filter-pendamping', {
+      method: 'get',
+    })
+
+    filterFasilitasi.value = response1.data || []
+    filterLembaga.value = response2.data || []
+    filterPendamping.value = response3.data || []
+    loading.value = false
+    console.log(response1.data, 'ini response filter fasilitasi')
+
+    return response1
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    loading.value = false
+  }
+}
+
 onMounted(async () => {
-  await loadItem(1, itemPerPage.value, '73376711-e2d2-4523-8e83-28d327de926e', '', '', '')
+  loading.value = true
+  await loadItem(1, itemPerPage.value, lembaga.value, fasilitasi.value, pendamping.value, searchQuery.value)
+  await loadFilter()
+  loading.value = false
 })
 
 const refresh = async () => {
-  await loadItem(1, itemPerPage.value, '73376711-e2d2-4523-8e83-28d327de926e', '', '', '')
+  await loadItem(1, itemPerPage.value, lembaga.value, fasilitasi.value, pendamping.value, searchQuery.value)
 }
 
 const verifikatorTableHeader = [
   { title: 'No', key: 'id' },
-  { title: 'Nomor Daftar', key: 'nomor_daftar' },
+  { title: 'Nomor Daftar', key: 'no_daftar' },
   { title: 'Tanggal Daftar', key: 'tanggal_daftar' },
   { title: 'Nama PU', key: 'nama_pu' },
-  { title: 'Alamat', key: 'alamat' },
+  { title: 'Alamat', key: 'alamat_pu' },
   { title: 'Skala Usaha', key: 'skala_usaha' },
   { title: 'Jenis Produk', key: 'jenis_produk' },
   { title: 'Merek Dagang', key: 'merek_dagang' },
-  { title: 'Lihat Laporan SPH', key: 'laporan_sph' },
+  { title: 'Pendamping', key: 'pendamping' },
   { title: 'Action', key: 'action' },
 ]
-
-const selectedFilters = ref({
-  jenisLayanan: 'Semua',
-  jenisProduk: 'Semua',
-  provinsi: 'Semua',
-  lph: 'Semua',
-})
 
 const debouncedFetch = debounce(loadItem, 500)
 
@@ -92,19 +124,20 @@ const handleInput = () => {
   debouncedFetch(
     page.value,
     itemPerPage.value,
+    lembaga.value, fasilitasi.value, pendamping.value,
     searchQuery.value,
   )
 }
 
 const navigateAction = (id: string) => {
-  navigateTo(`/sidang-fatwa/detail/${id}`)
+  navigateTo(`/sidang-fatwa/proses-sidang/${id}`)
 }
 
 // Filter state
 const showFilterMenu = ref(false)
 
 const applyFilters = () => {
-  loadItem(page.value, itemPerPage.value, '73376711-e2d2-4523-8e83-28d327de926e', '', '', '')
+  loadItem(page.value, itemPerPage.value, lembaga.value, fasilitasi.value, pendamping.value, searchQuery.value)
 }
 </script>
 
@@ -146,26 +179,30 @@ const applyFilters = () => {
               width="300"
             >
               <VSelect
-                v-model="selectedFilters.jenisLayanan"
-                label="Jenis Layanan"
-                :items="['Semua', 'Layanan B', 'Layanan C']"
-              />
-              <VSelect
-                v-model="selectedFilters.jenisProduk"
-                label="Jenis Produk"
-                :items="['Semua', 'Produk Y', 'Produk Z']"
+                v-model="fasilitasi"
+                label="Fasilitasi"
+                placeholder="Pilih Fasilitasi"
+                :items="filterFasilitasi"
+                item-title="name"
+                item-value="id"
                 class="mt-3"
               />
               <VSelect
-                v-model="selectedFilters.provinsi"
-                label="Provinsi"
-                :items="['Semua', 'Jakarta', 'Jawa Barat']"
+                v-model="lembaga"
+                placeholder="Pilih Lembaga"
+                label="Lembaga"
+                :items="filterLembaga"
+                item-title="name"
+                item-value="id"
                 class="mt-3"
               />
               <VSelect
-                v-model="selectedFilters.lph"
-                label="LPH"
-                :items="['Semua', 'Approved', 'Rejected']"
+                v-model="pendamping"
+                label="Pendamping"
+                placeholder="Pilih Pendamping"
+                :items="filterPendamping"
+                item-title="name"
+                item-value="id"
                 class="mt-3"
               />
               <VBtn
@@ -208,9 +245,11 @@ const applyFilters = () => {
             <template #item.id="{ index }">
               {{ index + 1 + (page - 1) * itemPerPage }}
             </template>
-            <template #item.tanggal_daftar="{ item }">
+            <!--
+              <template #item.tanggal_daftar="{ item }">
               {{ formatDateIntl(new Date(item?.tanggal_daftar)) || "22-07-2024"}}
-            </template>
+              </template>
+            -->
             <template #item.merek_dagang="{ item }">
               {{ item.merek_dagang || 'N/A' }} <!-- Display Merek Dagang value or N/A if not available -->
             </template>

@@ -12,33 +12,50 @@ const submissionData = ref({
   type: "Baru",
 });
 
-const fasilitatorData = ref([{ title: "BPJH SEHATI", value: "BPJH SEHATI" }]);
-const selectedFasilitator = ref("");
-const searchFasilitator = ref("");
-const foundFasilitator = ref("");
+const responseId = ref("");
 
-const handleSelectFasilitator = (v: string) => {
-  selectedFasilitator.value = v;
-  const found = fasilitatorData.value.find((i) => i.value === v);
-  if (found) foundFasilitator.value = found.value;
-};
-const handleSearchFasilitator = () => {
-  const regex = new RegExp(searchFasilitator.value, "i");
-  const found = fasilitatorData.value.find((i) => regex.test(i.value));
-  if (found) {
-    foundFasilitator.value = found.value;
-    useSnackbar().sendSnackbar("Kode fasilitator ditemukan", "success");
-  } else {
-    foundFasilitator.value = "";
-    useSnackbar().sendSnackbar(
-      "Kode fasilitator tidak ditemukan, silahkan cek kembali",
-      "error"
-    );
+const responseMessage = ref("");
+const isFasilitator = ref<boolean>(false);
+const isKodeNotFound = ref<boolean>(false);
+const isKodeFound = ref<boolean>(false);
+
+const querySearch = ref("");
+
+const route = useRoute();
+const submissionId = (route.params as any).id as string;
+
+const foundFasilitator = ref("");
+const loadingAll = ref(true);
+const suratPermohonan = ref(null);
+const suratPernyataan = ref(null);
+
+const onSelectFasilitator = (selectedId: string) => {
+  if ((isFasilitator.value = selectedId === "Lainnya")) {
+    isKodeFound.value = false;
+    querySearch.value = "";
   }
 };
 
-const downloadFile = () => {
-  useSnackbar().sendSnackbar("Berhasil mengunduh data", "success");
+const getDownloadForm = async (docName: string, propName: any) => {
+  const result: any = await $api(
+    `/self-declare/submission/${submissionId}/file`,
+    {
+      method: "get",
+      query: {
+        document: docName,
+      },
+    }
+  );
+
+  if (result.code === 2000) {
+    if (docName === "surat-permohonan") {
+      suratPermohonan.value = result.data.file;
+      return result;
+    } else {
+      suratPernyataan.value = result.data.file;
+      return result;
+    }
+  }
 };
 
 const submissionDetail = reactive({
@@ -52,6 +69,30 @@ const submissionDetail = reactive({
   nomor_kontak_pj: null,
   nama_pu: null,
 });
+
+const onSearchFasilitator = async () => {
+  try {
+    const kode = querySearch.value;
+
+    const response: any = await $api("/self-declare/submission/kode", {
+      method: "post",
+      body: {
+        kode,
+      },
+    });
+
+    if (responseMessage.value === "Kode Fasilitasi dapat digunakan") {
+      isKodeFound.value = true;
+      isKodeNotFound.value = false;
+      responseMessage.value = "";
+      responseId.value = response.data.id;
+    } else {
+      responseMessage.value = response.message;
+      isKodeFound.value = false;
+      isKodeNotFound.value = true;
+    }
+  } catch (error) {}
+};
 
 const formData = reactive({
   id_reg: null,
@@ -86,37 +127,55 @@ const { refresh } = await useAsyncData("get-detail-submission", async () => {
     );
 
     if (response.code === 2000) {
-      Object.assign(submissionDetail, response.data.certificate_halal);
-      submissionDetail.tanggal_buat = response.data.pendaftaran.tgl_daftar;
-      submissionDetail.nama_pj = response.data.penanggung_jawab.nama_pj;
-      submissionDetail.nomor_kontak_pj =
-        response.data.penanggung_jawab.nomor_kontak_pj;
-      Object.assign(formData, response.data.certificate_halal);
-      formData.tgl_surat_permohonan =
-        formData.tgl_mohon != "" ? formatToISOString(formData.tgl_mohon) : null;
-      // if (formData.id_lembaga_pendamping != "") {
-      //   await handleGetPendamping(formData.id_lembaga_pendamping);
-      // }
+      const { data } = response || {};
+      const {
+        tgl_daftar,
+        nama_pj,
+        nomor_kontak_pj,
+        id_jenis_layanan,
+        nama_pu,
+        area_pemasaran,
+        id_lembaga_pendamping,
+        id_product,
+        jenis_pendaftaran,
+        fac_id,
+        no_surat_permohonan,
+      } = data || {};
+
+      submissionDetail.tanggal_buat = tgl_daftar;
+      submissionDetail.nama_pj = nama_pj;
+      submissionDetail.nomor_kontak_pj = nomor_kontak_pj;
+      formData.tgl_surat_permohonan = formatToISOString(tgl_daftar) as any;
+
+      formData.id_jenis_layanan = id_jenis_layanan;
+      formData.id_jenis_produk = id_product;
+      formData.nama_pu = nama_pu;
+      formData.area_pemasaran = area_pemasaran;
+      formData.lembaga_pendamping = id_lembaga_pendamping;
+      formData.id_jenis_pengajuan = jenis_pendaftaran;
+      formData.id_fasilitator = fac_id;
+      formData.no_mohon = no_surat_permohonan;
     }
     return response;
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 });
 
 const handleGetListPendaftaran = async () => {
   try {
-    listPendaftaran.value = await $api(`/master/jenis-pendaftaran`, {
+    const res: any = await $api(`/master/jenis-pendaftaran`, {
       method: "get",
     });
-  } catch (error) {
-    console.log(error);
-  }
+
+    if (res.length) {
+      listPendaftaran.value = res;
+      return res;
+    }
+  } catch (err) {}
 };
 
 const listPendaftaran = ref([]);
 const findListDaftar = (kode: string) => {
-  const data = listPendaftaran.value.find((code) => kode == code.code);
+  const data = listPendaftaran.value.find((code: any) => kode == code.code);
   if (data == undefined) return { code: null, name: "-" };
   return data;
 };
@@ -139,30 +198,36 @@ const handleGetFasilitator = async () => {
 
     if (response.code === 2000) {
       listFasilitasi.value = response.data;
+      return response;
     }
     return response;
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (err) {}
 };
-const formLembagaPendamping = ref<{}>();
+
 const handleGetJenisLayanan = async () => {
   try {
-    listLayanan.value = await $api(`/master/jenis-layanan`, {
+    const res: any = await $api(`/master/jenis-layanan`, {
       method: "get",
     });
-  } catch (error) {
-    console.log(error);
-  }
+
+    if (res.length) {
+      listLayanan.value = res;
+      return res;
+    }
+  } catch (err) {}
 };
+
 const handleGetJenisProduk = async () => {
   try {
-    listProduk.value = await $api(`/master/products`, {
+    const res: any = await $api(`/master/products`, {
       method: "get",
     });
-  } catch (error) {
-    console.log(error);
-  }
+
+    if (res.length) {
+      listProduk.value = res;
+      return res;
+    }
+  } catch (error) {}
 };
 
 const lembagaPendamping = ref([]);
@@ -181,14 +246,10 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
     );
 
     if (response.code === 2000) {
-      if (response.data !== null) {
-        lembagaPendamping.value = response.data;
-      }
+      lembagaPendamping.value = response.data || [];
+      return response;
     }
-    return response;
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 const loadDataPendamping = async (lokasi: string | null) => {
   if (lokasi) {
@@ -213,32 +274,34 @@ const handleGetPendamping = async (idLembaga: string | null) => {
     }
 
     return response;
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 
-onMounted(() => {
-  // await Promise.all([
-  handleGetListPendaftaran();
-  // handleDetailPengajuan();
-  handleGetFasilitator();
-  handleGetJenisLayanan();
-  handleGetJenisProduk();
-  loadDataPendamping(formData.lokasi_pendamping);
+onMounted(async () => {
+  const res = await Promise.all([
+    handleGetListPendaftaran(),
+    handleGetFasilitator(),
+    handleGetJenisLayanan(),
+    handleGetJenisProduk(),
+    loadDataPendamping(formData.lokasi_pendamping),
+    getDownloadForm("surat-permohonan", "suratPermohonan"),
+    getDownloadForm("surat-pernyataan", "suratPernyataan"),
+  ]);
 
-  // on edit:
-  // handleGetPendamping(formData.id_lembaga_pendamping);
-  // formData.value.id_pendamping = listPendamping.value.filter(
-  //   (val) => val.id_pendamping == formData.value.id_pendamping
-  // )[0]?.id;
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
 
-  // ]);
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
 });
 </script>
 
 <template>
-  <VCard class="mb-10 pt-3">
+  <VCard v-if="!loadingAll" class="mb-10 pt-3">
     <VCardTitle class="mb-5">
       <div class="font-weight-bold text-h4">Data Pengajuan</div>
     </VCardTitle>
@@ -275,7 +338,6 @@ onMounted(() => {
           item-title="name"
           item-value="code"
           v-model="formData.id_jenis_pengajuan"
-          disabled
         />
       </VItemGroup>
       <br />
@@ -285,44 +347,29 @@ onMounted(() => {
             <VCol>
               <VItemGroup>
                 <div class="font-weight-bold mb-1">Fasilitasi</div>
+
                 <VSelect
-                  density="compact"
-                  rounded="xl"
                   v-model="formData.id_fasilitator"
+                  density="compact"
                   :items="listFasilitasi"
                   item-title="name"
+                  :rules="[requiredValidator]"
                   item-value="id"
                   placeholder="Pilih Fasilitator"
-                  @update:model-value="handleSelectFasilitator"
-                  @click:clear="
-                    [(selectedFasilitator = ''), (foundFasilitator = '')]
-                  "
-                  :disabled="searchFasilitator.length > 0"
-                  clearable
-                  menu-icon="fa-chevron-down"
+                  @update:model-value="onSelectFasilitator"
                 />
               </VItemGroup>
             </VCol>
-            <VCol cols="auto" align-self="center">Atau</VCol>
-            <VCol>
+            <VCol v-if="isFasilitator">
               <div class="font-weight-bold mb-1">Kode Fasilitasi</div>
               <VTextField
-                v-model="searchFasilitator"
-                placeholder="Masukkan Kode"
-                :disabled="selectedFasilitator.length > 0"
+                v-model="querySearch"
+                placeholder="Masukan Kode Fasilitasi"
+                append-inner-icon="mdi-magnify"
                 density="compact"
-                rounded="xl"
-              >
-                <template #append>
-                  <VBtn
-                    variant="outlined"
-                    @click="handleSearchFasilitator"
-                    :disabled="selectedFasilitator.length > 0"
-                  >
-                    Cari Kode
-                  </VBtn>
-                </template>
-              </VTextField>
+                :rules="[requiredValidator]"
+                @input="onSearchFasilitator"
+              />
             </VCol>
           </VRow>
           <VExpandTransition>
@@ -352,7 +399,7 @@ onMounted(() => {
       </VItemGroup>
     </VCardText>
   </VCard>
-  <VCard class="pt-3">
+  <VCard v-if="!loadingAll" class="pt-3">
     <VCardTitle class="mb-5">
       <div class="font-weight-bold text-h4">Penanggung Jawab</div>
     </VCardTitle>
@@ -362,11 +409,12 @@ onMounted(() => {
           <VCol cols="3" class="font-weight-bold mb-1">Surat Permohonan</VCol>
           <VCol cols="9">
             :
+
             <VBtn
               color="primary"
               density="comfortable"
               append-icon="fa-download"
-              @click="downloadFile"
+              @click="downloadDocument(suratPermohonan)"
               >Unduh</VBtn
             >
           </VCol>
@@ -379,7 +427,7 @@ onMounted(() => {
               color="primary"
               density="comfortable"
               append-icon="fa-download"
-              @click="downloadFile"
+              @click="downloadDocument(suratPernyataan)"
               >Unduh</VBtn
             >
           </VCol>
@@ -400,29 +448,12 @@ onMounted(() => {
         <VCol cols="6">
           <VItemGroup>
             <div class="font-weight-bold mb-1">Tanggal Surat Pemohon</div>
-            <Vuepicdatepicker>
-              <template #trigger>
-                <Vuepicdatepicker
-                  v-model:model-value="formData.tgl_surat_permohonan"
-                  auto-apply
-                  model-type="yyyy-MM-dd"
-                  :enable-time-picker="false"
-                  teleport
-                  clearable
-                >
-                  <template #trigger>
-                    <VTextField
-                      placeholder="Pilih Tanggal Surat Pemohon"
-                      append-inner-icon="fa-calendar"
-                      :model-value="formData.tgl_surat_permohonan"
-                      color="#757575"
-                      readonly
-                      density="compact"
-                    />
-                  </template>
-                </Vuepicdatepicker>
-              </template>
-            </Vuepicdatepicker>
+            <VTextField
+              placeholder="Pilih Tanggal Surat Pemohon"
+              :model-value="formData.tgl_surat_permohonan"
+              density="compact"
+              type="date"
+            />
           </VItemGroup>
         </VCol>
       </VRow>
@@ -475,6 +506,7 @@ onMounted(() => {
               rounded="xl"
               menu-icon="fa-chevron-down"
               v-model="formData.area_pemasaran"
+              disabled
             />
           </VItemGroup>
         </VCol>
@@ -488,6 +520,7 @@ onMounted(() => {
               menu-icon="fa-chevron-down"
               :items="['Provinsi', 'Kabupaten']"
               @update:model-value="loadDataPendamping"
+              disabled
             />
           </VItemGroup>
         </VCol>
@@ -505,7 +538,7 @@ onMounted(() => {
               item-title="name"
               :rules="[requiredValidator]"
               item-value="id"
-              :disabled="formData.lokasi_pendamping == null"
+              disabled
               @update:model-value="handleGetPendamping"
             />
           </VItemGroup>
@@ -521,13 +554,18 @@ onMounted(() => {
               :items="listPendamping"
               :rules="[requiredValidator]"
               item-title="name"
-              :disabled="formData.lokasi_pendamping == null"
               item-value="id"
               v-model="formData.id_pendamping"
+              disabled
             />
           </VItemGroup>
         </VCol>
       </VRow>
     </VCardText>
   </VCard>
+
+  <VSkeletonLoader
+    type="table-heading, list-item-two-line, image, table-tfoot"
+    v-else
+  />
 </template>
