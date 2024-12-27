@@ -26,6 +26,8 @@ const headers: any = [
   { title: "Action", key: "action" },
 ];
 
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+
 const statusItem: any = new Proxy(
   {
     OF1: { color: "grey-300", desc: "Draft" },

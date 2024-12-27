@@ -2,6 +2,7 @@
 import { ref } from "vue";
 
 const searchQuery = ref("");
+const loadingAll = ref(true);
 
 const headers: any = [
   { title: "No", key: "no", nowrap: true },
@@ -25,16 +26,6 @@ const submission = ref([]);
 const currentPage = ref(1);
 const itemPerPage = ref(10);
 const totalItems = ref(0);
-
-// const filteredSubmissions = computed(() => {
-//   if (!searchQuery.value) return submission.value;
-
-//   return submission.value.filter((item) =>
-//     Object.values(item).some((value) =>
-//       String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
-//     )
-//   );
-// });
 
 const questions = [
   "Saya tidak pernah mendapatkan fasilitas sertifikasi halal sebelumnya ",
@@ -86,7 +77,6 @@ const handleSubmitQuestionare = (answers: Array<string>) => {
 const router = useRouter();
 
 const hanleSubmitRequest = async (answer: string) => {
-  // console.log("answer request : ", answer);
   handleCreate(answer);
 };
 
@@ -102,9 +92,7 @@ const handleCreate = async (answer: string) => {
     if (result.code === 2000) {
       router.push(`/sh-domestic/submission/self-declare/${result.data.id_reg}`);
     }
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 
 const alertData = ref({
@@ -119,6 +107,7 @@ const loadValidation = async () => {
   if (response.code === 2000) {
     alertData.value.isValid = response.data.is_allow_submission;
     alertData.value.text = response.data.keterangan;
+    return response;
   }
 };
 
@@ -137,11 +126,9 @@ const handleLoadList = async () => {
       submission.value = response.data;
       currentPage.value = response.current_page;
       totalItems.value = response.total_item;
+      return response;
     }
-    return response;
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 
 const { refresh } = await useAsyncData(
@@ -163,6 +150,20 @@ onMounted(() => {
   loadValidation();
   handleLoadList();
 });
+
+onMounted(async () => {
+  const res = await Promise.all([loadValidation(), handleLoadList()]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
+});
 </script>
 
 <template>
@@ -171,7 +172,7 @@ onMounted(() => {
       <p class="text-h4">Pengajuan Self Declare</p>
     </div>
 
-    <VContainer class="bg-surface rounded">
+    <VContainer v-if="!loadingAll" class="bg-surface rounded">
       <VRow>
         <VCol class="d-flex justify-sm-space-between align-center">
           <div class="text-h4 font-weight-bold">
@@ -282,6 +283,11 @@ onMounted(() => {
         </VCol>
       </VRow>
     </VContainer>
+
+    <VSkeletonLoader
+      type="table-heading, list-item-two-line, image, table-tfoot"
+      v-else
+    />
 
     <Questionnaire
       :dialog-visible="questionareDialogVisible"

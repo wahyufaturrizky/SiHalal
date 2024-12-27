@@ -5,6 +5,7 @@ const tableHeader: any[] = [
   { title: "Merk", key: "merek", nowrap: true },
   { title: "Foto", key: "foto", nowrap: true },
   { title: "Jumlah Bahan Digunakan", key: "jumlah_bahan", nowrap: true },
+  { title: "Verifikasi Pendamping", key: "verified", nowrap: true },
   {
     title: "Action",
     key: "action",
@@ -14,36 +15,14 @@ const tableHeader: any[] = [
   },
 ];
 
-const productData = ref([]);
 const selectedIngredient = ref([]);
-
+const store = useMyTabEditRegulerStore();
 const route = useRoute<"">();
+const { produk, produkAllBahan } = storeToRefs(store);
 const submissionId = route.params?.id as string;
 const { refresh } = await useAsyncData("list-product", async () => {
-  return handleListProduct();
+  return store.getProduct(submissionId);
 });
-const handleListProduct = async () => {
-  try {
-    const response: any = await $api(
-      `/self-declare/business-actor/product/list`,
-      {
-        method: "get",
-        query: {
-          id_reg: submissionId,
-        },
-      } as any
-    );
-
-    if (response.code === 2000) {
-      console.log("product list = ", response.data);
-      productData.value = response.data ? response.data : [];
-    }
-    return response;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 const handleSubmit = async (payload: any) => {
   if (modalUse.value === "CREATE") await handleAddProduct(payload);
   // if (modalUse.value === "UPDATE") await handleUpdateProduct(payload);
@@ -63,12 +42,14 @@ const handleAddProduct = async (payload: any) => {
 
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
-      refresh();
+      await refresh();
     }
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
     console.log(error);
+  } finally {
+    store.isAllBahanSelected();
   }
 };
 
@@ -88,12 +69,14 @@ const handleUpdateProduct = async (payload: any, productId: string) => {
 
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil mengubah data", "success");
-      refresh();
+      await refresh();
     }
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal mengubah data", "error");
     console.log(error);
+  } finally {
+    store.isAllBahanSelected();
   }
 };
 
@@ -113,12 +96,14 @@ const handleAddIngredient = async (payload: any, idProduct: string) => {
 
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
-      refresh();
+      await refresh();
     }
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
     console.log(error);
+  } finally {
+    store.isAllBahanSelected();
   }
 };
 
@@ -194,18 +179,16 @@ const handleDeleteProduct = async () => {
 
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil menghapus data", "success");
-      refresh();
+      await refresh();
     }
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal menghapus data", "error");
     console.log(error);
+  } finally {
+    store.isAllBahanSelected();
   }
 };
-
-onMounted(() => {
-  handleListProduct();
-});
 </script>
 
 <template>
@@ -226,12 +209,7 @@ onMounted(() => {
       </VRow>
     </VCardTitle>
     <VCardItem>
-      <VDataTable
-        :headers="tableHeader"
-        :items="productData"
-        class="custom-table"
-        :hide-default-footer="productData.length > 0"
-      >
+      <VDataTable :headers="tableHeader" :items="produk" class="custom-table">
         <template #item.no="{ index }">
           {{ index + 1 }}
         </template>
@@ -243,8 +221,13 @@ onMounted(() => {
             ></VIcon>
           </VBtn>
         </template>
+        <template #item.verified="{ item }">
+          <v-chip :color="item.verified ? 'success' : 'error'">{{
+            item.verified ? "Sudah" : "Belum"
+          }}</v-chip>
+        </template>
         <template #item.action="{ item }: any">
-          <VMenu>
+          <VMenu v-if="!item.verified">
             <template #activator="{ props }">
               <!-- <VIcon
                 @click="handleDetailProduct(item.id)"
