@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { defineProps, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { defineProps, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 
 const props = defineProps({
   sertifikat: {
@@ -50,8 +50,10 @@ async function ditetapkan() {
     console.log(error, 'ini error')
     useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
   }
-  dialogOpen.value = false
-  notes.value = ''
+  finally {
+    dialogOpen.value = false
+    notes.value = ''
+  }
 }
 
 watch(
