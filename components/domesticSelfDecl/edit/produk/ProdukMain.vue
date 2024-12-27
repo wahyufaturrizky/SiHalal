@@ -31,7 +31,7 @@ const handleListProduct = async () => {
         query: {
           id_reg: submissionId,
         },
-      }
+      } as any
     );
 
     if (response.code === 2000) {
@@ -58,7 +58,7 @@ const handleAddProduct = async (payload: any) => {
         query: {
           id_reg: submissionId,
         },
-      }
+      } as any
     );
 
     if (response.code === 2000) {
@@ -83,7 +83,7 @@ const handleUpdateProduct = async (payload: any, productId: string) => {
           id_reg: submissionId,
           product_id: productId,
         },
-      }
+      } as any
     );
 
     if (response.code === 2000) {
@@ -108,7 +108,7 @@ const handleAddIngredient = async (payload: any, idProduct: string) => {
           id_reg: submissionId,
           product_id: idProduct,
         },
-      }
+      } as any
     );
 
     if (response.code === 2000) {
@@ -168,7 +168,7 @@ const handleDetailProduct = async (id: string) => {
           id_reg: submissionId,
           product_id: id,
         },
-      }
+      } as any
     );
 
     if (response.code === 2000) {
@@ -189,7 +189,7 @@ const handleDeleteProduct = async () => {
           id_reg: submissionId,
           product_id: selectedProduct.value,
         },
-      }
+      } as any
     );
 
     if (response.code === 2000) {
@@ -260,19 +260,20 @@ onMounted(() => {
             </template>
 
             <VList>
-              <VListItem>
-                <UbahProduk
-                  :submission-id="submissionId"
-                  :id-produk="item.id"
-                  @confirm-edit="handleUpdateProduct"
-                ></UbahProduk>
-              </VListItem>
               <InputBahan
                 :product-name="item.nama"
                 :product-id="item.id"
                 :bahan-selected="item.bahan_selected"
                 @submit="handleAddIngredient"
+                :embedded-in-module="'pelakuSelfDec'"
               />
+              <!-- <VListItem> -->
+              <UbahProduk
+                :submission-id="submissionId"
+                :id-produk="item.id"
+                @confirm-edit="handleUpdateProduct"
+              ></UbahProduk>
+              <!-- </VListItem> -->
               <!-- <VListItem
                 prepend-icon="mdi-pencil"
                 title="Ubah"
