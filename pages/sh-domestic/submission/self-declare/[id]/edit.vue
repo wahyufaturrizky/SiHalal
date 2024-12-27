@@ -5,12 +5,13 @@ const router = useRouter();
 const tabs = ref("1");
 const submissionId = route.params?.id;
 const store = useMyTabEditRegulerStore();
-const { bahan, produk, produkAllBahan } = storeToRefs(store);
+const { bahan, produk, produkAllBahan, bahanCheck } = storeToRefs(store);
 
 onMounted(async () => {
   await store.getProduct(submissionId);
   await store.getBahan(submissionId);
   store.isAllBahanSelected();
+  store.isBahan();
   tabs.value = route.query?.tab ? String(route.query.tab) : "1";
 });
 </script>
@@ -42,7 +43,7 @@ onMounted(async () => {
           <VTab value="2">Pengajuan</VTab>
           <VTab value="3">Pabrik & Outlet</VTab>
           <VTab value="4">Bahan</VTab>
-          <VTab value="5">Produk</VTab>
+          <VTab value="5" :disabled="bahanCheck">Produk</VTab>
           <VTab :disabled="!produkAllBahan" value="6">Proses Produk Halal</VTab>
           <VTab :disabled="!produkAllBahan" value="7">Pernyataan</VTab>
         </VTabs>

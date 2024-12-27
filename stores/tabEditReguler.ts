@@ -2,7 +2,12 @@ import { defineStore } from "pinia";
 
 export const useMyTabEditRegulerStore = defineStore({
   id: "myTabEditRegulerStore",
-  state: () => ({ produk: [], bahan: [], produkAllBahan: false }),
+  state: () => ({
+    produk: [],
+    bahan: [],
+    produkAllBahan: false,
+    bahanCheck: false,
+  }),
   actions: {
     async getProduct(submissionId: string) {
       try {
@@ -54,6 +59,12 @@ export const useMyTabEditRegulerStore = defineStore({
       }
       this.produkAllBahan = true;
       return true;
+    },
+    isBahan() {
+      const jenisBahan = this.bahan.map((item) => item.jenis_bahan);
+      const bahanTerkait = ["Kemasan", "Cleaning Agent", "Bahan"].every(
+        (jenis) => jenisBahan.includes(jenis)
+      );
     },
   },
 });
