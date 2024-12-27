@@ -119,6 +119,7 @@ const loadItem = async ({
         lembaga,
         pendamping,
         kabupaten,
+        status: "OF10",
       },
     });
 
@@ -132,7 +133,7 @@ const loadItem = async ({
   }
 };
 
-const debouncedFetch = debounce(loadItem, 500);
+// const debouncedFetch = debounce(loadItem, 500);
 
 const showFilterMenu = ref(false);
 
