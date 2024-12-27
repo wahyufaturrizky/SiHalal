@@ -42,7 +42,6 @@ export const useMyTabEditRegulerStore = defineStore({
       } catch (error) {}
     },
     isAllBahanSelected() {
-      console.log("ubah bahan");
       const distinctProductBahan = new Set(
         this.produk.flatMap((item) => item.bahan_selected)
       );
@@ -61,10 +60,21 @@ export const useMyTabEditRegulerStore = defineStore({
       return true;
     },
     isBahan() {
-      const jenisBahan = this.bahan.map((item) => item.jenis_bahan);
-      const bahanTerkait = ["Kemasan", "Cleaning Agent", "Bahan"].every(
-        (jenis) => jenisBahan.includes(jenis)
-      );
+      console.log(this.bahan);
+      const jenisBahan = new Set(this.bahan.map((item) => item.jenis_bahan));
+      const verifyBahan = new Set(["Kemasan", "Cleaning Agent", "Bahan"]);
+      if (jenisBahan.size != verifyBahan.size) {
+        this.bahanCheck = false;
+        return false;
+      }
+      for (const value of verifyBahan) {
+        if (!jenisBahan.has(value)) {
+          this.bahanCheck = false;
+          return false;
+        }
+      }
+      this.bahanCheck = true;
+      return true;
     },
   },
 });
