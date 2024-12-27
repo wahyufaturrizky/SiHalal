@@ -260,7 +260,7 @@ const getDetail = async () => {
       formData.area_pemasaran = response.data.area_pemasaran;
       formData.lokasi_pendamping = "Provinsi";
 
-      formData.lembaga_pendamping = response.data.id_lembaga_pendamping;
+      formData.id_lembaga_pendamping = response.data.id_lembaga_pendamping;
       formData.id_pendamping = response.data.id_pendamping;
       console.log("ini sub det = ", Object.keys(submissionDetail));
       console.log("ini form = ", Object.keys(formData));
@@ -396,7 +396,7 @@ onMounted(async () => {
   await loadDataPendamping(formData.lokasi_pendamping);
   await handleGetFasilitator();
   await getDetail();
-  console.log(listFasilitasi.value, formData.id_fasilitator);
+  await handleGetPendamping(formData.id_lembaga_pendamping);
   if (
     !listFasilitasi.value.some((item) => item.id == formData.id_fasilitator)
   ) {
