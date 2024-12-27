@@ -3,11 +3,12 @@ const props = defineProps<{
   productName?: string | null;
   productId?: string | null;
   bahanSelected: any;
-  embeddedInModule: {
-    type: string | null;
-    default: "pelakuSelfDec";
-  };
+  embeddedInModule?: string | null;
 }>();
+
+const embedType = computed(() =>
+  props.embeddedInModule !== null ? props.embeddedInModule : "pelakuSelfDec"
+);
 const listBahan: any = ref([]);
 
 const selectedBahan = ref([]);
@@ -23,7 +24,7 @@ const handleListIngredient = async () => {
         query: {
           id_reg: submissionId,
         },
-      }
+      } as any
     );
 
     if (response.code === 2000) {
@@ -61,7 +62,7 @@ const onOpenModal = () => {
   <VDialog max-width="60svw">
     <template #activator="{ props: openModal }">
       <VListItem
-        v-if="props.embeddedInModule === 'pelakuSelfDec'"
+        v-if="embedType === 'pelakuSelfDec'"
         v-bind="openModal"
         @click="onOpenModal"
         ><VListItemTitle>
@@ -70,7 +71,7 @@ const onOpenModal = () => {
         </VListItemTitle></VListItem
       >
       <VBtn
-        v-if="props.embeddedInModule === 'pendampingSelfDec'"
+        v-if="embedType === 'pendampingSelfDec'"
         variant="outlined"
         size="small"
         rounded="lg"
