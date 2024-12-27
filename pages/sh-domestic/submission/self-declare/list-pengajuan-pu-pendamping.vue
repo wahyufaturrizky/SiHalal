@@ -4,9 +4,11 @@ import { ref } from "vue";
 const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
+const loadingAll = ref(true);
 const page = ref(1);
 const searchQuery = ref("");
 const status = ref("");
+const queryBy = ref("pelaku_usaha");
 
 const headers = [
   { title: "No", key: "no" },
@@ -37,7 +39,8 @@ const getpuApi = async (
   page: number,
   size: number,
   keyword: string = "",
-  status: string = ""
+  status: string,
+  query_by: string
 ) => {
   try {
     loading.value = true;
@@ -49,27 +52,24 @@ const getpuApi = async (
         size,
         keyword,
         status,
+        query_by,
       },
     });
 
-    items.value = response.data;
-    totalItems.value = response.total_item;
-    loading.value = false;
-    // return response;
+    if (response.code === 2000) {
+      items.value = response.data;
+      totalItems.value = response.total_item;
+      loading.value = false;
+      return response;
+    } else {
+      loading.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loading.value = false;
   }
 };
-
-onMounted(async () => {
-  await getpuApi(
-    page.value,
-    itemPerPage.value,
-    searchQuery.value,
-    status.value
-  );
-});
 
 const debouncedFetch = debounce(getpuApi, 500);
 
@@ -78,13 +78,36 @@ const handleInput = () => {
     page.value,
     itemPerPage.value,
     searchQuery.value,
-    status.value
+    status.value,
+    queryBy.value
   );
 };
+
+onMounted(async () => {
+  const res = await Promise.all([
+    getpuApi(
+      page.value,
+      itemPerPage.value,
+      searchQuery.value,
+      status.value,
+      queryBy.value
+    ),
+  ]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
+});
 </script>
 
 <template>
-  <v-container>
+  <v-container v-if="!loadingAll">
     <kembali-button class="pl-0" />
     <h3 class="text-h3">Cek Data Pengajuan PU</h3>
     <br />
@@ -94,6 +117,11 @@ const handleInput = () => {
         >Data Pengajuan</v-card-title
       >
       <v-card-item>
+        <VRadioGroup inline v-model="queryBy" label="Cari Berdasarkan">
+          <v-radio label="Pelaku Usaha" value="pelaku_usaha"></v-radio>
+          <v-radio label="Nomor Daftar" value="no_daftar"></v-radio>
+        </VRadioGroup>
+
         <v-text-field
           v-model="searchQuery"
           density="compact"
@@ -114,7 +142,9 @@ const handleInput = () => {
           :loading="loading"
           :items-length="totalItems"
           loading-text="Loading..."
-          @update:options="getpuApi(page, itemPerPage, searchQuery, status)"
+          @update:options="
+            getpuApi(page, itemPerPage, searchQuery, status, queryBy)
+          "
         >
           <template #item.no="{ index }">
             {{ index + 1 + (page - 1) * itemPerPage }}
@@ -150,4 +180,5 @@ const handleInput = () => {
       </v-card-item>
     </v-card>
   </v-container>
+  <VSkeletonLoader type="card" v-else />
 </template>

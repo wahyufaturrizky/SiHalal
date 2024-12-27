@@ -24,9 +24,14 @@ export default defineEventHandler(async (event) => {
     query_by,
   };
 
-  if (keyword != "") {
+  if (keyword !== "") {
+    params["keyword"] = keyword;
   }
-  params["keyword"] = keyword;
+
+  if (query_by !== "") {
+    params["query_by"] = query_by;
+  }
+  console.log("@params", params);
 
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/pendamping/halal-certificate-reguler/pengajuan`,
