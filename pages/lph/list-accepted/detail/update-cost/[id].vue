@@ -1,3 +1,4 @@
+<!-- eslint-disable camelcase -->
 <script setup lang="ts">
 const router = useRouter()
 const route = useRoute()
@@ -8,7 +9,24 @@ const data = ref<any>({})
 const dataDomestic = ref<any>([])
 const dataLn = ref<any>([])
 const dataAudit = ref<any>([])
+const lovPabrik = ref<any>([])
 const totalHargaAudit = ref(0)
+const detailData = ref<any>({})
+const selectedItem = ref<any>({})
+const editDialog = ref<boolean>(false)
+const addPesawat = ref<boolean>(false)
+const addLn = ref<boolean>(false)
+const editLn = ref<boolean>(false)
+const pabrikId = ref<string>('')
+const biayaPabrik = ref(0)
+const editDataLn = ref({})
+
+const detailDataLn = ref<any>({
+  keterangan: '',
+  qty: 0,
+  harga: 0,
+  total: 0,
+})
 
 const domesticAuditHeader: any[] = [
   { title: 'No', key: 'no' },
@@ -180,20 +198,37 @@ const overseaModalText = computed(() => {
 //   useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
 // };
 
-const handleAddOverseaCost = (type: string) => {
-  handleOpenOverseaModal(type)
-
-  const message = type === 'CREATE' ? 'menambahkan' : 'mengubah'
-
-  useSnackbar().sendSnackbar(`Berhasil ${message} data`, 'success')
-};
-
 const handleUpdateAuditCost = (type: string) => {
   handleOpenUpdateModal('CREATE')
 
   const message = type === 'CREATE' ? 'menambahkan' : 'mengubah'
 
   useSnackbar().sendSnackbar(`Berhasil ${message} data`, 'success')
+}
+
+const onAdd = () => {
+  addPesawat.value = true
+}
+
+const openModalEditDalamNegri = (item: any) => {
+  selectedItem.value = item
+  const isManipulated = Object.values(item).some((value) => value.toString().includes('Rp'));
+  if (!isManipulated) {
+    item.unit_cost_awal = formatToIDR(item.unit_cost_awal)
+    item.unit_cost_akhir = formatToIDR(item.unit_cost_akhir)
+    item.uhpd_awal = formatToIDR(item.uhpd_awal)
+    item.uhpd_akhir = formatToIDR(item.uhpd_akhir)
+    item.operasional = formatToIDR(item.operasional)
+    item.transport_awal = formatToIDR(item.transport_awal)
+    item.transport_akhir = formatToIDR(item.transport_akhir)
+    item.akomodasi_awal = formatToIDR(item.akomodasi_awal)
+    item.akomodasi_akhir = formatToIDR(item.akomodasi_akhir)
+    item.tiket_pesawat_awal = formatToIDR(item.tiket_pesawat_awal)
+    item.tiket_pesawat_akhir = formatToIDR(item.tiket_pesawat_akhir)
+    item.subtotal = formatToIDR(item.subtotal)
+  }
+  detailData.value = item
+  editDialog.value = true
 }
 
 const getDetailBiaya = async () => {
@@ -206,13 +241,33 @@ const getDetailBiaya = async () => {
     if (response?.code === 2000) {
       const arrayAudit: any = []
 
-      response?.data?.biaya_indo?.list?.map((item: any) => arrayAudit.push({ keterangan: item.nama_pabrik, subtotal: item?.subtotal }))
+      response.data.biaya_indo.list.map((item: any) => {
+        item.unit_cost_awal = formatToIDR(item.unit_cost_awal)
+        item.unit_cost_akhir = formatToIDR(item.unit_cost_akhir)
+        item.uhpd_awal = formatToIDR(item.uhpd_awal)
+        item.uhpd_akhir = formatToIDR(item.uhpd_akhir)
+        item.operasional = formatToIDR(item.operasional)
+        item.transport_awal = formatToIDR(item.transport_awal)
+        item.transport_akhir = formatToIDR(item.transport_akhir)
+        item.akomodasi_awal = formatToIDR(item.akomodasi_awal)
+        item.akomodasi_akhir = formatToIDR(item.akomodasi_akhir)
+        item.tiket_pesawat_awal = formatToIDR(item.tiket_pesawat_awal)
+        item.tiket_pesawat_akhir = formatToIDR(item.tiket_pesawat_akhir)
+        item.subtotal = formatToIDR(item.subtotal)
+      })
+
+      response.data.biaya_ln.list.map((item: any) => {
+        item.harga = formatToIDR(item.harga)
+        item.sub_total = formatToIDR(item.sub_total)
+      })
+
+      arrayAudit.push({ keterangan: 'Biaya Pemeriksaan LPH', subtotal: formatToIDR(response?.data?.biaya_indo?.total_biaya) })
       response?.data?.biaya_ln?.list?.map((item: any) => arrayAudit.push({ keterangan: item.keterangan, subtotal: item?.sub_total }))
       data.value = response.data
       dataDomestic.value = response.data?.biaya_indo?.list
       dataLn.value = response.data?.biaya_ln?.list
       dataAudit.value = arrayAudit
-      totalHargaAudit.value = arrayAudit.reduce((total, item) => total + item.subtotal, 0)
+      totalHargaAudit.value = arrayAudit.reduce((total, item) => total + idrToNumber(item.subtotal), 0)
     }
     else {
       useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
@@ -225,9 +280,160 @@ const getDetailBiaya = async () => {
   }
 }
 
+const getLovPabrik = async () => {
+  try {
+    const response: any = await $api('/reguler/lph/update-cost/list-pabrik', {
+      method: 'get',
+      params: { id },
+    })
+
+    if (response?.code === 2000) {
+      lovPabrik.value = response.data
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+
+    return response.data || []
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const getBiayaPesawat = async (id_pabrik: string) => {
+  try {
+    const response: any = await $api('/reguler/lph/update-cost/detail-pesawat', {
+      method: 'get',
+      params: { id, id_pabrik },
+    })
+
+    if (response?.code === 2000) {
+      biayaPabrik.value = formatToIDR(response.data)
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+
+    return response.data || []
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const onEdit = async () => {
+  try {
+    const body = {
+      akomodasi_akhir: idrToNumber(detailData.value?.akomodasi_akhir),
+      akomodasi_diskon: +detailData.value?.akomodasi_diskon,
+      id_pabrik: detailData.value?.id_pabrik,
+      tiket_pesawat_akhir: idrToNumber(detailData.value?.transport_akhir),
+      tiket_pesawat_diskon: +detailData.value?.tiket_pesawat_diskon,
+      transport_akhir: idrToNumber(detailData.value?.transport_akhir),
+      transport_diskon: +detailData.value?.transport_diskon,
+      uhpd_akhir: idrToNumber(detailData.value?.uhpd_akhir),
+      uhpd_diskon: +detailData.value?.uhpd_diskon,
+      unit_cost_akhir: idrToNumber(detailData.value?.unit_cost_akhir),
+      unit_cost_diskon: +detailData.value?.unit_cost_diskon,
+    }
+
+    const response: any = await $api('/reguler/lph/update-cost/update', {
+      method: 'put',
+      query: { id },
+      body,
+    })
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar('Berhasil ubah data', 'success')
+      editDialog.value = false
+      getDetailBiaya()
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const onAddDataLn = async () => {
+  try {
+    const response: any = await $api('/reguler/lph/update-cost/create-dataln', {
+      method: 'post',
+      query: { id },
+      body: {
+        ...detailDataLn.value,
+        qty: +detailDataLn.value.qty,
+        harga: +detailDataLn.value.harga,
+        total: +detailDataLn.value.total,
+      },
+    })
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar('Berhasil ubah data', 'success')
+      addLn.value = false
+      getDetailBiaya()
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const onEditDataLn = async () => {
+  const body = {
+    id_biaya: editDataLn.value?.id,
+    keterangan: editDataLn.value?.keterangan,
+    qty: +editDataLn.value?.jumlah,
+    harga: editDataLn.value?.harga,
+    total: editDataLn.value?.sub_total,
+  }
+
+  try {
+    const response: any = await $api('/reguler/lph/update-cost/update-ln', {
+      method: 'put',
+      query: { id },
+      body,
+    })
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar('Berhasil ubah data', 'success')
+      editLn.value = false
+      getDetailBiaya()
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const onAddDataDalamNegri = async () => {
+  try {
+    const response: any = await $api('/reguler/lph/update-cost/biaya-pesawat', {
+      method: 'put',
+      query: { id },
+      body: {
+        id_pabrik: pabrikId.value,
+        biaya_tiket: idrToNumber(biayaPabrik.value),
+      },
+    })
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar('Berhasil ubah data', 'success')
+      addPesawat.value = false
+      getDetailBiaya()
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
 onMounted(async () => {
   loading.value = true
-  await getDetailBiaya()
+  await Promise.allSettled([
+    getDetailBiaya(),
+    getLovPabrik(),
+  ])
   loading.value = false
 })
 </script>
@@ -238,25 +444,27 @@ onMounted(async () => {
       <VIcon icon="mdi-chevron-left" size="40px" color="primary" />
       <div class="text-primary">Kembali</div>
     </div>
-    <VRow no-gutters>
+    <VRow cols="8">
       <VCol>
         <h1>
           Informasi Penetapan Biaya Audit Untuk Fasilitas Produksi di Indonesia
         </h1>
       </VCol>
     </VRow>
-    <VRow>
+    <VRow cols="4">
       <VCol>
         <VCard>
           <VCardTitle class="my-3 d-flex justify-space-between align-center">
-            <div class="font-weight-bold text-h4">
-              Penetapan Biaya Audit untuk Fasilitas Produksi di Indonesia
+            <div class="d-flex flex-wrap w-100" style="justify-content: space-between;">
+              <div class="font-weight-bold text-h4">
+                Penetapan Biaya Audit untuk Fasilitas Produksi di Indonesia
+              </div>
+              <VBtn
+                variant="outlined"
+                text="Tambah Biaya Pesawat"
+                @click="onAdd('CREATE')"
+              />
             </div>
-            <VBtn
-              variant="outlined"
-              text="Tambah Biaya Pesawat"
-              @click="handleOpenUpdateModal('CREATE')"
-            />
           </VCardTitle>
           <VCardText>
             <VDataTable
@@ -312,7 +520,7 @@ onMounted(async () => {
                         <VListItem
                           prepend-icon="mdi-pencil"
                           title="Ubah"
-                          @click="() => handleOpenUpdateModal('EDIT')"
+                          @click="() => openModalEditDalamNegri(item)"
                         />
                       </VList>
                     </VMenu>
@@ -337,14 +545,16 @@ onMounted(async () => {
       <VCol>
         <VCard>
           <VCardTitle class="my-3 d-flex justify-space-between align-center">
-            <div class="font-weight-bold text-h4">
-              Penetapan Biaya Audit untuk Fasilitas Produksi di Luar Negeri
+            <div class="d-flex flex-wrap w-100" style="justify-content: space-between;">
+              <div class="font-weight-bold text-h4">
+                Penetapan Biaya Audit untuk Fasilitas Produksi di Luar Negeri
+              </div>
+              <VBtn
+                variant="outlined"
+                text="Tambah Biaya"
+                @click="addLn = true"
+              />
             </div>
-            <VBtn
-              variant="outlined"
-              text="Tambah Biaya"
-              @click="handleOpenOverseaModal('CREATE')"
-            />
           </VCardTitle>
           <VCardText>
             <VDataTable
@@ -382,7 +592,14 @@ onMounted(async () => {
                         <VListItem
                           prepend-icon="mdi-pencil"
                           title="Ubah"
-                          @click="() => handleOpenOverseaModal('EDIT')"
+                          @click="() => {
+                            editDataLn = {
+                              ...item,
+                              harga: idrToNumber(item.harga),
+                              sub_total: idrToNumber(item.sub_total),
+                            }
+                            editLn = true
+                          }"
                         />
                       </VList>
                     </VMenu>
@@ -449,19 +666,70 @@ onMounted(async () => {
         </VCard>
       </VCol>
     </VRow>
-    <VDialog v-model="isOverseaModalOpen" max-width="840px" persistent>
+    <VDialog v-model="addPesawat" max-width="840px" persistent>
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
           <div class="text-h3 font-weight-bold">
-            {{ overseaModalText }} Biaya Fasilitas Produksi di Luar Negeri
+            Tambah Biaya Pesawat
           </div>
-          <VIcon @click="handleOpenOverseaModal"> fa-times </VIcon>
+          <VIcon @click="addPesawat = false"> fa-times </VIcon>
+        </VCardTitle>
+        <VCardText>
+          <div>
+            <label>Pabrik</label>
+            <VSelect
+              v-model="pabrikId"
+              :items="lovPabrik"
+              placeholder="Pilih pabrik"
+              item-title="nama"
+              item-value="id_pabrik"
+              @update:model-value="() => getBiayaPesawat(pabrikId)"
+            />
+          </div>
+          <br>
+          <div>
+            <label>Biaya</label>
+            <VTextField
+              v-model="biayaPabrik"
+              rounded="xl"
+              density="compact"
+              placeholder="2"
+              disabled
+            />
+          </div>
+        </VCardText>
+        <VCardActions class="pt-2 px-4">
+          <VBtn
+            variant="outlined"
+            class="px-4 me-3"
+            @click="addPesawat = false"
+            >Batal</VBtn
+          >
+          <VBtn
+            variant="flat"
+            class="px-4"
+            color="primary"
+            @click="onAddDataDalamNegri"
+          >
+            Tambah
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+    <VDialog v-model="addLn" max-width="840px" persistent>
+      <VCard class="pa-4">
+        <VCardTitle class="d-flex justify-space-between align-center">
+          <div class="text-h3 font-weight-bold">
+            Tambah Biaya Fasilitas Produksi di Luar Negeri
+          </div>
+          <VIcon @click="addLn = false"> fa-times </VIcon>
         </VCardTitle>
         <VCardText>
           <VRow>
             <VCol>
               <div class="text-h6">Keterangan Biaya</div>
               <VTextField
+                v-model="detailDataLn.keterangan"
                 rounded="xl"
                 density="compact"
                 placeholder="Biaya Admin"
@@ -469,11 +737,18 @@ onMounted(async () => {
             </VCol>
             <VCol>
               <div class="text-h6">Jumlah</div>
-              <VTextField rounded="xl" density="compact" placeholder="2" />
+              <VTextField
+                v-model="detailDataLn.qty"
+                rounded="xl"
+                density="compact"
+                placeholder="2"
+              />
             </VCol>
             <VCol>
               <div class="text-h6">Harga</div>
               <VTextField
+                v-model="detailDataLn.harga"
+                type="number"
                 rounded="xl"
                 density="compact"
                 placeholder="Rp 400.000"
@@ -482,6 +757,8 @@ onMounted(async () => {
             <VCol>
               <div class="text-h6">Sub Total</div>
               <VTextField
+                v-model="detailDataLn.total"
+                type="number"
                 rounded="xl"
                 density="compact"
                 placeholder="Rp 800.000"
@@ -493,178 +770,65 @@ onMounted(async () => {
           <VBtn
             variant="outlined"
             class="px-4 me-3"
-            @click="handleOpenOverseaModal"
+            @click="addLn = false"
             >Batal</VBtn
           >
           <VBtn
             variant="flat"
             class="px-4"
             color="primary"
-            @click="handleAddOverseaCost"
+            @click="onAddDataLn"
           >
             {{ overseaModalText }}
           </VBtn>
         </VCardActions>
       </VCard>
     </VDialog>
-    <VDialog v-model="isUpdateModalOpen" max-width="840px" persistent>
+    <VDialog v-model="editLn" max-width="840px" persistent>
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
           <div class="text-h3 font-weight-bold">
-            {{ domesticModalText }} Biaya Audit
+            Ubah Biaya Fasilitas Produksi di Luar Negeri
           </div>
-          <VIcon @click="handleOpenUpdateModal"> fa-times </VIcon>
+          <VIcon @click="editLn = false"> fa-times </VIcon>
         </VCardTitle>
         <VCardText>
+          {{ editDataLn }}
           <VRow>
             <VCol>
-              <div class="text-h6">Fasilitas Produksi</div>
+              <div class="text-h6">Keterangan Biaya</div>
               <VTextField
-                model-value="Outlet Indihome"
+                v-model="editDataLn.keterangan"
                 rounded="xl"
                 density="compact"
-              />
-            </VCol>
-          </VRow>
-          <VRow>
-            <VCol>
-              <div class="text-h6">Unit Cost Awal</div>
-              <VTextField
-                model-value="Rp 700.000"
-                rounded="xl"
-                density="compact"
+                placeholder="Biaya Admin"
               />
             </VCol>
             <VCol>
-              <div class="text-h6">Diskon (%)</div>
+              <div class="text-h6">Jumlah</div>
               <VTextField
-                model-value="50"
+                v-model="editDataLn.jumlah"
                 rounded="xl"
                 density="compact"
-                placeholder="Masukkan Diskon"
+                placeholder="2"
               />
             </VCol>
             <VCol>
-              <div class="text-h6">Unit Cost Akhir</div>
+              <div class="text-h6">Harga</div>
               <VTextField
-                model-value="Rp 350.000"
+                v-model="editDataLn.harga"
                 rounded="xl"
                 density="compact"
-              />
-            </VCol>
-          </VRow>
-          <VRow>
-            <VCol>
-              <div class="text-h6">UHPD Awal</div>
-              <VTextField
-                model-value="Rp 700.000"
-                rounded="xl"
-                density="compact"
+                placeholder="Rp 400.000"
               />
             </VCol>
             <VCol>
-              <div class="text-h6">Diskon (%)</div>
+              <div class="text-h6">Sub Total</div>
               <VTextField
+                v-model="editDataLn.sub_total"
                 rounded="xl"
                 density="compact"
-                placeholder="Masukkan Diskon"
-              />
-            </VCol>
-            <VCol>
-              <div class="text-h6">UHPD Akhir</div>
-              <VTextField
-                model-value="Rp 350.000"
-                rounded="xl"
-                density="compact"
-              />
-            </VCol>
-          </VRow>
-          <VRow>
-            <VCol>
-              <div class="text-h6">Operasional</div>
-              <VTextField
-                model-value="Rp 700.000"
-                rounded="xl"
-                density="compact"
-              />
-            </VCol>
-          </VRow>
-          <VRow>
-            <VCol>
-              <div class="text-h6">Transportasi Awal</div>
-              <VTextField
-                model-value="Rp 700.000"
-                rounded="xl"
-                density="compact"
-              />
-            </VCol>
-            <VCol>
-              <div class="text-h6">Diskon (%)</div>
-              <VTextField
-                model-value="50"
-                rounded="xl"
-                density="compact"
-                placeholder="Masukkan Diskon"
-              />
-            </VCol>
-            <VCol>
-              <div class="text-h6">Transportasi Akhir</div>
-              <VTextField
-                model-value="Rp 350.000"
-                rounded="xl"
-                density="compact"
-              />
-            </VCol>
-          </VRow>
-          <VRow>
-            <VCol>
-              <div class="text-h6">Akomodasi Awal</div>
-              <VTextField
-                model-value="Rp 700.000"
-                rounded="xl"
-                density="compact"
-              />
-            </VCol>
-            <VCol>
-              <div class="text-h6">Diskon (%)</div>
-              <VTextField
-                rounded="xl"
-                density="compact"
-                placeholder="Masukkan Diskon"
-              />
-            </VCol>
-            <VCol>
-              <div class="text-h6">Akomodasi Akhir</div>
-              <VTextField
-                model-value="Rp 350.000"
-                rounded="xl"
-                density="compact"
-              />
-            </VCol>
-          </VRow>
-          <VRow>
-            <VCol>
-              <div class="text-h6">Tiket Pesawat Awal</div>
-              <VTextField
-                model-value="Rp 700.000"
-                rounded="xl"
-                density="compact"
-              />
-            </VCol>
-            <VCol>
-              <div class="text-h6">Diskon (%)</div>
-              <VTextField
-                rounded="xl"
-                density="compact"
-                placeholder="Masukkan Diskon"
-              />
-            </VCol>
-            <VCol>
-              <div class="text-h6">Tiket Pesawat Akhir</div>
-              <VTextField
-                model-value="Rp 350.000"
-                rounded="xl"
-                density="compact"
+                placeholder="Rp 800.000"
               />
             </VCol>
           </VRow>
@@ -673,14 +837,269 @@ onMounted(async () => {
           <VBtn
             variant="outlined"
             class="px-4 me-3"
-            @click="handleOpenUpdateModal"
+            @click="editLn = false"
             >Batal</VBtn
           >
           <VBtn
             variant="flat"
             class="px-4"
             color="primary"
-            @click="handleUpdateAuditCost"
+            @click="onEditDataLn"
+          >
+            Ubah
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+    <VDialog v-model="editDialog" max-width="840px" persistent>
+      <VCard class="pa-4">
+        <VCardTitle class="d-flex justify-space-between align-center">
+          <div class="text-h3 font-weight-bold">
+            Ubah Biaya Audit
+          </div>
+          <VIcon @click="() => {
+            editDialog = false
+          }"> fa-times </VIcon>
+        </VCardTitle>
+        <VCardText>
+          <VRow>
+            <VCol>
+              <div class="text-h6">Fasilitas Produksi</div>
+              <VTextField
+                v-model="detailData.nama_pabrik"
+                rounded="xl"
+                density="compact"
+                disabled
+              />
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol>
+              <div class="text-h6">Unit Cost Awal</div>
+              <VTextField
+                v-model="detailData.unit_cost_awal"
+                rounded="xl"
+                density="compact"
+                disabled
+              />
+            </VCol>
+            <VCol>
+              <div class="text-h6">Diskon (%)</div>
+              <VTextField
+                v-model="detailData.unit_cost_diskon"
+                type="number"
+                rounded="xl"
+                density="compact"
+                placeholder="Masukkan Diskon"
+                @input="(e) => {
+                  if (+e.target.value) {
+                    const initialCost = idrToNumber(detailData.unit_cost_awal)
+                    detailData.unit_cost_akhir = initialCost - (initialCost * (+e.target.value / 100))
+                    if (detailData.unit_cost_akhir) {
+                      detailData.unit_cost_akhir = formatToIDR(detailData.unit_cost_akhir)
+                    }
+                  } else {
+                    detailData.unit_cost_akhir = detailData.unit_cost_awal
+                  }
+                }"
+              />
+            </VCol>
+            <VCol>
+              <div class="text-h6">Unit Cost Akhir</div>
+              <VTextField
+                v-model="detailData.unit_cost_akhir"
+                rounded="xl"
+                density="compact"
+                disabled
+              />
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol>
+              <div class="text-h6">UHPD Awal</div>
+              <VTextField
+                v-model="detailData.uhpd_awal"
+                rounded="xl"
+                density="compact"
+                disabled
+              />
+            </VCol>
+            <VCol>
+              <div class="text-h6">Diskon (%)</div>
+              <VTextField
+                v-model="detailData.uhpd_diskon"
+                rounded="xl"
+                density="compact"
+                placeholder="Masukkan Diskon"
+                @input="(e) => {
+                  if (+e.target.value) {
+                    const initialCost = idrToNumber(detailData.uhpd_awal)
+                    detailData.uhpd_akhir = initialCost - (initialCost * (+e.target.value / 100))
+                    if (detailData.uhpd_akhir) {
+                      detailData.uhpd_akhir = formatToIDR(detailData.uhpd_akhir)
+                    }
+                  } else {
+                    detailData.uhpd_akhir = detailData.uhpd_awal
+                  }
+                }"
+              />
+            </VCol>
+            <VCol>
+              <div class="text-h6">UHPD Akhir</div>
+              <VTextField
+                v-model="detailData.uhpd_akhir"
+                rounded="xl"
+                density="compact"
+                disabled
+              />
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol>
+              <div class="text-h6">Operasional</div>
+              <VTextField
+                v-model="detailData.operasional"
+                rounded="xl"
+                density="compact"
+                disabled
+              />
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol>
+              <div class="text-h6">Transportasi Awal</div>
+              <VTextField
+                v-model="detailData.transport_awal"
+                rounded="xl"
+                density="compact"
+                disabled
+              />
+            </VCol>
+            <VCol>
+              <div class="text-h6">Diskon (%)</div>
+              <VTextField
+                v-model="detailData.transport_diskon"
+                rounded="xl"
+                density="compact"
+                placeholder="Masukkan Diskon"
+                @input="(e) => {
+                  if (+e.target.value) {
+                    const initialCost = idrToNumber(detailData.transport_awal)
+                    detailData.transport_akhir = initialCost - (initialCost * (+e.target.value / 100))
+                    if (detailData.transport_akhir) {
+                      detailData.transport_akhir = formatToIDR(detailData.transport_akhir)
+                    }
+                  } else {
+                    detailData.transport_akhir = detailData.transport_awal
+                  }
+                }"
+              />
+            </VCol>
+            <VCol>
+              <div class="text-h6">Transportasi Akhir</div>
+              <VTextField
+                v-model="detailData.transport_akhir"
+                rounded="xl"
+                density="compact"
+                disabled
+              />
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol>
+              <div class="text-h6">Akomodasi Awal</div>
+              <VTextField
+                v-model="detailData.akomodasi_awal"
+                rounded="xl"
+                density="compact"
+                disabled
+              />
+            </VCol>
+            <VCol>
+              <div class="text-h6">Diskon (%)</div>
+              <VTextField
+                v-model="detailData.akomodasi_diskon"
+                rounded="xl"
+                density="compact"
+                placeholder="Masukkan Diskon"
+                @input="(e) => {
+                  if (+e.target.value) {
+                    const initialCost = idrToNumber(detailData.akomodasi_awal)
+                    detailData.akomodasi_akhir = initialCost - (initialCost * (+e.target.value / 100))
+                    if (detailData.akomodasi_akhir) {
+                      detailData.akomodasi_akhir = formatToIDR(detailData.akomodasi_akhir)
+                    }
+                  } else {
+                    detailData.akomodasi_akhir = detailData.akomodasi_awal
+                  }
+                }"
+              />
+            </VCol>
+            <VCol>
+              <div class="text-h6">Akomodasi Akhir</div>
+              <VTextField
+                v-model="detailData.akomodasi_akhir"
+                rounded="xl"
+                density="compact"
+                disabled
+              />
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol>
+              <div class="text-h6">Tiket Pesawat Awal</div>
+              <VTextField
+                v-model="detailData.tiket_pesawat_awal"
+                rounded="xl"
+                density="compact"
+                disabled
+              />
+            </VCol>
+            <VCol>
+              <div class="text-h6">Diskon (%)</div>
+              <VTextField
+                v-model="detailData.tiket_pesawat_diskon"
+                rounded="xl"
+                density="compact"
+                placeholder="Masukkan Diskon"
+                @input="(e) => {
+                  if (+e.target.value) {
+                    const initialCost = idrToNumber(detailData.tiket_pesawat_awal)
+                    detailData.tiket_pesawat_akhir = initialCost - (initialCost * (+e.target.value / 100))
+                    if (detailData.tiket_pesawat_akhir) {
+                      detailData.tiket_pesawat_akhir = formatToIDR(detailData.tiket_pesawat_akhir)
+                    }
+                  } else {
+                    detailData.tiket_pesawat_akhir = detailData.tiket_pesawat_awal
+                  }
+                }"
+              />
+            </VCol>
+            <VCol>
+              <div class="text-h6">Tiket Pesawat Akhir</div>
+              <VTextField
+                v-model="detailData.tiket_pesawat_akhir"
+                rounded="xl"
+                density="compact"
+                disabled
+              />
+            </VCol>
+          </VRow>
+        </VCardText>
+        <VCardActions class="pt-2 px-4">
+          <VBtn
+            variant="outlined"
+            class="px-4 me-3"
+            @click="() => {
+              editDialog = false
+            }"
+            >Batal</VBtn
+          >
+          <VBtn
+            variant="flat"
+            class="px-4"
+            color="primary"
+            @click="onEdit"
           >
             {{ domesticModalText }}
           </VBtn>
