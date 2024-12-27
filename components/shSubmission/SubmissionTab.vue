@@ -143,7 +143,7 @@ const { refresh } = await useAsyncData("get-detail-submission", async () => {
         id_pendamping,
       } = data || {};
 
-      submissionDetail.tanggal_buat = tgl_daftar;
+      submissionDetail.tanggal_buat = formatDate(tgl_daftar);
       submissionDetail.nama_pj = nama_pj;
       submissionDetail.nomor_kontak_pj = nomor_kontak_pj;
       formData.tgl_surat_permohonan = formatToISOString(tgl_daftar) as any;

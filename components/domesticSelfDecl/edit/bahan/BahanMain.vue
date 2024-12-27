@@ -63,7 +63,12 @@ const deleteBahan = async () => {
   } finally {
     deleteButton.value = false;
     await store.getBahan(route.params.id);
+    store.isBahan();
   }
+};
+const loadBahan = async () => {
+  await store.getBahan(route.params.id);
+  store.isBahan();
 };
 
 interface editBahan {
@@ -84,9 +89,7 @@ interface editBahan {
           ><h3>Daftar Nama Bahan dan Kemasan</h3></VCol
         >
         <VCol cols="6" style="display: flex; justify-content: end">
-          <TambahBahanModal
-            @loadList="store.getBahan(route.params.id)"
-          ></TambahBahanModal>
+          <TambahBahanModal @loadList="loadBahan()"></TambahBahanModal>
         </VCol>
       </VRow>
     </VCardTitle>
@@ -104,7 +107,7 @@ interface editBahan {
               }}</v-chip>
             </template>
             <template #item.action="{ item }">
-              <div class="d-flex gap-1">
+              <div class="d-flex gap-1" v-if="!item.vefified">
                 <EditBahanModal
                   :data="{
                     id: item.id,
@@ -116,9 +119,13 @@ interface editBahan {
                     produsen: item.produsen,
                     no_sertifikat: item.no_sertifikat,
                   }"
-                  @loadList="store.getBahan(route.params.id)"
+                  @loadList="loadBahan()"
                 />
-                <IconBtn size="small" @click="deleteItem(item.id)">
+                <IconBtn
+                  size="small"
+                  @click="deleteItem(item.id)"
+                  v-if="!item.vefified"
+                >
                   <VIcon color="error" icon="ri-delete-bin-line" />
                 </IconBtn>
               </div>
