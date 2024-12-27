@@ -138,7 +138,7 @@ const onSearchFasilitator = async () => {
       facName.value = response.data[0].name;
       console.log("ressponde id", response.data[0].id);
       console.log("responseId ", responseId);
-      formData.id_fasilitator.value = responseId.value;
+      // formData.id_fasilitator = responseId.value;
       console.log("id fasilitator ", formData.id_fasilitator);
     } else {
       responseMessage.value = response.message;
@@ -246,6 +246,7 @@ const getDetail = async () => {
     if (response.code == 2000) {
       submissionDetail.tanggal_buat = response.data.tgl_daftar.split("T")[0];
       submissionDetail.status = response.data.status_reg;
+      submissionDetail.id_jenis_pengajuan = response.data.jenis_pendaftaran;
       formData.tgl_surat_permohonan =
         response.data.tgl_surat_permohonan.split("T")[0];
       formData.id_jenis_pengajuan = response.data.jenis_pendaftaran;
@@ -378,7 +379,6 @@ const handleUpdateSubmission = async () => {
     useSnackbar().sendSnackbar("Gagal mengubah data", "error");
   }
 };
-
 const findListDaftar = (kode: string) => {
   const data = listPendaftaran.value.find((code) => kode == code.code);
   if (data == undefined) return { code: null, name: "-" };
@@ -397,6 +397,7 @@ onMounted(async () => {
   await handleGetFasilitator();
   await getDetail();
   await handleGetPendamping(formData.id_lembaga_pendamping);
+  console.log(submissionDetail);
   if (
     !listFasilitasi.value.some((item) => item.id == formData.id_fasilitator)
   ) {
@@ -443,9 +444,7 @@ onMounted(async () => {
           <VCol cols="2"> Jenis Pengajuan </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="9">
-            {{
-              findListDaftar(submissionDetail.id_jenis_pengajuan as any).name
-            }}
+            {{ findListDaftar(submissionDetail.id_jenis_pengajuan).name }}
           </VCol>
         </VRow>
         <br />
