@@ -31,7 +31,7 @@ const permohonanHeaders: any = [
   { title: "Nama PU", key: "nama_pu", nowrap: true },
   { title: "Alamat", key: "alamat", nowrap: true },
   { title: "Merk Dagang", key: "merek_dagang", nowrap: true },
-  { title: "Status", key: "status_code" },
+  { title: "Status", key: "status" },
   // { title: "Action", key: "action", align: "center" },
 ];
 const listData = ref<Array<DataItem>>([]);
@@ -443,7 +443,7 @@ onMounted(() => {
           <template #item.pilih="{ item }">
             <VCheckbox v-model="selectedItems" :value="item.id_daftar" />
           </template>
-          <template #item.status_code="{ item }">
+          <template #item.status="{ item }">
             <!-- <div v-if="item.status === 'OF74'">
               <div class="status-container">
                 <VChip
@@ -471,7 +471,7 @@ onMounted(() => {
                 "
               >
                 <span style="color: #652672">
-                  {{ item.status_code }}
+                  {{ item.status }}
                 </span>
               </VChip>
             </div>
