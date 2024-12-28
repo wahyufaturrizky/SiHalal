@@ -32,7 +32,7 @@ export default defineEventHandler(async event => {
   if (fasilitasi !== '')
     params['fac_id'] = fasilitasi
   if (namaPengajuan !== '')
-    params['nama_pengajuan'] = namaPengajuan
+    params['nama_pu'] = namaPengajuan
 
   // if (status !== "" && status !== "Semua") {
   //   params["status"] = status;
