@@ -2,6 +2,7 @@
 const route = useRoute();
 
 const selectedIsVefified = ref([]);
+const loadingAll = ref(true);
 
 const productHeader: any[] = [
   { title: "No", value: "index" },
@@ -27,7 +28,6 @@ const verifiedProduct = computed(() => {
 const isFormModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 
-const selectedDelete = ref();
 const modalUse = ref("CREATE");
 
 const modalTitle = computed(() => {
@@ -50,7 +50,6 @@ const handleSaveVerified = async () => {
     });
   }
 
-  console.log("selected verified = ", selectedIsVefified.value);
   if (countKey > 0) {
     console.log(submitedData);
     try {
@@ -106,6 +105,7 @@ const handleDeleteProduct = async () => {
 const { refresh } = await useAsyncData("list-product", async () => {
   return handleListProduct();
 });
+
 const handleListProduct = async () => {
   try {
     const response: any = await $api(
@@ -113,23 +113,24 @@ const handleListProduct = async () => {
       {
         method: "get",
         query: {
-          id_reg: route.params?.id,
+          id_reg: (route.params as any)?.id,
         },
       }
     );
 
     if (response.code === 2000) {
-      console.log("product list = ", response.data);
-      productData.value = response.data ? response.data : [];
-      if (response.data) {
-        productData.value.forEach((val) => {
-          selectedIsVefified.value.push(val.vefified);
-        });
-      }
+      productData.value = response.data || [];
+
+      response.data.forEach((val: any) => {
+        selectedIsVefified.value.push(val.vefified);
+      });
+
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    return response;
   } catch (error) {
-    console.log(error);
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
@@ -160,7 +161,7 @@ const handleAddProduct = async (payload: any) => {
         method: "post",
         body: payload,
         query: {
-          id_reg: route.params?.id,
+          id_reg: (route.params as any)?.id,
         },
       }
     );
@@ -210,7 +211,7 @@ const handleUpdateProduct = async (payload: any, productId: string) => {
         method: "put",
         body: payload,
         query: {
-          id_reg: route.params?.id,
+          id_reg: (route.params as any)?.id,
           product_id: productId,
         },
       }
@@ -237,13 +238,23 @@ const handleDownload = async (filename: string) => {
   }
 };
 
-onMounted(() => {
-  handleListProduct();
+onMounted(async () => {
+  const res: any = await Promise.all([handleListProduct()]);
+
+  const checkResIfUndefined = res.every((item: any) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
 });
 </script>
 
 <template>
-  <VCard>
+  <VCard v-if="!loadingAll">
     <VCardTitle class="my-3 d-flex justify-space-between align-center">
       <div class="font-weight-bold text-h4">Daftar Nama Produk</div>
       <div>
@@ -285,9 +296,9 @@ onMounted(() => {
         <template #item.ingredientInput="{ item }">
           <InputBahan
             :embedded-in-module="'pendampingSelfDec'"
-            :product-name="item.nama"
-            :product-id="item.id"
-            :bahan-selected="item.bahan_selected ? item.bahan_selected : []"
+            :product-name="(item as any).nama"
+            :product-id="(item as any).id"
+            :bahan-selected="(item as any).bahan_selected ? (item as any).bahan_selected : []"
             @submit="handleAddIngredient"
           />
         </template>
@@ -295,11 +306,11 @@ onMounted(() => {
           <!-- <VCheckboxBtn v-model="item.isVerified" /> -->
           <VCheckboxBtn
             @change="addVefified($event)"
-            :key="item.id"
+            :key="(item as any).id"
             v-model="selectedIsVefified[index]"
           ></VCheckboxBtn>
         </template>
-        <template #item.actions="{ index, item }">
+        <template #item.actions="{ item }">
           <VMenu>
             <template #activator="{ props }">
               <VIcon
@@ -317,11 +328,11 @@ onMounted(() => {
                 @click="handleOpenFormModal('EDIT')"
               /> -->
               <UbahProduk
-                :submission-id="route.params?.id"
-                :id-produk="item.id"
+                :submission-id="(route.params as any)?.id"
+                :id-produk="(item as any).id"
                 @confirm-edit="handleUpdateProduct"
               ></UbahProduk>
-              <VListItem @click="handleOpenModal('DELETE', item.id)">
+              <VListItem @click="handleOpenModal('DELETE', (item as any).id)">
                 <template #prepend>
                   <VIcon
                     icon="mdi-delete"

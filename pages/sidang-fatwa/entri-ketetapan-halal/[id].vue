@@ -5,22 +5,21 @@ const route = useRoute();
 
 const sidangFatwaId = (route.params as any).id;
 
-const loadingAll = ref(true);
-const detailData = ref();
-
-const profil = ref();
-const jenisUsaha = ref();
-const skalaUsaha = ref();
-const trackingData = ref();
+const loadingAll = ref(true)
+const detailData = ref()
+const profil = ref()
+const jenisUsaha = ref()
+const skalaUsaha = ref()
+const trackingData = ref()
 
 const loadItemById = async () => {
   try {
     const response: any = await $api(
       `/sidang-fatwa/entri-ketetapan-halal/${sidangFatwaId}`,
       {
-        method: "get",
-      }
-    );
+        method: 'get',
+      },
+    )
 
     if (response.code === 2000) {
       detailData.value = response.data;
