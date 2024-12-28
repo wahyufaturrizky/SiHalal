@@ -8,6 +8,7 @@ const router = useRouter();
 const selfDeclareId = (route.params as any).id;
 
 const detailData = ref();
+const isFasilitator = ref<boolean>(false);
 const loadingAll = ref(true);
 const loadingTandaiOK = ref(false);
 const loadingTandaiNotOK = ref(false);
@@ -16,6 +17,34 @@ const loadingPengembalian = ref(false);
 const itemsPabrik = ref([]);
 const itemsOutlet = ref([]);
 const listKodeDaftarFasilitasi = ref([]);
+const listFasilitasi = ref([]);
+
+const handleGetFasilitator = async () => {
+  try {
+    const response: any = await $api(
+      "/self-declare/business-actor/submission/list-fasilitator",
+      {
+        method: "get",
+        query: {
+          reg_id: selfDeclareId,
+          lokasi: "Kabupaten",
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      listFasilitasi.value = response.data;
+      listFasilitasi.value.push({
+        id: "Lainnya",
+        name: "Lainnya",
+      });
+    }
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const tabs = ref([
   { text: "Pelaku Usaha", value: "pelaku_usaha" },
@@ -62,6 +91,7 @@ const itemPerPageOutlet = ref(10);
 const totalItemsOutlet = ref(0);
 const pageOutlet = ref(1);
 const loadingOutlet = ref(false);
+const lembagaPendamping = ref([]);
 
 const itemPerPageAspekLegal = ref(10);
 const totalItemsAspekLegal = ref(0);
@@ -118,6 +148,40 @@ const statusItem: any = new Proxy(
     },
   }
 );
+
+const formData = reactive({
+  id_reg: selfDeclareId,
+  jenis_pendaftaran: null,
+  id_jenis_pengajuan: null,
+  kode_daftar: null,
+  no_mohon: null,
+  tgl_surat_permohonan: null,
+  tgl_mohon: null,
+  jenis_layanan: null,
+  jenis_produk: null,
+  id_jenis_layanan: null,
+  id_jenis_produk: null,
+  id_fasilitator: null,
+  nama_pu: null,
+  area_pemasaran: null,
+  lokasi_pendamping: "Provinsi",
+  lembaga_pendamping: null,
+  id_lembaga_pendamping: null,
+  pendamping: null,
+  id_pendamping: null,
+});
+
+const responseType = computed(() => {
+  return responseMessage.value == "Kode Fasilitasi dapat digunakan"
+    ? "success"
+    : "error";
+});
+
+const responseColor = computed(() => {
+  return responseMessage.value == "Kode Fasilitasi dapat digunakan"
+    ? "#5CB338"
+    : "#FB4141";
+});
 
 const loadItemPabrik = async (
   pageParamPabrik: number,
@@ -549,12 +613,65 @@ const loadListFasilitasi = async () => {
   }
 };
 
+const handleGetLembagaPendampingInitial = async (lokasi: string) => {
+  try {
+    const response: any = await $api(
+      "/self-declare/business-actor/submission/list-lembaga-pendamping",
+      {
+        method: "get",
+        query: {
+          id_reg: self,
+          lokasi,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      lembagaPendamping.value = response.data;
+      return response;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const handleGetPendamping = async (idLembaga: string | null) => {
+  if (!idLembaga) return;
+  try {
+    const response: any = await $api(
+      "/self-declare/business-actor/submission/list-pendamping",
+      {
+        method: "get",
+        query: {
+          id_lembaga: idLembaga,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      if (response.data !== null) listPendamping.value = response.data;
+      console.log("isi list", listPendamping.value);
+    }
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const loadDataPendamping = async (lokasi: string | null) => {
+  if (lokasi) await handleGetLembagaPendamping(lokasi);
+};
+
 onMounted(async () => {
   const res: any = await Promise.all([
     loadItemById(),
     loadDocument(),
+    handleGetLembagaPendampingInitial(formData.lokasi_pendamping),
     loadAgama(),
+    handleGetFasilitator(),
     loadJenisPendaftaran(),
+    handleGetPendamping(formData.id_lembaga_pendamping),
     loadJenisLayanan(),
     loadJenisProduk(),
     loadListFasilitasi(),
@@ -569,7 +686,19 @@ onMounted(async () => {
       page: pageAspekLegal.value,
       size: itemPerPageAspekLegal.value,
     }),
+    onSearchFasilitator(),
   ]);
+
+  if (
+    formData.id_fasilitator != null &&
+    !listFasilitasi.value.some(
+      (item) => (item as any).id == formData.id_fasilitator
+    )
+  ) {
+    formData.id_fasilitator.value = "Lainnya";
+    onSelectFasilitator("Lainnya");
+    onSearchFasilitator();
+  }
 
   const checkResIfUndefined = res.every((item: any) => {
     return item !== undefined;
@@ -774,6 +903,57 @@ const dibatalkan = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loadingDibatalkan.value = false;
   }
+};
+
+const lokasiPendamping = ref([
+  { title: "Kabupaten", value: "Kabupaten" },
+  { title: "Provinsi", value: "Provinsi" },
+]);
+
+const querySearch = ref("");
+const facName = ref("");
+const isKodeFound = ref<boolean>(false);
+const isKodeNotFound = ref<boolean>(false);
+const responseMessage = ref("");
+const responseId = ref("");
+
+const onSearchFasilitator = async () => {
+  try {
+    facName.value = "";
+    const kode = querySearch.value;
+
+    const response: any = await $api("/self-declare/submission/kode", {
+      method: "post",
+      body: {
+        kode,
+      },
+    });
+
+    if (response.message === "Kode Fasilitasi dapat digunakan") {
+      isKodeFound.value = true;
+      isKodeNotFound.value = false;
+      responseMessage.value = "";
+      responseId.value = response.data[0].id;
+      facName.value = response.data[0].name;
+      console.log("ressponde id", response.data[0].id);
+      console.log("responseId ", responseId);
+      // formData.id_fasilitator = responseId.value;
+      console.log("id fasilitator ", formData.id_fasilitator);
+    } else {
+      responseMessage.value = response.message;
+      isKodeFound.value = false;
+      isKodeNotFound.value = true;
+    }
+    return response;
+  } catch (error) {}
+};
+
+const onSelectFasilitator = (selectedId: string) => {
+  if ((isFasilitator.value = selectedId === "Lainnya")) {
+    onSearchFasilitator();
+    return;
+  }
+  isKodeFound.value = false;
 };
 </script>
 
@@ -1145,7 +1325,6 @@ const dibatalkan = async () => {
                       />
                     </VCol>
 
-                    <!-- Kode Daftar / Fasilitasi -->
                     <VCol cols="12">
                       <VLabel class="required">
                         Kode Daftar / Fasilitasi
@@ -1153,19 +1332,14 @@ const dibatalkan = async () => {
                       <VRow align="center" class="mb-2">
                         <VCol cols="5.5">
                           <VSelect
-                            v-model="dataFormPengajuan.kodeDaftarFasilitasi"
-                            :items="listKodeDaftarFasilitasi"
+                            v-model="formData.id_fasilitator"
+                            density="compact"
+                            :items="listFasilitasi"
                             item-title="name"
+                            :rules="[requiredValidator]"
                             item-value="id"
-                            disabled
-                          />
-                        </VCol>
-                        <span>Atau</span>
-                        <VCol cols="5.5">
-                          <VTextField
-                            append-inner-icon="mdi-magnify"
-                            required
-                            disabled
+                            placeholder="Pilih Fasilitator"
+                            @update:model-value="onSelectFasilitator"
                           />
                         </VCol>
                       </VRow>
@@ -1180,16 +1354,80 @@ const dibatalkan = async () => {
                         sertifikasi halal gratis
                       </VAlert>
                     </VCol>
+
+                    <VRow>
+                      <VCol v-if="isFasilitator" cols="12">
+                        <VTextField
+                          v-model="querySearch"
+                          placeholder="Masukan Kode Fasilitasi"
+                          append-inner-icon="mdi-magnify"
+                          density="compact"
+                          :rules="[requiredValidator]"
+                          @input="onSearchFasilitator"
+                        />
+                      </VCol>
+                    </VRow>
+                    <VRow>
+                      <VCol v-if="isFasilitator" cols="12">
+                        <VTextField
+                          v-model="facName"
+                          placeholder="nama Fasilitator"
+                          density="compact"
+                          readonly
+                        />
+                      </VCol>
+                    </VRow>
+                    <div v-if="isFasilitator">
+                      <VAlert
+                        v-if="isKodeNotFound"
+                        :type="responseType"
+                        variant="tonal"
+                        :color="responseColor"
+                        class="mt-5"
+                      >
+                        {{ responseMessage }}
+                      </VAlert>
+                      <VAlert
+                        v-if="isKodeFound"
+                        type="success"
+                        variant="tonal"
+                        color="#5CB338"
+                        class="mt-5"
+                      >
+                        Kode Fasilitasi dapat digunakan
+                      </VAlert>
+
+                      <VAlert
+                        v-if="!isKodeFound"
+                        type="warning"
+                        variant="tonal"
+                        color="#652672"
+                        class="mt-5"
+                      >
+                        Kode unik yang diterbitkan oleh BPJPH yang diberikan
+                        kepada fasilitator sebagai kode untuk mendaftarkan
+                        sertifikasi halal gratis
+                      </VAlert>
+
+                      <VAlert
+                        v-if="isKodeFound"
+                        type="warning"
+                        variant="tonal"
+                        color="#652672"
+                        class="mt-5"
+                      >
+                        Pastikan anda melengkapi isian pengajuan sertifikasi
+                        halal dan mengirimkan pengajuan untuk memperoleh
+                        fasilitasi sertifikat halal.
+                      </VAlert>
+                    </div>
+
                     <VDivider class="mt-2" />
                     <!-- Nomor Surat Permohonan & Tanggal Surat Pemohon -->
                     <VCol cols="6">
-                      <VLabel
-                        v-model="dataFormPengajuan.nomorSuratPermohonan"
-                        class="required"
-                      >
-                        Nomor Surat Permohonan
-                      </VLabel>
+                      <VLabel class="required"> Nomor Surat Permohonan </VLabel>
                       <VTextField
+                        v-model="dataFormPengajuan.nomorSuratPermohonan"
                         disabled
                         required
                         placeholder="Isi Nomor Surat Permohonan"
@@ -1266,9 +1504,10 @@ const dibatalkan = async () => {
                       <VLabel class="required"> Lokasi Pendamping </VLabel>
                       <VSelect
                         placeholder="Pilih Area Pendamping"
-                        :items="['Lokasi A', 'Lokasi B']"
+                        :items="lokasiPendamping"
                         required
                         v-model="dataFormPengajuan.lokasiPendamping"
+                        @update:model-value="loadDataPendamping"
                       />
                     </VCol>
 
@@ -1277,9 +1516,10 @@ const dibatalkan = async () => {
                       <VLabel class="required"> Lembaga Pendamping </VLabel>
                       <VSelect
                         placeholder="Pilih Lembaga Pendamping"
-                        :items="['Lembaga A', 'Lembaga B']"
+                        :items="lembagaPendamping"
                         required
                         v-model="dataFormPengajuan.lembagaPendamping"
+                        @update:model-value="handleGetPendamping"
                       />
                     </VCol>
 
@@ -1288,9 +1528,11 @@ const dibatalkan = async () => {
                       <VLabel class="required"> Pendamping </VLabel>
                       <VSelect
                         placeholder="Pilih Pendamping"
-                        :items="['Pendamping A', 'Pendamping B']"
+                        :items="listPendamping"
                         required
                         v-model="dataFormPengajuan.pendamping"
+                        item-title="name"
+                        item-value="id"
                       />
                     </VCol>
                   </VRow>
