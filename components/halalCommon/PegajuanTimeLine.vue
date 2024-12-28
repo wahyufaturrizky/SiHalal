@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, ref, watch } from 'vue';
+import { defineProps, ref, watch } from 'vue'
 
 const props = defineProps({
   melacak: {
@@ -8,17 +8,34 @@ const props = defineProps({
   },
 })
 
-console.log(props.melacak, 'ini props tracking di halal 2 timeline')
-
+const defaultStatus = { color: 'error', desc: 'Unknown Status' }
 const melacak2 = ref([])
 
-// Watch the `databahan` prop for changes and process it
+const statusMap = {
+  'OF1': { color: 'primary', desc: 'Draft' },
+  'OF10': { color: 'success', desc: 'Submitted' },
+  'OF71': { color: 'success', desc: 'Finish P3H' },
+  'OF74': { color: 'success', desc: 'Sent to Komite Fatwa' },
+  'OF280': { color: 'error', desc: 'Returned to PU' },
+  'OF285': { color: 'error', desc: 'Returned to Komite Fatwa' },
+  'OF100': { color: 'success', desc: 'Complete' },
+  'OF120': { color: 'success', desc: 'Certified Issued' },
+  'OF300': { color: 'success', desc: 'Halal Certified Issued' },
+}
+
+const getStatusDesc = (status: string) =>
+  statusMap[status]?.desc || "Unknown Status"
+
+// Example usage in `watch`:
 watch(
   () => props.melacak,
   newDataTracking => {
-    console.log(newDataTracking, 'Updated databahan')
-    melacak2.value = Array.isArray(newDataTracking) ? [...newDataTracking] : []
-    console.log(melacak2.value, 'Processed melacak')
+    melacak2.value = Array.isArray(newDataTracking)
+      ? newDataTracking.map(item => ({
+          ...item,
+          status: getStatusDesc(item.status),
+        }))
+      : []
   },
   { immediate: true },
 )
