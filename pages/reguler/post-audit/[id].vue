@@ -1,99 +1,96 @@
 <script setup lang="ts">
-import LPHDetailLayout from '@/layouts/LPHDetailLayout.vue'
+import LPHDetailLayout from "@/layouts/LPHDetailLayout.vue";
 
-const route = useRoute()
-const id = route?.params?.id
+const route = useRoute();
+const id = (route?.params as any).id;
 
-const openedLeftPanels = ref([0, 1, 2, 3, 4, 5])
-const openedRightPanels = ref([0, 1, 2])
-const loading = ref(false)
-const dataPengajuan = ref<any>({})
-const dataProduk = ref<any>([])
-const dataPemeriksaanProduk = ref<any>(null)
+const openedLeftPanels = ref([0, 1, 2, 3, 4, 5]);
+const openedRightPanels = ref([0, 1, 2]);
+const loading = ref(false);
+const dataPengajuan = ref<any>({});
+const dataProduk = ref<any>([]);
+const dataPemeriksaanProduk = ref<any>(null);
 
 const assignAuditorHeader: any[] = [
-  { title: 'No', key: 'index' },
-  { title: 'Nama', key: 'name' },
-  { title: 'Tanggal Lahir', key: 'birthDate' },
-  { title: 'No Reg', key: 'regisNumber' },
-  { title: 'Action', key: 'actions', align: 'center', sortable: false },
-]
+  { title: "No", key: "index" },
+  { title: "Nama", key: "name" },
+  { title: "Tanggal Lahir", key: "birthDate" },
+  { title: "No Reg", key: "regisNumber" },
+  { title: "Action", key: "actions", align: "center", sortable: false },
+];
 
 const assignAuditorData = ref([
-  { name: 'Idris', birthDate: '02/10/2000', regisNumber: 'SK-896376-3028' },
-])
+  { name: "Idris", birthDate: "02/10/2000", regisNumber: "SK-896376-3028" },
+]);
 
 const newAuditorData = {
-  name: 'Aliando Syakir',
-  birthDate: '02/10/2000',
-  regisNumber: 'SK-896376-3028',
-}
+  name: "Aliando Syakir",
+  birthDate: "02/10/2000",
+  regisNumber: "SK-896376-3028",
+};
 
-const assignedAuditor = ref(null)
-const isAssignModalOpen = ref(false)
-const isUpdateModalOpen = ref(false)
+const assignedAuditor = ref(null);
+const isAssignModalOpen = ref(false);
+const isUpdateModalOpen = ref(false);
 
 const handleOpenAssignModal = () => {
-  isAssignModalOpen.value = !isAssignModalOpen.value
-}
+  isAssignModalOpen.value = !isAssignModalOpen.value;
+};
 
 const handleOpenUpdateModal = () => {
-  isUpdateModalOpen.value = !isUpdateModalOpen.value
-}
+  isUpdateModalOpen.value = !isUpdateModalOpen.value;
+};
 
 const handleAddAuditor = () => {
-  assignAuditorData.value.push(newAuditorData)
-}
+  assignAuditorData.value.push(newAuditorData);
+};
 
 const handleDeleteAuditor = (index: number) => {
-  assignAuditorData.value.splice(index, 1)
-}
+  assignAuditorData.value.splice(index, 1);
+};
 
 const handleSaveAuditor = () => {
-  useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
-}
+  useSnackbar().sendSnackbar("Berhasil mengirim pengajuan data", "success");
+};
 
 const handleUpdateStatus = () => {
   const snackbarMessage = assignedAuditor.value
-    ? 'Berhasil mengupdate status data'
-    : 'Gagal mengupdate status, silahkan assign auditor'
+    ? "Berhasil mengupdate status data"
+    : "Gagal mengupdate status, silahkan assign auditor";
 
-  const snackbarType = assignedAuditor.value ? 'success' : 'error'
+  const snackbarType = assignedAuditor.value ? "success" : "error";
 
-  useSnackbar().sendSnackbar(snackbarMessage, snackbarType)
-}
+  useSnackbar().sendSnackbar(snackbarMessage, snackbarType);
+};
 
 const getDetailData = async (type: string) => {
   try {
-    const response: any = await $api('/reguler/lph/detail-payment', {
-      method: 'get',
+    const response: any = await $api("/reguler/lph/detail-payment", {
+      method: "get",
       params: { url: `${POST_AUDIT_DETAIL}/${id}/${type}` },
-    })
+    });
 
-    if (response?.code === 2000)
-      return response?.data
-    else
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    if (response?.code === 2000) return response?.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 onMounted(async () => {
-  loading.value = true
+  loading.value = true;
 
   const responseData = await Promise.allSettled([
-    getDetailData('pengajuan'),
-    getDetailData('produk'),
-    getDetailData('pemeriksaanproduk'),
-  ])
+    getDetailData("pengajuan"),
+    getDetailData("produk"),
+    getDetailData("pemeriksaanproduk"),
+  ]);
 
-  dataPengajuan.value = responseData?.[0]?.value || {}
-  dataPemeriksaanProduk.value = responseData?.[1]?.value || {}
-  dataProduk.value = responseData?.[2]?.value || []
-  loading.value = false
-})
+  dataPengajuan.value = responseData?.[0]?.value || {};
+  dataPemeriksaanProduk.value = responseData?.[1]?.value || {};
+  dataProduk.value = responseData?.[2]?.value || [];
+  loading.value = false;
+});
 </script>
 
 <template>
@@ -109,20 +106,21 @@ onMounted(async () => {
               <VBtn
                 variant="outlined"
                 color="#E1442E"
-                style="border-color: #E1442E;"
+                style="border-color: #e1442e"
                 @click="() => toggle('return')"
               >
                 Pengembalian
               </VBtn>
-              <VBtn variant="outlined">
-                Lihat Draft Sertif
+              <VBtn variant="outlined"> Lihat Draft Sertif </VBtn>
+              <VBtn
+                @click="
+                  navigateTo(`/sh-domestic/submission/reguler/${id}/edit`)
+                "
+                variant="outlined"
+              >
+                Cek Data
               </VBtn>
-              <VBtn variant="outlined">
-                Cetak Data
-              </VBtn>
-              <VBtn @click="() => toggle('add')">
-                Kirim
-              </VBtn>
+              <VBtn @click="() => toggle('add')"> Kirim </VBtn>
             </VRow>
           </VCol>
         </VRow>
@@ -242,7 +240,9 @@ onMounted(async () => {
               No. Pendaftaran
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelNoPendaftaran :data="dataPemeriksaanProduk?.no_pendaftaran" />
+              <PanelNoPendaftaran
+                :data="dataPemeriksaanProduk?.no_pendaftaran"
+              />
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="2" class="pt-3">
@@ -251,7 +251,9 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <VRow>
-                <VCol>{{ formatToIDR(dataPemeriksaanProduk?.total_biaya) }}</VCol>
+                <VCol>{{
+                  formatToIDR(dataPemeriksaanProduk?.total_biaya)
+                }}</VCol>
               </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
