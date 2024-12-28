@@ -125,7 +125,12 @@ onMounted(async () => {
       <KembaliButton class="pl0" />
       <div class="headerSection">
         <h3 class="text-h3 font-weight-bold">Ubah Data</h3>
-        <div v-if="activeTab === 4 || activeTab === 5 || activeTab === 6">
+        <div
+          v-if="
+            (activeTab === 4 || activeTab === 5 || activeTab === 6) &&
+            !isViewOnly
+          "
+        >
           <VRow>
             <VCol>
               <VBtn
@@ -177,7 +182,7 @@ onMounted(async () => {
             </div>
           </div>
           <div v-if="activeTab === 2">
-            <Bahan />
+            <Bahan :isviewonly="isViewOnly" />
           </div>
           <div v-if="activeTab === 3">
             <div v-if="!approveRequirements">
@@ -191,7 +196,7 @@ onMounted(async () => {
             </div>
           </div>
           <div v-if="activeTab === 4">
-            <Produk />
+            <Produk :isviewonly="isViewOnly" />
           </div>
           <div v-if="activeTab === 5">
             <Evaluasi />
