@@ -174,8 +174,24 @@ const handleGetJenisLayanan = async () => {
 
 const handleGetJenisProduk = async () => {
   try {
-    listProduk.value = await $api("/master/products", {
+    listProduk.value = await $api("/master/product-filter", {
       method: "get",
+      params: {
+        id: formData.id_jenis_layanan,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+const handleGetJenisProdukFilter = async (item) => {
+  try {
+    formData.id_jenis_produk = null;
+    listProduk.value = await $api("/master/product-filter", {
+      method: "get",
+      params: {
+        id: item,
+      },
     });
   } catch (error) {
     console.log(error);
@@ -388,6 +404,7 @@ const findListDaftar = (kode: string) => {
 
 onMounted(async () => {
   // await Promise.all([
+  await getDetail();
   await handleGetListPendaftaran();
   await handleGetJenisLayanan();
   await handleGetJenisProduk();
@@ -395,7 +412,6 @@ onMounted(async () => {
   // handleDetailPengajuan();
   await loadDataPendamping(formData.lokasi_pendamping);
   await handleGetFasilitator();
-  await getDetail();
   await handleGetPendamping(formData.id_lembaga_pendamping);
   console.log(submissionDetail);
   if (
@@ -606,6 +622,7 @@ onMounted(async () => {
                 item-title="name"
                 :rules="[requiredValidator]"
                 item-value="code"
+                @update:model-value="handleGetJenisProdukFilter"
               />
             </VItemGroup>
             <br />
