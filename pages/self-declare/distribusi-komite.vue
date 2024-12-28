@@ -23,7 +23,7 @@ const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
 const permohonanHeaders: any = [
-  { title: "No", key: "id", maxWidth: 25 },
+  { title: "No", key: "id", sortable: false },
   { title: "Pilih", key: "pilih", maxWidth: 60 },
   { title: "ID Daftar", key: "id_daftar", nowrap: true },
   { title: "Nomor Daftar", key: "no_daftar", nowrap: true },
@@ -71,8 +71,8 @@ const onHandleDistribusi = async () => {
       } as any
     );
     if (result.code === 2000) {
-      refresh();
       useSnackbar().sendSnackbar("Berhasil Mengdistribusikan Data", "success");
+      refresh();
     }
   } catch (error) {
     useSnackbar().sendSnackbar(
