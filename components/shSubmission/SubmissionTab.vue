@@ -178,6 +178,10 @@ const findListDaftar = (kode: string) => {
   if (data == undefined) return { code: null, name: "-" };
   return data;
 };
+const findListFasilitator = (fac_id: string) => {
+  const data = listPendaftaran.value.find((list: any) => fac_id == list.id);
+  return data;
+};
 
 const listFasilitasi = ref([]);
 const listLayanan = ref([]);
