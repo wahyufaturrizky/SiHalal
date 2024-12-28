@@ -6,6 +6,7 @@ const sessionData = await useMyAuthUserStore().getSession();
 const userRoles = sessionData.value?.roles.map((role) => role.name);
 
 const currentTab = ref("IDENTITY");
+const refresh = ref();
 
 const route = useRoute();
 const id_detail = (route.params as any).id as string;

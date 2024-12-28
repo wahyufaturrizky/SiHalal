@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const router = useRouter();
+const loadingAll = ref(true);
 
 const ingredientHeader: any = [
   { title: "No", key: "index" },
@@ -38,22 +38,25 @@ const deletedId = ref();
 
 const loadBahan = async () => {
   try {
-    const options = {
+    const options: any = {
       method: "get",
     };
-    const response = await $api(
-      `/self-declare/submission/bahan/${route.params.id}/list`,
+    const response: any = await $api(
+      `/self-declare/submission/bahan/${(route.params as any).id}/list`,
       options
     );
-    ingredientData.value = response.data;
-    if (ingredientData.value) {
-      ingredientData.value.forEach((val) => {
+
+    if (response.code === 2000) {
+      ingredientData.value = response.data;
+      response.data.forEach((val: any) => {
         selectedIsVefified.value.push(val.vefified);
       });
+
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    // console.log("data bahan = ", response?.data);
   } catch (error) {
-    console.log(error);
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
@@ -70,9 +73,7 @@ const isDeleteModalOpen = ref(false);
 const selectedDelete = ref();
 const selectedIsVefified = ref([]);
 
-const addVefified = (event: any) => {
-  console.log("event", selectedIsVefified.value);
-};
+const addVefified = (event: any) => {};
 
 const handleSaveVerified = async () => {
   const submitedData = {};
@@ -88,7 +89,6 @@ const handleSaveVerified = async () => {
     });
   }
 
-  console.log(selectedIsVefified.value);
   if (countKey > 0) {
     console.log(submitedData);
     try {
@@ -123,11 +123,11 @@ const handleOpenDeleteModal = (index: string) => {
   selectedDelete.value = index;
   isDeleteModalOpen.value = true;
 };
+
 const handleDeleteIngredient = async () => {
   try {
-    console.log("deleted id 2 =", deletedId.value);
-    const response = await $api(
-      `/self-declare/submission/bahan/${route.params.id}/delete`,
+    const response: any = await $api(
+      `/self-declare/submission/bahan/${(route.params as any).id}/delete`,
       {
         method: "post",
         body: {
@@ -140,7 +140,6 @@ const handleDeleteIngredient = async () => {
       return;
     }
 
-    // deleteDialog.value = false;
     useSnackbar().sendSnackbar("Berhasil Menghapus bahan", "success");
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal Menghapus bahan", "error");
@@ -150,12 +149,22 @@ const handleDeleteIngredient = async () => {
 };
 
 onMounted(async () => {
-  await loadBahan();
+  const res: any = await Promise.all([loadBahan()]);
+
+  const checkResIfUndefined = res.every((item: any) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
 });
 </script>
 
 <template>
-  <VCard>
+  <VCard v-if="!loadingAll">
     <VCardTitle class="my-3 d-flex justify-space-between align-center">
       <div class="font-weight-bold text-h4">Daftar Nama Bahan dan Kemasan</div>
       <div>
@@ -227,6 +236,12 @@ onMounted(async () => {
       </VDataTable>
     </VCardText>
   </VCard>
+
+  <VSkeletonLoader
+    type="table-heading, list-item-two-line, image, table-tfoot"
+    v-else
+  />
+
   <ShSubmissionDetailFormModal
     dialog-title="Menghapus Data"
     :dialog-visible="isDeleteModalOpen"
