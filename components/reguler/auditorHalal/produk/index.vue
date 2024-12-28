@@ -1,35 +1,43 @@
 <!-- eslint-disable array-callback-return -->
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
 
-const route = useRoute()
-const addDialog = ref(false)
-const confirmSaveDialog = ref(false)
-const loading = ref(false)
-const titleDialog = ref('')
-const id = route.params.id
-const lovPabrik = ref<any>([])
-const lovProduct = ref<any>([])
-const start = ref(1)
-const end = ref(1)
-const lengthData = ref([])
+const props = defineProps<{
+  isviewonly: Boolean;
+}>();
+
+const route = useRoute();
+const addDialog = ref(false);
+const confirmSaveDialog = ref(false);
+const loading = ref(false);
+const titleDialog = ref("");
+const id = route.params.id;
+const lovPabrik = ref<any>([]);
+const lovProduct = ref<any>([]);
+const start = ref(1);
+const end = ref(1);
+const lengthData = ref([]);
 
 const formData = ref({
-  id_pabrik: '',
+  id_pabrik: "",
   id_produk: [],
-})
+});
 
-const comitmentData = ref(
-  {
-    label: [
-      { title: 'No.', key: 'no', nowrap: true },
-      { title: 'Nama Produk', key: 'nama_produk', nowrap: true },
-      { title: 'Nama Pabrik', key: 'nama_pabrik', nowrap: true },
-      { title: 'Action', value: 'action', sortable: false, nowrap: true, popOver: true },
-    ],
-    value: [],
-  },
-)
+const comitmentData = ref({
+  label: [
+    { title: "No.", key: "no", nowrap: true },
+    { title: "Nama Produk", key: "nama_produk", nowrap: true },
+    { title: "Nama Pabrik", key: "nama_pabrik", nowrap: true },
+    {
+      title: "Action",
+      value: "action",
+      sortable: false,
+      nowrap: true,
+      popOver: true,
+    },
+  ],
+  value: [],
+});
 
 const tableHeader = [
   { title: "No", value: "no" },
@@ -48,169 +56,152 @@ const items = [
 const selected = ref([]);
 
 const toggleAdd = () => {
-  addDialog.value = true
-  titleDialog.value = 'Tambah Pemetaan Produk dan Pabrik'
-}
+  addDialog.value = true;
+  titleDialog.value = "Tambah Pemetaan Produk dan Pabrik";
+};
 
 const toggleEdit = () => {
-  addDialog.value = true
-  titleDialog.value = 'Ubah Pemetaan Produk dan Pabrik'
-}
+  addDialog.value = true;
+  titleDialog.value = "Ubah Pemetaan Produk dan Pabrik";
+};
 
 const handleSubmit = () => {
   // submit
-}
+};
 
 const getListData = async () => {
   try {
-    const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-produk/list',
-      {
-        method: 'get',
-        query: {
-          url: `${LIST_TAB_PRODUK}${id}/list`,
-        },
+    const response: any = await $api("/reguler/pelaku-usaha/tab-produk/list", {
+      method: "get",
+      query: {
+        url: `${LIST_TAB_PRODUK}${id}/list`,
       },
-    )
+    });
 
     if (response.code === 2000) {
       comitmentData.value = {
         ...comitmentData.value,
         value: response.data,
-      }
+      };
     }
 
-    return response.data
+    return response.data;
+  } catch (error) {
+    console.log(error);
   }
-  catch (error) {
-    console.log(error)
-  }
-}
+};
 
 const getListPabrikLayout = async () => {
   try {
-    const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-produk/list',
-      {
-        method: 'get',
-        query: {
-          url: `${LIST_TAB_PRODUK}${id}/list-pabrik`,
-        },
+    const response: any = await $api("/reguler/pelaku-usaha/tab-produk/list", {
+      method: "get",
+      query: {
+        url: `${LIST_TAB_PRODUK}${id}/list-pabrik`,
       },
-    )
+    });
 
-    if (response.code === 2000)
-      lovPabrik.value = response.data
+    if (response.code === 2000) lovPabrik.value = response.data;
 
-    return response.data
+    return response.data;
+  } catch (error) {
+    console.log(error);
   }
-  catch (error) {
-    console.log(error)
-  }
-}
+};
 
 const getListProduct = async () => {
   try {
-    const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-produk/list',
-      {
-        method: 'get',
-        query: {
-          url: `api/v1/halal-certificate-reguler/lph/post-audit/${id}/produk`,
-        },
+    const response: any = await $api("/reguler/pelaku-usaha/tab-produk/list", {
+      method: "get",
+      query: {
+        url: `api/v1/halal-certificate-reguler/lph/post-audit/${id}/produk`,
       },
-    )
+    });
 
     response.data.map((item: any) => {
-      item.checked = false
-    })
+      item.checked = false;
+    });
 
     const countData = Array(response.data.length)
       .fill(0)
-      .map((_, index) => index + 1)
+      .map((_, index) => index + 1);
 
-    lovProduct.value = response.data
-    lengthData.value = countData
+    lovProduct.value = response.data;
+    lengthData.value = countData;
+  } catch (error) {
+    console.log(error);
   }
-  catch (error) {
-    console.log(error)
-  }
-}
+};
 
 const handleAddOrEdit = async () => {
-  const listChecked: any[] = []
+  const listChecked: any[] = [];
 
   lovProduct.value.map((item: any) => {
-    if (item.checked)
-      return listChecked.push(item.id_reg_prod)
-  })
+    if (item.checked) return listChecked.push(item.id_reg_prod);
+  });
 
   const payload = {
     ...formData.value,
     id_produk: listChecked,
-  }
+  };
 
   try {
     const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-produk/create',
+      "/reguler/pelaku-usaha/tab-produk/create",
       {
-        method: 'post',
+        method: "post",
         query: { id },
         body: payload,
-      },
-    )
+      }
+    );
 
     if (response.code === 2000) {
-      addDialog.value = false
-      getListData()
-      useSnackbar().sendSnackbar('Sukses menambah data', 'success')
+      addDialog.value = false;
+      getListData();
+      useSnackbar().sendSnackbar("Sukses menambah data", "success");
     }
+  } catch (error) {
+    console.log(error);
   }
-  catch (error) {
-    console.log(error)
-  }
-}
+};
 
 const deleteData = async (idData: string) => {
   try {
     const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-produk/remove',
+      "/reguler/pelaku-usaha/tab-produk/remove",
       {
-        method: 'delete',
+        method: "delete",
         query: { id: idData },
-      },
-    )
+      }
+    );
 
     if (response.code === 2000) {
-      addDialog.value = false
-      getListData()
-      useSnackbar().sendSnackbar('Sukses menghapus data', 'success')
+      addDialog.value = false;
+      getListData();
+      useSnackbar().sendSnackbar("Sukses menghapus data", "success");
     }
+  } catch (error) {
+    console.log(error);
   }
-  catch (error) {
-    console.log(error)
-  }
-}
+};
 
 onMounted(async () => {
-  loading.value = true
+  loading.value = true;
   await Promise.allSettled([
     getListData(),
     getListPabrikLayout(),
     getListProduct(),
-  ])
-  loading.value = false
-})
+  ]);
+  loading.value = false;
+});
 
 watch([start, end], () => {
   if (start.value !== null && end.value !== null) {
     lovProduct.value = lovProduct.value.map((product: any, index: number) => ({
       ...product,
-      checked:
-        index >= start.value - 1 && index <= end.value - 1,
-    }))
+      checked: index >= start.value - 1 && index <= end.value - 1,
+    }));
   }
-})
+});
 </script>
 
 <template>
@@ -218,14 +209,14 @@ watch([start, end], () => {
     <DialogSaveDataPengajuan
       title="Simpan Perubahan"
       :is-open="confirmSaveDialog"
-      :toggle="() => confirmSaveDialog = false"
+      :toggle="() => (confirmSaveDialog = false)"
       :on-save="() => handleSubmit()"
     />
     <DialogWithAction
       :title="titleDialog"
       :is-open="addDialog"
       :label-save-btn="labelSaveBtn"
-      :toggle="() => addDialog = false"
+      :toggle="() => (addDialog = false)"
       :on-save="handleAddOrEdit"
     >
       <template #content>
@@ -276,7 +267,7 @@ watch([start, end], () => {
                   class="border rounded"
                 >
                   <template #item.no="{ index }">
-                      <label>{{ index + 1 }}</label>
+                    <label>{{ index + 1 }}</label>
                   </template>
                   <template #item.action="{ item }">
                     <VCheckbox v-model="item.checked"></VCheckbox>
@@ -289,7 +280,7 @@ watch([start, end], () => {
       </template>
     </DialogWithAction>
     <TableData
-      :on-submit="() => confirmSaveDialog = true"
+      :on-submit="() => (confirmSaveDialog = true)"
       :on-add="toggleAdd"
       :on-edit="toggleEdit"
       :on-delete="(item: any) => deleteData(item.id_map_pabrik)"
@@ -297,21 +288,22 @@ watch([start, end], () => {
       title="Pemetaan Produk dan Pabrik"
       with-add-button
       :hide-default-footer="false"
+      :isviewonly="props.isviewonly"
     />
   </div>
 </template>
 
-  <style scoped>
-  .text-center {
-    text-align: center;
-  }
-  .bgContent {
-    background-color: #F0E9F1;
-    border-radius: 10px;
-  }
-  .progress-text {
-    font-size: 14px !important;
-    font-weight: 700 !important;
-    line-height: 20px !important;
-  }
-  </style>
+<style scoped>
+.text-center {
+  text-align: center;
+}
+.bgContent {
+  background-color: #f0e9f1;
+  border-radius: 10px;
+}
+.progress-text {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  line-height: 20px !important;
+}
+</style>

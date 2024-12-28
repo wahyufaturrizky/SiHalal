@@ -159,7 +159,12 @@ onMounted(async () => {
               </VBtn>
               <VBtn
                 @click="
-                  navigateTo(`/sh-domestic/submission/reguler/${id}/edit`)
+                  navigateTo({
+                    path: `/sh-domestic/submission/reguler/${id}/edit`,
+                    query: {
+                      isViewOnly: true,
+                    },
+                  })
                 "
                 variant="outlined"
               >
