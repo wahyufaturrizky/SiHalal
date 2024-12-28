@@ -189,23 +189,15 @@ onMounted(async () => {
             {{ index + 1 + (page - 1) * itemPerPage }}
           </template>
           <template #item.tgl_daftar="{ item }">
-            {{ formatDate(item.tgl_daftar) }}
+            {{ formatDate((item as any).tgl_daftar) }}
           </template>
           <template #item.status_reg="{ item }">
             <VChip
-              v-if="/^[a-zA-Z\s]+[^0-9]$/.test(item.status_reg)"
               style="background-color: #f0e9f1; border-radius: 10px"
               variant="outlined"
               color="primary"
-              >{{ item.status_reg }}</VChip
+              >{{ (item as any).status_reg }}</VChip
             >
-            <VChip
-              v-if="/^OF[0-9]+$/.test(item.status_reg)"
-              label
-              :color="statusItem[(item as any).status_code].color"
-            >
-              {{ statusItem[(item as any).status_code].desc }}
-            </VChip>
           </template>
           <template #item.action="{ item }">
             <div class="d-flex gap-1">
