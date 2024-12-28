@@ -670,7 +670,7 @@ watch(
             </div>
           </template>
 
-          <template #item.actionV2="{ item }">
+          <template v-if="!isviewonly" #item.actionV2="{ item }">
             <v-btn color="primary" variant="plain">
               <VIcon>mdi-dots-vertical</VIcon>
               <VMenu activator="parent" :close-on-content-click="true">

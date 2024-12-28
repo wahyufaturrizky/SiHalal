@@ -45,6 +45,7 @@ const props = defineProps({
 
 const itemsProduct = ref<any>(null);
 const confirmSaveDialog = ref(false);
+const loadingAll = ref(true);
 const addDialog = ref(false);
 const titleAddDialog = ref("");
 const submitContentType = ref("");
@@ -497,6 +498,20 @@ onMounted(async () => {
   // await getDetailData()
   await Promise.allSettled([getDetailData(), loadItemProduct()]);
 });
+
+onMounted(async () => {
+  const res: any = await Promise.all([getDetailData(), loadItemProduct()]);
+
+  const checkResIfUndefined = res.every((item: any) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
+});
 </script>
 
 <template>
@@ -645,7 +660,7 @@ onMounted(async () => {
       <!-- ADD MODAL DATA PENYELIA HALAL END -->
     </template>
   </DialogWithAction>
-  <div v-if="!loading">
+  <div v-if="!loadingAll">
     <FormData
       :id="props?.id"
       :on-submit="(payload: any) => triggerSaveModal(payload, 'Pengajuan Sertifikasi Halal')"

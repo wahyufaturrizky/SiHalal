@@ -6,7 +6,7 @@ const route = useRoute();
 
 const id = (route?.params as any)?.id;
 const isViewOnly = (route?.query as any)?.isViewOnly;
-const loading = ref<boolean>(false);
+const loadingAll = ref<boolean>(true);
 
 const activeTab = ref(-1);
 const approveRequirements = ref(false);
@@ -33,8 +33,11 @@ const getListLegal = async () => {
       params: { id },
     });
 
-    if (response?.code === 2000) listLegal.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (response?.code === 2000) {
+      listLegal.value = response.data;
+
+      return response;
+    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -47,8 +50,11 @@ const getListPenyelia = async () => {
       params: { id },
     });
 
-    if (response?.code === 2000) listPenyelia.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (response?.code === 2000) {
+      listPenyelia.value = response.data;
+
+      return response;
+    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -68,7 +74,7 @@ const getChannel = async (path: string) => {
     if (response?.code === 2000) {
       itemsChannel.value = response?.data;
 
-      return itemsChannel.value;
+      return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
@@ -97,6 +103,7 @@ const getFactoryAndOutlet = async (type: string) => {
         response?.data.map((el: any) => (el.checked = false));
         listOutlet.value = response?.data;
       }
+      return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
@@ -106,21 +113,29 @@ const getFactoryAndOutlet = async (type: string) => {
 };
 
 onMounted(async () => {
-  loading.value = true;
   activeTab.value = 0;
-  await Promise.allSettled([
+  const res: any = await Promise.all([
     getFactoryAndOutlet("FAPAB"),
     getFactoryAndOutlet("FAOUT"),
     getListLegal(),
     getListPenyelia(),
     getChannel(LIST_CHANNEL_PATH_JNLAY),
   ]);
-  loading.value = false;
+
+  const checkResIfUndefined = res.every((item: any) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
 });
 </script>
 
 <template>
-  <div v-if="!loading">
+  <div v-if="!loadingAll">
     <VContainer>
       <KembaliButton class="pl0" />
       <div class="headerSection">
@@ -178,7 +193,7 @@ onMounted(async () => {
               />
             </div>
             <div v-else>
-              <ListKomitmenDanTanggungJawab />
+              <ListKomitmenDanTanggungJawab :isviewonly="isViewOnly" />
             </div>
           </div>
           <div v-if="activeTab === 2">
@@ -192,14 +207,14 @@ onMounted(async () => {
               />
             </div>
             <div v-else>
-              <ListProses />
+              <ListProses :isviewonly="isViewOnly" />
             </div>
           </div>
           <div v-if="activeTab === 4">
             <Produk :isviewonly="isViewOnly" />
           </div>
           <div v-if="activeTab === 5">
-            <Evaluasi />
+            <Evaluasi :isviewonly="isViewOnly" />
           </div>
           <div v-if="activeTab === 6">
             <DokumenTab />
