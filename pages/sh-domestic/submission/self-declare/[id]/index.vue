@@ -54,7 +54,7 @@
               <InfoRow name="Tanggal" :name-style="{ fontWeight: '600' }">
                 {{
                   submissionDetail.tanggal_buat
-                    ? submissionDetail.tanggal_buat
+                    ? formatToISOString(submissionDetail.tanggal_buat)
                     : "-"
                 }}
               </InfoRow>
@@ -72,7 +72,9 @@
                 :name-style="{ fontWeight: '600' }"
               >
                 {{
-                  submissionDetail.tgl_mohon ? submissionDetail.tgl_mohon : "-"
+                  submissionDetail.tgl_mohon
+                    ? formatToISOString(submissionDetail.tgl_mohon)
+                    : "-"
                 }}
               </InfoRow>
               <InfoRow name="Jenis Layanan" :name-style="{ fontWeight: '600' }">
