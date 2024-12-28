@@ -291,7 +291,7 @@ const getDetail = async () => {
       submissionDetail.id_jenis_pengajuan = response.data.jenis_pendaftaran;
       submissionDetail.nama_pj = response.data.nama_pj;
       submissionDetail.alamat_pu = response.data.alamat_pu;
-      submissionDetail.nomor_kontak_pj = response.data.nomor_kontak_pj;
+      submissionDetail.nomor_kontak_pj = response.data.no_kontak_pj;
       submissionDetail.nama_pu = response.data.nama_pu;
       formData.tgl_surat_permohonan =
         response.data.tgl_surat_permohonan.split("T")[0];
