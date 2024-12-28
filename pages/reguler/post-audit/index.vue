@@ -1,195 +1,197 @@
 <script setup lang="ts">
-const router = useRouter()
-const dataTable = ref<any[]>([])
-const loading = ref<boolean>(false)
-const page = ref<number>(1)
-const size = ref<number>(50)
-const searchQuery = ref<string>('')
-const showFilterMenu = ref(false)
-const getWithFilter = ref<boolean>(false)
-const listChannel = ref<any[]>([])
-const skalaUsaha = ref<any[]>([])
-const provinceData = ref<any[]>([])
+const router = useRouter();
+const dataTable = ref<any[]>([]);
+const loading = ref<boolean>(false);
+const page = ref<number>(1);
+const size = ref<number>(50);
+const totalItems = ref<number>(0);
+const searchQuery = ref<string>("");
+const showFilterMenu = ref(false);
+const loadingAll = ref(true);
+const getWithFilter = ref<boolean>(false);
+const listChannel = ref<any[]>([]);
+const skalaUsaha = ref<any[]>([]);
+const provinceData = ref<any[]>([]);
 
 const invoiceHeader: any[] = [
-  { title: 'No', value: 'index' },
-  { title: 'Nomor Daftar', value: 'nomor_daftar', nowrap: true },
-  { title: 'Tanggal', value: 'tanggal', nowrap: true },
-  { title: 'Nama PU', value: 'nama_pu', nowrap: true },
-  { title: 'Jenis Daftar', value: 'jenis_daftar', nowrap: true },
-  { title: 'Jenis Produk', value: 'jenis_produk', nowrap: true },
-  { title: 'Jenis Usaha dan Jumlah', value: 'jenis_usaha_jumlah', nowrap: true },
-  { title: 'Status', value: 'status', nowrap: true },
-  { title: 'Tanggal Dikirim Oleh BPJPH', value: 'tgl_dikirim', nowrap: true },
-  { title: 'Action', value: 'actions', align: 'center' },
-]
+  { title: "No", value: "index" },
+  { title: "Nomor Daftar", value: "nomor_daftar", nowrap: true },
+  { title: "Tanggal", value: "tanggal", nowrap: true },
+  { title: "Nama PU", value: "nama_pu", nowrap: true },
+  { title: "Jenis Daftar", value: "jenis_daftar", nowrap: true },
+  { title: "Jenis Produk", value: "jenis_produk", nowrap: true },
+  {
+    title: "Jenis Usaha dan Jumlah",
+    value: "jenis_usaha_jumlah",
+    nowrap: true,
+  },
+  { title: "Status", value: "status", nowrap: true },
+  { title: "Tanggal Dikirim Oleh BPJPH", value: "tgl_dikirim", nowrap: true },
+  { title: "Action", value: "actions", align: "center" },
+];
 
 const selectedFilters = ref({
-  jenisLayanan: 'Semua',
-  jenisProduk: 'Semua',
-  provinsi: 'Semua',
-  lph: 'Semua',
-})
+  jenisLayanan: "Semua",
+  jenisProduk: "Semua",
+  provinsi: "Semua",
+  lph: "Semua",
+});
 
-const loadItem = async (pageNumber: number, sizeData: number, search: string = '', path: string) => {
+const loadItem = async (
+  pageNumber: number,
+  sizeData: number,
+  search: string = "",
+  path: string
+) => {
+  loading.value = true;
   try {
-    let params = {
+    let params: any = {
       page: pageNumber,
       size: sizeData,
       search,
       url: path,
-    }
+    };
     if (getWithFilter.value) {
       params = {
         ...params,
-        skala_code: selectedFilters.value.jenisProduk.replace('Semua', ''),
-        provinsi_code: selectedFilters.value.provinsi.replace('Semua', ''),
-        channel_code: selectedFilters.value.jenisLayanan.replace('Semua', ''),
-      }
+        skala_code: selectedFilters.value.jenisProduk.replace("Semua", ""),
+        provinsi_code: selectedFilters.value.provinsi.replace("Semua", ""),
+        channel_code: selectedFilters.value.jenisLayanan.replace("Semua", ""),
+      };
     }
 
-    const response: any = await $api('/reguler/lph/list', {
-      method: 'get',
+    const response: any = await $api("/reguler/lph/list", {
+      method: "get",
       params,
-    })
+    });
 
     if (response?.code === 2000) {
       if (path === LIST_CHANNEL_PATH) {
-        const newData: any = [{ name: 'Semua', code: '' }]
+        const newData: any = [{ name: "Semua", code: "" }];
 
         response?.data.map((item: any) => {
-          return newData.push(item)
-        })
+          return newData.push(item);
+        });
+        loading.value = false;
 
-        return newData
+        return newData;
       }
 
-      return response.data
+      return response.data;
+    } else {
+      loading.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    loading.value = false;
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
-const handleSearch = async (pageNumber: number, sizeData: number, search: string = '', path: string) => {
+const handleSearch = async (
+  pageNumber: number,
+  sizeData: number,
+  search: string = "",
+  path: string
+) => {
   try {
     let params = {
       page: pageNumber,
       size: sizeData,
       search,
       url: path,
-    }
+    };
     if (getWithFilter.value) {
       params = {
         ...params,
-        skala_code: selectedFilters.value.jenisProduk.replace('Semua', ''),
-        provinsi_code: selectedFilters.value.provinsi.replace('Semua', ''),
-        channel_code: selectedFilters.value.jenisLayanan.replace('Semua', ''),
-      }
+        skala_code: selectedFilters.value.jenisProduk.replace("Semua", ""),
+        provinsi_code: selectedFilters.value.provinsi.replace("Semua", ""),
+        channel_code: selectedFilters.value.jenisLayanan.replace("Semua", ""),
+      };
     }
 
-    const response: any = await $api('/reguler/lph/list', {
-      method: 'get',
+    const response: any = await $api("/reguler/lph/list", {
+      method: "get",
       params,
-    })
+    });
 
-    if (response?.code === 2000)
-      return dataTable.value = response.data
-    else
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    if (response?.code === 2000) return (dataTable.value = response.data);
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const getMasterSkalaUsaha = async () => {
-  const response: any[] = await $api('/master/business-entity-scale',
-    { method: 'get' },
-  )
+  const response: any[] = await $api("/master/business-entity-scale", {
+    method: "get",
+  });
 
-  const newData: any = { name: 'Semua', code: '' }
+  const newData: any = { name: "Semua", code: "" };
 
-  response.unshift(newData)
+  response.unshift(newData);
 
-  return response
-}
+  return response;
+};
 
 const getMasterProvinsi = async () => {
-  const response: any[] = await $api('/master/province',
-    { method: 'get' },
-  )
+  const response: any[] = await $api("/master/province", { method: "get" });
 
-  const newData: any = { name: 'Semua', code: '' }
+  const newData: any = { name: "Semua", code: "" };
 
-  response.unshift(newData)
+  response.unshift(newData);
 
-  return response
-}
+  return response;
+};
 
 const handleInput = (e: any) => {
-  loading.value = true
-  debounce(handleSearch(page.value, size.value, e.target.value, LIST_POST_AUDIT), 500)
-  loading.value = false
-}
+  debounce(
+    handleSearch(page.value, size.value, e.target.value, LIST_POST_AUDIT),
+    500
+  );
+};
 
 const applyFilters = async () => {
-  showFilterMenu.value = false
-  getWithFilter.value = true
-  handleSearch(page.value, size.value, searchQuery.value, LIST_POST_AUDIT)
-}
+  showFilterMenu.value = false;
+  getWithFilter.value = true;
+  handleSearch(page.value, size.value, searchQuery.value, LIST_POST_AUDIT);
+};
 
 onMounted(async () => {
-  loading.value = true
-
-  const responseData = await Promise.allSettled([
+  const responseData: any = await Promise.allSettled([
     loadItem(page.value, size.value, searchQuery.value, LIST_POST_AUDIT),
     loadItem(page.value, size.value, searchQuery.value, LIST_CHANNEL_PATH),
     getMasterSkalaUsaha(),
     getMasterProvinsi(),
-  ])
+  ]);
 
   if (responseData) {
-    dataTable.value = responseData?.[0]?.value || []
-    listChannel.value = responseData?.[1]?.value || []
-    skalaUsaha.value = responseData?.[2]?.value || []
-    provinceData.value = responseData?.[3]?.value || []
+    dataTable.value = responseData?.[0]?.value || [];
+    totalItems.value = responseData?.[0]?.value.length || 0;
+    listChannel.value = responseData?.[1]?.value || [];
+    skalaUsaha.value = responseData?.[2]?.value || [];
+    provinceData.value = responseData?.[3]?.value || [];
+    loadingAll.value = false;
   }
-  loading.value = false
-})
+});
 </script>
 
 <template>
-  <div
-    class="d-flex align-center cursor-pointer"
-    @click="router.go(-1)"
-  >
-    <VIcon
-      icon="mdi-chevron-left"
-      size="40px"
-      color="primary"
-    />
-    <div class="text-primary">
-      Kembali
-    </div>
+  <div class="d-flex align-center cursor-pointer" @click="router.go(-1)">
+    <VIcon icon="mdi-chevron-left" size="40px" color="primary" />
+    <div class="text-primary">Kembali</div>
   </div>
   <VRow no-gutters>
     <VCol>
       <h1>Penyelesaian Data Post Audit</h1>
     </VCol>
   </VRow>
-  <div v-if="!loading">
+  <div v-if="!loadingAll">
     <VRow>
       <VCol>
         <VCard>
           <VCardTitle class="my-3 d-flex justify-space-between align-center">
-            <div class="font-weight-bold text-h4">
-              Data Pemeriksaan Produk
-            </div>
+            <div class="font-weight-bold text-h4">Data Pemeriksaan Produk</div>
           </VCardTitle>
           <VCardText>
             <VRow class="mb-4">
@@ -209,10 +211,7 @@ onMounted(async () => {
                       Filter
                     </VBtn>
                   </template>
-                  <VCard
-                    class="pa-3"
-                    width="300"
-                  >
+                  <VCard class="pa-3" width="300">
                     <VSelect
                       v-model="selectedFilters.jenisLayanan"
                       label="Jenis Layanan"
@@ -259,31 +258,30 @@ onMounted(async () => {
                 />
               </VCol>
             </VRow>
-            <VDataTable
+            <VDataTableServer
+              v-model:items-per-page="size"
+              v-model:page="page"
+              :items-length="totalItems"
               class="examination-table border rounded"
               :headers="invoiceHeader"
               :items="dataTable"
               :hide-default-footer="dataTable.length === 0"
+              :loading="loading"
               hover
             >
               <template #no-data>
                 <div class="w-full mt-2">
-                  <div
-                    class="pt-2"
-                    style="justify-items: center"
-                  >
+                  <div class="pt-2" style="justify-items: center">
                     <img
                       src="~/assets/images/empty-data.png"
                       alt="empty_data"
-                    >
-                    <div class="pt-2 pb-2 font-weight-bold">
-                      Data Kosong
-                    </div>
+                    />
+                    <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
                   </div>
                 </div>
               </template>
-              <template #item.index="{ index }">
-                {{ index + 1 }}
+              <template #item.no="{ index }">
+                {{ index + 1 + (page - 1) * size }}
               </template>
               <template #item.tanggal_daftar="{ item }">
                 <div v-if="item?.tanggal_daftar">
@@ -291,20 +289,35 @@ onMounted(async () => {
                 </div>
               </template>
               <template #item.jenis_usaha_jumlah="{ item }">
-                <VContainer style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                <VContainer
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    white-space: nowrap;
+                  "
+                >
                   <VChip
                     variant="outlined"
-                    style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
+                    style="
+                      border-color: #49a84c;
+                      border-radius: 8px;
+                      background-color: #edf6ed;
+                    "
                   >
-                    <span style="color: #49a84c;">
+                    <span style="color: #49a84c">
                       {{ item.jenis_usaha }}
                     </span>
                   </VChip>
                   <VChip
                     variant="outlined"
-                    style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
+                    style="
+                      border-color: #49a84c;
+                      border-radius: 8px;
+                      background-color: #edf6ed;
+                    "
                   >
-                    <span style="color: #49a84c;">
+                    <span style="color: #49a84c">
                       {{ item.jumlah_produk }}
                     </span>
                   </VChip>
@@ -323,12 +336,13 @@ onMounted(async () => {
                   @click="router.push(`/reguler/post-audit/${item?.id_reg}`)"
                 />
               </template>
-            </VDataTable>
+            </VDataTableServer>
           </VCardText>
         </VCard>
       </VCol>
     </VRow>
   </div>
+  <VSkeletonLoader type="card" v-else />
 </template>
 
 <style scoped lang="scss">

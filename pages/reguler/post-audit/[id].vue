@@ -6,7 +6,7 @@ const id = (route?.params as any).id;
 
 const openedLeftPanels = ref([0, 1, 2, 3, 4, 5]);
 const openedRightPanels = ref([0, 1, 2]);
-const loading = ref(false);
+const loadingAll = ref(true);
 const dataPengajuan = ref<any>({});
 const dataProduk = ref<any>([]);
 const dataPemeriksaanProduk = ref<any>(null);
@@ -71,30 +71,34 @@ const getDetailData = async (type: string) => {
     });
 
     if (response?.code === 2000) return response?.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    else
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
 onMounted(async () => {
-  loading.value = true;
-
-  const responseData = await Promise.allSettled([
+  const responseData: any = await Promise.allSettled([
     getDetailData("pengajuan"),
     getDetailData("produk"),
     getDetailData("pemeriksaanproduk"),
   ]);
 
-  dataPengajuan.value = responseData?.[0]?.value || {};
-  dataPemeriksaanProduk.value = responseData?.[1]?.value || {};
-  dataProduk.value = responseData?.[2]?.value || [];
-  loading.value = false;
+  if (dataPengajuan) {
+    dataPengajuan.value = responseData?.[0]?.value || {};
+    dataPemeriksaanProduk.value = responseData?.[1]?.value || {};
+    dataProduk.value = responseData?.[2]?.value || [];
+    loadingAll.value = false;
+  }
 });
 </script>
 
 <template>
-  <div v-if="!loading">
+  <div v-if="!loadingAll">
     <LPHDetailLayout>
       <template #page-title>
         <VRow no-gutters>
@@ -360,6 +364,10 @@ onMounted(async () => {
       </VCard>
     </VDialog>
   </div>
+  <VSkeletonLoader
+    type="table-heading, list-item-two-line, image, table-tfoot"
+    v-else
+  />
 </template>
 
 <style scoped lang="scss">
