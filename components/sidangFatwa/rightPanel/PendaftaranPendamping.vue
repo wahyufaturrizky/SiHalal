@@ -17,7 +17,7 @@ const combinedProps = ref({
 
 const data = ref([])
 const expanded = [0]
-const selectedStatus = ref('')
+const selectedStatus = ref('OF100')
 const dialogOpen = ref(false)
 const notes = ref('')
 const submissionId = (route.params as any).id

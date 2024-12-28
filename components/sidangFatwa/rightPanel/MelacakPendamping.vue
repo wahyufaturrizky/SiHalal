@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, ref, watch } from 'vue'
+import { defineProps, ref, watch } from 'vue';
 
 const props = defineProps({
   tracking: {
@@ -8,7 +8,7 @@ const props = defineProps({
   },
 })
 
-console.log(props.tracking, 'ini props tracking2')
+console.log(props.tracking, 'ini props tracking22')
 
 const tracking2 = ref<Array<any>>([])
 
@@ -27,12 +27,15 @@ watch(
   { immediate: true },
 )
 </script>
+
 <template>
   <VCard>
     <VCardTitle><h3>Melacak</h3></VCardTitle>
-    <VCardItem style="max-height: 40svh; overflow-y: auto">
-      <div v-if="tracking2.value && tracking2.value.length === 0">No tracking data available.</div>
-      <HalalTimeLine
+    <VCardItem style="max-block-size: 40svh; overflow-y: auto;">
+      <div v-if="tracking2.value && tracking2.value.length === 0">
+        No tracking data available.
+      </div>
+      <PegajuanTimeLine
         v-else
         :melacak="tracking2"
       />

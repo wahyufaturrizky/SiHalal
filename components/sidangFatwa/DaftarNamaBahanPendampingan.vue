@@ -10,10 +10,10 @@ const props = defineProps({
 console.log(props.databahan, 'ini props databahan')
 const tableHeader = [
   { title: "No", key: "no" },
-  { title: "Nama Bahan", key: "NamaBahan" },
-  { title: "Temuan", key: "Temuan" },
-  { title: "Diragukan", key: "Diragukan" },
-  { title: "Keterangan", key: "Keterangan" },
+  { title: "Nama Bahan", key: "nama_bahan" },
+  { title: "Temuan", key: "temuan" },
+  { title: "Diragukan", key: "diragukan" },
+  { title: "Keterangan", key: "keterangan" },
 ]
 
 // Helper function to get value or return a dash
