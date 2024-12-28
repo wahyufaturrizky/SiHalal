@@ -2,6 +2,7 @@
 import { ref } from "vue";
 
 const searchQuery = ref("");
+const loadingAll = ref(true);
 
 const headers: any = [
   { title: "No", key: "no", nowrap: true },
@@ -24,16 +25,7 @@ const headers: any = [
 const submission = ref([]);
 const currentPage = ref(1);
 const itemPerPage = ref(10);
-
-// const filteredSubmissions = computed(() => {
-//   if (!searchQuery.value) return submission.value;
-
-//   return submission.value.filter((item) =>
-//     Object.values(item).some((value) =>
-//       String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
-//     )
-//   );
-// });
+const totalItems = ref(0);
 
 const questions = [
   "Saya tidak pernah mendapatkan fasilitas sertifikasi halal sebelumnya ",
@@ -43,6 +35,15 @@ const questions = [
   "Proses produksi tidak menggunakan bahan berbahaya (contoh bahan berbahaya tertuang dalam Peraturan BPOM Nomor 7 Tahun 2018)",
   "Proses pengawetan produk sederhana dan tidak menggunakan kombinasi lebih dari 1 metode pengawetan ",
   "Proses produksi menggunakan peralatan manual/ semi otomatis",
+];
+const questionResponse = [
+  "Anda sudah pernah mendapatkan fasilitas self declare",
+  "Aktivitas produksi yang dilakukan bukan merupakan usaha rumahan",
+  "Tidak semua proses produksi menggunakan bahan-bahan halal",
+  "Proses produksi produk lain yang menggunakan bahan non-halal tidak dilakukan pada tempat terpisah dan tidak menggunakan alat yang berbeda.",
+  "Proses produksi menggunakan bahan berbahaya",
+  "Proses pengawetan produk tidak sederhana atau menggunakan kombinasi lebih dari 1 metode pengawetan",
+  "Proses produksi tidak menggunakan peralatan manual/semi otomatis",
 ];
 
 const questionareDialogVisible = ref(false);
@@ -58,7 +59,7 @@ const handleSubmitQuestionare = (answers: Array<string>) => {
   let unfulfilledCount = 0;
   answers.map((item, idx) => {
     if (item == "no") {
-      const data = questions.find((el, index) => index === idx);
+      const data = questionResponse.find((el, index) => index === idx);
       if (data) {
         isUnfulfilled.value.push(data);
         unfulfilledCount++;
@@ -76,7 +77,6 @@ const handleSubmitQuestionare = (answers: Array<string>) => {
 const router = useRouter();
 
 const hanleSubmitRequest = async (answer: string) => {
-  // console.log("answer request : ", answer);
   handleCreate(answer);
 };
 
@@ -92,9 +92,7 @@ const handleCreate = async (answer: string) => {
     if (result.code === 2000) {
       router.push(`/sh-domestic/submission/self-declare/${result.data.id_reg}`);
     }
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 
 const alertData = ref({
@@ -109,6 +107,7 @@ const loadValidation = async () => {
   if (response.code === 2000) {
     alertData.value.isValid = response.data.is_allow_submission;
     alertData.value.text = response.data.keterangan;
+    return response;
   }
 };
 
@@ -126,11 +125,10 @@ const handleLoadList = async () => {
     if (response.code === 2000) {
       submission.value = response.data;
       currentPage.value = response.current_page;
+      totalItems.value = response.total_item;
+      return response;
     }
-    return response;
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 
 const { refresh } = await useAsyncData(
@@ -150,7 +148,20 @@ const handleSearchSubmission = useDebounceFn((val: string) => {
 
 onMounted(() => {
   loadValidation();
-  handleLoadList();
+});
+
+onMounted(async () => {
+  const res = await Promise.all([loadValidation(), handleLoadList()]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
 });
 </script>
 
@@ -160,7 +171,7 @@ onMounted(() => {
       <p class="text-h4">Pengajuan Self Declare</p>
     </div>
 
-    <VContainer class="bg-surface rounded">
+    <VContainer v-if="!loadingAll" class="bg-surface rounded">
       <VRow>
         <VCol class="d-flex justify-sm-space-between align-center">
           <div class="text-h4 font-weight-bold">
@@ -214,24 +225,29 @@ onMounted(() => {
       </VRow>
       <VRow>
         <VCol>
-          <VDataTable
+          <VDataTableServer
+            class="elevation-1 custom-table"
             :headers="headers"
             :items="submission"
-            class="elevation-1 custom-table"
-            fixed-header
+            :items-length="totalItems"
+            v-model:page="currentPage"
+            v-model:items-per-page="itemPerPage"
+            :items-per-page-options="[5, 25, 50, 100]"
+            @update:options="handleLoadList"
             :hide-default-footer="!submission.length"
-            :page="currentPage"
-            :items-per-page-options="[10, 25, 50, 100]"
-            @update:items-per-page="(v) => (itemPerPage = v)"
           >
             <template #item.no="{ index }">
-              {{ index + 1 }}
+              {{ index + 1 + (currentPage - 1) * itemPerPage }}
             </template>
             <template #item.no_daftar="{ item }: any">
               {{ item.no_daftar ? item.no_daftar : "-" }}
             </template>
             <template #item.tgl_daftar="{ item }: any">
-              {{ item.tgl_daftar ? item.tgl_daftar : "-" }}
+              {{
+                item.tgl_daftar
+                  ? new Date(item.tgl_daftar).toISOString().substring(0, 10)
+                  : "-"
+              }}
             </template>
             <template #item.jenis_produk="{ item }: any">
               {{ item.jenis_produk ? item.jenis_produk : "-" }}
@@ -262,10 +278,15 @@ onMounted(() => {
                 </VRow>
               </VCard>
             </template>
-          </VDataTable>
+          </VDataTableServer>
         </VCol>
       </VRow>
     </VContainer>
+
+    <VSkeletonLoader
+      type="table-heading, list-item-two-line, image, table-tfoot"
+      v-else
+    />
 
     <Questionnaire
       :dialog-visible="questionareDialogVisible"

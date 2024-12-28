@@ -6,14 +6,18 @@ const props = defineProps({
   placeholder: { type: String, default: '' },
   rules: { type: Array, default: () => [] },
   disable: { type: Boolean, default: false },
+  readonly: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update:modelValue'])
 
 const internalValue = ref(props.modelValue)
 
-watch(internalValue, newValue => {
-  emit('update:modelValue', newValue)
+// watch(internalValue, newValue => {
+//   emit('update:modelValue', newValue)
+// })
+watchEffect(()=> {
+  internalValue.value = props.modelValue
 })
 </script>
 
@@ -31,6 +35,7 @@ watch(internalValue, newValue => {
       :placeholder="placeholder"
       :rules="rules"
       :disabled="props.disable"
+      :readonly="props.readonly"
     >
       <template #message="{ message }">
         <div>

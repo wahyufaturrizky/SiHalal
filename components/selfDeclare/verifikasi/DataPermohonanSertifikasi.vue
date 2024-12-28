@@ -24,16 +24,17 @@ const loadingAddSubmission = ref(false);
 const selectedItems = ref<any[]>([]);
 
 const headers: any = [
+  { title: "Pilih", key: "pilih", fixed: true },
   { title: "No", key: "no", align: "center" },
-  { title: "ID Daftar", key: "no_daftar" },
-  { title: "Pilih", key: "pilih" },
+  { title: "ID Daftar", key: "id_daftar" },
+  { title: "No Daftar", key: "no_daftar" },
   { title: "Tanggal Daftar", key: "tgl_daftar" },
-  { title: "Nama", key: "nama" },
+  { title: "Nama PU", key: "nama" },
   { title: "Alamat", key: "alamat" },
   { title: "Jenis Produk", key: "jenis_produk" },
   { title: "Merk Dagang", key: "merek_dagang" },
   { title: "Status", key: "status_code" },
-  { title: "Action", key: "action" },
+  { title: "Action", key: "action", fixed: true },
 ];
 
 const defaultStatus = { color: "error", desc: "Unknown Status" };
@@ -118,6 +119,7 @@ const loadItem = async ({
         lembaga,
         pendamping,
         kabupaten,
+        status: "OF10",
       },
     });
 
@@ -131,7 +133,7 @@ const loadItem = async ({
   }
 };
 
-const debouncedFetch = debounce(loadItem, 500);
+// const debouncedFetch = debounce(loadItem, 500);
 
 const showFilterMenu = ref(false);
 

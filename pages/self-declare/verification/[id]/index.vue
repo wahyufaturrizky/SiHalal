@@ -11,9 +11,11 @@ const detailData = ref();
 const loadingAll = ref(true);
 const loadingTandaiOK = ref(false);
 const loadingTandaiNotOK = ref(false);
+const loadingLihatLaporan = ref(false);
 const loadingPengembalian = ref(false);
 const itemsPabrik = ref([]);
 const itemsOutlet = ref([]);
+const listKodeDaftarFasilitasi = ref([]);
 
 const tabs = ref([
   { text: "Pelaku Usaha", value: "pelaku_usaha" },
@@ -22,6 +24,8 @@ const tabs = ref([
   { text: "Bahan", value: "bahan" },
   { text: "Produk", value: "produk" },
   { text: "Melacak", value: "melacak" },
+  { text: "Proses", value: "proses" },
+  { text: "Pernyataan", value: "pernyataan" },
 ]);
 
 const tab = ref("pelaku_usaha"); // Default selected tab
@@ -71,6 +75,7 @@ const pagePenyelia = ref(1);
 
 const dataPengajuanSertifikasiHalal = ref();
 const jenisBadanUsahaPenanggungJawab = ref();
+const namaPenanggungJawab = ref();
 const dataPengajuan = ref();
 const dataFormPengajuan = ref();
 const nomorKontakPenanggungJawab = ref();
@@ -211,8 +216,8 @@ const loadItemAspekLegalById = async ({
     );
 
     if (response.code === 2000) {
-      aspekLegal.value = response.data;
-      totalItemsAspekLegal.value = response.total;
+      aspekLegal.value = response.data || [];
+      totalItemsAspekLegal.value = response.total || 0;
       loadingAspekLegal.value = false;
       return response;
     } else {
@@ -287,8 +292,8 @@ const loadItemProdukById = async ({
     );
 
     if (response.code === 2000) {
-      listTableProduk.value = response.data;
-      totalItemsTableProduk.value = response.total;
+      listTableProduk.value = response.data || [];
+      totalItemsTableProduk.value = response.total || 0;
       loadingTableProduk.value = false;
       return response;
     } else {
@@ -322,8 +327,8 @@ const loadItemBahanById = async ({
     );
 
     if (response.code === 2000) {
-      listBahan.value = response.data;
-      totalItemsBahan.value = response.total;
+      // listBahan.value = response.data || [];
+      totalItemsBahan.value = response.total || 0;
       loadingBahan.value = false;
       return response;
     } else {
@@ -347,7 +352,14 @@ const loadItemById = async () => {
 
     if (response.code === 2000) {
       const { data } = response || {};
-      const { certificate_halal, penanggung_jawab, tracking } = data || {};
+      const {
+        certificate_halal,
+        penanggung_jawab,
+        tracking,
+        bahan,
+        outlet,
+        pabrik,
+      } = data || {};
       const { nama_pj, nomor_kontak_pj, email_pj } = penanggung_jawab || {};
       const {
         nama_pu,
@@ -362,13 +374,15 @@ const loadItemById = async () => {
         area_pemasaran,
         lembaga_pendamping,
         pendamping,
+        jenis_daftar,
+        fac_id,
       } = certificate_halal || {};
 
-      dataTracking.value = tracking;
+      dataTracking.value = tracking || [];
 
       dataFormPengajuan.value = {
-        jenisPendaftaran: "",
-        kodeDaftarFasilitasi: "",
+        jenisPendaftaran: jenis_daftar,
+        kodeDaftarFasilitasi: fac_id,
         nomorSuratPermohonan: no_mohon,
         jenisLayanan: jenis_layanan,
         jenisProduk: jenis_produk,
@@ -377,16 +391,17 @@ const loadItemById = async () => {
         lokasiPendamping: "",
         lembagaPendamping: lembaga_pendamping,
         pendamping: pendamping,
+        namaPenanggungJawab: nama_pj,
         tanggalSuratPermohon: formatToISOString(
           tgl_mohon || new Date(new Date().setDate(new Date().getDate() + 1))
         ),
       };
 
       dataPengajuan.value = [
-        {
-          label: "No. ID",
-          value: no_mohon,
-        },
+        // {
+        //   label: "No. ID",
+        //   value: no_mohon,
+        // },
         {
           label: "Tanggal",
           value: formatDate(tgl_mohon),
@@ -397,7 +412,13 @@ const loadItemById = async () => {
         },
       ];
 
+      listBahan.value = bahan || [];
+
+      itemsPabrik.value = pabrik || [];
+      itemsOutlet.value = outlet || [];
+
       jenisBadanUsahaPenanggungJawab.value = jenis_badan_usaha;
+      namaPenanggungJawab.value = nama_pj;
       nomorKontakPenanggungJawab.value = nomor_kontak_pj;
       emailPenanggungJawab.value = email_pj;
 
@@ -510,6 +531,24 @@ const loadJenisProduk = async () => {
   }
 };
 
+const loadListFasilitasi = async () => {
+  try {
+    const response: any = await $api(
+      "/self-declare/business-actor/submission/list-fasilitator",
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) {
+      listKodeDaftarFasilitasi.value = response.data || [];
+      return response;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
 onMounted(async () => {
   const res: any = await Promise.all([
     loadItemById(),
@@ -518,6 +557,7 @@ onMounted(async () => {
     loadJenisPendaftaran(),
     loadJenisLayanan(),
     loadJenisProduk(),
+    loadListFasilitasi(),
     loadItemBahanById({ page: pageBahan.value, size: itemPerPageBahan.value }),
     loadItemPabrik(pagePabrik.value, itemPerPagePabrik.value),
     loadItemOutlet(pageOutlet.value, itemPerPageOutlet.value),
@@ -548,7 +588,7 @@ const headersProduk = [
   { title: "Jumlah Bahan", key: "jumlah_bahan" },
   { title: "Merek", key: "merek" },
   { title: "Verified", key: "verified" },
-  { title: "Action", key: "action" },
+  // { title: "Action", key: "action" },
 ];
 
 const bahanTableHeader = [
@@ -562,16 +602,17 @@ const bahanTableHeader = [
 
 const outletTableHeader = [
   { title: "No", key: "no" },
-  { title: "Jenis Bahan", key: "jenis_outlet" },
+  // { title: "Jenis Bahan", key: "jenis_outlet" },
   { title: "Nama Bahan", key: "nama_outlet" },
-  { title: "Status", key: "status_milik" },
+  { title: "Alamat", key: "alamat_outlet" },
+  // { title: "Status", key: "status_milik" },
   // { title: "Action", key: "action" },
 ];
 
 const pabrikTableHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "nama" },
-  { title: "Alamat", key: "alamat" },
+  { title: "Nama", key: "nama_pabrik" },
+  { title: "Alamat", key: "alamat_pabrik" },
   { title: "Status", key: "status_milik" },
   // { title: "Action", key: "action" },
 ];
@@ -587,54 +628,13 @@ const legalTableHeader = [
 
 const penyeliaTableHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "penyelia_nama" },
+  { title: "Nama", key: "nama" },
   { title: "No. KTP", key: "no_ktp" },
   { title: "No. Kontak", key: "no_kontak" },
-  { title: "No/Tgl Sertif Penyelia Halal", key: "no_penyelia_halal" },
-  { title: "Tgl SK", key: "tanggal_sk" },
-  { title: "Tgl Penyelia Halal", key: "tgl_penyelia_halal" },
-  { title: "No SK", key: "no_sk" },
+  { title: "Tgl SK", key: "tgl_sk" },
+  { title: "No Sertifikat", key: "no_sertikat" },
   { title: "Action", key: "action" },
 ];
-
-const headersDokumenPersyaratanFasilitas = [
-  { title: "No", key: "id" },
-  { title: "Nama", key: "nama" },
-  { title: "Dokumen", key: "doc" },
-];
-
-const itemsDokumenPersyaratanFasilitas = ref([
-  {
-    id: 1,
-    nama: "Dokumen 1",
-    doc: "Dokumen 1",
-  },
-  {
-    id: 2,
-    nama: "Dokumen 2",
-    doc: "Dokumen 2",
-  },
-]);
-
-const searchFasilitator = ref("");
-
-const fasilitators = ref([
-  { id: 1, name: "Fasilitator A" },
-  { id: 2, name: "Fasilitator B" },
-  { id: 3, name: "Fasilitator C" },
-]);
-
-const filteredFasilitators = computed(() => {
-  return fasilitators.value.filter((fasilitator) =>
-    fasilitator.name
-      .toLowerCase()
-      .includes(searchFasilitator.value.toLowerCase())
-  );
-});
-
-const onFasilitatorSearchInput = debounce((input: any) => {
-  searchFasilitator.value = input;
-}, 500);
 
 const tandaiOK = async () => {
   try {
@@ -661,6 +661,34 @@ const tandaiOK = async () => {
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loadingTandaiOK.value = false;
+  }
+};
+
+const lihatLaporan = async () => {
+  try {
+    loadingLihatLaporan.value = true;
+
+    const res: any = await $api(
+      `/self-declare/verificator/lihat-laporan/${selfDeclareId}`,
+      {
+        method: "put",
+      }
+    );
+
+    if (res?.code === 2000) {
+      useSnackbar().sendSnackbar("Success", "success");
+      loadingLihatLaporan.value = false;
+
+      setTimeout(() => {
+        router.go(-1);
+      }, 1000);
+    } else {
+      useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
+      loadingLihatLaporan.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingLihatLaporan.value = false;
   }
 };
 
@@ -758,7 +786,14 @@ const dibatalkan = async () => {
         <p class="text-h4">Detail Pengajuan</p>
       </VCol>
       <VCol class="d-flex justify-end align-center" cols="4" md="5">
-        <!-- <VBtn variant="outlined" class="mx-2"> Lihat Laporan </VBtn> -->
+        <VBtn
+          :loading="loadingLihatLaporan"
+          @click="lihatLaporan"
+          variant="outlined"
+          class="mx-2"
+        >
+          Lihat Laporan
+        </VBtn>
         <VBtn
           :loading="loadingTandaiOK"
           @click="tandaiOK"
@@ -852,12 +887,21 @@ const dibatalkan = async () => {
           <VCard variant="flat" class="pa-4">
             <p class="text-h4" style="font-weight: bold">Penanggung Jawab</p>
             <!-- Nama Usaha -->
-            <VCol cols="12">
+            <!-- <VCol cols="12">
               <VLabel class="required"> Jenis Badan Usaha </VLabel>
               <VTextField
                 v-model="jenisBadanUsahaPenanggungJawab"
                 required
                 placeholder="Jenis Badan Usaha"
+              />
+            </VCol> -->
+            <VCol cols="12">
+              <VLabel class="required"> Nama </VLabel>
+              <VTextField
+                v-model="namaPenanggungJawab"
+                required
+                placeholder="Nama"
+                disabled
               />
             </VCol>
             <VCol cols="12">
@@ -866,6 +910,7 @@ const dibatalkan = async () => {
                 v-model="nomorKontakPenanggungJawab"
                 required
                 placeholder="Nomor Kontak"
+                disabled
               />
             </VCol>
             <VCol cols="12">
@@ -874,6 +919,7 @@ const dibatalkan = async () => {
                 v-model="emailPenanggungJawab"
                 required
                 placeholder="Email"
+                disabled
               />
             </VCol>
           </VCard>
@@ -886,7 +932,7 @@ const dibatalkan = async () => {
               <VCol>
                 <p class="text-h3">Aspek Legal</p>
               </VCol>
-              <VCol class="d-flex justify-end align-center" cols="6" md="2">
+              <!-- <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahDataAspekLegal
                   mode="add"
                   :dokumen="dokumen"
@@ -897,7 +943,7 @@ const dibatalkan = async () => {
                     })
                   "
                 />
-              </VCol>
+              </VCol> -->
             </VRow>
             <VRow>
               <VCol>
@@ -921,6 +967,9 @@ const dibatalkan = async () => {
                       index + 1 + (pageAspekLegal - 1) * itemPerPageAspekLegal
                     }}
                   </template>
+                  <template #item.tanggal_surat="{ item }">
+                    {{ formatDate((item as any).tanggal_surat) }}
+                  </template>
                 </VDataTableServer>
               </VCol>
             </VRow>
@@ -936,7 +985,7 @@ const dibatalkan = async () => {
                 <p class="text-h3">Penyelia Halal</p>
               </VCol>
               <VCol class="d-flex justify-end align-center" cols="6" md="2">
-                <TambahDataPenyeliaHalal
+                <!-- <TambahDataPenyeliaHalal
                   @refresh="
                     loadItemPenyeliaById({
                       page: pagePenyelia,
@@ -945,7 +994,7 @@ const dibatalkan = async () => {
                   "
                   mode="add"
                   :listagama="listAgama"
-                />
+                /> -->
               </VCol>
             </VRow>
             <VRow>
@@ -968,7 +1017,10 @@ const dibatalkan = async () => {
                   <template #item.no="{ index }">
                     {{ index + 1 + (pagePenyelia - 1) * itemPerPagePenyelia }}
                   </template>
-                  <template #item.action="{ item }">
+                  <template #item.tgl_sk="{ item }">
+                    {{ formatDate((item as any).tgl_sk) }}
+                  </template>
+                  <!-- <template #item.action="{ item }">
                     <div class="d-flex gap-1">
                       <VBtn variant="text" elevation="0">
                         <VIcon
@@ -978,14 +1030,14 @@ const dibatalkan = async () => {
                         />
                       </VBtn>
                     </div>
-                  </template>
+                  </template> -->
                 </VDataTableServer>
               </VCol>
             </VRow>
           </VCard>
         </VCol>
       </VRow>
-      <VRow>
+      <!-- <VRow>
         <VCol>
           <VCard variant="flat" class="pa-4">
             <VRow>
@@ -1042,7 +1094,7 @@ const dibatalkan = async () => {
             </VRow>
           </VCard>
         </VCol>
-      </VRow>
+      </VRow> -->
     </VContainer>
 
     <!-- Tab Content Pengajuan -->
@@ -1089,6 +1141,7 @@ const dibatalkan = async () => {
                         item-title="name"
                         item-value="code"
                         required
+                        disabled
                       />
                     </VCol>
 
@@ -1101,21 +1154,18 @@ const dibatalkan = async () => {
                         <VCol cols="5.5">
                           <VSelect
                             v-model="dataFormPengajuan.kodeDaftarFasilitasi"
-                            :items="filteredFasilitators"
+                            :items="listKodeDaftarFasilitasi"
                             item-title="name"
                             item-value="id"
-                            :search-input="searchFasilitator"
-                            clearable
-                            required
-                            @update:search-input="onFasilitatorSearchInput"
+                            disabled
                           />
                         </VCol>
                         <span>Atau</span>
                         <VCol cols="5.5">
                           <VTextField
-                            v-model="searchFasilitator"
                             append-inner-icon="mdi-magnify"
                             required
+                            disabled
                           />
                         </VCol>
                       </VRow>
@@ -1140,6 +1190,7 @@ const dibatalkan = async () => {
                         Nomor Surat Permohonan
                       </VLabel>
                       <VTextField
+                        disabled
                         required
                         placeholder="Isi Nomor Surat Permohonan"
                       />
@@ -1149,6 +1200,7 @@ const dibatalkan = async () => {
                       <VTextField
                         placeholder="Pilih Tanggal Surat Pemohon"
                         type="date"
+                        disabled
                         v-model="dataFormPengajuan.tanggalSuratPermohon"
                       />
                     </VCol>
@@ -1163,6 +1215,7 @@ const dibatalkan = async () => {
                         v-model="dataFormPengajuan.jenisLayanan"
                         item-title="name"
                         item-value="code"
+                        disabled
                       />
                     </VCol>
 
@@ -1176,6 +1229,7 @@ const dibatalkan = async () => {
                         v-model="dataFormPengajuan.jenisProduk"
                         item-title="name"
                         item-value="code"
+                        disabled
                       />
                     </VCol>
 
@@ -1186,6 +1240,7 @@ const dibatalkan = async () => {
                         v-model="dataFormPengajuan.jenisUsaha"
                         required
                         placeholder="Pilih Jenis Usaha"
+                        disabled
                       />
                     </VCol>
 
@@ -1202,6 +1257,7 @@ const dibatalkan = async () => {
                         ]"
                         required
                         v-model="dataFormPengajuan.areaPemasaran"
+                        disabled
                       />
                     </VCol>
 
@@ -1244,8 +1300,8 @@ const dibatalkan = async () => {
               <!-- Action Buttons -->
               <VCardActions>
                 <VSpacer />
-                <Permohonan />
-                <Pernyataan />
+                <PermohonanSelfDeclareVerifikator :detaildata="detailData" />
+                <PernyataanSelfDeclareVerifikator :detaildata="detailData" />
               </VCardActions>
             </div>
           </VExpandTransition>
@@ -1262,9 +1318,9 @@ const dibatalkan = async () => {
               <VCol>
                 <p class="text-h3">Pabrik</p>
               </VCol>
-              <VCol class="d-flex justify-end align-center" cols="6" md="2">
+              <!-- <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahPabrikOutlet mode="add" />
-              </VCol>
+              </VCol> -->
             </VRow>
             <VRow>
               <VCol>
@@ -1309,9 +1365,9 @@ const dibatalkan = async () => {
               <VCol>
                 <p class="text-h3">Outlet</p>
               </VCol>
-              <VCol class="d-flex justify-end align-center" cols="6" md="2">
+              <!-- <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahOutlet mode="add" />
-              </VCol>
+              </VCol> -->
             </VRow>
             <VRow>
               <VCol>
@@ -1359,7 +1415,12 @@ const dibatalkan = async () => {
               <p class="text-h3">Daftar Nama Bahan dan Kemasan</p>
             </VCol>
             <VCol class="d-flex justify-end align-center" cols="0" md="2">
-              <TambahBahanModalHalal mode="add" />
+              <!-- <TambahBahanModalHalal
+                @refresh="
+                  loadItemBahanById({ page: pageBahan, size: itemPerPageBahan })
+                "
+                mode="add"
+              /> -->
               <!-- <VContainer>
                 <VBtn
                   color="primary"
@@ -1447,9 +1508,17 @@ const dibatalkan = async () => {
                 </li>
               </ol>
             </VCol>
-            <VCol class="d-flex justify-end align-center" cols="6" md="2">
-              <TambahProduk mode="add" />
-            </VCol>
+            <!-- <VCol class="d-flex justify-end align-center" cols="6" md="2">
+              <TambahProdukSelfDeclareVerifikator
+                @refresh="
+                  loadItemProdukById({
+                    page: pageTableProduk,
+                    size: itemPerPageTableProduk,
+                  })
+                "
+                mode="add"
+              />
+            </VCol> -->
           </VRow>
           <VRow>
             <VCol>
@@ -1550,6 +1619,14 @@ const dibatalkan = async () => {
           </VExpandTransition>
         </VCard>
       </VCol>
+    </VContainer>
+
+    <VContainer v-if="tab === 'proses'">
+      <EditProsesProdukHalalSelfDeclareSubmission :is-verificator="true" />
+    </VContainer>
+
+    <VContainer v-if="tab === 'pernyataan'">
+      <EditPernyataanSelfDeclareSubmision :is-verificator="true" />
     </VContainer>
   </VContainer>
 

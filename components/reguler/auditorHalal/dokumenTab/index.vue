@@ -1,5 +1,53 @@
 <script setup>
 import { ref } from 'vue'
+
+const data = ref({})
+const route = useRoute()
+const id = route?.params?.id
+const loading = ref(false)
+
+const handleDownloadV2 = async filename => {
+  try {
+    const response = await $api('/shln/submission/document/download', {
+      method: 'post',
+      body: {
+        filename: filename,
+      },
+    })
+
+    if (response.url)
+      window.open(response.url, '_blank', 'noopener,noreferrer')
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
+const getDetailData = async () => {
+  try {
+    const response = await $api('/reguler/pelaku-usaha/detail', {
+      method: 'get',
+      params: { id },
+    })
+
+    if (response?.code === 2000)
+      data.value = response.data
+    else
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+onMounted(async () => {
+  loading.value = true
+  await Promise.allSettled([
+    getDetailData(),
+  ])
+  loading.value = false
+})
+
 </script>
 
 <template>
@@ -19,8 +67,10 @@ import { ref } from 'vue'
             style="display: flex; justify-content: start"
           >
             <VBtn
+              v-if="!loading"
               append-icon="fa-download"
               variant="flat"
+              @click="() => handleDownloadV2(data?.dokumen?.permohonan)"
             >
               Unduh
             </VBtn>
@@ -38,8 +88,10 @@ import { ref } from 'vue'
             style="display: flex; justify-content: start"
           >
             <VBtn
+              v-if="!loading"
               append-icon="fa-download"
               variant="flat"
+              @click="() => handleDownloadV2(data?.dokumen?.sjph)"
             >
               Unduh
             </VBtn>

@@ -1,32 +1,89 @@
 <script setup lang="ts">
-const tableHeader = [
-  { title: "No", value: "no" },
-  { title: "Jenis Bahan", value: "ingr_kind" },
-  { title: "Nama Bahan", value: "ingr_name" },
-  { title: "Kelompok", value: "group" },
-  { title: "Merk", value: "brand" },
-  { title: "Produsen", value: "manufacturer" },
-  { title: "No. Sertifikat Halal", value: "sh_number" },
-  { title: "Tanggal Berlaku", value: "effective_date" },
-  { title: "Verifikasi Pendamping", value: "verification_comp" },
-  { title: "Action", value: "action" },
-];
+import { ref } from 'vue';
+import { VDataTableServer } from 'vuetify/components';
 
-const selectedFilterProduk = ref([]);
-const selectedFilterFasilitas = ref([]);
-const selectedFilterLembaga = ref([]);
-const selectedFilterPendamping = ref([]);
+const items = ref<
+  {
+    id: string
+    nama_pu: string
+    alamat: string
+    kota_pu: string
+    jenis_produk: string
+    merek_dagang: string
+    no_daftar: string
+    tgl_daftar: string
+  }[]
+>([])
+
+const tableHeader = [
+  { title: 'No', key: 'no' },
+  { title: 'Jenis Produk', key: 'jenis_produk' },
+  { title: 'Nama PU', key: 'nama_pu' },
+  { title: 'Alamat', key: 'alamat' },
+  { title: 'Merk Dagang', key: 'merek_dagang' },
+  { title: 'No. Daftar', key: 'no_daftar' },
+  { title: 'Tanggal Daftar', key: 'tgl_daftar' },
+  { title: 'Action', key: 'action' },
+]
+
+const itemPerPage = ref(10)
+const totalItems = ref(0)
+const loading = ref(false)
+const loadingAll = ref(true)
+const page = ref(1)
+const selectedFilterProduk = ref([])
+const selectedFilterFasilitas = ref([])
+const selectedFilterLembaga = ref([])
+const selectedFilterPendamping = ref([])
+
+const loadItem = async (
+  page: number,
+  size: number,
+
+) => {
+  try {
+    loading.value = true
+
+    const response: any = await $api('/self-declare/komite-fatwa/inquiry-1', {
+      method: 'get',
+      params: {
+        page,
+        size,
+      },
+    })
+
+    if (response.code === 2000) {
+      console.log(response.data, 'ini response data')
+      items.value = response.data || []
+      totalItems.value = response.total_item || 0
+      loading.value = false
+      console.log('Total Items:', totalItems.value)
+
+      return response
+    }
+    else {
+      loading.value = false
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    loading.value = false
+  }
+}
 </script>
 
 <template>
   <VRow>
     <VCol cols="12">
-      <KembaliButton></KembaliButton>
+      <KembaliButton />
     </VCol>
   </VRow>
-  <VRow
-    ><VCol cols="12"><h2>Inquiry / Pengajuan</h2></VCol></VRow
-  >
+  <VRow>
+    <VCol cols="12">
+      <h2>Inquiry / Pengajuan</h2>
+    </VCol>
+  </VRow>
   <VRow>
     <VCol cols="12">
       <VCard>
@@ -40,9 +97,10 @@ const selectedFilterPendamping = ref([]);
                     append-icon="fa-filter"
                     v-bind="openMenu"
                     variant="outlined"
-                    style="width: 100%"
-                    >Filter</VBtn
+                    style="inline-size: 100%;"
                   >
+                    Filter
+                  </VBtn>
                 </template>
                 <VList>
                   <VListItem>
@@ -52,7 +110,7 @@ const selectedFilterPendamping = ref([]);
                         v-model="selectedFilterProduk"
                         density="compact"
                         placeholder="Semua"
-                      ></VSelect>
+                      />
                     </VItemGroup>
                   </VListItem>
                   <VListItem>
@@ -62,7 +120,7 @@ const selectedFilterPendamping = ref([]);
                         v-model="selectedFilterFasilitas"
                         density="compact"
                         placeholder="Semua"
-                      ></VSelect>
+                      />
                     </VItemGroup>
                   </VListItem>
                   <VListItem>
@@ -72,7 +130,7 @@ const selectedFilterPendamping = ref([]);
                         v-model="selectedFilterLembaga"
                         density="compact"
                         placeholder="Semua"
-                      ></VSelect>
+                      />
                     </VItemGroup>
                   </VListItem>
                   <VListItem>
@@ -82,29 +140,46 @@ const selectedFilterPendamping = ref([]);
                         v-model="selectedFilterPendamping"
                         density="compact"
                         placeholder="Semua"
-                      ></VSelect>
+                      />
                     </VItemGroup>
                   </VListItem>
                   <VListItem>
-                    <VBtn style="width: 100%" ariant="flat" density="compact"
-                      >Apply</VBtn
+                    <VBtn
+                      style="inline-size: 100%;"
+                      ariant="flat"
+                      density="compact"
                     >
+                      Apply
+                    </VBtn>
                   </VListItem>
                 </VList>
               </VMenu>
             </VCol>
-            <VCol cols="1"></VCol>
+            <VCol cols="1" />
             <VCol cols="8">
               <VTextField
                 density="compact"
                 placeholder="Cari Nama Pengajuan"
                 append-inner-icon="mdi-magnify"
-              ></VTextField>
+              />
             </VCol>
           </VRow>
           <VRow>
             <VCol>
-              <VDataTable :headers="tableHeader"></VDataTable>
+              <VDataTableServer
+                v-model:items-per-page="itemPerPage"
+                v-model:page="page"
+                :headers="tableHeader"
+                :items="items"
+                :loading="loading"
+                :items-length="totalItems"
+                loading-text="Loading..."
+                @update:options="loadItem(page, itemPerPage)"
+              >
+                <template #item.no="{ index }">
+                  {{ index + 1 + (page - 1) * itemPerPage }}
+                </template>
+              </VDataTableServer>
             </VCol>
           </VRow>
         </VCardItem>
@@ -112,5 +187,3 @@ const selectedFilterPendamping = ref([]);
     </VCol>
   </VRow>
 </template>
-
-<style scoped></style>

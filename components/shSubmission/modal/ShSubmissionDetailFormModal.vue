@@ -17,6 +17,8 @@ const textSubmitButton = computed(() => {
       return "Tambah";
     case "EDIT":
       return "Simpan";
+    case "SEND":
+      return "Kirim";
     default:
       return "Ya, Hapus";
   }

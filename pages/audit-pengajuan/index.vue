@@ -41,13 +41,13 @@ const items = ref([])
 
 const searchQuery = ref('')
 const page = ref(1)
-const size = ref(20)
+const size = ref(10)
 
 const loadItem = async (page: number, size: number, search: string): void => {
   try {
     const response = await $api('/reguler/auditor', {
       method: 'GET',
-      params: {page, size, search},
+      params: { page, size, search },
     })
 
     if (response.code === 2000)
@@ -68,13 +68,12 @@ const getChipColor = (status: string) => {
   return 'success'
 }
 
-
 const debouncedFetch = debounce(loadItem, 500)
 const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
 
-// onMounted(
-//   await loadItem(1, size.value)
-// )
+onMounted(
+  await loadItem(1, size.value)
+)
 </script>
 
 <template>
@@ -95,7 +94,7 @@ const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
           density="compact"
           placeholder="Cari Tagihan"
           append-inner-icon="ri-search-line"
-          style="max-width: 100%"
+          style="max-inline-size: 100%;"
           @input="handleInput"
         />
       </VCardItem>
@@ -106,9 +105,16 @@ const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
           :headers="headers"
           :items="items"
           item-value="no"
-          class="elevation-1"
+          class="elevation-1 border rounded"
           @update:options="loadItem(page, size, searchQuery)"
+          :hide-default-footer="items.length < 10"
         >
+          <template #no-data>
+            <div class="pt-2">
+              <img src="~/assets/images/empty-data.png" alt="" />
+              <div class="pt-2 font-weight-bold">Data Kosong</div>
+            </div>
+          </template>
           <template #[`item.status`]="{ item }">
             <div class="d-flex">
               <VChip
@@ -142,7 +148,7 @@ const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
 
 <style lang="scss" scoped>
 .ic-center {
-    place-self: center;
-    display: flex;
+  display: flex;
+  place-self: center;
 }
 </style>

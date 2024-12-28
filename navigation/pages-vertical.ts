@@ -126,9 +126,21 @@ export default [
     roles: ["Pelaku Usaha", "Admin"],
   },
   {
+    title: "Status Permohonan",
+    icon: { icon: "ri-id-card-line" },
+    to: "sh-domestic-status",
+    roles: ["Pelaku Usaha", "Admin"],
+  },
+  {
     title: "navbar.sh_registration.menu.self_declare_submission",
     icon: { icon: "ri-id-card-line" },
     to: "sh-domestic-submission-self-declare",
+    roles: ["Pelaku Usaha", "Admin"],
+  },
+  {
+    title: "Tagihan/Invoices",
+    icon: { icon: "ri-id-card-line" },
+    to: "sh-domestic-bill",
     roles: ["Pelaku Usaha", "Admin"],
   },
 
@@ -175,6 +187,12 @@ export default [
     title: "navbar.online_registration.menu.sd_verification",
     icon: { icon: "fa-check-circle" },
     to: "self-declare-verification",
+    roles: ["Verifikator Self-Declare", "Admin"],
+  },
+  {
+    title: "navbar.online_registration.menu.sd_distribusi",
+    icon: { icon: "fa-check-circle" },
+    to: "self-declare-distribusi-komite",
     roles: ["Verifikator Self-Declare", "Admin"],
   },
   {

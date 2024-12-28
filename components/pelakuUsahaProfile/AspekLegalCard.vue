@@ -7,6 +7,10 @@ const props = defineProps({
     type: Object as Array<legal> | any,
     required: true,
   },
+  hideDefaultFooter: {
+    type: Boolean,
+    required: false,
+  }
 });
 
 const legalHeader = [
@@ -42,6 +46,7 @@ onMounted(() => {
         <VDataTable
           :headers="legalHeader"
           :items="props.aspekLegalData ?? props.aspekLegalData"
+          :hide-default-footer="false"
         >
           <template #item.no="{ index }">
             {{ index + 1 }}

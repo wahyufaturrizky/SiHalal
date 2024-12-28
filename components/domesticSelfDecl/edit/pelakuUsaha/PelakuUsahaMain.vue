@@ -84,12 +84,21 @@ const handleUpdatePIC = async () => {
         },
       }
     );
-    if (response.code === 2000) {
-      refresh();
+    if (response.code !== 2000) {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      return;
     }
+    useSnackbar().sendSnackbar("Berhasil Simpan Penanggung Jawab", "success");
+    refresh();
   } catch (error) {
-    console.log(error);
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
+};
+const refVForm = ref<VForm>();
+const submitPIC = async () => {
+  refVForm.value?.validate().then(({ valid: isValid }) => {
+    if (isValid) handleUpdatePIC();
+  });
 };
 
 const handleAddLegal = async (selectedLegal: string[]) => {
@@ -206,43 +215,54 @@ onMounted(() => {
   <VRow>
     <VCol :cols="12" class="mb-3">
       <VCard class="py-3 px-2">
-        <VCardTitle
-          class="d-flex justify-space-between align-center font-weight-bold text-h4 mb-5"
-        >
-          <div>Penanggung Jawab</div>
-          <VBtn
-            color="primary"
-            variant="flat"
-            text="Simpan Perubahan"
-            @click="handleUpdatePIC"
-          />
-        </VCardTitle>
-        <VCardText>
-          <PenanggungJawab :data="picDetail" />
-          <!-- <VRow>
-            <VCol cols="12">
-              <VItemGroup>
-                <VLabel class="text-h6 font-weight-bold">Nama</VLabel>
-                <VTextField density="compact" v-model="picDetail.nama_pj" />
-              </VItemGroup>
-              <br />
-              <VItemGroup>
-                <VLabel class="text-h6 font-weight-bold"
-                  >Nomor Handphone</VLabel
-                >
-                <VTextFields
-                  density="compact"
-                  v-model="picDetail.nomor_kontak_pj"
-                />
-              </VItemGroup>
-              <br />
-              <VItemGroup>
-                <VLabel class="text-h6 font-weight-bold">Email</VLabel>
-                <VTextField density="compact" v-model="picDetail.email_pj" />
-              </VItemGroup>
-            </VCol>
-          </VRow> -->
-        </VCardText>
+        <v-form ref="refVForm" @submit.prevent="handleUpdatePIC">
+          <VCardTitle
+            class="d-flex justify-space-between align-center font-weight-bold text-h4 mb-5"
+          >
+            <div>Penanggung Jawab</div>
+            <VBtn
+              type="submit"
+              color="primary"
+              variant="flat"
+              text="Simpan Perubahan"
+            />
+          </VCardTitle>
+          <VCardText>
+            <VRow>
+              <VCol cols="12">
+                <VItemGroup>
+                  <VLabel class="text-h6 font-weight-bold">Nama</VLabel>
+                  <VTextField
+                    :rules="[requiredValidator]"
+                    density="compact"
+                    v-model="picDetail.nama_pj"
+                  />
+                </VItemGroup>
+                <br />
+                <VItemGroup>
+                  <VLabel class="text-h6 font-weight-bold"
+                    >Nomor Handphone</VLabel
+                  >
+                  <VTextField
+                    density="compact"
+                    @input="onlyAcceptNumber"
+                    :rules="[requiredValidator, phoneNumberIdValidator]"
+                    v-model="picDetail.nomor_kontak_pj"
+                  />
+                </VItemGroup>
+                <br />
+                <VItemGroup>
+                  <VLabel class="text-h6 font-weight-bold">Email</VLabel>
+                  <VTextField
+                    :rules="[requiredValidator, emailValidator]"
+                    density="compact"
+                    v-model="picDetail.email_pj"
+                  />
+                </VItemGroup>
+              </VCol>
+            </VRow>
+          </VCardText>
+        </v-form>
       </VCard>
     </VCol>
   </VRow>
@@ -273,7 +293,7 @@ onMounted(() => {
               {{ item.masa_berlaku ? item.masa_berlaku : "-" }}
             </template>
             <template #item.action="{ item }: any">
-              <div>
+              <div v-if="item.jenis_surat != 'NIB'">
                 <VIcon
                   icon="mdi-delete"
                   color="error"
@@ -374,6 +394,7 @@ onMounted(() => {
       position: sticky;
       border-left: 1px solid rgba(#000000, 0.12);
     }
+
     tbody > tr > td:last-of-type {
       right: 0;
       position: sticky;

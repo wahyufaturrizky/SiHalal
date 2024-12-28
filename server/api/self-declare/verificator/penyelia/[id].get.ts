@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
   };
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/${id}/penyelia/list`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/halal-certificate-reguler/self-declare/${id}/penyelia`,
     {
       method: "get",
       headers: { Authorization: authorizationHeader },

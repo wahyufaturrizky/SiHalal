@@ -24,7 +24,6 @@ const formData = ref({
   tanggal_surat: "",
   masa_berlaku: "",
   instansi_penerbit: "",
-  id_legal: "",
 });
 
 const resetForm = () => {
@@ -34,18 +33,13 @@ const resetForm = () => {
     tanggal_surat: "",
     masa_berlaku: "",
     instansi_penerbit: "",
-    id_legal: "",
   };
 };
 
 const isFormError = ref(false);
 
 const checkIsFieldEMpty = (data: any) => {
-  return Object.keys(data)?.find((key: any) => {
-    if (key !== "id_legal") {
-      return !data[key];
-    }
-  });
+  return Object.keys(data)?.find((key: any) => !data[key]);
 };
 
 const addDataAspekLegal = async () => {

@@ -179,7 +179,7 @@
                   v-model="form.statusPabrik"
                   :items="statusOptions"
                   item-title="name"
-                  item-value="name"
+                  item-value="code"
                   placeholder="Pilih Status Pabrik"
                   outlined
                   dense
@@ -219,10 +219,12 @@ const isVisible = ref(false);
 
 const masterDataStore = dataMasterStore();
 
-const convertstfas = async (name: string) => {
-  const api = await masterDataStore.getMasterData("factorystatus");
+const convertstfas = async (code: string) => {
+  // const api = await masterDataStore.getMasterData("factorystatus");
+  // console.log("convert stfas = ", statusOptions.value);
+  const api = statusOptions.value.filter((val) => val.code == code)[0]?.code;
 
-  return api.filter((val) => val.name == name)[0]?.name;
+  return api;
 };
 
 const openDialog = async () => {

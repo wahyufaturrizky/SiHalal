@@ -1,21 +1,66 @@
 <script setup lang="ts">
-const dataPermohonan = [
-  { id: 1, key: "Nama (sesuai KTP)", value: "Samsul" },
+const props = defineProps<{ data: any }>();
+const businessActor = computed(() => props.data);
+const dataPermohonan = computed(() => [
+  {
+    id: 1,
+    key: "Nama (sesuai KTP)",
+    value: props.data.nama_pj ? props.data.nama_pj : "-",
+  },
   {
     id: 2,
     key: "Alamat (sesuai KTP)",
-    value: "Sumbang, RT/RW -, Sumbang, Curio, xxx",
+    value: props.data.alamat_pu ? props.data.alamat_pu : "-",
   },
-  { id: 3, key: "Jabatan", value: "Penanggung Jawab Usaha" },
-  { id: 4, key: "Nomor Kontak", value: "0812113900779" },
-  { id: 5, key: "Nama Perusahaan", value: "Samsul" },
+  {
+    id: 3,
+    key: "Jabatan",
+    value: "Penanggung Jawab Usaha",
+  },
+  {
+    id: 4,
+    key: "Nomor Kontak",
+    value: props.data.nomor_kontak_pj ? props.data.nomor_kontak_pj : "-",
+  },
+  {
+    id: 5,
+    key: "Nama Perusahaan",
+    value: props.data.nama_pu ? props.data.nama_pu : "-",
+  },
   {
     id: 6,
     key: "Alamat Perusahaan",
-    value: "Sumbang, RT/RW -, Sumbang, Curio, xxx",
+    value: props.data.alamat_pu ? props.data.alamat_pu : "-",
   },
-];
+]);
+
+const route = useRoute<"">();
+const submissionId = route.params?.id;
+const suratPernyataan = ref("");
+const getDownloadForm = async (docName: string) => {
+  const result: any = await $api(
+    `/self-declare/submission/${submissionId}/file`,
+    {
+      method: "get",
+      query: {
+        document: docName,
+      },
+    }
+  );
+  if (result.code === 2000) {
+    suratPernyataan.value = result.data.file;
+  }
+};
+
+const handleDownload = async () => {
+  return await downloadDocument(suratPernyataan.value);
+};
+
+onMounted(() => {
+  getDownloadForm("surat-pernyataan");
+});
 </script>
+
 <template>
   <VDialog max-width="70svw">
     <template #activator="{ props: openModal }">
@@ -77,7 +122,9 @@ const dataPermohonan = [
           style="display: flex; justify-content: end; padding: 1.5svw"
         >
           <div>
-            <VBtn variant="flat">Pratinjau Surat Pengajuan</VBtn>
+            <VBtn variant="flat" @click="handleDownload"
+              >Pratinjau Surat Pengajuan</VBtn
+            >
           </div>
         </VCardActions>
       </VCard>
