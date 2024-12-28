@@ -6,11 +6,25 @@ const props = defineProps({
   },
 });
 
-const submissionData = ref({
-  id: "39886986",
-  date: "10/10/2024",
-  type: "Baru",
-});
+const handleGetPengajuanSubmission = async () => {
+  try {
+    const response: any = await $api(
+      `/self-declare/submission/${props.idDetail}/detail-pengajuan`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) {
+      // submissionDetail.id_reg = response.data.id_reg;
+      // submissionDetail.id_jenis_pengajuan = response.data.jenis_pendaftaran;
+      console.log("ini apa response", response);
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const responseId = ref("");
 
@@ -143,6 +157,8 @@ const { refresh } = await useAsyncData("get-detail-submission", async () => {
         id_pendamping,
       } = data || {};
 
+      submissionDetail.id_reg = response.data.id_reg;
+      submissionDetail.id_jenis_pengajuan = response.data.jenis_pendaftaran;
       submissionDetail.tanggal_buat = formatDate(tgl_daftar) as any;
       submissionDetail.nama_pj = nama_pj;
       submissionDetail.nomor_kontak_pj = nomor_kontak_pj;
@@ -286,6 +302,7 @@ onMounted(async () => {
     handleGetFasilitator(),
     handleGetJenisLayanan(),
     handleGetJenisProduk(),
+    handleGetPengajuanSubmission(),
     loadDataPendamping(formData.lokasi_pendamping),
     getDownloadForm("surat-permohonan"),
     getDownloadForm("surat-pernyataan"),
@@ -311,7 +328,7 @@ onMounted(async () => {
     <VCardText>
       <VRow>
         <VCol cols="3" class="font-weight-bold mb-1">No. ID</VCol>
-        <VCol cols="9">: {{ submissionData.id }}</VCol>
+        <VCol cols="9">: {{ submissionDetail.id_reg }}</VCol>
       </VRow>
       <VRow>
         <VCol cols="3" class="font-weight-bold mb-1">Tanggal</VCol>
