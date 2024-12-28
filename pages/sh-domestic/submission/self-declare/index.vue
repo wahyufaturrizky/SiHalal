@@ -148,7 +148,6 @@ const handleSearchSubmission = useDebounceFn((val: string) => {
 
 onMounted(() => {
   loadValidation();
-  handleLoadList();
 });
 
 onMounted(async () => {
