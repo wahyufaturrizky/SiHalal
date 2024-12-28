@@ -218,6 +218,34 @@ const loadPemeriksaanProduk = async (): void => {
   }
 }
 
+const send = async () => {
+  const body = {
+    id_reg: id,
+    status: 'OF70'
+  }
+
+  try {
+    const response: any = await $api(`/reguler/auditor/send`, {
+      method : 'post',
+      body : body
+    })
+
+    console.log("RESPONSE : ", response)
+
+    if (response?.code === 2000) {
+      useSnackbar().sendSnackbar('Sukses send', 'success')
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+
+  console.log("BODY SAVE HASIL AUDIT : ", body)
+}
+
 onMounted(async () => {
   await Promise.all([
     loadDetailPengajuan(),
@@ -255,7 +283,7 @@ onMounted(async () => {
           >
             Ubah Laporan
           </VBtn>
-          <VBtn append-icon="fa-paper-plane">
+          <VBtn append-icon="fa-paper-plane" @click="send">
             Kirim
           </VBtn>
         </VRow>
@@ -375,24 +403,7 @@ onMounted(async () => {
                 name="Skala Usaha"
                 class="d-flex align-center"
               >
-                <VRow class="d-flex align-center">
-                  <VCol cols="8">
-                    <VSelect
-                      v-model="detailPengajuan.skala_usaha"
-                      :items="typeSkalaUsaha"
-                      label="Choose an option"
-                      outlined
-                    />
-                  </VCol>
-                  <VCol cols="4">
-                    <VBtn
-                      variant="outlined"
-                      @click="updateSkalaUsaha"
-                    >
-                      Update
-                    </VBtn>
-                  </VCol>
-                </VRow>
+                {{detailPengajuan.skala_usaha}}
               </InfoRow>
             </VExpansionPanelText>
           </VExpansionPanel>

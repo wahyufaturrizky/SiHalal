@@ -21,7 +21,49 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+  opsiBahan: {
+    type: Array,
+    required: false
+  },
+  opsiKeterangan: {
+    type: Array,
+    required: false
+  },
+  bahanData: {
+    type: Array,
+    required: false
+  }
 })
+
+const bahanData = ref({
+  namaBahan: '',
+  statusKeraguan: '',
+  kriteriaBahan: '',
+  keterangan: '',
+});
+
+const addProsesProduk = ref({
+  persyaratan: '',
+  penjelasan: ''
+})
+
+const updateBahanData = ref(props.bahanData)
+
+const emit = defineEmits()
+const submitData = () => {
+  if(props.title === 'Bahan'){
+    emit('submit', bahanData);
+  } else if (props.title === 'Proses Produk Halal'){
+    emit('submit',addProsesProduk)
+  }
+};
+
+const updateBahan = (items) => {
+  if(props.title === 'Bahan'){
+    emit('update', items)
+  }
+}
+
 </script>
 
 <template>
@@ -42,16 +84,17 @@ const props = defineProps({
               v-if="title === 'Bahan'"
               title="Tambah Bahan"
               button-text="Tambah"
+              @submit="submitData"
             >
               <template #content>
                 <p class="label-pengajuan">
                   Nama Bahan
                 </p>
                 <VSelect
-                  :items="['1', '2']"
+                  v-model="bahanData.namaBahan"
+                  :items="props.opsiBahan"
                   outlined
                   class="-mt-5"
-                  disabled
                   bg-color="#F6F6F6"
                 />
                 <br>
@@ -59,10 +102,10 @@ const props = defineProps({
                   Status Keraguan
                 </p>
                 <VSelect
-                  :items="['1', '2']"
+                  v-model="bahanData.statusKeraguan"
+                  :items="['Diragukan', 'Tidak Diragukan']"
                   outlined
                   class="-mt-5"
-                  disabled
                   bg-color="#F6F6F6"
                 />
                 <br>
@@ -70,10 +113,10 @@ const props = defineProps({
                   Kriteria Bahan
                 </p>
                 <VSelect
-                  :items="['1', '2']"
+                  v-model="bahanData.kriteriaBahan"
+                  :items="['Kritis', 'Tidak Kritis']"
                   outlined
                   class="-mt-5"
-                  disabled
                   bg-color="#F6F6F6"
                 />
                 <br>
@@ -81,10 +124,10 @@ const props = defineProps({
                   Keterangan
                 </p>
                 <VSelect
-                  :items="['1', '2']"
+                  v-model="bahanData.keterangan"
+                  :items="props.opsiKeterangan"
                   outlined
                   class="-mt-5"
-                  disabled
                   bg-color="#F6F6F6"
                 />
               </template>
@@ -93,23 +136,24 @@ const props = defineProps({
               v-if="title === 'Proses Produk Halal'"
               title="Tambah Proses Produk Halal"
               button-text="Tambah"
+              @submit="submitData"
             >
               <template #content>
                 <p class="label-pengajuan">
                   Persyaratan
                 </p>
                 <VSelect
-                  :items="['1', '2']"
+                  v-model="addProsesProduk.persyaratan"
+                  :items="['Proses', 'Kriteria SJPH']"
                   outlined
                   class="-mt-5"
-                  disabled
                   bg-color="#F6F6F6"
                 />
                 <br>
                 <p class="label-pengajuan">
                   Penjelasan
                 </p>
-                <VTextarea class="-mt-5" />
+                <VTextarea class="-mt-5" v-model="addProsesProduk.penjelasan"/>
               </template>
             </DialogAuditPengajuan>
             <DialogAuditPengajuan
@@ -174,8 +218,9 @@ const props = defineProps({
         <template #item.action="{ item }">
           <DialogEditAuditPengajuan
             v-if="title === 'Bahan'"
-            title="Ubah Nama Produk"
+            title="Ubah Bahan"
             button-text="Tambah"
+            @submit="() => updateBahan(item)"
           >
             <template
               v-if="title === 'Bahan'"
@@ -185,10 +230,11 @@ const props = defineProps({
                 Nama Bahan
               </p>
               <VSelect
-                :items="['1', '2']"
+                v-model="item.materialName"
+                :items="props.opsiBahan"
+                disabled
                 outlined
                 class="-mt-5"
-                disabled
                 bg-color="#F6F6F6"
               />
               <br>
@@ -196,10 +242,10 @@ const props = defineProps({
                 Status Keraguan
               </p>
               <VSelect
-                :items="['1', '2']"
+                v-model="item.diragukan"
+                :items="['Diragukan', 'Tidak Diragukan']"
                 outlined
                 class="-mt-5"
-                disabled
                 bg-color="#F6F6F6"
               />
               <br>
@@ -207,10 +253,10 @@ const props = defineProps({
                 Kriteria Bahan
               </p>
               <VSelect
-                :items="['1', '2']"
+                v-model="item.priority"
+                :items="['Kritis', 'Tidak Kritis']"
                 outlined
                 class="-mt-5"
-                disabled
                 bg-color="#F6F6F6"
               />
               <br>
@@ -218,10 +264,10 @@ const props = defineProps({
                 Keterangan
               </p>
               <VSelect
-                :items="['1', '2']"
+                v-model="item.information"
+                :items="props.opsiKeterangan"
                 outlined
                 class="-mt-5"
-                disabled
                 bg-color="#F6F6F6"
               />
             </template>
