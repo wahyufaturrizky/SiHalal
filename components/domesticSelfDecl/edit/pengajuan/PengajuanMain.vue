@@ -293,12 +293,11 @@ const getDetail = async () => {
       querySearch.value = response.data.kode_fac;
       formData.no_mohon = response.data.no_surat_permohonan;
       formData.id_jenis_layanan = response.data.id_jenis_layanan;
-
+      formData.lokasi_pendamping = response.data.lokasi_pendamping;
       formData.lokasi_pendamping = response.data.lokasi_pendamping;
       formData.id_jenis_produk = response.data.id_product;
       formData.nama_pu = response.data.nama_usaha;
       formData.area_pemasaran = response.data.area_pemasaran;
-      formData.lokasi_pendamping = "Provinsi";
 
       formData.id_lembaga_pendamping = response.data.id_lembaga_pendamping;
       formData.id_pendamping = response.data.id_pendamping;
