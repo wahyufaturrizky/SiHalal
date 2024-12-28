@@ -54,7 +54,7 @@
               <InfoRow name="Tanggal" :name-style="{ fontWeight: '600' }">
                 {{
                   submissionDetail.tanggal_buat
-                    ? submissionDetail.tanggal_buat
+                    ? formatToISOString(submissionDetail.tanggal_buat)
                     : "-"
                 }}
               </InfoRow>
@@ -72,7 +72,9 @@
                 :name-style="{ fontWeight: '600' }"
               >
                 {{
-                  submissionDetail.tgl_mohon ? submissionDetail.tgl_mohon : "-"
+                  submissionDetail.tgl_mohon
+                    ? formatToISOString(submissionDetail.tgl_mohon)
+                    : "-"
                 }}
               </InfoRow>
               <InfoRow name="Jenis Layanan" :name-style="{ fontWeight: '600' }">
@@ -1342,6 +1344,7 @@ const handleSentSubmission = async () => {
     });
     if (response.code === 2000) {
       snackbar.sendSnackbar("Berhasil mengirim pengajuan", "success");
+      navigateTo("/sh-domestic/submission/self-declare");
     } else {
       if (response.errors.list_error.length > 0) {
         for (const element of response.errors.list_error) {

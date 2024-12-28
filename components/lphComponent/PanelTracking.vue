@@ -1,28 +1,51 @@
 <script setup lang="ts">
 const props = defineProps<{
-  data: array
-}>()
+  data: array;
+}>();
 </script>
 
 <template>
   <VCard class="pa-5">
     <VCardlTitle class="font-weight-bold text-h4"> Melacak </VCardlTitle>
     <VCardText class="px-0">
-      <VTimeline side="end" align="start" hide-opposite>
+      <VTimeline
+        side="end"
+        align="start"
+        line-inset="9"
+        truncate-line="start"
+        density="compact"
+        class="v-timeline--variant-outlined"
+      >
         <VTimelineItem
           v-for="(item, index) in props?.data"
           :key="index"
-          dot-color="#FFFFFF"
+          dot-color="rgb(var(--v-theme-surface))"
+          size="x-small"
         >
-          <VRow>
-            <VCol cols="7">
-              <div class="text-h6">{{ item.status }}</div>
-              <div>{{ item.username }}</div>
-            </VCol>
-            <VCol cols="5" v-if="item.date">
-              <div>{{ formatDateIntl(new Date(item.date)) }}</div>
-            </VCol>
-          </VRow>
+          <template #icon>
+            <VIcon icon="ri-circle-line" color="primary" size="16" />
+          </template>
+
+          <div
+            class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
+          >
+            <span class="app-timeline-title">
+              {{ (item as any).status }}
+            </span>
+            <span class="app-timeline-meta">{{
+              formatDate((item as any).date)
+            }}</span>
+          </div>
+          <div class="app-timeline-text mt-1">
+            {{ (item as any).username }}
+          </div>
+          <div v-if="item.comment" class="app-timeline-text mt-1">
+            {{
+              (item.comment as any).length > 38
+                ? (item.comment as any).slice(0, 38) + "..."
+                : (item.comment as any)
+            }}
+          </div>
         </VTimelineItem>
       </VTimeline>
     </VCardText>

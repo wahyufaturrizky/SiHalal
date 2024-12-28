@@ -209,7 +209,7 @@ const loadItemById = async () => {
         },
         {
           label: "Negara",
-          value: negara_pu || 'Indonesia',
+          value: negara_pu || "Indonesia",
         },
         {
           label: "Telepon",
@@ -274,7 +274,14 @@ onMounted(async () => {
           </VBtn>
           <!-- <VBtn variant="outlined"> Lihat Draft Sertif </VBtn> -->
           <VBtn
-            @click="navigateTo(`/sh-domestic/submission/reguler/${id}/edit`)"
+            @click="
+              navigateTo({
+                path: `/sh-domestic/submission/reguler/${id}/edit`,
+                query: {
+                  isViewOnly: true,
+                },
+              })
+            "
             variant="outlined"
           >
             Cek Data
