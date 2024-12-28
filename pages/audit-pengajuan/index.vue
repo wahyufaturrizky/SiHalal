@@ -50,8 +50,13 @@ const loadItem = async (page: number, size: number, search: string): void => {
       params: { page, size, search },
     })
 
-    if (response.code === 2000)
+    if (response.code === 2000){
+      response?.data?.map((item: any) => {
+        item.newStatus = [item?.jenis_usaha, item?.jumlah_produk, item.status]
+      })
       items.value = response.data
+    }
+
   }
   catch (e) {
     snackBar.sendSnackbar('Terjadi Kesalahan ', 'error')
@@ -115,15 +120,16 @@ onMounted(
               <div class="pt-2 font-weight-bold">Data Kosong</div>
             </div>
           </template>
-          <template #[`item.status`]="{ item }">
+          <template #[`item.newStatus`]="{ item }">
             <div class="d-flex">
               <VChip
+                v-for="(status, index) in item.newStatus"
                 :key="index"
-                :color="getChipColor(item.status)"
+                :color="getChipColor(status)"
                 label
                 class="ma-1"
               >
-                {{ item.status }}
+                {{ status }}
               </VChip>
             </div>
           </template>
