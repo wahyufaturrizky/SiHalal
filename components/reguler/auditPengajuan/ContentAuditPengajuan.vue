@@ -23,47 +23,65 @@ const props = defineProps({
   },
   opsiBahan: {
     type: Array,
-    required: false
+    required: false,
   },
   opsiKeterangan: {
     type: Array,
-    required: false
+    required: false,
   },
   bahanData: {
     type: Array,
-    required: false
-  }
+    required: false,
+  },
 })
 
-const bahanData = ref({
+const emit = defineEmits()
+
+const emptyBahan = {
   namaBahan: '',
   statusKeraguan: '',
   kriteriaBahan: '',
   keterangan: '',
-});
+}
+const bahanData = ref(emptyBahan)
 
-const addProsesProduk = ref({
+const emptyProsesProduk = {
   persyaratan: '',
-  penjelasan: ''
-})
+  penjelasan: '',
+}
+const addProsesProduk = ref(emptyProsesProduk)
+
+const emptyKriteria = {
+  kriteria: '',
+  kesesuaian: '',
+  keterangan: '',
+}
+const addKriteria = ref(emptyKriteria)
 
 const updateBahanData = ref(props.bahanData)
 
-const emit = defineEmits()
 const submitData = () => {
-  if(props.title === 'Bahan'){
-    emit('submit', bahanData);
-  } else if (props.title === 'Proses Produk Halal'){
-    emit('submit',addProsesProduk)
+  if (props.title === 'Bahan'){
+    emit('submit', bahanData)
+    bahanData.value = emptyBahan
   }
-};
-
-const updateBahan = (items) => {
-  if(props.title === 'Bahan'){
-    emit('update', items)
+  else if (props.title === 'Proses Produk Halal'){
+    emit('submit', addProsesProduk)
+    addProsesProduk.value = emptyProsesProduk
+  }
+  else if (props.title === 'Kesimpulan Pemenuhan Kriteria Sistem Jaminan Produk Halal'){
+    emit('submit', addKriteria)
+    addKriteria.value = emptyKriteria
   }
 }
 
+const updateBahan = items => {
+  emit('update', items)
+}
+
+const remove = items => {
+  emit('remove', items)
+}
 </script>
 
 <template>
@@ -153,23 +171,27 @@ const updateBahan = (items) => {
                 <p class="label-pengajuan">
                   Penjelasan
                 </p>
-                <VTextarea class="-mt-5" v-model="addProsesProduk.penjelasan"/>
+                <VTextarea
+                  v-model="addProsesProduk.penjelasan"
+                  class="-mt-5"
+                />
               </template>
             </DialogAuditPengajuan>
             <DialogAuditPengajuan
               v-if="title === 'Kesimpulan Pemenuhan Kriteria Sistem Jaminan Produk Halal'"
               title="Kesimpulan Pemenuhan Kriteria"
               button-text="Tambah"
+              @submit="submitData"
             >
               <template #content>
                 <p class="label-pengajuan">
                   Kriteria
                 </p>
                 <VSelect
-                  :items="['1', '2']"
+                  v-model="addKriteria.kriteria"
+                  :items="['Bahan', 'Produk', 'Proses produk halal', 'Komitmen dan Tanggung Jawab', 'Pemantauan dan evaluasi']"
                   outlined
                   class="-mt-5"
-                  disabled
                   bg-color="#F6F6F6"
                 />
                 <br>
@@ -177,17 +199,20 @@ const updateBahan = (items) => {
                   Kesesuaian
                 </p>
                 <VSelect
-                  :items="['1', '2']"
+                  v-model="addKriteria.kesesuaian"
+                  :items="['Sesuai', 'Tidak Sesuai']"
                   outlined
                   class="-mt-5"
-                  disabled
                   bg-color="#F6F6F6"
                 />
                 <br>
                 <p class="label-pengajuan">
                   Penjelasan
                 </p>
-                <VTextarea class="-mt-5" />
+                <VTextarea
+                  v-model="addKriteria.keterangan"
+                  class="-mt-5"
+                />
               </template>
             </DialogAuditPengajuan>
           </VRow>
@@ -274,7 +299,8 @@ const updateBahan = (items) => {
           </DialogEditAuditPengajuan>
           <DialogDeleteAuditPengajuan
             v-else
-            title="Hapus Bahan"
+            :on-delete="() => remove(item)"
+            :title="props.title"
             button-text="Hapus"
           />
         </template>

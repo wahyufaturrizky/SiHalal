@@ -230,8 +230,6 @@ const send = async () => {
       body : body
     })
 
-    console.log("RESPONSE : ", response)
-
     if (response?.code === 2000) {
       useSnackbar().sendSnackbar('Sukses send', 'success')
     }
@@ -242,8 +240,6 @@ const send = async () => {
   catch (error) {
     useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
   }
-
-  console.log("BODY SAVE HASIL AUDIT : ", body)
 }
 
 onMounted(async () => {
