@@ -3,4 +3,5 @@ export default interface RequirementDataInterface {
   uraian: string;
   bukti: string;
   verval: string;
+  memenuhi: boolean;
 }

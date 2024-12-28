@@ -8,6 +8,8 @@ export const dataMasterStore = defineStore({
     masterJnlgl: [] as Array<commonDataMaster>,
     masterStfas: [] as Array<commonDataMaster>,
     masterJnfas: [] as Array<commonDataMaster>,
+    masterJnlay: [] as Array<commonDataMaster>,
+    masterJnpro: [] as Array<commonDataMaster>,
   }),
   actions: {
     async getMasterData(mastertype: string): Promise<any> {
@@ -32,6 +34,12 @@ export const dataMasterStore = defineStore({
 
       response = await this.getMasterData("JNFAS");
       this.masterJnfas = response;
+
+      response = await this.getMasterData("jnlay");
+      this.masterJnlay = response;
+
+      response = await this.getMasterData("jnpro");
+      this.masterJnpro = response;
     },
   },
 });

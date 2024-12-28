@@ -1281,14 +1281,28 @@ const onSelectFasilitator = (selectedId: string) => {
     <VContainer v-if="tab === 'pengajuan'">
       <VCol>
         <VCard variant="flat" class="pa-4">
-          <div
-            class="d-flex justify-space-between align-center"
-            @click="showPengajuan = !showPengajuan"
-          >
-            <p class="text-h4" style="font-weight: bold">Data Pengajuan</p>
-            <VIcon
-              :icon="showPengajuan ? 'mdi-chevron-up' : 'mdi-chevron-down'"
-            />
+          <div class="d-flex justify-space-between align-center">
+            <VRow>
+              <VCol cols="6"
+                ><p class="text-h4" style="font-weight: bold">
+                  Data Pengajuan
+                </p></VCol
+              >
+              <VCol cols="5" style="display: flex; justify-content: end">
+                <VBtn
+                  type="submit"
+                  color="primary"
+                  variant="flat"
+                  text="Simpan Perubahan"
+                  @click="onSubmitSubmission"
+                />
+              </VCol>
+              <VCol cols="1" @click="showPengajuan = !showPengajuan">
+                <VIcon
+                  :icon="showPengajuan ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+                />
+              </VCol>
+            </VRow>
           </div>
           <VExpandTransition>
             <div v-if="showPengajuan">
