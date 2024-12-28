@@ -159,7 +159,6 @@ const handleDownloadForm = async (fileName: string) => {
 
 onMounted(async () => {
   loading.value = true
-  getDetailData()
   await Promise.allSettled([
     getDetailData(),
     getDownloadForm('sttd', 'sttd'),

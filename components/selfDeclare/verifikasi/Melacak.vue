@@ -1,36 +1,23 @@
 <script setup lang="ts">
-const props = defineProps({
-  data: {
-    type: Object,
-    required: true,
-  },
-});
+const props = defineProps<{data : any[]}>();
 
 interface TimelineItem {
-  title: string;
-  user: string;
+  comment: string;
+  username: string;
   date: string;
-  color: string;
+  status: string;
 }
 
-const timelineItems = ref<TimelineItem[]>([]);
+const timelineItems = ref<TimelineItem[]>(props.data);
+watchEffect(() => {
+  timelineItems.value = props.data
+})
 
 // const dummyData = [
 // { status: "Draft PU", username: "Ramen Grill Indonesia", created_at: "2024-11-01" },
 // { status: "Submitted PU", username: "Ramen Grill Indonesia", created_at: "2024-11-02" },
 // { status: "Verifikasi", username: "Yuan", created_at: "2024-11-03" },
 // ];
-
-timelineItems.value = props.data?.map((item: any) => {
-  const { status, username, created_at } = item || {};
-
-  return {
-    title: status,
-    user: username,
-    date: created_at,
-    color: "grey",
-  };
-});
 
 const formatDate = (date: string): string => {
   return new Date(date).toLocaleDateString("en-GB", {
@@ -56,10 +43,10 @@ const formatDate = (date: string): string => {
           <div class="d-flex justify-space-between align-start">
             <div>
               <div class="text-subtitle-2 font-weight-bold">
-                {{ item.title }}
+                {{ item.status }}
               </div>
               <div class="text-caption text-grey">
-                {{ item.user }}
+                {{ item.username }}
               </div>
             </div>
             <div class="text-caption text-grey">

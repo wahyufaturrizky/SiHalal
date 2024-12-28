@@ -8,6 +8,13 @@ const processRules = ref([(v: string) => !!v || "Proses produksi harus diisi"]);
 const processArray = ref<Array<string>>([]);
 const prosesProduction = ref("");
 
+const props = defineProps({
+  isVerificator: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const snackbar = useSnackbar();
 
 const route = useRoute<"">();
@@ -15,16 +22,31 @@ const submissionId = route.params?.id;
 
 const { refresh } = await useAsyncData("get-narration", async () => {
   try {
-    const response: any = await $api(`/self-declare/business-actor/narration`, {
+    const endpointBusActor = `/self-declare/business-actor/narration`;
+    const endpointVerificator = `/self-declare/verificator/narration`;
+    const finalUri = props.isVerificator
+      ? endpointVerificator
+      : endpointBusActor;
+    const response: any = await $api(finalUri, {
       method: "get",
       query: {
         id_reg: submissionId,
       },
     });
     if (response.code === 2000) {
-      prosesProduction.value = response.data.narasi;
-      if (response.data.narasi.length > 0) {
-        Object.assign(processArray.value, response.data.narasi.split("\n"));
+      if (props.isVerificator) {
+        prosesProduction.value = response.data?.narasi_pph;
+        if (response.data.narasi_pph != "") {
+          Object.assign(
+            processArray.value,
+            response.data.narasi_pph.split("\n")
+          );
+        }
+      } else {
+        prosesProduction.value = response.data.narasi;
+        if (response.data.narasi.length > 0) {
+          Object.assign(processArray.value, response.data.narasi.split("\n"));
+        }
       }
     }
   } catch (error) {
@@ -68,13 +90,61 @@ const handleAddProcess = () => {
     prosesProduction.value = `1. ${processArray.value[0]}`;
   }
 };
+
+const statusItem: any = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+    OF11: { color: "success", desc: "Verification" },
+    OF50: { color: "success", desc: "Dikirim ke LPH" },
+    OF300: { color: "success", desc: "Halal Certified Issued" },
+    OF285: { color: "success", desc: "Dikembalikan Oleh Fatwa" },
+    OF74: { color: "success", desc: "Sent to Komite Fatwa" },
+    OF280: { color: "success", desc: "Dikembalikan Ke PU" },
+    OF100: { color: "success", desc: "Selesai Sidang Fatwa" },
+    OF120: { color: "success", desc: "Certificate Issued" },
+    OF900: { color: "error", desc: "Dibatalkan" },
+  },
+  {
+    get(target: any, prop: any) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
 </script>
 
 <template>
   <VCard>
     <VCardTitle class="pa-4 d-flex justify-space-between align-center">
+      <!-- <template #[`item.status`]="{ item, index }">
+        <div class="d-flex">
+          <VChip
+            :key="index"
+            :color="statusItem[(item as any).status_code].color"
+            class="ma-1"
+          >
+            {{ statusItem[(item as any).status_code].desc }}
+          </VChip>
+        </div>
+      </template> -->
+
       <h4 class="text-h4">Proses Produksi Halal</h4>
-      <VBtn @click="handleAddSave">Simpan Perubahan</VBtn>
+      <div class="d-flex align-center gap-4">
+        <VChip color="success" class="ma-1">Verified</VChip>
+        <VBtn
+          v-if="!props.isVerificator"
+          @click="handleAddSave"
+          color="primary"
+          variant="elevated"
+        >
+          Simpan Perubahan
+        </VBtn>
+      </div>
     </VCardTitle>
     <VCardItem>
       <VForm ref="form" v-model="formStatus" @submit.prevent="handleAddProcess">
@@ -82,6 +152,7 @@ const handleAddProcess = () => {
           <VCol cols="6" class="text-h6">Ketik Proses</VCol>
           <VCol cols="6" class="d-flex justify-space-between align-center ga-4">
             <VTextField
+              :disabled="props.isVerificator"
               v-model="typedProcess"
               :rules="processRules"
               placeholder="Isi Ketik Proses"
@@ -92,7 +163,14 @@ const handleAddProcess = () => {
               autofocus
             >
               <template #append>
-                <VBtn dense outlined @click="handleAddProcess"> Tambah </VBtn>
+                <VBtn
+                  :disabled="props.isVerificator"
+                  dense
+                  outlined
+                  @click="handleAddProcess"
+                >
+                  Tambah
+                </VBtn>
               </template>
             </VTextField>
           </VCol>

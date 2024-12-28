@@ -1,146 +1,280 @@
 <script setup lang="ts">
+import { defineProps, ref } from "vue";
 import { useDisplay } from "vuetify";
-import { defineProps, ref } from 'vue';
-import { VDataTableServer } from 'vuetify/components';
+import { VDataTableServer } from "vuetify/components";
 
-defineProps({ mode: String })
-const selectAll = ref([])
+defineProps({ mode: String });
+const selectAll = ref([]);
 
 interface DataItem {
-  id: number
-  id_daftar: string
-  TanggalDaftar: string
-  Nama: string
-  Alamat: string
-  MerkDagang: string
-  Status: string
+  id: number;
+  id_daftar: string;
+  no_daftar: string;
+  tgl_daftar: string;
+  nama_pu: string;
+  alamat: string;
+  merek_dagang: string;
+  status: string;
+  status_code: string;
 }
 
-const itemPerPage = ref(10)
-const totalItems = ref(0)
-const loading = ref(false)
-const page = ref(1)
-const permohonanHeaders = [
-  { title: 'No', key: 'id', maxWidth: 25},
-  { title: 'Pilih', key: 'pilih', maxWidth: 60},
-  { title: 'ID Daftar', key: 'id_registrasi' , nowrap: true},
-  { title: 'Nomor Daftar', key: 'nomor_daftar' , nowrap: true},
-  { title: 'Tanggal Daftar', key: 'TanggalDaftar' , nowrap: true},
-  { title: 'Nama PU', key: 'Nama' , nowrap: true},
-  { title: 'Alamat', key: 'Alamat' , nowrap: true},
-  { title: 'Merk Dagang', key: 'MerkDagang' , nowrap: true},
-  { title: 'Status', key: 'Status' },
-  { title: 'Action', key: 'action' },
-]
-const items = ref([
-  {
-    id: 1,
-    id_registrasi: 'D001',
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-01',
-    Nama: 'John Doe',
-    Alamat: '1234 Elm Street, Springfield',
-    MerkDagang: 'TechBrand',
-    Status: 'OF74',
-  },
-  {
-    id: 2,
-    id_registrasi: 'D002',
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-02',
-    Nama: 'Jane Smith',
-    Alamat: '5678 Oak Avenue, Riverdale',
-    MerkDagang: 'Tasty Treats',
-    Status: 'OF74',
-  },
-  {
-    id: 3,
-    id_registrasi: 'D003',
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-03',
-    Nama: 'Alice Johnson',
-    Alamat: '9102 Pine Lane, Metropolis',
-    MerkDagang: 'FashionWear',
-    Status: 'OF74',
-  },
-  {
-    id: 4,
-    id_registrasi: 'D004',
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-04',
-    Nama: 'Bob Brown',
-    Alamat: '1122 Maple Drive, Gotham',
-    MerkDagang: 'HomeEase',
-    Status: 'Verifikasi',
-  },
-  {
-    id: 5,
-    id_registrasi: 'D005',
-    nomor_daftar: 'SH2024-225-29480',
-    TanggalDaftar: '2024-11-05',
-    Nama: 'Emily Davis',
-    Alamat: '3344 Birch Road, Star City',
-    MerkDagang: 'BeautyGlow',
-    Status: 'OF74',
-  },
-])
-const selectedItems = ref<String[]>([])
+const currentPage = ref(1);
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const loading = ref(false);
+const permohonanHeaders: any = [
+  { title: "No", key: "id", maxWidth: 25 },
+  { title: "Pilih", key: "pilih", maxWidth: 60 },
+  { title: "ID Daftar", key: "id_daftar", nowrap: true },
+  { title: "Nomor Daftar", key: "no_daftar", nowrap: true },
+  { title: "Tanggal Daftar", key: "tgl_daftar", nowrap: true },
+  { title: "Nama PU", key: "nama_pu", nowrap: true },
+  { title: "Alamat", key: "alamat", nowrap: true },
+  { title: "Merk Dagang", key: "merek_dagang", nowrap: true },
+  { title: "Status", key: "status_code" },
+  // { title: "Action", key: "action", align: "center" },
+];
+const listData = ref<Array<DataItem>>([]);
+const selectedItems = ref<String[]>([]);
 
-
-const searchQuery = ref('')
-
-const handleInput = () => {
-  // TODO -> UPDATE TABLE ON INPUT QUERY
-  console.log("SEARCH DATA : ", searchQuery)
-}
-
-
-const navigateAction = (id: string) => {
-  navigateTo(`/sh-domestic/submission/self-declare/${id}`)
-}
-
+const searchQuery = ref("");
 
 const handleSelectAll = () => {
-  if(selectAll.value.length === 1){
-    for (const item of items.value) {
-      selectedItems.value.push(item.id_registrasi)
+  if (selectAll.value.length === 1) {
+    for (const item of listData.value) {
+      selectedItems.value.push(item.id_daftar);
     }
-  }else {
-    selectedItems.value = []
+  } else {
+    selectedItems.value = [];
   }
-}
-
+};
 
 const isVisible = ref(false);
-const openDialog = () => isVisible.value = true
-const closeDialog = () => isVisible.value = false
+const openDialog = () => (isVisible.value = true);
+const closeDialog = () => (isVisible.value = false);
 
 const { mdAndUp } = useDisplay();
 
-const dialogMaxWidth = computed(() => mdAndUp.value ? 700 : "90%")
+const dialogMaxWidth = computed(() => (mdAndUp.value ? 700 : "90%"));
 
-const selectedProses = ref(null)
-// TODO -> HANDLE DISTRIBUSI
-const onHandleDistribusi = () => {
-  console.log("DISTRIBUSI : ", selectedItems.value)
-  console.log("SELECTED PROSES : ", selectedProses.value)
+const selectedComitee = ref(null);
+const onHandleDistribusi = async () => {
+  try {
+    const result: any = await $api(
+      "/self-declare/verificator/submission/update-status",
+      {
+        method: "post",
+        body: {
+          certificate_id: selectedItems.value,
+          user_id: selectedComitee.value,
+        },
+      } as any
+    );
+    if (result.code === 2000) {
+      refresh();
+      useSnackbar().sendSnackbar("Berhasil Mengdistribusikan Data", "success");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      "Oops, terjadi kesalahan. Silakan coba kembali",
+      "error"
+    );
+  }
 
-  closeDialog()
-}
-
+  selectedItems.value = [];
+  selectedComitee.value = null;
+  closeDialog();
+};
 
 // TODO -> IMPLEMENT FILTER
-const onFiltersUpdate = (filter) => {
-  console.log("UPDATE FILTER : ", filter)
-}
+const onFiltersUpdate = (filter: any) => {
+  console.log("UPDATE FILTER : ", filter);
+};
+const distributeBtnText = computed(() => {
+  return selectedItems.value.length
+    ? `Distribusi (${selectedItems.value.length})`
+    : `Distribusi`;
+});
 
+const listProduct = ref([]);
+const listFasilitas = ref([]);
+const listLembaga = ref([]);
+const listPendamping = ref([]);
+const listComitee = ref([]);
+
+const selectedProductType = ref();
+const selectedFasilitas = ref();
+const selectedLembaga = ref();
+const selectedPendamping = ref();
+const handleLoadList = async () => {
+  try {
+    const response: any = await $api(
+      "/self-declare/verificator/submission/list",
+      {
+        method: "get",
+        params: {
+          jenis_produk: selectedProductType.value,
+          fasilitas: selectedFasilitas.value,
+          lembaga: selectedLembaga.value,
+          pendamping: selectedPendamping.value,
+          page: currentPage.value,
+          size: itemPerPage.value,
+          keyword: searchQuery.value,
+        },
+      } as any
+    );
+
+    if (response.code === 2000) {
+      if (response.data !== null) {
+        listData.value = response.data;
+        currentPage.value = response.current_page;
+        totalItems.value = response.total_item;
+      } else {
+        listData.value = [];
+        currentPage.value = 1;
+        totalItems.value = 0;
+      }
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+const loadItemProduct = async () => {
+  try {
+    const response: any = await $api("/master/products", {
+      method: "get",
+    } as any);
+
+    if (response.length) {
+      listProduct.value = response;
+
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+const loadItemFacility = async () => {
+  try {
+    const response: any = await $api("/master/facility", {
+      method: "get",
+    } as any);
+
+    if (response.length) {
+      listFasilitas.value = response;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+const loadItemLembaga = async () => {
+  try {
+    const response: any = await $api("/master/lembaga", {
+      method: "get",
+    } as any);
+
+    if (response.length) {
+      listLembaga.value = response;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+const loadItemPendamping = async () => {
+  try {
+    const response: any = await $api("/master/pendamping", {
+      method: "get",
+    } as any);
+
+    if (response.length) {
+      listPendamping.value = response;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const handleLoadListComitee = async () => {
+  try {
+    const response: any = await $api(
+      "/self-declare/verificator/submission/list-comitee",
+      {
+        method: "get",
+      } as any
+    );
+
+    if (response.code === 2000 && response.data) {
+      listComitee.value = response.data;
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const { refresh } = await useAsyncData(
+  "comitee-distribution-list",
+  async () => handleLoadList(),
+  {
+    watch: [currentPage, itemPerPage],
+  }
+);
+
+const handleSearchSubmission = useDebounceFn((val: string) => {
+  searchQuery.value = val;
+  currentPage.value = 1;
+
+  refresh();
+}, 350);
+const handleFilterProductType = (val: string) => {
+  selectedProductType.value = val;
+  currentPage.value = 1;
+
+  refresh();
+};
+const handleFilterFasilitas = (val: string) => {
+  selectedFasilitas.value = val;
+  currentPage.value = 1;
+
+  refresh();
+};
+const handleFilterLembaga = (val: string) => {
+  selectedLembaga.value = val;
+  currentPage.value = 1;
+
+  refresh();
+};
+const handleFilterPendamping = (val: string) => {
+  selectedPendamping.value = val;
+  currentPage.value = 1;
+
+  refresh();
+};
+
+onMounted(() => {
+  handleLoadList();
+  loadItemProduct();
+  loadItemFacility();
+  loadItemLembaga();
+  loadItemPendamping();
+  handleLoadListComitee();
+});
 </script>
 
 <template>
-  <VCard
-    variant="flat"
-    class="pa-4"
-  >
+  <VCard variant="flat" class="pa-4">
     <VCardTitle class="mb-6 px-2">
       <VRow>
         <VCol cols="10">
@@ -150,107 +284,208 @@ const onFiltersUpdate = (filter) => {
     </VCardTitle>
     <VCardText>
       <VRow>
-        <VBtn @click="openDialog">
-          Distribusi ({{selectedItems.length}})
+        <VBtn
+          :color="selectedItems.length ? 'primary' : '#A09BA1'"
+          @click="selectedItems.length ? openDialog() : null"
+        >
+          {{ distributeBtnText }}
         </VBtn>
       </VRow>
-      <VRow >
+      <VRow>
         <VCol cols="3" class="px-0">
           <VRow class="ga-4" no-gutters>
-            <div class="border rounded-lg d-flex justify-center align-center pa">
-              <VCheckbox v-model="selectAll" @change="handleSelectAll"></VCheckbox>
+            <div
+              class="border rounded-lg d-flex justify-center align-center pa"
+            >
+              <VCheckbox
+                v-model="selectAll"
+                @change="handleSelectAll"
+              ></VCheckbox>
             </div>
-            <DistribusiKomiteSelfDeclareTableFilter @updateFilter="onFiltersUpdate" />
+            <VMenu :close-on-content-click="false">
+              <template #activator="{ props }">
+                <VTextField
+                  placeholder="Filter"
+                  density="compact"
+                  rounded="xl"
+                  append-inner-icon="mdi-filter"
+                  class="cursor-pointer"
+                  v-bind="props"
+                />
+              </template>
+              <VCard min-width="360px" class="mt-2">
+                <VCardText>
+                  <VRow no-gutters class="mb-3">
+                    <VCol>
+                      <div class="text-h6 mb-1">Jenis Produk</div>
+                      <VSelect
+                        density="compact"
+                        @update:model-value="handleFilterProductType"
+                        v-model="selectedProductType"
+                        :items="listProduct"
+                        item-title="name"
+                        item-value="code"
+                        menu-icon="fa-chevron-down"
+                        rounded="xl"
+                        placeholder="Semua"
+                        clearable
+                      />
+                    </VCol>
+                  </VRow>
+                  <VRow no-gutters class="mb-3">
+                    <VCol>
+                      <div class="text-h6 mb-1">Fasilitas</div>
+                      <VSelect
+                        density="compact"
+                        @update:model-value="handleFilterFasilitas"
+                        v-model="selectedFasilitas"
+                        :items="listFasilitas"
+                        item-title="name"
+                        item-value="id"
+                        menu-icon="fa-chevron-down"
+                        rounded="xl"
+                        placeholder="Semua"
+                        clearable
+                      />
+                    </VCol>
+                  </VRow>
+                  <VRow no-gutters class="mb-3">
+                    <VCol>
+                      <div class="text-h6 mb-1">Lembaga</div>
+                      <VSelect
+                        density="compact"
+                        @update:model-value="handleFilterLembaga"
+                        v-model="selectedLembaga"
+                        :items="listLembaga"
+                        item-title="name"
+                        item-value="id"
+                        menu-icon="fa-chevron-down"
+                        rounded="xl"
+                        placeholder="Semua"
+                        clearable
+                      />
+                    </VCol>
+                  </VRow>
+                  <VRow no-gutters class="mb-3">
+                    <VCol>
+                      <div class="text-h6 mb-1">Pendamping</div>
+                      <VSelect
+                        density="compact"
+                        @update:model-value="handleFilterPendamping"
+                        v-model="selectedPendamping"
+                        :items="listPendamping"
+                        menu-icon="fa-chevron-down"
+                        rounded="xl"
+                        placeholder="Semua"
+                        clearable
+                      />
+                    </VCol>
+                  </VRow>
+                </VCardText>
+              </VCard>
+            </VMenu>
+            <!-- <DistribusiKomiteSelfDeclareTableFilter
+              @updateFilter="onFiltersUpdate"
+            /> -->
           </VRow>
         </VCol>
-        <VCol
-          class="d-flex justify-sm-space-between align-center"
-          cols="9"
-        >
+        <VCol class="d-flex justify-sm-space-between align-center" cols="9">
           <VTextField
             v-model="searchQuery"
             density="compact"
             placeholder="Cari Nama Pengajuan"
             append-inner-icon="ri-search-line"
-            style="max-inline-size: 100%;"
-            @input="handleInput"
+            style="max-inline-size: 100%"
+            @update:model-value="handleSearchSubmission"
+            clearable
           />
         </VCol>
       </VRow>
       <VRow>
         <VDataTableServer
+          class="custom-table"
           v-model:items-per-page="itemPerPage"
-          v-model:page="page"
+          v-model:page="currentPage"
           :headers="permohonanHeaders"
-          :items="items"
+          :items="listData"
           :loading="loading"
           :items-length="totalItems"
           loading-text="Loading..."
         >
           <template #item.id="{ index }">
-            {{ index + 1 + (page - 1) * itemPerPage }}
+            {{ index + 1 + (currentPage - 1) * itemPerPage }}
+          </template>
+          <template #item.no_daftar="{ item }">
+            {{ item.no_daftar ? item.no_daftar : "-" }}
           </template>
           <template #item.tgl_daftar="{ item }">
-            {{ formatDateIntl(new Date(item.TanggalDaftar)) }}
+            {{
+              item.tgl_daftar
+                ? new Date(item.tgl_daftar)
+                    .toISOString()
+                    .substring(0, 10)
+                    .replace(/-/g, "/")
+                : "-"
+            }}
           </template>
-          <template #item.action="{ item }">
-            <div class="d-flex gap-1">
-              <IconBtn size="small">
-                <VIcon
-                  icon="ri-arrow-right-line"
-                  color="primary"
-                  @click="navigateAction(item.id_registrasi)"
-                />
-              </IconBtn>
-            </div>
+          <template #item.nama_pu="{ item }">
+            {{ item.nama_pu ? item.nama_pu : "-" }}
           </template>
+          <template #item.alamat="{ item }">
+            {{ item.alamat ? item.alamat : "-" }}
+          </template>
+          <template #item.merek_dagang="{ item }">
+            {{ item.merek_dagang ? item.merek_dagang : "-" }}
+          </template>
+          <!-- <template #item.status="{ item }">
+            {{ item.status ? item.status : "-" }}
+          </template> -->
           <template #item.pilih="{ item }">
-            <VCheckbox
-              v-model="selectedItems"
-              :value="item.id_registrasi"
-            />
+            <VCheckbox v-model="selectedItems" :value="item.id_daftar" />
           </template>
-          <template #item.Status="{ item }">
-            <div v-if="item.Status === 'OF74'">
+          <template #item.status_code="{ item }">
+            <!-- <div v-if="item.status === 'OF74'">
               <div class="status-container">
                 <VChip
                   variant="outlined"
-                  style="border-color: #49a84c; border-radius: 8px; background-color: #edf6ed;"
+                  style="
+                    border-color: #49a84c;
+                    border-radius: 8px;
+                    background-color: #edf6ed;
+                  "
                 >
-                  <span style="color: #49a84c;">
-                    {{ item.Status }}
+                  <span style="color: #49a84c">
+                    {{ item.status_code }}
                   </span>
                 </VChip>
               </div>
+            </div> -->
+            <!-- <div> -->
+            <div class="status-container">
+              <VChip
+                variant="outlined"
+                style="
+                  border-color: #652672;
+                  border-radius: 8px;
+                  background-color: #f0e9f1;
+                "
+              >
+                <span style="color: #652672">
+                  {{ item.status_code }}
+                </span>
+              </VChip>
             </div>
-            <div v-else>
-              <div class="status-container">
-                <VChip
-                  variant="outlined"
-                  style="border-color: #652672; border-radius: 8px; background-color: #f0e9f1;"
-                >
-                  <span style="color: #652672;">
-                    {{ item.Status }}
-                  </span>
-                </VChip>
-              </div>
-            </div>
+            <!-- </div> -->
           </template>
         </VDataTableServer>
       </VRow>
-      <VPagination
-        v-model="page"
-        :total-visible="7"
-        :length="totalPages"
-      />
+      <!-- <VPagination v-model="page" :total-visible="7" :length="totalPages" /> -->
     </VCardText>
   </VCard>
 
   <VDialog v-model="isVisible" :max-width="dialogMaxWidth" location="top">
     <VCard class="pa-4">
-      <VCardTitle class="px-2 font-weight-bold">
-        Distribusi
-      </VCardTitle>
+      <VCardTitle class="px-2 font-weight-bold"> Distribusi </VCardTitle>
       <VCardItem class="px-2 mb-4">
         <VLabel for="proses">
           Proses Distribusi Untuk Data Data Yang Dipilih
@@ -258,12 +493,18 @@ const onFiltersUpdate = (filter) => {
         <VSelect
           id="proses"
           placeholder="Pilih Proses Distribusi"
-          v-model="selectedProses"
-          :items="['Proses Distribusi 1', 'Proses Distribusi 2']"
+          v-model="selectedComitee"
+          :items="listComitee"
+          item-title="name"
+          item-value="user_id"
         />
       </VCardItem>
       <VCardActions class="d-flex justify-end ga-4">
-        <VBtn @click="closeDialog" variant="outlined" min-width="100px">
+        <VBtn
+          @click="[closeDialog(), (selectedComitee = null)]"
+          variant="outlined"
+          min-width="100px"
+        >
           Batal
         </VBtn>
         <VBtn min-width="100px" variant="flat" @click="onHandleDistribusi">
@@ -274,7 +515,7 @@ const onFiltersUpdate = (filter) => {
   </VDialog>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .text-center {
   text-align: center;
 }

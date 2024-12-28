@@ -21,7 +21,7 @@ const items = ref<
   }[]
 >([])
 
-const itemPerPage = ref(100)
+const itemPerPage = ref(10)
 const totalItems = ref(0)
 const loading = ref(false)
 const loadingAll = ref(true)
@@ -30,14 +30,9 @@ const startDate = ref('')
 const endDate = ref('')
 const page = ref(1)
 const ketetapan = ref('')
-
-const filter = ref({
-  startDate: '',
-  endDate: '',
-  ketetapan: '',
-  totalWorkingDays: '',
-  average: 21,
-})
+const average = ref(0)
+const showFilterMenu = ref(false)
+const totalWorkingDays = ref(0)
 
 const headers = [
   { title: 'No', key: 'no' },
@@ -61,6 +56,7 @@ const loadItem = async (
   startDate: string,
   endDate: string,
   ketetapan: string,
+  searchQuery: string,
 ) => {
   try {
     loading.value = true
@@ -73,6 +69,7 @@ const loadItem = async (
         startDate,
         endDate,
         ketetapan,
+        searchQuery,
       },
     })
 
@@ -108,9 +105,15 @@ const loadItem = async (
 //   })
 // }
 
+const selectable = [
+  { id: 1, value: 'Ditetapkan Halal', title: 'Ditetapkan Halal' },
+  { id: 2, value: 'Dikembalikan', title: 'Dikembalikan' },
+  { id: 3, value: 'Ditolak', title: 'Ditolak' },
+]
+
 onMounted(async () => {
   const res = await Promise.all([
-    loadItem(page.value, itemPerPage.value, startDate.value, endDate.value, ketetapan.value),
+    loadItem(page.value, itemPerPage.value, startDate.value, endDate.value, ketetapan.value, searchQuery.value),
   ])
 
   const checkResIfUndefined = res.every(item => {
@@ -122,6 +125,30 @@ onMounted(async () => {
   else
     loadingAll.value = false
 })
+
+const debouncedFetch = debounce(loadItem, 500)
+
+const handleInput = () => {
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    startDate.value, endDate.value, ketetapan.value,
+    searchQuery.value,
+  )
+}
+
+const applyFilters = () => {
+  debouncedFetch(page.value, itemPerPage.value, startDate.value, endDate.value, ketetapan.value, searchQuery.value)
+  showFilterMenu.value = false
+}
+
+const reset = () => {
+  startDate.value = ''
+  endDate.value = ''
+  ketetapan.value = ''
+  debouncedFetch(page.value, itemPerPage.value, startDate.value, endDate.value, ketetapan.value, searchQuery.value)
+  showFilterMenu.value = false
+}
 
 // TODO -> LOGIC BUAT NGE UPDATE DATA BY FILTER
 // const onUpdate = () => {
@@ -161,67 +188,81 @@ const dialogMaxWidth = computed(() => {
           class="d-flex align-center"
         >
           <VCol cols="2">
-            <VBtn
-              color="primary"
-              append-icon="mdi-filter"
-              variant="outlined"
+            <VMenu
+              v-model="showFilterMenu"
+              :close-on-content-click="false"
+              offset-y
             >
-              Filter
-              <VMenu
-                activator="parent"
-                :close-on-content-click="false"
-                @update:model-value="onUpdate"
-              >
-                <VCard :min-width="dialogMaxWidth">
-                  <VCardItem>
-                    <VRow class="mb-1">
-                      <VCol cols="6">
-                        <VLabel for="startDate">
-                          Tanggal Sidang
-                        </VLabel>
-                        <VTextField
-                          id="startDate"
-                          v-model="filter.startDate"
-                          type="date"
-                        />
-                      </VCol>
-                      <VCol cols="6">
-                        <VLabel for="startDate">
-                          Sampai
-                        </VLabel>
-                        <VTextField
-                          id="startDate"
-                          v-model="filter.endDate"
-                          type="date"
-                        />
-                      </VCol>
-                    </VRow>
-                    <VSelect
-                      v-model="filter.ketetapan"
-                      :items="['Dikembalikan', 'Ditetapkan Halal', 'Ditolak']"
-                      placeholder="Pilih Ketetapan"
-                      class="mb-1"
+              <template #activator="{ props }">
+                <VBtn
+                  color="primary"
+                  variant="outlined"
+                  v-bind="props"
+                  append-icon="ri-filter-fill"
+                >
+                  Filter
+                </VBtn>
+              </template>
+              <VCard :min-width="dialogMaxWidth">
+                <VCardItem>
+                  <VRow class="mb-1">
+                    <VCol cols="6">
+                      <VLabel for="startDate">
+                        Tanggal Sidang
+                      </VLabel>
+                      <VTextField
+                        id="startDate"
+                        v-model="startDate"
+                        type="date"
+                      />
+                    </VCol>
+                    <VCol cols="6">
+                      <VLabel for="endDate">
+                        Sampai
+                      </VLabel>
+                      <VTextField
+                        id="endDate"
+                        v-model="endDate"
+                        type="date"
+                      />
+                    </VCol>
+                  </VRow>
+                  <VSelect
+                    v-model="ketetapan"
+                    :items="selectable"
+                    placeholder="Pilih Ketetapan"
+                    class="mb-1"
+                  />
+                  <VCardText class="pa-0 mb-1">
+                    <VLabel>Jumlah Hari Kerja</VLabel>
+                    <VTextField
+                      v-model="totalWorkingDays"
+                      type="number"
+                      placeholder="Isi Jumlah Hari Kerja"
                     />
-                    <VCardText class="pa-0 mb-1">
-                      <VLabel>Jumlah Hari Kerja</VLabel>
-                      <VTextField
-                        v-model="filter.totalWorkingDays"
-                        type="number"
-                        placeholder="Isi Jumlah Hari Kerja"
-                      />
-                    </VCardText>
-                    <VCardText class="pa-0">
-                      <VLabel>Rata-Rata</VLabel>
-                      <VTextField
-                        v-model="filter.average"
-                        type="number"
-                        placeholder="Isi Rata-Rata"
-                      />
-                    </VCardText>
-                  </VCardItem>
-                </VCard>
-              </VMenu>
-            </VBtn>
+                  </VCardText>
+                  <VCardText class="pa-0">
+                    <VLabel>Rata-Rata</VLabel>
+                    <VTextField
+                      v-model="average"
+                      type="number"
+                      placeholder="Isi Rata-Rata"
+                    />
+                  </VCardText>
+                  <br>
+                  <VBtn
+                    style="float: inline-start;"
+                    text="Reset Filter"
+                    @click="reset"
+                  />
+                  <VBtn
+                    style="float: inline-end;"
+                    text="Apply"
+                    @click="applyFilters"
+                  />
+                </VCardItem>
+              </VCard>
+            </VMenu>
           </VCol>
           <VCol>
             <VTextField

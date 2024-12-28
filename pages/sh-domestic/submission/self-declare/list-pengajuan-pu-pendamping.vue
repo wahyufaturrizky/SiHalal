@@ -1,65 +1,3 @@
-<template>
-  <v-container>
-    <kembali-button class="pl-0" />
-    <h3 class="text-h3">Cek Data Pengajuan PU</h3>
-    <br />
-
-    <v-card class="pa-4">
-      <v-card-title class="text-h5 font-weight-bold"
-        >Data Pengajuan</v-card-title
-      >
-      <v-card-item>
-        <v-text-field
-          v-model="searchQuery"
-          density="compact"
-          placeholder="Search Data"
-          append-inner-icon="ri-search-line"
-          style="max-width: 100%"
-          @input="handleInput"
-        />
-      </v-card-item>
-      <v-card-item>
-        <v-data-table
-          :headers="headers"
-          :items="items"
-          class="elevation-1"
-          fixed-header
-          v-model:items-per-page="itemPerPage"
-          v-model:page="page"
-          :loading="loading"
-          :items-length="totalItems"
-          @update:options="getpuApi(page, itemPerPage, searchQuery, status)"
-        >
-          <template #item.no="{ index }">
-            {{ index + 1 }}
-          </template>
-          <template #item.create_on="{ item }">
-            {{ new Date(item.create_on).toISOString().substring(0, 10) }}
-          </template>
-          <template #item.status="{ item }">
-            <v-chip
-              :color="getStatusColor(item.status_reg)"
-              label
-              variant="outlined"
-            >
-              {{ item.status_reg }}
-            </v-chip>
-          </template>
-          <template #item.action="{ item }">
-            <v-icon
-              color="primary"
-              style="cursor: pointer"
-              @click="navigateTo(`/sh-submission/detail/${item.id}`)"
-            >
-              ri-arrow-right-line
-            </v-icon>
-          </template>
-        </v-data-table>
-      </v-card-item>
-    </v-card>
-  </v-container>
-</template>
-
 <script setup lang="ts">
 import { ref } from "vue";
 
@@ -69,6 +7,8 @@ const loading = ref(false);
 const loadingAll = ref(true);
 const page = ref(1);
 const searchQuery = ref("");
+const status = ref("");
+const queryBy = ref("pelaku_usaha");
 
 const headers = [
   { title: "No", key: "no" },
@@ -77,8 +17,8 @@ const headers = [
   { title: "Alamat", key: "alamat_pu", nowrap: true },
   { title: "Penanggung Jawab", key: "nama_pj", nowrap: true },
   { title: "Nomor Kontak", key: "no_kontak_pj", nowrap: true },
-  { title: "Jenis Usaha", key: "jenis_usaha", nowrap: true },
-  { title: "Skala Usaha", key: "skala_usaha", nowrap: true },
+  { title: "Jenis Usaha", key: "jenis_usaha_name", nowrap: true },
+  { title: "Skala Usaha", key: "skala_usaha_name", nowrap: true },
   { title: "Merek Dagang", key: "merek_dagang", nowrap: true },
   { title: "Status", key: "status_reg", nowrap: true },
   { title: "Action", key: "action", sortable: false, nowrap: true },
@@ -99,7 +39,8 @@ const getpuApi = async (
   page: number,
   size: number,
   keyword: string = "",
-  status: string = ""
+  status: string,
+  query_by: string
 ) => {
   try {
     loading.value = true;
@@ -111,25 +52,135 @@ const getpuApi = async (
         size,
         keyword,
         status,
+        query_by,
       },
     });
 
-    items.value = response.data;
-    totalItems.value = response.total_item;
-    loading.value = false;
-    // return response;
+    if (response.code === 2000) {
+      items.value = response.data;
+      totalItems.value = response.total_item;
+      loading.value = false;
+      return response;
+    } else {
+      loading.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loading.value = false;
   }
 };
 
-const nextPage = async () => {
-  if (condition) {
-  }
+const debouncedFetch = debounce(getpuApi, 500);
+
+const handleInput = () => {
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    status.value,
+    queryBy.value
+  );
 };
 
 onMounted(async () => {
-  await getpuApi(page.value, itemPerPage.value);
+  const res = await Promise.all([
+    getpuApi(
+      page.value,
+      itemPerPage.value,
+      searchQuery.value,
+      status.value,
+      queryBy.value
+    ),
+  ]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
 });
 </script>
+
+<template>
+  <v-container v-if="!loadingAll">
+    <kembali-button class="pl-0" />
+    <h3 class="text-h3">Cek Data Pengajuan PU</h3>
+    <br />
+
+    <v-card class="pa-4">
+      <v-card-title class="text-h5 font-weight-bold"
+        >Data Pengajuan</v-card-title
+      >
+      <v-card-item>
+        <VRadioGroup inline v-model="queryBy" label="Cari Berdasarkan">
+          <v-radio label="Pelaku Usaha" value="pelaku_usaha"></v-radio>
+          <v-radio label="Nomor Daftar" value="no_daftar"></v-radio>
+        </VRadioGroup>
+
+        <v-text-field
+          v-model="searchQuery"
+          density="compact"
+          placeholder="Search Data"
+          append-inner-icon="ri-search-line"
+          style="max-width: 100%"
+          @input="handleInput"
+          clearable
+          @click:clear="handleInput"
+        />
+      </v-card-item>
+      <v-card-item>
+        <v-data-table
+          :headers="headers"
+          :items="items"
+          class="elevation-1"
+          fixed-header
+          v-model:items-per-page="itemPerPage"
+          v-model:page="page"
+          :loading="loading"
+          :items-length="totalItems"
+          loading-text="Loading..."
+          @update:options="
+            getpuApi(page, itemPerPage, searchQuery, status, queryBy)
+          "
+        >
+          <template #item.no="{ index }">
+            {{ index + 1 + (page - 1) * itemPerPage }}
+          </template>
+          <template #item.create_on="{ item }">
+            {{
+              (item as any).create_on
+                ? new Date((item as any).create_on)
+                    ?.toISOString()
+                    .substring(0, 10)
+                : "-"
+            }}
+          </template>
+          <template #item.status="{ item }">
+            <v-chip
+              :color="getStatusColor((item as any).status_reg)"
+              label
+              variant="outlined"
+            >
+              {{ (item as any).status_reg }}
+            </v-chip>
+          </template>
+          <template #item.action="{ item }">
+            <v-icon
+              color="primary"
+              style="cursor: pointer"
+              @click="navigateTo(`/sh-submission/detail/${(item as any).id}`)"
+            >
+              ri-arrow-right-line
+            </v-icon>
+          </template>
+        </v-data-table>
+      </v-card-item>
+    </v-card>
+  </v-container>
+  <VSkeletonLoader type="card" v-else />
+</template>

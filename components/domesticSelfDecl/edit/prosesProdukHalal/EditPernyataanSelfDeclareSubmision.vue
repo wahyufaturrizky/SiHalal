@@ -5,7 +5,7 @@ const showDownloadButton = ref(false);
 const loadingAgree = ref(false);
 const pledgeFile = ref("");
 const handleAgree = async () => {
-  // console.log("agree.........");
+  console.log("agree.........");
   try {
     loadingAgree.value = true;
     const response: any = await $api(
@@ -35,6 +35,13 @@ const handleDownload = async () => {
   return await downloadDocument(pledgeFile.value);
 };
 
+const props = defineProps({
+  isVerificator: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const route = useRoute<"">();
 const submissionId = route.params?.id;
 const submissionDetail = reactive({
@@ -61,7 +68,7 @@ const handleGetDeclare = async () => {
     if (response.code === 2000) {
       Object.assign(submissionDetail, response.data);
       pledgeFile.value = response.data.file;
-      if (pledgeFile) {
+      if (pledgeFile.value) {
         aggreButtonDisable.value = true;
         showDownloadButton.value = true;
       }
@@ -195,7 +202,14 @@ onMounted(() => {
           <br />
           <br />
           <br />
-          <div class="dots">
+          <p>
+            {{
+              submissionDetail.nama_pemilik
+                ? submissionDetail.nama_pemilik
+                : "-"
+            }}
+          </p>
+          <div>
             <!-- {{ submissionDetail.nama_pj ? submissionDetail.nama_pj : "-" }} -->
             Pelaku Usaha
           </div>
@@ -205,6 +219,13 @@ onMounted(() => {
     </VCardText>
     <VCardActions class="d-flex justify-end">
       <VBtn
+        v-if="props.isVerificator"
+        @click="handleDownload"
+        variant="outlined"
+        append-icon="ri-download-line"
+        >Download ikrar</VBtn
+      >
+      <VBtn
         v-if="showDownloadButton"
         @click="handleDownload"
         variant="outlined"
@@ -212,7 +233,8 @@ onMounted(() => {
         >Download ikrar</VBtn
       >
       <VBtn
-        @click="aggreButtonDisable ? handleAgree : null"
+        @click="handleAgree"
+        :disabled="props.isVerificator"
         variant="flat"
         min-width="120px"
         class="text-white"

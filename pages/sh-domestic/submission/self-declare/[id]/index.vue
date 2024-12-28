@@ -54,7 +54,7 @@
               <InfoRow name="Tanggal" :name-style="{ fontWeight: '600' }">
                 {{
                   submissionDetail.tanggal_buat
-                    ? submissionDetail.tanggal_buat
+                    ? formatToISOString(submissionDetail.tanggal_buat)
                     : "-"
                 }}
               </InfoRow>
@@ -72,7 +72,9 @@
                 :name-style="{ fontWeight: '600' }"
               >
                 {{
-                  submissionDetail.tgl_mohon ? submissionDetail.tgl_mohon : "-"
+                  submissionDetail.tgl_mohon
+                    ? formatToISOString(submissionDetail.tgl_mohon)
+                    : "-"
                 }}
               </InfoRow>
               <InfoRow name="Jenis Layanan" :name-style="{ fontWeight: '600' }">
@@ -387,13 +389,13 @@
               </VCard>
               <div>
                 <VBtn
-                  text="Download SK Penyelia"
                   append-icon="fa-download"
                   variant="outlined"
                   class="float-end mt-6"
-                  target="_blank"
-                  :download="submissionDetail.url_sample_penyelia_sk"
-                />
+                  @click="handleDownloadSk(submissionId)"
+                >
+                  Download SK Penyelia
+                </VBtn>
               </div>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -735,9 +737,11 @@
                 :style="{ fontWeight: '600' }"
               >
                 {{
-                  registrationDetail.tgl_daftar
-                    ? formatToISOString(registrationDetail.tgl_daftar)
-                    : "-"
+                  registrationDetail.status != "OF1"
+                    ? registrationDetail.tgl_daftar
+                      ? formatToISOString(registrationDetail.tgl_daftar)
+                      : "-"
+                    : ""
                 }}
               </InfoRowV2>
               <InfoRowV2
@@ -941,7 +945,7 @@ import { formatCurrency } from "@/utils/conversionIntl";
 const defaultStatus = { color: "error", desc: "Unknown Status" };
 const statusItem = new Proxy(
   {
-    OF1: { color: "grey-300", desc: "Draft" },
+    OF1: { color: "primary", desc: "Draft" },
     OF10: { color: "success", desc: "Submitted" },
     OF11: { color: "success", desc: "Verification" },
     OF15: { color: "success", desc: "Verified" },
@@ -962,7 +966,7 @@ const skalaUsaha = ref([]);
 
 const router = useRouter();
 const route = useRoute<"">();
-const submissionId = route.params?.id;
+const submissionId = route.params?.id as string;
 
 const snackbar = useSnackbar();
 
@@ -1216,9 +1220,14 @@ onMounted(async () => {
     getDownloadForm("rekomendasi", "rekomendasi"),
     getDownloadForm("sjph", "sjph"),
     getDownloadForm("laporan", "laporan"),
-    getDownloadForm("sttd", "sttd"),
     getDownloadForm("setifikasi-halal", "setifikasi_halal"),
   ]);
+  if (registrationDetail.status == "") {
+    return;
+  }
+  if (Number(registrationDetail.status.split("OF")[1]) >= 71) {
+    getDownloadForm("sttd", "sttd");
+  }
 });
 
 const getSubmissionDetail = async () => {
@@ -1302,6 +1311,29 @@ const handleDownload = async (productId: string) => {
   return await downloadDocument(productId);
 };
 
+const handleDownloadSk = async (id: string) => {
+  try {
+    const response = await $api("download-sk-selfdeclare", {
+      method: "post",
+      body: {
+        id,
+      },
+    });
+
+    if (response.data.file) {
+      await handleDownload(response.data?.file);
+    } else {
+      useSnackbar().sendSnackbar("Download gagal", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const handleOpenBlankWindow = (fileUri: string) => {
+  window.open(fileUri, "_blank", "noopener,noreferrer");
+};
+
 const handleSentSubmission = async () => {
   try {
     const response: any = await $api(`/self-declare/submission/send`, {
@@ -1312,6 +1344,7 @@ const handleSentSubmission = async () => {
     });
     if (response.code === 2000) {
       snackbar.sendSnackbar("Berhasil mengirim pengajuan", "success");
+      navigateTo("/sh-domestic/submission/self-declare");
     } else {
       if (response.errors.list_error.length > 0) {
         for (const element of response.errors.list_error) {

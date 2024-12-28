@@ -1,14 +1,25 @@
 <script setup lang="ts">
 const props = defineProps<{
   productName?: string | null;
+  productId?: string | null;
+  bahanSelected: any;
+  embeddedInModule?: string | null;
 }>();
+
+const embedType = computed(() =>
+  props.embeddedInModule !== null ? props.embeddedInModule : "pelakuSelfDec"
+);
 const listBahan: any = ref([]);
 
 const selectedBahan = ref([]);
+const loadingAll = ref(true);
+const loadingListIngredient = ref(false);
 
 const route = useRoute<"">();
 const submissionId = route.params?.id;
+
 const handleListIngredient = async () => {
+  loadingListIngredient.value = true;
   try {
     const response: any = await $api(
       `/self-declare/business-actor/ingredient/list`,
@@ -17,47 +28,79 @@ const handleListIngredient = async () => {
         query: {
           id_reg: submissionId,
         },
-      }
+      } as any
     );
 
     if (response.code === 2000) {
       listBahan.value = response.data ? response.data : [];
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingListIngredient.value = false;
+      return response;
+    } else {
+      loadingListIngredient.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    return response;
   } catch (error) {
-    console.log(error);
+    loadingListIngredient.value = false;
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
 onMounted(async () => {
-  await handleListIngredient();
+  const res: any = await Promise.all([handleListIngredient()]);
+
+  const checkResIfUndefined = res.every((item: any) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
 });
 
 const addText = computed(() => {
-  return selectedBahan.value.length
+  return selectedBahan.value.length > 0
     ? `Tambah (${selectedBahan.value.length})`
     : "Tambah";
 });
 
 const emit = defineEmits(["submit"]);
 const handleSubmit = () => {
-  emit("submit", selectedBahan.value);
-  selectedBahan.value = [];
+  emit("submit", selectedBahan.value, props.productId);
+};
+
+const onOpenModal = () => {
+  selectedBahan.value = props.bahanSelected ? props.bahanSelected : [];
+  handleListIngredient();
 };
 </script>
 
 <template>
   <VDialog max-width="60svw">
     <template #activator="{ props: openModal }">
-      <VListItem v-bind="openModal"
+      <VListItem
+        v-if="embedType === 'pelakuSelfDec'"
+        v-bind="openModal"
+        @click="onOpenModal"
         ><VListItemTitle>
           <VIcon class="mr-2" icon="ri-file-add-fill" />
           Input Bahan
         </VListItemTitle></VListItem
       >
+      <VBtn
+        v-if="embedType === 'pendampingSelfDec'"
+        variant="outlined"
+        size="small"
+        rounded="lg"
+        v-bind="openModal"
+        @click="onOpenModal"
+        >Lihat</VBtn
+      >
     </template>
     <template #default="{ isActive }">
-      <VCard>
+      <VCard v-if="!loadingAll">
         <VCardTitle>
           <VRow>
             <VCol cols="10" style="display: flex; align-items: center"
@@ -92,6 +135,7 @@ const handleSubmit = () => {
                   :label="item.nama_bahan"
                   :value="item.id"
                   v-model="selectedBahan"
+                  @change="console.log('selected bahan', selectedBahan)"
                 ></VCheckbox>
               </div>
             </VCol>
@@ -118,6 +162,11 @@ const handleSubmit = () => {
           >
         </VCardActions>
       </VCard>
+
+      <VSkeletonLoader
+        type="table-heading, list-item-two-line, image, table-tfoot"
+        v-else
+      />
     </template>
   </VDialog>
 </template>

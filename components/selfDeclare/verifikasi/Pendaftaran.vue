@@ -1,33 +1,21 @@
 <script lang="ts" setup>
-const props = defineProps({
-  data: {
-    type: Object,
-    required: true,
-  },
-});
+interface Pendaftaran {
+  channel_pendaftaran: string
+  fasilitator: string
+  jenis_pengajuan: string
+  kode_fac: string
+  nomor_daftar: string
+  status: string
+  tanggal: string
+  tempat_pendaftaran: string
+}
+const props = defineProps<{data : Pendaftaran}>();
 
-const { data } = props || {};
-const { importer, hcb, hcn, profile } = data || {};
 
-const dataDetail = {
-  name: importer?.name,
-  nib: profile?.nib,
-  api: profile?.api_type,
-  npwp: profile?.npwp,
-  address: importer?.address,
-  province: profile?.province,
-  regence: profile?.regency,
-  subDistrict: profile?.sub_district,
-  hcb: hcb?.hcb_id,
-  companyName: hcb?.company_name,
-  companyId: hcb?.corporate_id_number,
-  country: hcb?.country,
-  companyAddress: hcb?.address,
-  halalCertNumber: hcn?.hcn_number,
-  issuedDate: hcn?.issued_date,
-  expiredDate: hcn?.expired_date,
-  scope: hcn?.scope,
-};
+const dataDetail = ref(props.data);
+watchEffect(()=> {
+  dataDetail.value = props.data
+})
 
 const selectedFilters = ref({
   fasilitas: 'Semua',
@@ -47,22 +35,22 @@ const selectedFilters = ref({
   <VRow>
     <VCol cols="3"> Nomor Daftar </VCol>
     <VCol cols="1"> : </VCol>
-    <VCol cols="8"> Samsul </VCol>
+    <VCol cols="8"> {{dataDetail.nomor_daftar}} </VCol>
   </VRow>
   <VRow>
     <VCol cols="3"> Tanggal Daftar </VCol>
     <VCol cols="1"> : </VCol>
-    <VCol cols="8"> Sumbawa Banget, RT002/RW002, Sumbang, Curio </VCol>
+    <VCol cols="8">{{dataDetail.tanggal}} </VCol>
   </VRow>
   <VRow>
     <VCol cols="3"> Tempat Pendaftaran </VCol>
     <VCol cols="1"> : </VCol>
-    <VCol cols="8"> Lainnya </VCol>
+    <VCol cols="8"> {{dataDetail.tempat_pendaftaran}} </VCol>
   </VRow>
   <VRow>
     <VCol cols="3"> Jenis Daftar </VCol>
     <VCol cols="1"> : </VCol>
-    <VCol cols="8"> Mikro </VCol>
+    <VCol cols="8"> {{dataDetail.jenis_pengajuan}} </VCol>
   </VRow>
   <VRow>
     <VCol cols="3"> Status </VCol>
@@ -73,7 +61,7 @@ const selectedFilters = ref({
         style="border-color: #652672; border-radius: 8px; background-color: #f0e9f1;"
       >
         <span style="color: #652672;">
-          Verifikasi
+          {{dataDetail.status}}
         </span>
       </VChip>
     </VCol>
@@ -81,17 +69,17 @@ const selectedFilters = ref({
   <VRow>
     <VCol cols="3"> Channel </VCol>
     <VCol cols="1"> : </VCol>
-    <VCol cols="8"> Mikro </VCol>
+    <VCol cols="8"> {{dataDetail.channel_pendaftaran}} </VCol>
   </VRow>
   <VRow>
     <VCol cols="3"> Fasilitator </VCol>
     <VCol cols="1"> : </VCol>
-    <VCol cols="8"> - </VCol>
+    <VCol cols="8"> {{dataDetail.fasilitator}} </VCol>
   </VRow>
   <VRow>
     <VCol cols="3"> Kode Fasilitasi </VCol>
     <VCol cols="1"> : </VCol>
-    <VCol cols="8"> - </VCol>
+    <VCol cols="8"> {{dataDetail.kode_fac}} </VCol>
   </VRow>
 </VContainer>
 </template>

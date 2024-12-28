@@ -33,16 +33,15 @@ const headers = [
   { title: 'Nama PU', key: 'nama_pu', nowrap: true },
   { title: 'Jenis Daftar', key: 'jenis_daftar', nowrap: true },
   { title: 'Jenis Produk', key: 'jenis_produk', nowrap: true },
-  { title: 'Status', key: 'newStatus', nowrap: true },
+  { title: 'Status', key: 'status', nowrap: true },
   { title: 'Action', value: 'action', sortable: false, nowrap: true },
 ]
 
 const items = ref([])
 
 const searchQuery = ref('')
-const currentPage = ref(1)
-const size = ref(20)
-const totalItems = ref(0)
+const page = ref(1)
+const size = ref(10)
 
 const loadItem = async (page: number, size: number, search: string): void => {
   try {
@@ -51,17 +50,10 @@ const loadItem = async (page: number, size: number, search: string): void => {
       params: { page, size, search },
     })
 
-    if (response.code === 2000){
-      currentPage.value = response.current_page
-      totalItems.value = response.total_item
-      response?.data?.map((item: any) => {
-        item.newStatus = [item?.jenis_usaha, item?.jumlah_produk, item.status]
-      })
+    if (response.code === 2000)
       items.value = response.data
-    }
   }
   catch (e) {
-    console.log('error : ', e)
     snackBar.sendSnackbar('Terjadi Kesalahan ', 'error')
   }
 }
@@ -70,7 +62,7 @@ const loadItem = async (page: number, size: number, search: string): void => {
 const getChipColor = (status: string) => {
   if (status === 'Proses di LPH')
     return 'primary'
-  else if (status === 'Micro')
+  else if (status === 'Micre')
     return 'success'
 
   return 'success'
@@ -79,9 +71,9 @@ const getChipColor = (status: string) => {
 const debouncedFetch = debounce(loadItem, 500)
 const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
 
-// onMounted(
-//   await loadItem(1, size.value)
-// )
+onMounted(
+  await loadItem(1, size.value)
+)
 </script>
 
 <template>
@@ -109,24 +101,29 @@ const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
       <VCardItem>
         <VDataTableServer
           v-model:items-per-page="size"
-          v-model:page="currentPage"
-          :items-length="totalItems"
+          v-model:page="page"
           :headers="headers"
           :items="items"
           item-value="no"
-          class="elevation-1"
+          class="elevation-1 border rounded"
           @update:options="loadItem(page, size, searchQuery)"
+          :hide-default-footer="items.length < 10"
         >
-          <template #[`item.newStatus`]="{ item }">
+          <template #no-data>
+            <div class="pt-2">
+              <img src="~/assets/images/empty-data.png" alt="" />
+              <div class="pt-2 font-weight-bold">Data Kosong</div>
+            </div>
+          </template>
+          <template #[`item.status`]="{ item }">
             <div class="d-flex">
               <VChip
-                v-for="(status, index) in item.newStatus"
                 :key="index"
-                :color="getChipColor(status)"
+                :color="getChipColor(item.status)"
                 label
                 class="ma-1"
               >
-                {{ status }}
+                {{ item.status }}
               </VChip>
             </div>
           </template>

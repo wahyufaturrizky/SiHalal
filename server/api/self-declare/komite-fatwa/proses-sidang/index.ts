@@ -2,24 +2,22 @@ import type { NuxtError } from 'nuxt/app'
 
 const runtimeConfig = useRuntimeConfig()
 export default defineEventHandler(async event => {
-  const authorizationHeader = getRequestHeader(event, 'Authorization');
+  const authorizationHeader = getRequestHeader(event, 'Authorization')
   if (typeof authorizationHeader === 'undefined') {
     throw createError({
       statusCode: 403,
       statusMessage:
         'Need to pass valid Bearer-authorization header to access this endpoint',
-    });
+    })
   }
 
-  const { page, size, keyword, lembagaPendampingId, pendampingId, facId, namaPengajuan } = (await getQuery(event)) as {
+  const { page, size, lembaga, pendamping, fasilitasi, namaPengajuan } = (await getQuery(event)) as {
     page: string
     size: string
-    keyword: string
-    lembagaPendampingId: string
-    pendampingId: string
-    facId: string
+    lembaga: string
+    pendamping: string
+    fasilitasi: string
     namaPengajuan: string
-    // status: string;
   }
 
   const params: any = {
@@ -27,20 +25,19 @@ export default defineEventHandler(async event => {
     size: Number.isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
   }
 
-  if (keyword !== '')
-    params['keyword'] = keyword
-  if (lembagaPendampingId !== '')
-    params['lembaga_pendamping_id'] = lembagaPendampingId
-  if (pendampingId !== '')
-    params['pendamping_id'] = pendampingId
-  if (facId !== '')
-    params['fac_id'] = facId
+  if (lembaga !== '')
+    params['lembaga_pendamping_id'] = lembaga
+  if (pendamping !== '')
+    params['pendamping_id'] = pendamping
+  if (fasilitasi !== '')
+    params['fac_id'] = fasilitasi
   if (namaPengajuan !== '')
-    params['nama_pengajuan'] = namaPengajuan
+    params['nama_pu'] = namaPengajuan
 
   // if (status !== "" && status !== "Semua") {
   //   params["status"] = status;
   // }
+  console.log(params, 'ini params ya')
 
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/komite/halal-certificate-reguler/list`,

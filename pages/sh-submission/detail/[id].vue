@@ -1,9 +1,15 @@
 <script setup lang="ts">
+import IdentityTabPendamping from "@/components/shSubmission/IdentityTabPendamping.vue";
+
 const router = useRouter();
 const sessionData = await useMyAuthUserStore().getSession();
 const userRoles = sessionData.value?.roles.map((role) => role.name);
 
 const currentTab = ref("IDENTITY");
+const refresh = ref();
+
+const route = useRoute();
+const id_detail = (route.params as any).id as string;
 </script>
 
 <template>
@@ -46,10 +52,10 @@ const currentTab = ref("IDENTITY");
 
       <VTabsWindow v-model="currentTab">
         <VTabsWindowItem value="IDENTITY">
-          <IdentityTab />
+          <IdentityTabPendamping :id-detail="id_detail" />
         </VTabsWindowItem>
         <VTabsWindowItem value="SUBMISSION">
-          <SubmissionTab />
+          <SubmissionTab :id-detail="id_detail" />
         </VTabsWindowItem>
         <VTabsWindowItem value="PLACE">
           <PlaceTab />
@@ -64,7 +70,8 @@ const currentTab = ref("IDENTITY");
           <ProcessTab :user-roles="userRoles" />
         </VTabsWindowItem>
         <VTabsWindowItem value="STATEMENT">
-          <StatementTab />
+          <!-- <StatementTab :id-detail="id_detail" /> -->
+          <EditPernyataanSelfDeclareSubmision></EditPernyataanSelfDeclareSubmision>
         </VTabsWindowItem>
       </VTabsWindow>
     </VCol>

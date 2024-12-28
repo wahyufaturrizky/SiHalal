@@ -1,105 +1,177 @@
 <script setup lang="ts">
-const router = useRouter();
+const loadingAll = ref(true);
 
 const ingredientHeader: any = [
-  { title: "No", value: "index" },
-  { title: "ID", value: "id", nowrap: true },
-  { title: "Jenis Bahan", value: "type", nowrap: true },
-  { title: "Nama Bahan", value: "name", nowrap: true },
-  { title: "Kelompok", value: "category", nowrap: true },
-  { title: "Merek", value: "brand", nowrap: true },
-  { title: "Produsen", value: "producer", nowrap: true },
+  { title: "No", key: "index" },
+  { title: "ID", key: "id", nowrap: true },
+  { title: "Jenis Bahan", key: "jenis_bahan", nowrap: true },
+  { title: "Nama Bahan", key: "nama_bahan", nowrap: true },
+  { title: "Kelompok", key: "kelompok", nowrap: true },
+  { title: "Merek", key: "merek", nowrap: true },
+  { title: "Produsen", key: "produsen", nowrap: true },
   {
     title: "Nomor Sertifikat Halal",
-    value: "certificateNumber",
+    key: "no_sertifikat",
     nowrap: true,
   },
   {
     title: "Tanggal Berlaku",
-    value: "effectiveDate",
+    key: "tgl_berlaku_sertifikat",
     nowrap: true,
   },
   {
     title: "Verif Pendamping",
-    value: "isVerified",
+    key: "vefified",
     nowrap: true,
   },
   {
     title: "Action",
-    value: "actions",
+    key: "actions",
     align: "center",
   },
 ];
-const ingredientData = ref([
-  {
-    id: "89379868",
-    type: "Kopi Luak Ciater",
-    name: "Biji Kopi",
-    category: "Bahan Nabati",
-    brand: "Bahan Nabati",
-    producer: "Luakmantuy",
-    certificateNumber: "72836/Halal/V",
-    effectiveDate: "12/09/2023",
-    isVerified: false,
-  },
-]);
+const ingredientData = ref([]);
+
+const route = useRoute();
+
+const deletedId = ref();
+
+const loadBahan = async () => {
+  try {
+    const options: any = {
+      method: "get",
+    };
+    const response: any = await $api(
+      `/self-declare/submission/bahan/${(route.params as any).id}/list`,
+      options
+    );
+
+    if (response.code === 2000) {
+      ingredientData.value = response.data;
+      response.data.forEach((val: any) => {
+        selectedIsVefified.value.push(val.vefified);
+      });
+
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 
 const verifiedProduct = computed(() => {
   let count = 0;
   ingredientData.value.forEach((item) => {
-    if (item.isVerified) count++;
+    if (item.vefified) count++;
   });
   return count;
 });
 
 const isDeleteModalOpen = ref(false);
 const selectedDelete = ref();
+const selectedIsVefified = ref([]);
 
-const handleSaveVerified = () => {
-  useSnackbar().sendSnackbar("Berhasil menyimpan verifikasi data", "success");
+const addVefified = (event: any) => {};
+
+const handleSaveVerified = async () => {
+  const submitedData = {};
+  let countKey = 0;
+  if (selectedIsVefified.value.length > 0) {
+    selectedIsVefified.value.forEach((item, index) => {
+      const keyTmp = ingredientData.value[index]?.id;
+      console.log("key tmp = ", keyTmp);
+      if (keyTmp) {
+        submitedData[keyTmp] = item;
+        countKey += 1;
+      }
+    });
+  }
+
+  if (countKey > 0) {
+    console.log(submitedData);
+    try {
+      const response: any = await $api(
+        `/self-declare/submission/bahan/${route.params?.id}/pendamping-verify`,
+        {
+          method: "post",
+          body: JSON.stringify(submitedData),
+        }
+      );
+
+      if (response.code === 2000) {
+        useSnackbar().sendSnackbar(
+          "Berhasil menyimpan verifikasi data",
+          "success"
+        );
+      }
+      return response;
+    } catch (error) {
+      console.error(error);
+      useSnackbar().sendSnackbar("Gagal menyimpan verifikasi data", "error");
+      return null;
+    }
+  } else {
+    useSnackbar().sendSnackbar("Gagal menyimpan verifikasi data", "error");
+  }
 };
 
-const handleOpenDeleteModal = (index: number) => {
+const handleOpenDeleteModal = (index: string) => {
+  console.log("deleteed id = ", index);
+  deletedId.value = index;
   selectedDelete.value = index;
   isDeleteModalOpen.value = true;
 };
-const handleDeleteIngredient = () => {
-  const exist = ingredientData.value.findIndex(
-    (i, idx) => idx === selectedDelete.value
-  );
-  ingredientData.value.splice(exist, 1);
-  selectedDelete.value = null;
-  useSnackbar().sendSnackbar("Berhasil menghapus data", "success");
+
+const handleDeleteIngredient = async () => {
+  try {
+    const response: any = await $api(
+      `/self-declare/submission/bahan/${(route.params as any).id}/delete`,
+      {
+        method: "post",
+        body: {
+          id_bahan: deletedId.value,
+        },
+      }
+    );
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("Gagal Menghapus bahan", "error");
+      return;
+    }
+
+    useSnackbar().sendSnackbar("Berhasil Menghapus bahan", "success");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Gagal Menghapus bahan", "error");
+  } finally {
+    await loadBahan();
+  }
 };
+
+onMounted(async () => {
+  const res: any = await Promise.all([loadBahan()]);
+
+  const checkResIfUndefined = res.every((item: any) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
+});
 </script>
 
 <template>
-  <VCard>
+  <VCard v-if="!loadingAll">
     <VCardTitle class="my-3 d-flex justify-space-between align-center">
       <div class="font-weight-bold text-h4">Daftar Nama Bahan dan Kemasan</div>
       <div>
-        <VBtn
-          variant="outlined"
-          class="me-3"
-          @click="
-            router.push('/sh-domestic/submission/self-declare/edit?tab=4')
-          "
-        >
-          <div class="pe-3">Tambah</div>
-          <VIcon icon="fa-plus" />
-        </VBtn>
-        <VBtn
-          variant="flat"
-          :color="verifiedProduct ? 'primary' : `#A09BA1`"
-          :disabled="verifiedProduct == 0"
-          @click="handleSaveVerified"
-        >
+        <TambahBahanModal @loadList="loadBahan()"></TambahBahanModal>
+        <VBtn variant="flat" @click="handleSaveVerified">
           <div class="pe-3">
-            {{
-              verifiedProduct
-                ? `Simpan Verif (${verifiedProduct})`
-                : "Simpan Verif"
-            }}
+            {{ verifiedProduct ? `Simpan Verif` : "Simpan Verif" }}
           </div>
           <VIcon icon="fa-upload" />
         </VBtn>
@@ -116,10 +188,14 @@ const handleDeleteIngredient = () => {
         <template #item.index="{ index }">
           {{ index + 1 }}
         </template>
-        <template #item.isVerified="{ item }">
-          <VCheckboxBtn v-model="item.isVerified" />
+        <template #item.vefified="{ item, index }">
+          <VCheckboxBtn
+            @change="addVefified($event)"
+            :key="item.id"
+            v-model="selectedIsVefified[index]"
+          />
         </template>
-        <template #item.actions="props">
+        <template #item.actions="{ item }">
           <VMenu>
             <template #activator="{ props }">
               <VIcon
@@ -130,14 +206,25 @@ const handleDeleteIngredient = () => {
               />
             </template>
             <VList>
-              <VListItem
-                prepend-icon="mdi-pencil"
-                title="Ubah"
-                @click="
-                  router.push('/sh-domestic/submission/self-declare/edit?tab=4')
-                "
-              />
-              <VListItem @click="handleOpenDeleteModal(props.index)">
+              <VListItem label="Edit Bahan">
+                <EditBahanModal
+                  :data="{
+                    id: item.id,
+                    typeBahan: item.kelompok != '' ? 1 : 0,
+                    jenis_bahan: item.jenis_bahan,
+                    nama_bahan: item.nama_bahan,
+                    kelompok: item.kelompok,
+                    merek: item.merek,
+                    produsen: item.produsen,
+                    no_sertifikat: item.no_sertifikat,
+                  }"
+                  @loadList="loadBahan()"
+                >
+                  <template #default><p>Edit Bahan</p></template>
+                </EditBahanModal>
+              </VListItem>
+
+              <VListItem @click="handleOpenDeleteModal(item.id)">
                 <template #prepend>
                   <VIcon icon="mdi-delete" color="error" />
                 </template>
@@ -149,6 +236,12 @@ const handleDeleteIngredient = () => {
       </VDataTable>
     </VCardText>
   </VCard>
+
+  <VSkeletonLoader
+    type="table-heading, list-item-two-line, image, table-tfoot"
+    v-else
+  />
+
   <ShSubmissionDetailFormModal
     dialog-title="Menghapus Data"
     :dialog-visible="isDeleteModalOpen"

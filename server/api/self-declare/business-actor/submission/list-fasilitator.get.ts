@@ -15,7 +15,7 @@ export default defineEventHandler(async (event: any) => {
     const query: any = await getQuery(event);
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/verificator/self-declare/filter/fasilitasi`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/verificator/self-declare/filter/fasilitator`,
       {
         method: "get",
         headers: { Authorization: authHeader },
