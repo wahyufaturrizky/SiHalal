@@ -36,7 +36,7 @@ const onSelectFasilitator = (selectedId: string) => {
   }
 };
 
-const getDownloadForm = async (docName: string, propName: any) => {
+const getDownloadForm = async (docName: string) => {
   const result: any = await $api(
     `/self-declare/submission/${submissionId}/file`,
     {
@@ -143,7 +143,7 @@ const { refresh } = await useAsyncData("get-detail-submission", async () => {
         id_pendamping,
       } = data || {};
 
-      submissionDetail.tanggal_buat = formatDate(tgl_daftar);
+      submissionDetail.tanggal_buat = formatDate(tgl_daftar) as any;
       submissionDetail.nama_pj = nama_pj;
       submissionDetail.nomor_kontak_pj = nomor_kontak_pj;
       formData.tgl_surat_permohonan = formatToISOString(tgl_daftar) as any;
@@ -287,8 +287,8 @@ onMounted(async () => {
     handleGetJenisLayanan(),
     handleGetJenisProduk(),
     loadDataPendamping(formData.lokasi_pendamping),
-    getDownloadForm("surat-permohonan", "suratPermohonan"),
-    getDownloadForm("surat-pernyataan", "suratPernyataan"),
+    getDownloadForm("surat-permohonan"),
+    getDownloadForm("surat-pernyataan"),
   ]);
 
   const checkResIfUndefined = res.every((item) => {
