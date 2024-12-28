@@ -197,9 +197,32 @@ const handleGetJenisProdukFilter = async (item) => {
     console.log(error);
   }
 };
+const handleGetLembagaPendampingInitial = async (lokasi: string) => {
+  try {
+    const response: any = await $api(
+      "/self-declare/business-actor/submission/list-lembaga-pendamping",
+      {
+        method: "get",
+        query: {
+          id_reg: submissionId,
+          lokasi,
+        },
+      }
+    );
 
+    if (response.code === 2000) {
+      if (response.data !== null) lembagaPendamping.value = response.data;
+    }
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
 const handleGetLembagaPendamping = async (lokasi: string) => {
   try {
+    formData.id_lembaga_pendamping = null;
+    lembagaPendamping.value = [];
     const response: any = await $api(
       "/self-declare/business-actor/submission/list-lembaga-pendamping",
       {
@@ -408,9 +431,9 @@ onMounted(async () => {
   await handleGetListPendaftaran();
   await handleGetJenisLayanan();
   await handleGetJenisProduk();
-
+  handleGetLembagaPendampingInitial(formData.lokasi_pendamping);
   // handleDetailPengajuan();
-  await loadDataPendamping(formData.lokasi_pendamping);
+  // await loadDataPendamping(formData.lokasi_pendamping);
   await handleGetFasilitator();
   await handleGetPendamping(formData.id_lembaga_pendamping);
   console.log(submissionDetail);
