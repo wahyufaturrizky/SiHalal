@@ -163,6 +163,7 @@ onMounted(async () => {
               :list_outlet="listOutlet"
               :list_penyelia="listPenyelia"
               :list_channel="itemsChannel"
+              :isviewonly="isViewOnly"
             />
           </div>
           <div v-if="activeTab === 1">

@@ -119,7 +119,7 @@ const loadItem = async ({
         lembaga,
         pendamping,
         kabupaten,
-        status: "OF10",
+        status: "OF71",
       },
     });
 
