@@ -44,10 +44,6 @@ export default defineEventHandler(async event => {
   if (searchQuery !== '')
     params['nama_pu'] = searchQuery
 
-  // if (status !== "" && status !== "Semua") {
-  //   params["status"] = status;
-  // }
-
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/komite/halal-certificate-reguler/self-declare/inquiry`,
     {
