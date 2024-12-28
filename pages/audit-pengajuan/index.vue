@@ -40,8 +40,9 @@ const headers = [
 const items = ref([])
 
 const searchQuery = ref('')
-const page = ref(1)
+const currentPage = ref(1)
 const size = ref(10)
+const totalItems = ref(0)
 
 const loadItem = async (page: number, size: number, search: string): void => {
   try {
@@ -51,6 +52,8 @@ const loadItem = async (page: number, size: number, search: string): void => {
     })
 
     if (response.code === 2000){
+      currentPage.value = response.current_page
+      totalItems.value = response.total_item
       response?.data?.map((item: any) => {
         item.newStatus = [item?.jenis_usaha, item?.jumlah_produk, item.status]
       })
@@ -106,13 +109,14 @@ onMounted(
       <VCardItem>
         <VDataTableServer
           v-model:items-per-page="size"
-          v-model:page="page"
+          v-model:page="currentPage"
+          :items-length="totalItems"
           :headers="headers"
           :items="items"
           item-value="no"
           class="elevation-1 border rounded"
           @update:options="loadItem(page, size, searchQuery)"
-          :hide-default-footer="items.length < 10"
+          :hide-default-footer="totalItems < 10"
         >
           <template #no-data>
             <div class="pt-2">
