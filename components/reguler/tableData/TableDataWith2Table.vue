@@ -2,17 +2,17 @@
 const props = defineProps({
   onSubmit: {
     type: Function,
-    default: () => { },
+    default: () => {},
     required: false,
   },
   onAdd: {
     type: Function,
-    default: () => { },
+    default: () => {},
     required: false,
   },
   onEdit: {
     type: Function,
-    default: () => { },
+    default: () => {},
     required: false,
   },
   title: {
@@ -31,24 +31,26 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
-})
+  isviewonly: {
+    type: Boolean,
+  },
+});
 
 const handleDownload = async (item: any) => {
   try {
-    const response = await $api('/shln/submission/document/download', {
-      method: 'post',
+    const response = await $api("/shln/submission/document/download", {
+      method: "post",
       body: {
         filename: item,
       },
-    })
+    });
 
     if (response.url)
-      window.open(response.url, '_blank', 'noopener,noreferrer')
+      window.open(response.url, "_blank", "noopener,noreferrer");
+  } catch (error) {
+    console.log(error);
   }
-  catch (error) {
-    console.log(error)
-  }
-}
+};
 </script>
 
 <template>
@@ -75,10 +77,7 @@ const handleDownload = async (item: any) => {
       </div>
     </VCardTitle>
     <VCardText>
-      <div
-        v-for="(item, index) in props.data"
-        :key="index"
-      >
+      <div v-for="(item, index) in props.data" :key="index">
         <VRow class="mt-2">
           <slot :name="`subTitle${index + 1}`" />
           <VDataTable
@@ -102,17 +101,13 @@ const handleDownload = async (item: any) => {
               <div v-if="item.tanggal_masuk">
                 {{ formatDateIntl(new Date(item.tanggal_masuk)) }}
               </div>
-              <div v-else>
-                -
-              </div>
+              <div v-else>-</div>
             </template>
             <template #item.tanggal_keluar="{ item }">
               <div v-if="item.tanggal_keluar">
                 {{ formatDateIntl(new Date(item.tanggal_keluar)) }}
               </div>
-              <div v-else>
-                -
-              </div>
+              <div v-else>-</div>
             </template>
             <template #item.file_dok="{ item }">
               <Vbtn
@@ -143,23 +138,19 @@ const handleDownload = async (item: any) => {
             <template #item.publication="{ item }">
               <VCheckbox true-value="true" />
             </template>
-            <template #item.action="{ item }">
+            <template v-if="!isviewonly" #item.action="{ item }">
               <DialogDeleteAuditPengajuan
                 title="Hapus Bahan"
                 button-text="Hapus"
               />
             </template>
-            <template #item.actionEdit="{ item }">
+            <template v-if="!isviewonly" #item.actionEdit="{ item }">
               <Vbtn
                 variant="plain"
                 class="cursor-pointer"
                 @click="() => props.onEdit(item, index)"
               >
-                <VIcon
-                  end
-                  icon="ri-pencil-line"
-                  color="#652672"
-                />
+                <VIcon end icon="ri-pencil-line" color="#652672" />
               </Vbtn>
             </template>
             <template #item.actionPopOver2="{ item }">
@@ -181,14 +172,10 @@ const handleDownload = async (item: any) => {
                       >
                         <VRow>
                           <VCol sm="4">
-                            <VIcon
-                              end
-                              icon="ri-pencil-line"
-                            />
+                            <VIcon end icon="ri-pencil-line" />
                           </VCol>
                           <VCol>
-                            <label class="cursor-pointer">Ubah
-                            </label>
+                            <label class="cursor-pointer">Ubah </label>
                           </VCol>
                         </VRow>
                       </Vbtn>
@@ -196,10 +183,7 @@ const handleDownload = async (item: any) => {
                   </VListItem>
                   <VListItem class="p0">
                     <VListItemTitle>
-                      <Vbtn
-                        variant="plain"
-                        class="cursor-pointer"
-                      >
+                      <Vbtn variant="plain" class="cursor-pointer">
                         <VRow>
                           <VCol sm="4">
                             <VIcon
@@ -210,8 +194,7 @@ const handleDownload = async (item: any) => {
                             />
                           </VCol>
                           <VCol>
-                            <label class="cursor-pointer textRed">Hapus
-                            </label>
+                            <label class="cursor-pointer textRed">Hapus </label>
                           </VCol>
                         </VRow>
                       </Vbtn>
@@ -239,14 +222,10 @@ const handleDownload = async (item: any) => {
                       >
                         <VRow>
                           <VCol sm="4">
-                            <VIcon
-                              end
-                              icon="ri-arrow-right-line"
-                            />
+                            <VIcon end icon="ri-arrow-right-line" />
                           </VCol>
                           <VCol>
-                            <label class="cursor-pointer">Detail
-                            </label>
+                            <label class="cursor-pointer">Detail </label>
                           </VCol>
                         </VRow>
                       </Vbtn>
@@ -261,14 +240,10 @@ const handleDownload = async (item: any) => {
                       >
                         <VRow>
                           <VCol sm="4">
-                            <VIcon
-                              end
-                              icon="ri-pencil-line"
-                            />
+                            <VIcon end icon="ri-pencil-line" />
                           </VCol>
                           <VCol>
-                            <label class="cursor-pointer">Ubah
-                            </label>
+                            <label class="cursor-pointer">Ubah </label>
                           </VCol>
                         </VRow>
                       </Vbtn>
@@ -276,10 +251,7 @@ const handleDownload = async (item: any) => {
                   </VListItem>
                   <VListItem class="p0">
                     <VListItemTitle>
-                      <Vbtn
-                        variant="plain"
-                        class="cursor-pointer"
-                      >
+                      <Vbtn variant="plain" class="cursor-pointer">
                         <VRow>
                           <VCol sm="4">
                             <VIcon
@@ -290,8 +262,7 @@ const handleDownload = async (item: any) => {
                             />
                           </VCol>
                           <VCol>
-                            <label class="cursor-pointer textRed">Hapus
-                            </label>
+                            <label class="cursor-pointer textRed">Hapus </label>
                           </VCol>
                         </VRow>
                       </Vbtn>
@@ -314,12 +285,12 @@ const handleDownload = async (item: any) => {
 }
 .p0 {
   padding-left: 2px !important;
-};
+}
 .ml5 {
   margin-left: 5px;
 }
 .textRed {
-  color: #E1442E;
+  color: #e1442e;
 }
 .h-20 {
   height: 20px;
