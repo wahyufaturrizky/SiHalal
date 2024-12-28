@@ -568,7 +568,7 @@ onMounted(async () => {
         </VCard>
       </VCol>
     </VRow>
-    <VRow>
+    <VRow v-if="data?.is_ln_exist">
       <VCol>
         <VCard>
           <VCardTitle class="my-3 d-flex justify-space-between align-center">
