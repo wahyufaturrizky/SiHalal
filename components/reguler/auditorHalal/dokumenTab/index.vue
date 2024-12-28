@@ -8,7 +8,7 @@ const loadingAll = ref(true);
 
 const handleDownloadV2 = async (filename) => {
   try {
-    const response = await $api("/shln/submission/document/download", {
+    const response: any = await $api("/shln/submission/document/download", {
       method: "post",
       body: {
         filename: filename,
@@ -24,21 +24,23 @@ const handleDownloadV2 = async (filename) => {
 
 const getDetailData = async () => {
   try {
-    const response = await $api("/reguler/pelaku-usaha/detail", {
+    const response: any = await $api("/reguler/pelaku-usaha/detail", {
       method: "get",
       params: { id },
     });
 
-    if (response?.code === 2000) data.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (response?.code === 2000) {
+      data.value = response.data;
+
+      return response;
+    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
 onMounted(async () => {
-  activeTab.value = 0;
-  const res: any = await Promise.all([getDetailData("FAPAB")]);
+  const res: any = await Promise.all([getDetailData()]);
 
   const checkResIfUndefined = res.every((item: any) => {
     return item !== undefined;
@@ -62,7 +64,6 @@ onMounted(async () => {
           <VCol cols="1"> : </VCol>
           <VCol cols="7" style="display: flex; justify-content: start">
             <VBtn
-              v-if="!loading"
               append-icon="fa-download"
               variant="flat"
               @click="() => handleDownloadV2(data?.dokumen?.permohonan)"
@@ -76,7 +77,6 @@ onMounted(async () => {
           <VCol cols="1"> : </VCol>
           <VCol cols="7" style="display: flex; justify-content: start">
             <VBtn
-              v-if="!loading"
               append-icon="fa-download"
               variant="flat"
               @click="() => handleDownloadV2(data?.dokumen?.sjph)"
