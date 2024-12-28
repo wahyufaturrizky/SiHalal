@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import IdentityTabPendamping from "@/components/shSubmission/IdentityTabPendamping.vue";
+
 const router = useRouter();
 const sessionData = await useMyAuthUserStore().getSession();
 const userRoles = sessionData.value?.roles.map((role) => role.name);
@@ -49,7 +51,7 @@ const id_detail = (route.params as any).id as string;
 
       <VTabsWindow v-model="currentTab">
         <VTabsWindowItem value="IDENTITY">
-          <IdentityTab :id-detail="id_detail" />
+          <IdentityTabPendamping :id-detail="id_detail" />
         </VTabsWindowItem>
         <VTabsWindowItem value="SUBMISSION">
           <SubmissionTab :id-detail="id_detail" />
