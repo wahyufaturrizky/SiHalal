@@ -254,8 +254,8 @@ const loadItemPenyeliaById = async ({
     );
 
     if (response.code === 2000) {
-      penyeliaHalal.value = response.data;
-      totalItemsPenyelia.value = response.total;
+      penyeliaHalal.value = response.data || [];
+      totalItemsPenyelia.value = response.total || 0;
       loadingPenyelia.value = false;
       return response;
     } else {

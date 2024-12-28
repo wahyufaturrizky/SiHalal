@@ -428,6 +428,23 @@ const onAddDataDalamNegri = async () => {
   }
 }
 
+const onUpdateTotal = async () => {
+  try {
+    const response: any = await $api('/reguler/lph/update-cost/update-total', {
+      method: 'post',
+      query: { id },
+    })
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar('Berhasil perbaharui data', 'success')
+      getDetailBiaya()
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
 onMounted(async () => {
   loading.value = true
   await Promise.allSettled([
@@ -449,6 +466,16 @@ onMounted(async () => {
         <h1>
           Informasi Penetapan Biaya Audit Untuk Fasilitas Produksi di Indonesia
         </h1>
+        <VRow style="float: inline-end; margin-right: 10px;">
+          <VBtn
+            variant="flat"
+            class="px-4"
+            color="primary"
+            @click="onUpdateTotal"
+          >
+            Perbaharui
+          </VBtn>
+        </VRow>
       </VCol>
     </VRow>
     <VRow cols="4">
@@ -541,7 +568,7 @@ onMounted(async () => {
         </VCard>
       </VCol>
     </VRow>
-    <VRow>
+    <VRow v-if="data?.is_ln_exist">
       <VCol>
         <VCard>
           <VCardTitle class="my-3 d-flex justify-space-between align-center">
@@ -793,7 +820,6 @@ onMounted(async () => {
           <VIcon @click="editLn = false"> fa-times </VIcon>
         </VCardTitle>
         <VCardText>
-          {{ editDataLn }}
           <VRow>
             <VCol>
               <div class="text-h6">Keterangan Biaya</div>

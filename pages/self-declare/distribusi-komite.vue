@@ -32,16 +32,12 @@ const permohonanHeaders: any = [
   { title: "Alamat", key: "alamat", nowrap: true },
   { title: "Merk Dagang", key: "merek_dagang", nowrap: true },
   { title: "Status", key: "status_code" },
-  { title: "Action", key: "action", align: "center" },
+  // { title: "Action", key: "action", align: "center" },
 ];
 const listData = ref<Array<DataItem>>([]);
 const selectedItems = ref<String[]>([]);
 
 const searchQuery = ref("");
-
-const navigateAction = (id: string) => {
-  navigateTo(`/sh-domestic/submission/self-declare/${id}`);
-};
 
 const handleSelectAll = () => {
   if (selectAll.value.length === 1) {
@@ -219,7 +215,7 @@ const handleLoadListComitee = async () => {
       } as any
     );
 
-    if (response.length) {
+    if (response.code === 2000 && response.data) {
       listComitee.value = response.data;
     }
     return response;
@@ -425,7 +421,10 @@ onMounted(() => {
           <template #item.tgl_daftar="{ item }">
             {{
               item.tgl_daftar
-                ? new Date(item.tgl_daftar).toISOString().substring(0, 10)
+                ? new Date(item.tgl_daftar)
+                    .toISOString()
+                    .substring(0, 10)
+                    .replace(/-/g, "/")
                 : "-"
             }}
           </template>
@@ -441,17 +440,6 @@ onMounted(() => {
           <!-- <template #item.status="{ item }">
             {{ item.status ? item.status : "-" }}
           </template> -->
-          <template #item.action="{ item }">
-            <div class="d-flex gap-1">
-              <IconBtn size="small">
-                <VIcon
-                  icon="ri-arrow-right-line"
-                  color="primary"
-                  @click="navigateAction(item.id_daftar)"
-                />
-              </IconBtn>
-            </div>
-          </template>
           <template #item.pilih="{ item }">
             <VCheckbox v-model="selectedItems" :value="item.id_daftar" />
           </template>
@@ -513,7 +501,7 @@ onMounted(() => {
       </VCardItem>
       <VCardActions class="d-flex justify-end ga-4">
         <VBtn
-          @click="[closeDialog, (selectedComitee = null)]"
+          @click="[closeDialog(), (selectedComitee = null)]"
           variant="outlined"
           min-width="100px"
         >
@@ -568,21 +556,5 @@ custom-v-checkbox {
 .custom-v-checkbox .v-checkbox__input--checked::before {
   border-color: #000 !important; /* Inner box color */
   background: #ccc !important;
-}
-
-:deep(.v-data-table.custom-table > .v-table__wrapper) {
-  table {
-    thead > tr > th:last-of-type {
-      right: 0;
-      position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
-    }
-    tbody > tr > td:last-of-type {
-      right: 0;
-      position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
-      background: white;
-    }
-  }
 }
 </style>

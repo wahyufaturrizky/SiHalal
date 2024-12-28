@@ -131,6 +131,7 @@ const { refresh } = await useAsyncData("get-detail-submission", async () => {
         area_pemasaran,
         id_lembaga_pendamping,
         id_product,
+        lokasi_pendamping,
         jenis_pendaftaran,
         fac_id,
         no_surat_permohonan,
@@ -153,7 +154,7 @@ const { refresh } = await useAsyncData("get-detail-submission", async () => {
       formData.id_fasilitator = fac_id;
       formData.no_mohon = no_surat_permohonan;
       formData.id_pendamping = id_pendamping;
-      formData.lokasi_pendamping = area_pemasaran;
+      formData.lokasi_pendamping = lokasi_pendamping;
     }
     return response;
   } catch (error) {}

@@ -71,6 +71,27 @@ const getDetailData = async (type: string) => {
 //     downloadForms[propName] = result?.data?.file || ''
 // }
 
+const onUpdateBiaya = async () => {
+  try {
+    const response: any = await $api('/reguler/lph/update-cost/seed-detail', {
+      method: 'post',
+      query: { id },
+    })
+
+    if (response?.code === 2000) {
+      router.push(`/lph/list-accepted/detail/update-cost/${id}`)
+
+      return response?.data
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
 onMounted(async () => {
   loading.value = true
 
@@ -103,7 +124,7 @@ onMounted(async () => {
               text="Update Biaya"
               variant="outlined"
               class="me-4"
-              @click="router.push(`/lph/list-accepted/detail/update-cost/${id}`)"
+              @click="onUpdateBiaya"
             />
             <VBtn text="Kirim" @click="handleOpenSendModal" />
           </VCol>
