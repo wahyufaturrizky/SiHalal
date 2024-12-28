@@ -1,9 +1,27 @@
 <script setup lang="ts">
-import type { ShlnTracking } from "@/pages/sertifikasi-halal/luar-negeri/submission/[id]/index.vue"
+import { defineProps, ref, watch } from 'vue';
 
-const props = defineProps<{
-  event: ShlnTracking[]
-}>()
+const props = defineProps({
+  melacak: {
+    type: Array,
+    required: true,
+  },
+})
+
+console.log(props.melacak, 'ini props tracking di halal 2 timeline')
+
+const melacak2 = ref([])
+
+// Watch the `databahan` prop for changes and process it
+watch(
+  () => props.melacak,
+  newDataTracking => {
+    console.log(newDataTracking, 'Updated databahan')
+    melacak2.value = Array.isArray(newDataTracking) ? [...newDataTracking] : []
+    console.log(melacak2.value, 'Processed melacak')
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -16,7 +34,8 @@ const props = defineProps<{
     class="v-timeline--variant-outlined"
   >
     <VTimelineItem
-      v-for="item in event"
+      v-for="(item, index) in melacak2"
+      :key="index"
       dot-color="rgb(var(--v-theme-surface))"
       size="x-small"
     >
@@ -31,7 +50,7 @@ const props = defineProps<{
         <span class="app-timeline-title">
           {{ item.status }}
         </span>
-        <span class="app-timeline-meta">{{ formatDate(item.created_at) }}</span>
+        <span class="app-timeline-meta">{{ formatDate(item.tanggal) }}</span>
       </div>
       <div class="app-timeline-text mt-1">
         {{ item.username }}

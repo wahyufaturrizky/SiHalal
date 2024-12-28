@@ -30,14 +30,8 @@ const startDate = ref('')
 const endDate = ref('')
 const page = ref(1)
 const ketetapan = ref('')
-
-const filter = ref({
-  startDate: '',
-  endDate: '',
-  ketetapan: '',
-  totalWorkingDays: '',
-  average: 21,
-})
+const average = ref('')
+const showFilterMenu = ref(false)
 
 const headers = [
   { title: 'No', key: 'no' },
@@ -108,6 +102,12 @@ const loadItem = async (
 //   })
 // }
 
+const selectable = [
+  { id: 1, value: 'OF100', title: 'Ditetapkan Halal' },
+  { id: 2, value: 'OF280', title: 'Dikembalikan' },
+  { id: 3, value: 'OF290', title: 'Ditolak' },
+]
+
 onMounted(async () => {
   const res = await Promise.all([
     loadItem(page.value, itemPerPage.value, startDate.value, endDate.value, ketetapan.value),
@@ -122,6 +122,30 @@ onMounted(async () => {
   else
     loadingAll.value = false
 })
+
+const debouncedFetch = debounce(loadItem, 500)
+
+const handleInput = () => {
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    startDate.value, endDate.value, ketetapan.value,
+    searchQuery.value,
+  )
+}
+
+const applyFilters = () => {
+  loadItem(page.value, itemPerPage.value, startDate.value, endDate.value, ketetapan.value)
+  showFilterMenu.value = false
+}
+
+const reset = () => {
+  startDate.value = ''
+  endDate.value = ''
+  ketetapan.value = ''
+  loadItem(page.value, itemPerPage.value, startDate.value, endDate.value, ketetapan.value)
+  showFilterMenu.value = false
+}
 
 // TODO -> LOGIC BUAT NGE UPDATE DATA BY FILTER
 // const onUpdate = () => {
@@ -168,6 +192,7 @@ const dialogMaxWidth = computed(() => {
             >
               Filter
               <VMenu
+                v-model="showFilterMenu"
                 activator="parent"
                 :close-on-content-click="false"
                 @update:model-value="onUpdate"
@@ -181,7 +206,7 @@ const dialogMaxWidth = computed(() => {
                         </VLabel>
                         <VTextField
                           id="startDate"
-                          v-model="filter.startDate"
+                          v-model="startDate"
                           type="date"
                         />
                       </VCol>
@@ -191,14 +216,14 @@ const dialogMaxWidth = computed(() => {
                         </VLabel>
                         <VTextField
                           id="startDate"
-                          v-model="filter.endDate"
+                          v-model="endDate"
                           type="date"
                         />
                       </VCol>
                     </VRow>
                     <VSelect
-                      v-model="filter.ketetapan"
-                      :items="['Dikembalikan', 'Ditetapkan Halal', 'Ditolak']"
+                      v-model="ketetapan"
+                      :items="selectable"
                       placeholder="Pilih Ketetapan"
                       class="mb-1"
                     />
@@ -213,11 +238,22 @@ const dialogMaxWidth = computed(() => {
                     <VCardText class="pa-0">
                       <VLabel>Rata-Rata</VLabel>
                       <VTextField
-                        v-model="filter.average"
+                        v-model="average"
                         type="number"
                         placeholder="Isi Rata-Rata"
                       />
                     </VCardText>
+                    <br>
+                    <VBtn
+                      style="float: inline-start;"
+                      text="Reset Filter"
+                      @click="reset"
+                    />
+                    <VBtn
+                      style="float: inline-end;"
+                      text="Apply"
+                      @click="applyFilters"
+                    />
                   </VCardItem>
                 </VCard>
               </VMenu>

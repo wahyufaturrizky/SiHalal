@@ -31,7 +31,7 @@ const pendamping = ref('')
 const loadItem = async (
   page: number,
   size: number,
-  lembaga: string = '73376711-e2d2-4523-8e83-28d327de926e',
+  lembaga: string = '',
   fasilitasi: string = '',
   pendamping: string = '',
   namaPengajuan: string = '',
@@ -138,6 +138,18 @@ const showFilterMenu = ref(false)
 
 const applyFilters = () => {
   loadItem(page.value, itemPerPage.value, lembaga.value, fasilitasi.value, pendamping.value, searchQuery.value)
+  showFilterMenu.value = false
+}
+
+const reset = () => {
+  lembaga.value = ''
+  fasilitasi.value = ''
+  pendamping.value = ''
+  searchQuery.value = ''
+
+  loadItem(page.value, itemPerPage.value, fasilitasi.value, pendamping.value, searchQuery.value)
+
+  showFilterMenu.value = false
 }
 </script>
 
@@ -180,35 +192,42 @@ const applyFilters = () => {
             >
               <VSelect
                 v-model="fasilitasi"
-                label="Fasilitasi"
-                placeholder="Pilih Fasilitasi"
-                :items="filterFasilitasi"
+                label="Fasilitas"
+                placeholder="Pilih Fasilitas"
+                :items="[{ id: '', name: 'Pilih Fasilitas' }, ...filterFasilitasi]"
                 item-title="name"
                 item-value="id"
                 class="mt-3"
               />
+
               <VSelect
                 v-model="lembaga"
-                placeholder="Pilih Lembaga"
                 label="Lembaga"
-                :items="filterLembaga"
+                placeholder="Pilih Lembaga"
+                :items="[{ id: '', name: 'Pilih Lembaga' }, ...filterLembaga]"
                 item-title="name"
                 item-value="id"
                 class="mt-3"
               />
+
               <VSelect
                 v-model="pendamping"
                 label="Pendamping"
                 placeholder="Pilih Pendamping"
-                :items="filterPendamping"
+                :items="[{ id: '', name: 'Pilih Pendamping' }, ...filterPendamping]"
                 item-title="name"
                 item-value="id"
                 class="mt-3"
               />
+              <br>
               <VBtn
-                block
+                style="float: inline-start;"
+                text="Reset Filter"
+                @click="reset"
+              />
+              <VBtn
+                style="float: inline-end;"
                 color="primary"
-                class="mt-3"
                 @click="applyFilters"
               >
                 Apply Filters
@@ -218,7 +237,7 @@ const applyFilters = () => {
         </VCol>
         <VCol
           class="d-flex justify-sm-space-between align-center"
-          cols="5"
+          cols="10"
         >
           <VTextField
             v-model="searchQuery"
