@@ -69,7 +69,7 @@ const loadItem = async (
         startDate,
         endDate,
         ketetapan,
-        searchQuery
+        searchQuery,
       },
     })
 
@@ -106,9 +106,9 @@ const loadItem = async (
 // }
 
 const selectable = [
-  { id: 1, value: 'OF100', title: 'Ditetapkan Halal' },
-  { id: 2, value: 'OF280', title: 'Dikembalikan' },
-  { id: 3, value: 'OF290', title: 'Ditolak' },
+  { id: 1, value: 'Ditetapkan Halal', title: 'Ditetapkan Halal' },
+  { id: 2, value: 'Dikembalikan', title: 'Dikembalikan' },
+  { id: 3, value: 'Ditolak', title: 'Ditolak' },
 ]
 
 onMounted(async () => {
@@ -203,66 +203,66 @@ const dialogMaxWidth = computed(() => {
                   Filter
                 </VBtn>
               </template>
-                <VCard :min-width="dialogMaxWidth">
-                  <VCardItem>
-                    <VRow class="mb-1">
-                      <VCol cols="6">
-                        <VLabel for="startDate">
-                          Tanggal Sidang
-                        </VLabel>
-                        <VTextField
-                          id="startDate"
-                          v-model="startDate"
-                          type="date"
-                        />
-                      </VCol>
-                      <VCol cols="6">
-                        <VLabel for="startDate">
-                          Sampai
-                        </VLabel>
-                        <VTextField
-                          id="startDate"
-                          v-model="endDate"
-                          type="date"
-                        />
-                      </VCol>
-                    </VRow>
-                    <VSelect
-                      v-model="ketetapan"
-                      :items="selectable"
-                      placeholder="Pilih Ketetapan"
-                      class="mb-1"
-                    />
-                    <VCardText class="pa-0 mb-1">
-                      <VLabel>Jumlah Hari Kerja</VLabel>
+              <VCard :min-width="dialogMaxWidth">
+                <VCardItem>
+                  <VRow class="mb-1">
+                    <VCol cols="6">
+                      <VLabel for="startDate">
+                        Tanggal Sidang
+                      </VLabel>
                       <VTextField
-                        v-model="totalWorkingDays"
-                        type="number"
-                        placeholder="Isi Jumlah Hari Kerja"
+                        id="startDate"
+                        v-model="startDate"
+                        type="date"
                       />
-                    </VCardText>
-                    <VCardText class="pa-0">
-                      <VLabel>Rata-Rata</VLabel>
+                    </VCol>
+                    <VCol cols="6">
+                      <VLabel for="endDate">
+                        Sampai
+                      </VLabel>
                       <VTextField
-                        v-model="average"
-                        type="number"
-                        placeholder="Isi Rata-Rata"
+                        id="endDate"
+                        v-model="endDate"
+                        type="date"
                       />
-                    </VCardText>
-                    <br>
-                    <VBtn
-                      style="float: inline-start;"
-                      text="Reset Filter"
-                      @click="reset"
+                    </VCol>
+                  </VRow>
+                  <VSelect
+                    v-model="ketetapan"
+                    :items="selectable"
+                    placeholder="Pilih Ketetapan"
+                    class="mb-1"
+                  />
+                  <VCardText class="pa-0 mb-1">
+                    <VLabel>Jumlah Hari Kerja</VLabel>
+                    <VTextField
+                      v-model="totalWorkingDays"
+                      type="number"
+                      placeholder="Isi Jumlah Hari Kerja"
                     />
-                    <VBtn
-                      style="float: inline-end;"
-                      text="Apply"
-                      @click="applyFilters"
+                  </VCardText>
+                  <VCardText class="pa-0">
+                    <VLabel>Rata-Rata</VLabel>
+                    <VTextField
+                      v-model="average"
+                      type="number"
+                      placeholder="Isi Rata-Rata"
                     />
-                  </VCardItem>
-                </VCard>
-              </VMenu>
+                  </VCardText>
+                  <br>
+                  <VBtn
+                    style="float: inline-start;"
+                    text="Reset Filter"
+                    @click="reset"
+                  />
+                  <VBtn
+                    style="float: inline-end;"
+                    text="Apply"
+                    @click="applyFilters"
+                  />
+                </VCardItem>
+              </VCard>
+            </VMenu>
           </VCol>
           <VCol>
             <VTextField
