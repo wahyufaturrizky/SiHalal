@@ -250,7 +250,7 @@ watch(
       <div class="d-flex justify-space-between align-center">
         <span class="text-h5 font-weight-bold">{{ props.title }}</span>
         <div class="d-flex justify-space-between gap-4">
-          <div v-if="withAddButtonBahan">
+          <div v-if="withAddButtonBahan && !isviewonly">
             <TambahBahanModal
               @loadList="getListIngredients()"
             ></TambahBahanModal>
@@ -263,7 +263,11 @@ watch(
           >
             Tambah
           </VBtn>
-          <VBtn v-if="withSaveButton" variant="flat" @click="props.onSubmit">
+          <VBtn
+            v-if="withSaveButton && !isviewonly"
+            variant="flat"
+            @click="props.onSubmit"
+          >
             {{ withApproveButton ? "Saya Setuju" : "Simpan" }}
           </VBtn>
         </div>
@@ -344,7 +348,7 @@ watch(
               @change="() => handleCheck(item)"
             />
           </template>
-          <template #item.action="{ item }">
+          <template v-if="!isviewonly" #item.action="{ item }">
             <DialogDeleteAuditPengajuan
               title="Hapus Bahan"
               button-text="Ya, Hapus"
@@ -356,7 +360,7 @@ watch(
               </template>
             </DialogDeleteAuditPengajuan>
           </template>
-          <template #item.actionEdit="{ item }">
+          <template v-if="!isviewonly" #item.actionEdit="{ item }">
             <Vbtn
               variant="plain"
               class="cursor-pointer"
@@ -365,7 +369,7 @@ watch(
               <VIcon end icon="ri-pencil-line" color="#652672" />
             </Vbtn>
           </template>
-          <template #item.actionPopOver2="{ item }">
+          <template v-if="!isviewonly" #item.actionPopOver2="{ item }">
             <VMenu>
               <template #activator="{ props }">
                 <VBtn
@@ -411,7 +415,7 @@ watch(
               </VList>
             </VMenu>
           </template>
-          <template #item.actionPopOver3="{ item }">
+          <template v-if="!isviewonly" #item.actionPopOver3="{ item }">
             <VMenu>
               <template #activator="{ props }">
                 <VBtn
