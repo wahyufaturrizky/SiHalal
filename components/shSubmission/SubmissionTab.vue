@@ -6,26 +6,6 @@ const props = defineProps({
   },
 });
 
-const handleGetPengajuanSubmission = async () => {
-  try {
-    const response: any = await $api(
-      `/self-declare/submission/${props.idDetail}/detail-pengajuan`,
-      {
-        method: "get",
-      }
-    );
-
-    if (response.code === 2000) {
-      // submissionDetail.id_reg = response.data.id_reg;
-      // submissionDetail.id_jenis_pengajuan = response.data.jenis_pendaftaran;
-      console.log("ini apa response", response);
-    }
-    return response;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 const responseId = ref("");
 
 const responseMessage = ref("");
@@ -302,7 +282,6 @@ onMounted(async () => {
     handleGetFasilitator(),
     handleGetJenisLayanan(),
     handleGetJenisProduk(),
-    handleGetPengajuanSubmission(),
     loadDataPendamping(formData.lokasi_pendamping),
     getDownloadForm("surat-permohonan"),
     getDownloadForm("surat-pernyataan"),
