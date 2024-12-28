@@ -137,7 +137,7 @@ const navigateAction = (id: string) => {
 const showFilterMenu = ref(false)
 
 const applyFilters = () => {
-  loadItem(page.value, itemPerPage.value, lembaga.value, fasilitasi.value, pendamping.value, searchQuery.value)
+  debounceFetch(page.value, itemPerPage.value, lembaga.value, fasilitasi.value, pendamping.value, searchQuery.value)
   showFilterMenu.value = false
 }
 

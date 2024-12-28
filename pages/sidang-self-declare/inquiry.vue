@@ -29,17 +29,26 @@ const tableHeader = [
 const itemPerPage = ref(10)
 const totalItems = ref(0)
 const loading = ref(false)
-const loadingAll = ref(true)
 const page = ref(1)
-const selectedFilterProduk = ref([])
-const selectedFilterFasilitas = ref([])
-const selectedFilterLembaga = ref([])
-const selectedFilterPendamping = ref([])
+const selectedFilterProduk = ref('')
+const selectedFilterFasilitasi = ref('')
+const selectedFilterLembaga = ref('')
+const selectedFilterPendamping = ref('')
+const filterLembaga = ref([])
+const filterFasilitasi = ref([])
+const filterPendamping = ref([])
+const filterProduk = ref([])
+const searchQuery = ref('')
+const showFilterMenu = ref(false)
 
 const loadItem = async (
   page: number,
   size: number,
-
+  selectedFilterProduk: string,
+  selectedFilterFasilitasi: string,
+  selectedFilterLembaga: string,
+  selectedFilterPendamping: string,
+  searchQuery: string,
 ) => {
   try {
     loading.value = true
@@ -49,6 +58,11 @@ const loadItem = async (
       params: {
         page,
         size,
+        selectedFilterProduk,
+        selectedFilterFasilitasi,
+        selectedFilterLembaga,
+        selectedFilterPendamping,
+        searchQuery,
       },
     })
 
@@ -71,6 +85,76 @@ const loadItem = async (
     loading.value = false
   }
 }
+
+const debouncedFetch = debounce(loadItem, 500)
+
+const handleInput = () => {
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    selectedFilterProduk.value, selectedFilterFasilitasi.value, selectedFilterLembaga.value, selectedFilterPendamping.value,
+    searchQuery.value,
+  )
+}
+
+const loadFilter = async () => {
+  try {
+    loading.value = true
+
+    const response1: any = await $api('/self-declare/komite-fatwa/proses-sidang/filter-fasilitasi', {
+      method: 'get',
+    })
+
+    const response2: any = await $api('/self-declare/komite-fatwa/proses-sidang/filter-lembaga', {
+      method: 'get',
+    })
+
+    const response3: any = await $api('/self-declare/komite-fatwa/proses-sidang/filter-pendamping', {
+      method: 'get',
+    })
+
+    const response4: any = await $api('/self-declare/komite-fatwa/proses-sidang/filter-produk', {
+      method: 'get',
+    })
+
+    filterFasilitasi.value = response1.data || []
+    filterLembaga.value = response2.data || []
+    filterPendamping.value = response3.data || []
+    filterProduk.value = response4.data || []
+    loading.value = false
+    console.log(response1.data, 'ini response filter fasilitasi')
+
+    return response1
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    loading.value = false
+  }
+}
+
+onMounted(async () => {
+  loading.value = true
+  await loadItem(1, itemPerPage.value, selectedFilterProduk.value, selectedFilterFasilitasi.value, selectedFilterLembaga.value, selectedFilterPendamping.value, searchQuery.value)
+  await loadFilter()
+  loading.value = false
+})
+
+const applyFilters = () => {
+  debouncedFetch(page.value, itemPerPage.value, selectedFilterProduk.value, selectedFilterFasilitasi.value, selectedFilterLembaga.value, selectedFilterPendamping.value, searchQuery.value)
+  showFilterMenu.value = false
+}
+
+const reset = () => {
+  selectedFilterProduk.value = ''
+  selectedFilterLembaga.value = ''
+  selectedFilterFasilitasi.value = ''
+  selectedFilterPendamping.value = ''
+  searchQuery.value = ''
+
+  loadItem(page.value, itemPerPage.value, selectedFilterProduk.value, selectedFilterFasilitasi.value, selectedFilterLembaga.value, selectedFilterPendamping.value, searchQuery.value)
+
+  showFilterMenu.value = false
+}
 </script>
 
 <template>
@@ -91,7 +175,10 @@ const loadItem = async (
         <VCardItem>
           <VRow>
             <VCol cols="3">
-              <VMenu :close-on-content-click="false">
+              <VMenu
+                v-model="showFilterMenu"
+                :close-on-content-click="false"
+              >
                 <template #activator="{ props: openMenu }">
                   <VBtn
                     append-icon="fa-filter"
@@ -108,8 +195,11 @@ const loadItem = async (
                       <VLabel><b>Jenis Produk</b></VLabel>
                       <VSelect
                         v-model="selectedFilterProduk"
-                        density="compact"
-                        placeholder="Semua"
+                        placeholder="Pilih Produk"
+                        :items="[{ id: '', name: 'Pilih Produk' }, ...filterProduk]"
+                        item-title="name"
+                        item-value="id"
+                        class="mt-3"
                       />
                     </VItemGroup>
                   </VListItem>
@@ -117,9 +207,12 @@ const loadItem = async (
                     <VItemGroup>
                       <VLabel><b>Fasilitas</b></VLabel>
                       <VSelect
-                        v-model="selectedFilterFasilitas"
-                        density="compact"
-                        placeholder="Semua"
+                        v-model="selectedFilterFasilitasi"
+                        placeholder="Pilih Fasilitas"
+                        :items="[{ id: '', name: 'Pilih Fasilitas' }, ...filterFasilitasi]"
+                        item-title="name"
+                        item-value="id"
+                        class="mt-3"
                       />
                     </VItemGroup>
                   </VListItem>
@@ -128,8 +221,11 @@ const loadItem = async (
                       <VLabel><b>Lembaga</b></VLabel>
                       <VSelect
                         v-model="selectedFilterLembaga"
-                        density="compact"
-                        placeholder="Semua"
+                        placeholder="Pilih Lembaga"
+                        :items="[{ id: '', name: 'Pilih Lembaga' }, ...filterLembaga]"
+                        item-title="name"
+                        item-value="id"
+                        class="mt-3"
                       />
                     </VItemGroup>
                   </VListItem>
@@ -138,18 +234,27 @@ const loadItem = async (
                       <VLabel><b>Pendamping</b></VLabel>
                       <VSelect
                         v-model="selectedFilterPendamping"
-                        density="compact"
-                        placeholder="Semua"
+                        placeholder="Pilih Pendamping"
+                        :items="[{ id: '', name: 'Pilih Pendamping' }, ...filterPendamping]"
+                        item-title="name"
+                        item-value="id"
+                        class="mt-3"
                       />
                     </VItemGroup>
                   </VListItem>
                   <VListItem>
+                    <br>
                     <VBtn
-                      style="inline-size: 100%;"
-                      ariant="flat"
-                      density="compact"
+                      style="float: inline-start;"
+                      text="Reset Filter"
+                      @click="reset"
+                    />
+                    <VBtn
+                      style="float: inline-end;"
+                      color="primary"
+                      @click="applyFilters"
                     >
-                      Apply
+                      Apply Filters
                     </VBtn>
                   </VListItem>
                 </VList>
@@ -158,9 +263,12 @@ const loadItem = async (
             <VCol cols="1" />
             <VCol cols="8">
               <VTextField
+                v-model="searchQuery"
                 density="compact"
-                placeholder="Cari Nama Pengajuan"
-                append-inner-icon="mdi-magnify"
+                placeholder="Search Data"
+                append-inner-icon="ri-search-line"
+                style="max-inline-size: 100%;"
+                @input="handleInput"
               />
             </VCol>
           </VRow>

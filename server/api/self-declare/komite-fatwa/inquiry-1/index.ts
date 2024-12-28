@@ -2,18 +2,30 @@ import type { NuxtError } from 'nuxt/app'
 
 const runtimeConfig = useRuntimeConfig()
 export default defineEventHandler(async event => {
-  const authorizationHeader = getRequestHeader(event, 'Authorization');
+  const authorizationHeader = getRequestHeader(event, 'Authorization')
   if (typeof authorizationHeader === 'undefined') {
     throw createError({
       statusCode: 403,
       statusMessage:
         'Need to pass valid Bearer-authorization header to access this endpoint',
-    });
+    })
   }
 
-  const { page, size } = (await getQuery(event)) as {
+  const {
+    page,
+    size,
+    selectedFilterProduk,
+    selectedFilterFasilitasi,
+    selectedFilterLembaga,
+    selectedFilterPendamping,
+    searchQuery,
+  } = (await getQuery(event)) as {
     page: string
     size: string
+    selectedFilterProduk: string
+    selectedFilterFasilitasi: string
+    selectedFilterLembaga: string
+    selectedFilterPendamping: string
   }
 
   const params: any = {
@@ -21,16 +33,16 @@ export default defineEventHandler(async event => {
     size: Number.isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
   }
 
-  // if (jenisProduk !== '')
-  //   params['jenis_produk'] = jenisProduk
-  // if (lembagaPendampingId !== '')
-  //   params['lembaga_pendamping_id'] = lembagaPendampingId
-  // if (pendampingId !== '')
-  //   params['pendamping_id'] = pendampingId
-  // if (facId !== '')
-  //   params['fac_id'] = facId
-  // if (namaPengajuan !== '')
-  //   params['nama_pengajuan'] = namaPengajuan
+  if (selectedFilterProduk !== '')
+    params['jenis_produk'] = selectedFilterProduk
+  if (selectedFilterLembaga !== '')
+    params['lembaga'] = selectedFilterLembaga
+  if (selectedFilterPendamping !== '')
+    params['pendamping'] = selectedFilterPendamping
+  if (selectedFilterFasilitasi !== '')
+    params['fasilitas'] = selectedFilterFasilitasi
+  if (searchQuery !== '')
+    params['nama_pengajuan'] = searchQuery
 
   // if (status !== "" && status !== "Semua") {
   //   params["status"] = status;
