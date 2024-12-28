@@ -209,7 +209,7 @@ onMounted(async () => {
     </VCardTitle>
     <VCardText>
       <div class="mb-3">
-        <div class="font-weight-bold mb-1">Jenis Badan Usaha</div>
+        <div class="font-weight-bold mb-1">Nama Penanggung Jawab</div>
         <VTextField
           v-model="guarantorData.nama_pj"
           density="compact"
