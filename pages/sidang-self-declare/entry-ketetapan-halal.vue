@@ -30,8 +30,9 @@ const startDate = ref('')
 const endDate = ref('')
 const page = ref(1)
 const ketetapan = ref('')
-const average = ref('')
+const average = ref(0)
 const showFilterMenu = ref(false)
+const totalWorkingDays = ref(0)
 
 const headers = [
   { title: 'No', key: 'no' },
@@ -55,6 +56,7 @@ const loadItem = async (
   startDate: string,
   endDate: string,
   ketetapan: string,
+  searchQuery: string,
 ) => {
   try {
     loading.value = true
@@ -67,6 +69,7 @@ const loadItem = async (
         startDate,
         endDate,
         ketetapan,
+        searchQuery
       },
     })
 
@@ -110,7 +113,7 @@ const selectable = [
 
 onMounted(async () => {
   const res = await Promise.all([
-    loadItem(page.value, itemPerPage.value, startDate.value, endDate.value, ketetapan.value),
+    loadItem(page.value, itemPerPage.value, startDate.value, endDate.value, ketetapan.value, searchQuery.value),
   ])
 
   const checkResIfUndefined = res.every(item => {
@@ -135,7 +138,7 @@ const handleInput = () => {
 }
 
 const applyFilters = () => {
-  loadItem(page.value, itemPerPage.value, startDate.value, endDate.value, ketetapan.value)
+  debouncedFetch(page.value, itemPerPage.value, startDate.value, endDate.value, ketetapan.value, searchQuery.value)
   showFilterMenu.value = false
 }
 
@@ -143,7 +146,7 @@ const reset = () => {
   startDate.value = ''
   endDate.value = ''
   ketetapan.value = ''
-  loadItem(page.value, itemPerPage.value, startDate.value, endDate.value, ketetapan.value)
+  debouncedFetch(page.value, itemPerPage.value, startDate.value, endDate.value, ketetapan.value, searchQuery.value)
   showFilterMenu.value = false
 }
 
@@ -185,18 +188,21 @@ const dialogMaxWidth = computed(() => {
           class="d-flex align-center"
         >
           <VCol cols="2">
-            <VBtn
-              color="primary"
-              append-icon="mdi-filter"
-              variant="outlined"
+            <VMenu
+              v-model="showFilterMenu"
+              :close-on-content-click="false"
+              offset-y
             >
-              Filter
-              <VMenu
-                v-model="showFilterMenu"
-                activator="parent"
-                :close-on-content-click="false"
-                @update:model-value="onUpdate"
-              >
+              <template #activator="{ props }">
+                <VBtn
+                  color="primary"
+                  variant="outlined"
+                  v-bind="props"
+                  append-icon="ri-filter-fill"
+                >
+                  Filter
+                </VBtn>
+              </template>
                 <VCard :min-width="dialogMaxWidth">
                   <VCardItem>
                     <VRow class="mb-1">
@@ -230,7 +236,7 @@ const dialogMaxWidth = computed(() => {
                     <VCardText class="pa-0 mb-1">
                       <VLabel>Jumlah Hari Kerja</VLabel>
                       <VTextField
-                        v-model="filter.totalWorkingDays"
+                        v-model="totalWorkingDays"
                         type="number"
                         placeholder="Isi Jumlah Hari Kerja"
                       />
@@ -257,7 +263,6 @@ const dialogMaxWidth = computed(() => {
                   </VCardItem>
                 </VCard>
               </VMenu>
-            </VBtn>
           </VCol>
           <VCol>
             <VTextField

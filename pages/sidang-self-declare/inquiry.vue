@@ -151,7 +151,7 @@ const reset = () => {
   selectedFilterPendamping.value = ''
   searchQuery.value = ''
 
-  loadItem(page.value, itemPerPage.value, selectedFilterProduk.value, selectedFilterFasilitasi.value, selectedFilterLembaga.value, selectedFilterPendamping.value, searchQuery.value)
+  debouncedFetch(page.value, itemPerPage.value, selectedFilterProduk.value, selectedFilterFasilitasi.value, selectedFilterLembaga.value, selectedFilterPendamping.value, searchQuery.value)
 
   showFilterMenu.value = false
 }

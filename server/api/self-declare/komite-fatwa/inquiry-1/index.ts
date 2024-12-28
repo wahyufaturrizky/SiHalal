@@ -42,7 +42,7 @@ export default defineEventHandler(async event => {
   if (selectedFilterFasilitasi !== '')
     params['fasilitas'] = selectedFilterFasilitasi
   if (searchQuery !== '')
-    params['nama_pengajuan'] = searchQuery
+    params['nama_pu'] = searchQuery
 
   // if (status !== "" && status !== "Semua") {
   //   params["status"] = status;
