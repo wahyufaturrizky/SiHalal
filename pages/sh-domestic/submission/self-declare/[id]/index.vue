@@ -1342,6 +1342,7 @@ const handleSentSubmission = async () => {
     });
     if (response.code === 2000) {
       snackbar.sendSnackbar("Berhasil mengirim pengajuan", "success");
+      navigateTo("/sh-domestic/submission/self-declare");
     } else {
       if (response.errors.list_error.length > 0) {
         for (const element of response.errors.list_error) {

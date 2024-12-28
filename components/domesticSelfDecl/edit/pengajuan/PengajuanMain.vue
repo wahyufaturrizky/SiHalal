@@ -106,8 +106,11 @@ const handleGetFasilitator = async () => {
 const querySearch = ref("");
 
 const onSelectFasilitator = (selectedId: string) => {
-  if ((isFasilitator.value = selectedId === "Lainnya"))
-    isKodeFound.value = false;
+  if ((isFasilitator.value = selectedId === "Lainnya")) {
+    onSearchFasilitator(querySearch.value);
+    return;
+  }
+  isKodeFound.value = false;
 };
 
 const responseMessage = ref("");
@@ -305,23 +308,9 @@ const getDetail = async () => {
 
       formData.id_lembaga_pendamping = response.data.id_lembaga_pendamping;
       formData.id_pendamping = response.data.id_pendamping;
-      console.log("ini sub det = ", Object.keys(submissionDetail));
-      console.log("ini form = ", Object.keys(formData));
-
-      // Object.keys(response?.data).forEach((key) => {
-      //   // console.log('response = ', key)
-      //   // console.log('response data= ', response.data[key])
-      //   // submissionDetail[key] = response.data[key]
-      //   // console.log('coba tes = ', key == 'tanggal_daftar')
-      //   // console.log(key === 'tgl_daftar', 'keterangan', key)
-      //   if (key === "tgl_daftar") console.log("ini val", val);
-
-      //   formData[val] = response.data[val];
-      //   formData.id_fasilitator = "Lainnya";
-      // });
-
-      // console.log("form = ", formData);
-      // console.log("submission det = ", submissionDetail);
+      if (formData.id_fasilitator == "00000000-0000-0000-0000-000000000000") {
+        formData.id_fasilitator = null;
+      }
     }
   } catch (error: any) {
     // Tangani error
@@ -441,6 +430,7 @@ onMounted(async () => {
   await handleGetPendamping(formData.id_lembaga_pendamping);
   console.log(submissionDetail);
   if (
+    formData.id_fasilitator != null &&
     !listFasilitasi.value.some((item) => item.id == formData.id_fasilitator)
   ) {
     formData.id_fasilitator = "Lainnya";
