@@ -8,8 +8,12 @@ const openedLeftPanels = ref([0, 1, 2, 3, 4, 5]);
 const openedRightPanels = ref([0, 1, 2]);
 const loadingAll = ref(true);
 const dataPengajuan = ref<any>({});
-const dataProduk = ref<any>([]);
+const dataProduk = ref<any>();
 const dataPemeriksaanProduk = ref<any>(null);
+const fileLaporanLPH = ref<any>(null);
+const fileKH = ref<any>(null);
+const fileHasilAudit = ref<any>(null);
+const fileLihatDraft = ref<any>(null);
 
 const assignAuditorHeader: any[] = [
   { title: "No", key: "index" },
@@ -63,6 +67,34 @@ const handleUpdateStatus = () => {
   useSnackbar().sendSnackbar(snackbarMessage, snackbarType);
 };
 
+const getDownloadForm = async (docName: string) => {
+  const result: any = await $api(`/self-declare/submission/${id}/file`, {
+    method: "get",
+    query: {
+      document: docName,
+    },
+  });
+
+  if (result.code === 2000) {
+    switch (docName) {
+      case "laporan":
+        fileLaporanLPH.value = result.data.file;
+        return result;
+      case "setifikasi-halal":
+        fileKH.value = result.data.file;
+        return result;
+      case "rekomendasi":
+        fileHasilAudit.value = result.data.file;
+        return result;
+      case "surat-permohonan":
+        fileLihatDraft.value = result.data.file;
+        return result;
+      default:
+        break;
+    }
+  }
+};
+
 const getDetailData = async (type: string) => {
   try {
     const response: any = await $api("/reguler/lph/detail-payment", {
@@ -86,12 +118,16 @@ onMounted(async () => {
     getDetailData("pengajuan"),
     getDetailData("produk"),
     getDetailData("pemeriksaanproduk"),
+    getDownloadForm("laporan"),
+    getDownloadForm("setifikasi-halal"),
+    getDownloadForm("surat-pernyataan"),
+    getDownloadForm("surat-permohonan"),
   ]);
 
   if (dataPengajuan) {
     dataPengajuan.value = responseData?.[0]?.value || {};
-    dataPemeriksaanProduk.value = responseData?.[1]?.value || {};
-    dataProduk.value = responseData?.[2]?.value || [];
+    dataPemeriksaanProduk.value = responseData?.[1]?.value || [];
+    dataProduk.value = responseData?.[2]?.value || {};
     loadingAll.value = false;
   }
 });
@@ -115,7 +151,12 @@ onMounted(async () => {
               >
                 Pengembalian
               </VBtn>
-              <VBtn variant="outlined"> Lihat Draft Sertif </VBtn>
+              <VBtn
+                @click="downloadDocument(fileLihatDraft)"
+                variant="outlined"
+              >
+                Lihat Draft Sertif
+              </VBtn>
               <VBtn
                 @click="
                   navigateTo(`/sh-domestic/submission/reguler/${id}/edit`)
@@ -160,7 +201,7 @@ onMounted(async () => {
               Daftar Nama Produk
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelDaftarProduk :data="dataProduk" />
+              <PanelDaftarProduk :data="dataPemeriksaanProduk" />
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="3" class="pt-3">
@@ -168,7 +209,7 @@ onMounted(async () => {
               Jadwal Audit
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelJadwalAudit :data="dataPemeriksaanProduk?.jadwal_audit" />
+              <PanelJadwalAudit :data="dataProduk?.jadwal_audit" />
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="4" class="pt-3">
@@ -176,7 +217,7 @@ onMounted(async () => {
               Auditor
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelAuditorTable :data="dataPemeriksaanProduk?.auditor" />
+              <PanelAuditorTable :data="dataProduk?.auditor" />
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="5" class="pt-3">
@@ -186,7 +227,7 @@ onMounted(async () => {
             <VExpansionPanelText class="mt-5">
               <PanelHasilPemeriksaan
                 type="EDIT"
-                :data="dataPemeriksaanProduk?.hasil_pemeriksaan"
+                :data="dataProduk?.hasil_pemeriksaan"
               />
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -208,7 +249,12 @@ onMounted(async () => {
                 <VCol cols="5" class="text-h6"> Hasil Audit </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
-                  <VBtn rounded="xl" density="compact" class="px-2">
+                  <VBtn
+                    @click="downloadDocument(fileHasilAudit)"
+                    rounded="xl"
+                    density="compact"
+                    class="px-2"
+                  >
                     <template #default>
                       <VIcon icon="fa-download" />
                     </template>
@@ -219,7 +265,12 @@ onMounted(async () => {
                 <VCol cols="5" class="text-h6"> File KH </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
-                  <VBtn rounded="xl" density="compact" class="px-2">
+                  <VBtn
+                    @click="downloadDocument(fileKH)"
+                    rounded="xl"
+                    density="compact"
+                    class="px-2"
+                  >
                     <template #default>
                       <VIcon icon="fa-download" />
                     </template>
@@ -230,7 +281,12 @@ onMounted(async () => {
                 <VCol cols="5" class="text-h6"> File Laporan LPH </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
-                  <VBtn rounded="xl" density="compact" class="px-2">
+                  <VBtn
+                    @click="downloadDocument(fileLaporanLPH)"
+                    rounded="xl"
+                    density="compact"
+                    class="px-2"
+                  >
                     <template #default>
                       <VIcon icon="fa-download" />
                     </template>
@@ -244,9 +300,7 @@ onMounted(async () => {
               No. Pendaftaran
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelNoPendaftaran
-                :data="dataPemeriksaanProduk?.no_pendaftaran"
-              />
+              <PanelNoPendaftaran :data="dataProduk?.no_pendaftaran" />
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="2" class="pt-3">
@@ -255,15 +309,13 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <VRow>
-                <VCol>{{
-                  formatToIDR(dataPemeriksaanProduk?.total_biaya)
-                }}</VCol>
+                <VCol>{{ formatToIDR(dataProduk?.total_biaya) }}</VCol>
               </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
         <div class="mt-10">
-          <PanelTracking :data="dataPemeriksaanProduk?.tracking" />
+          <PanelTracking :data="dataProduk?.tracking" />
         </div>
       </template>
     </LPHDetailLayout>
