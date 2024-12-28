@@ -106,8 +106,11 @@ const handleGetFasilitator = async () => {
 const querySearch = ref("");
 
 const onSelectFasilitator = (selectedId: string) => {
-  if ((isFasilitator.value = selectedId === "Lainnya"))
-    isKodeFound.value = false;
+  if ((isFasilitator.value = selectedId === "Lainnya")) {
+    onSearchFasilitator(querySearch.value);
+    return;
+  }
+  isKodeFound.value = false;
 };
 
 const responseMessage = ref("");
@@ -138,7 +141,7 @@ const onSearchFasilitator = async () => {
       facName.value = response.data[0].name;
       console.log("ressponde id", response.data[0].id);
       console.log("responseId ", responseId);
-      formData.id_fasilitator.value = responseId.value;
+      // formData.id_fasilitator = responseId.value;
       console.log("id fasilitator ", formData.id_fasilitator);
     } else {
       responseMessage.value = response.message;
@@ -174,16 +177,55 @@ const handleGetJenisLayanan = async () => {
 
 const handleGetJenisProduk = async () => {
   try {
-    listProduk.value = await $api("/master/products", {
+    listProduk.value = await $api("/master/product-filter", {
       method: "get",
+      params: {
+        id: formData.id_jenis_layanan,
+      },
     });
   } catch (error) {
     console.log(error);
   }
 };
+const handleGetJenisProdukFilter = async (item) => {
+  try {
+    formData.id_jenis_produk = null;
+    listProduk.value = await $api("/master/product-filter", {
+      method: "get",
+      params: {
+        id: item,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+const handleGetLembagaPendampingInitial = async (lokasi: string) => {
+  try {
+    const response: any = await $api(
+      "/self-declare/business-actor/submission/list-lembaga-pendamping",
+      {
+        method: "get",
+        query: {
+          id_reg: submissionId,
+          lokasi,
+        },
+      }
+    );
 
+    if (response.code === 2000) {
+      if (response.data !== null) lembagaPendamping.value = response.data;
+    }
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
 const handleGetLembagaPendamping = async (lokasi: string) => {
   try {
+    formData.id_lembaga_pendamping = null;
+    lembagaPendamping.value = [];
     const response: any = await $api(
       "/self-declare/business-actor/submission/list-lembaga-pendamping",
       {
@@ -246,6 +288,11 @@ const getDetail = async () => {
     if (response.code == 2000) {
       submissionDetail.tanggal_buat = response.data.tgl_daftar.split("T")[0];
       submissionDetail.status = response.data.status_reg;
+      submissionDetail.id_jenis_pengajuan = response.data.jenis_pendaftaran;
+      submissionDetail.nama_pj = response.data.nama_pj;
+      submissionDetail.alamat_pu = response.data.alamat_pu;
+      submissionDetail.nomor_kontak_pj = response.data.no_kontak_pj;
+      submissionDetail.nama_pu = response.data.nama_pu;
       formData.tgl_surat_permohonan =
         response.data.tgl_surat_permohonan.split("T")[0];
       formData.id_jenis_pengajuan = response.data.jenis_pendaftaran;
@@ -253,32 +300,17 @@ const getDetail = async () => {
       querySearch.value = response.data.kode_fac;
       formData.no_mohon = response.data.no_surat_permohonan;
       formData.id_jenis_layanan = response.data.id_jenis_layanan;
-
+      formData.lokasi_pendamping = response.data.lokasi_pendamping;
       formData.lokasi_pendamping = response.data.lokasi_pendamping;
       formData.id_jenis_produk = response.data.id_product;
       formData.nama_pu = response.data.nama_usaha;
       formData.area_pemasaran = response.data.area_pemasaran;
-      formData.lokasi_pendamping = "Provinsi";
 
       formData.id_lembaga_pendamping = response.data.id_lembaga_pendamping;
       formData.id_pendamping = response.data.id_pendamping;
-      console.log("ini sub det = ", Object.keys(submissionDetail));
-      console.log("ini form = ", Object.keys(formData));
-
-      // Object.keys(response?.data).forEach((key) => {
-      //   // console.log('response = ', key)
-      //   // console.log('response data= ', response.data[key])
-      //   // submissionDetail[key] = response.data[key]
-      //   // console.log('coba tes = ', key == 'tanggal_daftar')
-      //   // console.log(key === 'tgl_daftar', 'keterangan', key)
-      //   if (key === "tgl_daftar") console.log("ini val", val);
-
-      //   formData[val] = response.data[val];
-      //   formData.id_fasilitator = "Lainnya";
-      // });
-
-      // console.log("form = ", formData);
-      // console.log("submission det = ", submissionDetail);
+      if (formData.id_fasilitator == "00000000-0000-0000-0000-000000000000") {
+        formData.id_fasilitator = null;
+      }
     }
   } catch (error: any) {
     // Tangani error
@@ -378,7 +410,6 @@ const handleUpdateSubmission = async () => {
     useSnackbar().sendSnackbar("Gagal mengubah data", "error");
   }
 };
-
 const findListDaftar = (kode: string) => {
   const data = listPendaftaran.value.find((code) => kode == code.code);
   if (data == undefined) return { code: null, name: "-" };
@@ -388,16 +419,18 @@ const findListDaftar = (kode: string) => {
 
 onMounted(async () => {
   // await Promise.all([
+  await getDetail();
   await handleGetListPendaftaran();
   await handleGetJenisLayanan();
   await handleGetJenisProduk();
-
+  handleGetLembagaPendampingInitial(formData.lokasi_pendamping);
   // handleDetailPengajuan();
-  await loadDataPendamping(formData.lokasi_pendamping);
+  // await loadDataPendamping(formData.lokasi_pendamping);
   await handleGetFasilitator();
-  await getDetail();
   await handleGetPendamping(formData.id_lembaga_pendamping);
+  console.log(submissionDetail);
   if (
+    formData.id_fasilitator != null &&
     !listFasilitasi.value.some((item) => item.id == formData.id_fasilitator)
   ) {
     formData.id_fasilitator = "Lainnya";
@@ -443,9 +476,7 @@ onMounted(async () => {
           <VCol cols="2"> Jenis Pengajuan </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="9">
-            {{
-              findListDaftar(submissionDetail.id_jenis_pengajuan as any).name
-            }}
+            {{ findListDaftar(submissionDetail.id_jenis_pengajuan).name }}
           </VCol>
         </VRow>
         <br />
@@ -607,6 +638,7 @@ onMounted(async () => {
                 item-title="name"
                 :rules="[requiredValidator]"
                 item-value="code"
+                @update:model-value="handleGetJenisProdukFilter"
               />
             </VItemGroup>
             <br />

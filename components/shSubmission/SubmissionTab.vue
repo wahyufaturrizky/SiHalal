@@ -6,12 +6,6 @@ const props = defineProps({
   },
 });
 
-const submissionData = ref({
-  id: "39886986",
-  date: "10/10/2024",
-  type: "Baru",
-});
-
 const responseId = ref("");
 
 const responseMessage = ref("");
@@ -36,7 +30,7 @@ const onSelectFasilitator = (selectedId: string) => {
   }
 };
 
-const getDownloadForm = async (docName: string, propName: any) => {
+const getDownloadForm = async (docName: string) => {
   const result: any = await $api(
     `/self-declare/submission/${submissionId}/file`,
     {
@@ -143,7 +137,9 @@ const { refresh } = await useAsyncData("get-detail-submission", async () => {
         id_pendamping,
       } = data || {};
 
-      submissionDetail.tanggal_buat = formatDate(tgl_daftar);
+      submissionDetail.id_reg = response.data.id_reg;
+      submissionDetail.id_jenis_pengajuan = response.data.jenis_pendaftaran;
+      submissionDetail.tanggal_buat = formatDate(tgl_daftar) as any;
       submissionDetail.nama_pj = nama_pj;
       submissionDetail.nomor_kontak_pj = nomor_kontak_pj;
       formData.tgl_surat_permohonan = formatToISOString(tgl_daftar) as any;
@@ -180,6 +176,10 @@ const listPendaftaran = ref([]);
 const findListDaftar = (kode: string) => {
   const data = listPendaftaran.value.find((code: any) => kode == code.code);
   if (data == undefined) return { code: null, name: "-" };
+  return data;
+};
+const findListFasilitator = (fac_id: string) => {
+  const data = listPendaftaran.value.find((list: any) => fac_id == list.id);
   return data;
 };
 
@@ -287,8 +287,8 @@ onMounted(async () => {
     handleGetJenisLayanan(),
     handleGetJenisProduk(),
     loadDataPendamping(formData.lokasi_pendamping),
-    getDownloadForm("surat-permohonan", "suratPermohonan"),
-    getDownloadForm("surat-pernyataan", "suratPernyataan"),
+    getDownloadForm("surat-permohonan"),
+    getDownloadForm("surat-pernyataan"),
   ]);
 
   const checkResIfUndefined = res.every((item) => {
@@ -311,7 +311,7 @@ onMounted(async () => {
     <VCardText>
       <VRow>
         <VCol cols="3" class="font-weight-bold mb-1">No. ID</VCol>
-        <VCol cols="9">: {{ submissionData.id }}</VCol>
+        <VCol cols="9">: {{ submissionDetail.id_reg }}</VCol>
       </VRow>
       <VRow>
         <VCol cols="3" class="font-weight-bold mb-1">Tanggal</VCol>

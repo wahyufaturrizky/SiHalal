@@ -1,198 +1,200 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
 
 const props = defineProps({
-  onComplete: {
-    type: Function,
-    default: () => { },
-    required: false,
+  isviewonly: {
+    type: Boolean,
   },
-})
+});
 
-const route = useRoute()
-const id = route.params.id
-const idForEdit = ref('')
-const isEdit = ref(false)
-const loading = ref(false)
+const { isviewonly } = props || {};
 
-const addDialog = ref(false)
-const titleDialog = ref('')
+const route = useRoute();
+const id = (route.params as any).id;
+const idForEdit = ref("");
+const isEdit = ref(false);
+const loadingAll = ref(true);
+
+const addDialog = ref(false);
+const titleDialog = ref("");
 
 const formAdd = ref<any>({
-  nama: '',
-  jabatan: '',
-  posisi: '',
-})
+  nama: "",
+  jabatan: "",
+  posisi: "",
+});
 
-const resetForm = () => {
-  formAdd.value = {
-    nama: '',
-    jabatan: '',
-    posisi: '',
-  }
-}
-
-const labelSaveDialog = ref('')
-const editItem = ref<any>({})
-
-const comitmentData = ref(
-  {
-    label: [
-      { title: 'No.', key: 'no', nowrap: true },
-      { title: 'Nama', key: 'nama', nowrap: true },
-      { title: 'Jabatan', key: 'jabatan', nowrap: true },
-      { title: 'Posisi', key: 'posisi', nowrap: true },
-      { title: 'Action', value: 'actionPopOver2', sortable: false, nowrap: true, popOver: true },
-    ],
-    value: [],
-  },
-)
+const comitmentData = ref({
+  label: [
+    { title: "No.", key: "no", nowrap: true },
+    { title: "Nama", key: "nama", nowrap: true },
+    { title: "Jabatan", key: "jabatan", nowrap: true },
+    { title: "Posisi", key: "posisi", nowrap: true },
+    {
+      title: "Action",
+      value: "actionPopOver2",
+      sortable: false,
+      nowrap: true,
+      popOver: true,
+    },
+  ],
+  value: [],
+});
 
 const toggleAdd = () => {
-  addDialog.value = true
-  isEdit.value = false
-  titleDialog.value = 'Tambah Anggota Komitmen'
-}
+  addDialog.value = true;
+  isEdit.value = false;
+  titleDialog.value = "Tambah Anggota Komitmen";
+};
 
 const toggleEdit = (item: any) => {
-  idForEdit.value = item?.id_reg_tim
-  isEdit.value = true
+  idForEdit.value = item?.id_reg_tim;
+  isEdit.value = true;
   formAdd.value = {
     nama: item?.nama,
     jabatan: item?.jabatan,
     posisi: item?.posisi,
-  }
-  addDialog.value = true
-  titleDialog.value = 'Ubah Anggota Komitmen'
-}
+  };
+  addDialog.value = true;
+  titleDialog.value = "Ubah Anggota Komitmen";
+};
 
 const getDetailData: any = async () => {
   try {
-    const response = await $api('/reguler/pelaku-usaha/detail-tab', {
-      method: 'get',
-      params: { id, type: 'tim-manajemen-halal' },
-    })
+    const response = await $api("/reguler/pelaku-usaha/detail-tab", {
+      method: "get",
+      params: { id, type: "tim-manajemen-halal" },
+    });
 
     comitmentData.value = {
       ...comitmentData.value,
-      value: response?.data || []
-    }
+      value: response?.data || [],
+    };
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const toggleDelete = async (item: any) => {
-  const response = await $api('/reguler/pelaku-usaha/delete-komitmen-tanggung-jawab', {
-    method: 'delete',
-    params: { id, id_edit: item?.id_reg_tim },
-    body: {
-      nama: item?.nama,
-      jabatan: item?.jabatan,
-      posisi: item?.posisi,
-    },
-  })
+  const response: any = await $api(
+    "/reguler/pelaku-usaha/delete-komitmen-tanggung-jawab",
+    {
+      method: "delete",
+      params: { id, id_edit: item?.id_reg_tim },
+      body: {
+        nama: item?.nama,
+        jabatan: item?.jabatan,
+        posisi: item?.posisi,
+      },
+    }
+  );
 
   if (response?.code === 2000) {
     formAdd.value = {
-      name: '',
-      jabatan: '',
-      posisi: '',
-    }
-    useSnackbar().sendSnackbar('Sukses menghapus data', 'success')
+      name: "",
+      jabatan: "",
+      posisi: "",
+    };
+    useSnackbar().sendSnackbar("Sukses menghapus data", "success");
+  } else {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  else {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-  await getDetailData()
-}
+  await getDetailData();
+};
 
 const handleAddOrEdit = async () => {
   if (isEdit.value) {
-    const response = await $api('/reguler/pelaku-usaha/edit-komitmen-tanggung-jawab', {
-      method: 'put',
-      params: { id, id_edit: idForEdit.value },
-      body: formAdd.value,
-    })
+    const response = await $api(
+      "/reguler/pelaku-usaha/edit-komitmen-tanggung-jawab",
+      {
+        method: "put",
+        params: { id, id_edit: idForEdit.value },
+        body: formAdd.value,
+      }
+    );
 
     if (response?.code === 2000) {
       formAdd.value = {
-        name: '',
-        jabatan: '',
-        posisi: '',
+        name: "",
+        jabatan: "",
+        posisi: "",
+      };
+      useSnackbar().sendSnackbar("Sukses menambah data", "success");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } else {
+    const response = await $api(
+      "/reguler/pelaku-usaha/add-komitmen-tanggung-jawab",
+      {
+        method: "post",
+        params: { id },
+        body: formAdd.value,
       }
-      useSnackbar().sendSnackbar('Sukses menambah data', 'success')
-    }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
-  }
-  else {
-    const response = await $api('/reguler/pelaku-usaha/add-komitmen-tanggung-jawab', {
-      method: 'post',
-      params: { id },
-      body: formAdd.value,
-    })
+    );
 
     if (response?.code === 2000) {
       formAdd.value = {
-        name: '',
-        jabatan: '',
-        posisi: '',
-      }
-      useSnackbar().sendSnackbar('Sukses menambah data', 'success')
-    }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+        name: "",
+        jabatan: "",
+        posisi: "",
+      };
+      useSnackbar().sendSnackbar("Sukses menambah data", "success");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
   }
-  addDialog.value = false
-  await getDetailData()
-}
+  addDialog.value = false;
+  await getDetailData();
+};
 
 onMounted(async () => {
-  loading.value = true
-  await getDetailData()
-  loading.value = false
-})
+  const res: any = await Promise.all([getDetailData()]);
+
+  const checkResIfUndefined = res.every((item: any) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
+});
 </script>
 
 <template>
-  <div v-if="!loading">
+  <div v-if="!loadingAll">
     <DialogWithAction
       :title="titleDialog"
       :is-open="addDialog"
       :label-save-btn="labelSaveBtn"
-      :toggle="() => addDialog = false"
+      :toggle="() => (addDialog = false)"
       :on-save="handleAddOrEdit"
     >
       <template #content>
         <div>
-          <p class="label-pengajuan">
-            Nama
-          </p>
+          <p class="label-pengajuan">Nama</p>
           <VTextField
             v-model="formAdd.nama"
             class="-mt-10"
             placeholder="isi Nama"
           />
-          <br>
-          <p class="label-pengajuan">
-            Jabatan
-          </p>
+          <br />
+          <p class="label-pengajuan">Jabatan</p>
           <VTextField
             v-model="formAdd.jabatan"
             class="-mt-10"
             placeholder="isi Jabatan"
           />
-          <br>
-          <p class="label-pengajuan">
-            Posisi
-          </p>
+          <br />
+          <p class="label-pengajuan">Posisi</p>
           <VSelect
             v-model="formAdd.posisi"
-            :items="[{ name: 'Ketua', value: 'Ketua' }, { name: 'Anggota', value: 'Anggota' }]"
+            :items="[
+              { name: 'Ketua', value: 'Ketua' },
+              { name: 'Anggota', value: 'Anggota' },
+            ]"
             item-value="value"
             item-title="name"
             density="compact"
@@ -201,6 +203,7 @@ onMounted(async () => {
         </div>
       </template>
     </DialogWithAction>
+
     <TableData
       :on-submit="() => onSubmit()"
       :on-add="toggleAdd"
@@ -210,21 +213,26 @@ onMounted(async () => {
       title="Komitmen dan Tanggung Jawab"
       with-add-button
       with-approve-button
+      :isviewonly="isviewonly"
     />
+  </div>
+
+  <div v-else>
+    <VSkeletonLoader v-for="i in 3" :key="i" type="list-item-two-line" />
   </div>
 </template>
 
-  <style scoped>
-  .text-center {
-    text-align: center;
-  }
-  .bgContent {
-    background-color: #F0E9F1;
-    border-radius: 10px;
-  }
-  .progress-text {
-    font-size: 14px !important;
-    font-weight: 700 !important;
-    line-height: 20px !important;
-  }
-  </style>
+<style scoped>
+.text-center {
+  text-align: center;
+}
+.bgContent {
+  background-color: #f0e9f1;
+  border-radius: 10px;
+}
+.progress-text {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  line-height: 20px !important;
+}
+</style>

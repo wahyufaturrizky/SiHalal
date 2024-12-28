@@ -11,12 +11,13 @@ export default defineEventHandler(async event => {
     })
   }
 
-  const { page, size, startDate, endDate, ketetapan } = (await getQuery(event)) as {
+  const { page, size, startDate, endDate, ketetapan, searchQuery } = (await getQuery(event)) as {
     page: string
     size: string
     startDate: string
     endDate: string
     ketetapan: string
+    searchQuery: string
   }
 
   const params: any = {
@@ -30,6 +31,8 @@ export default defineEventHandler(async event => {
     params['end_date'] = endDate
   if (ketetapan !== '')
     params['status'] = ketetapan
+  if (searchQuery !== '')
+    params['nama_pu'] = searchQuery
 
   // if (status !== "" && status !== "Semua") {
   //   params["status"] = status;

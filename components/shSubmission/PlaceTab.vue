@@ -102,7 +102,7 @@ const tableHeader = [
   { title: "No", key: "index" },
   { title: "Nama", key: "nama" },
   { title: "Alamat", key: "alamat" },
-  { title: "Action", key: "action" },
+  // { title: "Action", key: "action" },
 ];
 
 const addDialog = ref(false);
@@ -180,7 +180,6 @@ const loadPabrik = async (type: string = "FAPAB") => {
       `/self-declare/submission/pabrik/${(route.params as any).id}/list`,
       options
     );
-    console.log("@response", response);
 
     if (type == "FAPAB") {
       itemsPabrik.value = response.data;

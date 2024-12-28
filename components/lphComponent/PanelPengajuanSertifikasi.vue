@@ -1,13 +1,13 @@
 <script setup lang="ts">
 const props = defineProps<{
-  dataPengajuan: object
-}>()
+  dataPengajuan: object;
+}>();
 
-const detail = props?.dataPengajuan
+const detail = props?.dataPengajuan;
 </script>
 
 <template>
-  <div class="d-flex flex-column ga-4">
+  <div v-if="detail" class="d-flex flex-column ga-4">
     <VRow no-gutters>
       <VCol cols="5">
         <div class="d-flex justify-space-between">
@@ -16,7 +16,7 @@ const detail = props?.dataPengajuan
         </div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.tanggal_buat }}
+        {{ (detail as any)?.tanggal_buat }}
       </VCol>
     </VRow>
     <VRow no-gutters>
@@ -27,7 +27,7 @@ const detail = props?.dataPengajuan
         </div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.jenis_usaha }}
+        {{ (detail as any)?.jenis_usaha }}
       </VCol>
     </VRow>
     <VRow no-gutters>
@@ -38,7 +38,7 @@ const detail = props?.dataPengajuan
         </div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.jenis_pendaftaran }}
+        {{ (detail as any)?.jenis_pendaftaran }}
       </VCol>
     </VRow>
     <VRow no-gutters>
@@ -49,7 +49,7 @@ const detail = props?.dataPengajuan
         </div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.jenis_produk }}
+        {{ (detail as any)?.jenis_produk }}
       </VCol>
     </VRow>
     <VRow no-gutters>
@@ -60,7 +60,7 @@ const detail = props?.dataPengajuan
         </div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.nama_pu }}
+        {{ (detail as any)?.nama_pu }}
       </VCol>
     </VRow>
     <VRow no-gutters>
@@ -71,7 +71,7 @@ const detail = props?.dataPengajuan
         </div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.provinsi }}
+        {{ (detail as any)?.provinsi }}
       </VCol>
     </VRow>
   </div>
