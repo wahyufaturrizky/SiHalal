@@ -102,7 +102,7 @@ const tableHeader = [
   { title: "No", key: "index" },
   { title: "Nama", key: "nama" },
   { title: "Alamat", key: "alamat" },
-  { title: "Action", key: "action" },
+  // { title: "Action", key: "action" },
 ];
 
 const addDialog = ref(false);
