@@ -1,36 +1,55 @@
 <script setup lang="ts">
-const unduhan = [
+const unduhan = ref([
   { id: 1, key: "Surat Permohonan", uri: "/#" },
   { id: 2, key: "Surat Pernyataan", uri: "/#" },
   { id: 3, key: "Ikrar", uri: "/#" },
   { id: 4, key: "STTD", uri: "/#" },
   { id: 5, key: "Cek Laporan", uri: "/#" },
   { id: 6, key: "Cek Hasil Pendampingan", uri: "/#" },
-];
+]);
 
-const pendaftaran = [
-  { id: 1, key: "Nomor Daftar", value: "/#" },
-  { id: 2, key: "Tanggal", value: "/#" },
-  { id: 3, key: "Tempat Pendaftaran", value: "/#" },
-  { id: 4, key: "Jenis Pengajuan", value: "/#" },
-  { id: 5, key: "Status", value: "" },
-  { id: 6, key: "Channel Pendaftaran", value: "/#" },
-  { id: 7, key: "Fasilitator", value: "/#" },
-];
+const pendaftaran = ref([
+  { id: 1, key: "Nomor Daftar", value: "/#", api_key: "no_daftar" },
+  { id: 2, key: "Tanggal", value: "/#", api_key: "tgl_daftar" },
+  { id: 3, key: "Tempat Pendaftaran", value: "/#", api_key: "provinsi" },
+  { id: 4, key: "Jenis Pengajuan", value: "/#", api_key: "jenis_daftar" },
+  { id: 5, key: "Status", value: "", api_key: "status" },
+  { id: 6, key: "Channel Pendaftaran", value: "/#", api_key: "channel" },
+  { id: 7, key: "Fasilitator", value: "/#", api_key: "nama_fasilitator" },
+]);
 
-const tracking = [
+const tracking = ref([
   { id: 1, key: "Draft", value: "fachrudin@panganlestari.com" },
   { id: 2, key: "Submitted", value: "fachrudin@panganlestari.com" },
   { id: 3, key: "Verification", value: "Arini HS" },
   { id: 4, key: "Returned", value: "ARINI HS" },
   { id: 5, key: "Submitted", value: "fachrudin@panganlestari.com" },
-];
+]);
 
 function onClickDownload(uri: string) {
   console.log("download file");
 }
 
 const expanded = [0, 1, 2];
+
+const props = defineProps({
+  dataPendaftaran: {
+    type: Object,
+    required: true,
+  },
+});
+
+watch(
+  () => props.dataPendaftaran,
+  async (newData) => {
+    if (newData) {
+      pendaftaran.value.forEach((val) => {
+        val.value = newData[val.api_key] ? newData[val.api_key] : "-";
+      });
+    }
+  },
+  { immediate: true }
+);
 </script>
 <template>
   <VRow>

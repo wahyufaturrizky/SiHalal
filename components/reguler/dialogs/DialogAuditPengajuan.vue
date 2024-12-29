@@ -17,11 +17,14 @@ defineProps({
   },
 })
 
+const emit = defineEmits()
+
+
 const dialog = ref(false)
 
 const confirmAction = () => {
+  emit('submit')
   dialog.value = false
-  alert('Confirmed!')
 }
 </script>
 

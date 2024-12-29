@@ -25,10 +25,20 @@ export default defineEventHandler(async event => {
     size: Number.isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
   }
 
-  if (startDate !== '')
-    params['start_date'] = startDate
-  if (endDate !== '')
-    params['end_date'] = endDate
+  if (startDate !== '') {
+    console.log('masuk1')
+    const dateStart = new Date(startDate)
+    const isoStringStartDate = dateStart.toISOString()
+
+    params['start_date'] = isoStringStartDate.split('.')[0] + 'Z'
+  }
+  if (endDate !== '' && endDate) {
+    console.log('masuk2', endDate)
+    const dateEnd = new Date(endDate)
+    const isoStringEndDate = dateEnd.toISOString()
+
+    params['end_date'] = isoStringEndDate.split('.')[0] + 'Z'
+  }
   if (ketetapan !== '')
     params['status'] = ketetapan
   if (searchQuery !== '')
@@ -37,7 +47,7 @@ export default defineEventHandler(async event => {
   // if (status !== "" && status !== "Semua") {
   //   params["status"] = status;
   // }
-
+  console.log(params, 'ini params')
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/komite/halal-certificate-reguler/self-declare/penetapan`,
     {

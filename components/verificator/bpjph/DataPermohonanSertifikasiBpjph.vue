@@ -2,15 +2,10 @@
 import {
   MasterBadanUsaha,
   type MasterProvince,
-} from "@/server/interface/master.iface";
-import { computed, defineEmits, defineProps, ref } from "vue";
-import { VDataTableServer } from "vuetify/components";
+} from "@/server/interface/master.ifnts";
 
 // Props and Emits
 defineProps({ mode: String });
-
-// State variables
-const isModalOpen = ref(false);
 interface DataItem {
   id: number;
   id_daftar: string;
@@ -75,7 +70,12 @@ const closeModal = () => {
 const searchQuery = ref("");
 
 const handleInput = () => {
-  debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    selectedFilters.value
+  );
 };
 
 const handleCancel = (message: string) => {
@@ -86,8 +86,11 @@ const navigateAction = (id: string) => {
   navigateTo(`/sertifikasi-halal/luar-negeri/verification/${id}`);
 };
 
-const loadItem = async (page, size, keyword) => {
+const loadItem = async (page, size, keyword, filter) => {
   // Temporarily skip API call for dummy data testing
+  if (filter.propinsi != "") {
+    filter.propinsi = filter.propinsi.toUpperCase();
+  }
   try {
     loading.value = true;
 
@@ -97,6 +100,7 @@ const loadItem = async (page, size, keyword) => {
         page,
         size,
         keyword,
+        ...filter,
       },
     });
 
@@ -114,19 +118,19 @@ const debouncedFetch = debounce(loadItem, 500);
 const showFilterMenu = ref(false);
 
 const selectedFilters = ref({
-  fasilitas: "Semua",
-  jenisProduk: "Semua",
-  provinsi: "",
-  lembaga: "Semua",
-  pendamping: "Semua",
-  kabupaten: "Semua",
-  skalaUsaha: "",
-  jenisPengajuan: "",
-  fac: "Semua",
+  // fasilitas: "",
+  // jenisProduk: "",
+  propinsi: "",
+  // lembaga: "",
+  // pendamping: "",
+  // kabupaten: "",
+  skala_usaha: "",
+  jenis_pengajuan: "",
+  // fac: "",
 });
 
-const applyFilters = () => {
-  loadItem(
+const applyFilters = async () => {
+  await loadItem(
     page.value,
     itemPerPage.value,
     searchQuery.value,
@@ -218,7 +222,16 @@ const getProvinsi = async () => {
   const masterSkalaUsaha: MasterProvince[] = await $api("/master/province", {
     method: "get",
   });
-  filterProvince.value = [{ code: "", name: "Semua" }, ...masterSkalaUsaha];
+  filterProvince.value = [
+    { code: "", name: "Semua" },
+    ...masterSkalaUsaha.map((skalaUsaha) => {
+      return {
+        code: skalaUsaha.name,
+        name: skalaUsaha.name,
+        name_eng: skalaUsaha.name_eng,
+      };
+    }),
+  ];
 };
 const dialogVisible = ref(false);
 const emits = defineEmits(["loadData"]);
@@ -227,7 +240,7 @@ const selectVerifikasiItem = async (item) => {
     const response = await $api("/reguler/verifikator/take", {
       method: "post",
       body: {
-        id_reg: [item],
+        id_reg: item,
       },
     });
     if (response.code != 2000) {
@@ -235,11 +248,32 @@ const selectVerifikasiItem = async (item) => {
       return;
     }
     emits("loadData");
-    // await loadItem(page.value, itemPerPage.value, searchQuery.value);
+
     dialogVisible.value = false;
     useSnackbar().sendSnackbar("Berhasil menyimpan data", "success");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada kesalahan", "error");
+  } finally {
+    selectedItems.value = [];
+    page.value = 1;
+    searchQuery.value = "";
+    selectedFilters.value = {
+      // fasilitas: "",
+      // jenisProduk: "",
+      propinsi: "",
+      // lembaga: "",
+      // pendamping: "",
+      // kabupaten: "",
+      skala_usaha: "",
+      jenis_pengajuan: "",
+      // fac: "",
+    };
+    await loadItem(
+      page.value,
+      itemPerPage.value,
+      searchQuery.value,
+      selectedFilters.value
+    );
   }
 };
 
@@ -280,7 +314,7 @@ onMounted(async () => {
               <VBtn
                 :disabled="selectedItems.length === 0"
                 :text="buttonText"
-                @click="() => console.log(selectedItems)"
+                @click="() => selectVerifikasiItem(selectedItems)"
               />
             </VCol>
           </VRow>
@@ -312,7 +346,7 @@ onMounted(async () => {
                 </template>
                 <VCard class="pa-3" width="300">
                   <VSelect
-                    v-model="selectedFilters.jenisPengajuan"
+                    v-model="selectedFilters.jenis_pengajuan"
                     label="Jenis Pengajuan"
                     item-value="value"
                     item-title="name"
@@ -320,7 +354,7 @@ onMounted(async () => {
                     class="mt-3"
                   />
                   <VSelect
-                    v-model="selectedFilters.skalaUsaha"
+                    v-model="selectedFilters.skala_usaha"
                     label="Skala Usaha"
                     item-value="code"
                     item-title="name"
@@ -328,7 +362,7 @@ onMounted(async () => {
                     class="mt-3"
                   />
                   <VSelect
-                    v-model="selectedFilters.provinsi"
+                    v-model="selectedFilters.propinsi"
                     label="Provinsi"
                     item-value="code"
                     item-title="name"
@@ -373,7 +407,9 @@ onMounted(async () => {
               :loading="loading"
               :items-length="totalItems"
               loading-text="Loading..."
-              @update:options="loadItem(page, itemPerPage, searchQuery)"
+              @update:options="
+                loadItem(page, itemPerPage, searchQuery, selectedFilters)
+              "
             >
               <template #item.index="{ index }">
                 {{ index + 1 + (page - 1) * itemPerPage }}
@@ -396,14 +432,14 @@ onMounted(async () => {
                     <VIcon
                       icon="ri-arrow-right-line"
                       color="primary"
-                      @click="selectVerifikasiItem(item.id_reg)"
+                      @click="selectVerifikasiItem([item.id_reg])"
                     />
                   </IconBtn>
                   <!-- Right arrow icon for action -->
                 </div>
               </template>
               <template #item.pilih="{ item }">
-                <VCheckbox v-model="selectedItems" :value="item" />
+                <VCheckbox v-model="selectedItems" :value="item.id_reg" />
               </template>
 
               <template #item.jenis_usaha_jumlah="{ item }">

@@ -129,28 +129,18 @@ const onSearchFasilitator = async () => {
       },
     });
 
-    console.log(
-      response.message === "Kode Fasilitasi dapat digunakan",
-      response.message
-    );
     if (response.message === "Kode Fasilitasi dapat digunakan") {
       isKodeFound.value = true;
       isKodeNotFound.value = false;
       responseMessage.value = "";
       responseId.value = response.data[0].id;
       facName.value = response.data[0].name;
-      console.log("ressponde id", response.data[0].id);
-      console.log("responseId ", responseId);
-      // formData.id_fasilitator = responseId.value;
-      console.log("id fasilitator ", formData.id_fasilitator);
     } else {
       responseMessage.value = response.message;
       isKodeFound.value = false;
       isKodeNotFound.value = true;
     }
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 
 const responseType = computed(() => {

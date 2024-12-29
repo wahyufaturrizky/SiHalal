@@ -190,14 +190,19 @@ const reset = () => {
               class="pa-3"
               width="300"
             >
-              <VSelect
-                v-model="fasilitasi"
+              <VAutocomplete
+                v-model="fasilitas"
                 label="Fasilitas"
                 placeholder="Pilih Fasilitas"
-                :items="[{ id: '', name: 'Pilih Fasilitas' }, ...filterFasilitasi]"
+                :items="filterFasilitasi"
                 item-title="name"
                 item-value="id"
+                :loading="loading"
+                :search="onSearch"
+                @update:search="onSearch"
+                @scroll="onScroll"
                 class="mt-3"
+                density="compact"
               />
 
               <VSelect

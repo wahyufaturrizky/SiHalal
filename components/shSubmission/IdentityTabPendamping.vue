@@ -209,7 +209,7 @@ onMounted(async () => {
     </VCardTitle>
     <VCardText>
       <div class="mb-3">
-        <div class="font-weight-bold mb-1">Jenis Badan Usaha</div>
+        <div class="font-weight-bold mb-1">Nama Penanggung Jawab</div>
         <VTextField
           v-model="guarantorData.nama_pj"
           density="compact"
@@ -376,15 +376,16 @@ onMounted(async () => {
 :deep(.v-data-table.legal-aspect-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }
