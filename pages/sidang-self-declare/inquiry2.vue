@@ -146,7 +146,7 @@ const getDistrict = async (item: string) => {
   });
   kabupatenItems.value = [{ code: "", name: "Semua" }, ...response];
 };
-const permohonanItems = [{ name: "Semua", code: "" }];
+const permohonanItems = ref([{ name: "Semua", code: "" }]);
 
 const selectedFilterStatusPermhonan = ref("");
 
@@ -263,6 +263,14 @@ onMounted(async () => {
       name_eng: "All",
     },
     ...(await getCommonCode(MasterRef.STOFF)),
+  ];
+  permohonanItems.value = [
+    {
+      code: "",
+      name: "Semua",
+      name_eng: "All",
+    },
+    ...(await getCommonCode(MasterRef.JNDAF)),
   ];
   await getFasilitator(pageFasilitator.value);
 
