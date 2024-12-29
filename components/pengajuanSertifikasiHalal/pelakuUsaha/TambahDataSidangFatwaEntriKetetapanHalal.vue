@@ -7,6 +7,7 @@ const route = useRoute();
 
 const selfDeclareId = (route.params as any).id;
 const isFormError = ref(false);
+const listPenetapan = ref([]);
 
 const emit = defineEmits(["refresh"]);
 
@@ -130,12 +131,47 @@ const addDataPenyeliaHalal = async () => {
   }
 };
 
+const loadItemPenetapan = async () => {
+  try {
+    const response: any = await $api("/master/penetapan", {
+      method: "get",
+    });
+
+    if (response.length) {
+      listPenetapan.value = response;
+
+      return response;
+    } else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
 const checkIsFieldEMpty = (data: any) => {
   return Object.keys(data)?.find((key: any) => !data[key]);
 };
 
 const { mdAndUp } = useDisplay();
 const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
+
+onMounted(async () => {
+  const res = await Promise.all([loadItemPenetapan()]);
+
+  const checkResIfUndefined = res.every((item: any) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
+});
 </script>
 
 <template>
@@ -161,7 +197,6 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               <VTextField
                 v-model="formData.no_penetapan"
                 placeholder="Isi Nomor Penetapan"
-                type="number"
               />
             </VItemGroup>
           </VCol>
@@ -186,7 +221,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               <VLabel>Penetapan</VLabel>
               <VSelect
                 v-model="formData.penetapan"
-                :items="[]"
+                :items="listPenetapan"
                 item-title="name"
                 item-value="code"
                 placeholder="Pilih Jenis Dokumen"
