@@ -626,7 +626,7 @@
                   </template>
                 </VBtn>
               </InfoRowV2>
-              <InfoRowV2
+              <!-- <InfoRowV2
                 class="d-flex align-center"
                 name="SJPH"
                 :style="{ fontWeight: '600' }"
@@ -665,7 +665,7 @@
                     <VIcon icon="fa-download" />
                   </template>
                 </VBtn>
-              </InfoRowV2>
+              </InfoRowV2> -->
               <InfoRowV2
                 class="d-flex align-center"
                 name="STTD"
