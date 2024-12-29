@@ -97,7 +97,13 @@ const listPenyelia = ref<any>({
     },
     { title: "Action", key: "publication", sortable: false, nowrap: true },
   ],
-  value: props?.list_penyelia || [],
+  value: props?.list_penyelia.map(
+    i => ({
+      ...i,
+      agama: 'Islam', // HARDCODE ISLAM
+      tgl_penyelia_halal : i.no_sertifikat
+    })
+  ) || [],
 });
 
 // const factoryModel = ref({
@@ -408,7 +414,7 @@ const handleAddOrEdit = async () => {
       url = "/self-declare/business-actor/supervisor/create";
       body = {
         ...body,
-        id_penyelia: ["90b107ef-8c16-41e7-84ba-25339bf244ce"],
+        id_penyelia: listPenyelia.value.value.filter(item => item.checked).map(i => i.id_penyelia),
       };
       method = "post";
       break;
