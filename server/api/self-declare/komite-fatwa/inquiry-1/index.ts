@@ -63,7 +63,7 @@ export default defineEventHandler(async (event) => {
   if (wilayah !== "") params["wilayah"] = wilayah;
   if (kabupaten !== "") params["kabupaten"] = kabupaten;
   if (fasilitas !== "") params["fasilitas"] = fasilitas;
-  if (namaFasilitator !== "") params["nama_fasilitator"] = namaFasilitator;
+  if (namaFasilitator !== "") params["fasilitator"] = namaFasilitator;
 
   console.log(params);
   const data = await $fetch<any>(
