@@ -36,7 +36,7 @@ const selectedFilterLembaga = ref("");
 const selectedFilterPendamping = ref("");
 const filterLembaga = ref([]);
 const filterFasilitasi = ref([]);
-const filterPendamping = ref([]);
+const filterPendamping = ref<any[]>([]);
 const filterProduk = ref([]);
 const searchQuery = ref("");
 const showFilterMenu = ref(false);
@@ -116,13 +116,6 @@ const loadFilter = async () => {
       }
     );
 
-    const response3: any = await $api(
-      "/self-declare/komite-fatwa/proses-sidang/filter-pendamping",
-      {
-        method: "get",
-      }
-    );
-
     const response4: any = await $api(
       "/self-declare/komite-fatwa/proses-sidang/filter-produk",
       {
@@ -132,7 +125,6 @@ const loadFilter = async () => {
 
     filterFasilitasi.value = response1.data || [];
     filterLembaga.value = response2.data || [];
-    filterPendamping.value = response3.data || [];
     filterProduk.value = response4.data || [];
     loading.value = false;
     console.log(response1.data, "ini response filter fasilitasi");
@@ -142,6 +134,60 @@ const loadFilter = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loading.value = false;
   }
+};
+const loadPendamping = async (page, item, name = "") => {
+  try {
+    loadingPendamping.value = true;
+    const response: any = await $api(
+      "/self-declare/komite-fatwa/proses-sidang/filter-pendamping",
+      {
+        method: "get",
+        params: {
+          page,
+          item,
+          name,
+        },
+      }
+    );
+    console.log("response pendamping ", response);
+    if (response.code == 2000) {
+      if (page === 1) {
+        filterPendamping.value = response.data || [];
+      } else {
+        filterPendamping.value = [...filterPendamping.value, ...response.data];
+      }
+      totalItemsPendamping.value = response.total_item || 0;
+      return;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } finally {
+    loadingPendamping.value = false;
+  }
+};
+const loadMorePendamping = () => {
+  if (
+    filterPendamping.value.length < totalItemsPendamping.value &&
+    !loadingPendamping.value
+  ) {
+    pagePendamping.value += 1;
+    loadPendamping(pagePendamping.value, itemPerPagePendamping.value, "");
+  }
+};
+const totalItemsPendamping = ref(0);
+const searchPendamping = ref("");
+const pagePendamping = ref(1);
+const itemPerPagePendamping = ref(0);
+const loadingPendamping = ref(false);
+const debouncedFetchPendamping = debounce(loadPendamping, 500);
+
+const handleInputPendamping = (val: any) => {
+  pagePendamping.value = 1;
+  debouncedFetchPendamping(
+    pagePendamping.value,
+    itemPerPagePendamping.value,
+    val.target.value
+  );
 };
 
 onMounted(async () => {
@@ -155,6 +201,7 @@ onMounted(async () => {
     selectedFilterPendamping.value,
     searchQuery.value
   );
+  await loadPendamping(pagePendamping.value, itemPerPagePendamping.value, "");
   await loadFilter();
   loading.value = false;
 });
@@ -242,15 +289,7 @@ const findProdukByCode = (code) => {
                       item-title="name"
                       item-value="code"
                       class="mt-3"
-                    >
-                      <template v-slot:default-item="{ props, item }">
-                        <v-list-item v-bind="props" class="text-truncate">
-                          <v-list-item-title class="text-truncate"
-                            >ASD</v-list-item-title
-                          >
-                        </v-list-item>
-                      </template></VSelect
-                    >
+                    />
                     <VLabel><b>Fasilitas</b></VLabel>
                     <VSelect
                       v-model="selectedFilterFasilitasi"
@@ -276,17 +315,27 @@ const findProdukByCode = (code) => {
                       class="mt-3"
                     />
                     <VLabel><b>Pendamping</b></VLabel>
-                    <VSelect
+                    <VAutocomplete
+                      :items="filterPendamping"
                       v-model="selectedFilterPendamping"
-                      placeholder="Pilih Pendamping"
-                      :items="[
-                        { id: '', name: 'Pilih Pendamping' },
-                        ...filterPendamping,
-                      ]"
-                      item-title="name"
                       item-value="id"
-                      class="mt-3"
-                    />
+                      item-title="name"
+                      density="compact"
+                      placeholder="Pilih atau Cari Pendamping"
+                      :loading="loadingPendamping"
+                      @input="handleInputPendamping"
+                    >
+                      <template #item="{ props, item }">
+                        <VListItem
+                          v-bind="props"
+                          :title="(item.raw as any).name"
+                        >
+                        </VListItem>
+                      </template>
+                      <template #append-item>
+                        <div v-intersect="loadMorePendamping" />
+                      </template>
+                    </VAutocomplete>
                   </VCardText>
                   <VCardText>
                     <VBtn
@@ -334,6 +383,9 @@ const findProdukByCode = (code) => {
                 </template>
                 <template #item.jenis_produk="{ item }">
                   {{ findProdukByCode(item.jenis_produk) }}
+                </template>
+                <template #item.tgl_daftar="{ item }">
+                  {{ formatToISOString(item.tgl_daftar) }}
                 </template>
               </VDataTableServer>
             </VCol>
