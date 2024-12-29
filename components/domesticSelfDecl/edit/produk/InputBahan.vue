@@ -33,7 +33,6 @@ const handleListIngredient = async () => {
 
     if (response.code === 2000) {
       listBahan.value = response.data ? response.data : [];
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
       loadingListIngredient.value = false;
       return response;
     } else {
