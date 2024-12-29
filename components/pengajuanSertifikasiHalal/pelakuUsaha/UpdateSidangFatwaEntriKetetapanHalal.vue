@@ -14,8 +14,6 @@ const props = defineProps({
   },
 });
 
-const { listagama } = props || {};
-
 const addDialog = ref(false);
 const loadingAdd = ref(false);
 
