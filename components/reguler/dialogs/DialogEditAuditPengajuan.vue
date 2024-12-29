@@ -27,7 +27,10 @@ const props = defineProps({
 
 const dialog = ref(false)
 
+const emit = defineEmits()
+
 const confirmAction = () => {
+  emit('submit')
   dialog.value = false
 }
 </script>
