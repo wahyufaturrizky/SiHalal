@@ -79,9 +79,9 @@ const getChipColor = (status: string) => {
 const debouncedFetch = debounce(loadItem, 500)
 const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
 
-onMounted(
-  await loadItem(1, size.value)
-)
+// onMounted(
+//   await loadItem(1, size.value)
+// )
 </script>
 
 <template>
