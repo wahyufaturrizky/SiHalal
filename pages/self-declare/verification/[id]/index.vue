@@ -66,7 +66,6 @@ const formatDate = (date: string): string => {
 };
 
 const showTimeline = ref(true);
-const showPengajuan = ref(true);
 const showDetail = ref(true);
 const loadingDibatalkan = ref(false);
 const loadingBahan = ref(false);
@@ -390,7 +389,7 @@ const loadItemBahanById = async ({
     );
 
     if (response.code === 2000) {
-      // listBahan.value = response.data || [];
+      listBahan.value = response.data || [];
       totalItemsBahan.value = response.total || 0;
       loadingBahan.value = false;
       return response;
@@ -476,7 +475,7 @@ const loadItemById = async () => {
         },
       ];
 
-      listBahan.value = bahan || [];
+      // listBahan.value = bahan || [];
 
       itemsPabrik.value = pabrik || [];
       itemsOutlet.value = outlet || [];
@@ -750,16 +749,16 @@ const bahanTableHeader = [
 const outletTableHeader = [
   { title: "No", key: "no" },
   // { title: "Jenis Bahan", key: "jenis_outlet" },
-  { title: "Nama Bahan", key: "nama_outlet" },
-  { title: "Alamat", key: "alamat_outlet" },
-  // { title: "Status", key: "status_milik" },
+  { title: "Nama Bahan", key: "nama" },
+  { title: "Alamat", key: "alamat" },
+  { title: "Status", key: "status_milik" },
   // { title: "Action", key: "action" },
 ];
 
 const pabrikTableHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "nama_pabrik" },
-  { title: "Alamat", key: "alamat_pabrik" },
+  { title: "Nama", key: "nama" },
+  { title: "Alamat", key: "alamat" },
   { title: "Status", key: "status_milik" },
   // { title: "Action", key: "action" },
 ];
@@ -1464,8 +1463,13 @@ const onSelectFasilitator = (selectedId: string) => {
                 <template #item.no="{ index }">
                   {{ index + 1 + (pageBahan - 1) * itemPerPageBahan }}
                 </template>
-                <template #item.tanggal_berlaku="{ item }">
-                  {{ formatDate((item as any).tanggal_berlaku) }}
+                <template #item.jenis_bahan="{ item }">
+                  {{
+                    (item as any).jenis_bahan.replace(
+                      /(uncertified|certified)\|/,
+                      ""
+                    )
+                  }}
                 </template>
                 <template #item.action="{ item }">
                   <div class="d-flex gap-1">
@@ -1530,6 +1534,9 @@ const onSelectFasilitator = (selectedId: string) => {
                   {{
                     index + 1 + (pageTableProduk - 1) * itemPerPageTableProduk
                   }}
+                </template>
+                <template #item.verified="{ item }">
+                  {{ (item as any).verified ? "Sudah" : "Belum" }}
                 </template>
                 <template #item.action="{ item }">
                   <div class="d-flex gap-1">
