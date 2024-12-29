@@ -28,8 +28,11 @@ const tabList = ref([
 
 const isBahanCompleted = ref(false)
 const bahanComplete = isComplete => {
-  console.log("BAHAN UDAH COMPLETE")
-  isBahanCompleted.value = true
+  isBahanCompleted.value = isComplete
+}
+
+const bahanFailed = missing => {
+  useSnackbar().sendSnackbar(`Jenis bahan berikut belum diinput : ${missing.join(',')} Lain - lain. Untuk jenis bahan lain - lain opsion`, 'error')
 }
 
 const getListLegal = async () => {
@@ -208,7 +211,7 @@ onMounted(async () => {
             </div>
           </div>
           <div v-if="activeTab === 2">
-            <Bahan :isviewonly="isViewOnly" @complete="bahanComplete"/>
+            <Bahan :isviewonly="isViewOnly" @complete="bahanComplete" @failed="bahanFailed"/>
           </div>
           <div v-if="activeTab === 3">
             <div v-if="!approveRequirements">

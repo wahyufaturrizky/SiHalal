@@ -570,7 +570,6 @@ const deleteProduct = async (productId: string) => {
 }
 
 const getListIngredients = async () => {
-  console.log('MASUK SINI GA ')
   try {
     const response: any = await $api(
       '/self-declare/business-actor/ingredient/list',
@@ -590,8 +589,12 @@ const getListIngredients = async () => {
 
       const jenisBahan = response.data?.map(i => i.jenis_bahan)
 
-      if (['Bahan', 'Cleaning Agent', 'Kemasan'].every(item => jenisBahan.includes(item)))
+      if (['Bahan', 'Cleaning Agent', 'Kemasan'].every(item => jenisBahan.includes(item))){
         emit('complete', true)
+      }else {
+        const missing = ['Bahan', 'Cleaning Agent', 'Kemasan'].filter(item => !jenisBahan.includes(item))
+        emit('failed', missing)
+      }
 
       reRender.value = !reRender.value
     }
