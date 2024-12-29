@@ -22,7 +22,6 @@ const loadItemById = async () => {
         method: "get",
       }
     );
-    console.log("@response", response);
 
     if (response.code === 2000) {
       detailData.value = response.data;
