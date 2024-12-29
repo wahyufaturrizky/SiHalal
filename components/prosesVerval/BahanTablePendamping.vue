@@ -76,6 +76,7 @@ watch(
             <VList>
               <ModalBahanPendampingVerval
                 :modal-type="modalTypeEnum.EDIT"
+                :id-bahan="item.id"
               ></ModalBahanPendampingVerval>
               <VListItem style="color: red" prepend-icon="fa-trash"
                 >Hapus</VListItem

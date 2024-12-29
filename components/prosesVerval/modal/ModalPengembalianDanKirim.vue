@@ -7,9 +7,58 @@ const props = defineProps({
     required: true,
   },
 });
+
+const notesPengembalian = ref();
+const route = useRoute();
+
+const isActive = ref(false);
+
+const vervalReturn = async () => {
+  try {
+    const response = await $api(
+      `/self-declare/proses-verval/${route.params?.id}/verval-return`,
+      {
+        method: "post",
+        body: {
+          notes: notesPengembalian.value,
+        },
+      }
+    );
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      return;
+    }
+    isActive.value = false;
+    useSnackbar().sendSnackbar("Kembalikan data sukses", "success");
+  } catch (error) {
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+  }
+};
+
+const vervalSend = async () => {
+  try {
+    const response = await $api(
+      `/self-declare/proses-verval/${route.params?.id}/verval-send`,
+      {
+        method: "post",
+        body: {
+          notes: "",
+        },
+      }
+    );
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("Gagal Kirim Data", "error");
+      return;
+    }
+    isActive.value = false;
+    useSnackbar().sendSnackbar("Kirim data sukses", "success");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Gagal Kirim Data", "error");
+  }
+};
 </script>
 <template>
-  <VDialog max-width="50svw">
+  <VDialog max-width="50svw" v-model="isActive">
     <template #activator="{ props: openModal }">
       <VBtn
         v-if="modalType === modalTypeEnum.KEMBALI"
@@ -53,6 +102,7 @@ const props = defineProps({
             </p>
             <VTextarea
               placeholder="Isi Catatan Pengembalian (Opsional)"
+              v-model="notesPengembalian"
             ></VTextarea>
           </VItemGroup>
           <VItemGroup v-if="modalType === modalTypeEnum.KIRIM">
@@ -66,10 +116,16 @@ const props = defineProps({
             <VBtn @click="isActive.value = false" variant="outlined"
               >Batal</VBtn
             >
-            <VBtn variant="flat" v-if="modalType === modalTypeEnum.KIRIM"
+            <VBtn
+              @click="vervalSend"
+              variant="flat"
+              v-if="modalType === modalTypeEnum.KIRIM"
               >Kirim</VBtn
             >
-            <VBtn variant="flat" v-if="modalType === modalTypeEnum.KEMBALI"
+            <VBtn
+              variant="flat"
+              @click="vervalReturn"
+              v-if="modalType === modalTypeEnum.KEMBALI"
               >Kembalikan</VBtn
             >
           </div>

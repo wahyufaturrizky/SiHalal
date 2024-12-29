@@ -9,6 +9,8 @@ const props = defineProps({
   },
 });
 
+const isVisible = ref(false);
+
 const form = ref({
   kriteria: null,
   pertanyaan: null,
@@ -122,6 +124,7 @@ const insertProduk = async () => {
     }
     emit("emit-add", true);
     useSnackbar().sendSnackbar("Berhasil menambahkan produk", "success");
+    isVisible.value = false;
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal menambahkan produk", "error");
   }
@@ -139,7 +142,7 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <VDialog>
+  <VDialog v-model="isVisible">
     <template #activator="{ props: openModal }">
       <VBtn
         v-if="modalType === modalTypeEnum.ADD"
