@@ -61,30 +61,22 @@ const uploadDocument = async (file: any) => {
   }
 };
 
-const props = defineProps({
-  listagama: {
-    type: Array,
-  },
-});
-
 const addDialog = ref(false);
 const loadingAdd = ref(false);
 
 const formData = ref({
   no_penetapan: "",
   penetapan: "",
-  no_sertifikat: "",
-  tgl_pemohon: "",
-  file: null,
+  tgl_penetapan: "",
+  dokumen: null,
 });
 
 const resetForm = () => {
   formData.value = {
     no_penetapan: "",
     penetapan: "",
-    no_sertifikat: "",
-    tgl_pemohon: "",
-    file: null,
+    tgl_penetapan: "",
+    dokumen: null,
   };
 };
 
@@ -92,9 +84,9 @@ const addDataPenyeliaHalal = async () => {
   try {
     loadingAdd.value = true;
 
-    const { file } = formData.value;
+    const { dokumen } = formData.value;
 
-    const fileSpph = await uploadDocument(file);
+    const fileSpph = await uploadDocument(dokumen);
     if (fileSpph.code !== 2000) {
       return;
     }
@@ -105,7 +97,7 @@ const addDataPenyeliaHalal = async () => {
         method: "put",
         body: {
           ...formData.value,
-          file: fileSpph.data.file_url,
+          dokumen: fileSpph.data.file_url,
         },
       }
     );
@@ -150,11 +142,7 @@ const loadItemPenetapan = async () => {
 };
 
 const checkIsFieldEMpty = (data: any) => {
-  return Object.keys(data)?.find((key: any) => {
-    if (key !== "no_sertifikat") {
-      return !data[key];
-    }
-  });
+  return Object.keys(data)?.find((key: any) => !data[key]);
 };
 
 const { mdAndUp } = useDisplay();
@@ -208,7 +196,7 @@ onMounted(async () => {
             <VItemGroup>
               <VLabel>Tanggal Surat Pemohon</VLabel>
               <VTextField
-                v-model="formData.tgl_pemohon"
+                v-model="formData.tgl_penetapan"
                 placeholder="Isi Tanggal Sertifikat"
                 type="date"
               />
@@ -240,7 +228,7 @@ onMounted(async () => {
               </VCol>
               <VCol cols="4">
                 <HalalFileInput
-                  :modelValue="formData.file"
+                  :modelValue="formData.dokumen"
                   :rules="[
                       requiredValidator,
                       fileExtensionValidator,
@@ -253,7 +241,7 @@ onMounted(async () => {
                         }
                       },
                     ]"
-                  @update:modelValue="formData.file = $event"
+                  @update:modelValue="formData.dokumen = $event"
                 />
               </VCol>
             </VRow>
