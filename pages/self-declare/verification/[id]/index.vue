@@ -200,8 +200,8 @@ const loadItemPabrik = async (
     );
 
     if (response.code === 2000) {
-      itemsPabrik.value = response.data || [];
-      totalItemsPabrik.value = response.total_item || 0;
+      // itemsPabrik.value = response.data || [];
+      // totalItemsPabrik.value = response.total_item || 0;
       loadingPabrik.value = false;
       return response;
     } else {
@@ -239,8 +239,8 @@ const loadItemOutlet = async (
     console.log("@response", response);
 
     if (response.code === 2000) {
-      itemsOutlet.value = response.data || [];
-      totalItemsOutlet.value = response.total_item || 0;
+      // itemsOutlet.value = response.data || [];
+      // totalItemsOutlet.value = response.total_item || 0;
       loadingOutlet.value = false;
       return response;
     } else {
@@ -478,7 +478,10 @@ const loadItemById = async () => {
       // listBahan.value = bahan || [];
 
       itemsPabrik.value = pabrik || [];
+      totalItemsPabrik.value = pabrik.length || 0;
+
       itemsOutlet.value = outlet || [];
+      totalItemsOutlet.value = outlet.length || 0;
 
       jenisBadanUsahaPenanggungJawab.value = jenis_badan_usaha;
       namaPenanggungJawab.value = nama_pj;
@@ -749,16 +752,16 @@ const bahanTableHeader = [
 const outletTableHeader = [
   { title: "No", key: "no" },
   // { title: "Jenis Bahan", key: "jenis_outlet" },
-  { title: "Nama Bahan", key: "nama" },
-  { title: "Alamat", key: "alamat" },
+  { title: "Nama Bahan", key: "nama_outlet" },
+  { title: "Alamat", key: "alamat_outlet" },
   { title: "Status", key: "status_milik" },
   // { title: "Action", key: "action" },
 ];
 
 const pabrikTableHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "nama" },
-  { title: "Alamat", key: "alamat" },
+  { title: "Nama", key: "nama_pabrik" },
+  { title: "Alamat", key: "alamat_pabrik" },
   { title: "Status", key: "status_milik" },
   // { title: "Action", key: "action" },
 ];
