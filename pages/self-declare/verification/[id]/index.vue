@@ -1364,6 +1364,7 @@ const onSelectFasilitator = (selectedId: string) => {
                       <VRow align="center" class="mb-2">
                         <VCol cols="5.5">
                           <VSelect
+                            disabled
                             v-model="formData.id_fasilitator"
                             density="compact"
                             :items="listFasilitasi"
@@ -1387,29 +1388,28 @@ const onSelectFasilitator = (selectedId: string) => {
                       </VAlert>
                     </VCol>
 
-                    <VRow>
-                      <VCol v-if="isFasilitator" cols="12">
-                        <VTextField
-                          v-model="querySearch"
-                          placeholder="Masukan Kode Fasilitasi"
-                          append-inner-icon="mdi-magnify"
-                          density="compact"
-                          :rules="[requiredValidator]"
-                          @input="onSearchFasilitator"
-                        />
-                      </VCol>
-                    </VRow>
-                    <VRow>
-                      <VCol v-if="isFasilitator" cols="12">
-                        <VTextField
-                          v-model="facName"
-                          placeholder="nama Fasilitator"
-                          density="compact"
-                          readonly
-                        />
-                      </VCol>
-                    </VRow>
-                    <div v-if="isFasilitator">
+                    <VCol v-if="isFasilitator" cols="6">
+                      <VTextField
+                        v-model="querySearch"
+                        disabled
+                        placeholder="Masukan Kode Fasilitasi"
+                        append-inner-icon="mdi-magnify"
+                        density="compact"
+                        :rules="[requiredValidator]"
+                        @input="onSearchFasilitator"
+                      />
+                    </VCol>
+
+                    <VCol v-if="isFasilitator" cols="6">
+                      <VTextField
+                        disabled
+                        v-model="facName"
+                        placeholder="nama Fasilitator"
+                        density="compact"
+                      />
+                    </VCol>
+
+                    <VCol cols="12" v-if="isFasilitator">
                       <VAlert
                         v-if="isKodeNotFound"
                         :type="responseType"
@@ -1452,7 +1452,7 @@ const onSelectFasilitator = (selectedId: string) => {
                         halal dan mengirimkan pengajuan untuk memperoleh
                         fasilitasi sertifikat halal.
                       </VAlert>
-                    </div>
+                    </VCol>
 
                     <VDivider class="mt-2" />
                     <!-- Nomor Surat Permohonan & Tanggal Surat Pemohon -->
@@ -1540,6 +1540,7 @@ const onSelectFasilitator = (selectedId: string) => {
                         required
                         v-model="dataFormPengajuan.lokasiPendamping"
                         @update:model-value="loadDataPendamping"
+                        disabled
                       />
                     </VCol>
 
@@ -1552,6 +1553,7 @@ const onSelectFasilitator = (selectedId: string) => {
                         required
                         v-model="dataFormPengajuan.lembagaPendamping"
                         @update:model-value="handleGetPendamping"
+                        disabled
                       />
                     </VCol>
 
@@ -1565,6 +1567,7 @@ const onSelectFasilitator = (selectedId: string) => {
                         v-model="dataFormPengajuan.pendamping"
                         item-title="name"
                         item-value="id"
+                        disabled
                       />
                     </VCol>
                   </VRow>
