@@ -16,6 +16,8 @@ const props = defineProps({
   },
 });
 
+const isVisible = ref(false);
+
 const emit = defineEmits(["emit-add"]);
 
 const dataBahanList = ref([]);
@@ -24,6 +26,7 @@ const form = ref({
   nama_bahan: null,
   diragukan: null,
   temuan: null,
+  keterangan: null,
 });
 
 const refVForm = ref<VForm>();
@@ -95,29 +98,77 @@ const insertBahan = async () => {
     emit("emit-add", true);
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal menambahkan bahan", "error");
+  } finally {
+    isVisible.value = false;
   }
-  // finally {
-  //   submitAddBahanButton.value = false;
-  //   modalAddBahan.value = false;
-  // }
+};
+
+const editBahan = async () => {
+  try {
+    const response = await $api(
+      `/self-declare/proses-verval/${route.params?.id}/ingredient-edit`,
+      {
+        method: "post",
+        body: {
+          status: form.value.diragukan,
+          notes: form.value.keterangan,
+        },
+      }
+    );
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("Gagal merubah bahan", "error");
+      return;
+    }
+    useSnackbar().sendSnackbar("Berhasil merubah bahan", "success");
+    emit("emit-add", true);
+  } catch (error) {
+    useSnackbar().sendSnackbar("Gagal merubah bahan", "error");
+  } finally {
+    isVisible.value = false;
+  }
+};
+
+const getDetailBahan = async () => {
+  try {
+    const response = await $api(
+      `/self-declare/proses-verval/${route.params?.id}/ingredient-detail/${props.idBahan}`,
+      {
+        method: "get",
+      }
+    );
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      return;
+    }
+
+    form.value.id_bahan = response.data?.id;
+    form.value.nama_bahan = response.data?.nama_bahan;
+    form.value.diragukan = response.data?.diragukan;
+    form.value.temuan = response.data?.temuan;
+    form.value.keterangan = response.data?.keterangan;
+  } catch (error) {
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+  }
 };
 
 const onOpenModal = async () => {
   await getIngredientListDropdown();
-  if (props.modalType === "EDIT") {
+  if (props.modalType === "edit") {
     console.log("edit");
+    getDetailBahan();
   } else {
     form.value = {
       id_bahan: null,
       nama_bahan: null,
       diragukan: null,
       temuan: null,
+      keterangan: null,
     };
   }
 };
 </script>
 <template>
-  <VDialog>
+  <VDialog v-model="isVisible">
     <template #activator="{ props }">
       <VBtn
         v-if="modalType === modalTypeEnum.ADD"
@@ -199,6 +250,7 @@ const onOpenModal = async () => {
                   <VSelect
                     density="compact"
                     placeholder="Data otomatis terisi apabila nama bahan telah dipilih"
+                    v-model="form.keterangan"
                   ></VSelect>
                 </VItemGroup>
               </VCol>
@@ -212,7 +264,10 @@ const onOpenModal = async () => {
             <VBtn @click="isActive.value = false" variant="outlined"
               >Batal</VBtn
             >
-            <VBtn variant="flat" v-if="modalType === modalTypeEnum.EDIT"
+            <VBtn
+              @click="editBahan"
+              variant="flat"
+              v-if="modalType === modalTypeEnum.EDIT"
               >Ubah</VBtn
             >
             <VBtn

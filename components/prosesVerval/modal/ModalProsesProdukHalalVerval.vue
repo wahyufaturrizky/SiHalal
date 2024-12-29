@@ -9,6 +9,8 @@ const props = defineProps({
   },
 });
 
+const isVisible = ref(false);
+
 const route = useRoute();
 
 const emit = defineEmits(["emit-add"]);
@@ -47,11 +49,9 @@ const insertProsesProduk = async () => {
     useSnackbar().sendSnackbar("Berhasil menambahkan proses", "success");
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal menambahkan proses", "error");
+  } finally {
+    isVisible.value = false;
   }
-  // finally {
-  //   submitAddBahanButton.value = false;
-  //   modalAddBahan.value = false;
-  // }
 };
 
 const onSubmit = async () => {
@@ -69,7 +69,7 @@ const onOpenModal = () => {
 </script>
 
 <template>
-  <VDialog>
+  <VDialog v-model="isVisible">
     <template #activator="{ props: openModal }">
       <VBtn
         v-if="modalType === modalTypeEnum.ADD"

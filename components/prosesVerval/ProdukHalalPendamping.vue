@@ -18,10 +18,39 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["confirm-add"]);
+const route = useRoute();
+const emit = defineEmits(["confirm-add", "confirm-delete"]);
 
 const handleAddProduk = (result: boolean) => {
   emit("confirm-add", result);
+};
+
+const handleDeleteProduk = async (idProduk: string) => {
+  try {
+    const response = await $api(
+      `/self-declare/proses-verval/${route.params?.id}/product-delete`,
+      {
+        method: "post",
+        body: {
+          idProduk,
+        },
+      }
+    );
+
+    if (response.code !== 2000) {
+      useSnackbar().sendSnackbar("Gagal menghapus produk", "error");
+      return;
+    }
+
+    // Update content to remove the deleted item
+    content.value = content.value.filter((item) => item.id !== idProduk);
+
+    emit("confirm-delete", true);
+    useSnackbar().sendSnackbar("Berhasil menghapus produk", "success");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Gagal menghapus produk", "error");
+    console.error("Error during deletion:", error);
+  }
 };
 
 watch(
@@ -34,6 +63,7 @@ watch(
   { immediate: true }
 );
 </script>
+
 <template>
   <VCard>
     <VCardTitle>
@@ -52,8 +82,12 @@ watch(
         <template #item.no="{ index }">
           {{ index + 1 }}
         </template>
-        <template #item.action>
-          <VIcon style="color: red" icon="fa-trash"></VIcon>
+        <template #item.action="{ item }">
+          <VBtn variant="text" @click="handleDeleteProduk(item.id)">
+            <template #default>
+              <VIcon style="color: red" icon="fa-trash"></VIcon>
+            </template>
+          </VBtn>
         </template>
       </VDataTable>
     </VCardItem>

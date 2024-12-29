@@ -1,11 +1,16 @@
 <script setup lang="ts">
 const unduhan = ref([
-  { id: 1, key: "Surat Permohonan", uri: "/#" },
-  { id: 2, key: "Surat Pernyataan", uri: "/#" },
-  { id: 3, key: "Ikrar", uri: "/#" },
-  { id: 4, key: "STTD", uri: "/#" },
-  { id: 5, key: "Cek Laporan", uri: "/#" },
-  { id: 6, key: "Cek Hasil Pendampingan", uri: "/#" },
+  { id: 1, key: "Surat Permohonan", filename: "", api_key: "surat_permohonan" },
+  { id: 2, key: "Surat Pernyataan", filename: "", api_key: "surat_pernyataan" },
+  { id: 3, key: "Ikrar", filename: "", api_key: "ikrar" },
+  { id: 4, key: "STTD", filename: "", api_key: "sttd" },
+  { id: 5, key: "Cek Laporan", filename: "", api_key: "cek_laporan" },
+  {
+    id: 6,
+    key: "Cek Hasil Pendampingan",
+    filename: "",
+    api_key: "laporan_pendamping",
+  },
 ]);
 
 const pendaftaran = ref([
@@ -26,8 +31,8 @@ const tracking = ref([
   { id: 5, key: "Submitted", value: "fachrudin@panganlestari.com" },
 ]);
 
-function onClickDownload(uri: string) {
-  console.log("download file");
+async function onClickDownload(filename: string) {
+  return await downloadDocument(filename);
 }
 
 const expanded = [0, 1, 2];
@@ -35,6 +40,10 @@ const expanded = [0, 1, 2];
 const props = defineProps({
   dataPendaftaran: {
     type: Object,
+    required: true,
+  },
+  dataTracking: {
+    type: Object as () => any,
     required: true,
   },
 });
@@ -50,6 +59,49 @@ watch(
   },
   { immediate: true }
 );
+
+const route = useRoute();
+
+const downloadForms = reactive({
+  sttd: "",
+  sertifikasi_halal: "",
+  laporan_pendamping: "",
+  rekomendasi: "",
+  surat_penyelia: "",
+  surat_permohonan: "",
+  surat_pernyataan: "",
+}) as Record<string, string>;
+
+const getDownloadForm = async (docName: string, propName: string) => {
+  // surat-penyelia, laporan-pendamping, rekomendasi, surat-permohonan,surat-pernyataan, sttd, setifikasi-halal
+  const result: any = await $api(
+    `/self-declare/submission/${route.params?.id}/file`,
+    {
+      method: "get",
+      query: {
+        document: docName,
+      },
+    }
+  );
+
+  if (result?.code === 2000) {
+    // downloadForms.value[propName] = result?.data?.file || "";
+    const idx = unduhan.value.findIndex((val) => val.api_key === propName);
+    unduhan.value[idx].filename = result?.data?.file || "";
+  }
+};
+
+onMounted(async () => {
+  await Promise.all([
+    getDownloadForm("sttd", "sttd"),
+    getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
+    getDownloadForm("laporan-pendamping", "laporan_pendamping"),
+    getDownloadForm("surat-penyelia", "surat_penyelia"),
+    getDownloadForm("rekomendasi", "rekomendasi"),
+    getDownloadForm("surat-permohonan", "surat_permohonan"),
+    getDownloadForm("surat-pernyataan", "surat_pernyataan"),
+  ]);
+});
 </script>
 <template>
   <VRow>
@@ -62,7 +114,10 @@ watch(
               <VCol cols="5">{{ item.key }}</VCol>
               <VCol cols="1">:</VCol>
               <VCol cols="6"
-                ><VBtn variant="flat" @click="onClickDownload(item.uri)"
+                ><VBtn
+                  :disabled="item.filename == ''"
+                  variant="flat"
+                  @click="onClickDownload(item.filename)"
                   ><VIcon icon="fa-download"></VIcon></VBtn
               ></VCol>
             </VRow>
@@ -100,24 +155,9 @@ watch(
         <VExpansionPanel>
           <VExpansionPanelTitle><h3>Tracking</h3></VExpansionPanelTitle>
           <VExpansionPanelText style="max-height: 50svh; overflow: auto">
-            <VTimeline
-              side="end"
-              align="start"
-              density="compact"
-              truncate-line="start"
-            >
-              <VTimelineItem
-                dot-color="rgb(var(--v-theme-surface))"
-                size="x-small"
-                v-for="item in tracking"
-                :key="item.id"
-              >
-                <div>
-                  <div class="text-h6">{{ item.key }}</div>
-                  <p>{{ item.value }}</p>
-                </div>
-              </VTimelineItem>
-            </VTimeline>
+            <div>
+              <HalalTimeLine :event="props.dataTracking"></HalalTimeLine>
+            </div>
           </VExpansionPanelText>
         </VExpansionPanel>
       </VExpansionPanels>

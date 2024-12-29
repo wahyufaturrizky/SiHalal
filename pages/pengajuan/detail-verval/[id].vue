@@ -11,6 +11,7 @@ const dataRequirementSpecific = ref();
 const dataBahanList = ref();
 const dataProdukList = ref();
 const dataProsesList = ref();
+const dataTracking = ref();
 
 const getDetail = async () => {
   try {
@@ -28,6 +29,7 @@ const getDetail = async () => {
     dataPelakuUsaha.value = response.data?.pelaku_usaha;
     dataPenanggungJawab.value = response.data?.penanggung_jawab;
     dataPendaftaran.value = response.data?.pendaftaran;
+    dataTracking.value = response.data?.tracking;
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
@@ -103,7 +105,11 @@ const getProductList = async () => {
       return;
     }
 
-    dataProdukList.value = response.data;
+    if (response.data) {
+      dataProdukList.value = response.data;
+    } else {
+      dataProdukList.value = [];
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
@@ -144,6 +150,24 @@ const handleProdukAdd = async (result: boolean) => {
   if (result) {
     await getProductList();
   }
+};
+
+const handleProsesProdukDelete = async (result: boolean) => {
+  if (result) {
+    await getProductProcessList();
+  }
+};
+
+const handleProdukDelete = async (result: boolean) => {
+  if (result) {
+    await getProductList();
+  }
+};
+
+const skBlobUri = ref();
+
+const skReadyHandler = (blob) => {
+  skBlobUri.value = blob;
 };
 
 onMounted(async () => {
@@ -201,6 +225,7 @@ onMounted(async () => {
     <VCol cols="4">
       <RightPanelVervalDetail
         :data-pendaftaran="dataPendaftaran"
+        :data-tracking="dataTracking"
         v-if="dataPendaftaran"
       ></RightPanelVervalDetail>
     </VCol>
@@ -234,6 +259,7 @@ onMounted(async () => {
       <ProsesProdukHalalPendamping
         :data="dataProsesList"
         @confirm-add="handleProsesProdukAdd"
+        @confirm-delete="handleProsesProdukDelete"
       ></ProsesProdukHalalPendamping>
     </VCol>
   </VRow>
@@ -242,7 +268,23 @@ onMounted(async () => {
       <ProdukHalalPendamping
         :data="dataProdukList"
         @confirm-add="handleProdukAdd"
+        @confirm-delete="handleProdukDelete"
       ></ProdukHalalPendamping>
+    </VCol>
+  </VRow>
+  <VRow style="display: none">
+    <VCol cols="12">
+      <VCard>
+        <VCardItem>
+          <!-- <component :is="SkPenyeliaHalal" :></component> -->
+          <!-- <VBtn @click="downloadSkHandler">tes</VBtn> -->
+          <PdfVervalRekomendasi
+            @sk-penyelia-download-handler="skReadyHandler"
+            :data-pu="dataPelakuUsaha"
+            :data-daftar="dataPendaftaran"
+          ></PdfVervalRekomendasi>
+        </VCardItem>
+      </VCard>
     </VCol>
   </VRow>
 </template>
