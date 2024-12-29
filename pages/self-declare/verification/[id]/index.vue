@@ -66,7 +66,6 @@ const formatDate = (date: string): string => {
 };
 
 const showTimeline = ref(true);
-const showPengajuan = ref(true);
 const showDetail = ref(true);
 const loadingDibatalkan = ref(false);
 const loadingBahan = ref(false);
@@ -390,7 +389,7 @@ const loadItemBahanById = async ({
     );
 
     if (response.code === 2000) {
-      // listBahan.value = response.data || [];
+      listBahan.value = response.data || [];
       totalItemsBahan.value = response.total || 0;
       loadingBahan.value = false;
       return response;
@@ -476,7 +475,7 @@ const loadItemById = async () => {
         },
       ];
 
-      listBahan.value = bahan || [];
+      // listBahan.value = bahan || [];
 
       itemsPabrik.value = pabrik || [];
       itemsOutlet.value = outlet || [];
@@ -1471,9 +1470,6 @@ const onSelectFasilitator = (selectedId: string) => {
                       ""
                     )
                   }}
-                </template>
-                <template #item.tanggal_berlaku="{ item }">
-                  {{ formatDate((item as any).tanggal_berlaku) }}
                 </template>
                 <template #item.action="{ item }">
                   <div class="d-flex gap-1">
