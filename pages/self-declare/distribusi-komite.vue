@@ -23,7 +23,7 @@ const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
 const permohonanHeaders: any = [
-  { title: "No", key: "id", maxWidth: 25 },
+  { title: "No", key: "id", sortable: false },
   { title: "Pilih", key: "pilih", maxWidth: 60 },
   { title: "ID Daftar", key: "id_daftar", nowrap: true },
   { title: "Nomor Daftar", key: "no_daftar", nowrap: true },
@@ -31,7 +31,7 @@ const permohonanHeaders: any = [
   { title: "Nama PU", key: "nama_pu", nowrap: true },
   { title: "Alamat", key: "alamat", nowrap: true },
   { title: "Merk Dagang", key: "merek_dagang", nowrap: true },
-  { title: "Status", key: "status_code" },
+  { title: "Status", key: "status" },
   // { title: "Action", key: "action", align: "center" },
 ];
 const listData = ref<Array<DataItem>>([]);
@@ -71,8 +71,8 @@ const onHandleDistribusi = async () => {
       } as any
     );
     if (result.code === 2000) {
-      refresh();
       useSnackbar().sendSnackbar("Berhasil Mengdistribusikan Data", "success");
+      refresh();
     }
   } catch (error) {
     useSnackbar().sendSnackbar(
@@ -443,7 +443,7 @@ onMounted(() => {
           <template #item.pilih="{ item }">
             <VCheckbox v-model="selectedItems" :value="item.id_daftar" />
           </template>
-          <template #item.status_code="{ item }">
+          <template #item.status="{ item }">
             <!-- <div v-if="item.status === 'OF74'">
               <div class="status-container">
                 <VChip
@@ -471,7 +471,7 @@ onMounted(() => {
                 "
               >
                 <span style="color: #652672">
-                  {{ item.status_code }}
+                  {{ item.status }}
                 </span>
               </VChip>
             </div>
