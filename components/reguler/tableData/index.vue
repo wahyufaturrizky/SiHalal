@@ -66,6 +66,11 @@ const props = defineProps({
   isviewonly: {
     type: Boolean,
   },
+  onInputBahan: {
+    type: Function,
+    default: () => {},
+    required: false,
+  }
 });
 
 const route = useRoute();
@@ -479,6 +484,80 @@ watch(
               </VList>
             </VMenu>
           </template>
+          <template v-if="!isviewonly" #item.actionPopOver4="{ item }">
+            <VMenu>
+              <template #activator="{ props }">
+                <VBtn
+                  v-bind="props"
+                  append-icon="ri-more-2-line"
+                  variant="plain"
+                />
+              </template>
+              <VList>
+                <VListItem class="p0">
+                  <InputBahan
+                    :product-name="item.nama"
+                    :product-id="item.id"
+                    :bahan-selected="item.bahan_selected"
+                    @submit="(selected, produkId) => props.onInputBahan(selected, produkId)"
+                    :embedded-in-module="'pelakuSelfDec'"
+                  />
+                </VListItem>
+                <VListItem class="p0">
+                  <VListItemTitle>
+                    <Vbtn
+                      variant="plain"
+                      class="cursor-pointer"
+                      @click="() => props.onDetail(item)"
+                    >
+                      <VRow>
+                        <VCol sm="4">
+                          <VIcon end icon="ri-arrow-right-line" />
+                        </VCol>
+                        <VCol>
+                          <label class="cursor-pointer">Detail </label>
+                        </VCol>
+                      </VRow>
+                    </Vbtn>
+                  </VListItemTitle>
+                </VListItem>
+                <VListItem class="p0">
+                  <VListItemTitle>
+                    <Vbtn
+                      variant="plain"
+                      class="cursor-pointer"
+                      @click="() => detailClicked(item)"
+                    >
+                      <VRow>
+                        <VCol sm="4">
+                          <VIcon end icon="ri-pencil-line" />
+                        </VCol>
+                        <VCol>
+                          <label class="cursor-pointer">Ubah </label>
+                        </VCol>
+                      </VRow>
+                    </Vbtn>
+                  </VListItemTitle>
+                </VListItem>
+                <VListItem class="p0 d-flex">
+                  <div class="d-flex -ml10">
+                    <DialogDeleteAuditPengajuan
+                      title="Hapus Bahan"
+                      button-text="Ya, Hapus"
+                      :content="props?.title"
+                      :on-delete="() => handleDelete(item)"
+                      with-label-header="true"
+                    >
+                      <template #contentDelete>
+                        <p>Apakah anda yakin menghapus data ini?</p>
+                      </template>
+                    </DialogDeleteAuditPengajuan>
+                  </div>
+                </VListItem>
+              </VList>
+            </VMenu>
+          </template>
+
           <template #item.foto="{ item }">
             <Vbtn
               v-if="item.foto"

@@ -7,34 +7,6 @@ const props = defineProps({
 
 const { trackingdata } = props || {};
 
-const defaultStatus = { color: "error", desc: "Unknown Status" };
-
-const statusItem: any = new Proxy(
-  {
-    OF1: { color: "grey-300", desc: "Draft" },
-    OF10: { color: "success", desc: "Submitted" },
-    OF15: { color: "success", desc: "Verified" },
-    OF2: { color: "error", desc: "Returned" },
-    OF290: { color: "error", desc: "Rejected" },
-    OF5: { color: "success", desc: "Invoice issued" },
-    OF320: { color: "success", desc: "Code Issued" },
-    OF11: { color: "success", desc: "Verification" },
-    OF50: { color: "success", desc: "Dikirim ke LPH" },
-    OF300: { color: "success", desc: "Halal Certified Issued" },
-    OF285: { color: "success", desc: "Dikembalikan Oleh Fatwa" },
-    OF74: { color: "success", desc: "Sent to Komite Fatwa" },
-    OF280: { color: "success", desc: "Dikembalikan Ke PU" },
-    OF100: { color: "success", desc: "Selesai Sidang Fatwa" },
-    OF120: { color: "success", desc: "Certificate Issued" },
-    OF900: { color: "error", desc: "Dibatalkan" },
-  },
-  {
-    get(target: any, prop: any) {
-      return prop in target ? target[prop] : defaultStatus;
-    },
-  }
-);
-
 const expanded = ref(0);
 </script>
 
@@ -55,7 +27,7 @@ const expanded = ref(0);
           class="v-timeline--variant-outlined"
         >
           <VTimelineItem
-            v-for="({ status, tanggal, username, comment }, i) in trackingdata"
+            v-for="({ tanggal, username, comment }, i) in trackingdata"
             :key="i"
             dot-color="rgb(var(--v-theme-surface))"
             size="x-small"
@@ -68,7 +40,7 @@ const expanded = ref(0);
               class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
             >
               <span class="app-timeline-title">
-                {{ status }}
+                {{ comment }}
               </span>
               <span class="app-timeline-meta">{{ formatDate(tanggal) }}</span>
             </div>

@@ -8,14 +8,6 @@ const selfDeclareId = (route.params as any).id;
 
 const emit = defineEmits(["refresh"]);
 
-const props = defineProps({
-  listagama: {
-    type: Array,
-  },
-});
-
-const { listagama } = props || {};
-
 const addDialog = ref(false);
 const loadingAdd = ref(false);
 
@@ -26,20 +18,15 @@ const updateData = async () => {
     const res: any = await $api(
       `/sidang-fatwa/entri-ketetapan-halal/update/${selfDeclareId}`,
       {
-        method: "post",
-        body: {
-          ...formData.value,
-          file: fileSpph.data.file_url,
-        },
+        method: "put",
       }
     );
 
     if (res?.code === 2000) {
       loadingAdd.value = false;
-
       addDialog.value = false;
-      useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
       emit("refresh");
+      useSnackbar().sendSnackbar("Berhasil update data", "success");
     } else {
       useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
       loadingAdd.value = false;

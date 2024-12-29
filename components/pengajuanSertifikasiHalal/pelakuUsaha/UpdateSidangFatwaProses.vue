@@ -8,11 +8,6 @@ const selfDeclareId = (route.params as any).id;
 
 const emit = defineEmits(["refresh"]);
 
-const formData = ref({
-  id: selfDeclareId,
-  status: "selesai",
-});
-
 const addDialog = ref(false);
 const loadingAdd = ref(false);
 
@@ -23,8 +18,7 @@ const updateData = async () => {
     const res: any = await $api(
       `/sidang-fatwa/proses-sidang-fatwa/update/${selfDeclareId}`,
       {
-        method: "post",
-        body: formData.value,
+        method: "put",
       }
     );
 

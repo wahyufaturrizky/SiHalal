@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import LPHDetailLayout from "@/layouts/LPHDetailLayout.vue";
+import LPHDetailLayout from '@/layouts/LPHDetailLayout.vue';
 
 const route = useRoute();
 const id = (route?.params as any).id;
@@ -14,23 +14,24 @@ const fileLaporanLPH = ref<any>(null);
 const fileKH = ref<any>(null);
 const fileHasilAudit = ref<any>(null);
 const fileLihatDraft = ref<any>(null);
+const isSendModalOpen = ref(false);
 
 const assignAuditorHeader: any[] = [
-  { title: "No", key: "index" },
-  { title: "Nama", key: "name" },
-  { title: "Tanggal Lahir", key: "birthDate" },
-  { title: "No Reg", key: "regisNumber" },
-  { title: "Action", key: "actions", align: "center", sortable: false },
+  { title: 'No', key: 'index' },
+  { title: 'Nama', key: 'name' },
+  { title: 'Tanggal Lahir', key: 'birthDate' },
+  { title: 'No Reg', key: 'regisNumber' },
+  { title: 'Action', key: 'actions', align: 'center', sortable: false },
 ];
 
 const assignAuditorData = ref([
-  { name: "Idris", birthDate: "02/10/2000", regisNumber: "SK-896376-3028" },
+  { name: 'Idris', birthDate: '02/10/2000', regisNumber: 'SK-896376-3028' },
 ]);
 
 const newAuditorData = {
-  name: "Aliando Syakir",
-  birthDate: "02/10/2000",
-  regisNumber: "SK-896376-3028",
+  name: 'Aliando Syakir',
+  birthDate: '02/10/2000',
+  regisNumber: 'SK-896376-3028',
 };
 
 const assignedAuditor = ref(null);
@@ -54,22 +55,12 @@ const handleDeleteAuditor = (index: number) => {
 };
 
 const handleSaveAuditor = () => {
-  useSnackbar().sendSnackbar("Berhasil mengirim pengajuan data", "success");
-};
-
-const handleUpdateStatus = () => {
-  const snackbarMessage = assignedAuditor.value
-    ? "Berhasil mengupdate status data"
-    : "Gagal mengupdate status, silahkan assign auditor";
-
-  const snackbarType = assignedAuditor.value ? "success" : "error";
-
-  useSnackbar().sendSnackbar(snackbarMessage, snackbarType);
+  useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success');
 };
 
 const getDownloadForm = async (docName: string) => {
   const result: any = await $api(`/self-declare/submission/${id}/file`, {
-    method: "get",
+    method: 'get',
     query: {
       document: docName,
     },
@@ -77,16 +68,16 @@ const getDownloadForm = async (docName: string) => {
 
   if (result.code === 2000) {
     switch (docName) {
-      case "laporan":
+      case 'laporan':
         fileLaporanLPH.value = result.data.file;
         return result;
-      case "setifikasi-halal":
+      case 'setifikasi-halal':
         fileKH.value = result.data.file;
         return result;
-      case "rekomendasi":
+      case 'rekomendasi':
         fileHasilAudit.value = result.data.file;
         return result;
-      case "surat-permohonan":
+      case 'surat-permohonan':
         fileLihatDraft.value = result.data.file;
         return result;
       default:
@@ -97,31 +88,56 @@ const getDownloadForm = async (docName: string) => {
 
 const getDetailData = async (type: string) => {
   try {
-    const response: any = await $api("/reguler/lph/detail-payment", {
-      method: "get",
+    const response: any = await $api('/reguler/lph/detail-payment', {
+      method: 'get',
       params: { url: `${POST_AUDIT_DETAIL}/${id}/${type}` },
     });
 
     if (response?.code === 2000) return response?.data;
     else
       useSnackbar().sendSnackbar(
-        response.errors.list_error.join(", "),
-        "error"
+        response.errors.list_error.join(', '),
+        'error'
       );
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error');
   }
 };
 
+const handleOpenSendModal = () => {
+  isSendModalOpen.value = false
+}
+
+const handleUpdateStatus = async () => {
+  try {
+    const response: any = await $api('/reguler/lph/post-audit/kirim', {
+      method: 'put',
+      body: {
+        id_reg: id,
+        keterangan: 'update',
+      },
+    });
+
+    if (response?.code === 2000) return response?.data;
+    else
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(', '),
+        'error'
+      );
+  } catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error');
+  }
+}
+
 onMounted(async () => {
   const responseData: any = await Promise.allSettled([
-    getDetailData("pengajuan"),
-    getDetailData("produk"),
-    getDetailData("pemeriksaanproduk"),
-    getDownloadForm("laporan"),
-    getDownloadForm("setifikasi-halal"),
-    getDownloadForm("surat-pernyataan"),
-    getDownloadForm("surat-permohonan"),
+    getDetailData('pengajuan'),
+    getDetailData('produk'),
+    getDetailData('pemeriksaanproduk'),
+    getDownloadForm('laporan'),
+    getDownloadForm('setifikasi-halal'),
+    getDownloadForm('surat-pernyataan'),
+    getDownloadForm('surat-permohonan'),
   ]);
 
   if (dataPengajuan) {
@@ -135,6 +151,36 @@ onMounted(async () => {
 
 <template>
   <div v-if="!loadingAll">
+    <VDialog v-model="isSendModalOpen" max-width="840px" persistent>
+      <VCard class="pa-4">
+        <VCardTitle class="d-flex justify-space-between align-center">
+          <div class="text-h3 font-weight-bold">Kirim Pengajuan</div>
+          <VIcon @click="handleOpenSendModal"> fa-times </VIcon>
+        </VCardTitle>
+        <VCardText>
+          <VRow>
+            <VCol>
+              Pastikan dokumen persyaratan lengkap dan semua biaya pemeriksaan
+              sudah dimasukkan. Invoice akan diterbitkan saat Anda klik tombol
+              ”kirim” dan invoice tidak dapat diedit kembali
+            </VCol>
+          </VRow>
+        </VCardText>
+        <VCardActions class="px-4">
+          <VBtn variant="outlined" class="px-4 me-3" @click="handleOpenSendModal"
+            >Batal</VBtn
+          >
+          <VBtn
+            variant="flat"
+            class="px-4"
+            color="primary"
+            @click="[handleUpdateStatus(), handleOpenSendModal()]"
+          >
+            Ya, Kirim
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
     <LPHDetailLayout>
       <template #page-title>
         <VRow no-gutters>
@@ -170,7 +216,7 @@ onMounted(async () => {
               >
                 Cek Data
               </VBtn>
-              <VBtn @click="() => toggle('add')"> Kirim </VBtn>
+              <VBtn @click="() => isSendModalOpen = true"> Kirim </VBtn>
             </VRow>
           </VCol>
         </VRow>

@@ -48,7 +48,7 @@ const invoiceData = [
 
 const loadItem = async (pageNumber: number, sizeData: number, search: string = '', path: string) => {
   try {
-    const response: any = await $api('/reguler/lph/list', {
+    const response: any = await $api('/reguler/payment', {
       method: 'get',
       params: {
         pageNumber,
@@ -123,7 +123,6 @@ onMounted(async () => {
             class="invoice-table border rounded mt-5"
             :headers="invoiceHeader"
             :items="dataTable"
-            :page="1"
           >
             <template #no-data>
               <div class="w-full mt-2">
@@ -154,7 +153,7 @@ onMounted(async () => {
             </template>
             <template #bottom>
               <VDataTableFooter
-                v-if="invoiceData.length > 10"
+                v-if="invoiceData.length > 5"
                 first-icon="mdi-chevron-double-left"
                 last-icon="mdi-chevron-double-right"
                 show-current-page

@@ -26,6 +26,15 @@ const tabList = ref([
   "Dokumen",
 ]);
 
+const isBahanCompleted = ref(false)
+const bahanComplete = isComplete => {
+  isBahanCompleted.value = isComplete
+}
+
+const bahanFailed = missing => {
+  useSnackbar().sendSnackbar(`Jenis bahan berikut belum diinput : ${missing.join(',')} Lain - lain. Untuk jenis bahan lain - lain opsion`, 'error')
+}
+
 const getListLegal = async () => {
   try {
     const response: any = await $api("/reguler/pelaku-usaha/list-legal", {
@@ -197,7 +206,7 @@ onMounted(async () => {
             </div>
           </div>
           <div v-if="activeTab === 2">
-            <Bahan :isviewonly="isViewOnly" />
+            <Bahan :isviewonly="isViewOnly" @complete="bahanComplete" @failed="bahanFailed"/>
           </div>
           <div v-if="activeTab === 3">
             <div v-if="!approveRequirements">
