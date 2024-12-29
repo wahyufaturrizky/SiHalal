@@ -89,10 +89,6 @@ const onSearchFasilitator = async () => {
       },
     });
 
-    console.log(
-      response.message === "Kode Fasilitasi dapat digunakan",
-      response.message
-    );
     if (response.message === "Kode Fasilitasi dapat digunakan") {
       isKodeFound.value = true;
       isKodeNotFound.value = false;
@@ -103,6 +99,8 @@ const onSearchFasilitator = async () => {
       console.log("responseId ", responseId);
       // formData.id_fasilitator = responseId.value;
       console.log("id fasilitator ", formData.id_fasilitator);
+    } else if (response.message === "Kuota habis") {
+      facName.value = response.data[0].name;
     } else {
       responseMessage.value = response.message;
       isKodeFound.value = false;
@@ -135,7 +133,7 @@ const formData = reactive({
   id_pendamping: null,
   asal_usaha: null,
 });
-
+const facId = ref("");
 const getDetail = async () => {
   try {
     const response: any = await $api(
@@ -163,7 +161,7 @@ const getDetail = async () => {
         no_surat_permohonan,
         id_pendamping,
       } = data || {};
-
+      facId.value = response.data.fac_id;
       submissionDetail.id_reg = response.data.id_reg;
       submissionDetail.id_jenis_pengajuan = response.data.jenis_pendaftaran;
       submissionDetail.tanggal_buat = formatDate(tgl_daftar) as any;
@@ -324,6 +322,50 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
     console.log(error);
   }
 };
+
+const handleUpdateSubmission = async () => {
+  try {
+    if (isKodeFound.value === true) {
+      console.log("id fasilitator submit", formData.id_fasilitator);
+      console.log("responseid submit", responseId.value);
+    } else {
+      responseId.value = formData.id_fasilitator;
+    }
+
+    const response: any = await $api(
+      "/self-declare/business-actor/submission/update",
+      {
+        method: "put",
+        body: {
+          id_reg: submissionId,
+          jenis_pendaftaran: formData.id_jenis_pengajuan,
+          kode_daftar: formData.id_fasilitator,
+          fac_id: facId.value,
+          no_surat_permohonan: formData.no_mohon,
+          tgl_surat_permohonan: new Date(formData.tgl_surat_permohonan),
+          jenis_layanan: formData.id_jenis_layanan,
+          jenis_produk: formData.id_jenis_produk,
+          nama_usaha: formData.nama_pu,
+          area_pemasaran: formData.area_pemasaran,
+          lokasi_pendamping: formData.lokasi_pendamping,
+          lembaga_pendamping: formData.id_lembaga_pendamping,
+          pendamping: formData.id_pendamping,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      if (response.data !== null)
+        useSnackbar().sendSnackbar("Berhasil mengubah data", "success");
+    }
+
+    return response;
+  } catch (error) {
+    console.log(error, "error");
+    useSnackbar().sendSnackbar("Gagal mengubah data", "error");
+  }
+};
+
 onMounted(async () => {
   // await Promise.all([
   await getDetail();
@@ -581,7 +623,6 @@ onMounted(async () => {
           :rules="[requiredValidator]"
           item-value="code"
           @update:model-value="handleGetJenisProdukFilter"
-          readonly
         />
       </VItemGroup>
       <br />
@@ -595,12 +636,11 @@ onMounted(async () => {
           item-title="name"
           :rules="[requiredValidator]"
           item-value="code"
-          readonly
         />
       </VItemGroup>
       <br />
       <VItemGroup>
-        <div class="font-weight-bold mb-1">Nama Usaha</div>
+        <Vlabel class="font-weight-bold mb-1">Nama Usaha</Vlabel>
         <VTextField
           placeholder="Masukkan Nama Usaha"
           density="compact"
@@ -610,103 +650,71 @@ onMounted(async () => {
         />
       </VItemGroup>
       <br />
-      <VCol cols="12">
-        <VItemGroup>
-          <VLabel>Jenis Layanan</VLabel>
-          <VSelect
-            v-model="formData.id_jenis_layanan"
-            placeholder="Pilih Jenis Layanan"
-            density="compact"
-            :items="listLayanan"
-            item-title="name"
-            :rules="[requiredValidator]"
-            item-value="code"
-            @update:model-value="handleGetJenisProdukFilter"
-            readonly
-          />
-        </VItemGroup>
-        <br />
-        <VItemGroup>
-          <VLabel>Jenis Produk</VLabel>
-          <VSelect
-            v-model="formData.id_jenis_produk"
-            placeholder="Pilih Jenis Produk"
-            density="compact"
-            :items="listProduk"
-            item-title="name"
-            :rules="[requiredValidator]"
-            item-value="code"
-            readonly
-          />
-        </VItemGroup>
-        <br />
-        <VItemGroup>
-          <VLabel>Nama Usaha</VLabel>
-          <VTextField
-            v-model="formData.nama_pu"
-            :rules="[requiredValidator]"
-            placeholder="Isi Nama Usaha"
-            density="compact"
-            readonly
-          />
-        </VItemGroup>
-        <br />
-        <VItemGroup>
-          <VLabel>Area Pemasaran</VLabel>
-          <VSelect
-            v-model="formData.area_pemasaran"
-            placeholder="Pilih Area Pemasaran"
-            :rules="[requiredValidator]"
-            density="compact"
-            :items="listAreaPemasaran"
-            readonly
-          />
-        </VItemGroup>
-        <br />
-        <VItemGroup>
-          <VLabel>Lokasi Pendamping</VLabel>
-          <VSelect
-            v-model="formData.lokasi_pendamping"
-            placeholder="Pilih Area Pemasaran"
-            density="compact"
-            :rules="[requiredValidator]"
-            :items="lokasiPendamping"
-            @update:model-value="loadDataPendamping"
-            readonly
-          />
-        </VItemGroup>
-        <br />
-        <VItemGroup>
-          <VLabel>Lembaga Pendamping</VLabel>
-          <VSelect
-            v-model="formData.id_lembaga_pendamping"
-            placeholder="Pilih Area Pemasarang"
-            density="compact"
-            :items="lembagaPendamping"
-            item-title="name"
-            :rules="[requiredValidator]"
-            item-value="id"
-            :disabled="formData.lokasi_pendamping == null"
-            @update:model-value="handleGetPendamping"
-            readonly
-          />
-        </VItemGroup>
-        <br />
-        <VItemGroup>
-          <VLabel>Pendamping</VLabel>
-          <VSelect
-            v-model="formData.id_pendamping"
-            placeholder="Pilih Pendamping"
-            density="compact"
-            :items="listPendamping"
-            :rules="[requiredValidator]"
-            item-title="name"
-            :disabled="formData.lokasi_pendamping == null"
-            item-value="id"
-            readonly
-          />
-        </VItemGroup>
-      </VCol>
+      <VItemGroup>
+        <VLabel class="font-weight-bold mb-1">Area Pemasaran</VLabel>
+        <VSelect
+          v-model="formData.area_pemasaran"
+          placeholder="Pilih Area Pemasaran"
+          :rules="[requiredValidator]"
+          density="compact"
+          :items="listAreaPemasaran"
+          readonly
+        />
+      </VItemGroup>
+      <br />
+      <VItemGroup>
+        <VLabel class="font-weight-bold mb-1">Lokasi Pendamping</VLabel>
+        <VSelect
+          v-model="formData.lokasi_pendamping"
+          placeholder="Pilih Area Pemasaran"
+          density="compact"
+          :rules="[requiredValidator]"
+          :items="lokasiPendamping"
+          @update:model-value="loadDataPendamping"
+          readonly
+        />
+      </VItemGroup>
+      <br />
+      <VItemGroup>
+        <VLabel class="font-weight-bold mb-1">Lembaga Pendamping</VLabel>
+        <VSelect
+          v-model="formData.id_lembaga_pendamping"
+          placeholder="Pilih Area Pemasarang"
+          density="compact"
+          :items="lembagaPendamping"
+          item-title="name"
+          :rules="[requiredValidator]"
+          item-value="id"
+          :disabled="formData.lokasi_pendamping == null"
+          @update:model-value="handleGetPendamping"
+          readonly
+        />
+      </VItemGroup>
+      <br />
+      <VItemGroup>
+        <VLabel class="font-weight-bold mb-1">Pendamping</VLabel>
+        <VSelect
+          v-model="formData.id_pendamping"
+          placeholder="Pilih Pendamping"
+          density="compact"
+          :items="listPendamping"
+          :rules="[requiredValidator]"
+          item-title="name"
+          :disabled="formData.lokasi_pendamping == null"
+          item-value="id"
+          readonly
+        />
+      </VItemGroup>
+      <br />
+      <VItemGroup>
+        <VBtn
+          type="submit"
+          color="primary"
+          variant="flat"
+          text="Simpan Perubahan"
+          @click="handleUpdateSubmission"
+        />
+      </VItemGroup>
     </VCardText>
   </VCard>
 </template>
