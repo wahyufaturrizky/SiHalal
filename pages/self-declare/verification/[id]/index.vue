@@ -1531,6 +1531,9 @@ const onSelectFasilitator = (selectedId: string) => {
                     index + 1 + (pageTableProduk - 1) * itemPerPageTableProduk
                   }}
                 </template>
+                <template #item.verified="{ item }">
+                  {{ (item as any).verified ? "Sudah" : "Belum" }}
+                </template>
                 <template #item.action="{ item }">
                   <div class="d-flex gap-1">
                     <UbahProduk
