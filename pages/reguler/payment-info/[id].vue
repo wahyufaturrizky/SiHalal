@@ -5,6 +5,7 @@ const route = useRoute()
 const id = route?.params?.id
 
 const loading = ref(false)
+const isSendModalOpen = ref(false)
 const dataPengajuan = ref<any>({})
 const dataProduk = ref<any>([])
 const dataPemeriksaanProduk = ref<any>({})
@@ -25,6 +26,30 @@ const getDetailData = async (type: string) => {
     const response: any = await $api('/reguler/lph/detail-payment', {
       method: 'get',
       params: { url: `${LIST_INFORMASI_PEMBAYARAN}/${id}/${type}` },
+    })
+
+    if (response?.code === 2000)
+      return response?.data
+    else
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const handleOpenSendModal = () => {
+  isSendModalOpen.value = false
+}
+
+const handleUpdateStatus = async () => {
+  try {
+    const response: any = await $api('/reguler/update-status-payment', {
+      method: 'put',
+      body: {
+        id_reg: id,
+        keterangan: 'update',
+      },
     })
 
     if (response?.code === 2000)
@@ -62,7 +87,7 @@ onMounted(async () => {
             <h1>Informasi Pembayaran Detail</h1>
           </VCol>
           <VCol class="d-flex justify-end">
-            <VBtn text="Proses di LPH" append-icon="fa-paper-plane" />
+            <VBtn text="Proses di LPH" append-icon="fa-paper-plane" @click="() => isSendModalOpen = true" />
           </VCol>
         </VRow>
       </template>
@@ -185,20 +210,42 @@ onMounted(async () => {
               </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
-          <VExpansionPanel :value="2" class="pt-3">
-            <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Informasi Lainnya
-            </VExpansionPanelTitle>
-            <VExpansionPanelText class="mt-5">
-              <VBtn color="primary"> Dokumen Lengkap </VBtn>
-            </VExpansionPanelText>
-          </VExpansionPanel>
         </VExpansionPanels>
         <div class="mt-10">
           <PanelTracking :data="dataPemeriksaanProduk?.tracking" />
         </div>
       </template>
     </LPHDetailLayout>
+    <VDialog v-model="isSendModalOpen" max-width="840px" persistent>
+      <VCard class="pa-4">
+        <VCardTitle class="d-flex justify-space-between align-center">
+          <div class="text-h3 font-weight-bold">Kirim Pengajuan</div>
+          <VIcon @click="handleOpenSendModal"> fa-times </VIcon>
+        </VCardTitle>
+        <VCardText>
+          <VRow>
+            <VCol>
+              Pastikan dokumen persyaratan lengkap dan semua biaya pemeriksaan
+              sudah dimasukkan. Invoice akan diterbitkan saat Anda klik tombol
+              ”kirim” dan invoice tidak dapat diedit kembali
+            </VCol>
+          </VRow>
+        </VCardText>
+        <VCardActions class="px-4">
+          <VBtn variant="outlined" class="px-4 me-3" @click="handleOpenSendModal"
+            >Batal</VBtn
+          >
+          <VBtn
+            variant="flat"
+            class="px-4"
+            color="primary"
+            @click="[handleUpdateStatus(), handleOpenSendModal()]"
+          >
+            Ya, Kirim
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
   </div>
 </template>
 
