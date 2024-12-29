@@ -178,7 +178,6 @@ onMounted(async () => {
             <VTab v-for="(item, index) in tabList" :key="item" :value="index">
               {{ item }}
             </VTab>
-            </VTab>
           </VTabs>
         </VCol>
       </VRow>
