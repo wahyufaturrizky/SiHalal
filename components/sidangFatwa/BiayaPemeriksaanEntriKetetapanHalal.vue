@@ -19,7 +19,7 @@ const headers = ref([
 ]);
 
 const itemPerPage = ref(10);
-const totalItems = ref(biaya.length);
+const totalItems = ref(biaya?.length || 0);
 const page = ref(1);
 </script>
 

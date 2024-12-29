@@ -18,7 +18,7 @@ const headers = ref([
 const expanded = [0];
 
 const itemPerPage = ref(10);
-const totalItems = ref(auditor.length);
+const totalItems = ref(auditor?.length || 0);
 const page = ref(1);
 </script>
 <template>

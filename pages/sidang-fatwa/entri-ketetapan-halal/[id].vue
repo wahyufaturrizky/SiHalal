@@ -6,6 +6,7 @@ const route = useRoute();
 const sidangFatwaId = (route.params as any).id;
 
 const loadingAll = ref(true);
+const loadingById = ref(false);
 const detailData = ref();
 const profil = ref();
 const jenisUsaha = ref();
@@ -13,6 +14,7 @@ const skalaUsaha = ref();
 const trackingData = ref();
 
 const loadItemById = async () => {
+  loadingById.value = true;
   try {
     const response: any = await $api(
       `/sidang-fatwa/entri-ketetapan-halal/${sidangFatwaId}`,
@@ -20,6 +22,7 @@ const loadItemById = async () => {
         method: "get",
       }
     );
+    console.log("@response", response);
 
     if (response.code === 2000) {
       detailData.value = response.data;
@@ -97,15 +100,18 @@ const loadItemById = async () => {
           value: email,
         },
       ];
+      loadingById.value = false;
 
       return response;
     } else {
+      loadingById.value = false;
       useSnackbar().sendSnackbar(
         response.errors.list_error.join(", "),
         "error"
       );
     }
   } catch (error) {
+    loadingById.value = false;
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
@@ -126,15 +132,15 @@ onMounted(async () => {
 </script>
 
 <template>
-  <SubPelakuUsahaLayout v-if="!loadingAll">
+  <SubPelakuUsahaLayout v-if="!loadingAll && !loadingById">
     <template #pageTitle>
       <VRow justify="space-between" align="center">
         <VCol cols="12">
           <h2 class="font-weight-bold">Detail Data Pengajuan</h2>
         </VCol>
         <VCol cols="auto">
-          <UpdateSidangFatwaEntriKetetapanHalal />
-          <TambahDataSidangFatwaEntriKetetapanHalal />
+          <UpdateSidangFatwaEntriKetetapanHalal @refresh="loadItemById()" />
+          <TambahDataSidangFatwaEntriKetetapanHalal @refresh="loadItemById()" />
         </VCol>
       </VRow>
     </template>
