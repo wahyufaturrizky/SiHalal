@@ -8,6 +8,7 @@ const router = useRouter();
 const selfDeclareId = (route.params as any).id;
 
 const detailData = ref();
+const listPendamping = ref([]);
 const isFasilitator = ref<boolean>(false);
 const loadingAll = ref(true);
 const loadingTandaiOK = ref(false);
@@ -38,12 +39,9 @@ const handleGetFasilitator = async () => {
         id: "Lainnya",
         name: "Lainnya",
       });
+      return response;
     }
-
-    return response;
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 
 const tabs = ref([
@@ -202,7 +200,7 @@ const loadItemPabrik = async (
       }
     );
 
-    if (response.code === 200) {
+    if (response.code === 2000) {
       itemsPabrik.value = response.data || [];
       totalItemsPabrik.value = response.total_item || 0;
       loadingPabrik.value = false;
@@ -239,8 +237,9 @@ const loadItemOutlet = async (
         },
       }
     );
+    console.log("@response", response);
 
-    if (response.code === 200) {
+    if (response.code === 2000) {
       itemsOutlet.value = response.data || [];
       totalItemsOutlet.value = response.total_item || 0;
       loadingOutlet.value = false;
@@ -443,6 +442,7 @@ const loadItemById = async () => {
       } = certificate_halal || {};
 
       dataTracking.value = tracking || [];
+      formData.id_fasilitator = response.data.fac_id;
 
       dataFormPengajuan.value = {
         jenisPendaftaran: jenis_daftar,
@@ -630,9 +630,7 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
       lembagaPendamping.value = response.data;
       return response;
     }
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 
 const handleGetPendamping = async (idLembaga: string | null) => {
@@ -650,13 +648,33 @@ const handleGetPendamping = async (idLembaga: string | null) => {
 
     if (response.code === 2000) {
       if (response.data !== null) listPendamping.value = response.data;
-      console.log("isi list", listPendamping.value);
     }
 
     return response;
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
+};
+
+const handleGetLembagaPendamping = async (lokasi: string) => {
+  try {
+    formData.id_lembaga_pendamping = null;
+    lembagaPendamping.value = [];
+    const response: any = await $api(
+      "/self-declare/business-actor/submission/list-lembaga-pendamping",
+      {
+        method: "get",
+        query: {
+          id_reg: selfDeclareId,
+          lokasi,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      if (response.data !== null) lembagaPendamping.value = response.data;
+    }
+
+    return response;
+  } catch (error) {}
 };
 
 const loadDataPendamping = async (lokasi: string | null) => {
@@ -690,12 +708,12 @@ onMounted(async () => {
   ]);
 
   if (
-    formData.id_fasilitator != null &&
+    formData.id_fasilitator !== null &&
     !listFasilitasi.value.some(
       (item) => (item as any).id == formData.id_fasilitator
     )
   ) {
-    formData.id_fasilitator.value = "Lainnya";
+    formData.id_fasilitator = "Lainnya";
     onSelectFasilitator("Lainnya");
     onSearchFasilitator();
   }
