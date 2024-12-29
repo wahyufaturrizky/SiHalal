@@ -25,14 +25,24 @@ const tableHeader = [
   { title: "Merek Dagang", value: "merek_dagang" },
 ];
 
-const selectedFilterPermohonan = ref([]);
+const selectedFilterPermohonan = ref("");
 const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
 const loadingAll = ref(true);
 const page = ref(1);
 
-const loadItem = async (page: number, size: number) => {
+const loadItem = async (
+  page: number,
+  size: number,
+  searchQuery: string,
+  jenisPermohonan: string,
+  statusPermohonan: string,
+  wilayah: string,
+  kabupaten: string,
+  fasilitas: string,
+  namaFasilitator: string
+) => {
   try {
     loading.value = true;
 
@@ -41,6 +51,13 @@ const loadItem = async (page: number, size: number) => {
       params: {
         page,
         size,
+        searchQuery,
+        jenisPermohonan,
+        statusPermohonan,
+        wilayah,
+        kabupaten,
+        fasilitas,
+        namaFasilitator,
       },
     });
 
@@ -129,11 +146,7 @@ const getDistrict = async (item: string) => {
   });
   kabupatenItems.value = [{ code: "", name: "Semua" }, ...response];
 };
-const permohonanItems = [
-  { name: "X", value: 1 },
-  { name: "Y", value: 2 },
-  { name: "Z", value: 3 },
-];
+const permohonanItems = [{ name: "Semua", code: "" }];
 
 const selectedFilterStatusPermhonan = ref("");
 
@@ -177,6 +190,57 @@ const layerItems = ref([
   { name: "Layar", code: "layar" },
   { name: "Excel", code: "excel" },
 ]);
+const showFilterMenu = ref(false);
+
+const debouncedFetch = debounce(loadItem, 500);
+const searchQuery = ref("");
+const handleInput = () => {
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    selectedFilterPermohonan.value,
+    selectedFilterStatusPermhonan.value,
+    selectedFilterWilayah.value,
+    selectedFilterKabupaten.value,
+    selectedFilterFasilitaas.value,
+    selectedFilterNameFasilitator.value
+  );
+};
+const reset = () => {
+  selectedFilterPermohonan.value = "";
+  selectedFilterStatusPermhonan.value = "";
+  selectedFilterWilayah.value = "";
+  selectedFilterKabupaten.value = "";
+  selectedFilterFasilitaas.value = "";
+  selectedFilterNameFasilitator.value = "";
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    selectedFilterPermohonan.value,
+    selectedFilterStatusPermhonan.value,
+    selectedFilterWilayah.value,
+    selectedFilterKabupaten.value,
+    selectedFilterFasilitaas.value,
+    selectedFilterNameFasilitator.value
+  );
+  showFilterMenu.value = false;
+};
+const applyFilters = () => {
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    selectedFilterPermohonan.value,
+    selectedFilterStatusPermhonan.value,
+    selectedFilterWilayah.value,
+    selectedFilterKabupaten.value,
+    selectedFilterFasilitaas.value,
+    selectedFilterNameFasilitator.value
+  );
+  showFilterMenu.value = false;
+};
 const findProdukByCode = (code) => {
   const produk = filterProduk.value.find((item) => item.code == code);
   if (produk) {
@@ -229,7 +293,7 @@ onMounted(async () => {
         <VCardItem>
           <VRow>
             <VCol cols="3">
-              <VMenu :close-on-content-click="false">
+              <VMenu v-model="showFilterMenu" :close-on-content-click="false">
                 <template #activator="{ props: openMenu }">
                   <VBtn
                     append-icon="fa-filter"
@@ -350,6 +414,20 @@ onMounted(async () => {
                       />
                     </VItemGroup>
                   </VListItem>
+                  <VListItem>
+                    <VBtn
+                      style="float: inline-start"
+                      text="Reset Filter"
+                      @click="reset"
+                    />
+                    <VBtn
+                      style="float: inline-end"
+                      color="primary"
+                      @click="applyFilters"
+                    >
+                      Apply Filters
+                    </VBtn>
+                  </VListItem>
                 </VList>
               </VMenu>
             </VCol>
@@ -357,8 +435,10 @@ onMounted(async () => {
             <VCol cols="8">
               <VTextField
                 density="compact"
+                v-model="searchQuery"
                 placeholder="Cari Nama Pengajuan"
                 append-inner-icon="mdi-magnify"
+                @input="handleInput"
               />
             </VCol>
           </VRow>
@@ -372,7 +452,19 @@ onMounted(async () => {
                 :loading="loading"
                 :items-length="totalItems"
                 loading-text="Loading..."
-                @update:options="loadItem(page, itemPerPage)"
+                @update:options="
+                  loadItem(
+                    page,
+                    itemPerPage,
+                    searchQuery,
+                    selectedFilterPermohonan,
+                    selectedFilterStatusPermhonan,
+                    selectedFilterWilayah,
+                    selectedFilterKabupaten,
+                    selectedFilterFasilitaas,
+                    selectedFilterNameFasilitator
+                  )
+                "
               >
                 <template #item.no="{ index }">
                   {{ index + 1 + (page - 1) * itemPerPage }}
