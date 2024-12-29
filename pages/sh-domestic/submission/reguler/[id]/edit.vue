@@ -26,6 +26,12 @@ const tabList = ref([
   "Dokumen",
 ]);
 
+const isBahanCompleted = ref(false)
+const bahanComplete = isComplete => {
+  console.log("BAHAN UDAH COMPLETE")
+  isBahanCompleted.value = true
+}
+
 const getListLegal = async () => {
   try {
     const response: any = await $api("/reguler/pelaku-usaha/list-legal", {
@@ -166,7 +172,12 @@ onMounted(async () => {
       <VRow>
         <VCol cols="12" class="pl0">
           <VTabs v-model="activeTab" align-tabs="start" class="w-100">
-            <VTab v-for="(item, index) in tabList" :key="item" :value="index">
+            <VTab v-for="(item, index) in tabList.slice(0,3)" :key="item" :value="index">
+              {{ item }}
+            </VTab>
+            <VTab v-for="(item, index) in tabList.slice(3,7)" :key="item" :value="index"
+                  :disabled="!isBahanCompleted"
+            >
               {{ item }}
             </VTab>
           </VTabs>
@@ -197,7 +208,7 @@ onMounted(async () => {
             </div>
           </div>
           <div v-if="activeTab === 2">
-            <Bahan :isviewonly="isViewOnly" />
+            <Bahan :isviewonly="isViewOnly" @complete="bahanComplete"/>
           </div>
           <div v-if="activeTab === 3">
             <div v-if="!approveRequirements">
