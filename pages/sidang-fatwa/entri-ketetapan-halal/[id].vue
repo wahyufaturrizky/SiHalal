@@ -5,21 +5,21 @@ const route = useRoute();
 
 const sidangFatwaId = (route.params as any).id;
 
-const loadingAll = ref(true)
-const detailData = ref()
-const profil = ref()
-const jenisUsaha = ref()
-const skalaUsaha = ref()
-const trackingData = ref()
+const loadingAll = ref(true);
+const detailData = ref();
+const profil = ref();
+const jenisUsaha = ref();
+const skalaUsaha = ref();
+const trackingData = ref();
 
 const loadItemById = async () => {
   try {
     const response: any = await $api(
       `/sidang-fatwa/entri-ketetapan-halal/${sidangFatwaId}`,
       {
-        method: 'get',
-      },
-    )
+        method: "get",
+      }
+    );
 
     if (response.code === 2000) {
       detailData.value = response.data;
@@ -132,10 +132,10 @@ onMounted(async () => {
         <VCol cols="12">
           <h2 class="font-weight-bold">Detail Data Pengajuan</h2>
         </VCol>
-        <!-- <VCol cols="auto">
+        <VCol cols="auto">
           <UpdateSidangFatwaEntriKetetapanHalal />
           <TambahDataSidangFatwaEntriKetetapanHalal />
-        </VCol> -->
+        </VCol>
       </VRow>
     </template>
 
@@ -185,7 +185,7 @@ onMounted(async () => {
 
     <!-- right content -->
     <template #rightContent>
-      <!-- <VRow>
+      <VRow>
         <VCol :cols="12">
           <HasilAuditDetailPengajuan />
         </VCol>
@@ -194,11 +194,11 @@ onMounted(async () => {
         <VCol :cols="12">
           <BiayaPemeriksaanDetail />
         </VCol>
-      </VRow> -->
+      </VRow>
       <VRow>
-        <!-- <VCol :cols="12">
+        <VCol :cols="12">
           <DokumenUnduhan />
-        </VCol> -->
+        </VCol>
         <VCol :cols="12">
           <MelacakDetaikFatwaEntriKetetapanHalal :trackingdata="trackingData" />
         </VCol>
