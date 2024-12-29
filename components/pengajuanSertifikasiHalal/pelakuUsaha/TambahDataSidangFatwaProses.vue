@@ -122,7 +122,11 @@ const updateData = async () => {
 };
 
 const checkIsFieldEMpty = (data: any) => {
-  return Object.keys(data)?.find((key: any) => !data[key]);
+  return Object.keys(data)?.find((key: any) => {
+    if (key !== "no_sertifikat") {
+      return !data[key];
+    }
+  });
 };
 
 const { mdAndUp } = useDisplay();
