@@ -89,10 +89,6 @@ const onSearchFasilitator = async () => {
       },
     });
 
-    console.log(
-      response.message === "Kode Fasilitasi dapat digunakan",
-      response.message
-    );
     if (response.message === "Kode Fasilitasi dapat digunakan") {
       isKodeFound.value = true;
       isKodeNotFound.value = false;
@@ -103,6 +99,8 @@ const onSearchFasilitator = async () => {
       console.log("responseId ", responseId);
       // formData.id_fasilitator = responseId.value;
       console.log("id fasilitator ", formData.id_fasilitator);
+    } else if (response.message === "Kuota habis") {
+      facName.value = response.data[0].name;
     } else {
       responseMessage.value = response.message;
       isKodeFound.value = false;
