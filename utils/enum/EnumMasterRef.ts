@@ -6,6 +6,10 @@ export enum MasterRef {
   bustype = "JNBUS",
   jnlay = "JNLAY",
   jnpro = "JNPRO",
+
+  CHANL = "CHANL",
+
+  STOFF = "STOFF",
 }
 
 export const findRefType = (input: any): string => {

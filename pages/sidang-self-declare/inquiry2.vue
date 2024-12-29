@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import KomiteFatwaLayout from "@/layouts/komiteFatwaLayout.vue";
+import { MasterRef } from "@/utils/enum/EnumMasterRef";
 import { VDataTableServer } from "vuetify/components";
 
 const items = ref<
@@ -60,60 +61,122 @@ const loadItem = async (page: number, size: number) => {
     loading.value = false;
   }
 };
-
+const getCommonCode = async (code: MasterRef) => {
+  try {
+    const response4: any = await $api("/master/common-code", {
+      method: "get",
+      params: {
+        type: code,
+      },
+    });
+    return response4;
+  } catch (error) {
+    return [];
+  }
+};
+const totalItemFasilitator = ref(0);
+const pageFasilitator = ref(1);
+const getFasilitator = async (page) => {
+  try {
+    const response4: any = await $api("/facilitate/verifikator/list", {
+      method: "get",
+      params: {
+        status: "OF320",
+        page: page,
+      },
+    });
+    if (response4.code === 2000) {
+      if (page === 1) {
+        nameFasilitatorItems.value = [
+          { id: "", fac_name: "Semua" },
+          ...response4.data,
+        ] || [{ id: "", fac_name: "Semua" }];
+      } else {
+        nameFasilitatorItems.value = [
+          ...nameFasilitatorItems.value,
+          ...response4.data,
+        ];
+      }
+      totalItemFasilitator.value = response4.total_item;
+    }
+  } catch (error) {
+    return [];
+  }
+};
+const loadMoreFasilitator = () => {
+  if (nameFasilitatorItems.value.length < totalItemFasilitator.value) {
+    pageFasilitator.value += 1;
+    getFasilitator(pageFasilitator.value);
+  }
+};
+const getProvince = async () => {
+  try {
+    const response: any = await $api("/master/province", {
+      method: "get",
+    });
+    wilayahItems.value = [{ code: "", name: "Semua" }, ...response];
+  } catch (error) {
+    return [];
+  }
+};
+const getDistrict = async (item: string) => {
+  selectedFilterKabupaten.value = "";
+  const response: MasterDistrict[] = await $api("/master/district", {
+    method: "post",
+    body: {
+      province: item,
+    },
+  });
+  kabupatenItems.value = [{ code: "", name: "Semua" }, ...response];
+};
 const permohonanItems = [
   { name: "X", value: 1 },
   { name: "Y", value: 2 },
   { name: "Z", value: 3 },
 ];
 
-const selectedFilterStatusPermhonan = ref([]);
+const selectedFilterStatusPermhonan = ref("");
 
-const statusPermhonanItems = [
+const statusPermhonanItems = ref([
   { name: "X", value: 1 },
   { name: "Y", value: 2 },
   { name: "Z", value: 3 },
-];
+]);
 
-const selectedFilterWilayah = ref([]);
+const selectedFilterWilayah = ref("");
 
-const wilayahItems = [
+const wilayahItems = ref([
   { name: "X", value: 1 },
   { name: "Y", value: 2 },
   { name: "Z", value: 3 },
-];
+]);
 
-const selectedFilterKabupaten = ref([]);
+const selectedFilterKabupaten = ref("");
 
-const kabupatenItems = [
+const kabupatenItems = ref([{ code: "", name: "Semua" }]);
+
+const selectedFilterFasilitaas = ref("");
+
+const fasilitasItems = ref([
   { name: "X", value: 1 },
   { name: "Y", value: 2 },
   { name: "Z", value: 3 },
-];
+]);
 
-const selectedFilterFasilitaas = ref([]);
+const selectedFilterNameFasilitator = ref("");
 
-const fasilitasItems = [
+const nameFasilitatorItems = ref([
   { name: "X", value: 1 },
   { name: "Y", value: 2 },
   { name: "Z", value: 3 },
-];
+]);
 
-const selectedFilterNameFasilitator = ref([]);
+const selectedFilterLayer = ref("Layar");
 
-const nameFasilitatorItems = [
-  { name: "X", value: 1 },
-  { name: "Y", value: 2 },
-  { name: "Z", value: 3 },
-];
-
-const selectedFilterLayer = ref([]);
-
-const layerItems = [
-  { name: "X", value: 1 },
-  { name: "Y", value: 2 },
-  { name: "Z", value: 3 },
-];
+const layerItems = ref([
+  { name: "Layar", code: "layar" },
+  { name: "Excel", code: "excel" },
+]);
 const findProdukByCode = (code) => {
   const produk = filterProduk.value.find((item) => item.code == code);
   if (produk) {
@@ -122,7 +185,23 @@ const findProdukByCode = (code) => {
   return code;
 };
 const filterProduk = ref([]);
+const statusMohon = ref([]);
 onMounted(async () => {
+  await getProvince();
+  fasilitasItems.value = [
+    { code: "", name: "Semua", name_eng: "All" },
+    ...(await getCommonCode(MasterRef.CHANL)),
+  ];
+  statusPermhonanItems.value = [
+    {
+      code: "",
+      name: "Semua",
+      name_eng: "All",
+    },
+    ...(await getCommonCode(MasterRef.STOFF)),
+  ];
+  await getFasilitator(pageFasilitator.value);
+
   const response4: any = await $api(
     "/self-declare/komite-fatwa/proses-sidang/filter-produk",
     {
@@ -168,7 +247,7 @@ onMounted(async () => {
                       <VSelect
                         v-model="selectedFilterPermohonan"
                         :items="permohonanItems"
-                        item-value="value"
+                        item-value="code"
                         item-title="name"
                         placeholder="Semua"
                         density="compact"
@@ -182,7 +261,7 @@ onMounted(async () => {
                       <VSelect
                         v-model="selectedFilterStatusPermhonan"
                         :items="statusPermhonanItems"
-                        item-value="value"
+                        item-value="code"
                         item-title="name"
                         density="compact"
                         placeholder="Semua"
@@ -196,10 +275,11 @@ onMounted(async () => {
                       <VSelect
                         v-model="selectedFilterWilayah"
                         :items="wilayahItems"
-                        item-value="value"
+                        item-value="code"
                         item-title="name"
                         density="compact"
                         placeholder="Semua"
+                        v-on:update:model-value="getDistrict"
                       />
                     </VItemGroup>
                   </VListItem>
@@ -210,7 +290,7 @@ onMounted(async () => {
                       <VSelect
                         v-model="selectedFilterKabupaten"
                         :items="kabupatenItems"
-                        item-value="value"
+                        item-value="code"
                         item-title="name"
                         density="compact"
                         placeholder="Semua"
@@ -224,7 +304,7 @@ onMounted(async () => {
                       <VSelect
                         v-model="selectedFilterFasilitaas"
                         :items="fasilitasItems"
-                        item-value="value"
+                        item-value="code"
                         item-title="name"
                         density="compact"
                         placeholder="Semua"
@@ -235,14 +315,25 @@ onMounted(async () => {
                   <VListItem>
                     <VItemGroup>
                       <VLabel><b>Nama Fasilitator </b></VLabel>
-                      <VSelect
+                      <VAutocomplete
+                        :items="nameFasilitatorItems"
                         v-model="selectedFilterNameFasilitator"
-                        :items="layerItems"
-                        item-value="value"
-                        item-title="name"
+                        item-value="id"
+                        item-title="fac_name"
                         density="compact"
-                        placeholder="Semua"
-                      />
+                        placeholder="Pilih Fasilitator"
+                      >
+                        <template #item="{ props, item }">
+                          <VListItem
+                            v-bind="props"
+                            :title="(item.raw as any).fac_name"
+                          >
+                          </VListItem>
+                        </template>
+                        <template #append-item>
+                          <div v-intersect="loadMoreFasilitator" />
+                        </template>
+                      </VAutocomplete>
                     </VItemGroup>
                   </VListItem>
 
@@ -251,8 +342,8 @@ onMounted(async () => {
                       <VLabel><b>Layer </b></VLabel>
                       <VSelect
                         v-model="selectedFilterLayer"
-                        :items="nameFasilitatorItems"
-                        item-value="value"
+                        :items="layerItems"
+                        item-value="code"
                         item-title="name"
                         density="compact"
                         placeholder="Semua"
