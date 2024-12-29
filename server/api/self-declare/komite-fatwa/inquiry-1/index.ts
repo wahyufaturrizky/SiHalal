@@ -60,10 +60,12 @@ export default defineEventHandler(async (event) => {
   if (searchQuery !== "") params["keywords"] = searchQuery;
   if (jenisPermohonan !== "") params["jenisPermohonan"] = jenisPermohonan;
   if (statusPermohonan !== "") params["status_permohonan"] = statusPermohonan;
-  if (wilayah !== "") params["wilayah"] = wilayah;
-  if (kabupaten !== "") params["kabupaten"] = kabupaten;
+  if (wilayah !== "" && wilayah !== undefined)
+    params["wilayah"] = wilayah.toUpperCase();
+  if (kabupaten !== "" && kabupaten !== undefined)
+    params["kabupaten"] = kabupaten.toUpperCase();
   if (fasilitas !== "") params["fasilitas"] = fasilitas;
-  if (namaFasilitator !== "") params["nama_fasilitator"] = namaFasilitator;
+  if (namaFasilitator !== "") params["fasilitator"] = namaFasilitator;
 
   console.log(params);
   const data = await $fetch<any>(

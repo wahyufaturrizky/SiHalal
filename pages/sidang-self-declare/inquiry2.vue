@@ -54,8 +54,8 @@ const loadItem = async (
         searchQuery,
         jenisPermohonan,
         statusPermohonan,
-        wilayah,
-        kabupaten,
+        wilayah: wilayah.split("||")[1],
+        kabupaten: kabupaten.split("||")[1],
         fasilitas,
         namaFasilitator,
       },
@@ -141,7 +141,7 @@ const getDistrict = async (item: string) => {
   const response: MasterDistrict[] = await $api("/master/district", {
     method: "post",
     body: {
-      province: item,
+      province: item.split("||")[0],
     },
   });
   kabupatenItems.value = [{ code: "", name: "Semua" }, ...response];
@@ -282,6 +282,9 @@ onMounted(async () => {
   );
   filterProduk.value = response4.data || [];
 });
+const provinceValue = (item: MasterDistrict) => {
+  return `${item.code}||${item.name}`;
+};
 </script>
 
 <template>
@@ -347,7 +350,7 @@ onMounted(async () => {
                       <VSelect
                         v-model="selectedFilterWilayah"
                         :items="wilayahItems"
-                        item-value="code"
+                        :item-value="provinceValue"
                         item-title="name"
                         density="compact"
                         placeholder="Semua"
@@ -362,7 +365,7 @@ onMounted(async () => {
                       <VSelect
                         v-model="selectedFilterKabupaten"
                         :items="kabupatenItems"
-                        item-value="code"
+                        :item-value="provinceValue"
                         item-title="name"
                         density="compact"
                         placeholder="Semua"

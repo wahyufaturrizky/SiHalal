@@ -29,7 +29,7 @@ export default defineEventHandler(async event => {
   if (endDate !== '')
     params['end_date'] = endDate
   if (namaPengajuan !== '')
-    params['nama_pu'] = namaPengajuan
+    params['keywords'] = namaPengajuan
 
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/komite/halal-certificate-reguler/self-declare/rekapitulasi`,
