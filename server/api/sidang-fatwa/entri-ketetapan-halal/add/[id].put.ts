@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/sidang-fatwa/entri-ketetapan-halal/update/${id}`,
     {
-      method: "post",
+      method: "put",
       headers: { Authorization: authorizationHeader },
       body,
     }
