@@ -835,7 +835,9 @@
               >
                 {{
                   fatwaSessionDetail.tanggal_penetapan
-                    ? fatwaSessionDetail.tanggal_penetapan
+                    ? new Date(fatwaSessionDetail.tanggal_penetapan)
+                        .toISOString()
+                        .substring(0, 10)
                     : "-"
                 }}
               </InfoRowV2>
@@ -874,18 +876,40 @@
               Sertifikat Halal
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
-              <InfoRowV2
+              <VRow :style="{ fontWeight: '600' }">
+                <VCol cols="3">Nomor Sertifikat</VCol>
+                <VCol cols="1">:</VCol>
+                <VCol cols="8">{{
+                  halalCertificateDetail.nomor_sertifikat
+                    ? halalCertificateDetail.nomor_sertifikat
+                    : "-"
+                }}</VCol>
+              </VRow>
+              <VRow :style="{ fontWeight: '600' }">
+                <VCol cols="3">Tanggal Sertifikat</VCol>
+                <VCol cols="1">:</VCol>
+                <VCol cols="8">{{
+                  halalCertificateDetail.tanggal_sertifikat
+                    ? new Date(halalCertificateDetail.tanggal_sertifikat)
+                        .toISOString()
+                        .substring(0, 10)
+                    : "-"
+                }}</VCol>
+              </VRow>
+              <!-- <InfoRowV2
                 class="d-flex align-center"
                 name="Nomor Sertifikat"
                 :style="{ fontWeight: '600' }"
               >
-                {{
-                  halalCertificateDetail.nomor_sertifikat
-                    ? halalCertificateDetail.nomor_sertifikat
-                    : "-"
-                }}
-              </InfoRowV2>
-              <InfoRowV2
+                <p>
+                  {{
+                    halalCertificateDetail.nomor_sertifikat
+                      ? halalCertificateDetail.nomor_sertifikat
+                      : "-"
+                  }}
+                </p>
+              </InfoRowV2> -->
+              <!-- <InfoRowV2
                 class="d-flex align-center"
                 name="Tanggal Sertifikat"
                 :style="{ fontWeight: '600' }"
@@ -895,7 +919,7 @@
                     ? halalCertificateDetail.nomor_sertifikat
                     : "-"
                 }}
-              </InfoRowV2>
+              </InfoRowV2> -->
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
