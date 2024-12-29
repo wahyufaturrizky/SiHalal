@@ -18,7 +18,7 @@ const saveHasilAudit = async () => {
   const body = {
     pengujian_laboratorium: hasil.value.pengujianLab, // Ada / Tidak Ada
     hasil_audit: hasil.value.hasilAudit, // LULUS / TIDAK LULUS
-    hasil_uji: hasil.value.pengujianLab === 'ADA' ? hasil.value.hasilUji : '',
+    hasil_uji: hasil.value.pengujianLab === 'Ada' ? hasil.value.hasilUji : '',
     keterangan: hasil.value.hasilAudit === 'TIDAK LULUS' ? hasil.value.catatan : '',
   }
 
@@ -119,10 +119,10 @@ const loadItem = async (): void => {
       ]
 
       hasil.value = {
-        pengujianLab: 'Ada', // TODO -> TAMBAH FIELD INI
+        pengujianLab: data.pengajuan_sertifikat?.hasil_audit !== null || data.pengajuan_sertifikat?.hasil_audit !== '' ? 'Ada' : 'Tidak Ada',
         hasilAudit: data.pengajuan_sertifikat?.hasil_audit,
         hasilUji: data.pengajuan_sertifikat?.hasil_uji,
-        catatan: data.pengajuan_sertifikat?.keterangan,
+        catatan: data.pengajuan_sertifikat?.hasil_audit === 'TIDAK LULUS' ? data.pengajuan_sertifikat?.keterangan : '',
       }
 
       auditorListData.value.value = data.auditor_halal.map(

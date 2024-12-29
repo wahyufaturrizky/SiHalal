@@ -2,6 +2,7 @@ import type { NuxtError } from 'nuxt/app'
 
 interface DraftBody {
   pengujian_laboratorium: string
+  hasil_uji: string
   hasil_audit: string
   keterangan: string
 }
