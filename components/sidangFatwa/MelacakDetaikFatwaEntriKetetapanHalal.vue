@@ -27,7 +27,7 @@ const expanded = ref(0);
           class="v-timeline--variant-outlined"
         >
           <VTimelineItem
-            v-for="({ status, tanggal, username, comment }, i) in trackingdata"
+            v-for="({ tanggal, username, comment }, i) in trackingdata"
             :key="i"
             dot-color="rgb(var(--v-theme-surface))"
             size="x-small"
