@@ -14,7 +14,7 @@ const props = defineProps({
     default: false,
   },
 });
-const verified = ref(true);
+const verified = ref(false);
 
 const snackbar = useSnackbar();
 
