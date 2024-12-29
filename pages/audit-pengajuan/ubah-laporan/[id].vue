@@ -3,127 +3,43 @@ const panelCertificateRequest = ref([0, 1])
 const route = useRoute()
 const id = route?.params?.id
 
-const requestDataHalal = ref([
-  { title: 'Nama Perusahaan', value: 'PT Bahagia Sentosa', type: 'text' },
-  { title: 'Alamat Perusahaan', value: 'Sumbawa Banget, RT002/RW002, Sumbang, Curio', type: 'text' },
-  { title: 'NIB', value: '83472896', type: 'text' },
-  { title: 'Skala Usaha', value: 'Mikro', type: 'select', disabled: false },
-  { title: 'Nama Pimpinan', value: 'Bambang', type: 'text' },
-  { title: 'Nama Fasilitas', value: 'Es Cream', type: 'select', disabled: false },
-  { title: 'Alamat Fasilitas', value: 'Sumbawa Banget, RT002/RW002, Sumbang, Curio', type: 'text' },
-  {
-    type: 'date',
-    data: [
-      {
-        title: 'Tanggal Mulai', value: '11/11/2024', type: 'date',
-      },
-      {
-        title: 'Tanggal Selesai', value: '12/11/2024', type: 'date',
-      },
-    ],
-  },
-  { title: 'Jenis Produk', value: 'Minuman Bahagia', type: 'select', disabled: true },
-  { title: 'Nama / Merk Produk', value: 'Minuman Bahagia Lvl 2', type: 'select', disabled: true },
-  { title: 'Pengujian Laboratorium', value: 'Ada', type: 'select', disabled: false },
-  { title: 'Hasil Audit', value: 'Lulus', type: 'select', disabled: false },
-  { title: 'Hasil Pengujian', value: 'Es Cream', type: 'textarea' },
-  { title: 'Catatan', value: 'Es Cream', type: 'textarea' },
-])
+const loading = ref(false)
 
-const loadItem = async (): void => {
-  console.log("loaditem")
+const hasil = ref({
+  pengujianLab: '',
+  hasilAudit: '',
+  hasilUji: '',
+  catatan: '',
+})
+
+const requestDataHalal = ref([])
+
+const saveHasilAudit = async () => {
+  const body = {
+    pengujian_laboratorium: hasil.value.pengujianLab, // Ada / Tidak Ada
+    hasil_audit: hasil.value.hasilAudit, // LULUS / TIDAK LULUS
+    hasil_uji: hasil.value.pengujianLab === 'Ada' ? hasil.value.hasilUji : '',
+    keterangan: hasil.value.hasilAudit === 'TIDAK LULUS' ? hasil.value.catatan : '',
+  }
+
   try {
-    const response = await $api(`/reguler/auditor/ubah-laporan/${id}`, {
-      method: 'GET',
-      params: {id},
+    const response: any = await $api(`/reguler/auditor/${id}/save-hasil-audit`, {
+      method: 'post',
+      body,
     })
 
-    if (response.code === 2000) {
-      // TODO -> MAPPING VALUE
-      const data = response.data
-
-      // REQUEST DATA HALAL
-      requestDataHalal.value = [
-        { title: 'Nama Perusahaan', value: data.pengajuan_sertifikat?.nama_pu, type: 'text' },
-        { title: 'Alamat Perusahaan', value: data.pengajuan_sertifikat?.alamat, type: 'text' },
-        { title: 'NIB', value: data.pengajuan_sertifikat?.nib, type: 'text' },
-        { title: 'Skala Usaha', value: data.pengajuan_sertifikat?.skala_usaha, type: 'select', disabled: false },
-        { title: 'Nama Pimpinan', value: data.pengajuan_sertifikat?.nama_pimpinan, type: 'text' },
-        { title: 'Nama Fasilitas', value: data.pengajuan_sertifikat?.nama_fasilitas , type: 'select', disabled: false },
-        { title: 'Alamat Fasilitas', value: data.pengajuan_sertifikat?.alamat_fasilitas , type: 'text' },
-        {
-          type: 'date',
-          data: [
-            {
-              title: 'Tanggal Mulai', value: data.pengajuan_sertifikat?.tanggal_mulai, type: 'date',
-            },
-            {
-              title: 'Tanggal Selesai', value: data.pengajuan_sertifikat?.tanggal_selesai, type: 'date',
-            },
-          ],
-        },
-        { title: 'Jenis Produk', value: data.pengajuan_sertifikat?.jenis_produk, type: 'select', disabled: true },
-        { title: 'Nama / Merk Produk', value: data.pengajuan_sertifikat?.nama_produk, type: 'select', disabled: true },
-        { title: 'Pengujian Laboratorium', value: 'Ada', type: 'select', disabled: false },
-        { title: 'Hasil Audit', value: 'Lulus', type: 'select', disabled: false },
-        { title: 'Hasil Pengujian', value: 'Es Cream', type: 'textarea' },
-        { title: 'Catatan', value: 'Es Cream', type: 'textarea' },
-      ]
-
-      materialData.value.value = data.bahan.map(
-        (v, i) => ({
-          no: i + 1,
-          materialName: v.nama_bahan,
-          priority: v.kriteria,
-          findings: v.temuan,
-          information: v.keterangan,
-        }))
-
-      // processData.value.value = data.proses_produk_halal.map(
-      //   (v, i) => ({
-      //     no: i + 1,
-      //     requirement: v.persyaratan,
-      //     explanation: v.penjelasan,
-      //   }))
-
-      registrationProductData.value.value = data.produk.map(
-        (v, i) => ({ no: i + 1, name: v.nama_produk, foto: v.photo }))
-
-
-      outletData.value.value = data.outlet.map(
-        (v, i) => ({
-          no: i + 1,
-          name: v.nama_outlet,
-          address: v.alamat_outlet,
-        }))
-
-      summaryData.value.value = data.kesimpulan.map(
-        (v, i) => ({
-          no: i + 1,
-          criteria: v.kriteria,
-          matcher: v.kesesuaian,
-          information: v.keterangan,
-        }))
-
-      auditorListData.value.value = data.auditor.map(
-        (v, i) => ({
-          no: i + 1,
-          name: v.nama_auditor,
-          birthdate: v.tgl_lahir,
-          registrationNo: v.no_reg,
-        }),
-      )
+    if (response?.code === 2000) {
+      useSnackbar().sendSnackbar('Sukses add data', 'success')
+      await loadProsesProduk()
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
     }
   }
-  catch (e) {
-    console.log("ERROR : ", e)
-    useSnackbar().sendSnackbar('Terjadi Kesalahan ', 'error')
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
   }
 }
-
-onMounted(async () => {
-  await loadItem()
-})
 
 const materialData = ref(
   {
@@ -136,9 +52,6 @@ const materialData = ref(
       { title: 'Action', value: 'action', sortable: false, nowrap: true },
     ],
     value: [
-      { no: 1, materialName: 'Sunlight', priority: 'Tidak kritis', findings: 'SK/KH no.10002114', information: 'Bahan Kimia' },
-      { no: 2, materialName: 'Kemasan botol', priority: 'Tidak kritis', findings: '-', information: 'Bahan Kimia' },
-      { no: 3, materialName: 'Air Kelapa', priority: 'Tidak kritis', findings: '13/10/2019', information: 'Bahan Kimia' },
     ],
   },
 )
@@ -152,54 +65,6 @@ const processData = ref(
       { title: 'Action', value: 'action', sortable: false, nowrap: true },
     ],
     value: [
-      { no: 1, requirement: 'Proses', explanation: 'Produk dibuat dengan cara' },
-      { no: 2, requirement: 'Kriteria', explanation: 'Produk dibuat dengan cara' },
-    ],
-  },
-)
-
-const registrationProductData = ref(
-  {
-    label: [
-      { title: 'No.', key: 'no', nowrap: true },
-      { title: 'Nama Produk', key: 'name', nowrap: true },
-      { title: 'Foto Produk', key: 'foto', nowrap: true },
-      { title: 'Action', value: 'action', sortable: false, nowrap: true },
-    ],
-    value: [
-      { no: 1, name: 'Proses', foto: 'file' },
-      { no: 2, name: 'Kriteria', foto: 'file' },
-    ],
-  },
-)
-
-const outletData = ref(
-  {
-    label: [
-      { title: 'No.', key: 'no', nowrap: true },
-      { title: 'Nama Outlet', key: 'name', nowrap: true },
-      { title: 'Address', key: 'address', nowrap: true },
-      { title: 'Action', value: 'action', sortable: false, nowrap: true },
-    ],
-    value: [
-      { no: 1, name: 'Proses', address: 'file' },
-      { no: 2, name: 'Kriteria', address: 'file' },
-    ],
-  },
-)
-
-const summaryData = ref(
-  {
-    label: [
-      { title: 'No.', key: 'no', nowrap: true },
-      { title: 'Kriteria', key: 'criteria', nowrap: true },
-      { title: 'Kesesuaian', key: 'matcher', nowrap: true },
-      { title: 'keterangan', key: 'information', nowrap: true },
-      { title: 'Action', value: 'action', sortable: false, nowrap: true },
-    ],
-    value: [
-      { no: 1, criteria: 'Proses', matcher: 'file', information: '-' },
-      { no: 2, criteria: 'Kriteria', matcher: 'file', information: 'ada yang salah' },
     ],
   },
 )
@@ -210,20 +75,73 @@ const auditorListData = ref(
       { title: 'No.', key: 'no', nowrap: true },
       { title: 'Nama', key: 'name', nowrap: true },
       { title: 'Tanggal Lahir', key: 'birthdate', nowrap: true },
-      { title: 'No. Pendaftara', key: 'registrationNo', nowrap: true },
-      { title: 'Action', value: 'action', sortable: false, nowrap: true },
+      { title: 'No. Pendaftaran', key: 'registrationNo', nowrap: true },
     ],
     value: [
-      { no: 1, name: 'Proses', birthdate: '16/12/1999', registrationNo: '-' },
-      { no: 2, name: 'Kriteria', birthdate: '16/12/1999', registrationNo: 'SH 213618969 er' },
     ],
   },
 )
 
+const loadItem = async (): void => {
+  console.log('loaditem')
+  try {
+    const response = await $api(`/reguler/auditor/ubah-laporan/${id}`, {
+      method: 'GET',
+      params: { id },
+    })
+
+    if (response.code === 2000) {
+      // TODO -> MAPPING VALUE
+      const data = response.data
+
+      // REQUEST DATA HALAL
+      requestDataHalal.value = [
+        { title: 'Nama Perusahaan', value: data.pengajuan_sertifikat?.nama_pu, type: 'text' },
+        { title: 'Alamat Perusahaan', value: data.pengajuan_sertifikat?.alamat, type: 'text' },
+        { title: 'NIB', value: data.pengajuan_sertifikat?.nib, type: 'text' },
+        { title: 'Skala Usaha', value: data.pengajuan_sertifikat?.skala_usaha, type: 'select', disabled: true },
+        { title: 'Nama Pimpinan', value: data.pengajuan_sertifikat?.nama_pimpinan, type: 'text' },
+        { title: 'Nama Fasilitas', value: data.pengajuan_sertifikat?.nama_fasilitas, type: 'select', disabled: true },
+        { title: 'Alamat Fasilitas', value: data.pengajuan_sertifikat?.alamat_fasilitas, type: 'text' },
+        {
+          type: 'date',
+          data: [
+            {
+              title: 'Tanggal Mulai', value: data.pengajuan_sertifikat?.tanggal_mulai, type: 'date',
+            },
+            {
+              title: 'Tanggal Selesai', value: data.pengajuan_sertifikat?.tanggal_selesai, type: 'date',
+            },
+          ],
+        },
+        { title: 'Jenis Produk', value: data.pengajuan_sertifikat?.jenis_produk, type: 'select', disabled: true },
+        { title: 'Nama / Merk Produk', value: data.pengajuan_sertifikat?.nama_produk, type: 'select', disabled: true },
+      ]
+
+      hasil.value = {
+        pengujianLab: data.pengajuan_sertifikat?.hasil_audit !== null || data.pengajuan_sertifikat?.hasil_audit !== '' ? 'Ada' : 'Tidak Ada',
+        hasilAudit: data.pengajuan_sertifikat?.hasil_audit,
+        hasilUji: data.pengajuan_sertifikat?.hasil_uji,
+        catatan: data.pengajuan_sertifikat?.hasil_audit === 'TIDAK LULUS' ? data.pengajuan_sertifikat?.keterangan : '',
+      }
+
+      auditorListData.value.value = data.auditor_halal.map(
+        (v, i) => ({
+          no: i + 1,
+          name: v.nama,
+          birthdate: v.tgl_lahir,
+          registrationNo: v.no_registrasi,
+        }),
+      )
+    }
+  }
+  catch (e) {
+    useSnackbar().sendSnackbar('Terjadi Kesalahan ', 'error')
+  }
+}
+
 const fasilityOptions = ref(
   [
-    { title: 'facility 1', value: '1', alamat: 'alamat 2' },
-    { title: 'facility 2', value: '2', alamat: 'alamat 1' },
   ],
 )
 
@@ -240,7 +158,7 @@ const getSelectOptions = field => {
     data = ['Ada', 'Tidak Ada']
       break;
   case 'Hasil Audit':
-    data = ['Lulus', 'Tidak Lulus']
+    data = ['LULUS', 'TIDAK LULUS']
       break;
   default:
     break;
@@ -249,25 +167,343 @@ const getSelectOptions = field => {
   return data
 }
 
-const shouldShowHasilPengujian = computed(() => {
-  const labTesting = requestDataHalal.value.find(
-    item => item.title === 'Pengujian Laboratorium',
-  )
-
-  return labTesting && labTesting.value === 'Ada'
-})
-
-const shouldShowCatatan = computed(() => {
-  const auditResult = requestDataHalal.value.find(
-    item => item.title === 'Hasil Audit',
-  )
-
-  return auditResult && auditResult.value === 'Lulus'
-})
-
 const triggerDialog = type => {
 
 }
+
+const summaryData = ref(
+  {
+    label: [
+      { title: 'No.', key: 'no', nowrap: true },
+      { title: 'Kriteria', key: 'criteria', nowrap: true },
+      { title: 'Kesesuaian', key: 'matcher', nowrap: true },
+      { title: 'keterangan', key: 'information', nowrap: true },
+      { title: 'Action', value: 'action', sortable: false, nowrap: true },
+    ],
+    value: [
+    ],
+  },
+)
+
+// PEMENUHAN KRITERIA:
+const loadPemenuhanKriteria = async () => {
+  try {
+    const response = await $api(
+      `/reguler/auditor/${id}/pemenuhan-kriteria`,
+      {
+        method: 'get',
+      },
+    )
+
+    if (response.code === 2000) {
+      const data = response.data
+
+      summaryData.value = {
+        label: summaryData.value.label,
+        value: data.pemenuhan_kriteria?.map(
+          (v, i) => ({
+            no: i + 1,
+            criteria: v.kriteria,
+            matcher: v.kesesuaian,
+            information: v.keterangan,
+            id_kriteria: v.id_kriteria,
+            id_reg: v.id_reg,
+          })),
+      }
+
+      return response
+    }
+    else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(', '),
+        'error',
+      )
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const addPemenuhanKriteria = async item => {
+  try {
+    const body = {
+      kriteria: item.value.kriteria,
+      kesesuaian: item.value.kesesuaian,
+      keterangan: item.value.keterangan,
+    }
+
+    const response: any = await $api(`/reguler/auditor/${id}/add-pemenuhan-kriteria`, {
+      method: 'post',
+      body,
+    })
+
+    if (response?.code === 2000) {
+      useSnackbar().sendSnackbar('Sukses add data', 'success')
+      await loadPemenuhanKriteria()
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const removePemenuhanKriteria = async item => {
+  try {
+    const body = {
+      id_reg: id,
+      id_pemenuhan_kriteria: item.id_kriteria,
+    }
+
+    const response: any = await $api(`/reguler/auditor/${id}/destroy-pemenuhan-kriteria`, {
+      method: 'post',
+      body,
+    })
+
+    if (response?.code === 2000) {
+      useSnackbar().sendSnackbar('Sukses add data', 'success')
+      await loadPemenuhanKriteria()
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+// PROSES PRODUK
+const loadProsesProduk = async () => {
+  try {
+    const response = await $api(
+      `/reguler/auditor/${id}/proses-produk`,
+      {
+        method: 'get',
+      },
+    )
+
+    if (response.code === 2000) {
+      const data = response.data
+
+      processData.value = {
+        label: processData.value.label,
+        value: data.proses_produk_halal?.map(
+          (v, i) => ({
+            no: i + 1,
+            explanation: v.penjelasan,
+            requirement: v.persyaratan,
+            id_proses_produk_halal: v.id_proses_produk_halal,
+
+          })),
+      }
+
+      return response
+    }
+    else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(', '),
+        'error',
+      )
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const addProsesProduk = async item => {
+  console.log('ITEM ADD PROSES PRODUK: ', item)
+  try {
+    const response: any = await $api(`/reguler/auditor/${id}/add-proses-produk`, {
+      method: 'post',
+      body: {
+        persyaratan: item.value.persyaratan,
+        penjelasan: item.value.penjelasan,
+      },
+    })
+
+    if (response?.code === 2000) {
+      useSnackbar().sendSnackbar('Sukses add data', 'success')
+      await loadProsesProduk()
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const removeProsesProduk = async item => {
+  try {
+    const body = {
+      id_reg: id,
+      id_proses_produk_halal: item.id_proses_produk_halal,
+    }
+
+    const response: any = await $api(`/reguler/auditor/${id}/destroy-proses-produk`, {
+      method: 'post',
+      body,
+    })
+
+    if (response?.code === 2000) {
+      useSnackbar().sendSnackbar('Sukses add data', 'success')
+      await loadProsesProduk()
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+// BAHAN DUKUNG METHOD
+const jenisKeteranganBahan = ref([])
+
+const loadJenisKeteranganBahan = async () => {
+  try {
+    const response: any = await $api('/master/jenis-keterangan', {
+      method: 'get',
+    })
+
+    if (response.length > 0) {
+      jenisKeteranganBahan.value = response.map(
+        i => ({
+          title: i.name,
+          value: i.code,
+        }),
+      )
+
+      return response
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const addDataDukung = async item => {
+  try {
+    const response: any = await $api(`/reguler/auditor/${id}/add-bahan-dukung`, {
+      method: 'post',
+      body: {
+        id_reg_bahan: item.value.namaBahan,
+        nama_bahan: opsiBahan.value.filter(i => i.value === item.value.namaBahan)[0].title,
+        diragukan: item.value.statusKeraguan,
+        kriteria_bahan: item.value.kriteriaBahan,
+        keterangan: item.value.keterangan,
+      },
+    })
+
+    if (response?.code === 2000) {
+      useSnackbar().sendSnackbar('Sukses add data', 'success')
+      await loadBahanDukung()
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const updateDataDukung = async item => {
+  try {
+    const body = {
+      id_reg_bahan: item.id_reg_bahan,
+      id_bahan_data_dukung: item.id_bahan_data_dukung,
+      nama_bahan: item.materialName,
+      diragukan: item.diragukan,
+      kriteria_bahan: item.priority,
+      keterangan: item.information,
+    }
+
+    const response: any = await $api(`/reguler/auditor/${id}/update-bahan-dukung`, {
+      method: 'put',
+      body,
+    })
+
+    if (response?.code === 2000) {
+      useSnackbar().sendSnackbar('Sukses add data', 'success')
+      await loadBahanDukung()
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const opsiBahan = ref([])
+
+const loadBahanDukung = async () => {
+  try {
+    const response = await $api(
+      `/reguler/auditor/${id}/bahan-dukung`,
+      {
+        method: 'get',
+      },
+    )
+
+    if (response.code === 2000) {
+      const data = response.data
+
+      materialData.value = {
+        label: materialData.value.label,
+        value: data.bahan?.map(
+          (v, i) => ({
+            no: i + 1,
+            id_reg_bahan: v.id_reg_bahan,
+            id_bahan_data_dukung: v.DataDukung?.id_bahan_data_dukung,
+            materialName: v.reg_nama_bahan,
+            priority: v.DataDukung?.kriteria_bahan,
+            findings: v.DataDukung?.temuan,
+            information: v.DataDukung?.keterangan,
+            diragukan: v.DataDukung?.diragukan,
+          })),
+      }
+      opsiBahan.value = data.bahan?.filter(
+        i => i.DataDukung?.id_bahan_data_dukung === '00000000-0000-0000-0000-000000000000',
+      ).map(i => ({
+        title: i.reg_nama_bahan,
+        value: i.id_reg_bahan,
+      }))
+
+      return response
+    }
+    else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(', '),
+        'error',
+      )
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+onMounted(async () => {
+  loading.value = true
+  Promise.all([loadItem(), loadBahanDukung(), loadJenisKeteranganBahan(), loadProsesProduk(), loadPemenuhanKriteria()])
+
+  // await loadBahanDukung()
+  // await loadItem()
+  // await loadJenisKeteranganBahan()
+  // await loadProsesProduk()
+  // await loadPemenuhanKriteria()
+  loading.value = false
+})
 </script>
 
 <template>
@@ -290,7 +526,9 @@ const triggerDialog = type => {
           >
             Batal
           </VBtn>
-          <VBtn>Simpan</VBtn>
+          <VBtn @click="saveHasilAudit">
+            Simpan
+          </VBtn>
         </VRow>
       </VCol>
     </VRow>
@@ -367,38 +605,57 @@ const triggerDialog = type => {
                       />
                     </div>
                   </VCol>
-                  <div v-if="item.type === 'textarea'">
-                    <div v-if="item.title === 'Hasil Pengujian' && shouldShowHasilPengujian">
-                      <p class="label-pengajuan">
-                        {{ item.title }}
-                      </p>
-                      <VTextarea
-                        v-model="item.value"
-                        class="-mt-10"
-                      />
-                    </div>
-                    <div v-if="item.title === 'Catatan' && shouldShowCatatan && shouldShowHasilPengujian">
-                      <div>
-                        <p class="label-pengajuan">
-                          {{ item.title }}
-                        </p>
-                        <VTextarea
-                          v-model="item.value"
-                          class="-mt-10"
-                        />
-                      </div>
-                    </div>
-                    <div v-if="item.title === 'Catatan' && shouldShowCatatan && !shouldShowHasilPengujian">
-                      <div class="-mt-20">
-                        <p class="label-pengajuan">
-                          {{ item.title }}
-                        </p>
-                        <VTextarea
-                          v-model="item.value"
-                          class="-mt-10"
-                        />
-                      </div>
-                    </div>
+                </VCol>
+                <VCol cols="12">
+                  <p class="label-pengajuan">
+                    Pengujian Laboratorium
+                  </p>
+                  <VSelect
+                    v-model="hasil.pengujianLab"
+                    :items="getSelectOptions('Pengujian Laboratorium')"
+                    outlined
+                    class="-mt-10"
+                    bg-color="#F6F6F6"
+                  />
+                </VCol>
+                <VCol
+                  v-if="hasil.pengujianLab === 'Ada'"
+                  cols="12"
+                >
+                  <div>
+                    <p class="label-pengajuan">
+                      Hasil Uji
+                    </p>
+                    <VTextarea
+                      v-model="hasil.hasilUji"
+                      class="-mt-10"
+                    />
+                  </div>
+                </VCol>
+                <VCol cols="12">
+                  <p class="label-pengajuan">
+                    Hasil Audit
+                  </p>
+                  <VSelect
+                    v-model="hasil.hasilAudit"
+                    :items="getSelectOptions('Hasil Audit')"
+                    outlined
+                    class="-mt-10"
+                    bg-color="#F6F6F6"
+                  />
+                </VCol>
+                <VCol
+                  v-if="hasil.hasilAudit === 'TIDAK LULUS'"
+                  cols="12"
+                >
+                  <div>
+                    <p class="label-pengajuan">
+                      Catatan
+                    </p>
+                    <VTextarea
+                      v-model="hasil.catatan"
+                      class="-mt-10"
+                    />
                   </div>
                 </VCol>
               </VRow>
@@ -407,43 +664,37 @@ const triggerDialog = type => {
         </VExpansionPanels>
         <br>
         <ContentAuditPengajuan
+          v-if="!loading"
+          :opsi-bahan="opsiBahan"
+          :opsi-keterangan="jenisKeteranganBahan"
           :on-add="() => triggerDialog('add')"
           title="Bahan"
           :headers-label="materialData.label"
           :items-label="materialData.value"
           with-add-button
+          @submit="addDataDukung"
+          @update="updateDataDukung"
         />
         <br>
         <ContentAuditPengajuan
-          :on-add="() => console.log('aaa')"
           title="Proses Produk Halal"
           :headers-label="processData.label"
           :items-label="processData.value"
           with-add-button
+          @submit="addProsesProduk"
+          @remove="removeProsesProduk"
         />
         <br>
-        <ContentAuditPengajuan
-          :on-add="() => console.log('aaa')"
-          title="Daftar Produk"
-          :headers-label="registrationProductData.label"
-          :items-label="registrationProductData.value"
-          :with-add-button="false"
-        />
+        <DaftarProdukAudit />
+        <DaftarOutletAudit :id="id" />
         <br>
         <ContentAuditPengajuan
-          :on-add="() => console.log('aaa')"
-          title="Daftar Outlet"
-          :headers-label="outletData.label"
-          :items-label="outletData.value"
-          :with-add-button="false"
-        />
-        <br>
-        <ContentAuditPengajuan
-          :on-add="() => console.log('aaa')"
           title="Kesimpulan Pemenuhan Kriteria Sistem Jaminan Produk Halal"
           :headers-label="summaryData.label"
           :items-label="summaryData.value"
           with-add-button
+          @submit="addPemenuhanKriteria"
+          @remove="removePemenuhanKriteria"
         />
         <br>
         <ContentAuditPengajuan
