@@ -1464,6 +1464,14 @@ const onSelectFasilitator = (selectedId: string) => {
                 <template #item.no="{ index }">
                   {{ index + 1 + (pageBahan - 1) * itemPerPageBahan }}
                 </template>
+                <template #item.jenis_bahan="{ item }">
+                  {{
+                    (item as any).jenis_bahan.replace(
+                      /(uncertified|certified)\|/,
+                      ""
+                    )
+                  }}
+                </template>
                 <template #item.tanggal_berlaku="{ item }">
                   {{ formatDate((item as any).tanggal_berlaku) }}
                 </template>
