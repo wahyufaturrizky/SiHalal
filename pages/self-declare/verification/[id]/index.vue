@@ -750,16 +750,16 @@ const bahanTableHeader = [
 const outletTableHeader = [
   { title: "No", key: "no" },
   // { title: "Jenis Bahan", key: "jenis_outlet" },
-  { title: "Nama Bahan", key: "nama_outlet" },
-  { title: "Alamat", key: "alamat_outlet" },
-  // { title: "Status", key: "status_milik" },
+  { title: "Nama Bahan", key: "nama" },
+  { title: "Alamat", key: "alamat" },
+  { title: "Status", key: "status_milik" },
   // { title: "Action", key: "action" },
 ];
 
 const pabrikTableHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "nama_pabrik" },
-  { title: "Alamat", key: "alamat_pabrik" },
+  { title: "Nama", key: "nama" },
+  { title: "Alamat", key: "alamat" },
   { title: "Status", key: "status_milik" },
   // { title: "Action", key: "action" },
 ];
