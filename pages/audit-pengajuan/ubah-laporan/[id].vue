@@ -82,6 +82,18 @@ const auditorListData = ref(
   },
 )
 
+const facility = ref([])
+const facilityOptions = ref([])
+const selectedFacility = ref(null)
+const facilityAddress = ref(null)
+
+watch(selectedFacility, (newSelectedItem) => {
+  console.log("SELECT : ", newSelectedItem)
+  facilityAddress.value = facility.value.filter(
+    f => f.id_fas === newSelectedItem
+  )[0].alamat
+});
+
 const loadItem = async (): void => {
   console.log('loaditem')
   try {
@@ -101,8 +113,8 @@ const loadItem = async (): void => {
         { title: 'NIB', value: data.pengajuan_sertifikat?.nib, type: 'text' },
         { title: 'Skala Usaha', value: data.pengajuan_sertifikat?.skala_usaha, type: 'select', disabled: true },
         { title: 'Nama Pimpinan', value: data.pengajuan_sertifikat?.nama_pimpinan, type: 'text' },
-        { title: 'Nama Fasilitas', value: data.pengajuan_sertifikat?.nama_fasilitas, type: 'select', disabled: true },
-        { title: 'Alamat Fasilitas', value: data.pengajuan_sertifikat?.alamat_fasilitas, type: 'text' },
+        { title: 'Nama Fasilitas', value: '' , type: 'select-fasillitasi', },
+        { title: 'Alamat Fasilitas', value: '' , type: 'text-fasilitasi' },
         {
           type: 'date',
           data: [
@@ -117,6 +129,17 @@ const loadItem = async (): void => {
         { title: 'Jenis Produk', value: data.pengajuan_sertifikat?.jenis_produk, type: 'select', disabled: true },
         { title: 'Nama / Merk Produk', value: data.pengajuan_sertifikat?.nama_produk, type: 'select', disabled: true },
       ]
+
+      facility.value = data.pengajuan_sertifikat?.fasilitas
+
+      selectedFacility.value = facility.value.length > 0 ? facility.value[0].id_fas : ''
+
+      facilityOptions.value = data.pengajuan_sertifikat?.fasilitas.map(
+        f => ({
+          title: f.nama,
+          value: f.id_fas
+        })
+      )
 
       hasil.value = {
         pengujianLab: data.pengajuan_sertifikat?.hasil_audit !== null || data.pengajuan_sertifikat?.hasil_audit !== '' ? 'Ada' : 'Tidak Ada',
@@ -548,6 +571,32 @@ onMounted(async () => {
                   :value="index"
                   cols="12"
                 >
+                  <div v-if="item.type === 'select-fasillitasi'">
+                    <p class="label-pengajuan">
+                      {{ item.title }}
+                    </p>
+                    <VSelect
+                      v-model="selectedFacility"
+                      :items="facilityOptions"
+                      outlined
+                      class="-mt-10"
+                      bg-color="#F6F6F6"
+                    />
+                  </div>
+
+                  <div v-if="item.type === 'text-fasilitasi'">
+                    <p class="label-pengajuan">
+                      {{ item.title }}
+                    </p>
+                    <VTextField
+                      v-model="facilityAddress"
+                      :items="facilityOptions"
+                      outlined
+                      class="-mt-10"
+                      bg-color="#F6F6F6"
+                      disabled
+                    />
+                  </div>
                   <!-- <br> -->
                   <div v-if="item.type === 'text'">
                     <p class="label-pengajuan">
