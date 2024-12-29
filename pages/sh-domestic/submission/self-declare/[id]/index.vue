@@ -1227,7 +1227,7 @@ onMounted(async () => {
     getDownloadForm("rekomendasi", "rekomendasi"),
     getDownloadForm("sjph", "sjph"),
     getDownloadForm("laporan", "laporan"),
-    getDownloadForm("setifikasi-halal", "setifikasi_halal"),
+    getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
   ]);
   if (registrationDetail.status == "") {
     return;
