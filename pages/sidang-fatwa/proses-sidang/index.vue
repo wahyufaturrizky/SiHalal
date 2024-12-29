@@ -371,7 +371,7 @@ const reset = () => {
               </template>
             -->
             <template #item.merek_dagang="{ item }">
-              {{ item.merek_dagang || "N/A" }}
+              {{ item.merek_dagang }}
               <!-- Display Merek Dagang value or N/A if not available -->
             </template>
             <template #item.laporan_sph="{ item }">
