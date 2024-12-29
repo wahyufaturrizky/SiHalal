@@ -416,10 +416,12 @@
                 v-if="substanceItems.length"
                 :headers="substanceHeader"
                 :items="substanceItems"
+                v-model:page="pages.bahan"
+                v-model:items-per-page="itemPerPages.bahan"
                 :hide-default-footer="substanceItems.length < 10"
               >
                 <template #item.no="{ index }">
-                  {{ index + 1 }}
+                  {{ (pages.bahan - 1) * itemPerPages.bahan + index + 1 }}
                 </template>
                 <template #item.type="{ item }">
                   {{ item.jenis_bahan }}
@@ -1021,7 +1023,12 @@ const picDetail = reactive({
   nomor_kontak_pj: "",
   email_pj: "",
 });
-
+const pages = reactive({
+  bahan: 1,
+});
+const itemPerPages = reactive({
+  bahan: 10,
+});
 const kbliDropdown = ref<any>([]);
 const getExistKbli = () => {
   const result = kbliDropdown.value.find((el: any) => {
