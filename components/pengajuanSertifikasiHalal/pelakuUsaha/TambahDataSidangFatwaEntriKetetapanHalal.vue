@@ -67,8 +67,6 @@ const props = defineProps({
   },
 });
 
-const { listagama } = props || {};
-
 const addDialog = ref(false);
 const loadingAdd = ref(false);
 
@@ -153,7 +151,11 @@ const loadItemPenetapan = async () => {
 };
 
 const checkIsFieldEMpty = (data: any) => {
-  return Object.keys(data)?.find((key: any) => !data[key]);
+  return Object.keys(data)?.find((key: any) => {
+    if (key !== "no_sertifikat") {
+      return !data[key];
+    }
+  });
 };
 
 const { mdAndUp } = useDisplay();
