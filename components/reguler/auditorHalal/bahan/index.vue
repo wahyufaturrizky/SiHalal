@@ -587,13 +587,17 @@ const getListIngredients = async () => {
         value: response.data || [],
       }
 
-      const jenisBahan = response.data?.map(i => i.jenis_bahan)
+      if(response.data !== null){
+        const jenisBahan = response.data?.map(i => i.jenis_bahan)
 
-      if (['Bahan', 'Cleaning Agent', 'Kemasan'].every(item => jenisBahan.includes(item))){
-        emit('complete', true)
-      }else {
-        const missing = ['Bahan', 'Cleaning Agent', 'Kemasan'].filter(item => !jenisBahan.includes(item))
-        emit('failed', missing)
+        if (['Bahan', 'Cleaning Agent', 'Kemasan'].every(item => jenisBahan.includes(item))){
+          emit('complete', true)
+        }else {
+          const missing = ['Bahan', 'Cleaning Agent', 'Kemasan'].filter(item => !jenisBahan.includes(item))
+          emit('failed', missing)
+        }
+      }else{
+        emit('failed', ['Bahan', 'Cleaning Agent', 'Kemasan'])
       }
 
       reRender.value = !reRender.value

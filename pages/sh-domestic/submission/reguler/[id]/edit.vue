@@ -175,12 +175,7 @@ onMounted(async () => {
       <VRow>
         <VCol cols="12" class="pl0">
           <VTabs v-model="activeTab" align-tabs="start" class="w-100">
-            <VTab v-for="(item, index) in tabList.slice(0,3)" :key="item" :value="index">
-              {{ item }}
-            </VTab>
-            <VTab v-for="(item, index) in tabList.slice(3,7)" :key="item" :value="index"
-                  :disabled="!isBahanCompleted"
-            >
+            <VTab v-for="(item, index) in tabList" :key="item" :value="index">
               {{ item }}
             </VTab>
           </VTabs>
