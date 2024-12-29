@@ -10,6 +10,8 @@ export enum MasterRef {
   CHANL = "CHANL",
 
   STOFF = "STOFF",
+
+  JNDAF = "JNDAF",
 }
 
 export const findRefType = (input: any): string => {
