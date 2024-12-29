@@ -201,8 +201,7 @@ onMounted(async () => {
 watch(dataTable, () => {
   dataTable?.value.length > 0 && dataTable.value.map((item: any) => {
     const dateData = item?.tgl_dikirim?.split(' ')[0] || ''
-    const dayCount = item?.tgl_dikirim?.split(' ')[2] || ''
-
+    const dayCount = item?.tgl_dikirim?.split(' ')[1] || ''
     if (dateData) {
       const isFifteenDay = isOlderThan15Days(dateData)
       if (isFifteenDay) {
@@ -354,7 +353,7 @@ watch(dataTable, () => {
             </template>
             <template #bottom>
               <VDataTableFooter
-                v-if="invoiceData.length > 10"
+                v-if="dataTable.length > 10"
                 first-icon="mdi-chevron-double-left"
                 last-icon="mdi-chevron-double-right"
                 show-current-page
