@@ -102,14 +102,13 @@ const addDataPenyeliaHalal = async () => {
     const res: any = await $api(
       `/sidang-fatwa/entri-ketetapan-halal/add/${selfDeclareId}`,
       {
-        method: "post",
+        method: "put",
         body: {
           ...formData.value,
           file: fileSpph.data.file_url,
         },
       }
     );
-    console.log("@res", res);
 
     if (res?.code === 2000) {
       loadingAdd.value = false;
