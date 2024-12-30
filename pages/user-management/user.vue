@@ -1,9 +1,10 @@
 <script setup lang="ts">
 type DataUser = {
-  id?: string;
+  id: string;
   username: string;
   nama: string;
   email: string;
+  password?: string;
   phone_no: string;
   is_verify: boolean;
   role: string;
@@ -20,14 +21,17 @@ const tableHeaders: any[] = [
 ];
 const tableItems = ref<Array<DataUser>>([
   {
+    id: "1",
     username: "Banawadmnk",
     nama: "Banawa Damanik",
     email: "juli18@palastri.in",
+    password: "123",
     phone_no: "0839 9981 7991",
     is_verify: true,
     role: "Pelaku Usaha",
   },
   {
+    id: "2",
     username: "Zelda_Zulaika",
     nama: "Zelda Zulaika",
     email: "ibrani.pradana@yahoo.co.id",
@@ -36,6 +40,7 @@ const tableItems = ref<Array<DataUser>>([
     role: "Verifikator HLN",
   },
   {
+    id: "3",
     username: "Genta_Halimah",
     nama: "Genta Halimah",
     email: "gmulyani@tamba.sch.id",
@@ -57,8 +62,10 @@ const handleSearchUser = useDebounceFn((val: string) => {
   // refresh();
 }, 350);
 
+const dialogUse = ref("CREATE");
 const isOpenAddModal = ref(false);
-const handleOpenAddModal = () => {
+const handleOpenAddModal = (type?: string | null) => {
+  if (type) dialogUse.value = type;
   isOpenAddModal.value = !isOpenAddModal.value;
 };
 const handleAddNewUser = (payload: any) => {
@@ -66,8 +73,22 @@ const handleAddNewUser = (payload: any) => {
   useSnackbar().sendSnackbar("Data Successfully Added", "success");
   // useSnackbar().sendSnackbar("Add Data Failed", "error");
 };
+const handleUpdateUser = (payload: any) => {
+  console.log(payload, "< update payload");
+  useSnackbar().sendSnackbar("Data Successfully Updated", "success");
+  // useSnackbar().sendSnackbar("Update Data Failed", "error");
+};
 
 const selectedUser = ref("");
+const detailData = ref();
+// remove this function on integrating update
+const handleLoadDetail = (id: string) => {
+  selectedUser.value = id;
+  const detail = tableItems.value.find((item) => {
+    return item.id === selectedUser.value;
+  });
+  if (detail) detailData.value = detail;
+};
 const isOpenDeleteModal = ref(false);
 const handleOpenDeleteModal = (id?: string | null) => {
   if (id) selectedUser.value = id;
@@ -83,7 +104,7 @@ const handleConfirmDelete = () => {
 <template>
   <VRow>
     <VCol>
-      <h1 class="mb-3 font-weight-bold">User</h1>
+      <h1 class="mb-1 font-weight-bold">User</h1>
     </VCol>
   </VRow>
   <VRow>
@@ -93,7 +114,7 @@ const handleConfirmDelete = () => {
           class="d-flex justify-space-between align-center font-weight-bold text-h4"
         >
           <div>User List</div>
-          <VBtn append-icon="fa-plus" @click="handleOpenAddModal"
+          <VBtn append-icon="fa-plus" @click="handleOpenAddModal('CREATE')"
             >Add User</VBtn
           >
         </VCardTitle>
@@ -146,15 +167,14 @@ const handleConfirmDelete = () => {
                       v-bind="props"
                       icon="fa-ellipsis-v"
                       color="primary"
+                      @click="handleLoadDetail(item.id)"
                     />
                   </template>
                   <VList>
-                    <VListItem class="cursor-pointer">
-                      <template #prepend>
-                        <VIcon icon="fa-rotate-right" :size="16" />
-                      </template>
-                      <VListItemTitle>Reset Password</VListItemTitle>
-                    </VListItem>
+                    <UpdateUserForm
+                      :detail="detailData"
+                      @submit:update="handleUpdateUser"
+                    />
                     <VListItem
                       class="cursor-pointer"
                       @click="handleOpenDeleteModal(item.id)"
@@ -175,10 +195,9 @@ const handleConfirmDelete = () => {
   </VRow>
   <AddUserForm
     :dialog-visible="isOpenAddModal"
-    :open-handler="handleOpenAddModal"
-    @update:handle-submit="handleAddNewUser"
-  >
-  </AddUserForm>
+    :close-handler="handleOpenAddModal"
+    @submit:add="handleAddNewUser"
+  />
   <ConfirmModal
     dialog-title="Delete Confirmation"
     :dialog-visible="isOpenDeleteModal"
