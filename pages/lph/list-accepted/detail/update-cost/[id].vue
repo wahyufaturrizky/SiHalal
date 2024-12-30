@@ -328,7 +328,7 @@ const onEdit = async () => {
       akomodasi_akhir: idrToNumber(detailData.value?.akomodasi_akhir),
       akomodasi_diskon: +detailData.value?.akomodasi_diskon,
       id_pabrik: detailData.value?.id_pabrik,
-      tiket_pesawat_akhir: idrToNumber(detailData.value?.transport_akhir),
+      tiket_pesawat_akhir: idrToNumber(detailData.value?.tiket_pesawat_akhir),
       tiket_pesawat_diskon: +detailData.value?.tiket_pesawat_diskon,
       transport_akhir: idrToNumber(detailData.value?.transport_akhir),
       transport_diskon: +detailData.value?.transport_diskon,

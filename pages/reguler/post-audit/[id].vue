@@ -15,6 +15,8 @@ const fileKH = ref<any>(null);
 const fileHasilAudit = ref<any>(null);
 const fileLihatDraft = ref<any>(null);
 const isSendModalOpen = ref(false);
+const showReturn = ref(false);
+const returnNote = ref("");
 
 const assignAuditorHeader: any[] = [
   { title: 'No', key: 'index' },
@@ -38,6 +40,9 @@ const assignedAuditor = ref(null);
 const isAssignModalOpen = ref(false);
 const isUpdateModalOpen = ref(false);
 
+const openReturn = () => (showReturn.value = true);
+const closeReturn = () => (showReturn.value = false);
+
 const handleOpenAssignModal = () => {
   isAssignModalOpen.value = !isAssignModalOpen.value;
 };
@@ -57,6 +62,34 @@ const handleDeleteAuditor = (index: number) => {
 const handleSaveAuditor = () => {
   useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success');
 };
+
+const refVForm = ref<VForm>()
+
+const returnDocument = async () => {
+  try {
+    const response = await $api("/reguler/verifikator/detail/decline", {
+      method: "post",
+      body: {
+        id_reg: route.params.id,
+        keterangan: returnNote.value,
+      },
+    });
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("Ada kesalahan", "error");
+      return;
+    }
+    closeReturn();
+    useSnackbar().sendSnackbar("Berhasil mengembalikan data", "success");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada kesalahan", "error");
+  }
+};
+
+const rejectSubmission = async () => {
+  refVForm.value?.validate().then(({ valid: isValid }) => {
+    if (isValid) returnDocument();
+  });
+}
 
 const getDownloadForm = async (docName: string) => {
   const result: any = await $api(`/self-declare/submission/${id}/file`, {
@@ -181,6 +214,38 @@ onMounted(async () => {
         </VCardActions>
       </VCard>
     </VDialog>
+    <VDialog v-model="showReturn" max-width="600px">
+      <VForm ref="refVForm" @submit.prevent="rejectSubmission">
+        <VCard>
+          <VCardTitle class="font-weight-bold d-flex justify-space-between"
+            ><h3>Pengembalian Dokumen</h3>
+            <VBtn icon variant="plain" @click="closeReturn">
+              <VIcon style="color: black">mdi-close</VIcon>
+            </VBtn>
+          </VCardTitle>
+          <VCardText>
+            <div class="mb-3 font-weight-medium text-caption text-grey">
+              <span style="color: black"
+                ><b>Masukan Keterangan Pengembalian</b></span
+              >(Max. 1000 Karakter)
+            </div>
+            <VTextarea
+              label="Masukan Keterangan Pengembalian (Max. 1000 Karakter)"
+              v-model="returnNote"
+              :rules="[requiredValidator]"
+              rows="4"
+              outlined
+            />
+          </VCardText>
+          <VCardActions class="d-flex justify-end">
+            <VBtn color="primary" variant="outlined" @click="closeReturn"
+              >Batal</VBtn
+            >
+            <VBtn type="submit" color="primary" variant="flat">Kembalikan</VBtn>
+          </VCardActions>
+        </VCard>
+      </VForm>
+    </VDialog>
     <LPHDetailLayout>
       <template #page-title>
         <VRow no-gutters>
@@ -193,7 +258,7 @@ onMounted(async () => {
                 variant="outlined"
                 color="#E1442E"
                 style="border-color: #e1442e"
-                @click="() => toggle('return')"
+                @click="() => openReturn()"
               >
                 Pengembalian
               </VBtn>

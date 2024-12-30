@@ -121,7 +121,7 @@ const handleSend = async () => {
     const response: any = await $api(`/reguler/lph/kirim`, {
       method: "put",
       body: {
-        keterangan: "Kirin",
+        keterangan: "Kirim",
         id_reg: id,
       },
     });
@@ -235,8 +235,6 @@ const loadItemById = async () => {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
   } catch (error) {
-    console.log("@error", error);
-
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };

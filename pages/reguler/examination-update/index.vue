@@ -183,7 +183,7 @@ onMounted(async () => {
   loading.value = true
 
   const responseData = await Promise.allSettled([
-    loadItem(page.value, size.value, searchQuery.value, LIST_PEMERIKSAAN_PATH),
+    loadItem(page.value, 100, searchQuery.value, LIST_PEMERIKSAAN_PATH),
     loadItem(page.value, size.value, searchQuery.value, LIST_CHANNEL_PATH),
     getMasterSkalaUsaha(),
     getMasterProvinsi(),
@@ -305,8 +305,6 @@ watch(dataTable, () => {
             class="examination-table"
             :headers="invoiceHeader"
             :items="dataTable"
-            :page="1"
-            :hide-default-footer="dataTable.length === 0"
             hover
           >
             <template #no-data>

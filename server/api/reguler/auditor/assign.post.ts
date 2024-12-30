@@ -22,11 +22,6 @@ export default defineEventHandler(async (event: any) => {
 
   const body: DraftBody = await readBody(event)
 
-  console.log(`${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/lph/pemeriksaan/${id}/auditor`);
-  console.log(body);
-  
-  
-
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/lph/pemeriksaan/${id}/auditor`,
     {
@@ -35,8 +30,6 @@ export default defineEventHandler(async (event: any) => {
       body,
     },
   ).catch((err: NuxtError) => {
-    console.log(err, 'err');
-    
     setResponseStatus(event, 400)
 
     return err.data
