@@ -6,16 +6,21 @@ const submissionDetail = reactive({
   id_reg: null,
   jenis_pengajuan: null,
   tanggal_buat: null,
+  nama_pj: null,
+  alamat_pu: null,
+  jabatan_pj: null,
+  telp_pu: null,
+  nama_pu: null,
 });
 const formData = reactive({
-  id_reg: submissionDetail.id_reg,
+  id_reg: submissionId,
   jenis_pendaftaran: null,
   kode_daftar: null,
   no_surat_permohonan: null,
   tgl_surat_permohonan: null,
   jenis_layanan: null,
   jenis_produk: null,
-  nama_usaha: null,
+  nama_pu: null,
   area_pemasaran: null,
   lokasi_pendamping: null,
   lembaga_pendamping: null,
@@ -26,12 +31,26 @@ const listPendaftaran = ref([]);
 const listFasilitasi = ref([]);
 const listLayanan = ref([]);
 const listProduk = ref([]);
-const listAreaPemasaran = ref([]);
-const lokasiPendamping = ref([]);
+const listAreaPemasaran = ref([
+  { title: "Kabupaten/Kota", value: "Kabupaten" },
+  { title: "Provinsi", value: "Provinsi" },
+  { title: "Nasional", value: "Nasional" },
+  { title: "Internasional", value: "Internasional" },
+]);
+const lokasiPendamping = ref([
+  { title: "Kabupaten", value: "Kabupaten" },
+  { title: "Provinsi", value: "Provinsi" },
+]);
 const lembagaPendamping = ref([]);
 const listPendamping = ref([]);
 
-const handleDetailPengajuan = async () => {
+const loadDataPendamping = async (lokasi: string | null) => {
+  if (lokasi) {
+    await handleGetLembagaPendamping(lokasi);
+  }
+};
+
+const { refresh } = await useAsyncData("get-detail-submission", async () => {
   try {
     const response: any = await $api(
       `/self-declare/submission/${submissionId}/detail`,
@@ -42,12 +61,13 @@ const handleDetailPengajuan = async () => {
 
     if (response.code === 2000) {
       Object.assign(submissionDetail, response.data.certificate_halal);
+      Object.assign(formData, response.data.certificate_halal);
     }
     return response;
   } catch (error) {
     console.log(error);
   }
-};
+});
 const handleGetListPendaftaran = async () => {
   try {
     listPendaftaran.value = await $api(`/master/jenis-pendaftaran`, {
@@ -97,14 +117,38 @@ const handleGetJenisProduk = async () => {
   }
 };
 
-const handleGetPendamping = async () => {
+const handleGetLembagaPendamping = async (lokasi: string) => {
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/submission/list-lembaga-pendamping`,
+      {
+        method: "get",
+        query: {
+          id_reg: submissionId,
+          lokasi: lokasi,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      if (response.data !== null) {
+        lembagaPendamping.value = response.data;
+      }
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+const handleGetPendamping = async (idLembaga: string | null) => {
+  if (!idLembaga) return;
   try {
     const response: any = await $api(
       `/self-declare/business-actor/submission/list-pendamping`,
       {
         method: "get",
         query: {
-          id_reg: submissionId,
+          id_lembaga: idLembaga,
         },
       }
     );
@@ -126,29 +170,42 @@ const handleUpdateSubmission = async () => {
       `/self-declare/business-actor/submission/update`,
       {
         method: "put",
-        body: formData,
+        body: {
+          id_reg: submissionId,
+          jenis_pendaftaran: formData.jenis_pendaftaran,
+          kode_daftar: formData.kode_daftar,
+          no_surat_permohonan: formData.no_surat_permohonan,
+          tgl_surat_permohonan: formData.tgl_surat_permohonan,
+          jenis_layanan: formData.jenis_layanan,
+          jenis_produk: formData.jenis_produk,
+          nama_usaha: formData.nama_pu,
+          area_pemasaran: formData.area_pemasaran,
+          lokasi_pendamping: formData.lokasi_pendamping,
+          lembaga_pendamping: formData.lembaga_pendamping,
+          pendamping: formData.pendamping,
+        },
       }
     );
 
     if (response.code === 2000) {
       if (response.data !== null) {
-        listPendamping.value = response.data;
+        useSnackbar().sendSnackbar("Berhasil mengubah data", "success");
+        refresh();
       }
     }
     return response;
   } catch (error) {
-    console.log(error);
+    useSnackbar().sendSnackbar("Gagal mengubah data", "error");
   }
 };
 
 onMounted(() => {
   // await Promise.all([
   handleGetListPendaftaran();
-  handleDetailPengajuan();
+  // handleDetailPengajuan();
   handleGetFasilitator();
   handleGetJenisLayanan();
   handleGetJenisProduk();
-  handleGetPendamping();
   // ]);
 });
 </script>
@@ -265,7 +322,7 @@ onMounted(() => {
                 <Vuepicdatepicker
                   v-model:model-value="formData.tgl_surat_permohonan"
                   auto-apply
-                  model-type="dd/MM/yyyy"
+                  model-type="yyyy-MM-dddd"
                   :enable-time-picker="false"
                   teleport
                   clearable
@@ -315,7 +372,7 @@ onMounted(() => {
             <VTextField
               placeholder="Isi Nama Usaha"
               density="compact"
-              v-model="formData.nama_usaha"
+              v-model="formData.nama_pu"
             ></VTextField>
           </VItemGroup>
           <br />
@@ -325,8 +382,6 @@ onMounted(() => {
               placeholder="Pilih Area Pemasaran"
               density="compact"
               :items="listAreaPemasaran"
-              item-title="name"
-              item-value="id"
               v-model="formData.area_pemasaran"
             ></VSelect>
           </VItemGroup>
@@ -334,24 +389,24 @@ onMounted(() => {
           <VItemGroup>
             <VLabel>Lokasi Pendamping</VLabel>
             <VSelect
-              placeholder="Pilih Lokasi Pendamping"
+              placeholder="Pilih Area Pemasaran"
               density="compact"
               :items="lokasiPendamping"
-              item-title="name"
-              item-value="id"
               v-model="formData.lokasi_pendamping"
+              @update:model-value="loadDataPendamping"
             ></VSelect>
           </VItemGroup>
           <br />
           <VItemGroup>
             <VLabel>Lembaga Pendamping</VLabel>
             <VSelect
-              placeholder="Pilih Lembaga Pendamping"
+              placeholder="Pilih Area Pemasarang"
               density="compact"
               :items="lembagaPendamping"
               item-title="name"
               item-value="id"
               v-model="formData.lembaga_pendamping"
+              @update:model-value="handleGetPendamping"
             ></VSelect>
           </VItemGroup>
           <br />
@@ -371,9 +426,9 @@ onMounted(() => {
       <br />
       <div style="display: flex; justify-content: end">
         <VItemGroup style="display: inline-flex">
-          <SuratPermohonanModal></SuratPermohonanModal>
+          <SuratPermohonanModal :data="submissionDetail" />
           <div style="margin-left: 1svw"></div>
-          <SuratPernyataanModal></SuratPernyataanModal>
+          <SuratPernyataanModal :data="submissionDetail" />
         </VItemGroup>
       </div>
     </VCardTitle>

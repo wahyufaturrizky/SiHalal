@@ -12,7 +12,8 @@ const localDialogVisible = ref(props.dialogVisible);
 const localDialogUse = ref(props.dialogUse);
 
 const modalUse = computed(() => props.dialogUse);
-const detailData = computed(() => props.data);
+const detailData = ref(props.data);
+// console.log(detailData.value);
 
 const textSubmitButton = computed(() => {
   switch (localDialogUse.value) {
@@ -25,7 +26,27 @@ const textSubmitButton = computed(() => {
 
 const closeDialog = () => {
   localDialogVisible.value = false;
+  emit("update:dialogVisible", false);
 };
+const resetForm = () => {
+  uploadedFile.value.name = null;
+  uploadedFile.value.file = null;
+  formData.foto_produk = null;
+  formData.kode_rincian = null;
+  formData.nama_produk = null;
+  formData.product_grade = null;
+  formData.merek = null;
+  productDetail.value = null;
+};
+
+const productDetail = ref(null);
+const formData = reactive({
+  product_grade: null,
+  kode_rincian: detailData?.value?.koderincian || null,
+  nama_produk: detailData?.value?.nama || null,
+  merek: detailData?.value?.merek || null,
+  foto_produk: detailData?.value?.fotoproduk || null,
+});
 
 watch(
   () => props.dialogUse,
@@ -44,25 +65,6 @@ watch(localDialogVisible, (newVal, oldValue) => {
   emit("update:dialogVisible", newVal);
 });
 
-const resetForm = () => {
-  uploadedFile.value.name = null;
-  uploadedFile.value.file = null;
-  formData.foto_produk = null;
-  formData.kode_rincian = null;
-  formData.nama_produk = null;
-  formData.merek = null;
-  productDetail.value = null;
-};
-
-const productDetail = ref(null);
-const formData = reactive({
-  product_grade: null,
-  kode_rincian: detailData?.value?.koderincian || null,
-  nama_produk: detailData?.value?.nama || null,
-  merek: detailData?.value?.merek || null,
-  foto_produk: detailData?.value?.fotoproduk || null,
-});
-
 const uploadedFile = ref({
   name: props?.data?.fotoproduk || null,
   file: null,
@@ -72,24 +74,42 @@ const route = useRoute<"">();
 const submissionId = route.params?.id;
 
 const listClassification = ref([]);
+const listClassificationDetail = ref([]);
 const handleListClassification = async () => {
   try {
     const response: any = await $api(
       `/self-declare/business-actor/product/classification`,
       {
         method: "get",
-        query: {
+        params: {
           id_reg: submissionId,
         },
       }
     );
-
-    if (response.code === 2000) {
-      listClassification.value = response.data;
+    if (response.code != 2000) {
     }
-    return response;
+    listClassification.value = response.data;
   } catch (error) {
-    console.log(error);
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+  }
+};
+const handleListClassificationDetail = async (grade: string) => {
+  formData.kode_rincian = null;
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/product/classification-detail`,
+      {
+        method: "get",
+        params: {
+          code: grade,
+        },
+      }
+    );
+    if (response.code != 2000) {
+    }
+    listClassificationDetail.value = response.data;
+  } catch (error) {
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
 };
 
@@ -138,8 +158,8 @@ const handleSubmit = () => {
   closeDialog();
 };
 
-onMounted(() => {
-  handleListClassification();
+onMounted(async () => {
+  await handleListClassification();
 });
 </script>
 
@@ -165,7 +185,10 @@ onMounted(() => {
             density="compact"
             placeholder="Pilih Klasifikasi Produk"
             v-model="formData.product_grade"
-            :items="[]"
+            :items="listClassification"
+            item-title="name"
+            item-value="code"
+            v-on:update:model-value="handleListClassificationDetail"
           ></VSelect>
         </VItemGroup>
         <br />
@@ -175,7 +198,7 @@ onMounted(() => {
             density="compact"
             placeholder="Pilih Rincian Produk"
             v-model="formData.kode_rincian"
-            :items="listClassification"
+            :items="listClassificationDetail"
             item-title="name"
             item-value="code"
           ></VSelect>

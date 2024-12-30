@@ -4,7 +4,7 @@ import type { NewAccountGovernment } from "~/server/interface/new-account.iface"
 const runtimeConfig = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
-  const id = getQuery(event).id;
+  const id = getRouterParam(event, "id");
 
   if (typeof authorizationHeader === "undefined") {
     throw createError({

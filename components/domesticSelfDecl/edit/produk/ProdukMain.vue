@@ -42,9 +42,9 @@ const handleListProduct = async () => {
   }
 };
 
-const handleSubmit = (payload: any) => {
-  if (modalUse.value === "CREATE") handleAddProduct(payload);
-  if (modalUse.value === "UPDATE") handleUpdateProduct(payload);
+const handleSubmit = async (payload: any) => {
+  if (modalUse.value === "CREATE") await handleAddProduct(payload);
+  if (modalUse.value === "UPDATE") await handleUpdateProduct(payload);
 };
 const handleAddProduct = async (payload: any) => {
   try {
@@ -98,12 +98,13 @@ const handleUpdateProduct = async (payload: any) => {
 const handleAddIngredient = async (payload: any) => {
   try {
     const response: any = await $api(
-      `/self-declare/business-actor/product/create`,
+      `/self-declare/business-actor/product/add-ingredient`,
       {
         method: "post",
         body: payload,
         query: {
           id_reg: submissionId,
+          product_id: selectedProduct.value,
         },
       }
     );
@@ -145,13 +146,14 @@ const handleOpenModal = async (type: string, id?: string) => {
   }
 };
 
-const detailProduct = reactive({
+const detailProduct = ref({
   id: null,
   koderincian: null,
   merek: null,
   nama: null,
 });
 const handleDetailProduct = async (id: string) => {
+  selectedProduct.value = id;
   try {
     const response: any = await $api(
       `/self-declare/business-actor/product/detail`,
@@ -165,7 +167,7 @@ const handleDetailProduct = async (id: string) => {
     );
 
     if (response.code === 2000) {
-      Object.assign(detailProduct, response.data);
+      detailProduct.value = response.data;
     }
     return response;
   } catch (error) {
@@ -280,7 +282,7 @@ onMounted(() => {
     :dialog-use="modalUse"
     @update:dialog-visible="isFormModalOpen = $event"
     @submit:commit-action="handleSubmit"
-    :data="detailProduct"
+    :data="detailProduct != null ? detailProduct : undefined"
   />
   <ShSubmissionDetailFormModal
     dialog-title="Menghapus Data"

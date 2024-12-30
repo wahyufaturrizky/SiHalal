@@ -213,7 +213,7 @@ onMounted(async () => {
           <VCardText>
             <VDataTable :items="itemsPabrik" :headers="tableHeader">
               <template #item.index="{ index }">
-                {{ index }}
+                {{ index + 1 }}
               </template>
               <template #item.action="{ item }">
                 <div class="d-flex gap-1">
@@ -247,7 +247,7 @@ onMounted(async () => {
           <VCardText>
             <VDataTable :items="itemsOutlet" :headers="tableHeader">
               <template #item.index="{ index }">
-                {{ index }}
+                {{ index + 1 }}
               </template>
               <template #item.action="{ item }">
                 <div class="d-flex gap-1">

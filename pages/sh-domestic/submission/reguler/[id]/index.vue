@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+const router = useRouter()
 const route = useRoute()
 const id = route?.params?.id
 const panelSubmission = ref([0, 1])
@@ -12,6 +13,8 @@ const panelSupervisor = ref([0, 1])
 const panelDownloadFormulir = ref([0, 1])
 const panelTracking = ref([0, 1])
 const data = ref<any>({})
+const dialogKirim = ref(false)
+const dialogData = ref<any>({})
 const loading = ref(false)
 
 const aspectLegalHeader = [
@@ -42,6 +45,11 @@ const penyeliaHalalHeaders = [
   { title: 'No/Tgl SK', key: 'tanggal_sk', nowrap: true },
 ]
 
+const downloadForms = reactive({
+  sttd: '',
+  sertifikasi_halal: '',
+}) as Record<string, string>
+
 const getChipColor = (status: string) => {
   if (status === 'Draf')
     return 'primary'
@@ -68,24 +76,112 @@ const getDetailData = async () => {
   }
 }
 
-const handleDownload = (type: string, url: string) => {
-  if (type === 'STTD')
-    window.open(url, '_blank')
+const handleKirim = (type: string) => {
+  if (type === 'kirim')
+    dialogData.value = { title: 'Mengirim Pengajuan', description: 'Apakah yakin ingin mengirimkan pengajuan data ini?', label: 'Ya, Kirim' }
+  else if (type === 'delete')
+    dialogData.value = { title: 'Menghapus Pengajuan', description: 'Apakah yakin ingin menghapus pengajuan data ini?', label: 'Ya, Hapus' }
+  dialogKirim.value = true
 }
 
-onMounted(() => {
+const dialogDecision = async (type: string) => {
+  try {
+    let url = ''
+    let method = ''
+    if (type === 'Hapus') {
+      url = '/reguler/pelaku-usaha/delete-data'
+      method = 'delete'
+    }
+    else {
+      url = '/reguler/pelaku-usaha/submit'
+      method = 'post'
+    }
+
+    const response: any = await $api(url, {
+      method,
+      body: { id_reg: id },
+    })
+
+    dialogKirim.value = false
+
+    if (response?.code === 2000) {
+      useSnackbar().sendSnackbar(`Berhasil ${type === 'Hapus' ? 'menghapus' : 'mengirim'} pengajuan data`, 'success')
+      setTimeout(() => {
+        router.push('/sh-domestic/submission/reguler')
+      }, 500)
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    dialogKirim.value = false
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const getDownloadForm = async (docName: string, propName: string) => {
+  const result: any = await $api(
+    `/self-declare/submission/${id}/file`,
+    {
+      method: 'get',
+      query: {
+        document: docName,
+      },
+    },
+  )
+
+  if (result?.code === 2000)
+    downloadForms[propName] = result?.data?.file || ''
+}
+
+const handleDownloadForm = async (fileName: string) => {
+  return await downloadDocument(fileName)
+}
+
+onMounted(async () => {
   loading.value = true
   getDetailData()
+  await Promise.allSettled([
+    getDetailData(),
+    getDownloadForm('sttd', 'sttd'),
+    getDownloadForm('setifikasi-halal', 'setifikasi_halal'),
+  ])
   loading.value = false
 })
-
-const navigateTo = (url: string) => {
-  window.location.href = url
-}
 </script>
 
 <template>
   <div v-if="!loading">
+    <VDialog v-model="dialogKirim">
+      <VCard>
+        <VCardTitle class="font-weight-bold">
+          {{ dialogData?.title }}
+        </VCardTitle>
+        <VCardText>
+          <p>
+            {{ dialogData?.description }}
+          </p>
+        </VCardText>
+        <VCardActions>
+          <VBtn
+            color="primary"
+            variant="outlined"
+            @click="dialogKirim = false"
+          >
+            Batal
+          </VBtn>
+          <VBtn
+            text
+            variant="elevated"
+            :color="dialogData?.label.includes('Hapus') ? '#E1442E' : 'primary'"
+            @click="() => dialogDecision(dialogData?.label.includes('Hapus') ? 'Hapus' : 'Kirim')"
+          >
+            {{ dialogData?.label }}
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
     <VContainer>
       <VRow>
         <KembaliButton />
@@ -93,15 +189,16 @@ const navigateTo = (url: string) => {
       <VRow class="d-flex justify-space-between align-center">
         <VCol class="">
           <h3 class="text-h3">
-            Detail Audit Produk
+            Pengajuan Sertifikasi Halal: Detail
           </h3>
         </VCol>
-        <VCol cols="8">
+        <VCol cols="6">
           <VRow class="d-flex justify-end align-center ga-2">
             <VBtn
               variant="outlined"
-              olor="#E1442E"
+              color="#E1442E"
               class="delete-container"
+              @click="() => handleKirim('delete')"
             >
               <VIcon color="red">
                 fa-trash
@@ -114,7 +211,12 @@ const navigateTo = (url: string) => {
             >
               Ubah Laporan
             </VBtn>
-            <VBtn append-icon="fa-paper-plane"> Kirim </VBtn>
+            <VBtn
+              append-icon="fa-paper-plane"
+              @click="() => handleKirim('kirim')"
+            >
+              Kirim
+            </VBtn>
           </VRow>
         </VCol>
       </VRow>
@@ -276,7 +378,7 @@ const navigateTo = (url: string) => {
                   cols-value="6"
                   name="Negara"
                 >
-                  {{ data?.certificate_halal?.negara_pu || "-" }}
+                  {{ data?.certificate_halal?.negara_pu || "Indonesia" }}
                 </InfoRow>
                 <InfoRow
                   cols-name="5"
@@ -301,7 +403,7 @@ const navigateTo = (url: string) => {
                   cols-value="6"
                   name="Jenis Badan Usaha"
                 >
-                  {{ data?.certificate_halal?.jenis_badan_usaha || "-" }}
+                  {{ data?.certificate_halal?.jenis_badan_usaha || "PT" }}
                 </InfoRow>
                 <InfoRow
                   cols-name="5"
@@ -501,52 +603,59 @@ const navigateTo = (url: string) => {
           class="zero-padding"
         >
           <VExpansionPanels v-model="panelDownloadFormulir">
-            <VExpansionPanel class="pa-5">
-              <VExpansionPanelTitle class="text-h4 font-weight-bold">
-                Formulir Unduhan
-              </VExpansionPanelTitle>
-              <VExpansionPanelText class="d-flex align-center">
-                <VRow>
-                  <VCol cols="4">
-                    STTD
-                  </VCol>
-                  <VCol cols="1">
-                    :
-                  </VCol>
-                  <VCol cols="7">
+            <VExpansionPanels
+              v-model="panelDownloadFormulir"
+              expand-icon="fa-chevron-down"
+              collapse-icon="fa-chevron-up"
+            >
+              <VExpansionPanel class="py-2">
+                <VExpansionPanelTitle class="text-h4 font-weight-bold">
+                  Formulir Unduhan
+                </VExpansionPanelTitle>
+                <VExpansionPanelText class="d-flex align-center">
+                  <InfoRowV2
+                    class="d-flex align-center"
+                    name="STTD"
+                    :style="{ fontWeight: '600' }"
+                  >
                     <VBtn
-                      icon="ri-download-fill"
-                      class="rounded"
-                      variant="flat"
+                      :color="downloadForms.sttd ? 'primary' : '#A09BA1'"
                       density="compact"
+                      class="px-2"
                       @click="
-                        () =>
-                          handleDownload(
-                            'STTD',
-                            data?.certificate_halal?.url_sample_penyelia_sk,
-                          )
+                        downloadForms.sttd
+                          ? handleDownloadForm(downloadForms.sttd)
+                          : null
                       "
-                    />
-                  </VCol>
-                </VRow>
-                <VRow>
-                  <VCol cols="4">
-                    Sertifikasi Halal
-                  </VCol>
-                  <VCol cols="1">
-                    :
-                  </VCol>
-                  <VCol cols="7">
+                    >
+                      <template #default>
+                        <VIcon icon="fa-download" />
+                      </template>
+                    </VBtn>
+                  </InfoRowV2>
+                  <InfoRowV2
+                    class="d-flex align-center"
+                    name="Sertifikasi Halal"
+                    :style="{ fontWeight: '600' }"
+                  >
                     <VBtn
-                      icon="ri-download-fill"
-                      class="rounded"
-                      variant="flat"
+                      :color="downloadForms.sertifikasi_halal ? 'primary' : '#A09BA1'"
                       density="compact"
-                    />
-                  </VCol>
-                </VRow>
-              </VExpansionPanelText>
-            </VExpansionPanel>
+                      class="px-2"
+                      @click="
+                        downloadForms.sertifikasi_halal
+                          ? handleDownloadForm(downloadForms.sertifikasi_halal)
+                          : null
+                      "
+                    >
+                      <template #default>
+                        <VIcon icon="fa-download" />
+                      </template>
+                    </VBtn>
+                  </InfoRowV2>
+                </VExpansionPanelText>
+              </VExpansionPanel>
+            </VExpansionPanels>
           </VExpansionPanels>
           <br>
           <VExpansionPanels v-model="panelDownloadFormulir">

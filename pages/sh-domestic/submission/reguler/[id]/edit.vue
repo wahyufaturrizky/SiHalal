@@ -12,6 +12,8 @@ const listLegal = ref<any>(null)
 const listFactory = ref<any>(null)
 const listOutlet = ref<any>(null)
 const listPenyelia = ref<any>(null)
+const itemsProduct = ref<any>(null)
+const itemsChannel = ref<any>(null)
 
 const tabList = ref([
   'Data Pengajuan',
@@ -57,6 +59,31 @@ const getListPenyelia = async () => {
   }
 }
 
+const getChannel = async (path: string) => {
+  try {
+    const params = {
+      url: path,
+    }
+
+    const response: any = await $api('/reguler/lph/list', {
+      method: 'get',
+      params,
+    })
+
+    if (response?.code === 2000) {
+      itemsChannel.value = response?.data
+
+      return itemsChannel.value
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
 const getFactoryAndOutlet = async (type: string) => {
   try {
     const response: any = await $api('/reguler/pelaku-usaha/list-factory-outlet', {
@@ -88,7 +115,13 @@ const getFactoryAndOutlet = async (type: string) => {
 onMounted(async () => {
   loading.value = true
   activeTab.value = 0
-  await Promise.allSettled([getFactoryAndOutlet('FAPAB'), getFactoryAndOutlet('FAOUT'), getListLegal(), getListPenyelia()])
+  await Promise.allSettled([
+    getFactoryAndOutlet('FAPAB'),
+    getFactoryAndOutlet('FAOUT'),
+    getListLegal(),
+    getListPenyelia(),
+    getChannel(LIST_CHANNEL_PATH_JNLAY),
+  ])
   loading.value = false
 })
 </script>
@@ -151,6 +184,7 @@ onMounted(async () => {
               :list_factory="listFactory"
               :list_outlet="listOutlet"
               :list_penyelia="listPenyelia"
+              :list_channel="itemsChannel"
             />
           </div>
           <div v-if="activeTab === 1">

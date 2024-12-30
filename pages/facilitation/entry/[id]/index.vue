@@ -14,11 +14,11 @@ const openPanelTracking = ref(0);
 const route = useRoute();
 const router = useRouter();
 
-const facilitateId = route.params.id;
+const facilitateId = (route.params as any).id;
 
 const loadItemById = async () => {
   try {
-    const response = await $api(`/facilitate/entry/${facilitateId}`, {
+    const response: any = await $api(`/facilitate/entry/${facilitateId}`, {
       method: "get",
     });
 
@@ -180,7 +180,7 @@ const deleteFacilitate = async () => {
 onMounted(async () => {
   const res = await Promise.all([loadItemById()]);
 
-  const checkResIfUndefined = res.every((item) => {
+  const checkResIfUndefined = res.every((item: any) => {
     return item !== undefined;
   });
 

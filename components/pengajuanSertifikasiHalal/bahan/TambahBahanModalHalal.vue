@@ -1,30 +1,189 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useDisplay } from "vuetify";
-import { VTextField } from "vuetify/components";
 
 const emit = defineEmits(["refresh"]);
 
+const route = useRoute();
+
+const selfDeclareId = (route.params as any).id;
+
 const formData = ref({
-  bahan_type: "",
-  bahan_name: "",
-  bahan_kelompok: "",
-  bahan_merk_produk: "",
-  bahan_produsen: "",
-  bahan_nomor_sertifikat_halal: "",
+  jenis_bahan: "",
+  tipe_bahan: "",
+  produsen: "",
+  kelompok: "",
+  merek: "",
+  nomor_sertifikat_halal: "",
+  tgl_berlaku: "",
+  id_bahan: "",
+  nama: "",
 });
 
 const loadingAdd = ref(false);
 
 const resetForm = () => {
   formData.value = {
-    bahan_type: "",
-    bahan_name: "",
-    bahan_kelompok: "",
-    bahan_merk_produk: "",
-    bahan_produsen: "",
-    bahan_nomor_sertifikat_halal: "",
+    jenis_bahan: "",
+    tipe_bahan: "",
+    produsen: "",
+    kelompok: "",
+    merek: "",
+    nomor_sertifikat_halal: "",
+    tgl_berlaku: "",
+    id_bahan: "",
+    nama: "",
   };
+};
+
+const loadingAll = ref(true);
+
+const itemsIngredientsUncertified = ref<any[]>([]);
+const pageIngredientsUncertified = ref(1);
+const itemPerPageIngredientsUncertified = ref(10);
+const totalItemsIngredientsUncertified = ref(0);
+const loadingIngredientsUncertified = ref(false);
+
+const itemsIngredientsCertified = ref<any[]>([]);
+const pageIngredientsCertified = ref(1);
+const itemPerPageIngredientsCertified = ref(10);
+const totalItemsIngredientsCertified = ref(0);
+const loadingIngredientsCertified = ref(false);
+
+const loadItemIngredientsCertified = async (
+  page: number,
+  size: number,
+  name: string = ""
+) => {
+  try {
+    loadingIngredientsCertified.value = true;
+
+    const response: any = await $api(
+      "/self-declare/verificator/bahan/certified",
+      {
+        method: "get",
+        params: {
+          page,
+          size,
+          name,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      if (page === 1) {
+        itemsIngredientsCertified.value = response.data || [];
+      } else {
+        itemsIngredientsCertified.value = [
+          ...itemsIngredientsCertified.value,
+          ...response.data,
+        ];
+      }
+      totalItemsIngredientsCertified.value = response.total_item || 0;
+      loadingIngredientsCertified.value = false;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
+      loadingIngredientsCertified.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingIngredientsCertified.value = false;
+  }
+};
+
+const loadItemIngredientsUncertified = async (
+  page: number,
+  size: number,
+  name: string = ""
+) => {
+  try {
+    loadingIngredientsUncertified.value = true;
+
+    const response: any = await $api(
+      "/self-declare/verificator/bahan/uncertified",
+      {
+        method: "get",
+        params: {
+          page,
+          size,
+          name,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      if (page === 1) {
+        itemsIngredientsUncertified.value = response.data || [];
+      } else {
+        itemsIngredientsUncertified.value = [
+          ...itemsIngredientsUncertified.value,
+          ...response.data,
+        ];
+      }
+      totalItemsIngredientsUncertified.value = response.total_item || 0;
+      loadingIngredientsUncertified.value = false;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
+      loadingIngredientsUncertified.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingIngredientsUncertified.value = false;
+  }
+};
+
+onMounted(async () => {
+  const res = await Promise.all([
+    loadItemIngredientsUncertified(
+      pageIngredientsUncertified.value,
+      itemPerPageIngredientsUncertified.value,
+      ""
+    ),
+    loadItemIngredientsCertified(
+      pageIngredientsCertified.value,
+      itemPerPageIngredientsCertified.value,
+      ""
+    ),
+  ]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
+});
+
+const debouncedFetch = debounce(loadItemIngredientsUncertified, 500);
+const debouncedFetchCertified = debounce(loadItemIngredientsCertified, 500);
+
+const handleInputIngredientsUncertified = (val: any) => {
+  pageIngredientsUncertified.value = 1;
+  debouncedFetch(
+    pageIngredientsUncertified.value,
+    itemPerPageIngredientsUncertified.value,
+    val.target.value
+  );
+};
+
+const handleInputIngredientsCertified = (val: any) => {
+  pageIngredientsCertified.value = 1;
+  debouncedFetchCertified(
+    pageIngredientsCertified.value,
+    itemPerPageIngredientsCertified.value,
+    val.target.value
+  );
 };
 
 const addDialog = ref(false);
@@ -33,9 +192,28 @@ const addDataBahan = async () => {
   try {
     loadingAdd.value = true;
 
+    const {
+      jenis_bahan,
+      produsen,
+      merek,
+      nomor_sertifikat_halal,
+      tgl_berlaku,
+      id_bahan,
+      tipe_bahan,
+    } = formData.value;
+
     const res: any = await $api("/self-declare/verificator/bahan/add", {
       method: "post",
-      body: formData.value,
+      body: {
+        id_reg: selfDeclareId,
+        jenis_bahan: jenis_bahan,
+        is_bahan_bersertifikat: tipe_bahan === "bersertifikat" ? true : false,
+        id_bahan,
+        produsen,
+        merek,
+        nomor_sertifikat_halal,
+        tgl_berlaku,
+      },
     });
 
     if (res?.code === 2000) {
@@ -58,24 +236,117 @@ const addDataBahan = async () => {
   }
 };
 
+const loadMoreIngredientsUncertified = () => {
+  if (
+    itemsIngredientsUncertified.value.length <
+      totalItemsIngredientsUncertified.value &&
+    !loadingIngredientsUncertified.value
+  ) {
+    pageIngredientsUncertified.value += 1;
+    loadItemIngredientsUncertified(
+      pageIngredientsUncertified.value,
+      itemPerPageIngredientsUncertified.value,
+      ""
+    );
+  }
+};
+
+const loadMoreIngredientsCertified = () => {
+  if (
+    itemsIngredientsCertified.value.length <
+      totalItemsIngredientsCertified.value &&
+    !loadingIngredientsCertified.value
+  ) {
+    pageIngredientsCertified.value += 1;
+    loadItemIngredientsCertified(
+      pageIngredientsCertified.value,
+      itemPerPageIngredientsCertified.value,
+      ""
+    );
+  }
+};
+
 // Sample data for "Bahan Bersertifikat" and "Tidak Bersertifikat"
 const bahanOptions = [
   { name: "Bahan Bersertifikat", value: "bersertifikat" },
   { name: "Bahan Tidak Bersertifikat", value: "tidak_bersertifikat" },
 ];
 
-// Search term entered by the user
-const searchTerm = ref("");
-// Boolean to toggle visibility of the suggestion
-const showSuggestion = ref(false);
-
-// Function to handle search input
-const handleSearch = () => {
-  showSuggestion.value = searchTerm.value.toLowerCase() === "susu";
-};
+const jenisBahanOptions = [
+  { name: "Bahan", value: "Bahan" },
+  { name: "Cleaning Agent", value: "Cleaning Agent" },
+  { name: "Kemasan", value: "Kemasan" },
+];
 
 const { mdAndUp } = useDisplay();
 const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
+
+const changeTipeBahan = (val: string) => {
+  if (val === "bersertifikat") {
+    loadItemIngredientsCertified(
+      pageIngredientsCertified.value,
+      itemPerPageIngredientsCertified.value,
+      ""
+    );
+  } else {
+    loadItemIngredientsUncertified(
+      pageIngredientsUncertified.value,
+      itemPerPageIngredientsUncertified.value,
+      ""
+    );
+  }
+
+  formData.value = {
+    ...formData.value,
+    nama: "",
+    merek: "",
+    produsen: "",
+    nomor_sertifikat_halal: "",
+    tgl_berlaku: "",
+    jenis_bahan: "",
+    kelompok: "",
+  };
+};
+
+const changeSertifikat = (val: string) => {
+  if (formData.value.tipe_bahan === "bersertifikat") {
+    const findBahan = itemsIngredientsCertified.value.find(
+      (findItem: any) => findItem.id === val
+    );
+
+    const {
+      nama_bahan,
+      merek,
+      produsen,
+      no_sertifikat,
+      tgl_berlaku_sertifikat,
+      id,
+    } = findBahan || {};
+
+    formData.value = {
+      ...formData.value,
+      nama: nama_bahan,
+      id_bahan: id,
+      merek: merek,
+      produsen: produsen,
+      nomor_sertifikat_halal: no_sertifikat,
+      tgl_berlaku: formatToISOString(tgl_berlaku_sertifikat),
+    };
+  } else {
+    const findBahanUncertified = itemsIngredientsUncertified.value.find(
+      (findItem: any) => findItem.id === val
+    );
+
+    const { kelompok, nama_bahan } = findBahanUncertified || {};
+
+    formData.value = {
+      ...formData.value,
+      nama: nama_bahan,
+      kelompok: kelompok,
+      id_bahan: id,
+    };
+  }
+};
 </script>
 
 <template>
@@ -98,50 +369,76 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
           </VCol>
         </VRow>
       </VCardTitle>
-      <VCardItem>
+      <VCardItem v-if="!loadingAll">
         <VRow>
           <VCol cols="12">
             <VItemGroup>
               <VLabel>Tipe Bahan</VLabel>
               <VSelect
-                v-model="formData.bahan_type"
+                v-model="formData.tipe_bahan"
                 :items="bahanOptions"
                 item-title="name"
                 item-value="value"
                 placeholder="Pilih Tipe Bahan"
                 density="compact"
+                @update:modelValue="changeTipeBahan"
               />
             </VItemGroup>
           </VCol>
         </VRow>
-        <VRow>
+        <VRow v-if="formData.tipe_bahan">
           <VCol cols="12">
-            <VItemGroup v-if="formData.bahan_type === 'tidak_bersertifikat'">
+            <VItemGroup v-if="formData.tipe_bahan === 'tidak_bersertifikat'">
               <VLabel> Bahan&nbsp; Tidak&nbsp; Bersertifikat </VLabel>
-              <VTextField
-                placeholder="Cari Bahan Tidak Bersertifikat"
-                density="compact"
-              >
-                <template #append-inner>
-                  <CariBahanModal />
-                </template>
-              </VTextField>
-            </VItemGroup>
-            <VItemGroup>
-              <VLabel> Bahan&nbsp; Bersertifikat </VLabel>
-              <VTextField
-                v-model="formData.bahan_name"
-                placeholder="Cari Bahan Bersertifikat"
-                density="compact"
-                @input="handleSearch"
-              >
-                <!-- Suggestion and Button -->
 
-                <template #append-inner>
-                  <CariBahanModal />
+              <VAutocomplete
+                :items="itemsIngredientsUncertified"
+                item-title="nama_bahan"
+                item-value="id"
+                density="compact"
+                placeholder="Cari Bahan Tidak Bersertifikat"
+                :loading="loadingIngredientsUncertified"
+                @input="handleInputIngredientsUncertified"
+                @update:modelValue="changeSertifikat"
+              >
+                <template #item="{ props, item }">
+                  <VListItem
+                    v-bind="props"
+                    :title="(item.raw as any).nama_bahan"
+                  >
+                  </VListItem>
                 </template>
-              </VTextField>
-              <VRow v-if="showSuggestion" class="mt-2 justify-end align-center">
+                <template #append-item>
+                  <div v-intersect="loadMoreIngredientsUncertified" />
+                </template>
+              </VAutocomplete>
+            </VItemGroup>
+            <VItemGroup v-if="formData.tipe_bahan === 'bersertifikat'">
+              <VLabel> Bahan&nbsp; Bersertifikat </VLabel>
+
+              <VAutocomplete
+                :items="itemsIngredientsCertified"
+                item-title="nama_bahan"
+                item-value="id"
+                density="compact"
+                placeholder="Cari Bahan Bersertifikat"
+                :loading="loadingIngredientsCertified"
+                @input="handleInputIngredientsCertified"
+                @update:modelValue="changeSertifikat"
+              >
+                <template #item="{ props, item }">
+                  <VListItem
+                    v-bind="props"
+                    :title="(item.raw as any).nama_bahan"
+                  >
+                  </VListItem>
+                </template>
+                <template #append-item>
+                  <div v-intersect="loadMoreIngredientsCertified" />
+                </template>
+              </VAutocomplete>
+
+              <!-- <VRow class="mt-2 justify-end align-center">
                 <VCol cols="auto" class="d-flex align-center pr-0">
                   <p class="text-caption mb-0">
                     Bahan yang dicari tidak ditemukan? Ajukan bahan disini.
@@ -150,7 +447,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
                 <VCol cols="auto" class="pl-0">
                   <AjukanBahanModal />
                 </VCol>
-              </VRow>
+              </VRow> -->
             </VItemGroup>
           </VCol>
         </VRow>
@@ -163,8 +460,8 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
             <VItemGroup>
               <VLabel>Jenis Bahan</VLabel>
               <VSelect
-                v-model="formData.bahan_type"
-                :items="bahanOptions"
+                v-model="formData.jenis_bahan"
+                :items="jenisBahanOptions"
                 item-title="name"
                 item-value="value"
                 placeholder="Pilih Jenis Bahan"
@@ -173,99 +470,92 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
             </VItemGroup>
           </VCol>
         </VRow>
-        <VRow>
+        <VRow
+          v-if="
+            ['bersertifikat', 'tidak_bersertifikat'].includes(
+              formData.tipe_bahan
+            )
+          "
+        >
+          <!-- merk produk appears when tipe bahan = bersertifikat -->
           <VCol cols="12">
             <VItemGroup>
               <VLabel>Nama Bahan</VLabel>
               <VTextField
-                readonly
-                placeholder="Nama Bahan otomatis terisi setelah memilih bahan"
+                disabled
+                placeholder="Merk Produk otomatis terisi setelah memilih bahan"
                 density="compact"
-                v-model="formData.bahan_name"
+                v-model="formData.nama"
               />
             </VItemGroup>
           </VCol>
         </VRow>
-        <VRow v-if="bahanType === 'tidak_bersertifikat'">
+        <VRow v-if="formData.tipe_bahan === 'tidak_bersertifikat'">
           <!-- kelompok appears when tipe bahan = tidak bersertifikat -->
           <VCol cols="12">
             <VItemGroup>
               <VLabel>Kelompok</VLabel>
               <VTextField
-                readonly
+                disabled
                 placeholder="Kelompok otomatis terisi setelah memilih bahan"
                 density="compact"
+                v-model="formData.kelompok"
               />
             </VItemGroup>
           </VCol>
         </VRow>
-        <VRow v-if="bahanType === 'bersertifikat'">
+
+        <VRow v-if="formData.tipe_bahan === 'bersertifikat'">
           <!-- merk produk appears when tipe bahan = bersertifikat -->
           <VCol cols="12">
             <VItemGroup>
               <VLabel>Merk Produk</VLabel>
               <VTextField
-                readonly
+                disabled
                 placeholder="Merk Produk otomatis terisi setelah memilih bahan"
                 density="compact"
+                v-model="formData.merek"
               />
             </VItemGroup>
           </VCol>
         </VRow>
-        <VRow v-if="bahanType === 'bersertifikat'">
+        <VRow v-if="formData.tipe_bahan === 'bersertifikat'">
           <!-- produsen appears when tipe bahan = bersertifikat -->
           <VCol cols="12">
             <VItemGroup>
               <VLabel>Produsen</VLabel>
               <VTextField
-                readonly
+                disabled
                 placeholder="Produsen otomatis terisi setelah memilih bahan"
                 density="compact"
+                v-model="formData.produsen"
               />
             </VItemGroup>
           </VCol>
         </VRow>
-        <VRow v-if="bahanType === 'bersertifikat'">
+        <VRow v-if="formData.tipe_bahan === 'bersertifikat'">
           <!-- appears when tipe bahan = bersertifikat -->
           <VCol cols="12">
             <VItemGroup>
               <VLabel>Nomor Sertifikat Halal</VLabel>
               <VTextField
-                readonly
+                disabled
                 placeholder="Nomor Sertifikat Halal otomatis terisi setelah memilih bahan"
                 density="compact"
+                v-model="formData.nomor_sertifikat_halal"
               />
             </VItemGroup>
           </VCol>
         </VRow>
-        <VRow v-if="bahanType === 'bersertifikat'">
+        <VRow v-if="formData.tipe_bahan === 'bersertifikat'">
           <VCol cols="12">
-            <VItemGroup>
-              <!-- Date TextField -->
-              <Vuepicdatepicker>
-                <template #trigger>
-                  <Vuepicdatepicker
-                    v-model:model-value="data.sertifikasi_date.value"
-                    auto-apply
-                    model-type="dd/MM/yyyy"
-                    :enable-time-picker="false"
-                    :teleport="true"
-                    clearable
-                  >
-                    <template #trigger>
-                      <VLabel>Masa Berlaku Sertifikat Halal</VLabel>
-                      <VTextField
-                        placeholder="Masa Berlaku Sertifikat Halal"
-                        density="compact"
-                        readonly
-                        append-inner-icon="fa-calendar"
-                        :model-value="data.sertifikasi_date.value"
-                      />
-                    </template>
-                  </Vuepicdatepicker>
-                </template>
-              </Vuepicdatepicker>
-            </VItemGroup>
+            <VLabel>Masa Berlaku Sertifikat Halal</VLabel>
+            <VTextField
+              v-model="formData.tgl_berlaku"
+              placeholder="Tanggal"
+              type="date"
+              disabled
+            />
           </VCol>
         </VRow>
       </VCardItem>
