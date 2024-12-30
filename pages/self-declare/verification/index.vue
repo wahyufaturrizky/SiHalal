@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { VDataTableServer } from "vuetify/components";
+import { VChip, VDataTableServer } from "vuetify/components";
 
 const items = ref([]);
 const itemPerPage = ref(10);
@@ -25,6 +25,34 @@ const headers: any = [
   { title: "Status", key: "status_reg" },
   { title: "Action", key: "action" },
 ];
+
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+
+const statusItem: any = new Proxy(
+  {
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+    OF11: { color: "success", desc: "Verification" },
+    OF50: { color: "success", desc: "Dikirim ke LPH" },
+    OF300: { color: "success", desc: "Halal Certified Issued" },
+    OF285: { color: "success", desc: "Dikembalikan Oleh Fatwa" },
+    OF74: { color: "success", desc: "Sent to Komite Fatwa" },
+    OF280: { color: "success", desc: "Dikembalikan Ke PU" },
+    OF100: { color: "success", desc: "Selesai Sidang Fatwa" },
+    OF120: { color: "success", desc: "Certificate Issued" },
+    OF900: { color: "error", desc: "Dibatalkan" },
+  },
+  {
+    get(target: any, prop: any) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
 
 const handleInput = () => {
   debouncedFetch(
@@ -161,6 +189,22 @@ onMounted(async () => {
           </template>
           <template #item.tgl_daftar="{ item }">
             {{ formatDate(item.tgl_daftar) }}
+          </template>
+          <template #item.status_reg="{ item }">
+            <VChip
+              v-if="/^[a-zA-Z\s]+[^0-9]$/.test(item.status_reg)"
+              style="background-color: #f0e9f1; border-radius: 10px"
+              variant="outlined"
+              color="primary"
+              >{{ item.status_reg }}</VChip
+            >
+            <VChip
+              v-if="/^OF[0-9]+$/.test(item.status_reg)"
+              label
+              :color="statusItem[(item as any).status_code].color"
+            >
+              {{ statusItem[(item as any).status_code].desc }}
+            </VChip>
           </template>
           <template #item.action="{ item }">
             <div class="d-flex gap-1">

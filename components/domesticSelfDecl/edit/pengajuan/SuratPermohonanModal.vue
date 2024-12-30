@@ -1,17 +1,17 @@
 <script setup lang="ts">
 const props = defineProps<{ data: any }>();
-const businessActor = computed(() => props?.data);
+const businessActor = computed(() => props.data);
 
-const dataPermohonan = [
+const dataPermohonan = computed(() => [
   {
     id: 1,
     key: "Nama (sesuai KTP)",
-    value: businessActor.value.nama_pj ? businessActor.value.nama_pj : "-",
+    value: props.data.nama_pj ? props.data.nama_pj : "-",
   },
   {
     id: 2,
     key: "Alamat (sesuai KTP)",
-    value: businessActor.value.alamat_pu ? businessActor.value.alamat_pu : "-",
+    value: props.data.alamat_pu ? props.data.alamat_pu : "-",
   },
   {
     id: 3,
@@ -21,19 +21,19 @@ const dataPermohonan = [
   {
     id: 4,
     key: "Nomor Kontak",
-    value: businessActor.value.telp_pu ? businessActor.value.telp_pu : "-",
+    value: props.data.nomor_kontak_pj ? props.data.nomor_kontak_pj : "-",
   },
   {
     id: 5,
     key: "Nama Perusahaan",
-    value: businessActor.value.nama_pu ? businessActor.value.nama_pu : "-",
+    value: props.data.nama_pu ? props.data.nama_pu : "-",
   },
   {
     id: 6,
     key: "Alamat Perusahaan",
-    value: businessActor.value.alamat_pu ? businessActor.value.alamat_pu : "-",
+    value: props.data.alamat_pu ? props.data.alamat_pu : "-",
   },
-];
+]);
 
 const route = useRoute<"">();
 const submissionId = route.params?.id;

@@ -5,3 +5,11 @@ let toIDR = new Intl.NumberFormat("id-ID", {
 export const formatToIDR = (amount) => {
   return toIDR.format(amount);
 };
+
+export const idrToNumber = (amount) => {
+  return Number(
+    amount
+      .replace(/[^\d,-]/g, "")
+      .replace(",", ".")
+  );
+}

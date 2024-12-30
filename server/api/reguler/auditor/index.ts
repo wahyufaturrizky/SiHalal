@@ -26,7 +26,7 @@ export default defineEventHandler(async event => {
     params['search'] = search
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/lph/sent`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/auditor`,
     {
       method: 'GET',
       headers: { Authorization: authorizationHeader },

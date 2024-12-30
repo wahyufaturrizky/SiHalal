@@ -245,7 +245,7 @@ const getDetailData = async () => {
         value: certificateHalal.fac_id || '',
         type: 'select',
         disabled: false,
-        required: true,
+        required: false,
       },
       ]
 
@@ -309,9 +309,9 @@ const getDetailData = async () => {
         label: [
           { title: 'No.', key: 'no', nowrap: true },
           { title: 'Nama', key: 'penyelia_nama', nowrap: true },
-          { title: 'Unduh SKPH', key: 'skph', nowrap: true },
-          { title: 'Unduh SPPH', key: 'spph', nowrap: true },
-          { title: 'Unduh KTP', key: 'ktp', nowrap: true },
+          { title: 'Unduh SKPH', key: 'file_skph', nowrap: true },
+          { title: 'Unduh SPPH', key: 'file_spph', nowrap: true },
+          { title: 'Unduh KTP', key: 'file_ktp', nowrap: true },
           { title: 'No. KTP', key: 'no_ktp', nowrap: true },
           { title: 'Agama', key: 'religion', nowrap: true },
           { title: 'No/Tgl Sertif Penyelia Halal', key: 'tgl_penyelia_halal', nowrap: true },
@@ -472,10 +472,15 @@ const deleteFactoryOrOutlet = async (type: string, el: any) => {
 const handleSubmit = () => {
   let payload: any = {}
   if (submitContentType.value === 'Pengajuan Sertifikasi Halal') {
-    payload = payloadData.value
-    editResponsibility({
-      ...payload,
-    })
+    if (payloadData.value === 'error') {
+      confirmSaveDialog.value = false
+      useSnackbar().sendSnackbar('Lengkapi semua data', 'error')
+    } else {
+      payload = payloadData.value
+      editResponsibility({
+        ...payload,
+      })
+    }
   }
   else if (submitContentType.value === 'Penanggung Jawab') {
     payload = {

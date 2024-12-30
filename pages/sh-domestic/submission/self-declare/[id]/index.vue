@@ -8,10 +8,10 @@
       <div class="text-primary">Kembali</div>
     </div>
     <VRow align="center">
-      <VCol cols="8">
+      <VCol :cols="isCanEdit() ? 8 : 12">
         <h3 class="text-h3 font-weight-bold">Detail Pengajuan Self Declare</h3>
       </VCol>
-      <VCol cols="4">
+      <VCol cols="4" v-if="isCanEdit()">
         <div class="d-flex justify-end align-center ga-2">
           <VBtn
             variant="outlined"
@@ -31,7 +31,7 @@
             "
             >Ubah</VBtn
           >
-          <VBtn @click="handleSentSubmission">Kirim</VBtn>
+          <VBtn @click="isSendModalOpen = true">Kirim</VBtn>
         </div>
       </VCol>
     </VRow>
@@ -125,35 +125,9 @@
                 class="d-flex align-center"
                 :name-style="{ fontWeight: '600' }"
               >
-                <VRow class="d-flex align-center">
-                  <VCol cols="12">
-                    <VSelect
-                      :items="kbliDropdown"
-                      :model-value="kbliData"
-                      @update:model-value="(v) => (selectedKbli = v)"
-                      item-title="uraian_usaha"
-                      item-value="id"
-                      placeholder="Pilih KBLI"
-                      density="compact"
-                      rounded="xl"
-                      outlined
-                      menu-icon="mdi-chevron-down"
-                    >
-                      <template #append>
-                        <VBtn
-                          v-if="!isEditButtonDisabled"
-                          variant="outlined"
-                          @click="handleUpdateKbli"
-                        >
-                          Update
-                        </VBtn>
-                        <VBtn v-else variant="outlined" color="#A09BA1">
-                          Update
-                        </VBtn>
-                      </template>
-                    </VSelect>
-                  </VCol>
-                </VRow>
+                {{
+                  submissionDetail.nama_kbli ? submissionDetail.nama_kbli : "-"
+                }}
               </InfoRow>
               <ThinLine :thickness="1" />
               <InfoRow
@@ -215,8 +189,15 @@
               </InfoRow>
               <InfoRow name="Tingkat Usaha" :name-style="{ fontWeight: '600' }">
                 {{
-                  submissionDetail.tingkat_usaha
-                    ? submissionDetail.tingkat_usaha
+                  skalaUsaha.find(
+                    (data: any) => data.code == submissionDetail.tingkat_usaha
+                  ) != undefined
+                    ? (
+                        skalaUsaha.find(
+                          (data: any) =>
+                            data.code == submissionDetail.tingkat_usaha
+                        ) as any
+                      ).name
                     : "-"
                 }}
               </InfoRow>
@@ -224,7 +205,7 @@
                 {{
                   submissionDetail.modal_usaha
                     ? formatCurrency(String(submissionDetail.modal_usaha))
-                    : "-"
+                    : "Rp 0"
                 }}
               </InfoRow>
               <InfoRow name="Asal Usaha" :name-style="{ fontWeight: '600' }">
@@ -406,13 +387,13 @@
               </VCard>
               <div>
                 <VBtn
-                  text="Download SK Penyelia"
                   append-icon="fa-download"
                   variant="outlined"
                   class="float-end mt-6"
-                  target="_blank"
-                  :download="submissionDetail.url_sample_penyelia_sk"
-                />
+                  @click="handleDownloadSk(submissionId)"
+                >
+                  Download SK Penyelia
+                </VBtn>
               </div>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -437,6 +418,15 @@
               >
                 <template #item.no="{ index }">
                   {{ index + 1 }}
+                </template>
+                <template #item.type="{ item }">
+                  {{ item.jenis_bahan }}
+                </template>
+                <template #item.name="{ item }">
+                  {{ item.nama_bahan }}
+                </template>
+                <template #item.sertificateNumber="{ item }">
+                  {{ item.no_sertifikat }}
                 </template>
               </VDataTable>
               <VCard v-else variant="outlined" class="py-2">
@@ -745,9 +735,11 @@
                 :style="{ fontWeight: '600' }"
               >
                 {{
-                  registrationDetail.tgl_daftar
+                  registrationDetail.status != "OF1"
                     ? registrationDetail.tgl_daftar
-                    : "-"
+                      ? formatToISOString(registrationDetail.tgl_daftar)
+                      : "-"
+                    : ""
                 }}
               </InfoRowV2>
               <InfoRowV2
@@ -779,13 +771,11 @@
               >
                 <v-chip
                   style="background: #f0e9f1"
-                  color="primary"
+                  :color="statusItem[registrationDetail.status].color"
                   variant="outlined"
                   rounded="lg"
                 >
-                  {{
-                    registrationDetail.status ? registrationDetail.status : "-"
-                  }}
+                  {{ statusItem[registrationDetail.status].desc }}
                 </v-chip>
               </InfoRowV2>
               <InfoRowV2
@@ -917,7 +907,7 @@
               >Melacak</VExpansionPanelTitle
             >
             <VExpansionPanelText class="d-flex align-center">
-              <Melacak :data="trackingDetail" />
+              <Tracking :data="trackingDetail" />
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -935,18 +925,52 @@
       <div>Apakah yakin ingin menghapus data pengajuan ini</div>
     </VCardText>
   </ShSubmissionDetailFormModal>
+  <ShSubmissionDetailFormModal
+    dialog-title="Kirim Pengajuan"
+    :dialog-visible="isSendModalOpen"
+    dialog-use="SEND"
+    @update:dialog-visible="isSendModalOpen = $event"
+    @submit:commit-action="handleSentSubmission"
+  >
+    <VCardText>
+      <div>Apakah yakin ingin mengirim pengajuan ini</div>
+    </VCardText>
+  </ShSubmissionDetailFormModal>
 </template>
 
 <script setup lang="ts">
 import { formatCurrency } from "@/utils/conversionIntl";
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+const statusItem = new Proxy(
+  {
+    OF1: { color: "primary", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF11: { color: "success", desc: "Verification" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF280: { color: "error", desc: "Returned to PU" },
+    OF285: { color: "error", desc: "Returned By KF" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF300: { color: "success", desc: "Halal Certified Issued" },
+  },
+  {
+    get(target: any, prop: string) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
+const skalaUsaha = ref([]);
 
 const router = useRouter();
 const route = useRoute<"">();
-const submissionId = route.params?.id;
+const submissionId = route.params?.id as string;
 
 const snackbar = useSnackbar();
 
 const isDeleteModalOpen = ref(false);
+const isSendModalOpen = ref(false);
+
 const panelSubmission = ref([0, 1]);
 const panelPic = ref([0, 1]);
 const panelAspectLegal = ref([0, 1]);
@@ -960,7 +984,7 @@ const panelDownloadFormulir = ref([0, 1]);
 const panelRegistration = ref([0, 1]);
 const panelFatwaHearing = ref([0, 1]);
 const panelHalalCertificate = ref([0, 1]);
-const panelTracking = ref([0, 1]);
+const panelTracking = ref([]);
 
 const submissionDetail = reactive({
   id_reg: "",
@@ -1058,17 +1082,10 @@ const substanceHeader = [
   { title: "Jenis Bahan ", key: "type", nowrap: true },
   { title: "Nama Bahan", key: "name", nowrap: true },
   { title: "Produsen", key: "produsen", nowrap: true },
+  { title: "Kelompok", key: "kelompok", nowrap: true },
   { title: "No. Sertifikat Halal", key: "sertificateNumber", nowrap: true },
 ];
-const substanceItems = ref([
-  // {
-  //   no: 1,
-  //   type: "Bahan",
-  //   name: "Air Matang",
-  //   produsen: "PT ACEN ",
-  //   sertificateNumber: "3123821093821093821",
-  // },
-]);
+const substanceItems = ref([]);
 
 const productHeader = [
   { title: "No.", key: "no", nowrap: true, sortable: false },
@@ -1077,9 +1094,7 @@ const productHeader = [
   { title: "Foto", key: "photo", sortable: false, nowrap: true },
   { title: "Jumlah Bahan Digunakan", key: "jumlah_bahan", nowrap: true },
 ];
-const productItems = ref([
-  // { no: 1, name: "Jus Mangga Rez", brand: "Rez Juice", totalUsage: "1000" },
-]);
+const productItems = ref([]);
 
 const downloadForms = reactive({
   surat_permohonan: "",
@@ -1115,7 +1130,7 @@ const halalCertificateDetail = reactive({
   nomor_sertifikat: "",
   tanggal_sertifikat: "",
 });
-const trackingDetail = reactive([]);
+const trackingDetail = ref([]);
 
 const handleUpdateKbli = async () => {
   try {
@@ -1167,23 +1182,50 @@ const handleGetNarration = async () => {
     console.log(error);
   }
 };
-
+const getSkalaUsaha = async () => {
+  const response = await $api("/master/business-entity-scale", {
+    method: "get",
+  });
+  skalaUsaha.value = response;
+};
+const loadBahan = async () => {
+  try {
+    const options = {
+      method: "get",
+    };
+    const response = await $api(
+      `/self-declare/submission/bahan/${submissionId}/list`,
+      options
+    );
+    substanceItems.value = response.data;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 onMounted(async () => {
   await Promise.all([
+    loadBahan(),
+    getSkalaUsaha(),
     getSubmissionDetail(),
     getKbli(),
     getExistKbli(),
     handleGetNarration(),
     getDownloadForm("surat-permohonan", "surat_permohonan"),
     getDownloadForm("surat-pernyataan", "surat_pernyataan"),
+    // getDownloadForm("ikrar", "ikrar"),
     getIkrarFile(),
     getDownloadForm("surat-verval", "surat_verval"),
     getDownloadForm("rekomendasi", "rekomendasi"),
     getDownloadForm("sjph", "sjph"),
     getDownloadForm("laporan", "laporan"),
-    getDownloadForm("sttd", "sttd"),
     getDownloadForm("setifikasi-halal", "setifikasi_halal"),
   ]);
+  if (registrationDetail.status == "") {
+    return;
+  }
+  if (Number(registrationDetail.status.split("OF")[1]) >= 71) {
+    getDownloadForm("sttd", "sttd");
+  }
 });
 
 const getSubmissionDetail = async () => {
@@ -1203,7 +1245,6 @@ const getSubmissionDetail = async () => {
       factoryItems.value = response.data.pabrik;
       outletItems.value = response.data.outlet;
       supervisorItems.value = response.data.penyelia_halal;
-      substanceItems.value = response.data.bahan;
       productItems.value = response.data.produk;
 
       // data for right side
@@ -1213,7 +1254,8 @@ const getSubmissionDetail = async () => {
         halalCertificateDetail,
         response.data.sertifikat_halal_info
       );
-      Object.assign(trackingDetail, response.data.tracking);
+      trackingDetail.value = response.data.tracking;
+      Object.assign(panelTracking.value, [0, 1]);
     }
   } catch (error) {
     router.push("/sh-domestic/submission/self-declare");
@@ -1229,18 +1271,15 @@ const getKbli = async () => {
 
 const getIkrarFile = async () => {
   try {
-    const response: any = await $api(
-      `/self-declare/business-actor/statement/agree`,
-      {
-        method: "get",
-        query: {
-          id_reg: submissionId,
-        },
-      }
-    );
+    const response: any = await $api(`/self-declare/business-actor/statement`, {
+      method: "get",
+      query: {
+        id_reg: submissionId,
+      },
+    });
 
     if (response.code === 2000) {
-      downloadForms.ikrar = response.data.url_download;
+      downloadForms.ikrar = response.data.file;
     }
     return response;
   } catch (error) {
@@ -1270,6 +1309,29 @@ const handleDownload = async (productId: string) => {
   return await downloadDocument(productId);
 };
 
+const handleDownloadSk = async (id: string) => {
+  try {
+    const response = await $api("download-sk-selfdeclare", {
+      method: "post",
+      body: {
+        id,
+      },
+    });
+
+    if (response.data.file) {
+      await handleDownload(response.data?.file);
+    } else {
+      useSnackbar().sendSnackbar("Download gagal", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const handleOpenBlankWindow = (fileUri: string) => {
+  window.open(fileUri, "_blank", "noopener,noreferrer");
+};
+
 const handleSentSubmission = async () => {
   try {
     const response: any = await $api(`/self-declare/submission/send`, {
@@ -1281,10 +1343,21 @@ const handleSentSubmission = async () => {
     if (response.code === 2000) {
       snackbar.sendSnackbar("Berhasil mengirim pengajuan", "success");
     } else {
-      snackbar.sendSnackbar(response.errors.list_error[0], "error");
+      if (response.errors.list_error.length > 0) {
+        for (const element of response.errors.list_error) {
+          snackbar.sendSnackbar(element, "error");
+        }
+      }
     }
   } catch (error) {
     snackbar.sendSnackbar("Gagal mengirim pengajuan", "error");
   }
+};
+const isCanEdit = () => {
+  return (
+    registrationDetail.status == "OF1" ||
+    registrationDetail.status == "OF280" ||
+    registrationDetail.status == "OF285"
+  );
 };
 </script>

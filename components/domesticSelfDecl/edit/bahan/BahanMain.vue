@@ -23,24 +23,9 @@ interface Bahan {
   vefified: boolean;
 }
 
-const items = ref<Bahan[]>([]);
+const store = useMyTabEditRegulerStore();
+const { bahan } = storeToRefs(store);
 const route = useRoute();
-
-const loadBahan = async () => {
-  try {
-    const options = {
-      method: "get",
-    };
-    const response = await $api(
-      `/self-declare/submission/bahan/${route.params.id}/list`,
-      options
-    );
-    items.value = response.data;
-  } catch (error) {
-    console.log(error);
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
 const editItem = (item) => {};
 const deleteDialog = ref(false);
 const deleteButton = ref(false);
@@ -66,6 +51,7 @@ const deleteBahan = async () => {
         },
       }
     );
+
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("Gagal Menghapus bahan", "error");
       return;
@@ -77,13 +63,14 @@ const deleteBahan = async () => {
     useSnackbar().sendSnackbar("Gagal Menghapus bahan", "error");
   } finally {
     deleteButton.value = false;
-    await loadBahan();
+    await store.getBahan(route.params.id);
+    store.isBahan();
   }
 };
-
-onMounted(async () => {
-  await loadBahan();
-});
+const loadBahan = async () => {
+  await store.getBahan(route.params.id);
+  store.isBahan();
+};
 
 interface editBahan {
   typeBahan: 0 | 1;
@@ -113,7 +100,7 @@ interface editBahan {
       </VRow>
       <VRow>
         <VCol cols="12">
-          <VDataTable :headers="tableHeader" :items="items">
+          <VDataTable :headers="tableHeader" :items="bahan">
             <template #item.index="{ index }"> {{ index + 1 }} </template>
             <template #item.vefified="{ item }">
               <v-chip :color="item.vefified ? 'success' : 'error'">{{
@@ -121,7 +108,7 @@ interface editBahan {
               }}</v-chip>
             </template>
             <template #item.action="{ item }">
-              <div class="d-flex gap-1">
+              <div class="d-flex gap-1" v-if="!item.vefified">
                 <EditBahanModal
                   :data="{
                     id: item.id,
@@ -135,7 +122,11 @@ interface editBahan {
                   }"
                   @loadList="loadBahan()"
                 />
-                <IconBtn size="small" @click="deleteItem(item.id)">
+                <IconBtn
+                  size="small"
+                  @click="deleteItem(item.id)"
+                  v-if="!item.vefified"
+                >
                   <VIcon color="error" icon="ri-delete-bin-line" />
                 </IconBtn>
               </div>

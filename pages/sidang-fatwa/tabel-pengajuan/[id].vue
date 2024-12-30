@@ -1,34 +1,5 @@
 <script lang="ts" setup>
-import BiayaPemeriksaan from "@/components/sidangFatwa/BiayaPemeriksaan.vue";
 import SubPelakuUsahaLayout from "@/layouts/subPelakuUsahaLayout.vue";
-
-const defaultStatus = { color: "error", desc: "Unknown Status" };
-
-const statusItem: any = new Proxy(
-  {
-    OF1: { color: "grey-300", desc: "Draft" },
-    OF10: { color: "success", desc: "Submitted" },
-    OF15: { color: "success", desc: "Verified" },
-    OF2: { color: "error", desc: "Returned" },
-    OF290: { color: "error", desc: "Rejected" },
-    OF5: { color: "success", desc: "Invoice issued" },
-    OF320: { color: "success", desc: "Code Issued" },
-    OF11: { color: "success", desc: "Verification" },
-    OF50: { color: "success", desc: "Dikirim ke LPH" },
-    OF300: { color: "success", desc: "Halal Certified Issued" },
-    OF285: { color: "success", desc: "Dikembalikan Oleh Fatwa" },
-    OF74: { color: "success", desc: "Sent to Komite Fatwa" },
-    OF280: { color: "success", desc: "Dikembalikan Ke PU" },
-    OF100: { color: "success", desc: "Selesai Sidang Fatwa" },
-    OF120: { color: "success", desc: "Certificate Issued" },
-    OF900: { color: "error", desc: "Dibatalkan" },
-  },
-  {
-    get(target: any, prop: any) {
-      return prop in target ? target[prop] : defaultStatus;
-    },
-  }
-);
 
 const route = useRoute();
 
@@ -38,6 +9,8 @@ const loadingAll = ref(true);
 const detailData = ref();
 const profil = ref();
 const jenisUsaha = ref();
+const skalaUsaha = ref();
+const trackingData = ref();
 
 const loadItemById = async () => {
   try {
@@ -51,11 +24,10 @@ const loadItemById = async () => {
     if (response.code === 2000) {
       detailData.value = response.data;
 
-      const { sidang_fatwa } = response.data || {};
-      const { no_kh, SertifikatHalalReguler, tgl_sidang } = sidang_fatwa || {};
+      const { sertifikat_halal_reguler, tracking } = response.data || {};
 
       const {
-        status_reg,
+        status,
         jenis_daftar,
         nama_pu,
         kota_pu,
@@ -63,26 +35,30 @@ const loadItemById = async () => {
         alamat_pu,
         kode_pos_pu,
         negara_pu,
-        no_kontak_pj,
-        email_pj,
+        no_telp,
+        email,
         jenis_usaha,
-        tgl_mohon,
-      } = SertifikatHalalReguler || {};
+        id_reg,
+        tgl_permohonan,
+        skala_usaha,
+      } = sertifikat_halal_reguler || {};
 
       jenisUsaha.value = jenis_usaha;
+      skalaUsaha.value = skala_usaha;
+      trackingData.value = tracking;
 
       profil.value = [
         {
           label: "Nomor ID",
-          value: no_kh,
+          value: id_reg,
         },
         {
           label: "Tanggal Buat",
-          value: formatDate(tgl_sidang),
+          value: formatDate(tgl_permohonan),
         },
         {
           label: "Status",
-          value: statusItem[status_reg].desc,
+          value: status,
         },
         {
           label: "Jenis Pendaftaran",
@@ -114,11 +90,11 @@ const loadItemById = async () => {
         },
         {
           label: "Telepon",
-          value: no_kontak_pj,
+          value: no_telp,
         },
         {
           label: "Email",
-          value: email_pj,
+          value: email,
         },
       ];
 
@@ -169,6 +145,7 @@ onMounted(async () => {
         <VCol cols="12">
           <ProfileDetailPengajuanProsesSidangFatwa
             :jenisusaha="jenisUsaha"
+            :skalausaha="skalaUsaha"
             :profil="profil"
           />
         </VCol>
@@ -181,34 +158,34 @@ onMounted(async () => {
 
       <VRow>
         <VCol cols="12">
-          <DaftarNamaProduk />
+          <DaftarNamaProdukProsesSidang :detaildata="detailData" />
         </VCol>
       </VRow>
       <VRow>
         <VCol cols="12">
-          <BiayaPemeriksaan />
+          <BiayaPemeriksaanProsesSidang :detaildata="detailData" />
         </VCol>
       </VRow>
       <VRow>
         <VCol cols="12">
-          <JadwalAudit />
+          <JadwalAuditProsesSidang :detaildata="detailData" />
         </VCol>
       </VRow>
       <VRow>
         <VCol cols="12">
-          <AuditorList />
+          <AuditorListProsesSidang :detaildata="detailData" />
         </VCol>
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <HasilPemeriksaan />
+          <HasilPemeriksaanProsesSidang :detaildata="detailData" />
         </VCol>
       </VRow>
     </template>
 
     <!-- right content -->
     <template #rightContent>
-      <VRow>
+      <!-- <VRow>
         <VCol :cols="12">
           <HasilAuditDetailPengajuan />
         </VCol>
@@ -217,13 +194,13 @@ onMounted(async () => {
         <VCol :cols="12">
           <BiayaPemeriksaanDetail />
         </VCol>
-      </VRow>
+      </VRow> -->
       <VRow>
-        <VCol :cols="12">
+        <!-- <VCol :cols="12">
           <DokumenUnduhan />
-        </VCol>
+        </VCol> -->
         <VCol :cols="12">
-          <MelacakDetaikFatwa />
+          <MelacakDetailFatwaProsesSidang :trackingdata="trackingData" />
         </VCol>
       </VRow>
     </template>

@@ -14,6 +14,9 @@ export default defineEventHandler(async (event) => {
     {
       method: "get",
       headers: { Authorization: authorizationHeader },
+      params: {
+        query_by: "self_declare",
+      },
     }
   ).catch((err: NuxtError) => {
     throw createError({

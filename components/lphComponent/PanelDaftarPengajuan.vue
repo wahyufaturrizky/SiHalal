@@ -1,16 +1,16 @@
 <script setup lang="ts">
 const props = defineProps<{
-  type?: 'READ' | 'EDIT'
-  dataPengajuan?: object
-}>()
+  type?: "READ" | "EDIT";
+  dataPengajuan?: object;
+}>();
 
-const detail = ref(props?.dataPengajuan)
+const detail = ref(props?.dataPengajuan);
 
-const panelType = computed(() => (props.type ? props.type : 'READ'))
+const panelType = computed(() => (props.type ? props.type : "READ"));
 </script>
 
 <template>
-  <div class="d-flex flex-column ga-4">
+  <div v-if="detail" class="d-flex flex-column ga-4">
     <VRow no-gutters>
       <VCol cols="5">
         <div class="d-flex justify-space-between">
@@ -19,7 +19,7 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
         </div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.nomor_id }}
+        {{ (detail as any)?.nomor_id }}
       </VCol>
     </VRow>
     <VRow no-gutters>
@@ -30,7 +30,7 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
         </div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.status }}
+        {{ (detail as any)?.status }}
       </VCol>
     </VRow>
     <VRow no-gutters>
@@ -40,8 +40,8 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
           <div class="me-2">:</div>
         </div>
       </VCol>
-      <VCol cols="7" v-if="detail?.tanggal_buat">
-        {{ formatDateIntl(new Date(detail?.tanggal_buat)) }}
+      <VCol cols="7" v-if="(detail as any)?.tanggal_buat">
+        {{ formatDateIntl(new Date((detail as any)?.tanggal_buat)) }}
       </VCol>
     </VRow>
     <VDivider class="my-1" />
@@ -53,7 +53,7 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
         </div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.nama_pu }}
+        {{ (detail as any)?.nama_pu }}
       </VCol>
     </VRow>
     <VRow no-gutters>
@@ -64,7 +64,7 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
         </div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.alamat }}
+        {{ (detail as any)?.alamat }}
       </VCol>
     </VRow>
     <VRow no-gutters>
@@ -75,7 +75,7 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
         </div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.kota }}
+        {{ (detail as any)?.kota }}
       </VCol>
     </VRow>
     <VRow no-gutters>
@@ -86,7 +86,7 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
         </div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.provinsi }}
+        {{ (detail as any)?.provinsi }}
       </VCol>
     </VRow>
     <VRow no-gutters>
@@ -97,7 +97,7 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
         </div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.kodepos }}
+        {{ (detail as any)?.kodepos }}
       </VCol>
     </VRow>
     <VRow no-gutters>
@@ -108,7 +108,7 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
         </div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.negara }}
+        {{ (detail as any)?.negara }}
       </VCol>
     </VRow>
     <VRow no-gutters>
@@ -119,7 +119,7 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
         </div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.telepon }}
+        {{ (detail as any)?.telepon }}
       </VCol>
     </VRow>
     <VRow no-gutters>
@@ -130,7 +130,7 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
         </div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.email }}
+        {{ (detail as any)?.email }}
       </VCol>
     </VRow>
     <VDivider class="my-1" />
@@ -142,7 +142,7 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
         </div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.jenis_usaha }}
+        {{ (detail as any)?.jenis_usaha }}
       </VCol>
     </VRow>
     <VRow no-gutters>
@@ -151,7 +151,7 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
         <div class="me-2">:</div>
       </VCol>
       <VCol v-if="panelType == 'READ'" cols="7">
-        {{ detail?.skala_usaha }}
+        {{ (detail as any)?.skala_usaha }}
       </VCol>
       <VCol v-else cols="7" class="d-flex align-center">
         <VSelect density="compact" model-value="Mikro" rounded="xl">

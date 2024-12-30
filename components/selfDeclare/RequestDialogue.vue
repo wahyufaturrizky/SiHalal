@@ -43,7 +43,9 @@ onMounted(async () => {
   const response: any = await $api("/master/list-oss", {
     method: "get",
   });
-  kbliOptions.value = response;
+  kbliOptions.value = response.filter((item: any, index: number, self: any) => {
+    return index === self.findIndex((el: any) => el.id === item.id);
+  });
 });
 </script>
 

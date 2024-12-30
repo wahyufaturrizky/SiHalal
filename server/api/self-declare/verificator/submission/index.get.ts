@@ -66,6 +66,8 @@ export default defineEventHandler(async (event) => {
     params["kabupaten"] = kabupaten;
   }
 
+  params["status"] = "OF10";
+
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/verificator/halal-certificate-reguler/self-declare/search`,
     {
