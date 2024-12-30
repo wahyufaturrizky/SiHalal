@@ -17,7 +17,22 @@
         </div>
       </VCol>
     </VRow>
-    <VRow><VCol><VBtn>Submit</VBtn></VCol></VRow>
-    <br>
+    <div class="d-flex justify-end flex-wrap gap-4">
+      <VBtn
+        color="secondary"
+        variant="outlined"
+        @click="resetAuthCode"
+      >
+        Cancel
+      </VBtn>
+
+      <VBtn
+        color="primary"
+        type="submit"
+        @click="formSubmit"
+      >
+        Submit
+      </VBtn>
+    </div>
   </VForm>
 </template>
