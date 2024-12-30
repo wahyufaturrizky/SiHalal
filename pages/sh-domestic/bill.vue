@@ -1,6 +1,5 @@
 <!-- eslint-disable camelcase -->
 <script setup lang="ts">
-import TataCaraPembayaranDialog from '@/components/invoice/TataCaraPembayaranDialog.vue'
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 import { useDisplay } from 'vuetify'
@@ -13,6 +12,7 @@ const searchQuery = ref('');
 const data = ref<any[]>([]);
 const lovStatus = ref<any[]>([]);
 const loading = ref(false)
+const totalItems = ref(0)
 
 const headers = [
   { title: 'No', key: 'no' },
@@ -30,31 +30,15 @@ const headers = [
 
 ];
 
-// TODO -> LOGIC BUAT NGE UPDATE DATA BY FILTER
-const submitKonfirmasiPembayaran = (form) => {
-  // console.log('UPDATE FILTE ', form.value)
-}
-
-// TODO -> GET INVOICE INFO
-const invoiceInformation = ref({
-  noInvoice: '12321412',
-  tanggalPembayaran: '12/11/2024',
-  jumlahPembayaran: 'Rp 3.000.000'
-})
-
-
-const preview = (item) => {
-  // console.log('PREVIEW FILE : ', item)
-}
-
 const { mdAndUp } = useDisplay()
+
 const dialogMaxWidth = computed(() => {
   return mdAndUp.value ? 400 : '90%'
 })
 
 // TODO -> BIKIN LOGIC BUAT SET CHIP COLOR
-const getChipColor = (status: string) => {
-  if (status === 'Lunas') return 'success';
+const getChipColor = (stats: string) => {
+  if (stats === 'Lunas') return 'success';
   return 'primary';
 };
 
@@ -94,6 +78,7 @@ const loadItem = async (
       response?.data?.map((item: any) => {
         item.typeAndTotal = [item?.jenis_usaha, item?.jumlah_produk];
       });
+      totalItems.value = response.total_page
       data.value = response.data;
       return response;
     } else {
@@ -151,7 +136,7 @@ onMounted(async () => {
   loading.value = false
 });
 
-watch([status, outDated], () => {
+watch([status, outDated, page], () => {
   loadItem(page.value, size.value, status.value, outDated.value, searchQuery.value)
 })
 
@@ -231,7 +216,9 @@ watch([status, outDated], () => {
             :items="data"
             item-value="no"
             class="elevation-1 border rounded"
-            :hide-default-footer="data.length < 10"
+            hide-default-footer
+            :items-per-page="size"
+            :server-items-length="totalItems"
           >
             <template #no-data>
               <div class="pt-2">
@@ -287,6 +274,12 @@ watch([status, outDated], () => {
               </VBtn>
             </template>
           </VDataTable>
+          <VPagination
+            v-model="page"
+            :length="totalItems"
+            class="mt-5"
+            @input="loadItem"
+          />
         </VCardItem>
       </VCard>
     </VContainer>

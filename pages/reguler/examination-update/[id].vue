@@ -12,6 +12,7 @@ const dataProduk = ref<any>([])
 const lovAuditor = ref<any>([])
 const dataPemeriksaanProduk = ref<any>(null)
 const selectedAudiotor = ref<any>(null)
+const loadingAuditor = ref(false);
 
 const downloadForms = reactive({
   sttd: '',
@@ -58,50 +59,33 @@ const handleDeleteAuditor = (index: number) => {
 }
 
 const handleSaveAuditor = async () => {
-  const ids = dataPemeriksaanProduk.value?.auditor.map((item:any) => item.id_auditor || null)
-  try {
-    const response: any = await $api('/reguler/auditor/assign', {
-      method: 'post',
-      query: { id },
-      body: { id_auditor: ids },
-    })
-
-    if (response?.code === 2000) {
-      useSnackbar().sendSnackbar('Berhasil menambah auditor', 'success')
-      return response?.data
-    }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
-  }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
+  localStorage.setItem('lovAuditor', JSON.stringify(dataPemeriksaanProduk.value.auditor))
 }
 
 const handleUpdateStatus = async () => {
-  try {
-    const response: any = await $api('/reguler/lph/update-pemeriksaan', {
-      method: 'put',
-      body: {
-        id_reg: id,
-        status: 'OF50',
-      },
-    })
+  let auditorToAdd = localStorage.getItem('lovAuditor')
+  if (auditorToAdd) {
+    auditorToAdd = JSON.parse(auditorToAdd)
+    const ids = auditorToAdd.map((item:any) => item.id_auditor || null)
+    try {
+      const response: any = await $api('/reguler/auditor/assign', {
+        method: 'post',
+        query: { id },
+        body: { id_auditor: ids },
+      })
 
-    if (response?.code === 2000) {
-      useSnackbar().sendSnackbar('Sukses update status', 'success')
-
-      return response?.data
+      if (response?.code === 2000) {
+        useSnackbar().sendSnackbar('Berhasil menambah auditor', 'success')
+        return response?.data
+      }
+      else {
+        useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      }
     }
-    else {
+    catch (error) {
       useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
     }
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-
 }
 
 const getDetailData = async (type: string) => {
@@ -159,6 +143,26 @@ const getDownloadForm = async (docName: string, propName: string) => {
   if (result?.code === 2000)
     downloadForms[propName] = result?.data?.file || ''
 }
+
+const handleInputAuditor = async (val: any) => {
+  try {
+    const response: any = await $api('/reguler/list', {
+      method: 'get',
+      params: { url: `api/v1/halal-certificate-reguler/lph/pemeriksaan/${id}/auditor`, keyword: val },
+    })
+    if (response?.code === 2000) {
+      lovAuditor.value = response.data
+
+      return response?.data
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+};
 
 onMounted(async () => {
   loading.value = true
@@ -384,18 +388,26 @@ onMounted(async () => {
           <VRow class="mb-1">
             <VCol>
               <div class="text-h6 mb-1">Auditor</div>
-              <VSelect
+              <VAutocomplete
                 v-model="selectedAudiotor"
-                placeholder="Masukkan Auditor"
-                density="compact"
-                class="mb-3"
+                :items="lovAuditor"
                 item-title="nama"
                 item-value="id_auditor"
-                :items="lovAuditor"
+                density="compact"
+                placeholder="Cari auditor"
+                :loading="loadingAuditor"
+                @input="handleInputAuditor"
                 @update:model-value="(v) => (assignedAuditor = v)"
-                menu-icon="fa-chevron-down"
                 return-object
-              />
+                class="mb-5"
+              >
+                <template #item="{ props, item }">
+                  <VListItem
+                    v-bind="props"
+                    :title="(item.raw as any).nama"
+                  />
+                </template>
+              </VAutocomplete>
               <div class="d-flex justify-end">
                 <VBtn
                   :disabled="!assignedAuditor"

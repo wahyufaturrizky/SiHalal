@@ -21,11 +21,10 @@ const handleOpenSendModal = () => {
 const handleUpdateStatus = async () => {
   // useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
   try {
-    const response: any = await $api('/reguler/lph/kirim', {
+    const response: any = await $api('/reguler/lph/generate-invoice', {
       method: 'put',
       body: {
         id_reg: id,
-        keterangan: 'latest up',
       },
     })
 

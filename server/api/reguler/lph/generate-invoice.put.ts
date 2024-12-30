@@ -1,4 +1,6 @@
-import { NuxtError } from "nuxt/app";
+import type { NuxtError } from "nuxt/app";
+import type { NewAccountGovernment } from "~/server/interface/new-account.iface";
+
 const runtimeConfig = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
@@ -9,20 +11,18 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-  const { id_reg, keterangan } = await readBody(event);
+  const body: NewAccountGovernment = await readBody(event);
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/verifikator/kirimLPH`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/lph/generate-invoice`,
     {
-      method: "post",
+      method: "put",
+      body,
       headers: { Authorization: authorizationHeader },
-      body: {
-        id_reg,
-        keterangan,
-      },
     }
   ).catch((err: NuxtError) => {
     return err.data;
   });
+
   return data || null;
-})
+});
