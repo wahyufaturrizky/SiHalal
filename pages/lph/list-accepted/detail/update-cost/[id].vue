@@ -31,7 +31,7 @@ const detailDataLn = ref<any>({
 const domesticAuditHeader: any[] = [
   { title: 'No', key: 'no' },
   { title: 'Nama Fasilitas Produksi', key: 'nama_pabrik', nowrap: true },
-  { title: 'Man Day;s', key: 'man_days', nowrap: true },
+  { title: 'Man Days', key: 'man_days', nowrap: true },
   { title: 'Unit Cost Awal', key: 'unit_cost_awal', nowrap: true },
   { title: 'Diskon (%)', key: 'unit_cost_diskon', nowrap: true },
   { title: 'Unit Cost Akhir', key: 'unit_cost_akhir', nowrap: true },
@@ -328,7 +328,7 @@ const onEdit = async () => {
       akomodasi_akhir: idrToNumber(detailData.value?.akomodasi_akhir),
       akomodasi_diskon: +detailData.value?.akomodasi_diskon,
       id_pabrik: detailData.value?.id_pabrik,
-      tiket_pesawat_akhir: idrToNumber(detailData.value?.transport_akhir),
+      tiket_pesawat_akhir: idrToNumber(detailData.value?.tiket_pesawat_akhir),
       tiket_pesawat_diskon: +detailData.value?.tiket_pesawat_diskon,
       transport_akhir: idrToNumber(detailData.value?.transport_akhir),
       transport_diskon: +detailData.value?.transport_diskon,
