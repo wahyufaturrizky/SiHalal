@@ -6,7 +6,6 @@ const props = defineProps({
 });
 
 const { detaildata } = props || {};
-console.log("@detaildata", detaildata);
 
 const { sertifikat_halal_reguler } = detaildata || {};
 const {
