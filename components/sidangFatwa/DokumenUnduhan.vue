@@ -1,20 +1,58 @@
 <script setup lang="ts">
-</script>
+const route = useRoute();
 
-<script setup lang="ts">
-const panelOpen = ref(0) // Menentukan panel yang terbuka
+const loadingAll = ref(true);
+const sidangFatwaId = (route.params as any).id;
 
-const downloadKH = () => {
-  console.log('Mengunduh laporan...')
-}
+const panelOpen = ref(0); // Menentukan panel yang terbuka
+const fileLaporanLPH = ref<any>(null);
+const fileKH = ref<any>(null);
 
-const downloadLPH = () => {
-  console.log('Mengunduh laporan...')
-}
+const getDownloadForm = async (docName: string) => {
+  const result: any = await $api(
+    `/self-declare/submission/${sidangFatwaId}/file`,
+    {
+      method: "get",
+      query: {
+        document: docName,
+      },
+    }
+  );
+
+  if (result.code === 2000 && result.message !== "Not Found") {
+    switch (docName) {
+      case "laporan":
+        fileLaporanLPH.value = result.data.file;
+        return result;
+      case "setifikasi-halal":
+        fileKH.value = result.data.file;
+        return result;
+      default:
+        break;
+    }
+  }
+};
+
+onMounted(async () => {
+  const res = await Promise.all([
+    getDownloadForm("setifikasi-halal"),
+    getDownloadForm("laporan"),
+  ]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
+});
 </script>
 
 <template>
-  <VExpansionPanels v-model="panelOpen">
+  <VExpansionPanels v-if="!loadingAll" v-model="panelOpen">
     <VExpansionPanel>
       <!-- Header Panel -->
       <VExpansionPanelTitle>
@@ -27,19 +65,15 @@ const downloadLPH = () => {
           <VCol cols="7">
             <span class="label">File KH</span>
           </VCol>
-          <VCol cols="1">
-            :
-          </VCol>
-          <VCol
-            cols="2"
-            class="download-btn"
-          >
+          <VCol cols="1"> : </VCol>
+          <VCol cols="2" class="download-btn">
             <VBtn
               class="square-btn"
               color="primary"
               variant="flat"
               icon="mdi-download"
-              @click="downloadKH"
+              @click="downloadDocument(fileKH)"
+              :disabled="!fileKH"
             />
           </VCol>
         </VRow>
@@ -48,25 +82,26 @@ const downloadLPH = () => {
           <VCol cols="7">
             <span class="label">File Laporan LPH</span>
           </VCol>
-          <VCol cols="1">
-            :
-          </VCol>
-          <VCol
-            cols="2"
-            class="download-btn"
-          >
+          <VCol cols="1"> : </VCol>
+          <VCol cols="2" class="download-btn">
             <VBtn
               class="square-btn"
               color="primary"
               variant="flat"
               icon="mdi-download"
-              @click="downloadLPH"
+              @click="downloadDocument(fileLaporanLPH)"
+              :disabled="!fileLaporanLPH"
             />
           </VCol>
         </VRow>
       </VExpansionPanelText>
     </VExpansionPanel>
   </VExpansionPanels>
+
+  <VSkeletonLoader
+    type="table-heading, list-item-two-line, image, table-tfoot"
+    v-else
+  />
 </template>
 
 <style scoped>
