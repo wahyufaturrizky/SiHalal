@@ -40,7 +40,7 @@ const expanded = ref(0);
               class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
             >
               <span class="app-timeline-title">
-                {{ comment }}
+                {{ comment || "NA" }}
               </span>
               <span class="app-timeline-meta">{{ formatDate(tanggal) }}</span>
             </div>
