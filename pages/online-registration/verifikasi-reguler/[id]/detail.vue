@@ -269,9 +269,10 @@ const getDetail = async () => {
       return;
     }
     // dataDetail.value = response.data;
-    response.data.certificate_halal.tgl_mohon = response.data.certificate_halal.tgl_mohon != '' ?formatToISOString(
-      response.data.certificate_halal.tgl_mohon : ''
-    );
+    response.data.certificate_halal.tgl_mohon =
+      response.data.certificate_halal.tgl_mohon != ""
+        ? formatToISOString(response.data.certificate_halal.tgl_mohon)
+        : "";
     useMyVerifikatorRegulerStore().setData(response.data);
   } catch (error) {
     navigateTo("/online-registration/verifikasi-reguler");
