@@ -338,4 +338,10 @@ export default [
     to: "user-management-role",
     roles: ["Admin"],
   },
+  {
+    title: "navbar.management.menu.image",
+    icon: { icon: "fa-image" },
+    to: "administrator-image-auth",
+    roles: ["Admin"],
+  },
 ];
