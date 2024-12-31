@@ -39,8 +39,18 @@ const page = ref(1);
           <template #item.no="{ index }">
             {{ index + 1 }}
           </template>
+          <template #item.nama="{ item }">
+            {{ (item as any).nama || "-" }}
+          </template>
+          <template #item.jenis_kelamin="{ item }">
+            {{ (item as any).jenis_kelamin || "-" }}
+          </template>
           <template #item.tanggal_lahir="{ item }">
-            {{ formatDate((item as any).tanggal_lahir) }}
+            {{
+              (item as any).tanggal_lahir
+                ? formatDate((item as any).tanggal_lahir)
+                : "-"
+            }}
           </template>
         </VDataTableServer>
       </VExpansionPanelText>
