@@ -42,7 +42,7 @@ const listData = [
   },
   {
     label: "Area Pemasaran",
-    value: area_pemasaran,
+    value: area_pemasaran || "-",
   },
 ];
 
