@@ -3,10 +3,6 @@ const props = defineProps<{
   detail?: any;
 }>();
 
-onMounted(() => {
-  console.log("props", props?.detail);
-});
-
 const emit = defineEmits(["submit:update"]);
 const isModalOpen = ref(false);
 

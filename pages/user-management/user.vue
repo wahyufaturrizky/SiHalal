@@ -62,10 +62,8 @@ const handleSearchUser = useDebounceFn((val: string) => {
   // refresh();
 }, 350);
 
-const dialogUse = ref("CREATE");
 const isOpenAddModal = ref(false);
-const handleOpenAddModal = (type?: string | null) => {
-  if (type) dialogUse.value = type;
+const handleOpenAddModal = () => {
   isOpenAddModal.value = !isOpenAddModal.value;
 };
 const handleAddNewUser = (payload: any) => {
@@ -114,7 +112,7 @@ const handleConfirmDelete = () => {
           class="d-flex justify-space-between align-center font-weight-bold text-h4"
         >
           <div>User List</div>
-          <VBtn append-icon="fa-plus" @click="handleOpenAddModal('CREATE')"
+          <VBtn append-icon="fa-plus" @click="handleOpenAddModal"
             >Add User</VBtn
           >
         </VCardTitle>
@@ -182,7 +180,7 @@ const handleConfirmDelete = () => {
                       <template #prepend>
                         <VIcon icon="mdi-delete" color="error" />
                       </template>
-                      <VListItemTitle class="text-error">Hapus</VListItemTitle>
+                      <VListItemTitle class="text-error">Delete</VListItemTitle>
                     </VListItem>
                   </VList>
                 </VMenu>
