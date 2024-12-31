@@ -265,14 +265,18 @@ const getDetail = async () => {
     });
     if (response.code != 2000) {
       navigateTo("/online-registration/verifikasi-reguler");
-      useSnackbar().sendSnackbar("ada kesalahan 1", "error");
+      useSnackbar().sendSnackbar("ada kesalahan", "error");
       return;
     }
     // dataDetail.value = response.data;
-    useMyVerifikatorRegulerStore().setData(response.data)
+    response.data.certificate_halal.tgl_mohon =
+      response.data.certificate_halal.tgl_mohon != ""
+        ? formatToISOString(response.data.certificate_halal.tgl_mohon)
+        : "";
+    useMyVerifikatorRegulerStore().setData(response.data);
   } catch (error) {
     navigateTo("/online-registration/verifikasi-reguler");
-    useSnackbar().sendSnackbar("ada kesalahan 2", "error");
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
     return;
   }
 };
@@ -296,13 +300,11 @@ onMounted(async () => {
   <VTabsWindow v-model="tabs">
     <br />
     <VTabsWindowItem value="1">
-      <EditDataPengajuanRegulerVerifikator
-      />
+      <EditDataPengajuanRegulerVerifikator />
     </VTabsWindowItem>
 
     <VTabsWindowItem value="2">
-      <EditKomitmenDanTanggungJawabRegulerVerifikator
-      />
+      <EditKomitmenDanTanggungJawabRegulerVerifikator />
     </VTabsWindowItem>
 
     <VTabsWindowItem value="3">
@@ -318,12 +320,11 @@ onMounted(async () => {
     </VTabsWindowItem>
 
     <VTabsWindowItem value="6">
-      <EditPemantauanDanEvaluasiRegulerVerifikator
-      />
+      <EditPemantauanDanEvaluasiRegulerVerifikator />
     </VTabsWindowItem>
 
     <VTabsWindowItem value="7">
-      <EditDokumenRegulerVerifikator/>
+      <EditDokumenRegulerVerifikator />
     </VTabsWindowItem>
   </VTabsWindow>
 </template>
