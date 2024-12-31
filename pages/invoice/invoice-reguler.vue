@@ -18,17 +18,17 @@ const selectedFilters = ref({
 });
 
 const tableHeader = [
-  { title: "No", value: "no" },
-  { title: "No Invoice", value: "no_inv" },
-  { title: "Tanggal Invoice", value: "tgl_inv" },
-  { title: "Register Number", value: "no_daftar" },
-  { title: "Payment Code", value: "va" },
-  { title: "Importer's Name", value: "importer_name" },
-  { title: "Due Date", value: "duedate" },
-  { title: "Payment Date", value: "payment_date" },
-  { title: "Amount", value: "total_inv" },
-  { title: "Status", value: "status" },
-  { title: "Action", value: "action" },
+  { title: "No", value: "no", nowrap: true },
+  { title: "No Invoice", value: "no_inv", nowrap: true },
+  { title: "Tanggal Invoice", value: "tgl_inv", nowrap: true },
+  { title: "Register Number", value: "no_daftar", nowrap: true },
+  { title: "Payment Code", value: "va", nowrap: true },
+  { title: "Importer's Name", value: "nama", nowrap: true },
+  { title: "Due Date", value: "duedate", nowrap: true },
+  { title: "Payment Date", value: "tgl_bayar", nowrap: true },
+  { title: "Amount", value: "total_inv", nowrap: true },
+  { title: "Status", value: "status", nowrap: true },
+  { title: "Action", value: "action", nowrap: true },
 ];
 
 const loadItem = async ({
@@ -79,12 +79,15 @@ const loadItem = async ({
 
 const loadItemStatusApplication = async () => {
   try {
-    const response: any = await $api("/master/application-status", {
-      method: "get",
-    });
+    const response: any = await $api(
+      "/master/application-status-finance-reguler",
+      {
+        method: "get",
+      }
+    );
 
     if (response.length) {
-      itemsStatus.value = [{ code: "Semua", name: "Semua" }, ...response];
+      itemsStatus.value = [...response];
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -260,7 +263,6 @@ const downloadExcel = async () => {
                         :items="itemsStatus"
                         item-title="name"
                         item-value="code"
-                        placeholder="Semua"
                       ></VSelect>
                     </VItemGroup>
                   </VListItem>
@@ -330,32 +332,18 @@ const downloadExcel = async () => {
               <template #item.duedate="{ item }">
                 {{ formatDate((item as any).duedate) }}
               </template>
+              <template #item.tgl_bayar="{ item }">
+                {{ formatDate((item as any).tgl_bayar) }}
+              </template>
               <template #item.action="{ item }">
-                <VMenu
-                  v-model="showUnduhInvoice"
-                  :close-on-content-click="false"
+                <p
+                  v-if="(item as any).file_inv"
+                  class="cursor-pointer"
+                  @click="downloadDOcument((item as any).file_inv)"
                 >
-                  <template #activator="{ props: openMenu }">
-                    <VIcon icon="mdi-dots-vertical" v-bind="openMenu"></VIcon>
-                  </template>
-                  <template #default="{ isActive }">
-                    <VList>
-                      <VListItem>
-                        <p
-                          class="cursor-pointer"
-                          @click="downloadDOcument((item as any).file_inv)"
-                        >
-                          <VIcon
-                            icon="fa-download"
-                            size="xs"
-                            color="primary"
-                          ></VIcon>
-                          Unduh Invoice
-                        </p>
-                      </VListItem>
-                    </VList>
-                  </template>
-                </VMenu>
+                  <VIcon icon="fa-download" size="xs" color="primary"></VIcon>
+                  Unduh Ivoice
+                </p>
               </template>
             </VDataTableServer>
           </VRow>

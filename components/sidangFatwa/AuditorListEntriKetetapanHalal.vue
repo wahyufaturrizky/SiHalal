@@ -46,7 +46,11 @@ const page = ref(1);
             {{ (item as any).jenis_kelamin || "-" }}
           </template>
           <template #item.tanggal_lahir="{ item }">
-            {{ tanggal_lahir ? formatDate((item as any).tanggal_lahir) : "-" }}
+            {{
+              (item as any).tanggal_lahir
+                ? formatDate((item as any).tanggal_lahir)
+                : "-"
+            }}
           </template>
         </VDataTableServer>
       </VExpansionPanelText>

@@ -1,16 +1,52 @@
 <script setup lang="ts">
-</script>
+const route = useRoute();
+const sidangFatwaId = (route.params as any).id;
 
-<script setup lang="ts">
-const panelOpen = ref(0) // Menentukan panel yang terbuka
+const loadingAll = ref(true);
 
-const downloadReport = () => {
-  console.log('Mengunduh laporan...')
-}
+const panelOpen = ref(0); // Menentukan panel yang terbuka
+const fileLaporanLPH = ref<any>(null);
+
+const getDownloadForm = async (docName: string) => {
+  const result: any = await $api(
+    `/self-declare/submission/${sidangFatwaId}/file`,
+    {
+      method: "get",
+      query: {
+        document: docName,
+      },
+    }
+  );
+  console.log("@result", result);
+
+  if (result.code === 2000 && result.message !== "Not Found") {
+    switch (docName) {
+      case "laporan":
+        fileLaporanLPH.value = result.data.file;
+        return result;
+      default:
+        break;
+    }
+  }
+};
+
+onMounted(async () => {
+  const res = await Promise.all([getDownloadForm("laporan")]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
+});
 </script>
 
 <template>
-  <VExpansionPanels v-model="panelOpen">
+  <VExpansionPanels v-if="!loadingAll" v-model="panelOpen">
     <VExpansionPanel>
       <!-- Header Panel -->
       <VExpansionPanelTitle>
@@ -23,25 +59,26 @@ const downloadReport = () => {
           <VCol cols="7">
             <span class="label">Laporan</span>
           </VCol>
-          <VCol cols="1">
-            :
-          </VCol>
-          <VCol
-            cols="2"
-            class="download-btn"
-          >
+          <VCol cols="1"> : </VCol>
+          <VCol cols="2" class="download-btn">
             <VBtn
+              :disabled="!fileLaporanLPH"
               class="square-btn"
               color="primary"
               variant="flat"
               icon="mdi-download"
-              @click="downloadReport"
+              @click="downloadDocument(fileLaporanLPH)"
             />
           </VCol>
         </VRow>
       </VExpansionPanelText>
     </VExpansionPanel>
   </VExpansionPanels>
+
+  <VSkeletonLoader
+    type="table-heading, list-item-two-line, image, table-tfoot"
+    v-else
+  />
 </template>
 
 <style scoped>
