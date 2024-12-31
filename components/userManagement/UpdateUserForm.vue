@@ -80,7 +80,7 @@ const handleSubmitForm = async () => {
       <VForm ref="form" @submit.prevent="handleSubmitForm">
         <VCard class="pa-4">
           <VCardTitle class="d-flex justify-space-between align-center">
-            <div class="text-h4 font-weight-bold">Update User</div>
+            <div class="text-h4 font-weight-bold">Edit User</div>
             <VIcon @click="isActive.value = false" size="large">
               mdi-close-thick
             </VIcon>
@@ -179,7 +179,7 @@ const handleSubmitForm = async () => {
               @click="isActive.value = false"
               >Cancel</VBtn
             >
-            <VBtn type="submit" variant="flat" class="px-7"> Update </VBtn>
+            <VBtn type="submit" variant="flat" class="px-7"> Save </VBtn>
           </VCardActions>
         </VCard>
       </VForm>

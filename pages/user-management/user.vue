@@ -75,7 +75,7 @@ const handleAddNewUser = (payload: any) => {
 };
 const handleUpdateUser = (payload: any) => {
   console.log(payload, "< update payload");
-  useSnackbar().sendSnackbar("Data Successfully Updated", "success");
+  useSnackbar().sendSnackbar("Data Successfully Edited", "success");
   // useSnackbar().sendSnackbar("Update Data Failed", "error");
 };
 
