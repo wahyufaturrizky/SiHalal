@@ -192,7 +192,7 @@ onMounted(async () => {
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <BiayaPemeriksaanDetail />
+          <BiayaPemeriksaanDetail :detaildata="detailData" />
         </VCol>
       </VRow>
       <VRow>

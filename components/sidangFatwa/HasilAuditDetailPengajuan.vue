@@ -17,7 +17,6 @@ const getDownloadForm = async (docName: string) => {
       },
     }
   );
-  console.log("@result", result);
 
   if (result.code === 2000 && result.message !== "Not Found") {
     switch (docName) {

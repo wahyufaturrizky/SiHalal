@@ -7,6 +7,7 @@ const route = useRoute();
 
 const selfDeclareId = (route.params as any).id;
 const isFormError = ref(false);
+const loadingAll = ref(false);
 const listPenetapan = ref([]);
 
 const emit = defineEmits(["refresh"]);
@@ -169,7 +170,8 @@ onMounted(async () => {
   </VBtn>
 
   <VDialog v-model="addDialog" :max-width="dialogMaxWidth">
-    <VCard>
+    <VCard v-if="!loadingAll">
+      >
       <VCardTitle>
         <VRow>
           <VCol cols="10"><h3>Unggah Ketetapan Halal</h3></VCol>
@@ -269,5 +271,9 @@ onMounted(async () => {
         </div>
       </VCardActions>
     </VCard>
+    <VSkeletonLoader
+      type="table-heading, list-item-two-line, image, table-tfoot"
+      v-else
+    />
   </VDialog>
 </template>
