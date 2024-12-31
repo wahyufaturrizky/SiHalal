@@ -24,7 +24,7 @@ const expanded = [0];
             <p>:</p>
           </VCol>
           <VCol cols="8">
-            <p>{{ formatDate(tanggal_mulai) }}</p>
+            <p>{{ tanggal_mulai ? formatDate(tanggal_mulai) : "-" }}</p>
           </VCol>
         </VRow>
         <VRow>
@@ -35,7 +35,7 @@ const expanded = [0];
             <p>:</p>
           </VCol>
           <VCol cols="8">
-            <p>{{ formatDate(tanggal_selesai) }}</p>
+            <p>{{ tanggal_selesai ? formatDate(tanggal_selesai) : "-" }}</p>
           </VCol>
         </VRow>
       </VExpansionPanelText>
