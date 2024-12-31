@@ -1,7 +1,6 @@
 <script setup lang="ts">
-const store =useMyVerifikatorRegulerStore();
-const { certificate_halal } = storeToRefs(store)
-
+const store = useMyVerifikatorRegulerStore();
+const { certificate_halal } = storeToRefs(store);
 </script>
 
 <template>
@@ -49,7 +48,7 @@ const { certificate_halal } = storeToRefs(store)
           :readonly="true"
         />
 
-        <CustomTextarea
+        <CustomTextField
           id="brand"
           v-model="certificate_halal.merk_dagang"
           label="Merek Dagang"
