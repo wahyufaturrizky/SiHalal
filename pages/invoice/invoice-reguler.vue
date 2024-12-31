@@ -337,6 +337,7 @@ const downloadExcel = async () => {
               </template>
               <template #item.action="{ item }">
                 <p
+                  v-if="(item as any).file_inv"
                   class="cursor-pointer"
                   @click="downloadDOcument((item as any).file_inv)"
                 >
