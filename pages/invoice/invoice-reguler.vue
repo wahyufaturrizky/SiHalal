@@ -200,7 +200,8 @@ const downloadExcel = async () => {
       }
     );
 
-    if (response.code === 2000) {
+    if (response) {
+      downloadFileExcel(response);
       loadingDownloadExcel.value = false;
     } else {
       loadingDownloadExcel.value = false;
