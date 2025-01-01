@@ -367,7 +367,7 @@ onMounted(async () => {
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
-                    @click="downloadDocument(fileHasilAudit)"
+                    @click="downloadDocument(dataProduk?.file_laporan)"
                     rounded="xl"
                     density="compact"
                     class="px-2"
