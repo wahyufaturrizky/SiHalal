@@ -102,7 +102,15 @@
                 "recapitulation": "Rekapitulasi"
             }
         },
-        "business_actor": "Pelaku Usaha"
+        "business_actor": "Pelaku Usaha",
+        "management": {
+            "title": "Administrator",
+            "menu": {
+                "user": "User",
+                "role": "Role",
+                "image": "Image Authorization"
+            }
+        }
     },
     "uam_role": "Role",
     "uam_user": "User",

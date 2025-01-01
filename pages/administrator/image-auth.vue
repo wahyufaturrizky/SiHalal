@@ -1,52 +1,36 @@
 <script setup lang="ts">
-type DataUser = {
+type DataImage = {
   id: string;
-  username: string;
-  nama: string;
-  email: string;
-  password?: string;
-  phone_no: string;
-  is_verify: boolean;
-  role: string;
+  image: string | null;
+  status: boolean;
 };
 const tableHeaders: any[] = [
-  { title: "No", key: "no", sortable: false },
-  { title: "User Name", key: "username", nowrap: true },
-  { title: "Name", key: "nama", nowrap: true },
-  { title: "Email", key: "email", nowrap: true },
-  { title: "Phone Number", key: "phone_no", nowrap: true },
-  { title: "Verify", key: "is_verify", nowrap: true },
-  { title: "Role", key: "role", nowrap: true },
-  { title: "Action", key: "actions", sortable: false, align: "center" },
+  { title: "No", key: "no", sortable: false, width: "30px" },
+  { title: "Image", key: "image", nowrap: true },
+  { title: "Status", key: "status", nowrap: true },
+  {
+    title: "Action",
+    key: "actions",
+    sortable: false,
+    align: "center",
+    width: "30px",
+  },
 ];
-const tableItems = ref<Array<DataUser>>([
+const tableItems = ref<Array<DataImage>>([
   {
     id: "1",
-    username: "Banawadmnk",
-    nama: "Banawa Damanik",
-    email: "juli18@palastri.in",
-    password: "123",
-    phone_no: "0839 9981 7991",
-    is_verify: true,
-    role: "Pelaku Usaha",
+    image: "SiHalalBanner_2024.jpg",
+    status: false,
   },
   {
     id: "2",
-    username: "Zelda_Zulaika",
-    nama: "Zelda Zulaika",
-    email: "ibrani.pradana@yahoo.co.id",
-    phone_no: "0839 9981 7991",
-    is_verify: true,
-    role: "Verifikator HLN",
+    image: "SiHalalBanner_2023.jpg",
+    status: true,
   },
   {
     id: "3",
-    username: "Genta_Halimah",
-    nama: "Genta Halimah",
-    email: "gmulyani@tamba.sch.id",
-    phone_no: "0759 9443 896",
-    is_verify: false,
-    role: "Fasilitator",
+    image: null,
+    status: true,
   },
 ]);
 const currentPage = ref(1);
@@ -62,34 +46,38 @@ const handleSearchUser = useDebounceFn((val: string) => {
   // refresh();
 }, 350);
 
+const handleDownload = async (filename: string) => {
+  return await downloadDocument(filename);
+};
+
 const isOpenAddModal = ref(false);
 const handleOpenAddModal = () => {
   isOpenAddModal.value = !isOpenAddModal.value;
 };
-const handleAddNewUser = (payload: any) => {
+const handleAddImage = (payload: any) => {
   console.log(payload, "< submit payload");
   useSnackbar().sendSnackbar("Data Successfully Added", "success");
   // useSnackbar().sendSnackbar("Add Data Failed", "error");
 };
 const handleUpdateUser = (payload: any) => {
   console.log(payload, "< update payload");
-  useSnackbar().sendSnackbar("Data Successfully Edited", "success");
+  useSnackbar().sendSnackbar("Data Successfully Updated", "success");
   // useSnackbar().sendSnackbar("Update Data Failed", "error");
 };
 
-const selectedUser = ref("");
+const selectedImage = ref("");
 const detailData = ref();
 // remove this function on integrating update
 const handleLoadDetail = (id: string) => {
-  selectedUser.value = id;
+  selectedImage.value = id;
   const detail = tableItems.value.find((item) => {
-    return item.id === selectedUser.value;
+    return item.id === selectedImage.value;
   });
   if (detail) detailData.value = detail;
 };
 const isOpenDeleteModal = ref(false);
 const handleOpenDeleteModal = (id?: string | null) => {
-  if (id) selectedUser.value = id;
+  if (id) selectedImage.value = id;
   isOpenDeleteModal.value = !isOpenDeleteModal.value;
 };
 
@@ -102,7 +90,7 @@ const handleConfirmDelete = () => {
 <template>
   <VRow>
     <VCol>
-      <h1 class="mb-1 font-weight-bold">User</h1>
+      <h1 class="mb-1 font-weight-bold">Image Authorization</h1>
     </VCol>
   </VRow>
   <VRow>
@@ -111,9 +99,9 @@ const handleConfirmDelete = () => {
         <VCardTitle
           class="d-flex justify-space-between align-center font-weight-bold text-h4"
         >
-          <div>User List</div>
+          <div>Image Authorization List</div>
           <VBtn append-icon="fa-plus" @click="handleOpenAddModal"
-            >Add User</VBtn
+            >Add Image</VBtn
           >
         </VCardTitle>
         <VCardItem>
@@ -155,8 +143,29 @@ const handleConfirmDelete = () => {
               <template #item.no="{ index }">
                 {{ index + 1 + (currentPage - 1) * itemPerPage }}
               </template>
-              <template #item.is_verify="{ item }">
-                {{ item.is_verify ? "Yes" : "No" }}
+              <template #item.image="{ item }">
+                <div v-if="item.image" class="d-flex align-center">
+                  <div class="text-primary font-weight-bold">
+                    {{ item.image }}
+                  </div>
+                  <VBtn variant="flat" class="px-3 ms-2">
+                    <VIcon
+                      icon="fa-download"
+                      @click="handleDownload(item.image)"
+                    ></VIcon>
+                  </VBtn>
+                </div>
+                <div v-else>-</div>
+              </template>
+              <template #item.status="{ item }">
+                <VChip
+                  variant="outlined"
+                  :class="item.status ? 'active-chip' : 'inactive-chip'"
+                >
+                  <span>
+                    {{ item.status ? "Active" : "Inactive" }}
+                  </span>
+                </VChip>
               </template>
               <template #item.actions="{ item }">
                 <VMenu>
@@ -169,7 +178,7 @@ const handleConfirmDelete = () => {
                     />
                   </template>
                   <VList>
-                    <UpdateUserForm
+                    <UpdateImageForm
                       :detail="detailData"
                       @submit:update="handleUpdateUser"
                     />
@@ -191,10 +200,10 @@ const handleConfirmDelete = () => {
       </VCard>
     </VCol>
   </VRow>
-  <AddUserForm
+  <AddImageForm
     :dialog-visible="isOpenAddModal"
     :close-handler="handleOpenAddModal"
-    @submit:add="handleAddNewUser"
+    @submit:add="handleAddImage"
   />
   <ConfirmModal
     dialog-title="Delete Confirmation"
@@ -219,6 +228,24 @@ const handleConfirmDelete = () => {
 </template>
 
 <style scoped lang="scss">
+.active-chip {
+  border: 1px solid #49a84c !important;
+  border-radius: 8px;
+  background-color: #edf6ed;
+
+  span {
+    color: #49a84c;
+  }
+}
+.inactive-chip {
+  border: 1px solid #e1442e !important;
+  border-radius: 8px;
+  background-color: #fcecea;
+
+  span {
+    color: #e1442e;
+  }
+}
 :deep(.v-data-table.custom-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
