@@ -94,10 +94,8 @@ const getDownloadForm = async (docName: string, propName: string) => {
 onMounted(async () => {
   await Promise.all([
     getDownloadForm("sttd", "sttd"),
-    getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
+    getDownloadForm("ikrar", "ikrar"),
     getDownloadForm("laporan-pendamping", "laporan_pendamping"),
-    getDownloadForm("surat-penyelia", "surat_penyelia"),
-    getDownloadForm("rekomendasi", "rekomendasi"),
     getDownloadForm("surat-permohonan", "surat_permohonan"),
     getDownloadForm("surat-pernyataan", "surat_pernyataan"),
   ]);
@@ -137,11 +135,20 @@ onMounted(async () => {
               <VCol cols="1">:</VCol>
               <VCol cols="6">
                 <VChip
-                  v-if="item.key === 'Status' && item.value === ''"
+                  v-if="item.key === 'Status' && item.value !== ''"
                   color="success"
                   >{{ item.value }}</VChip
                 >
-                <p v-if="item.key !== 'Status'">{{ item.value }}</p>
+                <p v-if="item.key !== 'Status' && item.key !== 'Tanggal'">
+                  {{ item.value }}
+                </p>
+                <p v-if="item.key === 'Tanggal'">
+                  {{
+                    item.value
+                      ? new Date(item.value).toISOString().substring(0, 10)
+                      : "-"
+                  }}
+                </p>
               </VCol>
             </VRow>
           </VExpansionPanelText>

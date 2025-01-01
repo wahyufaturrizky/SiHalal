@@ -170,6 +170,12 @@ const skReadyHandler = (blob) => {
   skBlobUri.value = blob;
 };
 
+const downloadFileRekomendasi = () => {
+  if (skBlobUri.value) {
+    window.open(skBlobUri.value);
+  }
+};
+
 onMounted(async () => {
   await getDetail();
   await getGeneralQuestion();
@@ -189,10 +195,13 @@ onMounted(async () => {
   >
   <VRow>
     <VCol cols="7">
-      <VBtn style="margin-right: 1svw" color="warning" variant="outlined"
+      <!-- <VBtn style="margin-right: 1svw" color="warning" variant="outlined"
         >Formulir Rekomendasi</VBtn
-      >
-      <VBtn append-icon="fa-download" variant="outlined"
+      > -->
+      <VBtn
+        append-icon="fa-download"
+        variant="outlined"
+        @click="downloadFileRekomendasi"
         >Download Rekomendasi</VBtn
       >
     </VCol>

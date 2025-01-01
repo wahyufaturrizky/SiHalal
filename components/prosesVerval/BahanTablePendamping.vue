@@ -23,10 +23,38 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["confirm-add"]);
+const emit = defineEmits(["confirm-add", "confirm-delete"]);
 
 const handleAddBahan = (result: boolean) => {
   emit("confirm-add", result);
+};
+
+const handleDeleteBahan = async (idBahan: string) => {
+  try {
+    const response = await $api(
+      `/self-declare/proses-verval/${props.idReg}/ingredient-delete`,
+      {
+        method: "post",
+        body: {
+          idBahan,
+        },
+      }
+    );
+
+    if (response.code !== 2000) {
+      useSnackbar().sendSnackbar("Gagal menghapus proses", "error");
+      return;
+    }
+
+    // Update content to remove the deleted item
+    content.value = content.value.filter((item) => item.id_bahan !== idBahan);
+
+    emit("confirm-delete", true);
+    useSnackbar().sendSnackbar("Berhasil menghapus proses", "success");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Gagal menghapus proses", "error");
+    console.error("Delete failed:", error);
+  }
 };
 
 watch(
@@ -76,11 +104,15 @@ watch(
             <VList>
               <ModalBahanPendampingVerval
                 :modal-type="modalTypeEnum.EDIT"
-                :id-bahan="item.id"
+                :id-bahan="item.id_bahan"
+                @emit-add="handleAddBahan"
               ></ModalBahanPendampingVerval>
-              <VListItem style="color: red" prepend-icon="fa-trash"
-                >Hapus</VListItem
-              >
+              <VListItem @click="handleDeleteBahan(item.id_bahan)">
+                <template #prepend>
+                  <VIcon style="color: red" icon="fa-trash"></VIcon>
+                </template>
+                <template #append> Hapus </template>
+              </VListItem>
             </VList>
           </VMenu>
         </template>
