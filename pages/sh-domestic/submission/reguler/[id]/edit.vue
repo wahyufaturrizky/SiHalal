@@ -121,6 +121,36 @@ const getFactoryAndOutlet = async (type: string) => {
   }
 };
 
+const getListIngredients = async () => {
+  try {
+    const response: any = await $api(
+      '/self-declare/business-actor/ingredient/list',
+      {
+        method: 'get',
+        query: {
+          id_reg: id,
+        },
+      },
+    )
+
+    if (response.code === 2000) {
+
+      if(response.data !== null){
+        const jenisBahan = response.data?.map(i => i.jenis_bahan)
+
+        if (['Bahan', 'Cleaning Agent', 'Kemasan'].every(item => jenisBahan.includes(item))){
+          bahanComplete(true)
+        }
+      }
+    }
+
+    return response
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
 onMounted(async () => {
   activeTab.value = 0;
   const res: any = await Promise.all([
@@ -129,6 +159,7 @@ onMounted(async () => {
     getListLegal(),
     getListPenyelia(),
     getChannel(LIST_CHANNEL_PATH_JNLAY),
+    getListIngredients()
   ]);
 
   const checkResIfUndefined = res.every((item: any) => {
@@ -175,7 +206,7 @@ onMounted(async () => {
       <VRow>
         <VCol cols="12" class="pl0">
           <VTabs v-model="activeTab" align-tabs="start" class="w-100">
-            <VTab v-for="(item, index) in tabList" :key="item" :value="index">
+            <VTab v-for="(item, index) in tabList" :key="item" :value="index" :disabled="index > 2 && !isBahanCompleted">
               {{ item }}
             </VTab>
           </VTabs>

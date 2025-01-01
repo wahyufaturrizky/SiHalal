@@ -20,7 +20,7 @@ const titleDialog = ref("");
 
 const formAdd = ref<any>({
   nama: "",
-  jabatan: "",
+  jabatan: "Tim Manajemen Halal",
   posisi: "",
 });
 
@@ -186,6 +186,7 @@ onMounted(async () => {
             v-model="formAdd.jabatan"
             class="-mt-10"
             placeholder="isi Jabatan"
+            disabled
           />
           <br />
           <p class="label-pengajuan">Posisi</p>

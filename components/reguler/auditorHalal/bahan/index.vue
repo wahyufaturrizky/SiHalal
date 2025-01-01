@@ -66,6 +66,8 @@ const uploadedFileBahan = ref({
 const handleRemoveFile = () => {
   uploadedFile.value.name = ''
   uploadedFile.value.file = null
+  uploadedFileBahan.value.name = ''
+  uploadedFileBahan.value.file = null
   formData.value.foto_produk = ''
 }
 
@@ -155,7 +157,10 @@ const toggleAdd = (type: string) => {
 }
 
 const toggleEdit = (item: any, type: string) => {
+  tabBahan.value = '1'
   itemDetail.value = item
+  uploadedFileBahan.value.file = item.FileDok
+  uploadedFileBahan.value.name = item.FileDok
   addDialog.value = true
   titleDialog.value = `Ubah ${type}`
   labelSaveBtn.value = 'Ubah'
@@ -397,7 +402,10 @@ const addProduct = async () => {
       {
         method: 'post',
         params: { id_reg: id },
-        body: formDataCatatan.value,
+        body: {
+          nama: formData.value?.nama_produk,
+          file_dok: formData.value?.foto_produk,
+        },
       },
     )
 
@@ -408,7 +416,7 @@ const addProduct = async () => {
         foto_produk: null,
       }
       addDialog.value = false
-      reRender.value = !reRender.value
+      getListCatatan()
       useSnackbar().sendSnackbar('Sukses menambah data', 'success')
     }
   }
@@ -416,13 +424,20 @@ const addProduct = async () => {
     let body: any = {}
     let url = ''
     let method = ''
-    if (tabBahan.value === 0) {
-      body = {
-        id_reg_bahan: itemDetail.value.id_reg_bahan,
-        nama: itemDetail.value.nama,
-        jumlah: +itemDetail.value.jumlah,
-        tgl_pembelian: formatToISOString(itemDetail.value.tgl_pembelian),
-        file_dok: formData.value.foto_produk,
+    if (tabBahan.value === 0 || tabBahan.value === '1') {
+      if (itemDetail.value?.id_reg_bahan !== '') {
+        body = {
+          id_reg_bahan: itemDetail.value.id_reg_bahan,
+          nama: itemDetail.value.nama,
+          jumlah: +itemDetail.value.jumlah,
+          tgl_pembelian: formatToISOString(itemDetail.value.tgl_pembelian),
+          file_dok: formData.value.foto_produk,
+        }
+      } else {
+        body = {
+          nama: itemDetail.value?.nama,
+          file_dok: uploadedFileBahan.value.file !== null ? uploadedFileBahan.value.file : formData.value.foto_produk,
+        }
       }
     }
     else {
@@ -462,6 +477,24 @@ const addProduct = async () => {
       addDialog.value = false
       reRender.value = !reRender.value
       refresh()
+      useSnackbar().sendSnackbar('Sukses merubah data', 'success')
+    }
+  }
+  else if (titleDialog.value === 'Tambah Formulir Pemeriksaan Bahan') {
+    const response: any = await $api('/reguler/pelaku-usaha/tab-bahan/formulir/add-formulir', {
+      method: 'post',
+      params: {
+        id,
+      },
+      body: {
+        nama: formData.value?.nama_produk,
+        file_dok: formData.value?.foto_produk,
+      },
+    })
+
+    if (response.code === 2000) {
+      addDialog.value = false
+      getListFormulir()
       useSnackbar().sendSnackbar('Sukses menambah data', 'success')
     }
   }
@@ -469,13 +502,20 @@ const addProduct = async () => {
     let body: any = {}
     let url = ''
     let method = ''
-    if (tabBahan.value === 0) {
-      body = {
-        id_reg_bahan: itemDetail.value.id_reg_bahan,
-        nama: itemDetail.value.nama,
-        lokasi: itemDetail.value.lokasi,
-        tgl_pembelian: formatToISOString(itemDetail.value.tgl_pembelian),
-        file_dok: formData.value.foto_produk,
+    if (tabBahan.value === 0 || tabBahan.value === '1') {
+      if (itemDetail.value?.id_reg_bahan !== '') {
+        body = {
+          id_reg_bahan: itemDetail.value.id_reg_bahan,
+          nama: itemDetail.value.nama,
+          lokasi: itemDetail.value.lokasi,
+          tgl_pembelian: formatToISOString(itemDetail.value.tgl_pembelian),
+          file_dok: formData.value.foto_produk,
+        }
+      } else {
+        body = {
+          nama: itemDetail.value?.nama,
+          file_dok: uploadedFileBahan.value.file !== null ? uploadedFileBahan.value.file : formData.value.foto_produk,
+        }
       }
     }
     else {
@@ -512,7 +552,7 @@ const addProduct = async () => {
       addDialog.value = false
       reRender.value = !reRender.value
       refresh()
-      useSnackbar().sendSnackbar('Sukses menambah data', 'success')
+      useSnackbar().sendSnackbar('Sukses merubah data', 'success')
     }
   }
 }
@@ -612,11 +652,10 @@ const getListIngredients = async () => {
 
 const handleInputBahan = async (selected, idProduk) => {
   try {
-
     const response: any = await $api(
-      `/self-declare/business-actor/product/add-ingredient`,
+      '/self-declare/business-actor/product/add-ingredient',
       {
-        method: "post",
+        method: 'post',
         body: selected,
         query: {
           id_reg: id,
@@ -626,12 +665,12 @@ const handleInputBahan = async (selected, idProduk) => {
     );
 
     if (response.code === 2000) {
-      useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+      useSnackbar().sendSnackbar('Berhasil menambahkan data', 'success');
       await refresh();
     }
     return response;
   } catch (error) {
-    useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+    useSnackbar().sendSnackbar('Gagal menambahkan data', 'error');
     console.log(error);
   } finally {
     store.isAllBahanSelected();
@@ -936,17 +975,6 @@ onMounted(async () => {
               >
                 <span>Unggah File </span>
               </VTab>
-              <VTab
-                value="2"
-                active-color="primary"
-                base-color="#f0dcf5"
-                style="border-radius: 40px"
-                hide-slider
-                variant="flat"
-                height="40px"
-              >
-                <span> Tambah Manual </span>
-              </VTab>
             </VTabs>
           </div>
           <VTabsWindow v-model="tabBahan">
@@ -1055,21 +1083,20 @@ onMounted(async () => {
               >
                 <span>Unggah File </span>
               </VTab>
-              <VTab
-                value="2"
-                active-color="primary"
-                base-color="#f0dcf5"
-                style="border-radius: 40px"
-                hide-slider
-                variant="flat"
-                height="40px"
-              >
-                <span> Tambah Manual </span>
-              </VTab>
             </VTabs>
           </div>
           <VTabsWindow v-model="tabBahan">
             <VTabsWindowItem value="1">
+              {{ itemDetail }}
+              <div class="mt-5">
+                <label>Nama</label>
+                <VTextField
+                  v-model="formData.nama_produk"
+                  class="mt-2"
+                  density="compact"
+                  placeholder="Isi Nama"
+                />
+              </div>
               <div class="d-flex justify-space-between mt-5">
                 <label style="align-self: center"> Unggah Bahan </label>
                 <VCol cols="6">
@@ -1166,6 +1193,7 @@ onMounted(async () => {
                 <span>Unggah File </span>
               </VTab>
               <VTab
+                v-if="itemDetail?.id_reg_bahan"
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
@@ -1180,6 +1208,18 @@ onMounted(async () => {
           </div>
           <VTabsWindow v-model="tabBahan">
             <VTabsWindowItem value="1">
+              <div
+                v-if="!itemDetail?.id_reg_bahan"
+                class="mt-5"
+              >
+                <label>Nama</label>
+                <VTextField
+                  v-model="itemDetail.nama"
+                  class="mt-2"
+                  density="compact"
+                  placeholder="Isi Nama"
+                />
+              </div>
               <div class="d-flex justify-space-between mt-5">
                 <label style="align-self: center"> Unggah Bahan </label>
                 <VCol cols="6">
@@ -1277,6 +1317,7 @@ onMounted(async () => {
                 <span>Unggah File </span>
               </VTab>
               <VTab
+                v-if="itemDetail?.id_reg_bahan"
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
@@ -1291,6 +1332,18 @@ onMounted(async () => {
           </div>
           <VTabsWindow v-model="tabBahan">
             <VTabsWindowItem value="1">
+              <div
+                v-if="!itemDetail?.id_reg_bahan"
+                class="mt-5"
+              >
+                <label>Nama</label>
+                <VTextField
+                  v-model="itemDetail.nama"
+                  class="mt-2"
+                  density="compact"
+                  placeholder="Isi Nama"
+                />
+              </div>
               <div class="d-flex justify-space-between mt-5">
                 <label style="align-self: center"> Unggah Bahan </label>
                 <VCol cols="6">
@@ -1415,6 +1468,7 @@ onMounted(async () => {
       :data="payNote"
       title="Catatan Pembelian Bahan"
       :isviewonly="isviewonly"
+      with-add-button
     />
     <br>
     <TableData
@@ -1424,6 +1478,7 @@ onMounted(async () => {
       :data="materialCheck"
       title="Formulir Pemeriksaan Bahan"
       :isviewonly="isviewonly"
+      with-add-button
     />
   </div>
 </template>

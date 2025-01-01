@@ -205,6 +205,8 @@ const deleteIngredient = async (productId: string) => {
   if (response.code === 2000) {
     getListIngredients();
     useSnackbar().sendSnackbar("Sukses menghapus data", "success");
+  } else {
+    useSnackbar().sendSnackbar(response.data, "success");
   }
 };
 
@@ -319,7 +321,7 @@ watch(
             </div>
           </template>
           <template #item.tgl_pembelian="{ item }">
-            <div>
+            <div v-if="item.tgl_pembelian">
               {{ formatDateIntl(new Date(item.tgl_pembelian)) }}
             </div>
           </template>
