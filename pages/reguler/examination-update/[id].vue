@@ -9,13 +9,21 @@ const openedRightPanels = ref([0, 1, 2])
 const loading = ref(false)
 const dataPengajuan = ref<any>({})
 const dataProduk = ref<any>([])
+const lovAuditor = ref<any>([])
 const dataPemeriksaanProduk = ref<any>(null)
+const selectedAudiotor = ref<any>(null)
+const loadingAuditor = ref(false);
+
+const downloadForms = reactive({
+  sttd: '',
+  sertifikasi_halal: '',
+}) as Record<string, string>
 
 const assignAuditorHeader: any[] = [
   { title: 'No', key: 'index' },
-  { title: 'Nama', key: 'name' },
-  { title: 'Tanggal Lahir', key: 'birthDate' },
-  { title: 'No Reg', key: 'regisNumber' },
+  { title: 'Nama', key: 'nama' },
+  { title: 'Tanggal Lahir', key: 'tanggal_lahir' },
+  { title: 'No Reg', key: 'no_reg' },
   { title: 'Action', key: 'actions', align: 'center', sortable: false },
 ]
 
@@ -42,6 +50,7 @@ const handleOpenUpdateModal = () => {
 }
 
 const handleAddAuditor = () => {
+  dataPemeriksaanProduk.value?.auditor.push(selectedAudiotor.value)
   assignAuditorData.value.push(newAuditorData)
 }
 
@@ -49,18 +58,34 @@ const handleDeleteAuditor = (index: number) => {
   assignAuditorData.value.splice(index, 1)
 }
 
-const handleSaveAuditor = () => {
-  useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
+const handleSaveAuditor = async () => {
+  localStorage.setItem('lovAuditor', JSON.stringify(dataPemeriksaanProduk.value.auditor))
 }
 
-const handleUpdateStatus = () => {
-  const snackbarMessage = assignedAuditor.value
-    ? 'Berhasil mengupdate status data'
-    : 'Gagal mengupdate status, silahkan assign auditor'
+const handleUpdateStatus = async () => {
+  let auditorToAdd = localStorage.getItem('lovAuditor')
+  if (auditorToAdd) {
+    auditorToAdd = JSON.parse(auditorToAdd)
+    const ids = auditorToAdd.map((item:any) => item.id_auditor || null)
+    try {
+      const response: any = await $api('/reguler/auditor/assign', {
+        method: 'post',
+        query: { id },
+        body: { id_auditor: ids },
+      })
 
-  const snackbarType = assignedAuditor.value ? 'success' : 'error'
-
-  useSnackbar().sendSnackbar(snackbarMessage, snackbarType)
+      if (response?.code === 2000) {
+        useSnackbar().sendSnackbar('Berhasil menambah auditor', 'success')
+        return response?.data
+      }
+      else {
+        useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      }
+    }
+    catch (error) {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
 }
 
 const getDetailData = async (type: string) => {
@@ -80,6 +105,65 @@ const getDetailData = async (type: string) => {
   }
 }
 
+const handleDownloadForm = async (fileName: string) => {
+  return await downloadDocument(fileName)
+}
+
+const getListAuditor = async (type: string) => {
+  try {
+    const response: any = await $api('/reguler/list', {
+      method: 'get',
+      params: { url: `api/v1/halal-certificate-reguler/lph/pemeriksaan/${id}/auditor` },
+    })
+    if (response?.code === 2000) {
+      lovAuditor.value = response.data
+
+      return response?.data
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const getDownloadForm = async (docName: string, propName: string) => {
+  const result: any = await $api(
+    `/self-declare/submission/${id}/file`,
+    {
+      method: 'get',
+      query: {
+        document: docName,
+      },
+    },
+  )
+
+  if (result?.code === 2000)
+    downloadForms[propName] = result?.data?.file || ''
+}
+
+const handleInputAuditor = async (val: any) => {
+  try {
+    const response: any = await $api('/reguler/list', {
+      method: 'get',
+      params: { url: `api/v1/halal-certificate-reguler/lph/pemeriksaan/${id}/auditor`, keyword: val },
+    })
+    if (response?.code === 2000) {
+      lovAuditor.value = response.data
+
+      return response?.data
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+};
+
 onMounted(async () => {
   loading.value = true
 
@@ -87,6 +171,9 @@ onMounted(async () => {
     getDetailData('pengajuan'),
     getDetailData('produk'),
     getDetailData('pemeriksaanproduk'),
+    getListAuditor(),
+    getDownloadForm('file_laporan', 'file_laporan'),
+    getDownloadForm('file_kh', 'file_kh'),
   ])
 
   dataPengajuan.value = responseData?.[0]?.value || {}
@@ -194,7 +281,21 @@ onMounted(async () => {
                 <VCol cols="5" class="text-h6"> Hasil Audit </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
-                  <VBtn rounded="xl" density="compact" class="px-2">
+                  <!-- <VBtn rounded="xl" density="compact" class="px-2">
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn> -->
+                  <VBtn
+                    :color="downloadForms.hasil_audit ? 'primary' : '#A09BA1'"
+                    density="compact"
+                    class="px-2"
+                    @click="
+                      downloadForms.hasil_audit
+                        ? handleDownloadForm(downloadForms.hasil_audit)
+                        : null
+                    "
+                  >
                     <template #default>
                       <VIcon icon="fa-download" />
                     </template>
@@ -205,7 +306,21 @@ onMounted(async () => {
                 <VCol cols="5" class="text-h6"> File KH </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
-                  <VBtn rounded="xl" density="compact" class="px-2">
+                  <!-- <VBtn rounded="xl" density="compact" class="px-2">
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn> -->
+                  <VBtn
+                    :color="downloadForms.file_laporan ? 'primary' : '#A09BA1'"
+                    density="compact"
+                    class="px-2"
+                    @click="
+                      downloadForms.file_laporan
+                        ? handleDownloadForm(downloadForms.file_laporan)
+                        : null
+                    "
+                  >
                     <template #default>
                       <VIcon icon="fa-download" />
                     </template>
@@ -216,7 +331,21 @@ onMounted(async () => {
                 <VCol cols="5" class="text-h6"> File Laporan LPH </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
-                  <VBtn rounded="xl" density="compact" class="px-2">
+                  <!-- <VBtn rounded="xl" density="compact" class="px-2">
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn> -->
+                  <VBtn
+                    :color="downloadForms.file_kh ? 'primary' : '#A09BA1'"
+                    density="compact"
+                    class="px-2"
+                    @click="
+                      downloadForms.file_kh
+                        ? handleDownloadForm(downloadForms.file_kh)
+                        : null
+                    "
+                  >
                     <template #default>
                       <VIcon icon="fa-download" />
                     </template>
@@ -259,14 +388,26 @@ onMounted(async () => {
           <VRow class="mb-1">
             <VCol>
               <div class="text-h6 mb-1">Auditor</div>
-              <VSelect
-                placeholder="Masukkan Auditor"
+              <VAutocomplete
+                v-model="selectedAudiotor"
+                :items="lovAuditor"
+                item-title="nama"
+                item-value="id_auditor"
                 density="compact"
-                class="mb-3"
-                :items="[{ title: 'Aliando Syakir', value: 'Aliando Syakir' }]"
+                placeholder="Cari auditor"
+                :loading="loadingAuditor"
+                @input="handleInputAuditor"
                 @update:model-value="(v) => (assignedAuditor = v)"
-                menu-icon="fa-chevron-down"
-              />
+                return-object
+                class="mb-5"
+              >
+                <template #item="{ props, item }">
+                  <VListItem
+                    v-bind="props"
+                    :title="(item.raw as any).nama"
+                  />
+                </template>
+              </VAutocomplete>
               <div class="d-flex justify-end">
                 <VBtn
                   :disabled="!assignedAuditor"
@@ -281,7 +422,7 @@ onMounted(async () => {
               <VDataTable
                 class="auditor-table"
                 :headers="assignAuditorHeader"
-                :items="assignAuditorData"
+                :items="dataPemeriksaanProduk?.auditor"
                 hide-default-footer
               >
                 <template #item.index="{ index }">
@@ -291,7 +432,7 @@ onMounted(async () => {
                   <VIcon
                     icon="mdi-delete"
                     color="error"
-                    @click="handleDeleteAuditor"
+                    @click="() => dataPemeriksaanProduk.auditor.splice(index, 1)"
                   />
                 </template>
               </VDataTable>

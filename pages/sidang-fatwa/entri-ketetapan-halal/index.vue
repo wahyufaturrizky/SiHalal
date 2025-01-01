@@ -125,6 +125,13 @@ const navigateAction = (id: string) => {
             :loading="loading"
             :items-length="totalItems"
             loading-text="Loading..."
+            @update:options="
+              loadItem({
+                page: page,
+                size: itemPerPage,
+                keyword: searchQuery,
+              })
+            "
           >
             <template #item.no="{ index }">
               {{ index + 1 + (page - 1) * itemPerPage }}

@@ -8,12 +8,15 @@ export default defineEventHandler(async event => {
       statusCode: 403,
       statusMessage:
         'Need to pass valid Bearer-authorization header to access this endpoint',
-    });
+    })
   }
 
-  const { page, size } = (await getQuery(event)) as {
+  const { page, size, startDate, endDate, namaPengajuan } = (await getQuery(event)) as {
     page: string
     size: string
+    startDate: string
+    endDate: string
+    namaPengajuan: string
   }
 
   const params: any = {
@@ -21,23 +24,15 @@ export default defineEventHandler(async event => {
     size: Number.isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
   }
 
-  // if (jenisProduk !== '')
-  //   params['jenis_produk'] = jenisProduk
-  // if (lembagaPendampingId !== '')
-  //   params['lembaga_pendamping_id'] = lembagaPendampingId
-  // if (pendampingId !== '')
-  //   params['pendamping_id'] = pendampingId
-  // if (facId !== '')
-  //   params['fac_id'] = facId
-  // if (namaPengajuan !== '')
-  //   params['nama_pengajuan'] = namaPengajuan
-
-  // if (status !== "" && status !== "Semua") {
-  //   params["status"] = status;
-  // }
+  if (startDate !== '')
+    params['start_date'] = startDate
+  if (endDate !== '')
+    params['end_date'] = endDate
+  if (namaPengajuan !== '')
+    params['keywords'] = namaPengajuan
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/komite/halal-certificate-reguler/self-declare/inquiry`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/komite/halal-certificate-reguler/self-declare/rekapitulasi`,
     {
       method: 'get',
       headers: { Authorization: authorizationHeader },

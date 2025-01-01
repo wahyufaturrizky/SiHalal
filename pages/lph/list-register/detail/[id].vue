@@ -121,7 +121,7 @@ const handleSend = async () => {
     const response: any = await $api(`/reguler/lph/kirim`, {
       method: "put",
       body: {
-        keterangan: "Kirin",
+        keterangan: "Kirim",
         id_reg: id,
       },
     });
@@ -209,7 +209,7 @@ const loadItemById = async () => {
         },
         {
           label: "Negara",
-          value: negara_pu || 'Indonesia',
+          value: negara_pu || "Indonesia",
         },
         {
           label: "Telepon",
@@ -235,8 +235,6 @@ const loadItemById = async () => {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
   } catch (error) {
-    console.log("@error", error);
-
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
@@ -274,7 +272,14 @@ onMounted(async () => {
           </VBtn>
           <!-- <VBtn variant="outlined"> Lihat Draft Sertif </VBtn> -->
           <VBtn
-            @click="navigateTo(`/sh-domestic/submission/reguler/${id}/edit`)"
+            @click="
+              navigateTo({
+                path: `/sh-domestic/submission/reguler/${id}/edit`,
+                query: {
+                  isViewOnly: true,
+                },
+              })
+            "
             variant="outlined"
           >
             Cek Data

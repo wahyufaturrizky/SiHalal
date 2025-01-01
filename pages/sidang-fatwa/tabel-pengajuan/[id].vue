@@ -132,10 +132,10 @@ onMounted(async () => {
         <VCol cols="12">
           <h2 class="font-weight-bold">Detail Data Pengajuan</h2>
         </VCol>
-        <VCol cols="auto">
+        <!-- <VCol cols="auto">
           <UpdateSidangFatwaProses />
           <TambahDataSidangFatwaProses />
-        </VCol>
+        </VCol> -->
       </VRow>
     </template>
 
@@ -185,20 +185,20 @@ onMounted(async () => {
 
     <!-- right content -->
     <template #rightContent>
-      <!-- <VRow>
+      <VRow>
         <VCol :cols="12">
           <HasilAuditDetailPengajuan />
         </VCol>
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <BiayaPemeriksaanDetail />
+          <BiayaPemeriksaanDetail :detaildata="detailData" />
         </VCol>
-      </VRow> -->
+      </VRow>
       <VRow>
-        <!-- <VCol :cols="12">
+        <VCol :cols="12">
           <DokumenUnduhan />
-        </VCol> -->
+        </VCol>
         <VCol :cols="12">
           <MelacakDetailFatwaProsesSidang :trackingdata="trackingData" />
         </VCol>

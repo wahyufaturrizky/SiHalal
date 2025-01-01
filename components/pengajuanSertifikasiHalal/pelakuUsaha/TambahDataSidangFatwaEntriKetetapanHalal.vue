@@ -7,6 +7,8 @@ const route = useRoute();
 
 const selfDeclareId = (route.params as any).id;
 const isFormError = ref(false);
+const loadingAll = ref(false);
+const listPenetapan = ref([]);
 
 const emit = defineEmits(["refresh"]);
 
@@ -60,32 +62,22 @@ const uploadDocument = async (file: any) => {
   }
 };
 
-const props = defineProps({
-  listagama: {
-    type: Array,
-  },
-});
-
-const { listagama } = props || {};
-
 const addDialog = ref(false);
 const loadingAdd = ref(false);
 
 const formData = ref({
   no_penetapan: "",
   penetapan: "",
-  no_sertifikat: "",
-  tgl_pemohon: "",
-  file: null,
+  tgl_penetapan: "",
+  dokumen: null,
 });
 
 const resetForm = () => {
   formData.value = {
     no_penetapan: "",
     penetapan: "",
-    no_sertifikat: "",
-    tgl_pemohon: "",
-    file: null,
+    tgl_penetapan: "",
+    dokumen: null,
   };
 };
 
@@ -93,9 +85,9 @@ const addDataPenyeliaHalal = async () => {
   try {
     loadingAdd.value = true;
 
-    const { file } = formData.value;
+    const { dokumen } = formData.value;
 
-    const fileSpph = await uploadDocument(file);
+    const fileSpph = await uploadDocument(dokumen);
     if (fileSpph.code !== 2000) {
       return;
     }
@@ -103,14 +95,13 @@ const addDataPenyeliaHalal = async () => {
     const res: any = await $api(
       `/sidang-fatwa/entri-ketetapan-halal/add/${selfDeclareId}`,
       {
-        method: "post",
+        method: "put",
         body: {
           ...formData.value,
-          file: fileSpph.data.file_url,
+          dokumen: fileSpph.data.file_url,
         },
       }
     );
-    console.log("@res", res);
 
     if (res?.code === 2000) {
       loadingAdd.value = false;
@@ -130,12 +121,47 @@ const addDataPenyeliaHalal = async () => {
   }
 };
 
+const loadItemPenetapan = async () => {
+  try {
+    const response: any = await $api("/master/penetapan", {
+      method: "get",
+    });
+
+    if (response.length) {
+      listPenetapan.value = response;
+
+      return response;
+    } else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
 const checkIsFieldEMpty = (data: any) => {
   return Object.keys(data)?.find((key: any) => !data[key]);
 };
 
 const { mdAndUp } = useDisplay();
 const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
+
+onMounted(async () => {
+  const res = await Promise.all([loadItemPenetapan()]);
+
+  const checkResIfUndefined = res.every((item: any) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
+});
 </script>
 
 <template>
@@ -144,7 +170,8 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
   </VBtn>
 
   <VDialog v-model="addDialog" :max-width="dialogMaxWidth">
-    <VCard>
+    <VCard v-if="!loadingAll">
+      >
       <VCardTitle>
         <VRow>
           <VCol cols="10"><h3>Unggah Ketetapan Halal</h3></VCol>
@@ -161,7 +188,6 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               <VTextField
                 v-model="formData.no_penetapan"
                 placeholder="Isi Nomor Penetapan"
-                type="number"
               />
             </VItemGroup>
           </VCol>
@@ -172,7 +198,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
             <VItemGroup>
               <VLabel>Tanggal Surat Pemohon</VLabel>
               <VTextField
-                v-model="formData.tgl_pemohon"
+                v-model="formData.tgl_penetapan"
                 placeholder="Isi Tanggal Sertifikat"
                 type="date"
               />
@@ -186,7 +212,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               <VLabel>Penetapan</VLabel>
               <VSelect
                 v-model="formData.penetapan"
-                :items="[]"
+                :items="listPenetapan"
                 item-title="name"
                 item-value="code"
                 placeholder="Pilih Jenis Dokumen"
@@ -204,7 +230,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
               </VCol>
               <VCol cols="4">
                 <HalalFileInput
-                  :modelValue="formData.file"
+                  :modelValue="formData.dokumen"
                   :rules="[
                       requiredValidator,
                       fileExtensionValidator,
@@ -217,7 +243,7 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
                         }
                       },
                     ]"
-                  @update:modelValue="formData.file = $event"
+                  @update:modelValue="formData.dokumen = $event"
                 />
               </VCol>
             </VRow>
@@ -245,5 +271,9 @@ const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
         </div>
       </VCardActions>
     </VCard>
+    <VSkeletonLoader
+      type="table-heading, list-item-two-line, image, table-tfoot"
+      v-else
+    />
   </VDialog>
 </template>

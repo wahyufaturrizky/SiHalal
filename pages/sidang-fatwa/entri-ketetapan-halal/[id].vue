@@ -6,14 +6,15 @@ const route = useRoute();
 const sidangFatwaId = (route.params as any).id;
 
 const loadingAll = ref(true);
+const loadingById = ref(false);
 const detailData = ref();
-
 const profil = ref();
 const jenisUsaha = ref();
 const skalaUsaha = ref();
 const trackingData = ref();
 
 const loadItemById = async () => {
+  loadingById.value = true;
   try {
     const response: any = await $api(
       `/sidang-fatwa/entri-ketetapan-halal/${sidangFatwaId}`,
@@ -98,15 +99,18 @@ const loadItemById = async () => {
           value: email,
         },
       ];
+      loadingById.value = false;
 
       return response;
     } else {
+      loadingById.value = false;
       useSnackbar().sendSnackbar(
         response.errors.list_error.join(", "),
         "error"
       );
     }
   } catch (error) {
+    loadingById.value = false;
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
@@ -127,16 +131,16 @@ onMounted(async () => {
 </script>
 
 <template>
-  <SubPelakuUsahaLayout v-if="!loadingAll">
+  <SubPelakuUsahaLayout v-if="!loadingAll && !loadingById">
     <template #pageTitle>
       <VRow justify="space-between" align="center">
         <VCol cols="12">
           <h2 class="font-weight-bold">Detail Data Pengajuan</h2>
         </VCol>
-        <!-- <VCol cols="auto">
-          <UpdateSidangFatwaEntriKetetapanHalal />
-          <TambahDataSidangFatwaEntriKetetapanHalal />
-        </VCol> -->
+        <VCol cols="auto">
+          <UpdateSidangFatwaEntriKetetapanHalal @refresh="loadItemById()" />
+          <TambahDataSidangFatwaEntriKetetapanHalal @refresh="loadItemById()" />
+        </VCol>
       </VRow>
     </template>
 
@@ -186,20 +190,20 @@ onMounted(async () => {
 
     <!-- right content -->
     <template #rightContent>
-      <!-- <VRow>
+      <VRow>
         <VCol :cols="12">
           <HasilAuditDetailPengajuan />
         </VCol>
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <BiayaPemeriksaanDetail />
+          <BiayaPemeriksaanDetail :detaildata="detailData" />
         </VCol>
-      </VRow> -->
+      </VRow>
       <VRow>
-        <!-- <VCol :cols="12">
+        <VCol :cols="12">
           <DokumenUnduhan />
-        </VCol> -->
+        </VCol>
         <VCol :cols="12">
           <MelacakDetaikFatwaEntriKetetapanHalal :trackingdata="trackingData" />
         </VCol>

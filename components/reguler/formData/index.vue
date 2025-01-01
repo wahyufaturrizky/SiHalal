@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/prop-name-casing -->
 <script setup lang="ts">
-import VueDatePicker from '@vuepic/vue-datepicker'
-import '@vuepic/vue-datepicker/dist/main.css'
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
 
 const props = defineProps({
   id: {
@@ -41,58 +41,61 @@ const props = defineProps({
     type: String,
     required: false,
   },
-})
+  isviewonly: {
+    type: Boolean,
+  },
+});
 
-const itemsLph = ref<any>([])
-const searchRegisType = ref<string>('')
-const messageFasilitator = ref<string>('')
-const productList = ref<any[]>([])
+const itemsLph = ref<any>([]);
+const searchRegisType = ref<string>("");
+const messageFasilitator = ref<string>("");
+const productList = ref<any[]>([]);
 
 const listAreaPemasaran = [
-  { name: 'Kabupaten/Kota', code: 'Kabupaten/Kota' },
-  { name: 'Provinsi', code: 'Provinsi' },
-  { name: 'Nasional', code: 'Nasional' },
-  { name: 'Internasional', code: 'Internasional' },
-]
+  { name: "Kabupaten/Kota", code: "Kabupaten/Kota" },
+  { name: "Provinsi", code: "Provinsi" },
+  { name: "Nasional", code: "Nasional" },
+  { name: "Internasional", code: "Internasional" },
+];
 
 const getSelectOptions = (field: string): string => {
-  let data: string[] = []
+  let data: string[] = [];
   switch (field) {
-    case 'Jenis Layanan':
-      data = props?.service_type
-      break
-    case 'Jenis Produk':
-      data = productList.value || []
-      break
-    case 'Skala Usaha':
-      data = ['Mikro', 'Kecil', 'Menengah', 'Besar']
-      break
-    case 'Jenis Pendaftaran':
+    case "Jenis Layanan":
+      data = props?.service_type;
+      break;
+    case "Jenis Produk":
+      data = productList.value || [];
+      break;
+    case "Skala Usaha":
+      data = ["Mikro", "Kecil", "Menengah", "Besar"];
+      break;
+    case "Jenis Pendaftaran":
       data = [
-        { name: 'Pendaftaran Mandiri/Reguler ', code: '' },
-        { name: 'Pendaftaran Melalui Fasilitasi', code: 'CH002' },
-      ]
-      break
-    case 'Jenis Pengajuan':
-      data = [{ name: 'baru', code: 'baru' }]
-      break
-    case 'Nama Fasilitas':
-      data = ['Es Cream', 'Minuman', 'Snack', 'Lainnya']
-      break
-    case 'Pengujian Laboratorium':
-      data = ['Ada', 'Tidak Ada']
-      break
-    case 'Hasil Audit':
-      data = ['Lulus', 'Tidak Lulus']
-    case 'Area Pemasaran':
-      data = listAreaPemasaran || []
-      break
+        { name: "Pendaftaran Mandiri/Reguler ", code: "" },
+        { name: "Pendaftaran Melalui Fasilitasi", code: "CH002" },
+      ];
+      break;
+    case "Jenis Pengajuan":
+      data = [{ name: "baru", code: "baru" }];
+      break;
+    case "Nama Fasilitas":
+      data = ["Es Cream", "Minuman", "Snack", "Lainnya"];
+      break;
+    case "Pengujian Laboratorium":
+      data = ["Ada", "Tidak Ada"];
+      break;
+    case "Hasil Audit":
+      data = ["Lulus", "Tidak Lulus"];
+    case "Area Pemasaran":
+      data = listAreaPemasaran || [];
+      break;
     default:
-      break
+      break;
   }
 
-  return data
-}
+  return data;
+};
 
 const getLph = async (path: string, layanan: string, area: string) => {
   try {
@@ -100,128 +103,154 @@ const getLph = async (path: string, layanan: string, area: string) => {
       url: `${path}/${props?.id}/lph?jenis_layanan=${layanan}&area_pemasaran=${area}`,
       page: 1,
       size: 10,
-      keyword: '',
-    }
+      keyword: "",
+    };
 
-    const response: any = await $api('/reguler/list', {
-      method: 'get',
+    const response: any = await $api("/reguler/list", {
+      method: "get",
       params,
-    })
+    });
 
-    if (response?.code === 2000)
-      itemsLph.value = response.data
-    else
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    if (response?.code === 2000) itemsLph.value = response.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const onSubmit = async () => {
-  if (props?.title === 'Pengajuan Sertifikasi Halal') {
-    const jenisLayanan = props?.service_type?.find((item: any) => props.data?.[3]?.value === item.name || props.data?.[3]?.value === item.code)
-    const jenisProduk = props?.product_type?.find((item: any) => props.data?.[4]?.value === item.name || props.data?.[4]?.value === item.code)
-    const tanggalDaftar = props.data[2]?.value && formatDateIntl(new Date(props.data[2]?.value))
-    const lphId = itemsLph.value?.find((item: any) => props.data[7]?.value === item.nama_lph || props.data[7]?.value === item.lph_id)
+  if (props?.title === "Pengajuan Sertifikasi Halal") {
+    const jenisLayanan = props?.service_type?.find(
+      (item: any) =>
+        props.data?.[3]?.value === item.name ||
+        props.data?.[3]?.value === item.code
+    );
+    const jenisProduk = props?.product_type?.find(
+      (item: any) =>
+        props.data?.[4]?.value === item.name ||
+        props.data?.[4]?.value === item.code
+    );
+    const tanggalDaftar =
+      props.data[2]?.value && formatDateIntl(new Date(props.data[2]?.value));
+    const lphId = itemsLph.value?.find(
+      (item: any) =>
+        props.data[7]?.value === item.nama_lph ||
+        props.data[7]?.value === item.lph_id
+    );
 
     const payload = {
       id_reg: props?.id,
       nama_pu: props.data[0]?.value,
       no_mohon: props.data[1]?.value,
-      tgl_daftar: `${tanggalDaftar?.split('/')?.[2]}-${tanggalDaftar?.split('/')?.[1]}-${tanggalDaftar?.split('/')?.[0]}`,
+      tgl_daftar: `${tanggalDaftar?.split("/")?.[2]}-${
+        tanggalDaftar?.split("/")?.[1]
+      }-${tanggalDaftar?.split("/")?.[0]}`,
       jenis_layanan: jenisLayanan?.code || props.data?.[3]?.value,
       jenis_produk: jenisProduk?.code || props.data?.[4]?.value,
       merk_dagang: props.data[5]?.value,
       area_pemasaran: props.data?.[6]?.value,
       lph_id: lphId ? lphId.lph_id : props.data[7]?.value,
-      channel_id: '',
+      channel_id: "",
       fac_id: props.data[9]?.value,
-    }
+    };
     if (lphId) {
-      props.onSubmit(payload)
+      props.onSubmit(payload);
     } else {
-      props.onSubmit('error')
+      props.onSubmit("error");
     }
+  } else {
+    props.onSubmit();
   }
-  else {
-    props.onSubmit()
-  }
-}
+};
 
 const getProductType = async (id: string) => {
   try {
-    const response: any = await $api('/master/product-filter', {
-      method: 'get',
+    const response: any = await $api("/master/product-filter", {
+      method: "get",
       params: { id },
-    })
+    });
 
     if (response.length) {
-      productList.value = response
+      productList.value = response;
 
-      return response
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const lphValidation = async (title: string, value: string, index: number) => {
-  if (title === 'Jenis Layanan') {
+  if (title === "Jenis Layanan") {
     props.data.map((el) => {
-      if (el.title === 'Jenis Produk') {
-        el.value = ''
+      if (el.title === "Jenis Produk") {
+        el.value = "";
+      } else if (el.title === "LPH") {
+        el.value = "";
+      } else if (el.title === "Area Pemasaran") {
+        el.value = "";
       }
-      else if (el.title === 'LPH') {
-        el.value = ''
-      }
-      else if (el.title === 'Area Pemasaran') {
-        el.value = ''
-      }
-    })
+    });
   }
-  const jenisLayanan = props?.service_type?.find((item: any) => props.data?.[3]?.value === item.name || props.data?.[3]?.value === item.code)
+  const jenisLayanan = props?.service_type?.find(
+    (item: any) =>
+      props.data?.[3]?.value === item.name ||
+      props.data?.[3]?.value === item.code
+  );
 
-  if (title === 'Jenis Layanan')
-    await getProductType(value)
-  else if (title === 'Area Pemasaran')
-    await getLph(LIST_BUSINESS_ACTOR, jenisLayanan?.code, value)
+  if (title === "Jenis Layanan") await getProductType(value);
+  else if (title === "Area Pemasaran")
+    await getLph(LIST_BUSINESS_ACTOR, jenisLayanan?.code, value);
 
-  if (props.title === 'Pengajuan Sertifikasi Halal') {
+  if (props.title === "Pengajuan Sertifikasi Halal") {
     const checkData = props.data.map((el: any) => {
-      if (el.required && el.value === '')
-        return false
-      return true
-    })
+      if (el.required && el.value === "") return false;
+      return true;
+    });
   }
-}
+};
 
 const checkCodeFasilitas = async () => {
-  messageFasilitator.value = 'Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada fasilitator sebagai kode untuk mendaftarkan sertifikasi halal gratis'
-}
+  messageFasilitator.value =
+    "Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada fasilitator sebagai kode untuk mendaftarkan sertifikasi halal gratis";
+};
 
 onMounted(async () => {
   setTimeout(async () => {
-    const jenisLayanan = props?.service_type?.find((item: any) => props.data?.[3]?.value === item.name || props.data?.[3]?.value === item.code)
+    const jenisLayanan = props?.service_type?.find(
+      (item: any) =>
+        props.data?.[3]?.value === item.name ||
+        props.data?.[3]?.value === item.code
+    );
     if (props.data?.[3]?.value)
-      await getProductType(jenisLayanan?.code || props.data?.[3]?.value)
+      await getProductType(jenisLayanan?.code || props.data?.[3]?.value);
     if (jenisLayanan && props.data[6])
-      await getLph(LIST_BUSINESS_ACTOR, jenisLayanan?.code, props.data?.[6]?.value)
-  }, 1000)
-})
+      await getLph(
+        LIST_BUSINESS_ACTOR,
+        jenisLayanan?.code,
+        props.data?.[6]?.value
+      );
+  }, 1000);
+});
 
 watchEffect(async () => {
   // we need to check undefined because if we pass 0 as currentStep it will be falsy
-  const jenisLayanan = props?.service_type?.find((item: any) => props.data?.[3]?.value === item.name || props.data?.[3]?.value === item.code)
+  const jenisLayanan = props?.service_type?.find(
+    (item: any) =>
+      props.data?.[3]?.value === item.name ||
+      props.data?.[3]?.value === item.code
+  );
   if (props.data?.[3]?.value)
-    await getProductType(jenisLayanan?.code || props.data?.[3]?.value)
+    await getProductType(jenisLayanan?.code || props.data?.[3]?.value);
   if (jenisLayanan && props.data[6])
-    await getLph(LIST_BUSINESS_ACTOR, jenisLayanan?.code, props.data?.[6]?.value)
-})
+    await getLph(
+      LIST_BUSINESS_ACTOR,
+      jenisLayanan?.code,
+      props.data?.[6]?.value
+    );
+});
 </script>
 
 <template>
@@ -230,7 +259,7 @@ watchEffect(async () => {
       <span class="text-h5 font-weight-bold">{{ props.title }}</span>
     </VCardTitle>
     <VCardText>
-      <br>
+      <br />
       <VRow>
         <VCol
           v-for="(item, index) in props.data"
@@ -253,10 +282,7 @@ watchEffect(async () => {
               />
             </div>
             <div v-else>
-              <VTextField
-                v-model="item.value"
-                class="-mt-10"
-              />
+              <VTextField v-model="item.value" class="-mt-10" />
             </div>
           </div>
           <div v-if="item.type === 'select'">
@@ -277,12 +303,16 @@ watchEffect(async () => {
             <VSelect
               v-if="!item.disabled"
               v-model="item.value"
-              :items="item.title === 'LPH' ? itemsLph : getSelectOptions(item.title)"
+              :items="
+                item.title === 'LPH' ? itemsLph : getSelectOptions(item.title)
+              "
               outlined
               class="-mt-10"
               :item-value="item.title === 'LPH' ? 'lph_id' : 'code'"
               :item-title="item.title === 'LPH' ? 'nama_lph' : 'name'"
-              @update:model-value="() => lphValidation(item.title, item.value, index)"
+              @update:model-value="
+                () => lphValidation(item.title, item.value, index)
+              "
             />
           </div>
           <VCol
@@ -319,10 +349,7 @@ watchEffect(async () => {
             </div>
           </div>
         </VCol>
-        <VCol
-          v-if="props.data?.[9]?.value === 'CH002'"
-          cols="12"
-        >
+        <VCol v-if="props.data?.[9]?.value === 'CH002'" cols="12">
           <label>Kode Daftar/Fasilitasi</label>
           <div class="d-flex gap-10 mt-3">
             <VTextField
@@ -332,7 +359,7 @@ watchEffect(async () => {
             />
             <VBtn
               variant="outlined"
-              style="height: 45px;"
+              style="height: 45px"
               @click="checkCodeFasilitas"
             >
               Cari Kode
@@ -345,14 +372,18 @@ watchEffect(async () => {
             color="#652672"
             class="mt-3"
           >
-            Kode unik yang diterbitkan oleh BPJPH yang diberikan
-            kepada fasilitator sebagai kode untuk mendaftarkan
-            sertifikasi halal gratis
+            Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada
+            fasilitator sebagai kode untuk mendaftarkan sertifikasi halal gratis
           </VAlert>
         </VCol>
       </VRow>
       <br />
-      <VBtn class="btn-container" variant="flat" @click="onSubmit">
+      <VBtn
+        v-if="!isviewonly"
+        class="btn-container"
+        variant="flat"
+        @click="onSubmit"
+      >
         Simpan
       </VBtn>
     </VCardText>

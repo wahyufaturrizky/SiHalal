@@ -1,18 +1,24 @@
 <!-- eslint-disable camelcase -->
 <script setup lang="ts">
-import { ref } from 'vue'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
-
-const route = useRoute()
+import { ref } from 'vue'
 
 const props = defineProps({
   onComplete: {
     type: Function,
-    default: () => { },
+    default: () => {},
     required: false,
   },
+  isviewonly: {
+    type: Boolean,
+  },
 })
+
+const emit = defineEmits()
+
+const route = useRoute()
+const store = useMyTabEditRegulerStore();
 
 const id = route.params.id
 
@@ -58,10 +64,10 @@ const uploadedFileBahan = ref({
 })
 
 const handleRemoveFile = () => {
-  uploadedFile.value.name = '';
-  uploadedFile.value.file = null;
-  formData.value.foto_produk = '';
-};
+  uploadedFile.value.name = ''
+  uploadedFile.value.file = null
+  formData.value.foto_produk = ''
+}
 
 const documentList = ref([
   { nama: 'Izin Edar', fileName: 'Surat Izin Usaha.pdf', file: null },
@@ -77,52 +83,70 @@ const materialName = ref<any>({
     { title: 'Nama Bahan', key: 'nama_bahan', nowrap: true },
     { title: 'Produsen', key: 'produsen', nowrap: true },
     { title: 'Nomor Sertifikat Halal', key: 'no_sertifikat', nowrap: true },
-    { title: 'Action', value: 'actionPopOver3', sortable: false, nowrap: true, popOver: true },
+    {
+      title: 'Action',
+      value: 'actionPopOver3',
+      sortable: false,
+      nowrap: true,
+      popOver: true,
+    },
   ],
   value: [],
 })
 
-const productName = ref(
-  {
-    label: [
-      { title: 'No.', key: 'no', nowrap: true },
-      { title: 'Nama Produk', key: 'nama', nowrap: true },
-      { title: 'Foto Produk', key: 'foto', nowrap: true },
-      { title: 'Action', value: 'actionPopOver3', sortable: false, nowrap: true, popOver: true },
-    ],
-    value: [],
-  },
-)
+const productName = ref({
+  label: [
+    { title: 'No.', key: 'no', nowrap: true },
+    { title: 'Nama Produk', key: 'nama', nowrap: true },
+    { title: 'Foto Produk', key: 'foto', nowrap: true },
+    {
+      title: 'Action',
+      value: 'actionPopOver4',
+      sortable: false,
+      nowrap: true,
+      popOver: true,
+    },
+  ],
+  value: [],
+})
 
-const payNote = ref(
-  {
-    label: [
-      { title: 'No.', key: 'no', nowrap: true },
-      { title: 'Nama', key: 'nama', nowrap: true },
-      { title: 'Tipe Penambahan', key: 'addType', nowrap: true },
-      { title: 'Jumlah', key: 'jumlah', nowrap: true },
-      { title: 'Tanggal Pembelian', key: 'tgl_pembelian', nowrap: true },
-      { title: 'File Dokumen', key: 'FileDok', nowrap: true },
-      { title: 'Action', value: 'actionEdit', sortable: false, nowrap: true, popOver: true },
-    ],
-    value: [],
-  },
-)
+const payNote = ref({
+  label: [
+    { title: 'No.', key: 'no', nowrap: true },
+    { title: 'Nama', key: 'nama', nowrap: true },
+    { title: 'Tipe Penambahan', key: 'addType', nowrap: true },
+    { title: 'Jumlah', key: 'jumlah', nowrap: true },
+    { title: 'Tanggal Pembelian', key: 'tgl_pembelian', nowrap: true },
+    { title: 'File Dokumen', key: 'FileDok', nowrap: true },
+    {
+      title: 'Action',
+      value: 'actionEdit',
+      sortable: false,
+      nowrap: true,
+      popOver: true,
+    },
+  ],
+  value: [],
+})
 
-const materialCheck = ref(
-  {
-    label: [
-      { title: 'No.', key: 'no', nowrap: true },
-      { title: 'Nama', key: 'nama', nowrap: true },
-      { title: 'Tipe Penambahan', key: 'addType', nowrap: true },
-      { title: 'Lokasi', key: 'lokasi', nowrap: true },
-      { title: 'Tanggal Pembelian', key: 'tgl_pembelian', nowrap: true },
-      { title: 'File Dokumen', key: 'FileDok', nowrap: true },
-      { title: 'Action', value: 'actionEdit', sortable: false, nowrap: true, popOver: true },
-    ],
-    value: [],
-  },
-)
+const materialCheck = ref({
+  label: [
+    { title: 'No.', key: 'no', nowrap: true },
+    { title: 'Nama', key: 'nama', nowrap: true },
+    { title: 'Tipe Penambahan', key: 'addType', nowrap: true },
+    { title: 'Lokasi', key: 'lokasi', nowrap: true },
+    { title: 'Tanggal Pembelian', key: 'tgl_pembelian', nowrap: true },
+    { title: 'File Dokumen', key: 'FileDok', nowrap: true },
+    {
+      title: 'Action',
+      value: 'actionEdit',
+      sortable: false,
+      nowrap: true,
+      popOver: true,
+    },
+  ],
+  value: [],
+})
 
 const toggleAdd = (type: string) => {
   addDialog.value = true
@@ -146,38 +170,41 @@ const toggleDetail = (item: any, type: string) => {
 
 const uploadDocument = async (file: any) => {
   try {
-    const formData = new FormData();
-    formData.append('id', String(id));
-    formData.append('file', file);
-    formData.append('type', 'produk');
-    const response = await $api('/shln/submission/document/upload', {
+    const formData = new FormData()
+
+    formData.append('id', String(id))
+    formData.append('file', file)
+    formData.append('type', 'produk')
+
+    return await $api('/shln/submission/document/upload', {
       method: 'post',
       body: formData,
-    });
-    return response;
-  } catch (error) {
+    })
+  }
+  catch (error) {
     useSnackbar().sendSnackbar(
       'ada kesalahan saat upload file, gagal menyimpan!',
-      'error'
-    );
+      'error',
+    )
   }
-};
+}
 
 const handleUploadFile = async (event: any) => {
   if (event?.target?.files.length) {
-    const fileData = event.target.files[0];
-    uploadedFile.value.name = fileData.name;
-    uploadedFile.value.file = fileData;
+    const fileData = event.target.files[0]
+
+    uploadedFile.value.name = fileData.name
+    uploadedFile.value.file = fileData
     try {
-      const response = await uploadDocument(fileData);
-      if (response.code === 2000) {
-        formData.value.foto_produk = response.data.file_url;
-      }
-    } catch (error) {
-      console.log(error);
+      const response = await uploadDocument(fileData)
+      if (response.code === 2000)
+        formData.value.foto_produk = response.data.file_url
+    }
+    catch (error) {
+      console.log(error)
     }
   }
-};
+}
 
 const toggle = () => {
   addDialog.value = false
@@ -203,15 +230,17 @@ const getListCatatan = async () => {
         value: response.data || [],
       }
 
-      return response;
-    } else {
+      return response
+    }
+    else {
       useSnackbar().sendSnackbar(
         response.errors.list_error.join(', '),
-        'error'
-      );
+        'error',
+      )
     }
-  } catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error');
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
   }
 }
 
@@ -228,18 +257,20 @@ const getListFormulir = async () => {
     if (response.code === 2000) {
       materialCheck.value = {
         ...materialCheck.value,
-        value: response.data || []
+        value: response.data || [],
       }
 
-      return response;
-    } else {
+      return response
+    }
+    else {
       useSnackbar().sendSnackbar(
         response.errors.list_error.join(', '),
-        'error'
-      );
+        'error',
+      )
     }
-  } catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error');
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
   }
 }
 
@@ -249,55 +280,56 @@ const loadItemProductClasifications = async () => {
       `/self-declare/verificator/produk/clasification/${id}`,
       {
         method: 'get',
-      }
-    );
+      },
+    )
 
     if (response.code === 2000) {
-      dataProductClasification.value = response.data || [];
+      dataProductClasification.value = response.data || []
 
-      return response;
-    } else {
+      return response
+    }
+    else {
       useSnackbar().sendSnackbar(
         response.errors.list_error.join(', '),
-        'error'
-      );
+        'error',
+      )
     }
-  } catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error');
   }
-};
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
 
 const loadItemProductRincian = async (kode_rincian: string) => {
-  loadingRincian.value = true;
+  loadingRincian.value = true
   try {
     const response: any = await $api(
       `/self-declare/verificator/produk/rincian/${kode_rincian}`,
       {
         method: 'get',
-      }
-    );
+      },
+    )
 
     if (response.code === 2000) {
-      listRincian.value = response.data || [];
-      loadingRincian.value = false;
-    } else {
+      listRincian.value = response.data || []
+      loadingRincian.value = false
+    }
+    else {
       useSnackbar().sendSnackbar(
         response.errors.list_error.join(', '),
-        'error'
-      );
-      loadingRincian.value = false;
+        'error',
+      )
+      loadingRincian.value = false
     }
-  } catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan aaa', 'error');
-    loadingRincian.value = false;
   }
-};
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan aaa', 'error')
+    loadingRincian.value = false
+  }
+}
 
 const refresh = async () => {
-  await Promise.allSettled([
-    getListCatatan(),
-    getListFormulir(),
-  ])
+  await Promise.allSettled([getListCatatan(), getListFormulir()])
 }
 
 const addProduct = async () => {
@@ -329,13 +361,16 @@ const addProduct = async () => {
   else if (titleDialog.value === 'Ubah Nama Produk') {
     const response: any = await $api(
       '/reguler/pelaku-usaha/tab-bahan/products/update',
-        {
+      {
         method: 'put',
         params: { id_reg: id, product_id: itemDetail.value.id },
         body: {
-          kode_rincian: formData.value.kode_rincian || itemDetail.value.koderincian,
+          kode_rincian:
+            formData.value.kode_rincian || itemDetail.value.koderincian,
           nama_produk: itemDetail.value.nama,
-          foto_produk: formData.value.foto_produk ? formData.value.foto_produk : uploadedFile.value.file,
+          foto_produk: formData.value.foto_produk
+            ? formData.value.foto_produk
+            : uploadedFile.value.file,
           merek: itemDetail.value.merek,
         },
       },
@@ -409,14 +444,14 @@ const addProduct = async () => {
       url = '/reguler/pelaku-usaha/tab-bahan/catatan/create'
     }
 
-    const response: any = await $api(
-      url,
-      {
-        method,
-        params: { id_reg: id, product_id: itemDetail.value?.id_reg_bahan_pembelian },
-        body,
+    const response: any = await $api(url, {
+      method,
+      params: {
+        id_reg: id,
+        product_id: itemDetail.value?.id_reg_bahan_pembelian,
       },
-    )
+      body,
+    })
 
     if (response.code === 2000) {
       formDataCatatan.value = {
@@ -453,7 +488,6 @@ const addProduct = async () => {
       }
     }
 
-
     if (itemDetail.value.id_reg_bahan_cek !== '') {
       method = 'put'
       url = '/reguler/pelaku-usaha/tab-bahan/formulir/update'
@@ -463,14 +497,11 @@ const addProduct = async () => {
       url = '/reguler/pelaku-usaha/tab-bahan/formulir/create'
     }
 
-    const response: any = await $api(
-      url,
-      {
-        method,
-        params: { id_reg: id, product_id: itemDetail.value?.id_reg_bahan_cek },
-        body,
-      },
-    )
+    const response: any = await $api(url, {
+      method,
+      params: { id_reg: id, product_id: itemDetail.value?.id_reg_bahan_cek },
+      body,
+    })
 
     if (response.code === 2000) {
       formDataCatatan.value = {
@@ -502,7 +533,8 @@ const getDetailProduk = async (productId: string, type: string) => {
       file: response?.data?.foto_produk,
     }
     addDialog.value = true
-    titleDialog.value = type === 'edit' ? 'Ubah Nama Produk' : 'Detail Nama Produk'
+    titleDialog.value
+      = type === 'edit' ? 'Ubah Nama Produk' : 'Detail Nama Produk'
     labelSaveBtn.value = type === 'edit' ? 'Ubah' : 'Detail'
   }
 }
@@ -554,6 +586,20 @@ const getListIngredients = async () => {
         ...materialName.value,
         value: response.data || [],
       }
+
+      if(response.data !== null){
+        const jenisBahan = response.data?.map(i => i.jenis_bahan)
+
+        if (['Bahan', 'Cleaning Agent', 'Kemasan'].every(item => jenisBahan.includes(item))){
+          emit('complete', true)
+        }else {
+          const missing = ['Bahan', 'Cleaning Agent', 'Kemasan'].filter(item => !jenisBahan.includes(item))
+          emit('failed', missing)
+        }
+      }else{
+        emit('failed', ['Bahan', 'Cleaning Agent', 'Kemasan'])
+      }
+
       reRender.value = !reRender.value
     }
 
@@ -561,6 +607,34 @@ const getListIngredients = async () => {
   }
   catch (error) {
     console.log(error)
+  }
+}
+
+const handleInputBahan = async (selected, idProduk) => {
+  try {
+
+    const response: any = await $api(
+      `/self-declare/business-actor/product/add-ingredient`,
+      {
+        method: "post",
+        body: selected,
+        query: {
+          id_reg: id,
+          product_id: idProduk,
+        },
+      } as any
+    );
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+      await refresh();
+    }
+    return response;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+    console.log(error);
+  } finally {
+    store.isAllBahanSelected();
   }
 }
 
@@ -582,7 +656,7 @@ onMounted(async () => {
     <DialogSaveDataPengajuan
       title="Simpan Perubahan"
       :is-open="confirmSaveDialog"
-      :toggle="() => confirmSaveDialog = false"
+      :toggle="() => (confirmSaveDialog = false)"
       :on-save="() => handleSubmit()"
     />
     <DialogWithAction
@@ -610,7 +684,7 @@ onMounted(async () => {
               item-title="name"
               item-value="code"
               :items="dataProductClasification"
-              @update:modelValue="loadItemProductRincian"
+              @update:model-value="loadItemProductRincian"
             />
             <br>
             <label>Rincian Produk</label>
@@ -633,9 +707,7 @@ onMounted(async () => {
               placeholder="Isi Nama Produk"
             />
             <div class="d-flex justify-space-between mt-5">
-              <label>
-                Upload Foto
-              </label>
+              <label> Upload Foto </label>
               <VCol cols="6">
                 <VTextField
                   v-if="uploadedFile.file"
@@ -666,7 +738,10 @@ onMounted(async () => {
                   @change="handleUploadFile"
                 >
                   <template #append-inner>
-                    <VBtn rounded="s-0 e-xl" text="Choose" />
+                    <VBtn
+                      rounded="s-0 e-xl"
+                      text="Choose"
+                    />
                   </template>
                 </VFileInput>
               </VCol>
@@ -685,7 +760,7 @@ onMounted(async () => {
               item-title="name"
               item-value="code"
               :items="dataProductClasification"
-              @update:modelValue="loadItemProductRincian"
+              @update:model-value="loadItemProductRincian"
             />
             <br>
             <label>Rincian Produk</label>
@@ -708,9 +783,7 @@ onMounted(async () => {
               placeholder="Isi Nama Produk"
             />
             <div class="d-flex justify-space-between mt-5">
-              <label>
-                Upload Foto
-              </label>
+              <label> Upload Foto </label>
               <VCol cols="6">
                 <VTextField
                   v-if="uploadedFile.file"
@@ -741,7 +814,10 @@ onMounted(async () => {
                   @change="handleUploadFile"
                 >
                   <template #append-inner>
-                    <VBtn rounded="s-0 e-xl" text="Choose" />
+                    <VBtn
+                      rounded="s-0 e-xl"
+                      text="Choose"
+                    />
                   </template>
                 </VFileInput>
               </VCol>
@@ -760,7 +836,7 @@ onMounted(async () => {
               item-title="name"
               item-value="code"
               :items="dataProductClasification"
-              @update:modelValue="loadItemProductRincian"
+              @update:model-value="loadItemProductRincian"
             />
             <br>
             <label>Rincian Produk</label>
@@ -783,9 +859,7 @@ onMounted(async () => {
               placeholder="Isi Nama Produk"
             />
             <div class="d-flex justify-space-between mt-5">
-              <label>
-                Upload Foto
-              </label>
+              <label> Upload Foto </label>
               <VCol cols="6">
                 <VTextField
                   v-if="uploadedFile.file"
@@ -807,7 +881,10 @@ onMounted(async () => {
                   @change="handleUploadFile"
                 >
                   <template #append-inner>
-                    <VBtn rounded="s-0 e-xl" text="Choose" />
+                    <VBtn
+                      rounded="s-0 e-xl"
+                      text="Choose"
+                    />
                   </template>
                 </VFileInput>
               </VCol>
@@ -884,9 +961,7 @@ onMounted(async () => {
                 />
               </div>
               <div class="d-flex justify-space-between mt-5">
-                <label style="align-self: center;">
-                  Unggah Bahan
-                </label>
+                <label style="align-self: center"> Unggah Bahan </label>
                 <VCol cols="6">
                   <VTextField
                     v-if="uploadedFileBahan.file"
@@ -917,7 +992,10 @@ onMounted(async () => {
                     @change="handleUploadFile"
                   >
                     <template #append-inner>
-                      <VBtn rounded="s-0 e-xl" text="Choose" />
+                      <VBtn
+                        rounded="s-0 e-xl"
+                        text="Choose"
+                      />
                     </template>
                   </VFileInput>
                 </VCol>
@@ -993,9 +1071,7 @@ onMounted(async () => {
           <VTabsWindow v-model="tabBahan">
             <VTabsWindowItem value="1">
               <div class="d-flex justify-space-between mt-5">
-                <label style="align-self: center;">
-                  Unggah Bahan
-                </label>
+                <label style="align-self: center"> Unggah Bahan </label>
                 <VCol cols="6">
                   <VTextField
                     v-if="uploadedFileBahan.file"
@@ -1026,7 +1102,10 @@ onMounted(async () => {
                     @change="handleUploadFile"
                   >
                     <template #append-inner>
-                      <VBtn rounded="s-0 e-xl" text="Choose" />
+                      <VBtn
+                        rounded="s-0 e-xl"
+                        text="Choose"
+                      />
                     </template>
                   </VFileInput>
                 </VCol>
@@ -1102,9 +1181,7 @@ onMounted(async () => {
           <VTabsWindow v-model="tabBahan">
             <VTabsWindowItem value="1">
               <div class="d-flex justify-space-between mt-5">
-                <label style="align-self: center;">
-                  Unggah Bahan
-                </label>
+                <label style="align-self: center"> Unggah Bahan </label>
                 <VCol cols="6">
                   <VTextField
                     v-if="uploadedFileBahan.file"
@@ -1135,7 +1212,10 @@ onMounted(async () => {
                     @change="handleUploadFile"
                   >
                     <template #append-inner>
-                      <VBtn rounded="s-0 e-xl" text="Choose" />
+                      <VBtn
+                        rounded="s-0 e-xl"
+                        text="Choose"
+                      />
                     </template>
                   </VFileInput>
                 </VCol>
@@ -1212,9 +1292,7 @@ onMounted(async () => {
           <VTabsWindow v-model="tabBahan">
             <VTabsWindowItem value="1">
               <div class="d-flex justify-space-between mt-5">
-                <label style="align-self: center;">
-                  Unggah Bahan
-                </label>
+                <label style="align-self: center"> Unggah Bahan </label>
                 <VCol cols="6">
                   <VTextField
                     v-if="uploadedFileBahan.file"
@@ -1245,7 +1323,10 @@ onMounted(async () => {
                     @change="handleUploadFile"
                   >
                     <template #append-inner>
-                      <VBtn rounded="s-0 e-xl" text="Choose" />
+                      <VBtn
+                        rounded="s-0 e-xl"
+                        text="Choose"
+                      />
                     </template>
                   </VFileInput>
                 </VCol>
@@ -1288,7 +1369,7 @@ onMounted(async () => {
     </DialogWithAction>
     <TableData
       :id="props?.id"
-      :on-submit="() => confirmSaveDialog = true"
+      :on-submit="() => (confirmSaveDialog = true)"
       :on-add="() => toggleAdd('Data Bahan')"
       :on-edit="(el: any) => toggleEdit(el, 'Data Bahan')"
       :on-detail="(el: any) => toggleDetail(el, 'Data Bahan')"
@@ -1297,18 +1378,21 @@ onMounted(async () => {
       :refresh="refresh"
       title="Daftar Nama Bahan dan Kemasan"
       with-add-button-bahan
+      :isviewonly="isviewonly"
     />
     <br>
     <TableData
-      :on-submit="() => confirmSaveDialog = true"
+      :on-submit="() => (confirmSaveDialog = true)"
       :on-add="() => toggleAdd('Nama Produk')"
       :on-edit="(item: any) => getDetailProduk(item.id, 'edit')"
       :on-delete="(item: any) => deleteProduct(item.id)"
       :on-detail="(el: any) => getDetailProduk(el.id, 'detail')"
+      :on-input-bahan="handleInputBahan"
       :data="productName"
       :re-render="reRender"
       title="Daftar Nama Produk"
       with-add-button
+      :isviewonly="isviewonly"
     >
       <template #headerDialog>
         <div class="bgContent">
@@ -1317,60 +1401,63 @@ onMounted(async () => {
               icon="ri-error-warning-line"
               color="#652672"
             />
-            <label class="subText">Setelah mengisi nama produk jangan lupa untuk menetapkan bahan-bahan yang digunakan pada kolom pengisian bahan.</label>
+            <label class="subText">Setelah mengisi nama produk jangan lupa untuk menetapkan
+              bahan-bahan yang digunakan pada kolom pengisian bahan.</label>
           </div>
         </div>
       </template>
     </TableData>
     <br>
     <TableData
-      :on-submit="() => confirmSaveDialog = true"
+      :on-submit="() => (confirmSaveDialog = true)"
       :on-add="() => toggleAdd('Pembelian Bahan')"
       :on-edit="(item: any) => toggleEdit(item, 'Pembelian Bahan')"
       :data="payNote"
       title="Catatan Pembelian Bahan"
+      :isviewonly="isviewonly"
     />
     <br>
     <TableData
-      :on-submit="() => confirmSaveDialog = true"
+      :on-submit="() => (confirmSaveDialog = true)"
       :on-add="() => toggleAdd('Formulir Pemeriksaan Bahan')"
       :on-edit="(item:any) => toggleEdit(item, 'Formulir Pemeriksaan Bahan')"
       :data="materialCheck"
       title="Formulir Pemeriksaan Bahan"
+      :isviewonly="isviewonly"
     />
   </div>
 </template>
 
-  <style scoped>
-  .text-center {
-    text-align: center;
-  }
-  .subText {
-    font-size: 12px !important;
-    font-weight: 500 !important;
-    line-height: 18px !important;
-    align-content: center;
-    padding-left: 10px;
-    color: #652672 !important;
-  }
-  .bgContent {
-    background-color: #F0E9F1;
-    border-radius: 10px;
-    padding-left: 10px;
-  }
-  .progress-text {
-    font-size: 14px !important;
-    font-weight: 700 !important;
-    line-height: 20px !important;
-  }
-  .ml5 {
-    margin-left: 25px;
-  }
-  .download-template {
-    background-color: #652672;
-    border-radius: 10px;
-    font-size: 16px !important;
-    color: white;
-    width: fit-content;
-  }
-  </style>
+<style scoped>
+.text-center {
+  text-align: center;
+}
+.subText {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 18px !important;
+  align-content: center;
+  padding-left: 10px;
+  color: #652672 !important;
+}
+.bgContent {
+  background-color: #f0e9f1;
+  border-radius: 10px;
+  padding-left: 10px;
+}
+.progress-text {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  line-height: 20px !important;
+}
+.ml5 {
+  margin-left: 25px;
+}
+.download-template {
+  background-color: #652672;
+  border-radius: 10px;
+  font-size: 16px !important;
+  color: white;
+  width: fit-content;
+}
+</style>

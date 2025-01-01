@@ -65,11 +65,13 @@ const deleteBahan = async () => {
     deleteButton.value = false;
     await store.getBahan(route.params.id);
     store.isBahan();
+    store.isAllBahanSelected();
   }
 };
 const loadBahan = async () => {
   await store.getBahan(route.params.id);
   store.isBahan();
+  store.isAllBahanSelected();
 };
 
 interface editBahan {

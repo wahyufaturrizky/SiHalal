@@ -183,7 +183,7 @@ onMounted(async () => {
   loading.value = true
 
   const responseData = await Promise.allSettled([
-    loadItem(page.value, size.value, searchQuery.value, LIST_PEMERIKSAAN_PATH),
+    loadItem(page.value, 100, searchQuery.value, LIST_PEMERIKSAAN_PATH),
     loadItem(page.value, size.value, searchQuery.value, LIST_CHANNEL_PATH),
     getMasterSkalaUsaha(),
     getMasterProvinsi(),
@@ -201,8 +201,7 @@ onMounted(async () => {
 watch(dataTable, () => {
   dataTable?.value.length > 0 && dataTable.value.map((item: any) => {
     const dateData = item?.tgl_dikirim?.split(' ')[0] || ''
-    const dayCount = item?.tgl_dikirim?.split(' ')[2] || ''
-
+    const dayCount = item?.tgl_dikirim?.split(' ')[1] || ''
     if (dateData) {
       const isFifteenDay = isOlderThan15Days(dateData)
       if (isFifteenDay) {
@@ -306,8 +305,6 @@ watch(dataTable, () => {
             class="examination-table"
             :headers="invoiceHeader"
             :items="dataTable"
-            :page="1"
-            :hide-default-footer="dataTable.length === 0"
             hover
           >
             <template #no-data>
@@ -354,7 +351,7 @@ watch(dataTable, () => {
             </template>
             <template #bottom>
               <VDataTableFooter
-                v-if="invoiceData.length > 10"
+                v-if="dataTable.length > 10"
                 first-icon="mdi-chevron-double-left"
                 last-icon="mdi-chevron-double-right"
                 show-current-page

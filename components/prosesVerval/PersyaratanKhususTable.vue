@@ -1,180 +1,130 @@
 <script setup lang="ts">
-import type RequirementDataInterface from "./verval-interface";
+import { defineProps, ref, watch } from "vue";
 
-const content: Array<RequirementDataInterface> = [
-  {
-    id: "1",
-    uraian: "Kebijakan halal telah ditetapkan pemilik usaha",
-    bukti: "-",
-    verval: "",
-  },
-  {
-    id: "2",
-    uraian: "Kebijakan halal telah disampaikan ke semua pekerja",
-    bukti: "-",
-    verval: "",
-  },
-  {
-    id: "3",
-    uraian:
-      "Pemilik Usaha atau orang yang bertanggung jawab dalam proses produk halal (Penyelia Halal) telah ditetapkan oleh pemilik usaha dengan tanggung jawab yang jelas",
-    bukti: "-",
-    verval: "",
-  },
-  {
-    id: "4",
-    uraian: "Prosedur tertulis pelaksanaan training telah tersedia",
-    bukti: "-",
-    verval: "",
-  },
-  {
-    id: "5",
-    uraian:
-      "Training tentang produksi halal telah dilakukan untuk semua pekerja",
-    bukti: "-",
-    verval: "",
-  },
-  {
-    id: "6",
-    uraian:
-      "Bahan (bahan baku, bahan tambahan dan bahan penolong) telah dilengkapi dokumen pendukung sesuai dengan kriteria bahan dalam PPH",
-    bukti: "-",
-    verval: "",
-  },
-  {
-    id: "7",
-    uraian:
-      "Prosedur tertulis penggunaan bahan baru untuk produk yang sudah disertifikasi telah tersedia",
-    bukti: "-",
-    verval: "",
-  },
-  {
-    id: "8",
-    uraian:
-      "Bahan penolong pencucian (cleaning agent) merupakan bahan yang suci",
-    bukti: "-",
-    verval: "",
-  },
-  {
-    id: "9",
-    uraian:
-      "Adanya prosedur tertulis yang menjamin nama, bentuk dan rasa produk telah memenuhi kriteria",
-    bukti: "-",
-    verval: "",
-  },
-  {
-    id: "10",
-    uraian: "Semua fasilitas produksi telah tercantum dalam permohonan",
-    bukti: "-",
-    verval: "",
-  },
-  {
-    id: "11",
-    uraian:
-      "Adanya prosedur tertulis yang menjamin semua fasilitas yang kontak langsung dengan bahan, produk antara dan produk akhir bebas babi (tidak digunakan untuk menangani daging babi atau produk turunan babi)",
-    bukti: "-",
-    verval: "",
-  },
-  {
-    id: "12",
-    uraian:
-      "Adanya prosedur tertulis yang menjamin semua fasilitas bebas kontaminasi najis (dicuci dan dibersihkan sebelum digunakan)",
-    bukti: "-",
-    verval: "",
-  },
-  {
-    id: "13",
-    uraian:
-      "Adanya prosedur tertulis pemeriksaan bahan datang dapat menjamin kesesuaian data yang tercantum dalam label/kemasan dengan label/kemasan yang tercantum dalam dokumen pendukung bahan (nama bahan, nama produsen, negara produsen dan logo halal, jika dipersyaratkan)",
-    bukti: "-",
-    verval: "",
-  },
-  {
-    id: "14",
-    uraian:
-      "Adanya prosedur tertulis yang menjamin bahwa PPH hanya menggunakan bahan halal dan dilakukan di fasilitas yang bebas babi dan najis",
-    bukti: "-",
-    verval: "",
-  },
-  {
-    id: "15",
-    uraian:
-      "Adanya prosedur tertulis yang menjamin bahwa bahan, produk antara dan produk akhir tidak terkontaminasi najis selama penyimpanan",
-    bukti: "-",
-    verval: "",
-  },
-  {
-    id: "16",
-    uraian:
-      "Adanya prosedur tertulis yang menjamin bahwa produk yang disertifikasi hanya berasal dari bahan halal dan diproduksi di fasilitas bebas babi dan najis",
-    bukti: "-",
-    verval: "",
-  },
-  {
-    id: "17",
-    uraian:
-      "Adanya prosedur tertulis yang menjamin bahwa produk yang tidak memenuhi kriteria akan dimusnahkan",
-    bukti: "-",
-    verval: "",
-  },
-  {
-    id: "18",
-    uraian:
-      "Adanya prosedur tertulis yang menjamin bahwa audit internal dan kaji ulang dilakukan oleh pemilik usaha setidaknya setahun sekali",
-    bukti: "-",
-    verval: "",
-  },
+// Table headers
+const tableHeader = [
+  { title: "No", value: "nomor" },
+  { title: "Uraian", value: "uraian" },
+  { title: "Bukti", value: "bukti" },
+  { title: "Verval", value: "verval" },
+  { title: "Sesuai / Tidak Sesuai", value: "memenuhi" },
 ];
 
-const selected = ref([]);
+// Data for the table
+const content = ref([]);
+const route = useRoute();
+
+// Props for receiving `dataPersyaratan`
+const props = defineProps({
+  dataPersyaratan: {
+    type: Object,
+    required: true,
+  },
+});
+
+// Array to track selected item IDs
+const selected = ref(new Set<number>());
+const unSelected = ref(new Set<number>());
+
+// Watch for changes to `dataPersyaratan`
+watch(
+  () => props.dataPersyaratan,
+  (newData) => {
+    if (newData) {
+      content.value = newData;
+      // Initialize the selected set based on memenuhi
+      content.value.forEach((val, index) => {
+        if (val?.memenuhi) {
+          selected.value.add(index);
+        }
+      });
+      console.log("Initial selected items:", Array.from(selected.value));
+    }
+  },
+  { immediate: true }
+);
+
+// Toggle the selection for a checkbox
+const toggleSelection = (index: number) => {
+  if (selected.value.has(index)) {
+    selected.value.delete(index);
+    unSelected.value.add(index);
+  } else {
+    selected.value.add(index);
+    unSelected.value.delete(index);
+  }
+  console.log(selected.value);
+};
+
+const onSubmit = async () => {
+  const body = {};
+
+  if (selected.value.size > 0 || unSelected.value.size > 0) {
+    selected.value.forEach((val) => {
+      const tmp = content.value[val];
+      body[tmp.id] = true;
+    });
+
+    unSelected.value.forEach((val) => {
+      const tmp = content.value[val];
+      body[tmp.id] = false;
+    });
+
+    try {
+      const response = await $api(
+        `/self-declare/proses-verval/${route.params?.id}/submit-verval-requirement`,
+        {
+          method: "post",
+          body,
+        }
+      );
+      if (response.code != 2000) {
+        useSnackbar().sendSnackbar("Gagal merubah requirement", "error");
+        return;
+      }
+      useSnackbar().sendSnackbar("Berhasil merubah requirement", "success");
+      // emit("emit-add", true);
+    } catch (error) {
+      console.error("error = ", error);
+      useSnackbar().sendSnackbar("Gagal merubah requirement", "error");
+    }
+  } else {
+    useSnackbar().sendSnackbar("Tidak ada data yang berubah", "success");
+  }
+};
 </script>
+
 <template>
   <VCard>
-    <VCardTitle><h3>Persyaratan Umum</h3></VCardTitle>
+    <VCardTitle>
+      <h3>Persyaratan Khusus</h3>
+    </VCardTitle>
+
     <VCardItem>
-      <VTable
-        density="comfortable"
-        style="
-          border-collapse: collapse;
-          border: 1px solid #eae9eb;
-          border-radius: 10px;
-        "
+      <VDataTable
+        :headers="tableHeader"
+        :items="content"
+        :hide-default-footer="true"
       >
-        <thead style="background-color: #f6f6f6">
-          <th
-            style="padding: 1.5svw; word-wrap: break-word; width: 2svw"
-            class="text-left"
-          >
-            No
-          </th>
-          <th style="word-wrap: break-word; width: 5svw" class="text-left">
-            Uraian
-          </th>
-          <th style="word-wrap: break-word; width: 5svw" class="text-left">
-            Bukti
-          </th>
-          <th style="word-wrap: break-word; width: 5svw" class="text-left">
-            Verval
-          </th>
-          <th style="word-wrap: break-word; width: 5svw" class="text-left">
-            Sesuai / Tidak Sesuai
-          </th>
-        </thead>
-        <tbody>
-          <tr v-for="(item, idx) in content" :key="idx">
-            <td>{{ idx + 1 }}</td>
-            <td>{{ item.uraian }}</td>
-            <td>{{ item.bukti }}</td>
-            <td>{{ item.verval }}</td>
-            <td class="text-center">
-              <VCheckbox :key="idx" :model-value="selected"></VCheckbox>
-            </td>
-          </tr>
-        </tbody>
-      </VTable>
+        <!-- Row number -->
+        <template #item.nomor="{ index }">
+          {{ index + 1 }}
+        </template>
+
+        <!-- Checkbox for memenuhi -->
+        <template #item.memenuhi="{ index }">
+          <VCheckbox
+            :model-value="selected.has(index)"
+            @change="toggleSelection(index)"
+          />
+        </template>
+      </VDataTable>
     </VCardItem>
+
     <VCardActions style="display: flex; justify-content: end">
-      <VBtn variant="flat">Simpan Pengecekan Persyaratan</VBtn>
+      <VBtn variant="flat" @click="onSubmit"
+        >Simpan Pengecekan Persyaratan</VBtn
+      >
     </VCardActions>
   </VCard>
 </template>

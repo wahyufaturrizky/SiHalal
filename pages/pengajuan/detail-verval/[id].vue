@@ -1,5 +1,183 @@
 <script setup lang="ts">
 import { modalTypeEnum } from "@/components/prosesVerval/verval-enum";
+
+const route = useRoute();
+
+const dataPelakuUsaha = ref();
+const dataPenanggungJawab = ref();
+const dataPendaftaran = ref();
+const dataRequirementGeneral = ref();
+const dataRequirementSpecific = ref();
+const dataBahanList = ref();
+const dataProdukList = ref();
+const dataProsesList = ref();
+const dataTracking = ref();
+
+const getDetail = async () => {
+  try {
+    const response = await $api(
+      `/self-declare/proses-verval/${route.params?.id}/detail`,
+      {
+        method: "get",
+      }
+    );
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      return;
+    }
+
+    dataPelakuUsaha.value = response.data?.pelaku_usaha;
+    dataPenanggungJawab.value = response.data?.penanggung_jawab;
+    dataPendaftaran.value = response.data?.pendaftaran;
+    dataTracking.value = response.data?.tracking;
+  } catch (error) {
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+  }
+};
+
+const getGeneralQuestion = async () => {
+  try {
+    const response = await $api(
+      `/self-declare/proses-verval/${route.params?.id}/req-general`,
+      {
+        method: "get",
+      }
+    );
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      return;
+    }
+
+    dataRequirementGeneral.value = response.data;
+  } catch (error) {
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+  }
+};
+
+const getSpecificQuestion = async () => {
+  try {
+    const response = await $api(
+      `/self-declare/proses-verval/${route.params?.id}/req-specific`,
+      {
+        method: "get",
+      }
+    );
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      return;
+    }
+
+    dataRequirementSpecific.value = response.data;
+  } catch (error) {
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+  }
+};
+
+const getIngredientList = async () => {
+  try {
+    const response = await $api(
+      `/self-declare/proses-verval/${route.params?.id}/ingredient-list`,
+      {
+        method: "get",
+      }
+    );
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      return;
+    }
+
+    dataBahanList.value = response.data;
+  } catch (error) {
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+  }
+};
+
+const getProductList = async () => {
+  try {
+    const response = await $api(
+      `/self-declare/proses-verval/${route.params?.id}/product-list`,
+      {
+        method: "get",
+      }
+    );
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      return;
+    }
+
+    if (response.data) {
+      dataProdukList.value = response.data;
+    } else {
+      dataProdukList.value = [];
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+  }
+};
+
+const getProductProcessList = async () => {
+  try {
+    const response = await $api(
+      `/self-declare/proses-verval/${route.params?.id}/product-process-list`,
+      {
+        method: "get",
+      }
+    );
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      return;
+    }
+
+    dataProsesList.value = response.data;
+  } catch (error) {
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+  }
+};
+
+const handleBahanAdd = async (result: boolean) => {
+  if (result) {
+    await getIngredientList();
+  }
+};
+
+const handleProsesProdukAdd = async (result: boolean) => {
+  if (result) {
+    await getProductProcessList();
+  }
+};
+
+const handleProdukAdd = async (result: boolean) => {
+  if (result) {
+    await getProductList();
+  }
+};
+
+const handleProsesProdukDelete = async (result: boolean) => {
+  if (result) {
+    await getProductProcessList();
+  }
+};
+
+const handleProdukDelete = async (result: boolean) => {
+  if (result) {
+    await getProductList();
+  }
+};
+
+const skBlobUri = ref();
+
+const skReadyHandler = (blob) => {
+  skBlobUri.value = blob;
+};
+
+onMounted(async () => {
+  await getDetail();
+  await getGeneralQuestion();
+  await getSpecificQuestion();
+  await getIngredientList();
+  await getProductList();
+  await getProductProcessList();
+});
 </script>
 
 <template>
@@ -30,39 +208,83 @@ import { modalTypeEnum } from "@/components/prosesVerval/verval-enum";
   <VRow>
     <VCol cols="8">
       <VRow
-        ><VCol cols="12"><DataPelakuUsahaVerval></DataPelakuUsahaVerval></VCol
+        ><VCol cols="12"
+          ><DataPelakuUsahaVerval
+            :data="dataPelakuUsaha"
+            v-if="dataPelakuUsaha"
+          ></DataPelakuUsahaVerval></VCol
       ></VRow>
       <VRow
-        ><VCol cols="12"><PenanggungJawabVerval></PenanggungJawabVerval></VCol
+        ><VCol cols="12"
+          ><PenanggungJawabVerval
+            :data="dataPenanggungJawab"
+            v-if="dataPenanggungJawab"
+          ></PenanggungJawabVerval></VCol
       ></VRow>
     </VCol>
     <VCol cols="4">
-      <RightPanelVervalDetail></RightPanelVervalDetail>
+      <RightPanelVervalDetail
+        :data-pendaftaran="dataPendaftaran"
+        :data-tracking="dataTracking"
+        v-if="dataPendaftaran"
+      ></RightPanelVervalDetail>
     </VCol>
   </VRow>
   <VRow>
     <VCol cols="12">
-      <PersyaratanUmumTable></PersyaratanUmumTable>
+      <PersyaratanUmumTable
+        :data-persyaratan="dataRequirementGeneral"
+        v-if="dataRequirementGeneral"
+      ></PersyaratanUmumTable>
     </VCol>
   </VRow>
   <VRow>
     <VCol cols="12">
-      <PersyaratanKhususTable></PersyaratanKhususTable>
+      <PersyaratanKhususTable
+        :data-persyaratan="dataRequirementSpecific"
+      ></PersyaratanKhususTable>
     </VCol>
   </VRow>
   <VRow>
     <VCol cols="12">
-      <BahanTablePendamping></BahanTablePendamping>
+      <BahanTablePendamping
+        :data="dataBahanList"
+        :id-reg="route.params?.id"
+        @confirm-add="handleBahanAdd"
+      ></BahanTablePendamping>
     </VCol>
   </VRow>
   <VRow>
     <VCol cols="12">
-      <ProsesProdukHalalPendamping></ProsesProdukHalalPendamping>
+      <ProsesProdukHalalPendamping
+        :data="dataProsesList"
+        @confirm-add="handleProsesProdukAdd"
+        @confirm-delete="handleProsesProdukDelete"
+      ></ProsesProdukHalalPendamping>
     </VCol>
   </VRow>
   <VRow>
     <VCol cols="12">
-      <ProdukHalalPendamping></ProdukHalalPendamping>
+      <ProdukHalalPendamping
+        :data="dataProdukList"
+        @confirm-add="handleProdukAdd"
+        @confirm-delete="handleProdukDelete"
+      ></ProdukHalalPendamping>
+    </VCol>
+  </VRow>
+  <VRow style="display: none">
+    <VCol cols="12">
+      <VCard>
+        <VCardItem>
+          <!-- <component :is="SkPenyeliaHalal" :></component> -->
+          <!-- <VBtn @click="downloadSkHandler">tes</VBtn> -->
+          <PdfVervalRekomendasi
+            @sk-penyelia-download-handler="skReadyHandler"
+            :data-pu="dataPelakuUsaha"
+            :data-daftar="dataPendaftaran"
+          ></PdfVervalRekomendasi>
+        </VCardItem>
+      </VCard>
     </VCol>
   </VRow>
 </template>

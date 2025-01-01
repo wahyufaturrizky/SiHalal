@@ -8,6 +8,8 @@ const router = useRouter();
 const selfDeclareId = (route.params as any).id;
 
 const detailData = ref();
+const listPendamping = ref([]);
+const isFasilitator = ref<boolean>(false);
 const loadingAll = ref(true);
 const loadingTandaiOK = ref(false);
 const loadingTandaiNotOK = ref(false);
@@ -16,6 +18,31 @@ const loadingPengembalian = ref(false);
 const itemsPabrik = ref([]);
 const itemsOutlet = ref([]);
 const listKodeDaftarFasilitasi = ref([]);
+const listFasilitasi = ref([]);
+
+const handleGetFasilitator = async () => {
+  try {
+    const response: any = await $api(
+      "/self-declare/business-actor/submission/list-fasilitator",
+      {
+        method: "get",
+        query: {
+          reg_id: selfDeclareId,
+          lokasi: "Kabupaten",
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      listFasilitasi.value = response.data;
+      listFasilitasi.value.push({
+        id: "Lainnya",
+        name: "Lainnya",
+      });
+      return response;
+    }
+  } catch (error) {}
+};
 
 const tabs = ref([
   { text: "Pelaku Usaha", value: "pelaku_usaha" },
@@ -39,7 +66,6 @@ const formatDate = (date: string): string => {
 };
 
 const showTimeline = ref(true);
-const showPengajuan = ref(true);
 const showDetail = ref(true);
 const loadingDibatalkan = ref(false);
 const loadingBahan = ref(false);
@@ -62,6 +88,7 @@ const itemPerPageOutlet = ref(10);
 const totalItemsOutlet = ref(0);
 const pageOutlet = ref(1);
 const loadingOutlet = ref(false);
+const lembagaPendamping = ref([]);
 
 const itemPerPageAspekLegal = ref(10);
 const totalItemsAspekLegal = ref(0);
@@ -119,6 +146,40 @@ const statusItem: any = new Proxy(
   }
 );
 
+const formData = reactive({
+  id_reg: selfDeclareId,
+  jenis_pendaftaran: null,
+  id_jenis_pengajuan: null,
+  kode_daftar: null,
+  no_mohon: null,
+  tgl_surat_permohonan: null,
+  tgl_mohon: null,
+  jenis_layanan: null,
+  jenis_produk: null,
+  id_jenis_layanan: null,
+  id_jenis_produk: null,
+  id_fasilitator: null,
+  nama_pu: null,
+  area_pemasaran: null,
+  lokasi_pendamping: "Provinsi",
+  lembaga_pendamping: null,
+  id_lembaga_pendamping: null,
+  pendamping: null,
+  id_pendamping: null,
+});
+
+const responseType = computed(() => {
+  return responseMessage.value == "Kode Fasilitasi dapat digunakan"
+    ? "success"
+    : "error";
+});
+
+const responseColor = computed(() => {
+  return responseMessage.value == "Kode Fasilitasi dapat digunakan"
+    ? "#5CB338"
+    : "#FB4141";
+});
+
 const loadItemPabrik = async (
   pageParamPabrik: number,
   sizeParamPabrik: number
@@ -138,9 +199,9 @@ const loadItemPabrik = async (
       }
     );
 
-    if (response.code === 200) {
-      itemsPabrik.value = response.data || [];
-      totalItemsPabrik.value = response.total_item || 0;
+    if (response.code === 2000) {
+      // itemsPabrik.value = response.data || [];
+      // totalItemsPabrik.value = response.total_item || 0;
       loadingPabrik.value = false;
       return response;
     } else {
@@ -175,10 +236,11 @@ const loadItemOutlet = async (
         },
       }
     );
+    console.log("@response", response);
 
-    if (response.code === 200) {
-      itemsOutlet.value = response.data || [];
-      totalItemsOutlet.value = response.total_item || 0;
+    if (response.code === 2000) {
+      // itemsOutlet.value = response.data || [];
+      // totalItemsOutlet.value = response.total_item || 0;
       loadingOutlet.value = false;
       return response;
     } else {
@@ -254,8 +316,8 @@ const loadItemPenyeliaById = async ({
     );
 
     if (response.code === 2000) {
-      penyeliaHalal.value = response.data;
-      totalItemsPenyelia.value = response.total;
+      penyeliaHalal.value = response.data || [];
+      totalItemsPenyelia.value = response.total || 0;
       loadingPenyelia.value = false;
       return response;
     } else {
@@ -327,7 +389,7 @@ const loadItemBahanById = async ({
     );
 
     if (response.code === 2000) {
-      // listBahan.value = response.data || [];
+      listBahan.value = response.data || [];
       totalItemsBahan.value = response.total || 0;
       loadingBahan.value = false;
       return response;
@@ -379,6 +441,7 @@ const loadItemById = async () => {
       } = certificate_halal || {};
 
       dataTracking.value = tracking || [];
+      formData.id_fasilitator = response.data.fac_id;
 
       dataFormPengajuan.value = {
         jenisPendaftaran: jenis_daftar,
@@ -412,10 +475,13 @@ const loadItemById = async () => {
         },
       ];
 
-      listBahan.value = bahan || [];
+      // listBahan.value = bahan || [];
 
       itemsPabrik.value = pabrik || [];
+      totalItemsPabrik.value = pabrik.length || 0;
+
       itemsOutlet.value = outlet || [];
+      totalItemsOutlet.value = outlet.length || 0;
 
       jenisBadanUsahaPenanggungJawab.value = jenis_badan_usaha;
       namaPenanggungJawab.value = nama_pj;
@@ -549,12 +615,83 @@ const loadListFasilitasi = async () => {
   }
 };
 
+const handleGetLembagaPendampingInitial = async (lokasi: string) => {
+  try {
+    const response: any = await $api(
+      "/self-declare/business-actor/submission/list-lembaga-pendamping",
+      {
+        method: "get",
+        query: {
+          id_reg: self,
+          lokasi,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      lembagaPendamping.value = response.data;
+      return response;
+    }
+  } catch (error) {}
+};
+
+const handleGetPendamping = async (idLembaga: string | null) => {
+  if (!idLembaga) return;
+  try {
+    const response: any = await $api(
+      "/self-declare/business-actor/submission/list-pendamping",
+      {
+        method: "get",
+        query: {
+          id_lembaga: idLembaga,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      if (response.data !== null) listPendamping.value = response.data;
+    }
+
+    return response;
+  } catch (error) {}
+};
+
+const handleGetLembagaPendamping = async (lokasi: string) => {
+  try {
+    formData.id_lembaga_pendamping = null;
+    lembagaPendamping.value = [];
+    const response: any = await $api(
+      "/self-declare/business-actor/submission/list-lembaga-pendamping",
+      {
+        method: "get",
+        query: {
+          id_reg: selfDeclareId,
+          lokasi,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      if (response.data !== null) lembagaPendamping.value = response.data;
+    }
+
+    return response;
+  } catch (error) {}
+};
+
+const loadDataPendamping = async (lokasi: string | null) => {
+  if (lokasi) await handleGetLembagaPendamping(lokasi);
+};
+
 onMounted(async () => {
   const res: any = await Promise.all([
     loadItemById(),
     loadDocument(),
+    handleGetLembagaPendampingInitial(formData.lokasi_pendamping),
     loadAgama(),
+    handleGetFasilitator(),
     loadJenisPendaftaran(),
+    handleGetPendamping(formData.id_lembaga_pendamping),
     loadJenisLayanan(),
     loadJenisProduk(),
     loadListFasilitasi(),
@@ -569,7 +706,19 @@ onMounted(async () => {
       page: pageAspekLegal.value,
       size: itemPerPageAspekLegal.value,
     }),
+    onSearchFasilitator(),
   ]);
+
+  if (
+    formData.id_fasilitator !== null &&
+    !listFasilitasi.value.some(
+      (item) => (item as any).id == formData.id_fasilitator
+    )
+  ) {
+    formData.id_fasilitator = "Lainnya";
+    onSelectFasilitator("Lainnya");
+    onSearchFasilitator();
+  }
 
   const checkResIfUndefined = res.every((item: any) => {
     return item !== undefined;
@@ -605,7 +754,7 @@ const outletTableHeader = [
   // { title: "Jenis Bahan", key: "jenis_outlet" },
   { title: "Nama Bahan", key: "nama_outlet" },
   { title: "Alamat", key: "alamat_outlet" },
-  // { title: "Status", key: "status_milik" },
+  { title: "Status", key: "status_milik" },
   // { title: "Action", key: "action" },
 ];
 
@@ -774,6 +923,57 @@ const dibatalkan = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loadingDibatalkan.value = false;
   }
+};
+
+const lokasiPendamping = ref([
+  { title: "Kabupaten", value: "Kabupaten" },
+  { title: "Provinsi", value: "Provinsi" },
+]);
+
+const querySearch = ref("");
+const facName = ref("");
+const isKodeFound = ref<boolean>(false);
+const isKodeNotFound = ref<boolean>(false);
+const responseMessage = ref("");
+const responseId = ref("");
+
+const onSearchFasilitator = async () => {
+  try {
+    facName.value = "";
+    const kode = querySearch.value;
+
+    const response: any = await $api("/self-declare/submission/kode", {
+      method: "post",
+      body: {
+        kode,
+      },
+    });
+
+    if (response.message === "Kode Fasilitasi dapat digunakan") {
+      isKodeFound.value = true;
+      isKodeNotFound.value = false;
+      responseMessage.value = "";
+      responseId.value = response.data[0].id;
+      facName.value = response.data[0].name;
+      console.log("ressponde id", response.data[0].id);
+      console.log("responseId ", responseId);
+      // formData.id_fasilitator = responseId.value;
+      console.log("id fasilitator ", formData.id_fasilitator);
+    } else {
+      responseMessage.value = response.message;
+      isKodeFound.value = false;
+      isKodeNotFound.value = true;
+    }
+    return response;
+  } catch (error) {}
+};
+
+const onSelectFasilitator = (selectedId: string) => {
+  if ((isFasilitator.value = selectedId === "Lainnya")) {
+    onSearchFasilitator();
+    return;
+  }
+  isKodeFound.value = false;
 };
 </script>
 
@@ -1098,216 +1298,7 @@ const dibatalkan = async () => {
     </VContainer>
 
     <!-- Tab Content Pengajuan -->
-    <VContainer v-if="tab === 'pengajuan'">
-      <VCol>
-        <VCard variant="flat" class="pa-4">
-          <div
-            class="d-flex justify-space-between align-center"
-            @click="showPengajuan = !showPengajuan"
-          >
-            <p class="text-h4" style="font-weight: bold">Data Pengajuan</p>
-            <VIcon
-              :icon="showPengajuan ? 'mdi-chevron-up' : 'mdi-chevron-down'"
-            />
-          </div>
-          <VExpandTransition>
-            <div v-if="showPengajuan">
-              <VCardText>
-                <div class="d-flex flex-column">
-                  <!-- Static Details -->
-                  <VRow>
-                    <VCol
-                      v-for="({ label, value }, i) in dataPengajuan"
-                      :key="i"
-                      cols="12"
-                    >
-                      <div class="info-row">
-                        <span class="label">{{ label }}</span>
-                        <span class="colon">:</span>
-                        <span class="value">{{ value }}</span>
-                      </div>
-                    </VCol>
-                  </VRow>
-
-                  <!-- Form Fields -->
-                  <VRow>
-                    <!-- Jenis Pendaftaran -->
-                    <VCol cols="12">
-                      <VLabel class="required"> Jenis Pendaftaran </VLabel>
-                      <VSelect
-                        density="compact"
-                        :items="listJenisPendaftaran"
-                        v-model="dataFormPengajuan.jenisPendaftaran"
-                        item-title="name"
-                        item-value="code"
-                        required
-                        disabled
-                      />
-                    </VCol>
-
-                    <!-- Kode Daftar / Fasilitasi -->
-                    <VCol cols="12">
-                      <VLabel class="required">
-                        Kode Daftar / Fasilitasi
-                      </VLabel>
-                      <VRow align="center" class="mb-2">
-                        <VCol cols="5.5">
-                          <VSelect
-                            v-model="dataFormPengajuan.kodeDaftarFasilitasi"
-                            :items="listKodeDaftarFasilitasi"
-                            item-title="name"
-                            item-value="id"
-                            disabled
-                          />
-                        </VCol>
-                        <span>Atau</span>
-                        <VCol cols="5.5">
-                          <VTextField
-                            append-inner-icon="mdi-magnify"
-                            required
-                            disabled
-                          />
-                        </VCol>
-                      </VRow>
-                      <VAlert
-                        type="warning"
-                        variant="tonal"
-                        color="#652672"
-                        class="mt-3"
-                      >
-                        Kode unik yang diterbitkan oleh BPJPH yang diberikan
-                        kepada fasilitator sebagai kode untuk mendaftarkan
-                        sertifikasi halal gratis
-                      </VAlert>
-                    </VCol>
-                    <VDivider class="mt-2" />
-                    <!-- Nomor Surat Permohonan & Tanggal Surat Pemohon -->
-                    <VCol cols="6">
-                      <VLabel
-                        v-model="dataFormPengajuan.nomorSuratPermohonan"
-                        class="required"
-                      >
-                        Nomor Surat Permohonan
-                      </VLabel>
-                      <VTextField
-                        disabled
-                        required
-                        placeholder="Isi Nomor Surat Permohonan"
-                      />
-                    </VCol>
-                    <VCol cols="6">
-                      <VLabel class="required"> Tanggal Surat Pemohon </VLabel>
-                      <VTextField
-                        placeholder="Pilih Tanggal Surat Pemohon"
-                        type="date"
-                        disabled
-                        v-model="dataFormPengajuan.tanggalSuratPermohon"
-                      />
-                    </VCol>
-
-                    <!-- Jenis Layanan -->
-                    <VCol cols="12">
-                      <VLabel class="required"> Jenis Layanan </VLabel>
-                      <VSelect
-                        :items="listJenisLayanan"
-                        required
-                        placeholder="Pilih Jenis Layanan"
-                        v-model="dataFormPengajuan.jenisLayanan"
-                        item-title="name"
-                        item-value="code"
-                        disabled
-                      />
-                    </VCol>
-
-                    <!-- Jenis Produk -->
-                    <VCol cols="12">
-                      <VLabel class="required"> Jenis Produk </VLabel>
-                      <VSelect
-                        :items="listProduk"
-                        required
-                        placeholder="Pilih Jenis Produk"
-                        v-model="dataFormPengajuan.jenisProduk"
-                        item-title="name"
-                        item-value="code"
-                        disabled
-                      />
-                    </VCol>
-
-                    <!-- Nama Usaha -->
-                    <VCol cols="12">
-                      <VLabel class="required"> Jenis Usaha </VLabel>
-                      <VTextField
-                        v-model="dataFormPengajuan.jenisUsaha"
-                        required
-                        placeholder="Pilih Jenis Usaha"
-                        disabled
-                      />
-                    </VCol>
-
-                    <!-- Area Pemasaran -->
-                    <VCol cols="12">
-                      <VLabel class="required"> Area Pemasaran </VLabel>
-                      <VSelect
-                        placeholder="Pilih Area Pemasaran"
-                        :items="[
-                          'Nasional',
-                          'Internasional',
-                          'Kabupaten/Kota',
-                          'Provinsi',
-                        ]"
-                        required
-                        v-model="dataFormPengajuan.areaPemasaran"
-                        disabled
-                      />
-                    </VCol>
-
-                    <!-- Lokasi Pendamping -->
-                    <VCol cols="12">
-                      <VLabel class="required"> Lokasi Pendamping </VLabel>
-                      <VSelect
-                        placeholder="Pilih Area Pendamping"
-                        :items="['Lokasi A', 'Lokasi B']"
-                        required
-                        v-model="dataFormPengajuan.lokasiPendamping"
-                      />
-                    </VCol>
-
-                    <!-- Lembaga Pendamping -->
-                    <VCol cols="12">
-                      <VLabel class="required"> Lembaga Pendamping </VLabel>
-                      <VSelect
-                        placeholder="Pilih Lembaga Pendamping"
-                        :items="['Lembaga A', 'Lembaga B']"
-                        required
-                        v-model="dataFormPengajuan.lembagaPendamping"
-                      />
-                    </VCol>
-
-                    <!-- Pendamping -->
-                    <VCol cols="12">
-                      <VLabel class="required"> Pendamping </VLabel>
-                      <VSelect
-                        placeholder="Pilih Pendamping"
-                        :items="['Pendamping A', 'Pendamping B']"
-                        required
-                        v-model="dataFormPengajuan.pendamping"
-                      />
-                    </VCol>
-                  </VRow>
-                </div>
-              </VCardText>
-
-              <!-- Action Buttons -->
-              <VCardActions>
-                <VSpacer />
-                <PermohonanSelfDeclareVerifikator :detaildata="detailData" />
-                <PernyataanSelfDeclareVerifikator :detaildata="detailData" />
-              </VCardActions>
-            </div>
-          </VExpandTransition>
-        </VCard>
-      </VCol>
-    </VContainer>
+    <PengajuanMainSelfDeclareVerifikator v-if="tab === 'pengajuan'" />
 
     <!-- Tab Content Pabrik dan Outlet -->
     <VContainer v-if="tab === 'pabrik'">
@@ -1475,8 +1466,13 @@ const dibatalkan = async () => {
                 <template #item.no="{ index }">
                   {{ index + 1 + (pageBahan - 1) * itemPerPageBahan }}
                 </template>
-                <template #item.tanggal_berlaku="{ item }">
-                  {{ formatDate((item as any).tanggal_berlaku) }}
+                <template #item.jenis_bahan="{ item }">
+                  {{
+                    (item as any).jenis_bahan.replace(
+                      /(uncertified|certified)\|/,
+                      ""
+                    )
+                  }}
                 </template>
                 <template #item.action="{ item }">
                   <div class="d-flex gap-1">
@@ -1541,6 +1537,9 @@ const dibatalkan = async () => {
                   {{
                     index + 1 + (pageTableProduk - 1) * itemPerPageTableProduk
                   }}
+                </template>
+                <template #item.verified="{ item }">
+                  {{ (item as any).verified ? "Sudah" : "Belum" }}
                 </template>
                 <template #item.action="{ item }">
                   <div class="d-flex gap-1">

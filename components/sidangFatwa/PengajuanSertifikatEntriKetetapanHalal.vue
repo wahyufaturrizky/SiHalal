@@ -6,7 +6,6 @@ const props = defineProps({
 });
 
 const { detaildata } = props || {};
-console.log("@detaildata", detaildata);
 
 const { sertifikat_halal_reguler } = detaildata || {};
 const {
@@ -42,7 +41,7 @@ const listData = [
   },
   {
     label: "Area Pemasaran",
-    value: area_pemasaran,
+    value: area_pemasaran || "-",
   },
 ];
 

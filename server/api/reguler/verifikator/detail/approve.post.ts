@@ -25,4 +25,4 @@ export default defineEventHandler(async (event) => {
     return err.data;
   });
   return data || null;
-});
+})

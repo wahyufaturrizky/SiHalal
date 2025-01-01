@@ -31,7 +31,7 @@ const detailDataLn = ref<any>({
 const domesticAuditHeader: any[] = [
   { title: 'No', key: 'no' },
   { title: 'Nama Fasilitas Produksi', key: 'nama_pabrik', nowrap: true },
-  { title: 'Man Day;s', key: 'man_days', nowrap: true },
+  { title: 'Man Days', key: 'man_days', nowrap: true },
   { title: 'Unit Cost Awal', key: 'unit_cost_awal', nowrap: true },
   { title: 'Diskon (%)', key: 'unit_cost_diskon', nowrap: true },
   { title: 'Unit Cost Akhir', key: 'unit_cost_akhir', nowrap: true },
@@ -328,7 +328,7 @@ const onEdit = async () => {
       akomodasi_akhir: idrToNumber(detailData.value?.akomodasi_akhir),
       akomodasi_diskon: +detailData.value?.akomodasi_diskon,
       id_pabrik: detailData.value?.id_pabrik,
-      tiket_pesawat_akhir: idrToNumber(detailData.value?.transport_akhir),
+      tiket_pesawat_akhir: idrToNumber(detailData.value?.tiket_pesawat_akhir),
       tiket_pesawat_diskon: +detailData.value?.tiket_pesawat_diskon,
       transport_akhir: idrToNumber(detailData.value?.transport_akhir),
       transport_diskon: +detailData.value?.transport_diskon,
@@ -428,6 +428,23 @@ const onAddDataDalamNegri = async () => {
   }
 }
 
+const onUpdateTotal = async () => {
+  try {
+    const response: any = await $api('/reguler/lph/update-cost/update-total', {
+      method: 'post',
+      query: { id },
+    })
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar('Berhasil perbaharui data', 'success')
+      getDetailBiaya()
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
 onMounted(async () => {
   loading.value = true
   await Promise.allSettled([
@@ -449,6 +466,16 @@ onMounted(async () => {
         <h1>
           Informasi Penetapan Biaya Audit Untuk Fasilitas Produksi di Indonesia
         </h1>
+        <VRow style="float: inline-end; margin-right: 10px;">
+          <VBtn
+            variant="flat"
+            class="px-4"
+            color="primary"
+            @click="onUpdateTotal"
+          >
+            Perbaharui
+          </VBtn>
+        </VRow>
       </VCol>
     </VRow>
     <VRow cols="4">
@@ -541,7 +568,7 @@ onMounted(async () => {
         </VCard>
       </VCol>
     </VRow>
-    <VRow>
+    <VRow v-if="data?.is_ln_exist">
       <VCol>
         <VCard>
           <VCardTitle class="my-3 d-flex justify-space-between align-center">
@@ -793,7 +820,6 @@ onMounted(async () => {
           <VIcon @click="editLn = false"> fa-times </VIcon>
         </VCardTitle>
         <VCardText>
-          {{ editDataLn }}
           <VRow>
             <VCol>
               <div class="text-h6">Keterangan Biaya</div>

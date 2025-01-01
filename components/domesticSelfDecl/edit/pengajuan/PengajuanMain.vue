@@ -106,8 +106,11 @@ const handleGetFasilitator = async () => {
 const querySearch = ref("");
 
 const onSelectFasilitator = (selectedId: string) => {
-  if ((isFasilitator.value = selectedId === "Lainnya"))
-    isKodeFound.value = false;
+  if ((isFasilitator.value = selectedId === "Lainnya")) {
+    onSearchFasilitator(querySearch.value);
+    return;
+  }
+  isKodeFound.value = false;
 };
 
 const responseMessage = ref("");
@@ -126,28 +129,18 @@ const onSearchFasilitator = async () => {
       },
     });
 
-    console.log(
-      response.message === "Kode Fasilitasi dapat digunakan",
-      response.message
-    );
     if (response.message === "Kode Fasilitasi dapat digunakan") {
       isKodeFound.value = true;
       isKodeNotFound.value = false;
       responseMessage.value = "";
       responseId.value = response.data[0].id;
       facName.value = response.data[0].name;
-      console.log("ressponde id", response.data[0].id);
-      console.log("responseId ", responseId);
-      // formData.id_fasilitator = responseId.value;
-      console.log("id fasilitator ", formData.id_fasilitator);
     } else {
       responseMessage.value = response.message;
       isKodeFound.value = false;
       isKodeNotFound.value = true;
     }
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 
 const responseType = computed(() => {
@@ -288,7 +281,7 @@ const getDetail = async () => {
       submissionDetail.id_jenis_pengajuan = response.data.jenis_pendaftaran;
       submissionDetail.nama_pj = response.data.nama_pj;
       submissionDetail.alamat_pu = response.data.alamat_pu;
-      submissionDetail.nomor_kontak_pj = response.data.nomor_kontak_pj;
+      submissionDetail.nomor_kontak_pj = response.data.no_kontak_pj;
       submissionDetail.nama_pu = response.data.nama_pu;
       formData.tgl_surat_permohonan =
         response.data.tgl_surat_permohonan.split("T")[0];
@@ -305,23 +298,9 @@ const getDetail = async () => {
 
       formData.id_lembaga_pendamping = response.data.id_lembaga_pendamping;
       formData.id_pendamping = response.data.id_pendamping;
-      console.log("ini sub det = ", Object.keys(submissionDetail));
-      console.log("ini form = ", Object.keys(formData));
-
-      // Object.keys(response?.data).forEach((key) => {
-      //   // console.log('response = ', key)
-      //   // console.log('response data= ', response.data[key])
-      //   // submissionDetail[key] = response.data[key]
-      //   // console.log('coba tes = ', key == 'tanggal_daftar')
-      //   // console.log(key === 'tgl_daftar', 'keterangan', key)
-      //   if (key === "tgl_daftar") console.log("ini val", val);
-
-      //   formData[val] = response.data[val];
-      //   formData.id_fasilitator = "Lainnya";
-      // });
-
-      // console.log("form = ", formData);
-      // console.log("submission det = ", submissionDetail);
+      if (formData.id_fasilitator == "00000000-0000-0000-0000-000000000000") {
+        formData.id_fasilitator = null;
+      }
     }
   } catch (error: any) {
     // Tangani error
@@ -441,6 +420,7 @@ onMounted(async () => {
   await handleGetPendamping(formData.id_lembaga_pendamping);
   console.log(submissionDetail);
   if (
+    formData.id_fasilitator != null &&
     !listFasilitasi.value.some((item) => item.id == formData.id_fasilitator)
   ) {
     formData.id_fasilitator = "Lainnya";

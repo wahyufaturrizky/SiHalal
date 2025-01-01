@@ -219,13 +219,6 @@ onMounted(() => {
     </VCardText>
     <VCardActions class="d-flex justify-end">
       <VBtn
-        v-if="props.isVerificator"
-        @click="handleDownload"
-        variant="outlined"
-        append-icon="ri-download-line"
-        >Download ikrar</VBtn
-      >
-      <VBtn
         v-if="showDownloadButton"
         @click="handleDownload"
         variant="outlined"

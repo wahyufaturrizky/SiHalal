@@ -7,15 +7,71 @@ interface prosesProdukIntf {
   explanation: string;
 }
 
-const content: Array<prosesProdukIntf> = [
-  {
-    id: "1",
-    requirement: "Teh Candi Borobudur",
-    explanation: "Diragukan",
-  },
+const route = useRoute();
+
+const tableHeader = [
+  { title: "No", value: "no" },
+  { title: "Persyaratan", value: "persyaratan" },
+  { title: "Penjelasan", value: "penjelasan" },
+  { title: "Action", value: "action" },
 ];
 
-const selected = ref([]);
+const content = ref([]);
+
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true,
+  },
+});
+
+watch(
+  () => props.data,
+  async (newData) => {
+    content.value = newData;
+  },
+  { immediate: true }
+);
+
+const emit = defineEmits(["confirm-add", "confirm-delete"]);
+
+const handleAddBahan = (result: boolean) => {
+  emit("confirm-add", result);
+};
+
+const handleDeleteProsesProduk = async (idProses: string) => {
+  try {
+    const response = await $api(
+      `/self-declare/proses-verval/${route.params?.id}/product-process-delete`,
+      {
+        method: "post",
+        body: {
+          idProses,
+        },
+      }
+    );
+
+    if (response.code !== 2000) {
+      useSnackbar().sendSnackbar("Gagal menghapus proses", "error");
+      return;
+    }
+
+    // Update content to remove the deleted item
+    content.value = content.value.filter(
+      (item: prosesProdukIntf) => item.id !== idProses
+    );
+
+    emit("confirm-delete", true);
+    useSnackbar().sendSnackbar("Berhasil menghapus proses", "success");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Gagal menghapus proses", "error");
+    console.error("Delete failed:", error);
+  }
+};
+
+const onOpenModal = async () => {
+  // resetForm();
+};
 </script>
 <template>
   <VCard>
@@ -25,50 +81,33 @@ const selected = ref([]);
         <VCol cols="6" style="display: flex; justify-content: end">
           <ModalProsesProdukHalalVerval
             :modal-type="modalTypeEnum.ADD"
+            @emit-add="handleAddBahan"
           ></ModalProsesProdukHalalVerval>
         </VCol>
       </VRow>
     </VCardTitle>
     <VCardItem>
-      <VTable
-        density="comfortable"
-        style="
-          border-collapse: separate;
-          border: 1px solid #eae9eb;
-          border-radius: 10px;
-          max-height: 40svh;
-          overflow-y: auto;
-        "
-        fixed-header
-      >
-        <thead style="background-color: #f6f6f6">
-          <th
-            style="padding: 1.5svw; width: 3svw; word-wrap: break-word"
-            class="text-left"
-          >
-            No
-          </th>
-          <th class="text-left" style="width: 10svw; word-wrap: break-word">
-            Persyaratan
-          </th>
-          <th class="text-left" style="width: 10svw; word-wrap: break-word">
-            Penjelasan
-          </th>
-          <th class="text-center" style="width: 3svw; word-wrap: break-word">
-            Action
-          </th>
-        </thead>
-        <tbody>
-          <tr v-for="(item, idx) in content" :key="idx">
-            <td>{{ idx + 1 }}</td>
-            <td>{{ item.requirement }}</td>
-            <td>{{ item.explanation }}</td>
-            <td class="text-center">
+      <VDataTable :headers="tableHeader" :items="content" hide-default-footer>
+        <template #item.no="{ index }">
+          {{ index + 1 }}
+        </template>
+        <template #item.persyaratan="{ item }">
+          {{
+            item.persyaratan === 0
+              ? "Proses"
+              : item.persyaratan === 1
+              ? "Kriteria SJPH"
+              : "-"
+          }}
+        </template>
+        <template #item.action="{ item }">
+          <VBtn variant="text" @click="handleDeleteProsesProduk(item.id)">
+            <template #default>
               <VIcon style="color: red" icon="fa-trash"></VIcon>
-            </td>
-          </tr>
-        </tbody>
-      </VTable>
+            </template>
+          </VBtn>
+        </template>
+      </VDataTable>
     </VCardItem>
   </VCard>
 </template>

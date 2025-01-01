@@ -38,7 +38,7 @@ export const useMyTabEditRegulerStore = defineStore({
         if (response.code != 2000) {
           return;
         }
-        this.bahan = response.data;
+        this.bahan = response.data ? response.data : [];
       } catch (error) {}
     },
     isAllBahanSelected() {

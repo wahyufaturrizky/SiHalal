@@ -54,7 +54,7 @@
               <InfoRow name="Tanggal" :name-style="{ fontWeight: '600' }">
                 {{
                   submissionDetail.tanggal_buat
-                    ? submissionDetail.tanggal_buat
+                    ? formatToISOString(submissionDetail.tanggal_buat)
                     : "-"
                 }}
               </InfoRow>
@@ -72,7 +72,9 @@
                 :name-style="{ fontWeight: '600' }"
               >
                 {{
-                  submissionDetail.tgl_mohon ? submissionDetail.tgl_mohon : "-"
+                  submissionDetail.tgl_mohon
+                    ? formatToISOString(submissionDetail.tgl_mohon)
+                    : "-"
                 }}
               </InfoRow>
               <InfoRow name="Jenis Layanan" :name-style="{ fontWeight: '600' }">
@@ -414,10 +416,12 @@
                 v-if="substanceItems.length"
                 :headers="substanceHeader"
                 :items="substanceItems"
+                v-model:page="pages.bahan"
+                v-model:items-per-page="itemPerPages.bahan"
                 :hide-default-footer="substanceItems.length < 10"
               >
                 <template #item.no="{ index }">
-                  {{ index + 1 }}
+                  {{ (pages.bahan - 1) * itemPerPages.bahan + index + 1 }}
                 </template>
                 <template #item.type="{ item }">
                   {{ item.jenis_bahan }}
@@ -622,7 +626,7 @@
                   </template>
                 </VBtn>
               </InfoRowV2>
-              <InfoRowV2
+              <!-- <InfoRowV2
                 class="d-flex align-center"
                 name="SJPH"
                 :style="{ fontWeight: '600' }"
@@ -661,7 +665,7 @@
                     <VIcon icon="fa-download" />
                   </template>
                 </VBtn>
-              </InfoRowV2>
+              </InfoRowV2> -->
               <InfoRowV2
                 class="d-flex align-center"
                 name="STTD"
@@ -831,7 +835,9 @@
               >
                 {{
                   fatwaSessionDetail.tanggal_penetapan
-                    ? fatwaSessionDetail.tanggal_penetapan
+                    ? new Date(fatwaSessionDetail.tanggal_penetapan)
+                        .toISOString()
+                        .substring(0, 10)
                     : "-"
                 }}
               </InfoRowV2>
@@ -870,18 +876,40 @@
               Sertifikat Halal
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
-              <InfoRowV2
+              <VRow :style="{ fontWeight: '600' }">
+                <VCol cols="3">Nomor Sertifikat</VCol>
+                <VCol cols="1">:</VCol>
+                <VCol cols="8">{{
+                  halalCertificateDetail.nomor_sertifikat
+                    ? halalCertificateDetail.nomor_sertifikat
+                    : "-"
+                }}</VCol>
+              </VRow>
+              <VRow :style="{ fontWeight: '600' }">
+                <VCol cols="3">Tanggal Sertifikat</VCol>
+                <VCol cols="1">:</VCol>
+                <VCol cols="8">{{
+                  halalCertificateDetail.tanggal_sertifikat
+                    ? new Date(halalCertificateDetail.tanggal_sertifikat)
+                        .toISOString()
+                        .substring(0, 10)
+                    : "-"
+                }}</VCol>
+              </VRow>
+              <!-- <InfoRowV2
                 class="d-flex align-center"
                 name="Nomor Sertifikat"
                 :style="{ fontWeight: '600' }"
               >
-                {{
-                  halalCertificateDetail.nomor_sertifikat
-                    ? halalCertificateDetail.nomor_sertifikat
-                    : "-"
-                }}
-              </InfoRowV2>
-              <InfoRowV2
+                <p>
+                  {{
+                    halalCertificateDetail.nomor_sertifikat
+                      ? halalCertificateDetail.nomor_sertifikat
+                      : "-"
+                  }}
+                </p>
+              </InfoRowV2> -->
+              <!-- <InfoRowV2
                 class="d-flex align-center"
                 name="Tanggal Sertifikat"
                 :style="{ fontWeight: '600' }"
@@ -891,7 +919,7 @@
                     ? halalCertificateDetail.nomor_sertifikat
                     : "-"
                 }}
-              </InfoRowV2>
+              </InfoRowV2> -->
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -1019,7 +1047,12 @@ const picDetail = reactive({
   nomor_kontak_pj: "",
   email_pj: "",
 });
-
+const pages = reactive({
+  bahan: 1,
+});
+const itemPerPages = reactive({
+  bahan: 10,
+});
 const kbliDropdown = ref<any>([]);
 const getExistKbli = () => {
   const result = kbliDropdown.value.find((el: any) => {
@@ -1218,7 +1251,7 @@ onMounted(async () => {
     getDownloadForm("rekomendasi", "rekomendasi"),
     getDownloadForm("sjph", "sjph"),
     getDownloadForm("laporan", "laporan"),
-    getDownloadForm("setifikasi-halal", "setifikasi_halal"),
+    getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
   ]);
   if (registrationDetail.status == "") {
     return;
@@ -1342,6 +1375,7 @@ const handleSentSubmission = async () => {
     });
     if (response.code === 2000) {
       snackbar.sendSnackbar("Berhasil mengirim pengajuan", "success");
+      navigateTo("/sh-domestic/submission/self-declare");
     } else {
       if (response.errors.list_error.length > 0) {
         for (const element of response.errors.list_error) {

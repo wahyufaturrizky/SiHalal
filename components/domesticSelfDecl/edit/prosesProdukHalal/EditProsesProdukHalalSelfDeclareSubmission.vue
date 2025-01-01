@@ -14,6 +14,7 @@ const props = defineProps({
     default: false,
   },
 });
+const verified = ref(false);
 
 const snackbar = useSnackbar();
 
@@ -48,6 +49,7 @@ const { refresh } = await useAsyncData("get-narration", async () => {
           Object.assign(processArray.value, response.data.narasi.split("\n"));
         }
       }
+      verified.value = response.data.verified == "unverified" ? false : true;
     }
   } catch (error) {
     console.log(error);
@@ -135,9 +137,11 @@ const statusItem: any = new Proxy(
 
       <h4 class="text-h4">Proses Produksi Halal</h4>
       <div class="d-flex align-center gap-4">
-        <VChip color="success" class="ma-1">Verified</VChip>
+        <VChip :color="verified ? 'success' : 'error'" class="ma-1">{{
+          verified ? "Sudah Verifikasi" : "Belum Verifikasi"
+        }}</VChip>
         <VBtn
-          v-if="!props.isVerificator"
+          v-if="!props.isVerificator && !verified"
           @click="handleAddSave"
           color="primary"
           variant="elevated"

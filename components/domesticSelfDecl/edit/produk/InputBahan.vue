@@ -12,10 +12,14 @@ const embedType = computed(() =>
 const listBahan: any = ref([]);
 
 const selectedBahan = ref([]);
+const loadingAll = ref(true);
+const loadingListIngredient = ref(false);
 
 const route = useRoute<"">();
 const submissionId = route.params?.id;
+
 const handleListIngredient = async () => {
+  loadingListIngredient.value = true;
   try {
     const response: any = await $api(
       `/self-declare/business-actor/ingredient/list`,
@@ -29,16 +33,30 @@ const handleListIngredient = async () => {
 
     if (response.code === 2000) {
       listBahan.value = response.data ? response.data : [];
-      // selectedBahan.value = props.bahanSelected ? props.bahanSelected : [];
+      loadingListIngredient.value = false;
+      return response;
+    } else {
+      loadingListIngredient.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    return response;
   } catch (error) {
-    console.log(error);
+    loadingListIngredient.value = false;
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
 onMounted(async () => {
-  await handleListIngredient();
+  const res: any = await Promise.all([handleListIngredient()]);
+
+  const checkResIfUndefined = res.every((item: any) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
 });
 
 const addText = computed(() => {
@@ -50,11 +68,11 @@ const addText = computed(() => {
 const emit = defineEmits(["submit"]);
 const handleSubmit = () => {
   emit("submit", selectedBahan.value, props.productId);
-  // selectedBahan.value = [];
 };
 
 const onOpenModal = () => {
   selectedBahan.value = props.bahanSelected ? props.bahanSelected : [];
+  handleListIngredient();
 };
 </script>
 
@@ -81,7 +99,7 @@ const onOpenModal = () => {
       >
     </template>
     <template #default="{ isActive }">
-      <VCard>
+      <VCard v-if="!loadingAll">
         <VCardTitle>
           <VRow>
             <VCol cols="10" style="display: flex; align-items: center"
@@ -143,6 +161,11 @@ const onOpenModal = () => {
           >
         </VCardActions>
       </VCard>
+
+      <VSkeletonLoader
+        type="table-heading, list-item-two-line, image, table-tfoot"
+        v-else
+      />
     </template>
   </VDialog>
 </template>

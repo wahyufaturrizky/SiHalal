@@ -36,7 +36,7 @@ const panelOpen = ref(0);
           </VCol>
           <VCol cols="7">
             <p class="mb-0">
-              {{ (item as any).value }}
+              {{ (item as any).value || "-" }}
             </p>
           </VCol>
         </VRow>

@@ -40,8 +40,9 @@ const headers = [
 const items = ref([])
 
 const searchQuery = ref('')
-const page = ref(1)
+const currentPage = ref(1)
 const size = ref(10)
+const totalItems = ref(0)
 
 const loadItem = async (page: number, size: number, search: string): void => {
   try {
@@ -50,8 +51,15 @@ const loadItem = async (page: number, size: number, search: string): void => {
       params: { page, size, search },
     })
 
-    if (response.code === 2000)
+    if (response.code === 2000){
+      currentPage.value = response.current_page
+      totalItems.value = response.total_item
+      response?.data?.map((item: any) => {
+        item.newStatus = [item?.jenis_usaha, item?.jumlah_produk, item.status]
+      })
       items.value = response.data
+    }
+
   }
   catch (e) {
     snackBar.sendSnackbar('Terjadi Kesalahan ', 'error')
@@ -71,9 +79,9 @@ const getChipColor = (status: string) => {
 const debouncedFetch = debounce(loadItem, 500)
 const handleInput = () => debouncedFetch(1, size.value, searchQuery.value)
 
-onMounted(
-  await loadItem(1, size.value)
-)
+// onMounted(
+//   await loadItem(1, size.value)
+// )
 </script>
 
 <template>
@@ -101,13 +109,14 @@ onMounted(
       <VCardItem>
         <VDataTableServer
           v-model:items-per-page="size"
-          v-model:page="page"
+          v-model:page="currentPage"
+          :items-length="totalItems"
           :headers="headers"
           :items="items"
           item-value="no"
           class="elevation-1 border rounded"
           @update:options="loadItem(page, size, searchQuery)"
-          :hide-default-footer="items.length < 10"
+          :hide-default-footer="totalItems < 10"
         >
           <template #no-data>
             <div class="pt-2">
@@ -115,15 +124,16 @@ onMounted(
               <div class="pt-2 font-weight-bold">Data Kosong</div>
             </div>
           </template>
-          <template #[`item.status`]="{ item }">
+          <template #[`item.newStatus`]="{ item }">
             <div class="d-flex">
               <VChip
+                v-for="(status, index) in item.newStatus"
                 :key="index"
-                :color="getChipColor(item.status)"
+                :color="getChipColor(status)"
                 label
                 class="ma-1"
               >
-                {{ item.status }}
+                {{ status }}
               </VChip>
             </div>
           </template>
