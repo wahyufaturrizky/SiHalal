@@ -37,53 +37,56 @@
           :width="530"
           :style="{ fill: 'grad(grad1)', align: 'left' }"
           text="Nama Pendamping:"
-        ></i-text>
+        />
         <i-text
           :x="60"
           :y="70"
           :width="530"
           :style="{ fill: 'grad(grad1)', align: 'left' }"
-          :text="dataRef.dataRefPu?.nama_pendamping"
-        ></i-text>
+          :text="dataRefPu?.nama_pendamping"
+        />
         <i-text
           :x="60"
           :y="95"
           :width="530"
           :style="{ fill: 'grad(grad1)', align: 'left' }"
-          text="Nomor Registrasi"
-        ></i-text>
+          text="Nomor Registrasi:"
+        />
         <i-text
           :x="60"
           :y="115"
           :width="530"
           :style="{ fill: 'grad(grad1)', align: 'left' }"
-          :text="dataRef.dataRefDaftar?.no_daftar"
-        ></i-text>
+          :text="dataRefDaftar?.no_daftar || '-'"
+        />
         <i-text
           :x="60"
           :y="140"
           :width="530"
           :style="{ fill: 'grad(grad1)', align: 'left' }"
           text="Lembaga Pendamping:"
-        ></i-text>
+        />
         <i-text
           :x="60"
           :y="155"
           :width="530"
           :style="{ fill: 'grad(grad1)', align: 'left' }"
-          :text="dataRef.dataRefPu?.lembaga_pendamping"
-        ></i-text>
+          :text="dataRefPu?.lembaga_pendamping || '-'"
+        />
       </i-group>
       <i-group>
         <i-text
           v-for="(item, index) in listPdfElement"
+          :key="index"
           :x="item.spacesX"
-          :y="calculateRelativeCoordY(item.spacesY, 'list pdf')"
+          :y="calculateRelativeCoordY(item.spacesY)"
           :style="{ fill: 'grad(grad1)', align: 'left' }"
-          :text="`${item.type == 'numbered-list' ? index + '. ' : ''}${
-            item.value
-          }`"
-        ></i-text>
+          :text="
+            item.type === 'numbered-list'
+              ? `${index}. ${item.value}`
+              : item.value
+          "
+        />
       </i-group>
     </i-page>
   </pdfFrame>
@@ -98,20 +101,18 @@
 </style>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 const props = defineProps({
-  dataPu: Object as () => any,
-  dataDaftar: Object as () => any,
+  dataPu: Object,
+  dataDaftar: Object,
 });
 
-const dataRef = ref({
-  dataRefPu: null,
-  dataRefDaftar: null,
-});
+const dataRefPu = ref();
+const dataRefDaftar = ref();
 
-let pdfBlob = ref("");
-let pdfConfig = {
+const pdfBlob = ref("");
+const pdfConfig = {
   margins: {
     top: 30,
     bottom: 20,
@@ -126,15 +127,13 @@ const pdfCfg = {
 const emit = defineEmits(["skPenyeliaDownloadHandler"]);
 
 function getBlob(blob) {
-  // console.log("tes blob = ", blob);
   pdfBlob.value = blob;
   emit("skPenyeliaDownloadHandler", blob);
 }
 
 let baseCoordY = 140;
 
-const calculateRelativeCoordY = (currCoordY: number, keterangan: string) => {
-  // console.log("occured", baseCoordY, " - ", keterangan);
+const calculateRelativeCoordY = (currCoordY: number) => {
   baseCoordY += currCoordY;
   return baseCoordY;
 };
@@ -142,13 +141,9 @@ const calculateRelativeCoordY = (currCoordY: number, keterangan: string) => {
 const listPdfElement = ref();
 
 const refreshPdf = () => {
+  baseCoordY = 140;
   listPdfElement.value = [
-    {
-      value: "Rekomendasi",
-      spacesY: 60,
-      spacesX: 60,
-      type: "non-list",
-    },
+    { value: "Rekomendasi", spacesY: 60, spacesX: 60, type: "non-list" },
     {
       value: "Bahan yang digunakan sudah memenuhi persyaratan kehalalan produk",
       spacesY: 30,
@@ -156,37 +151,33 @@ const refreshPdf = () => {
       type: "numbered-list",
     },
     {
-      value:
-        "Proses produksi yang dilakukan telah memenuhi persyaratan kehalalan produk",
+      value: "Proses produksi telah memenuhi persyaratan kehalalan produk",
       spacesY: 20,
       spacesX: 80,
       type: "numbered-list",
     },
     {
-      value:
-        "Produk yang dihasilkan sudah dipastikan memenuhi persyaratan kehalalan produk",
+      value: "Produk memenuhi persyaratan kehalalan produk",
       spacesY: 20,
       spacesX: 80,
       type: "numbered-list",
     },
     {
-      value:
-        "Pelaku Usaha dapat direkomendasikan untuk diberikan Sertifikat Halal",
+      value: "Pelaku Usaha dapat direkomendasikan untuk Sertifikat Halal",
       spacesY: 20,
       spacesX: 80,
       type: "numbered-list",
     },
     {
-      value:
-        "Demikian keputusan penetapan ini dibuat untuk dilaksanakan sebagaimana mestinya",
+      value: "Keputusan dibuat untuk dilaksanakan sebagaimana mestinya",
       spacesY: 30,
       spacesX: 60,
       type: "non-list",
     },
     {
-      value: `${dataRef.value.dataRefPu?.kota}, ${
-        dataRef.value.dataRefDaftar?.tgl_daftar
-          ? new Date(dataRef.value.dataRefDaftar?.tgl_daftar)
+      value: `${dataRefPu.value?.kota || "-"}, ${
+        dataRefDaftar.value?.tgl_daftar
+          ? new Date(dataRefDaftar.value.tgl_daftar)
               .toISOString()
               .substring(0, 10)
           : "-"
@@ -196,34 +187,28 @@ const refreshPdf = () => {
       type: "non-list",
     },
     {
-      value: dataRef.value.dataRefPu?.nama_pendamping,
+      value: dataRefPu.value?.nama_pendamping || "-",
       spacesY: 80,
       spacesX: 30,
       type: "non-list",
     },
-    {
-      value: "Pendamping",
-      spacesY: 20,
-      spacesX: 30,
-      type: "non-list",
-    },
+    { value: "Pendamping", spacesY: 20, spacesX: 30, type: "non-list" },
   ];
 };
 
 watch(
-  [props.dataPu, props.dataDaftar],
+  () => [props.dataPu, props.dataDaftar],
   ([newDataPu, newDataDaftar]) => {
-    if (newDataPu && newDataDaftar) {
-      dataRef.value.dataRefPu = newDataPu;
-      dataRef.value.dataRefDaftar = newDataDaftar;
-
-      refreshPdf();
-    }
+    dataRefPu.value = newDataPu;
+    dataRefDaftar.value = newDataDaftar;
+    refreshPdf();
   },
   { immediate: true }
 );
 
-onMounted(async () => {
-  baseCoordY = 140;
+onMounted(() => {
+  dataRefPu.value = props.dataPu;
+  dataRefDaftar.value = props.dataDaftar;
+  refreshPdf();
 });
 </script>

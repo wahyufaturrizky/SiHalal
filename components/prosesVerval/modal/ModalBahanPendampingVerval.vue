@@ -12,7 +12,6 @@ const props = defineProps({
   },
   idReg: {
     type: String,
-    required: true,
   },
 });
 
@@ -22,6 +21,7 @@ const emit = defineEmits(["emit-add"]);
 
 const dataBahanList = ref([]);
 const form = ref({
+  id: null,
   id_bahan: null,
   nama_bahan: null,
   diragukan: null,
@@ -59,7 +59,8 @@ const hardcodeDiragukan = [
 
 const onClickBahan = () => {
   dataBahanList.value.filter((val) => {
-    if (val.id == form.value.id_bahan) {
+    if (val.id_bahan == form.value.id_bahan) {
+      form.value.id = val.id;
       if (val.tgl_berlaku_sertifikat) {
         form.value.temuan = `"SH/KH No ${val.no_sertifikat}, berlaku s.d ${tgl_berlaku_sertifikat} (Merek ${val.nama_bahan} dari produsen ${val.produsen})`;
       } else {
@@ -110,6 +111,7 @@ const editBahan = async () => {
       {
         method: "post",
         body: {
+          idBahan: form.value.id_bahan,
           status: form.value.diragukan,
           notes: form.value.keterangan,
         },
@@ -141,11 +143,17 @@ const getDetailBahan = async () => {
       return;
     }
 
-    form.value.id_bahan = response.data?.id;
+    form.value.id = response.data?.id;
+    form.value.id_bahan = response.data?.id_bahan;
     form.value.nama_bahan = response.data?.nama_bahan;
-    form.value.diragukan = response.data?.diragukan;
+    form.value.diragukan =
+      parseInt(response.data?.status) === parseInt(0)
+        ? parseInt(0)
+        : parseInt(response.data?.status) === parseInt(1)
+        ? parseInt(1)
+        : "";
     form.value.temuan = response.data?.temuan;
-    form.value.keterangan = response.data?.keterangan;
+    form.value.keterangan = response.data?.notes;
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
@@ -158,6 +166,7 @@ const onOpenModal = async () => {
     getDetailBahan();
   } else {
     form.value = {
+      id: null,
       id_bahan: null,
       nama_bahan: null,
       diragukan: null,
@@ -215,7 +224,7 @@ const onOpenModal = async () => {
                     density="compact"
                     placeholder="Pilih Nama Bahan"
                     :items="dataBahanList"
-                    item-value="id"
+                    item-value="id_bahan"
                     item-title="nama_bahan"
                     v-model="form.id_bahan"
                     v-on:update:model-value="onClickBahan"
@@ -235,7 +244,7 @@ const onOpenModal = async () => {
                     :rules="[requiredValidator]"
                   ></VSelect>
                 </VItemGroup>
-                <br />
+                <br v-if="modalType === modalTypeEnum.ADD" />
                 <VItemGroup v-if="modalType === modalTypeEnum.ADD">
                   <VLabel>Temuan</VLabel>
                   <VTextField
@@ -247,11 +256,11 @@ const onOpenModal = async () => {
                 <br />
                 <VItemGroup v-if="modalType === modalTypeEnum.EDIT">
                   <VLabel>Keterangan</VLabel>
-                  <VSelect
+                  <VTextField
                     density="compact"
                     placeholder="Data otomatis terisi apabila nama bahan telah dipilih"
                     v-model="form.keterangan"
-                  ></VSelect>
+                  ></VTextField>
                 </VItemGroup>
               </VCol>
             </VRow>

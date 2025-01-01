@@ -4,7 +4,7 @@ const dataPelakuUsaha = ref([
   { id: 2, key: "Tanggal", value: "", api_key: "tgl_daftar" },
   { id: 3, key: "divider", value: true, api_key: "" },
   { id: 4, key: "No. Surat Permohonan", value: "", api_key: "no_mohon" },
-  { id: 5, key: "Tanggal Permohonan", value: "", api_key: "tgl_mohon" },
+  { id: 5, key: "Tanggal Permohonan", value: "", api_key: "tgl_daftar" },
   { id: 6, key: "Jenis Layanan", value: "", api_key: "jenis_layanan" },
   { id: 7, key: "Jenis Produk", value: "", api_key: "jenis_produk" },
   { id: 8, key: "Merk Dagang", value: "", api_key: "merek_dagang" },

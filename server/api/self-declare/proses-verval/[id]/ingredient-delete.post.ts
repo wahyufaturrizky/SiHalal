@@ -10,21 +10,17 @@ export default defineEventHandler(async (event: any) => {
     });
   }
 
+  const body = await readBody(event);
+
   try {
     const runtimeConfig = useRuntimeConfig();
     const { id } = event.context.params;
 
-    const body = await readBody(event);
-
     const response = await $fetch(
       `${runtimeConfig.coreBaseUrl}/api/v1/pendamping/verval/${id}/ingredients/${body.idBahan}`,
       {
-        method: "put",
+        method: "delete",
         headers: { Authorization: authHeader },
-        body: {
-          status: body.status,
-          notes: body.notes,
-        },
       } as any
     );
 
