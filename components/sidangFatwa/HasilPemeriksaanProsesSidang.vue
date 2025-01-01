@@ -36,7 +36,7 @@ const expanded = ref(0);
             <p>:</p>
           </VCol>
           <VCol cols="8">
-            <p>{{ hasil }}</p>
+            <p>{{ hasil || "-" }}</p>
           </VCol>
         </VRow>
         <VRow>
@@ -47,7 +47,7 @@ const expanded = ref(0);
             <p>:</p>
           </VCol>
           <VCol cols="8">
-            <p>{{ dokumen }}</p>
+            <p>{{ dokumen || "-" }}</p>
           </VCol>
         </VRow>
       </VExpansionPanelText>

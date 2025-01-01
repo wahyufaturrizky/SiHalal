@@ -1,5 +1,15 @@
 <script setup lang="ts">
-const expanded = ref(0)
+const props = defineProps({
+  detaildata: {
+    type: Object,
+  },
+});
+
+const { detaildata } = props || {};
+const { sertifikat_halal_reguler } = detaildata || {};
+const { total_biaya } = sertifikat_halal_reguler || {};
+
+const expanded = ref(0);
 </script>
 
 <template>
@@ -8,9 +18,9 @@ const expanded = ref(0)
       <VExpansionPanelTitle>
         <h3>Biaya Pemeriksaan</h3>
       </VExpansionPanelTitle>
-      <br>
+      <br />
       <VExpansionPanelText>
-        <b>Rp.350.000</b>
+        <b>{{ formatCurrency(total_biaya) }}</b>
       </VExpansionPanelText>
     </VExpansionPanel>
   </VExpansionPanels>

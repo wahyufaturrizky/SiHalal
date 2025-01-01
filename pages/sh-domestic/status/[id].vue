@@ -1,60 +1,60 @@
 <script setup lang="ts">
-import LPHDetailLayout from '@/layouts/LPHDetailLayout.vue'
+import LPHDetailLayout from "@/layouts/LPHDetailLayout.vue";
 
-const route = useRoute()
-const id = route?.params?.id
+const route = useRoute();
+const id = route?.params?.id;
 
-const openedLeftPanels = ref([0, 1, 2, 3, 4, 5])
-const openedRightPanels = ref([0, 1, 2])
-const loading = ref(false)
-const detailData = ref<any>(null)
+const openedLeftPanels = ref([0, 1, 2, 3, 4, 5]);
+const openedRightPanels = ref([0, 1, 2]);
+const loading = ref(false);
+const detailData = ref<any>(null);
 
 const assignAuditorHeader: any[] = [
-  { title: 'No', key: 'index' },
-  { title: 'Nama', key: 'name' },
-  { title: 'Tanggal Lahir', key: 'birthDate' },
-  { title: 'No Reg', key: 'regisNumber' },
-  { title: 'Action', key: 'actions', align: 'center', sortable: false },
-]
+  { title: "No", key: "index" },
+  { title: "Nama", key: "name" },
+  { title: "Tanggal Lahir", key: "birthDate" },
+  { title: "No Reg", key: "regisNumber" },
+  { title: "Action", key: "actions", align: "center", sortable: false },
+];
 
 const aspectLegalHeader = [
-  { title: 'No.', key: 'id_reg_legal', nowrap: true },
-  { title: 'Jenis', key: 'jenis_surat', nowrap: true },
-  { title: 'No. Dokumen', key: 'no_surat', nowrap: true },
-  { title: 'Tanggal', key: 'tanggal_surat', nowrap: true },
-  { title: 'Masa Berlaku', key: 'masa_berlaku', nowrap: true },
-  { title: 'Instansi Penerbit', key: 'instansi_penerbit', nowrap: true },
-]
+  { title: "No.", key: "id_reg_legal", nowrap: true },
+  { title: "Jenis", key: "jenis_surat", nowrap: true },
+  { title: "No. Dokumen", key: "no_surat", nowrap: true },
+  { title: "Tanggal", key: "tanggal_surat", nowrap: true },
+  { title: "Masa Berlaku", key: "masa_berlaku", nowrap: true },
+  { title: "Instansi Penerbit", key: "instansi_penerbit", nowrap: true },
+];
 
 const outletHeaders = [
-  { title: 'No.', key: 'no', nowrap: true },
-  { title: 'Nama', key: 'nama_outlet', nowrap: true },
-  { title: 'Alamat', key: 'alamat_outlet', nowrap: true },
-  { title: 'Status', key: 'status_milik', nowrap: true },
-]
+  { title: "No.", key: "no", nowrap: true },
+  { title: "Nama", key: "nama_outlet", nowrap: true },
+  { title: "Alamat", key: "alamat_outlet", nowrap: true },
+  { title: "Status", key: "status_milik", nowrap: true },
+];
 
 const penyeliaHalalHeaders = [
-  { title: 'No.', key: 'no', nowrap: true },
-  { title: 'Nama', key: 'penyelia_nama', nowrap: true },
-  { title: 'No. KTP', key: 'no_ktp', nowrap: true },
-  { title: 'No. Kontak', key: 'no_kontak', nowrap: true },
+  { title: "No.", key: "no", nowrap: true },
+  { title: "Nama", key: "penyelia_nama", nowrap: true },
+  { title: "No. KTP", key: "no_ktp", nowrap: true },
+  { title: "No. Kontak", key: "no_kontak", nowrap: true },
   {
-    title: 'No/Tgl Sertif Penyelia Halal',
-    key: 'tgl_penyelia_halal',
+    title: "No/Tgl Sertif Penyelia Halal",
+    key: "tgl_penyelia_halal",
     nowrap: true,
   },
-  { title: 'No/Tgl SK', key: 'tanggal_sk', nowrap: true },
-]
+  { title: "No/Tgl SK", key: "tanggal_sk", nowrap: true },
+];
 
 const produkHeaders = [
-  { title: 'No', key: 'no' },
-  { title: 'Layanan Produk', key: 'layanan_produk' },
-  { title: 'Jenis Produk', key: 'jenis_produk' },
-  { title: 'Kelas Produk', key: 'kelas_produk' },
-  { title: 'Rincian Produk', key: 'rincian_prooduk' },
-  { title: 'Nama Produk', key: 'nama_produk' },
-  { title: 'Publikasi', key: 'publication' },
-]
+  { title: "No", key: "no" },
+  { title: "Layanan Produk", key: "layanan_produk" },
+  { title: "Jenis Produk", key: "jenis_produk" },
+  { title: "Kelas Produk", key: "kelas_produk" },
+  { title: "Rincian Produk", key: "rincian_prooduk" },
+  { title: "Nama Produk", key: "nama_produk" },
+  { title: "Publikasi", key: "publication" },
+];
 
 const pabrikHeader = [
   { title: "No", key: "no" },
@@ -64,98 +64,92 @@ const pabrikHeader = [
 ];
 
 const assignAuditorData = ref([
-  { name: 'Idris', birthDate: '02/10/2000', regisNumber: 'SK-896376-3028' },
-])
+  { name: "Idris", birthDate: "02/10/2000", regisNumber: "SK-896376-3028" },
+]);
 
 const newAuditorData = {
-  name: 'Aliando Syakir',
-  birthDate: '02/10/2000',
-  regisNumber: 'SK-896376-3028',
-}
+  name: "Aliando Syakir",
+  birthDate: "02/10/2000",
+  regisNumber: "SK-896376-3028",
+};
 
-const assignedAuditor = ref(null)
-const isAssignModalOpen = ref(false)
-const isUpdateModalOpen = ref(false)
+const assignedAuditor = ref(null);
+const isAssignModalOpen = ref(false);
+const isUpdateModalOpen = ref(false);
 
 const downloadForms = reactive({
-  sttd: '',
-  sertifikasi_halal: '',
-}) as Record<string, string>
+  sttd: "",
+  sertifikasi_halal: "",
+}) as Record<string, string>;
 
 const handleOpenAssignModal = () => {
-  isAssignModalOpen.value = !isAssignModalOpen.value
-}
+  isAssignModalOpen.value = !isAssignModalOpen.value;
+};
 
 const handleOpenUpdateModal = () => {
-  isUpdateModalOpen.value = !isUpdateModalOpen.value
-}
+  isUpdateModalOpen.value = !isUpdateModalOpen.value;
+};
 
 const handleAddAuditor = () => {
-  assignAuditorData.value.push(newAuditorData)
-}
+  assignAuditorData.value.push(newAuditorData);
+};
 
 const handleDeleteAuditor = (index: number) => {
-  assignAuditorData.value.splice(index, 1)
-}
+  assignAuditorData.value.splice(index, 1);
+};
 
 const handleSaveAuditor = () => {
-  useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
-}
+  useSnackbar().sendSnackbar("Berhasil mengirim pengajuan data", "success");
+};
 
 const handleUpdateStatus = () => {
   const snackbarMessage = assignedAuditor.value
-    ? 'Berhasil mengupdate status data'
-    : 'Gagal mengupdate status, silahkan assign auditor'
+    ? "Berhasil mengupdate status data"
+    : "Gagal mengupdate status, silahkan assign auditor";
 
-  const snackbarType = assignedAuditor.value ? 'success' : 'error'
+  const snackbarType = assignedAuditor.value ? "success" : "error";
 
-  useSnackbar().sendSnackbar(snackbarMessage, snackbarType)
-}
+  useSnackbar().sendSnackbar(snackbarMessage, snackbarType);
+};
 
 const getSertifikasiDetail = async () => {
   try {
-    const response: any = await $api('/reguler/lph/detail-payment', {
-      method: 'get',
+    const response: any = await $api("/reguler/lph/detail-payment", {
+      method: "get",
       params: { url: `${SERTIFIKASI_DETAIL}/${id}/detail` },
-    })
+    });
 
-    if (response?.code === 2000)
-      detailData.value = response.data || {}
-    else
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    if (response?.code === 2000) detailData.value = response.data || {};
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const getDownloadForm = async (docName: string, propName: string) => {
-  const result: any = await $api(
-    `/self-declare/submission/${id}/file`,
-    {
-      method: 'get',
-      query: {
-        document: docName,
-      },
+  const result: any = await $api(`/self-declare/submission/${id}/file`, {
+    method: "get",
+    query: {
+      document: docName,
     },
-  )
+  });
 
-  if (result?.code === 2000)
-    downloadForms[propName] = result?.data?.file || ''
-}
+  if (result?.code === 2000) downloadForms[propName] = result?.data?.file || "";
+};
 
 const handleDownloadForm = async (fileName: string) => {
-  return await downloadDocument(fileName)
-}
+  return await downloadDocument(fileName);
+};
 
 onMounted(async () => {
-  loading.value = true
+  loading.value = true;
   await Promise.allSettled([
     getSertifikasiDetail(),
-    getDownloadForm('sttd', 'sttd'),
-  ])
-  loading.value = false
-})
+    getDownloadForm("sttd", "sttd"),
+    getDownloadForm("setifikasi-halal", "setifikasi_halal"),
+  ]);
+  loading.value = false;
+});
 </script>
 
 <template>
@@ -306,6 +300,28 @@ onMounted(async () => {
                   </template>
                 </VBtn>
               </InfoRowV2>
+              <InfoRowV2
+                class="d-flex align-center"
+                name="Sertifikasi Halal"
+                :style="{ fontWeight: '600' }"
+              >
+                <VBtn
+                  :color="
+                    downloadForms.sertifikasi_halal ? 'primary' : '#A09BA1'
+                  "
+                  density="compact"
+                  class="px-2"
+                  @click="
+                    downloadForms.sertifikasi_halal
+                      ? handleDownloadForm(downloadForms.sertifikasi_halal)
+                      : null
+                  "
+                >
+                  <template #default>
+                    <VIcon icon="fa-download" />
+                  </template>
+                </VBtn>
+              </InfoRowV2>
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="1" class="pt-3">
@@ -319,40 +335,59 @@ onMounted(async () => {
                   <VRow>
                     <VCol cols="3"> Nomor Daftar </VCol>
                     <VCol cols="1"> : </VCol>
-                    <VCol cols="8"> {{detailData?.certificate_halal.no_daftar}} </VCol>
+                    <VCol cols="8">
+                      {{ detailData?.certificate_halal.no_daftar }}
+                    </VCol>
                   </VRow>
                   <VRow>
                     <VCol cols="3"> Tanggal </VCol>
                     <VCol cols="1"> : </VCol>
-                    <VCol cols="8" v-if="detailData?.certificate_halal?.tgl_daftar">
-                      {{ formatDateIntl(new Date(detailData?.certificate_halal?.tgl_daftar)) }}
+                    <VCol
+                      cols="8"
+                      v-if="detailData?.certificate_halal?.tgl_daftar"
+                    >
+                      {{
+                        formatDateIntl(
+                          new Date(detailData?.certificate_halal?.tgl_daftar)
+                        )
+                      }}
                     </VCol>
                   </VRow>
                   <VRow>
                     <VCol cols="3"> Jenis Daftar </VCol>
                     <VCol cols="1"> : </VCol>
-                    <VCol cols="8"> {{detailData?.certificate_halal.jenis_pengajuan}} </VCol>
+                    <VCol cols="8">
+                      {{ detailData?.certificate_halal.jenis_pengajuan }}
+                    </VCol>
                   </VRow>
                   <VRow>
                     <VCol cols="3"> Tempat Pendaftaran </VCol>
                     <VCol cols="1"> : </VCol>
-                    <VCol cols="8"> {{detailData?.certificate_halal.tempat}} </VCol>
+                    <VCol cols="8">
+                      {{ detailData?.certificate_halal.tempat }}
+                    </VCol>
                   </VRow>
                   <VRow>
                     <VCol cols="3"> Channel Pendaftaran </VCol>
                     <VCol cols="1"> : </VCol>
-                    <VCol cols="8"> {{detailData?.certificate_halal.channel}} </VCol>
+                    <VCol cols="8">
+                      {{ detailData?.certificate_halal.channel }}
+                    </VCol>
                   </VRow>
                   <VRow>
                     <VCol cols="3"> Status </VCol>
                     <VCol cols="1"> : </VCol>
-                    <VCol cols="8"> 
+                    <VCol cols="8">
                       <VChip
                         variant="outlined"
-                        style="border-color: #652672; border-radius: 8px; background-color: #f0e9f1;"
+                        style="
+                          border-color: #652672;
+                          border-radius: 8px;
+                          background-color: #f0e9f1;
+                        "
                       >
-                        <span style="color: #652672;">
-                          {{detailData?.certificate_halal.status}}
+                        <span style="color: #652672">
+                          {{ detailData?.certificate_halal.status }}
                         </span>
                       </VChip>
                     </VCol>
@@ -360,12 +395,16 @@ onMounted(async () => {
                   <VRow>
                     <VCol cols="3"> Fasilitator </VCol>
                     <VCol cols="1"> : </VCol>
-                    <VCol cols="8"> {{detailData?.certificate_halal.fasilitator_name}} </VCol>
+                    <VCol cols="8">
+                      {{ detailData?.certificate_halal.fasilitator_name }}
+                    </VCol>
                   </VRow>
                   <VRow>
                     <VCol cols="3"> Kode Fasilitasi </VCol>
                     <VCol cols="1"> : </VCol>
-                    <VCol cols="8"> {{detailData?.certificate_halal.kode_fac}} </VCol>
+                    <VCol cols="8">
+                      {{ detailData?.certificate_halal.kode_fac }}
+                    </VCol>
                   </VRow>
                 </VContainer>
               </div>
@@ -381,12 +420,18 @@ onMounted(async () => {
                   <VRow>
                     <VCol cols="3"> Nomor Sertifikat </VCol>
                     <VCol cols="1"> : </VCol>
-                    <VCol cols="8"> {{ detailData?.sertifikat_halal_info.nomor_sertifikat }} </VCol>
+                    <VCol cols="8">
+                      {{ detailData?.sertifikat_halal_info.nomor_sertifikat }}
+                    </VCol>
                   </VRow>
                   <VRow>
                     <VCol cols="3"> Tanggal Terbit </VCol>
                     <VCol cols="1"> : </VCol>
-                    <VCol cols="8">{{ detailData?.sertifikat_halal_info.tanggal_sertifikat }} </VCol>
+                    <VCol cols="8"
+                      >{{
+                        detailData?.sertifikat_halal_info.tanggal_sertifikat
+                      }}
+                    </VCol>
                   </VRow>
                 </VContainer>
               </div>
@@ -417,8 +462,15 @@ onMounted(async () => {
                         <div class="me-2">:</div>
                       </div>
                     </VCol>
-                    <VCol cols="7" v-if="detailData?.pemeriksaan?.tgl_selesai_lph">
-                      {{ formatDateIntl(new Date(detailData?.pemeriksaan?.tgl_selesai_lph)) }}
+                    <VCol
+                      cols="7"
+                      v-if="detailData?.pemeriksaan?.tgl_selesai_lph"
+                    >
+                      {{
+                        formatDateIntl(
+                          new Date(detailData?.pemeriksaan?.tgl_selesai_lph)
+                        )
+                      }}
                     </VCol>
                   </VRow>
                   <VRow no-gutters>
@@ -457,22 +509,30 @@ onMounted(async () => {
                   <VRow>
                     <VCol cols="3"> Nomor Penetapan </VCol>
                     <VCol cols="1"> : </VCol>
-                    <VCol cols="8">{{detailData?.sidang_fatwa.nomor_penetapan}}</VCol>
+                    <VCol cols="8">{{
+                      detailData?.sidang_fatwa.nomor_penetapan
+                    }}</VCol>
                   </VRow>
                   <VRow>
                     <VCol cols="3"> Tanggal Penetapan</VCol>
                     <VCol cols="1"> : </VCol>
-                    <VCol cols="8"> {{detailData?.sidang_fatwa.tanggal_penetapan}} </VCol>
+                    <VCol cols="8">
+                      {{ detailData?.sidang_fatwa.tanggal_penetapan }}
+                    </VCol>
                   </VRow>
                   <VRow>
                     <VCol cols="3"> Hasil Penetapan</VCol>
                     <VCol cols="1"> : </VCol>
-                    <VCol cols="8"> {{detailData?.sidang_fatwa.ketetapan}} </VCol>
+                    <VCol cols="8">
+                      {{ detailData?.sidang_fatwa.ketetapan }}
+                    </VCol>
                   </VRow>
                   <VRow>
                     <VCol cols="3"> Dokumen </VCol>
                     <VCol cols="1"> : </VCol>
-                    <VCol cols="8"> {{detailData?.sidang_fatwa.dokumen}} </VCol>
+                    <VCol cols="8">
+                      {{ detailData?.sidang_fatwa.dokumen }}
+                    </VCol>
                   </VRow>
                 </VContainer>
               </div>
@@ -482,7 +542,9 @@ onMounted(async () => {
             <div v-if="detailData?.tracking">
               <!-- <PanelTracking :data="detailData?.tracking" /> -->
               <VCard class="pa-5">
-                <VCardlTitle class="font-weight-bold text-h4"> Melacak </VCardlTitle>
+                <VCardlTitle class="font-weight-bold text-h4">
+                  Melacak
+                </VCardlTitle>
                 <VCardText class="px-0" v-if="detailData?.tracking">
                   <VTimeline side="end" align="start" hide-opposite>
                     <VTimelineItem
@@ -496,7 +558,9 @@ onMounted(async () => {
                           <div>{{ item.username }}</div>
                         </VCol>
                         <VCol cols="5" v-if="item.tanggal">
-                          <div>{{ formatDateIntl(new Date(item.tanggal)) }}</div>
+                          <div>
+                            {{ formatDateIntl(new Date(item.tanggal)) }}
+                          </div>
                         </VCol>
                       </VRow>
                     </VTimelineItem>
