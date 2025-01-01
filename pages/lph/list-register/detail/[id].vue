@@ -4,6 +4,8 @@ import { VDataTableServer } from "vuetify/components";
 
 const route = useRoute();
 const id = (route?.params as any)?.id;
+const notFound = ref(false)
+const totalBiaya = ref(0)
 
 const defaultStatus = { color: "error", desc: "Unknown Status" };
 
@@ -151,6 +153,7 @@ const loadItemById = async () => {
     });
 
     if (response.code === 2000) {
+      notFound.value = false
       const { certificate_halal, produk, auditor } = response.data || {};
 
       const {
@@ -232,6 +235,7 @@ const loadItemById = async () => {
       detailSubmission.value = response.data;
       return response;
     } else {
+      notFound.value = true
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
   } catch (error) {
@@ -239,8 +243,30 @@ const loadItemById = async () => {
   }
 };
 
+const getTotalBiaya = async () => {
+  try {
+    const response: any = await $api("/reguler/lph/total-biaya", {
+      method: "get",
+      query: { id },
+    });
+
+    if (response?.code === 2000) {
+      totalBiaya.value = formatToIDR(response.data)
+
+      return response.data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+}
+
 onMounted(async () => {
-  const res: any = await Promise.all([loadItemById()]);
+  const res: any = await Promise.all([
+    loadItemById(),
+    getTotalBiaya()
+  ]);
 
   const checkResIfUndefined = res.every((item: any) => {
     return item !== undefined;
@@ -289,7 +315,11 @@ onMounted(async () => {
       </VCol>
     </VRow>
 
-    <VRow class="d-flex justify-space-between">
+    <div v-if="notFound" />
+    <VRow
+      v-else
+      class="d-flex justify-space-between"
+    >
       <VCol cols="8">
         <VExpansionPanels v-model="panelSubmission">
           <VExpansionPanel class="pa-4">
@@ -533,7 +563,7 @@ onMounted(async () => {
               Biaya Pemeriksaan
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
-              <p class="font-weight-bold text-black">Rp 7.000.000</p>
+              <p class="font-weight-bold text-black">{{ totalBiaya }}</p>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>

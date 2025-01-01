@@ -166,6 +166,14 @@ onMounted(async () => {
           <template #item.no="{ index }">
             <label>{{ index + 1 }}</label>
           </template>
+          <template #item.tgl_daftar="{ item }">
+            <div v-if="item.tgl_daftar">
+              {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+            </div>
+            <div v-else>
+              -
+            </div>
+          </template>
           <template #[`item.newStatus`]="{ item }">
             <div class="d-flex">
               <VChip
