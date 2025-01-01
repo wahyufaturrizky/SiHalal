@@ -215,7 +215,14 @@ onMounted(async () => {
                   }}
                 </template>
                 <template #item.invoice_uri="{ item }">
-                  <VIcon icon="fa-download"></VIcon>
+                  <VIcon
+                    icon="fa-download"
+                    @click="
+                      item.invoice_url != ''
+                        ? downloadDocument(item.invoice_url)
+                        : () => {}
+                    "
+                  ></VIcon>
                 </template>
                 <template #item.bukti_url="{ item }">
                   <VIcon
