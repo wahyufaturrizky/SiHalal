@@ -16,7 +16,7 @@ const tableHeader = [
 ];
 
 const defaultStatus = { color: "error", desc: "Unknown Status" };
-const statusItem = new Proxy(
+const statusFinance = new Proxy(
   {
     SB001: { color: "warning", desc: "Menunggu Pembayaran" },
     SB002: { color: "warning", desc: "Kurang Bayar" },
@@ -181,13 +181,16 @@ onMounted(async () => {
                 :items="items"
                 @update:options="loadItem(page, itemPerPage)"
               >
+                <template #item.no="{ index }">
+                  {{ index + 1 + (page - 1) * itemPerPage }}
+                </template>
                 <template #item.status="{ item }">
                   <VChip
-                    :color="statusItem[item.status_code].color"
+                    :color="statusFinance[item.status].color"
                     text-color="white"
                     small
                   >
-                    {{ statusItem[item.status_code].desc }}
+                    {{ statusFinance[item.status].desc }}
                   </VChip>
                 </template>
                 <template #item.tanggal_bayar="{ item }">
