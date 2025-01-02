@@ -1,58 +1,19 @@
 <script setup lang="ts">
-const route = useRoute();
+const props = defineProps({
+  detaildata: {
+    type: Object,
+  },
+});
 
-const loadingAll = ref(true);
-const sidangFatwaId = (route.params as any).id;
+const { detaildata } = props || {};
+const { dokumen } = detaildata || {};
+const { file_kh, file_laporan_lph } = dokumen || {};
 
 const panelOpen = ref(0); // Menentukan panel yang terbuka
-const fileLaporanLPH = ref<any>(null);
-const fileKH = ref<any>(null);
-
-const getDownloadForm = async (docName: string) => {
-  const result: any = await $api(
-    `/self-declare/submission/${sidangFatwaId}/file`,
-    {
-      method: "get",
-      query: {
-        document: docName,
-      },
-    }
-  );
-
-  if (result.code === 2000 && result.message !== "Not Found") {
-    switch (docName) {
-      case "laporan":
-        fileLaporanLPH.value = result.data.file;
-        return result;
-      case "setifikasi-halal":
-        fileKH.value = result.data.file;
-        return result;
-      default:
-        break;
-    }
-  }
-};
-
-onMounted(async () => {
-  const res = await Promise.all([
-    getDownloadForm("setifikasi-halal"),
-    getDownloadForm("laporan"),
-  ]);
-
-  const checkResIfUndefined = res.every((item) => {
-    return item !== undefined;
-  });
-
-  if (checkResIfUndefined) {
-    loadingAll.value = false;
-  } else {
-    loadingAll.value = false;
-  }
-});
 </script>
 
 <template>
-  <VExpansionPanels v-if="!loadingAll" v-model="panelOpen">
+  <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
       <!-- Header Panel -->
       <VExpansionPanelTitle>
@@ -72,8 +33,8 @@ onMounted(async () => {
               color="primary"
               variant="flat"
               icon="mdi-download"
-              @click="downloadDocument(fileKH)"
-              :disabled="!fileKH"
+              @click="downloadDocument(file_kh)"
+              :disabled="!file_kh"
             />
           </VCol>
         </VRow>
@@ -89,19 +50,14 @@ onMounted(async () => {
               color="primary"
               variant="flat"
               icon="mdi-download"
-              @click="downloadDocument(fileLaporanLPH)"
-              :disabled="!fileLaporanLPH"
+              @click="downloadDocument(file_laporan_lph)"
+              :disabled="!file_laporan_lph"
             />
           </VCol>
         </VRow>
       </VExpansionPanelText>
     </VExpansionPanel>
   </VExpansionPanels>
-
-  <VSkeletonLoader
-    type="table-heading, list-item-two-line, image, table-tfoot"
-    v-else
-  />
 </template>
 
 <style scoped>

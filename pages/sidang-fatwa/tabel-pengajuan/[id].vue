@@ -197,7 +197,7 @@ onMounted(async () => {
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <DokumenUnduhan />
+          <DokumenUnduhan :detaildata="detailData" />
         </VCol>
         <VCol :cols="12">
           <MelacakDetailFatwaProsesSidang :trackingdata="trackingData" />
