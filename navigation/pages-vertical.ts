@@ -321,4 +321,27 @@ export default [
     to: "sidang-self-declare-rekapitulasi",
     roles: ["Komite Fatwa", "Admin"],
   },
+  // Administrator
+  {
+    heading: "navbar.management.title",
+    roles: ["Admin"],
+  },
+  {
+    title: "navbar.management.menu.user",
+    icon: { icon: "mdi-account-group" },
+    to: "user-management-user",
+    roles: ["Admin"],
+  },
+  {
+    title: "navbar.management.menu.role",
+    icon: { icon: "fa-briefcase" },
+    to: "user-management-role",
+    roles: ["Admin"],
+  },
+  {
+    title: "navbar.management.menu.image",
+    icon: { icon: "fa-image" },
+    to: "administrator-image-auth",
+    roles: ["Admin"],
+  },
 ];

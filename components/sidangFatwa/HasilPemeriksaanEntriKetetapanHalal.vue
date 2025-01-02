@@ -7,7 +7,7 @@ const props = defineProps({
 
 const { detaildata } = props || {};
 const { hasil_audit } = detaildata || {};
-const { dokumen, tanggal_selesai, hasil } = hasil_audit || {};
+const { tanggal_selesai, hasil } = hasil_audit || {};
 
 const expanded = ref(0);
 </script>
@@ -39,7 +39,7 @@ const expanded = ref(0);
             <p>{{ hasil || "-" }}</p>
           </VCol>
         </VRow>
-        <VRow>
+        <!-- <VRow>
           <VCol cols="3">
             <p>Dokumen</p>
           </VCol>
@@ -49,7 +49,7 @@ const expanded = ref(0);
           <VCol cols="8">
             <p>{{ dokumen || "-" }}</p>
           </VCol>
-        </VRow>
+        </VRow> -->
       </VExpansionPanelText>
     </VExpansionPanel>
   </VExpansionPanels>

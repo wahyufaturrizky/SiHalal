@@ -344,6 +344,7 @@ onMounted(async () => {
               <PanelHasilPemeriksaan
                 type="EDIT"
                 :data="dataProduk?.hasil_pemeriksaan"
+                from="post-audit"
               />
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -366,39 +367,7 @@ onMounted(async () => {
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
-                    @click="downloadDocument(fileHasilAudit)"
-                    rounded="xl"
-                    density="compact"
-                    class="px-2"
-                  >
-                    <template #default>
-                      <VIcon icon="fa-download" />
-                    </template>
-                  </VBtn>
-                </VCol>
-              </VRow>
-              <VRow align="center">
-                <VCol cols="5" class="text-h6"> File KH </VCol>
-                <VCol class="d-flex align-center">
-                  <div class="me-1">:</div>
-                  <VBtn
-                    @click="downloadDocument(fileKH)"
-                    rounded="xl"
-                    density="compact"
-                    class="px-2"
-                  >
-                    <template #default>
-                      <VIcon icon="fa-download" />
-                    </template>
-                  </VBtn>
-                </VCol>
-              </VRow>
-              <VRow align="center">
-                <VCol cols="5" class="text-h6"> File Laporan LPH </VCol>
-                <VCol class="d-flex align-center">
-                  <div class="me-1">:</div>
-                  <VBtn
-                    @click="downloadDocument(fileLaporanLPH)"
+                    @click="downloadDocument(dataProduk?.file_laporan)"
                     rounded="xl"
                     density="compact"
                     class="px-2"

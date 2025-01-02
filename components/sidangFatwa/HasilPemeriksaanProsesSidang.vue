@@ -39,7 +39,7 @@ const expanded = ref(0);
             <p>{{ hasil || "-" }}</p>
           </VCol>
         </VRow>
-        <VRow>
+        <!-- <VRow>
           <VCol cols="3">
             <p>Dokumen</p>
           </VCol>
@@ -49,7 +49,7 @@ const expanded = ref(0);
           <VCol cols="8">
             <p>{{ dokumen || "-" }}</p>
           </VCol>
-        </VRow>
+        </VRow> -->
       </VExpansionPanelText>
     </VExpansionPanel>
   </VExpansionPanels>

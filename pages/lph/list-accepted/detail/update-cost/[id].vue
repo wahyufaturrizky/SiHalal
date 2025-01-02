@@ -20,6 +20,7 @@ const editLn = ref<boolean>(false)
 const pabrikId = ref<string>('')
 const biayaPabrik = ref(0)
 const editDataLn = ref({})
+const totalDomestic = ref(0)
 
 const detailDataLn = ref<any>({
   keterangan: '',
@@ -212,7 +213,7 @@ const onAdd = () => {
 
 const openModalEditDalamNegri = (item: any) => {
   selectedItem.value = item
-  const isManipulated = Object.values(item).some((value) => value.toString().includes('Rp'));
+  const isManipulated = Object.values(item).some((value) => value.toString().includes('Rp'))
   if (!isManipulated) {
     item.unit_cost_awal = formatToIDR(item.unit_cost_awal)
     item.unit_cost_akhir = formatToIDR(item.unit_cost_akhir)
@@ -241,6 +242,8 @@ const getDetailBiaya = async () => {
     if (response?.code === 2000) {
       const arrayAudit: any = []
 
+      let total = response.data.biaya_indo.total_biaya
+
       response.data.biaya_indo.list.map((item: any) => {
         item.unit_cost_awal = formatToIDR(item.unit_cost_awal)
         item.unit_cost_akhir = formatToIDR(item.unit_cost_akhir)
@@ -256,12 +259,19 @@ const getDetailBiaya = async () => {
         item.subtotal = formatToIDR(item.subtotal)
       })
 
+      if (response.data.lph_admin) {
+        response.data.biaya_indo.list.push({ nama_pabrik: 'Biaya Admin', subtotal: formatToIDR(response.data.lph_admin) })
+        total += response.data.lph_admin
+      }
+
+      totalDomestic.value = total
+
       response.data.biaya_ln.list.map((item: any) => {
         item.harga = formatToIDR(item.harga)
         item.sub_total = formatToIDR(item.sub_total)
       })
 
-      arrayAudit.push({ keterangan: 'Biaya Pemeriksaan LPH', subtotal: formatToIDR(response?.data?.biaya_indo?.total_biaya) })
+      arrayAudit.push({ keterangan: 'Biaya Pemeriksaan LPH', subtotal: formatToIDR(total) })
       response?.data?.biaya_ln?.list?.map((item: any) => arrayAudit.push({ keterangan: item.keterangan, subtotal: item?.sub_total }))
       data.value = response.data
       dataDomestic.value = response.data?.biaya_indo?.list
@@ -287,12 +297,12 @@ const getLovPabrik = async () => {
       params: { id },
     })
 
-    if (response?.code === 2000) {
+    if (response?.code === 2000) 
       lovPabrik.value = response.data
-    }
-    else {
+    
+    else 
       useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+    
 
     return response.data || []
   }
@@ -308,12 +318,12 @@ const getBiayaPesawat = async (id_pabrik: string) => {
       params: { id, id_pabrik },
     })
 
-    if (response?.code === 2000) {
+    if (response?.code === 2000) 
       biayaPabrik.value = formatToIDR(response.data)
-    }
-    else {
+    
+    else 
       useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+    
 
     return response.data || []
   }
@@ -325,16 +335,16 @@ const getBiayaPesawat = async (id_pabrik: string) => {
 const onEdit = async () => {
   try {
     const body = {
-      akomodasi_akhir: idrToNumber(detailData.value?.akomodasi_akhir),
+      akomodasi_akhir: detailData.value?.akomodasi_akhir !== 0 ? idrToNumber(detailData.value?.akomodasi_akhir) : 0,
       akomodasi_diskon: +detailData.value?.akomodasi_diskon,
       id_pabrik: detailData.value?.id_pabrik,
-      tiket_pesawat_akhir: idrToNumber(detailData.value?.tiket_pesawat_akhir),
+      tiket_pesawat_akhir: detailData.value?.tiket_pesawat_akhir !== 0 ? idrToNumber(detailData.value?.tiket_pesawat_akhir) : 0,
       tiket_pesawat_diskon: +detailData.value?.tiket_pesawat_diskon,
-      transport_akhir: idrToNumber(detailData.value?.transport_akhir),
+      transport_akhir: detailData.value?.transport_akhir !== 0 ? idrToNumber(detailData.value?.transport_akhir) : 0,
       transport_diskon: +detailData.value?.transport_diskon,
-      uhpd_akhir: idrToNumber(detailData.value?.uhpd_akhir),
+      uhpd_akhir: detailData.value?.uhpd_akhir !== 0 ? idrToNumber(detailData.value?.uhpd_akhir) : 0,
       uhpd_diskon: +detailData.value?.uhpd_diskon,
-      unit_cost_akhir: idrToNumber(detailData.value?.unit_cost_akhir),
+      unit_cost_akhir: detailData.value?.unit_cost_akhir !== 0 ? idrToNumber(detailData.value?.unit_cost_akhir) : 0,
       unit_cost_diskon: +detailData.value?.unit_cost_diskon,
     }
 
@@ -445,6 +455,15 @@ const onUpdateTotal = async () => {
   }
 }
 
+const validateInput = (event: any) => {
+  if (+event.target.value > 100)
+    event.target.value = 100
+  if (event.target.value.length > 2)
+    event.preventDefault()
+  if (['e', 'E', '-', '+'].includes(event.key))
+    event.preventDefault()
+}
+
 onMounted(async () => {
   loading.value = true
   await Promise.allSettled([
@@ -534,7 +553,7 @@ onMounted(async () => {
                   <td>{{ item.tiket_pesawat_akhir }}</td>
                   <td>{{ item.subtotal }}</td>
                   <td class="text-center">
-                    <VMenu>
+                    <VMenu v-if="item.nama_pabrik !== 'Biaya Admin'">
                       <template #activator="{ props }">
                         <VIcon
                           icon="fa-ellipsis-v"
@@ -553,15 +572,38 @@ onMounted(async () => {
                     </VMenu>
                   </td>
                 </tr>
-                <tr v-if="dataDomestic.length">
-                  <td colspan="18" />
-                  <td colspan="1" class="text-right font-weight-bold">
-                    Total
-                  </td>
-                  <td colspan="2" class="d-flex align-center font-weight-bold">
-                    {{ formatToIDR(data?.biaya_indo?.total_biaya) || 0 }}
+                <tr>
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td v-if="dataDomestic.length">
+                    <div class="d-flex gap-5">
+                      <td class="text-right font-weight-bold" style="align-content: center;">
+                        Total
+                      </td>
+                      <div class="d-flex align-center font-weight-bold">
+                        {{ formatToIDR(totalDomestic) || 0 }}
+                      </div>
+                    </div>
                   </td>
                 </tr>
+                <div />
               </template>
             </VDataTable>
           </VCardText>
@@ -917,7 +959,11 @@ onMounted(async () => {
                 rounded="xl"
                 density="compact"
                 placeholder="Masukkan Diskon"
+                :min="0"
+                :max="100"
+                @keypress="validateInput"
                 @input="(e) => {
+                  validateInput(e)
                   if (+e.target.value) {
                     const initialCost = idrToNumber(detailData.unit_cost_awal)
                     detailData.unit_cost_akhir = initialCost - (initialCost * (+e.target.value / 100))
@@ -957,7 +1003,11 @@ onMounted(async () => {
                 rounded="xl"
                 density="compact"
                 placeholder="Masukkan Diskon"
+                :min="0"
+                :max="100"
+                @keypress="validateInput"
                 @input="(e) => {
+                  validateInput(e)
                   if (+e.target.value) {
                     const initialCost = idrToNumber(detailData.uhpd_awal)
                     detailData.uhpd_akhir = initialCost - (initialCost * (+e.target.value / 100))
@@ -1008,7 +1058,11 @@ onMounted(async () => {
                 rounded="xl"
                 density="compact"
                 placeholder="Masukkan Diskon"
+                :min="0"
+                :max="100"
+                @keypress="validateInput"
                 @input="(e) => {
+                  validateInput(e)
                   if (+e.target.value) {
                     const initialCost = idrToNumber(detailData.transport_awal)
                     detailData.transport_akhir = initialCost - (initialCost * (+e.target.value / 100))
@@ -1048,7 +1102,11 @@ onMounted(async () => {
                 rounded="xl"
                 density="compact"
                 placeholder="Masukkan Diskon"
+                :min="0"
+                :max="100"
+                @keypress="validateInput"
                 @input="(e) => {
+                  validateInput(e)
                   if (+e.target.value) {
                     const initialCost = idrToNumber(detailData.akomodasi_awal)
                     detailData.akomodasi_akhir = initialCost - (initialCost * (+e.target.value / 100))
@@ -1088,7 +1146,11 @@ onMounted(async () => {
                 rounded="xl"
                 density="compact"
                 placeholder="Masukkan Diskon"
+                :min="0"
+                :max="100"
+                @keypress="validateInput"
                 @input="(e) => {
+                  validateInput(e)
                   if (+e.target.value) {
                     const initialCost = idrToNumber(detailData.tiket_pesawat_awal)
                     detailData.tiket_pesawat_akhir = initialCost - (initialCost * (+e.target.value / 100))
@@ -1127,7 +1189,7 @@ onMounted(async () => {
             color="primary"
             @click="onEdit"
           >
-            {{ domesticModalText }}
+            Ubah
           </VBtn>
         </VCardActions>
       </VCard>

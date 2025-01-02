@@ -2,6 +2,7 @@
 const props = defineProps<{
   type?: 'READ' | 'EDIT'
   data: object
+  from: string
 }>()
 
 const detail = props?.data
@@ -31,7 +32,10 @@ const detail = props?.data
         {{ detail?.hasil }}
       </VCol>
     </VRow>
-    <VRow no-gutters>
+    <VRow
+      v-if="props.from !== 'post-audit'"
+      no-gutters
+    >
       <VCol cols="5">
         <div class="d-flex justify-space-between">
           <div class="text-h6">Dokumen</div>

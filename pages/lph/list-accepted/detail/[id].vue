@@ -91,6 +91,10 @@ const onUpdateBiaya = async () => {
   }
 }
 
+const handleDownloadForm = async (fileName: string) => {
+  return await downloadDocument(fileName)
+}
+
 onMounted(async () => {
   loading.value = true
 
@@ -223,7 +227,16 @@ onMounted(async () => {
                 <VCol cols="5" class="text-h6"> File KH </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
-                  <VBtn rounded="xl" density="compact" class="px-2">
+                  <VBtn
+                    :color="dataPemeriksaanProduk?.file_kh ? 'primary' : '#A09BA1'"
+                    density="compact"
+                    class="px-2"
+                    @click="
+                      dataPemeriksaanProduk?.file_kh
+                        ? handleDownloadForm(dataPemeriksaanProduk?.file_kh)
+                        : null
+                    "
+                  >
                     <template #default>
                       <VIcon icon="fa-download" />
                     </template>
@@ -234,7 +247,16 @@ onMounted(async () => {
                 <VCol cols="5" class="text-h6"> File Laporan LPH </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
-                  <VBtn rounded="xl" density="compact" class="px-2">
+                  <VBtn
+                    :color="dataPemeriksaanProduk?.file_laporan ? 'primary' : '#A09BA1'"
+                    density="compact"
+                    class="px-2"
+                    @click="
+                      dataPemeriksaanProduk?.file_laporan
+                        ? handleDownloadForm(dataPemeriksaanProduk?.file_laporan)
+                        : null
+                    "
+                  >
                     <template #default>
                       <VIcon icon="fa-download" />
                     </template>
