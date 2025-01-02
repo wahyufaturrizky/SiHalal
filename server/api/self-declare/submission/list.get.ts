@@ -21,6 +21,7 @@ export default defineEventHandler(async (event: any) => {
         ? 1
         : Number.parseInt(query.size, 10),
       keyword: query.keyword,
+      status: query.status,
     };
 
     const response = await $fetch(
