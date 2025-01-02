@@ -301,6 +301,7 @@ const vervalSend = async () => {
       return;
     }
     useSnackbar().sendSnackbar("Kirim data sukses", "success");
+    navigateTo("/pengajuan/verval-pendamping");
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal Kirim Data", "error");
   }

@@ -78,6 +78,8 @@ const onSubmit = async () => {
 };
 const insertBahan = async () => {
   // submitAddBahanButton.value = true;
+  console.log("add bahan = ", form.value);
+  console.log("array bahan option = ", dataBahanList.value);
 
   try {
     const response = await $api(
@@ -161,7 +163,7 @@ const getDetailBahan = async () => {
 
 const onOpenModal = async () => {
   await getIngredientListDropdown();
-  if (props.modalType === "edit") {
+  if (props.modalType === modalTypeEnum.EDIT) {
     console.log("edit");
     getDetailBahan();
   } else {
@@ -224,7 +226,7 @@ const onOpenModal = async () => {
                     density="compact"
                     placeholder="Pilih Nama Bahan"
                     :items="dataBahanList"
-                    item-value="id_bahan"
+                    item-value="id"
                     item-title="nama_bahan"
                     v-model="form.id_bahan"
                     v-on:update:model-value="onClickBahan"
