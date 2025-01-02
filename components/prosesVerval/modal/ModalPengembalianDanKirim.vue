@@ -13,48 +13,16 @@ const route = useRoute();
 
 const isActive = ref(false);
 
+const emit = defineEmits(["verval-return", "verval-submit"]);
+
 const vervalReturn = async () => {
-  try {
-    const response = await $api(
-      `/self-declare/proses-verval/${route.params?.id}/verval-return`,
-      {
-        method: "post",
-        body: {
-          notes: notesPengembalian.value,
-        },
-      }
-    );
-    if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
-      return;
-    }
-    isActive.value = false;
-    useSnackbar().sendSnackbar("Kembalikan data sukses", "success");
-  } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
-  }
+  emit("verval-return", notesPengembalian.value);
+  isActive.value = false;
 };
 
 const vervalSend = async () => {
-  try {
-    const response = await $api(
-      `/self-declare/proses-verval/${route.params?.id}/verval-send`,
-      {
-        method: "post",
-        body: {
-          notes: "",
-        },
-      }
-    );
-    if (response.code != 2000) {
-      useSnackbar().sendSnackbar("Gagal Kirim Data", "error");
-      return;
-    }
-    isActive.value = false;
-    useSnackbar().sendSnackbar("Kirim data sukses", "success");
-  } catch (error) {
-    useSnackbar().sendSnackbar("Gagal Kirim Data", "error");
-  }
+  emit("verval-submit");
+  isActive.value = false;
 };
 </script>
 <template>

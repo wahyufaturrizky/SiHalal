@@ -92,6 +92,17 @@ const onSubmit = async () => {
     useSnackbar().sendSnackbar("Tidak ada data yang berubah", "success");
   }
 };
+
+const validationErrorRibbon = ref(false);
+
+const openValidationErrorRibbon = () => {
+  validationErrorRibbon.value = true;
+};
+
+defineExpose({
+  selected,
+  openValidationErrorRibbon,
+});
 </script>
 
 <template>
@@ -101,11 +112,18 @@ const onSubmit = async () => {
     </VCardTitle>
 
     <VCardItem>
-      <VDataTable
-        :headers="tableHeader"
-        :items="content"
-        :hide-default-footer="true"
-      >
+      <VRow>
+        <VCol cols="12">
+          <VAlert
+            closable
+            type="error"
+            text="Persyaratan Khusus belum sepenuhnya dipilih"
+            v-if="validationErrorRibbon"
+          ></VAlert>
+        </VCol>
+      </VRow>
+      <br />
+      <VDataTable :headers="tableHeader" :items="content">
         <!-- Row number -->
         <template #item.nomor="{ index }">
           {{ index + 1 }}
