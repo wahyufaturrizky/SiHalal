@@ -9,7 +9,7 @@ const loading = ref(false);
 const loadingAll = ref(true);
 const page = ref(1);
 const searchQuery = ref("");
-const status = ref("Semua");
+const status = ref("OF71");
 const itemsStatus = ref<any[]>([]);
 
 // Table headers

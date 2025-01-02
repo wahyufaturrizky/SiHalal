@@ -342,7 +342,9 @@ const loadItemDistrict = async () => {
   }
 };
 
-onMounted(async () => {
+const openDialog = async () => {
+  dialogVisible.value = true;
+
   const res = await Promise.all([
     loadItem({
       page: page.value,
@@ -371,10 +373,6 @@ onMounted(async () => {
   } else {
     loadingAll.value = false;
   }
-});
-
-const openDialog = () => {
-  dialogVisible.value = true;
 };
 </script>
 
