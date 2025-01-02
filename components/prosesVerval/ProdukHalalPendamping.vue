@@ -62,6 +62,16 @@ watch(
   },
   { immediate: true }
 );
+
+const validationErrorRibbon = ref(false);
+
+const openValidationErrorRibbon = () => {
+  validationErrorRibbon.value = true;
+};
+
+defineExpose({
+  openValidationErrorRibbon,
+});
 </script>
 
 <template>
@@ -78,6 +88,17 @@ watch(
       </VRow>
     </VCardTitle>
     <VCardItem>
+      <VRow>
+        <VCol cols="12">
+          <VAlert
+            closable
+            type="error"
+            text="Produk belum sepenuhnya dipilih"
+            v-if="validationErrorRibbon"
+          ></VAlert>
+        </VCol>
+      </VRow>
+      <br />
       <VDataTable :headers="tableHeader" :items="content" hide-default-footer>
         <template #item.no="{ index }">
           {{ index + 1 }}

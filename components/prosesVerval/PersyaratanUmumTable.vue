@@ -88,12 +88,34 @@ const onSubmit = async () => {
     useSnackbar().sendSnackbar("Tidak ada data yang berubah", "success");
   }
 };
+
+const validationErrorRibbon = ref(false);
+
+const openValidationErrorRibbon = () => {
+  validationErrorRibbon.value = true;
+};
+
+defineExpose({
+  selected,
+  openValidationErrorRibbon,
+});
 </script>
 
 <template>
   <VCard>
     <VCardTitle><h3>Persyaratan Umum</h3></VCardTitle>
     <VCardItem>
+      <VRow>
+        <VCol cols="12">
+          <VAlert
+            closable
+            type="error"
+            text="Persyaratan Umum belum sepenuhnya dipilih"
+            v-if="validationErrorRibbon"
+          ></VAlert>
+        </VCol>
+      </VRow>
+      <br />
       <VDataTable
         :headers="tableHeader"
         :items="content"

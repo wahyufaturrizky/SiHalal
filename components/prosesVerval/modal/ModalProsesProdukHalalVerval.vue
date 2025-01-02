@@ -7,6 +7,9 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  disableAdd: {
+    type: Boolean,
+  },
 });
 
 const isVisible = ref(false);
@@ -60,11 +63,46 @@ const onSubmit = async () => {
   });
 };
 
-const onOpenModal = () => {
-  form.value = {
-    persyaratan: null,
-    penjelasan: null,
-  };
+const handleChangePersyaratan = async (value: number) => {
+  if (value === 0) {
+    // get api proses pph
+    getProsesProdukData();
+  } else if (value === 1) {
+    form.value.penjelasan =
+      "Pemenuhan Kriteria Sistem Jaminan Produk Halal telah diverifikasi langsung ke lokasi Pelaku Usaha";
+  }
+};
+
+const getProsesProdukData = async () => {
+  try {
+    const response: any = await $api(
+      `/self-declare/submission/${route.params?.id}/detail`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) {
+      form.value.penjelasan = response.data.narasi;
+      if (response.data.narasi.length > 0) {
+        Object.assign(form.value.penjelasan, response.data.narasi.split("\n"));
+      }
+    }
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const onOpenModal = async () => {
+  if (props.modalType === modalTypeEnum.EDIT) {
+    await getProsesProdukData();
+  } else {
+    form.value = {
+      persyaratan: null,
+      penjelasan: null,
+    };
+  }
 };
 </script>
 
@@ -73,6 +111,7 @@ const onOpenModal = () => {
     <template #activator="{ props: openModal }">
       <VBtn
         v-if="modalType === modalTypeEnum.ADD"
+        :disabled="props.disableAdd"
         append-icon="fa-plus"
         variant="outlined"
         v-bind="openModal"
@@ -116,6 +155,7 @@ const onOpenModal = () => {
                     :items="persyaratanItem"
                     item-value="value"
                     item-title="name"
+                    v-on:update:model-value="handleChangePersyaratan"
                   ></VSelect>
                 </VItemGroup>
                 <br />
@@ -125,6 +165,7 @@ const onOpenModal = () => {
                     density="compact"
                     placeholder="Isi Penjelasan"
                     v-model="form.penjelasan"
+                    disabled
                   ></VTextarea>
                 </VItemGroup>
               </VCol>

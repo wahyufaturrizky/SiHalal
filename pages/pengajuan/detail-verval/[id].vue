@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { modalTypeEnum } from "@/components/prosesVerval/verval-enum";
+import { useGoTo } from "vuetify";
 
 const route = useRoute();
 
@@ -12,6 +13,11 @@ const dataBahanList = ref();
 const dataProdukList = ref();
 const dataProsesList = ref();
 const dataTracking = ref();
+const generalReqRef = ref();
+const specificReqRef = ref();
+const ingredientTableRef = ref();
+const productRef = ref();
+const prodProcessRef = ref();
 
 const getDetail = async () => {
   try {
@@ -176,6 +182,131 @@ const downloadFileRekomendasi = () => {
   }
 };
 
+const dataBahanListOption = ref();
+
+const getIngredientListDropdown = async () => {
+  try {
+    const response = await $api(
+      `/self-declare/proses-verval/${route.params?.id}/pendamping-bahan-list`,
+      {
+        method: "get",
+      }
+    );
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      return;
+    }
+
+    dataBahanListOption.value = response.data;
+  } catch (error) {
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+  }
+};
+
+const goToComponent = useGoTo();
+
+const validateVerval = async () => {
+  let scrollTo = null;
+  let countValidation = 5;
+
+  const countGeneralReqRefSelected = generalReqRef.value.selected.size;
+  const countSpecificReqRefSelected = specificReqRef.value.selected.size;
+  await getIngredientListDropdown();
+
+  if (countGeneralReqRefSelected < dataRequirementGeneral.value?.length) {
+    countValidation -= 1;
+    generalReqRef.value.openValidationErrorRibbon();
+    if (!scrollTo) {
+      scrollTo = "#generalReqTableId";
+    }
+  }
+  if (countSpecificReqRefSelected < dataRequirementSpecific.value?.length) {
+    countValidation -= 1;
+    specificReqRef.value.openValidationErrorRibbon();
+    if (!scrollTo) {
+      scrollTo = "#specificReqTableId";
+    }
+  }
+  if (dataBahanList.value?.length != dataBahanListOption.value?.length) {
+    countValidation -= 1;
+    ingredientTableRef.value.openValidationErrorRibbon();
+    if (!scrollTo) {
+      scrollTo = "#ingredientTableId";
+    }
+  }
+  if (dataProsesList.value?.length < 2) {
+    countValidation -= 1;
+    prodProcessRef.value.openValidationErrorRibbon();
+    if (!scrollTo) {
+      scrollTo = "#processProductReqTableId";
+    }
+  }
+  if (dataProdukList.value?.length < 1) {
+    countValidation -= 1;
+    productRef.value.openValidationErrorRibbon();
+    if (!scrollTo) {
+      scrollTo = "#productReqTableId";
+    }
+  }
+
+  if (countValidation == 5) {
+    await vervalSend();
+  } else {
+    if (scrollTo) {
+      goToComponent(scrollTo, {
+        duration: 500,
+        easing: "easeInOutCubic",
+        offset: -10,
+      });
+    }
+
+    useSnackbar().sendSnackbar("Data Verval belum terisi sepenuhnya", "error");
+  }
+};
+
+const vervalReturn = async (notesPengembalian: string) => {
+  try {
+    const response = await $api(
+      `/self-declare/proses-verval/${route.params?.id}/verval-return`,
+      {
+        method: "post",
+        body: {
+          notes: notesPengembalian,
+        },
+      }
+    );
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      return;
+    }
+    useSnackbar().sendSnackbar("Kembalikan data sukses", "success");
+  } catch (error) {
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+  }
+};
+
+const vervalSend = async () => {
+  try {
+    const response = await $api(
+      `/self-declare/proses-verval/${route.params?.id}/verval-send`,
+      {
+        method: "post",
+        body: {
+          notes: "",
+        },
+      }
+    );
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("Gagal Kirim Data", "error");
+      return;
+    }
+    useSnackbar().sendSnackbar("Kirim data sukses", "success");
+    navigateTo("/pengajuan/verval-pendamping");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Gagal Kirim Data", "error");
+  }
+};
+
 onMounted(async () => {
   await getDetail();
   await getGeneralQuestion();
@@ -208,9 +339,11 @@ onMounted(async () => {
     <VCol cols="5" style="display: flex; justify-content: end">
       <ModalPengembalianDanKirim
         :modal-type="modalTypeEnum.KEMBALI"
+        @verval-return="vervalReturn"
       ></ModalPengembalianDanKirim>
       <ModalPengembalianDanKirim
         :modal-type="modalTypeEnum.KIRIM"
+        @verval-submit="validateVerval"
       ></ModalPengembalianDanKirim>
     </VCol>
   </VRow>
@@ -242,6 +375,8 @@ onMounted(async () => {
   <VRow>
     <VCol cols="12">
       <PersyaratanUmumTable
+        id="generalReqTableId"
+        ref="generalReqRef"
         :data-persyaratan="dataRequirementGeneral"
         v-if="dataRequirementGeneral"
       ></PersyaratanUmumTable>
@@ -250,6 +385,8 @@ onMounted(async () => {
   <VRow>
     <VCol cols="12">
       <PersyaratanKhususTable
+        id="specificReqTableId"
+        ref="specificReqRef"
         :data-persyaratan="dataRequirementSpecific"
       ></PersyaratanKhususTable>
     </VCol>
@@ -257,6 +394,8 @@ onMounted(async () => {
   <VRow>
     <VCol cols="12">
       <BahanTablePendamping
+        id="ingredientTableId"
+        ref="ingredientTableRef"
         :data="dataBahanList"
         :id-reg="route.params?.id"
         @confirm-add="handleBahanAdd"
@@ -266,6 +405,8 @@ onMounted(async () => {
   <VRow>
     <VCol cols="12">
       <ProsesProdukHalalPendamping
+        id="processProductReqTableId"
+        ref="prodProcessRef"
         :data="dataProsesList"
         @confirm-add="handleProsesProdukAdd"
         @confirm-delete="handleProsesProdukDelete"
@@ -275,6 +416,8 @@ onMounted(async () => {
   <VRow>
     <VCol cols="12">
       <ProdukHalalPendamping
+        id="productReqTableId"
+        ref="productRef"
         :data="dataProdukList"
         @confirm-add="handleProdukAdd"
         @confirm-delete="handleProdukDelete"
