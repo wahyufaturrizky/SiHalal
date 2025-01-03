@@ -35,6 +35,10 @@ const handleResetForm = () => {
     id_role: [],
   });
 };
+const showPassword = ref(false);
+const handleShowPassword = () => {
+  showPassword.value = !showPassword.value;
+};
 const handleGeneratePassword = async () => {
   try {
     const response: any = await $api("/admin/users/gen-password", {
@@ -131,9 +135,11 @@ onMounted(() => {
               <VTextField
                 v-model="formData.password"
                 :rules="formRules.password"
-                type="password"
                 placeholder="Input password"
                 density="compact"
+                :type="showPassword ? 'text' : 'password'"
+                :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                @click:append-inner="handleShowPassword"
               >
                 <template #append>
                   <VBtn @click="handleGeneratePassword">Generate</VBtn>

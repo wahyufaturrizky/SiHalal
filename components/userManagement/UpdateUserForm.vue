@@ -42,6 +42,10 @@ const formRules = reactive({
 });
 const roleDropdown = ref([]);
 
+const showPassword = ref(false);
+const handleShowPassword = () => {
+  showPassword.value = !showPassword.value;
+};
 const handleGeneratePassword = async () => {
   try {
     const response: any = await $api("/admin/users/gen-password", {
@@ -66,6 +70,7 @@ const handleSubmitForm = async () => {
       name: formData.name,
       phone_no: formData.phone_no,
       username: formData.username,
+      password: formData.password,
     };
     emit("submit:update", payload);
     isModalOpen.value = false;
@@ -155,9 +160,11 @@ onMounted(() => {
                 <div class="font-weight-bold mb-1">Password</div>
                 <VTextField
                   v-model="formData.password"
-                  type="password"
                   placeholder="Input password"
                   density="compact"
+                  :type="showPassword ? 'text' : 'password'"
+                  :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                  @click:append-inner="handleShowPassword"
                 >
                   <template #append>
                     <VBtn @click="handleGeneratePassword">Generate</VBtn>
