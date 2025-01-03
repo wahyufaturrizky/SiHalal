@@ -41,13 +41,12 @@ const dialogVisible = ref(false);
 const handleDialogvisible = () => {
   dialogVisible.value = true;
 };
-const handleCloseButton = (data) => {
-  console.log(data);
+const handleCloseButton = (data:any) => {
   dialogVisible.value = data;
 };
-const handleDelete = async (item) => {
+const handleDelete = async (item:any) => {
   try {
-    console.log(item.id, "ini di delete");
+  
 
     const response = await $api(
       `/user-management/role/delete-user/${item.id}`,
@@ -58,16 +57,17 @@ const handleDelete = async (item) => {
 
     if (response.code === 2000) {
       loading.value = false;
-      useSnackbar().sendSnackbar("Data Successfully Deleted", "success");
+      useSnackbar().sendSnackbar("Data Berhasil di Hapus", "success");
     } else {
       loading.value = false;
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
 
-    loadItem({
-      page: page.value,
-      size: itemPerPage.value,
-    });
+    debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+  )
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loading.value = false;
@@ -82,7 +82,9 @@ const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
 
-const loadItem = async ({ page, size }: { page: number; size: number }) => {
+
+
+const loadItem = async ({ page, size,keyword }: { page: number; size: number;keyword: string }) => {
   try {
     loading.value = true;
 
@@ -91,6 +93,7 @@ const loadItem = async ({ page, size }: { page: number; size: number }) => {
       params: {
         page,
         size,
+        keyword
       },
     });
 
@@ -111,6 +114,15 @@ const loadItem = async ({ page, size }: { page: number; size: number }) => {
     loading.value = false;
   }
 };
+const searchQuery = ref('')
+
+const handleInput = () => {
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+  )
+}
 
 const debouncedFetch = debounce(loadItem, 500);
 
@@ -120,6 +132,7 @@ onMounted(async () => {
       page: page.value,
       size: itemPerPage.value,
     }),
+  
   ]);
 
   const checkResIfUndefined = res.every((item: any) => {
@@ -132,9 +145,7 @@ onMounted(async () => {
     loadingAll.value = false;
   }
 });
-const handleConfirmDelete = () => {
-  useSnackbar().sendSnackbar("Data Successfully Deleted", "success");
-};
+
 </script>
 
 <template>
@@ -157,7 +168,7 @@ const handleConfirmDelete = () => {
               </VBtn>
 
               <VDialog v-model="dialogVisible" max-width="100svh">
-                <VCard style="padding: 1.5svw">
+                <VCard style="padding: 1.5svw;">
                   <AddRoleForm @visible="handleCloseButton" :action="true" />
                 </VCard>
               </VDialog>
@@ -166,9 +177,11 @@ const handleConfirmDelete = () => {
             <VRow>
               <VCol cols="7">
                 <VTextField
+                  v-model="searchQuery"
                   placeholder="Search Data"
                   density="compact"
                   append-inner-icon="mdi-magnify"
+                  @input="handleInput"
                 />
               </VCol>
             </VRow>
@@ -192,7 +205,7 @@ const handleConfirmDelete = () => {
                 >
                   <template #no-data>
                     <VCard variant="outlined" class="w-full mt-7 mb-5">
-                      <div class="pt-2" style="justify-items: center">
+                      <div class="pt-2" style="justify-items: center;">
                         <img
                           src="~/assets/images/empty-data.png"
                           alt="empty_data"
@@ -236,9 +249,10 @@ const handleConfirmDelete = () => {
                           <VListItemTitle>Ubah</VListItemTitle>
                         </VListItem>
                         <VDialog v-model="dialogVisible" max-width="100svh">
-                          <VCard style="padding: 1.5svw">
+                          <VCard style="padding: 1.5svw;">
                             <AddRoleForm
                               @visible="handleCloseButton"
+                              :id_role="item.id"
                               :action="false"
                             />
                           </VCard>

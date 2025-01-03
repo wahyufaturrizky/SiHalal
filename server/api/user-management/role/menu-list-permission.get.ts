@@ -9,9 +9,9 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-
+ 
   const data = await $fetch<any>(
-    `${runtimeConfig.authBaseUrl}/api/v1/admin/users/d36fa568-b88d-4eb4-bc77-cba43d16f5e3/detail`,
+    `${runtimeConfig.authBaseUrl}/api/v1/admin/users-type/list-permission`,
     {
       method: "get",
       headers: { Authorization: authorizationHeader },

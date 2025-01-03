@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
     });
   }
   const id = getRouterParam(event, "id");
-  console.log(id, "ini idnya");
+
   const data = await $fetch<any>(
     `${runtimeConfig.authBaseUrl}/api/v1/admin/users-type/delete/${id}`,
     {

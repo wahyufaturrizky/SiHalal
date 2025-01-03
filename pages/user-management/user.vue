@@ -82,7 +82,7 @@ const detailData = ref();
 // remove this function on integrating update
 const handleLoadDetail = (id: string) => {
   selectedUser.value = id;
-  const detail = tableItems.value.find((item) => {
+  const detail = tableItems.value.find((item:any) => {
     return item.id === selectedUser.value;
   });
   if (detail) detailData.value = detail;
@@ -142,7 +142,7 @@ const handleConfirmDelete = () => {
             >
               <template #no-data>
                 <VCard variant="outlined" class="w-full mt-7 mb-5">
-                  <div class="pt-2" style="justify-items: center">
+                  <div class="pt-2" style="justify-items: center;">
                     <img
                       src="~/assets/images/empty-data.png"
                       alt="empty_data"

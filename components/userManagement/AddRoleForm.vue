@@ -1,18 +1,21 @@
 <script setup lang="ts">
 const emit = defineEmits(["visible"]);
+
 const closeDialog = () => {
   emit("visible", false);
 };
+
 const formSubmit = () => {
-  console.log("submit bro");
-  console.log("parent", parentCheckbox);
-  console.log("childddddd", childItems);
+  // console.log("submit bro");
+  // console.log("parent", parentCheckbox);
+  // console.log("childddddd", childItems);
   emit("visible", false);
 };
+
 const formEdit = () => {
-  console.log("submit bro");
-  console.log("parent", parentCheckbox);
-  console.log("childddddd", childItems);
+  // console.log("submit bro");
+  // console.log("parent", parentCheckbox);
+  // console.log("childddddd", childItems);
   emit("visible", false);
 };
 
@@ -21,7 +24,11 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  id_role: {
+    type: String,
+  },
 });
+
 const formData = reactive({
   roleName: "",
   description: "",
@@ -29,53 +36,106 @@ const formData = reactive({
 
 const menuItems = ref([
   {
-    label: "Registrasi SH",
+    role_label: "Registrasi SH",
+    role_id: "ii2isd0sasd0",
     expanded: false,
     checked: false,
     children: [
-      { label: "Pengajuan 2", checked: false },
-      { label: "Pengajuan 3", checked: true },
-      { label: "Pengajuan 5", checked: false },
+      { label_child: "Pengajuan 2", id_child: "29sdas", checked: false },
+      { label_child: "Pengajuan 3", id_child: "29sdax", checked: true },
+      { label_child: "Pengajuan 5", id_child: "29sdaa", checked: false },
     ],
   },
   {
-    label: "Pengajuan Self Declare",
+    role_label: "Pengajuan Self Declare",
+    role_id: "ii2isd0sasd0x",
     expanded: false,
     checked: false,
     children: [
-      { label: "Pengajuan 6", checked: false },
-      { label: "Pengajuan 7", checked: false },
-      { label: "Pengajuan 8", checked: false },
+      { label_child: "Pengajuan 6", id_child: "28sdas", checked: false },
+      { label_child: "Pengajuan 7", id_child: "28sdas", checked: false },
+      { label_child: "Pengajuan 8", id_child: "28sdas", checked: false },
     ],
-  },
-  {
-    label: "Permohonan",
-    expanded: false,
-    checked: false,
-    children: [
-      { label: "Pengajuan 9", checked: false },
-      { label: "Pengajuan 10", checked: false },
-      { label: "Pengajuan 11", checked: false },
-    ],
-  },
-  {
-    label: "Revisi Sertifikat Halal",
-    expanded: false,
-    checked: false,
-    children: [
-      { label: "Pengajuan 12", checked: false },
-      { label: "Pengajuan 13", checked: false },
-      { label: "Pengajuan 14", checked: false },
-    ],
-  },
-  {
-    label: "Tagihan Invoice",
-    expanded: false,
-    checked: false,
-    children: [],
   },
 ]);
+
+const menuList = async () => {
+  try {
+    const response: any = await $api(
+      "/user-management/role/menu-list-permission",
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) {
+      response.data.forEach((el) => {
+        // console.log(el.child,'ini el apa aja')
+        let temp = [];
+        if (el.child !== undefined) {
+          el.child.forEach((child) => {
+            console.log(child, "el child");
+            temp.push({
+              label_child: child.name,
+              id_child: child.id,
+              checked: false,
+            });
+          });
+          menuItems.value.push({
+            role_label: el.name,
+            role_id: el.id,
+            expanded: false,
+            checked: false,
+            children: temp,
+          });
+        } else {
+          menuItems.value.push({
+            role_label: el.name,
+            role_id: el.id,
+            expanded: false,
+            checked: false,
+          });
+        }
+        console.log(menuItems);
+      });
+    }
+  } catch (error) {
+    console.log(error, "ini error");
+    useSnackbar().sendSnackbar("Ada Kesalahan  list", "error");
+  }
+};
+
+// el.child.map((el2:any)=>{
+//   // console.log(el2,'ini apa')
+// })
+
+const detail = async (id: any) => {
+  try {
+    const response: any = await $api(`/user-management/role/${id}`, {
+      method: "get",
+    });
+
+    if (response.code === 2000) {
+      formData.roleName = response.data.name;
+      formData.description = response.data.desc;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan detail", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan detail", "error");
+  }
+};
+
+if (props.action === false) {
+  console.log(props.id_role, "ini isi id rolenya");
+  detail(props.id_role);
+}
+
+onMounted(() => {
+  menuList();
+});
 </script>
+
 <template>
   <VForm>
     <VCardTitle
@@ -140,8 +200,6 @@ const menuItems = ref([
                     font-size: 16px;
                     inline-size: 80%;
                     line-height: 1.5;
-                    padding-block: 10px;
-                    padding-inline: 10px 100px;
                     text-align: start;
                   "
                 >
@@ -166,12 +224,7 @@ const menuItems = ref([
                 <tr>
                   <td
                     class="text-left"
-                    style="
-                      font-size: 16px;
-                      line-height: 1.5;
-                      padding-block: 10px;
-                      padding-inline: 20px;
-                    "
+                    style="font-size: 16px; line-height: 1.5"
                   >
                     <v-btn
                       color="primary"
@@ -184,7 +237,7 @@ const menuItems = ref([
                           item.expanded ? "mdi-chevron-up" : "mdi-chevron-down"
                         }}
                       </v-icon>
-                      <span>{{ item.label }}</span>
+                      <span>{{ item.role_label }}</span>
                     </v-btn>
                   </td>
                   <td
@@ -215,11 +268,9 @@ const menuItems = ref([
                         color: #555;
                         font-size: 16px;
                         line-height: 1.5;
-                        padding-block: 10px;
-                        padding-inline: 40px;
                       "
                     >
-                      {{ child.label }}
+                      {{ child.label_child }}
                     </td>
                     <td
                       style="
@@ -229,8 +280,6 @@ const menuItems = ref([
                         background-color: #fafafa;
                         font-size: 16px;
                         line-height: 1.5;
-                        padding-block: 10px;
-                        padding-inline: 20px;
                       "
                     >
                       <VCheckbox v-model="child.checked" />
@@ -268,3 +317,4 @@ const menuItems = ref([
     </div>
   </VForm>
 </template>
+
