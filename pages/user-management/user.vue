@@ -12,54 +12,53 @@ type DataUser = {
 const tableHeaders: any[] = [
   { title: "No", key: "no", sortable: false },
   { title: "User Name", key: "username", nowrap: true },
-  { title: "Name", key: "nama", nowrap: true },
+  { title: "Name", key: "name", nowrap: true },
   { title: "Email", key: "email", nowrap: true },
   { title: "Phone Number", key: "phone_no", nowrap: true },
   { title: "Verify", key: "is_verify", nowrap: true },
   { title: "Role", key: "role", nowrap: true },
   { title: "Action", key: "actions", sortable: false, align: "center" },
 ];
-const tableItems = ref<Array<DataUser>>([
-  {
-    id: "1",
-    username: "Banawadmnk",
-    nama: "Banawa Damanik",
-    email: "juli18@palastri.in",
-    password: "123",
-    phone_no: "0839 9981 7991",
-    is_verify: true,
-    role: "Pelaku Usaha",
-  },
-  {
-    id: "2",
-    username: "Zelda_Zulaika",
-    nama: "Zelda Zulaika",
-    email: "ibrani.pradana@yahoo.co.id",
-    phone_no: "0839 9981 7991",
-    is_verify: true,
-    role: "Verifikator HLN",
-  },
-  {
-    id: "3",
-    username: "Genta_Halimah",
-    nama: "Genta Halimah",
-    email: "gmulyani@tamba.sch.id",
-    phone_no: "0759 9443 896",
-    is_verify: false,
-    role: "Fasilitator",
-  },
-]);
+const tableItems = ref<Array<DataUser>>([]);
 const currentPage = ref(1);
 const itemPerPage = ref(10);
 const totalItems = ref(tableItems.value.length);
 const isLoading = ref(false);
 
 const searchQuery = ref("");
+const handleLoadList = async () => {
+  try {
+    const response: any = await $api("/admin/users/list", {
+      method: "get",
+      params: {
+        page: currentPage.value,
+        size: itemPerPage.value,
+        search: searchQuery.value,
+      },
+    } as any);
+
+    if (response.code === 2000) {
+      tableItems.value = response.data;
+      currentPage.value = response.current_page;
+      totalItems.value = response.total_item;
+      return response;
+    }
+  } catch (error) {}
+};
+
+const { refresh } = await useAsyncData(
+  "self-declare-list",
+  async () => handleLoadList(),
+  {
+    watch: [currentPage, itemPerPage],
+  }
+);
+
 const handleSearchUser = useDebounceFn((val: string) => {
   searchQuery.value = val;
   currentPage.value = 1;
 
-  // refresh();
+  refresh();
 }, 350);
 
 const isOpenAddModal = ref(false);
@@ -157,6 +156,9 @@ const handleConfirmDelete = () => {
               </template>
               <template #item.is_verify="{ item }">
                 {{ item.is_verify ? "Yes" : "No" }}
+              </template>
+              <template #item.role="{ item }">
+                {{ item.role ? item.role : "-" }}
               </template>
               <template #item.actions="{ item }">
                 <VMenu>
