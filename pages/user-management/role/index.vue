@@ -1,34 +1,34 @@
 <script setup lang="ts">
-const items = [
-  {
-    index: 1,
-    role_name: "Verificator Self Declare",
-    menu: "10 Acess Menu(s)",
-    action: "true",
-  },
-  {
-    index: 2,
-    role_name: "Komisi fatwa",
-    menu: "5 Acess Menu(s)",
-    action: "true",
-  },
-  {
-    index: 3,
-    role_name: "Auditor",
-    menu: "2 Acess Menu(s)",
-    action: "true",
-  },
-  {
-    index: 4,
-    role_name: "Verifikator BPJPH",
-    action: "true",
-  },
-];
+// const items = [
+//   {
+//     index: 1,
+//     role_name: "Verificator Self Declare",
+//     menu: "10 Acess Menu(s)",
+//     action: "true",
+//   },
+//   {
+//     index: 2,
+//     role_name: "Komisi fatwa",
+//     menu: "5 Acess Menu(s)",
+//     action: "true",
+//   },
+//   {
+//     index: 3,
+//     role_name: "Auditor",
+//     menu: "2 Acess Menu(s)",
+//     action: "true",
+//   },
+//   {
+//     index: 4,
+//     role_name: "Verifikator BPJPH",
+//     action: "true",
+//   },
+// ];
 
 const tableHeader = [
   { title: "No", value: "index" },
-  { title: "Role Name", value: "role_name" },
-  { title: "Menu", value: "menu" },
+  { title: "Role Name", value: "name" },
+  { title: "Menu", value: "count_menu" },
   { title: "Action", value: "action", fixed: true },
 ];
 
@@ -45,32 +45,123 @@ const handleCloseButton = (data) => {
   console.log(data);
   dialogVisible.value = data;
 };
+const handleDelete = async (item) => {
+  try {
+    console.log(item.id, "ini di delete");
+
+    const response = await $api(
+      `/user-management/role/delete-user/${item.id}`,
+      {
+        method: "post",
+      }
+    );
+
+    if (response.code === 2000) {
+      loading.value = false;
+      useSnackbar().sendSnackbar("Data Successfully Deleted", "success");
+    } else {
+      loading.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+
+    loadItem({
+      page: page.value,
+      size: itemPerPage.value,
+    });
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
+  }
+};
+
+const items = ref([]);
+const loadingAll = ref(true);
+
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const loading = ref(false);
+const page = ref(1);
+
+const loadItem = async ({ page, size }: { page: number; size: number }) => {
+  try {
+    loading.value = true;
+
+    const response: any = await $api("/user-management/role/list", {
+      method: "get",
+      params: {
+        page,
+        size,
+      },
+    });
+
+    if (response.code === 2000) {
+      items.value = items.value = response.data.map((item, idx) => ({
+        ...item,
+        index: idx + 1,
+      }));
+      totalItems.value = response.total_item || 0;
+      loading.value = false;
+      return response;
+    } else {
+      loading.value = false;
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
+  }
+};
+
+const debouncedFetch = debounce(loadItem, 500);
+
+onMounted(async () => {
+  const res = await Promise.all([
+    loadItem({
+      page: page.value,
+      size: itemPerPage.value,
+    }),
+  ]);
+
+  const checkResIfUndefined = res.every((item: any) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
+});
+const handleConfirmDelete = () => {
+  useSnackbar().sendSnackbar("Data Successfully Deleted", "success");
+};
 </script>
 
 <template>
   <div>
     <VRow>
       <VCol>
-        <h2>User</h2>
+        <VRow>
+          <VCol>
+            <h1 class="mb-1 font-weight-bold">Role</h1>
+          </VCol>
+        </VRow>
         <VCard>
           <VCardItem>
-            <VRow>
-              <VCol cols="10">
-                <h2>User List</h2>
-              </VCol>
+            <VCardTitle
+              class="d-flex justify-space-between align-center font-weight-bold text-h4"
+            >
+              <div>Role List</div>
+              <VBtn append-icon="fa-plus" @click="handleDialogvisible">
+                Add Role
+              </VBtn>
 
-              <VCol cols="2">
-                <VBtn append-icon="fa-plus" @click="handleDialogvisible">
-                  Add Role
-                </VBtn>
-
-                <VDialog v-model="dialogVisible" max-width="100svh">
-                  <VCard style="padding: 1.5svw">
-                    <AddRoleForm @visible="handleCloseButton" :action="true" />
-                  </VCard>
-                </VDialog>
-              </VCol>
-            </VRow>
+              <VDialog v-model="dialogVisible" max-width="100svh">
+                <VCard style="padding: 1.5svw">
+                  <AddRoleForm @visible="handleCloseButton" :action="true" />
+                </VCard>
+              </VDialog>
+            </VCardTitle>
 
             <VRow>
               <VCol cols="7">
@@ -84,7 +175,45 @@ const handleCloseButton = (data) => {
 
             <VRow>
               <VCol>
-                <VDataTableServer :headers="tableHeader" :items="items">
+                <VDataTableServer
+                  class="custom-table"
+                  v-model:items-per-page="itemPerPage"
+                  v-model:page="page"
+                  :headers="tableHeader"
+                  :items="items"
+                  :items-length="totalItems"
+                  @update:options="
+                    loadItem({
+                      page: page,
+                      size: itemPerPage,
+                      keyword: searchQuery,
+                    })
+                  "
+                >
+                  <template #no-data>
+                    <VCard variant="outlined" class="w-full mt-7 mb-5">
+                      <div class="pt-2" style="justify-items: center">
+                        <img
+                          src="~/assets/images/empty-data.png"
+                          alt="empty_data"
+                        />
+                        <div class="pt-2 pb-2 font-weight-bold">
+                          Data Kosong
+                        </div>
+                      </div>
+                    </VCard>
+                  </template>
+
+                  <template #item.index="{ index }">
+                    {{ index + 1 + (page - 1) * itemPerPage }}
+                  </template>
+                  <template #item.count_menu="{ item }">
+                    {{ item.count_menu }} Access Menus(s)
+                  </template>
+
+                  <template #item.no="{ index }">
+                    {{ index + 1 + (page - 1) * itemPerPage }}
+                  </template>
                   <template #item.action="{ item }">
                     <VMenu :close-on-content-click="false">
                       <template #activator="{ props }">
@@ -92,34 +221,32 @@ const handleCloseButton = (data) => {
                           icon="mdi-dots-vertical"
                           variant="text"
                           v-bind="props"
+                          color="primary"
                         />
                       </template>
                       <VList>
-                        <VListItem>
-                          <VBtn
-                            variant="text"
-                            prepend-icon="ri-edit-line"
-                            block
-                            @click="handleDialogvisible"
-                          >
-                            Edit
-                          </VBtn>
-
-                          <VDialog v-model="dialogVisible" max-width="100svh">
-                            <VCard style="padding: 1.5svw">
-                              <AddRoleForm
-                                @visible="handleCloseButton"
-                                :action="false"
-                              />
-                            </VCard>
-                          </VDialog>
+                        <VListItem
+                          v-bind="props"
+                          class="cursor-pointer"
+                          @click="handleDialogvisible"
+                        >
+                          <template #prepend>
+                            <VIcon icon="ri-edit-line" :size="16" />
+                          </template>
+                          <VListItemTitle>Ubah</VListItemTitle>
                         </VListItem>
+                        <VDialog v-model="dialogVisible" max-width="100svh">
+                          <VCard style="padding: 1.5svw">
+                            <AddRoleForm
+                              @visible="handleCloseButton"
+                              :action="false"
+                            />
+                          </VCard>
+                        </VDialog>
 
-                        <VListItem>
-                          <DeleteConfirmation
-                            @delete-confirm="handleDelete(item)"
-                          />
-                        </VListItem>
+                        <DeleteConfirmation
+                          @delete-confirm="handleDelete(item)"
+                        />
                       </VList>
                     </VMenu>
                   </template>
@@ -132,3 +259,22 @@ const handleCloseButton = (data) => {
     </VRow>
   </div>
 </template>
+
+<style scoped lang="scss">
+:deep(.v-data-table.custom-table > .v-table__wrapper) {
+  table {
+    thead > tr > th:last-of-type {
+      position: sticky;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
+    }
+
+    tbody > tr > td:last-of-type {
+      position: sticky;
+      background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
+    }
+  }
+}
+</style>
