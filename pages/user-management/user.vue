@@ -82,7 +82,7 @@ const detailData = ref();
 // remove this function on integrating update
 const handleLoadDetail = (id: string) => {
   selectedUser.value = id;
-  const detail = tableItems.value.find((item) => {
+  const detail = tableItems.value.find((item:any) => {
     return item.id === selectedUser.value;
   });
   if (detail) detailData.value = detail;
@@ -95,7 +95,6 @@ const handleOpenDeleteModal = (id?: string | null) => {
 
 const handleConfirmDelete = () => {
   useSnackbar().sendSnackbar("Data Successfully Deleted", "success");
-  // useSnackbar().sendSnackbar("Delete Data Failed", "error");
 };
 </script>
 
@@ -143,7 +142,7 @@ const handleConfirmDelete = () => {
             >
               <template #no-data>
                 <VCard variant="outlined" class="w-full mt-7 mb-5">
-                  <div class="pt-2" style="justify-items: center">
+                  <div class="pt-2" style="justify-items: center;">
                     <img
                       src="~/assets/images/empty-data.png"
                       alt="empty_data"
@@ -222,15 +221,16 @@ const handleConfirmDelete = () => {
 :deep(.v-data-table.custom-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }
