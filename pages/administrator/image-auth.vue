@@ -53,7 +53,7 @@ const handleLoadList = async () => {
 };
 
 const { refresh } = await useAsyncData(
-  "self-declare-list",
+  "image-auth-list",
   async () => await handleLoadList(),
   {
     watch: [currentPage, itemPerPage],
