@@ -7,7 +7,7 @@ type DataUser = {
   password?: string;
   phone_no: string;
   is_verify: boolean;
-  role: string;
+  roles: Array<{ name: string }>;
 };
 const tableHeaders: any[] = [
   { title: "No", key: "no", sortable: false },
@@ -16,7 +16,7 @@ const tableHeaders: any[] = [
   { title: "Email", key: "email", nowrap: true },
   { title: "Phone Number", key: "phone_no", nowrap: true },
   { title: "Verify", key: "is_verify", nowrap: true },
-  { title: "Role", key: "role", nowrap: true },
+  { title: "Role", key: "roles", nowrap: true },
   { title: "Action", key: "actions", sortable: false, align: "center" },
 ];
 const tableItems = ref<Array<DataUser>>([]);
@@ -201,8 +201,15 @@ const handleConfirmDelete = async () => {
               <template #item.is_verify="{ item }">
                 {{ item.is_verify ? "Yes" : "No" }}
               </template>
-              <template #item.role="{ item }">
-                {{ item.role ? item.role : "-" }}
+              <template #item.roles="{ item }">
+                <div v-if="item.roles.length">
+                  <div v-for="(el, idx) in item.roles" class="d-inline-block">
+                    <div>
+                      <span v-if="idx != 0" class="mx-2">|</span>{{ el.name }}
+                    </div>
+                  </div>
+                </div>
+                <div v-else>-</div>
               </template>
               <template #item.actions="{ item }">
                 <VMenu>
