@@ -12,9 +12,9 @@ const formData = reactive({
   name: null,
   email: null,
   password: null,
-  phone_number: null,
-  is_verified: false,
-  role: null,
+  phone_no: null,
+  is_verify: false,
+  id_role: [],
 });
 const formRules = reactive({
   username: [(v: string) => !!v || "Username is required!"],
@@ -24,34 +24,29 @@ const formRules = reactive({
   phoneNumber: [(v: string) => !!v || "Phone number is required!"],
   role: [(v: string) => !!v || "Role is required!"],
 });
-const roleDropdown = ref([
-  { title: "Pelaku Usaha", value: "Pelaku Usaha" },
-  { title: "Verifikator HLN", value: "Verifikator HLN" },
-  { title: "Keuangan", value: "Keuangan" },
-  { title: "Verifikator Fasilitator", value: "Verifikator Fasilitator" },
-  { title: "Fasilitator", value: "Fasilitator" },
-  { title: "Pendamping", value: "Pendamping" },
-  { title: "Verifikator Self-Declare", value: "Verifikator Self-Declare" },
-  { title: "Komite Fatwa", value: "Komite Fatwa" },
-  { title: "Verifikator Reguler", value: "Verifikator Reguler" },
-  { title: "Lembaga Penjamin Halal", value: "Lembaga Penjamin Halal" },
-  { title: "Auditor", value: "Auditor" },
-  { title: "Komisi Fatwa", value: "Komisi Fatwa" },
-  { title: "Admin", value: "Admin" },
-  { title: "Verifikator BPJPH", value: "Verifikator BPJPH" },
-]);
+const roleDropdown = ref([]);
 const handleResetForm = () => {
   Object.assign(formData, {
     username: null,
     name: null,
     email: null,
-    phone_number: null,
-    is_verified: false,
-    role: null,
+    phone_no: null,
+    is_verify: false,
+    id_role: [],
   });
 };
-const handleGeneratePassword = () => {
-  // generate password here
+const handleGeneratePassword = async () => {
+  try {
+    const response: any = await $api("/admin/users/gen-password", {
+      method: "post",
+    } as any);
+
+    if (response.code === 2000) {
+      formData.password = response.data.password;
+    }
+  } catch (error) {
+    console.error(error);
+  }
 };
 const handleSubmitForm = async () => {
   const status = await form.value.validate();
@@ -59,9 +54,29 @@ const handleSubmitForm = async () => {
   if (status.valid) {
     emit("submit:add", formData);
     props.closeHandler();
-    handleResetForm();
+    setTimeout(() => {
+      handleResetForm();
+    }, 1000);
   }
 };
+
+const handleLoadRoles = async () => {
+  try {
+    const response: any = await $api("/admin/users/list-role", {
+      method: "get",
+    } as any);
+
+    if (response.code === 2000) {
+      roleDropdown.value = response.data;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+onMounted(() => {
+  handleLoadRoles();
+});
 </script>
 
 <template>
@@ -130,7 +145,7 @@ const handleSubmitForm = async () => {
             <VCol cols="12">
               <div class="font-weight-bold mb-1">Phone Number</div>
               <VTextField
-                v-model="formData.phone_number"
+                v-model="formData.phone_no"
                 :rules="formRules.phoneNumber"
                 placeholder="Input phone number"
                 density="compact"
@@ -141,8 +156,8 @@ const handleSubmitForm = async () => {
             <VCol cols="12">
               <div class="font-weight-bold">Is Verify?</div>
               <VCheckbox
-                v-model="formData.is_verified"
-                :label="formData.is_verified ? 'Yes' : 'No'"
+                v-model="formData.is_verify"
+                :label="formData.is_verify ? 'Yes' : 'No'"
               />
             </VCol>
           </VRow>
@@ -150,13 +165,16 @@ const handleSubmitForm = async () => {
             <VCol cols="12">
               <div class="font-weight-bold mb-1">Role</div>
               <VSelect
-                v-model="formData.role"
+                v-model="formData.id_role"
                 :rules="formRules.role"
                 :items="roleDropdown"
+                item-value="id"
+                item-title="name"
                 placeholder="Select role"
                 density="compact"
                 menu-icon="fa-chevron-down"
                 clearable
+                multiple
               />
             </VCol>
           </VRow>

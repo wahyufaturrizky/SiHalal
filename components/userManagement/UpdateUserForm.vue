@@ -1,61 +1,94 @@
 <script setup lang="ts">
 const props = defineProps<{
-  detail?: any;
+  userId: string;
 }>();
 
 const emit = defineEmits(["submit:update"]);
 const isModalOpen = ref(false);
 
-const handleLoadUserDetail = () => {
-  // load user detail here for update
+const handleLoadUserDetail = async () => {
+  try {
+    const response: any = await $api("/admin/users/detail", {
+      method: "get",
+      query: {
+        user_id: props.userId,
+      },
+    } as any);
+
+    if (response.code === 2000) {
+      Object.assign(formData, response.data);
+    }
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 const form = ref();
 const formData = reactive({
-  username: props?.detail?.username || null,
-  name: props?.detail?.nama || null,
-  email: props?.detail?.nama || null,
-  password: props?.detail?.password || null,
-  phone_number: props?.detail?.phone_no || null,
-  is_verified: props?.detail?.is_verify || false,
-  role: props?.detail?.role || null,
+  username: null,
+  name: null,
+  email: null,
+  password: null,
+  phone_no: null,
+  is_verify: false,
+  roles: [],
 });
 const formRules = reactive({
   username: [(v: string) => !!v || "Username is required!"],
   name: [(v: string) => !!v || "Name is required!"],
   email: [(v: string) => !!v || "Email is required!"],
-  password: [(v: string) => !!v || "Password is required!"],
   phoneNumber: [(v: string) => !!v || "Phone number is required!"],
   role: [(v: string) => !!v || "Role is required!"],
 });
-const roleDropdown = ref([
-  { title: "Pelaku Usaha", value: "Pelaku Usaha" },
-  { title: "Verifikator HLN", value: "Verifikator HLN" },
-  { title: "Keuangan", value: "Keuangan" },
-  { title: "Verifikator Fasilitator", value: "Verifikator Fasilitator" },
-  { title: "Fasilitator", value: "Fasilitator" },
-  { title: "Pendamping", value: "Pendamping" },
-  { title: "Verifikator Self-Declare", value: "Verifikator Self-Declare" },
-  { title: "Komite Fatwa", value: "Komite Fatwa" },
-  { title: "Verifikator Reguler", value: "Verifikator Reguler" },
-  { title: "Lembaga Penjamin Halal", value: "Lembaga Penjamin Halal" },
-  { title: "Auditor", value: "Auditor" },
-  { title: "Komisi Fatwa", value: "Komisi Fatwa" },
-  { title: "Admin", value: "Admin" },
-  { title: "Verifikator BPJPH", value: "Verifikator BPJPH" },
-]);
+const roleDropdown = ref([]);
 
-const handleGeneratePassword = () => {
-  // generate password here
+const handleGeneratePassword = async () => {
+  try {
+    const response: any = await $api("/admin/users/gen-password", {
+      method: "post",
+    } as any);
+
+    if (response.code === 2000) {
+      formData.password = response.data.password;
+    }
+  } catch (error) {
+    console.error(error);
+  }
 };
 const handleSubmitForm = async () => {
   const status = await form.value.validate();
 
   if (status.valid) {
-    emit("submit:update", formData);
+    const payload = {
+      email: formData.email,
+      id_role: formData.roles,
+      is_verify: formData.is_verify,
+      name: formData.name,
+      phone_no: formData.phone_no,
+      username: formData.username,
+    };
+    emit("submit:update", payload);
     isModalOpen.value = false;
   }
 };
+
+const handleLoadRoles = async () => {
+  try {
+    const response: any = await $api("/admin/users/list-role", {
+      method: "get",
+    } as any);
+
+    if (response.code === 2000) {
+      roleDropdown.value = response.data;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+onMounted(() => {
+  handleLoadRoles();
+});
 </script>
 
 <template>
@@ -122,7 +155,6 @@ const handleSubmitForm = async () => {
                 <div class="font-weight-bold mb-1">Password</div>
                 <VTextField
                   v-model="formData.password"
-                  :rules="formRules.password"
                   type="password"
                   placeholder="Input password"
                   density="compact"
@@ -137,7 +169,7 @@ const handleSubmitForm = async () => {
               <VCol cols="12">
                 <div class="font-weight-bold mb-1">Phone Number</div>
                 <VTextField
-                  v-model="formData.phone_number"
+                  v-model="formData.phone_no"
                   :rules="formRules.phoneNumber"
                   placeholder="Input phone number"
                   density="compact"
@@ -148,8 +180,8 @@ const handleSubmitForm = async () => {
               <VCol cols="12">
                 <div class="font-weight-bold">Is Verify?</div>
                 <VCheckbox
-                  v-model="formData.is_verified"
-                  :label="formData.is_verified ? 'Yes' : 'No'"
+                  v-model="formData.is_verify"
+                  :label="formData.is_verify ? 'Yes' : 'No'"
                 />
               </VCol>
             </VRow>
@@ -157,13 +189,16 @@ const handleSubmitForm = async () => {
               <VCol cols="12">
                 <div class="font-weight-bold mb-1">Role</div>
                 <VSelect
-                  v-model="formData.role"
+                  v-model="formData.roles"
                   :rules="formRules.role"
                   :items="roleDropdown"
+                  item-value="id"
+                  item-title="name"
                   placeholder="Select role"
                   density="compact"
                   menu-icon="fa-chevron-down"
                   clearable
+                  multiple
                 />
               </VCol>
             </VRow>
