@@ -28,7 +28,6 @@ const form = ref();
 const inputData = reactive<any>({
   file: null,
   file_name: null,
-  group_code: null,
   status: false,
 });
 const uploadedFile = reactive({
@@ -50,6 +49,7 @@ const handleUploadFile = async (event: any) => {
 const handleRemoveFile = () => {
   uploadedFile.name = null;
   uploadedFile.file = null;
+  inputData.file = null;
   inputData.file_name = null;
 };
 
@@ -58,7 +58,10 @@ const handleSubmitForm = async () => {
 
   if (status.valid) {
     const formData = new FormData();
-    formData.append("file", inputData.file);
+    formData.append(
+      "file",
+      inputData.file ? inputData.file : inputData.file_name
+    );
     formData.append("status", inputData.status);
     emit("submit:update", formData);
     isModalOpen.value = false;
@@ -83,7 +86,9 @@ const handleSubmitForm = async () => {
     <template #default="{ isActive }">
       <VForm
         ref="form"
-        @submit.prevent="inputData.file_name ? handleSubmitForm() : null"
+        @submit.prevent="
+          inputData.file || inputData.file_name ? handleSubmitForm() : null
+        "
       >
         <VCard class="pa-4">
           <VCardTitle class="d-flex justify-space-between align-center">
@@ -150,7 +155,9 @@ const handleSubmitForm = async () => {
             >
             <VBtn
               type="submit"
-              :color="inputData.file_name ? 'primary' : '#A09BA1'"
+              :color="
+                inputData.file || inputData.file_name ? 'primary' : '#A09BA1'
+              "
               variant="flat"
               class="px-7"
             >
