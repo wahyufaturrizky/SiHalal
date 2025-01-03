@@ -15,7 +15,7 @@ export default defineEventHandler(async (event: any) => {
     const query: any = await getQuery(event);
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/admin/users/delete/${query.user_id}`,
+      `${runtimeConfig.authBaseUrl}/api/v1/admin/users/delete/${query.user_id}`,
       {
         method: "delete",
         headers: { Authorization: authHeader },

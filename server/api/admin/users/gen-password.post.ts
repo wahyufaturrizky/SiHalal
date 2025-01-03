@@ -15,7 +15,7 @@ export default defineEventHandler(async (event: any) => {
     const payload = await readBody(event);
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/admin/users/generate-password`,
+      `${runtimeConfig.authBaseUrl}/api/v1/admin/users/generate-password`,
       {
         method: "post",
         headers: { Authorization: authHeader },

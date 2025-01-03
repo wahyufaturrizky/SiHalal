@@ -12,10 +12,10 @@ export default defineEventHandler(async (event: any) => {
 
   try {
     const runtimeConfig = useRuntimeConfig();
-    const payload = await readBody(event);
+    const payload = await readFormData(event);
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/admin/image-auth/add`,
+      `${runtimeConfig.authBaseUrl}/api/v1/admin/image-auth/add`,
       {
         method: "post",
         headers: { Authorization: authHeader },

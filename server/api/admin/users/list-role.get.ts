@@ -14,7 +14,7 @@ export default defineEventHandler(async (event: any) => {
     const runtimeConfig = useRuntimeConfig();
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/list/user-type`,
+      `${runtimeConfig.authBaseUrl}/api/v1/list/user-type`,
       {
         method: "get",
         headers: { Authorization: authHeader },

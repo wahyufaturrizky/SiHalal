@@ -24,7 +24,7 @@ export default defineEventHandler(async (event: any) => {
     };
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/admin/image-auth/list`,
+      `${runtimeConfig.authBaseUrl}/api/v1/admin/image-auth/list`,
       {
         method: "get",
         headers: { Authorization: authHeader },

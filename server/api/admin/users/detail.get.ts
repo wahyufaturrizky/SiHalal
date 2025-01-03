@@ -15,7 +15,7 @@ export default defineEventHandler(async (event: any) => {
     const query: any = await getQuery(event);
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/admin/users/${query.user_id}/detail`,
+      `${runtimeConfig.authBaseUrl}/api/v1/admin/users/${query.user_id}/detail`,
       {
         method: "get",
         headers: { Authorization: authHeader },
