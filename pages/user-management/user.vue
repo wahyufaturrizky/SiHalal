@@ -183,7 +183,7 @@ const handleConfirmDelete = async () => {
             >
               <template #no-data>
                 <VCard variant="outlined" class="w-full mt-7 mb-5">
-                  <div class="pt-2" style="justify-items: center">
+                  <div class="pt-2" style="justify-items: center;">
                     <img
                       src="~/assets/images/empty-data.png"
                       alt="empty_data"
