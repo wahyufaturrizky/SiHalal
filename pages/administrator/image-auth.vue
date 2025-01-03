@@ -54,11 +54,15 @@ const handleLoadList = async () => {
 
 const { refresh } = await useAsyncData(
   "self-declare-list",
-  async () => handleLoadList(),
+  async () => await handleLoadList(),
   {
     watch: [currentPage, itemPerPage],
   }
 );
+onMounted(() => {
+  handleLoadList();
+});
+
 const handleSearchUser = useDebounceFn((val: string) => {
   searchQuery.value = val;
   currentPage.value = 1;
@@ -75,7 +79,6 @@ const handleOpenAddModal = () => {
   isOpenAddModal.value = !isOpenAddModal.value;
 };
 const handleAddImage = async (payload: any) => {
-  console.log(payload, "< submit payload");
   try {
     const response: any = await $api("/admin/images/create", {
       method: "post",
@@ -92,7 +95,6 @@ const handleAddImage = async (payload: any) => {
   }
 };
 const handleUpdateImage = async (payload: any) => {
-  console.log(payload, "< update payload");
   try {
     const response: any = await $api("/admin/images/update", {
       method: "put",

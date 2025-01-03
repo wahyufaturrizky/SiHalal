@@ -56,11 +56,14 @@ const handleLoadList = async () => {
 
 const { refresh } = await useAsyncData(
   "self-declare-list",
-  async () => handleLoadList(),
+  async () => await handleLoadList(),
   {
     watch: [currentPage, itemPerPage],
   }
 );
+onMounted(() => {
+  handleLoadList();
+});
 
 const handleSearchUser = useDebounceFn((val: string) => {
   searchQuery.value = val;
