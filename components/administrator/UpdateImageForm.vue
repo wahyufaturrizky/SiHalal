@@ -1,66 +1,65 @@
 <script setup lang="ts">
 const props = defineProps<{
-  detail?: any;
+  imageId?: string;
 }>();
 
 const emit = defineEmits(["submit:update"]);
 const isModalOpen = ref(false);
 
-const handleLoadImageDetail = () => {
-  // load image detail here for update
+const handleLoadImageDetail = async () => {
+  try {
+    const response: any = await $api("/admin/images/detail", {
+      method: "get",
+      query: {
+        image_id: props.imageId,
+      },
+    } as any);
+
+    if (response.code === 2000) {
+      Object.assign(inputData, response.data);
+      uploadedFile.name = response.data.file_name;
+    }
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 const form = ref();
-const formData = reactive({
-  image: props?.detail?.image || null,
-  status: props?.detail?.status || false,
+const inputData = reactive<any>({
+  file: null,
+  file_name: null,
+  group_code: null,
+  status: false,
 });
 const uploadedFile = reactive({
-  name: props?.detail?.image || null,
-  file: props?.detail?.image || null,
+  name: null,
+  file: null,
 });
 const formRules = reactive({
   image: [(v: string) => !!v || "Image is required!"],
 });
-const uploadImageFile = async (file: any) => {
-  try {
-    const formData = new FormData();
-    formData.append("file", file);
-    // put API for upload image here
-    return;
-  } catch (error) {
-    useSnackbar().sendSnackbar(
-      "ada kesalahan saat upload file, gagal menyimpan!",
-      "error"
-    );
-  }
-};
+
 const handleUploadFile = async (event: any) => {
   if (event?.target?.files.length) {
     const fileData = event.target.files[0];
     uploadedFile.name = fileData.name;
     uploadedFile.file = fileData;
-    formData.image = fileData;
-    // try {
-    //   const response: any = await uploadImageFile(fileData);
-    //   if (response.code === 2000) {
-    //     formData.image = response.data.file_url;
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    inputData.file = fileData;
   }
 };
 const handleRemoveFile = () => {
   uploadedFile.name = null;
   uploadedFile.file = null;
-  formData.image = null;
+  inputData.file_name = null;
 };
 
 const handleSubmitForm = async () => {
   const status = await form.value.validate();
 
   if (status.valid) {
+    const formData = new FormData();
+    formData.append("file", inputData.file);
+    formData.append("status", inputData.status);
     emit("submit:update", formData);
     isModalOpen.value = false;
   }
@@ -84,7 +83,7 @@ const handleSubmitForm = async () => {
     <template #default="{ isActive }">
       <VForm
         ref="form"
-        @submit.prevent="formData.image ? handleSubmitForm() : null"
+        @submit.prevent="inputData.file_name ? handleSubmitForm() : null"
       >
         <VCard class="pa-4">
           <VCardTitle class="d-flex justify-space-between align-center">
@@ -100,7 +99,7 @@ const handleSubmitForm = async () => {
               </VCol>
               <VCol cols="7">
                 <VTextField
-                  v-if="uploadedFile.file"
+                  v-if="uploadedFile.file || uploadedFile.name"
                   :model-value="uploadedFile.name"
                   density="compact"
                   placeholder="No file choosen"
@@ -136,8 +135,8 @@ const handleSubmitForm = async () => {
               <VCol cols="12">
                 <div class="font-weight-bold">Status</div>
                 <VCheckbox
-                  v-model="formData.status"
-                  :label="formData.status ? 'Active' : 'Inactive'"
+                  v-model="inputData.status"
+                  :label="inputData.status ? 'Active' : 'Inactive'"
                 />
               </VCol>
             </VRow>
@@ -151,7 +150,7 @@ const handleSubmitForm = async () => {
             >
             <VBtn
               type="submit"
-              :color="formData.image ? 'primary' : '#A09BA1'"
+              :color="inputData.file_name ? 'primary' : '#A09BA1'"
               variant="flat"
               class="px-7"
             >
