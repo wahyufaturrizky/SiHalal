@@ -497,7 +497,19 @@ onMounted(() => {
           :items="listComitee"
           item-title="name"
           item-value="user_id"
-        />
+        >
+          <template v-slot:item="{ props, item }">
+            <v-list-item
+              v-bind="props"
+              :title="item.raw.name"
+              :subtitle="item.raw.username"
+            >
+            </v-list-item>
+          </template>
+          <template v-slot:selection="{ item }">
+            <p>{{ `${item.raw.name} - ${item.raw.username}` }}</p>
+          </template>
+        </VSelect>
       </VCardItem>
       <VCardActions class="d-flex justify-end ga-4">
         <VBtn
