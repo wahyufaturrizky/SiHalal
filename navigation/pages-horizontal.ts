@@ -324,4 +324,29 @@ export default [
       },
     ],
   },
+  {
+    title: "navbar.management.title",
+    icon: { icon: "ri-more-line" },
+    roles: ["Admin"],
+    children: [
+      {
+        title: "navbar.management.menu.user",
+        icon: { icon: "mdi-account-group" },
+        to: "user-management-user",
+        roles: ["Admin"],
+      },
+      {
+        title: "navbar.management.menu.role",
+        icon: { icon: "fa-briefcase" },
+        to: "user-management-role",
+        roles: ["Admin"],
+      },
+      {
+        title: "navbar.management.menu.image",
+        icon: { icon: "fa-image" },
+        to: "administrator-image-auth",
+        roles: ["Admin"],
+      },
+    ],
+  },
 ];
