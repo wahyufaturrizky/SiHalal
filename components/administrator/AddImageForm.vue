@@ -7,8 +7,8 @@ const props = defineProps<{
 const emit = defineEmits(["submit:add"]);
 
 const form = ref();
-const formData = reactive({
-  image: null,
+const inputData = reactive<any>({
+  file: null,
   status: false,
 });
 const uploadedFile = reactive({
@@ -18,49 +18,35 @@ const uploadedFile = reactive({
 const formRules = reactive({
   image: [(v: string) => !!v || "Image is required!"],
 });
-const uploadImageFile = async (file: any) => {
-  try {
-    const formData = new FormData();
-    formData.append("file", file);
-    // put API for upload image here
-    return;
-  } catch (error) {
-    useSnackbar().sendSnackbar(
-      "ada kesalahan saat upload file, gagal menyimpan!",
-      "error"
-    );
-  }
-};
+
 const handleUploadFile = async (event: any) => {
   if (event?.target?.files.length) {
     const fileData = event.target.files[0];
     uploadedFile.name = fileData.name;
     uploadedFile.file = fileData;
-    formData.image = fileData;
-    // try {
-    //   const response: any = await uploadImageFile(fileData);
-    //   if (response.code === 2000) {
-    //     formData.image = response.data.file_url;
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    inputData.file = fileData;
   }
 };
 const handleRemoveFile = () => {
   uploadedFile.name = null;
   uploadedFile.file = null;
-  formData.image = null;
+  inputData.file = null;
 };
 
 const handleSubmitForm = async () => {
   const status = await form.value.validate();
 
   if (status.valid) {
+    const formData = new FormData();
+    formData.append("file", inputData.file);
+    formData.append("status", inputData.status);
     emit("submit:add", formData);
     props.closeHandler();
-    handleRemoveFile();
-    formData.status = false;
+
+    setTimeout(() => {
+      handleRemoveFile();
+      inputData.status = false;
+    }, 1000);
   }
 };
 </script>
@@ -69,7 +55,7 @@ const handleSubmitForm = async () => {
   <VDialog v-model="props.dialogVisible" max-width="640px" persistent>
     <VForm
       ref="form"
-      @submit.prevent="formData.image ? handleSubmitForm() : null"
+      @submit.prevent="inputData.file ? handleSubmitForm() : null"
     >
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
@@ -121,8 +107,8 @@ const handleSubmitForm = async () => {
             <VCol cols="12">
               <div class="font-weight-bold">Status</div>
               <VCheckbox
-                v-model="formData.status"
-                :label="formData.status ? 'Active' : 'Inactive'"
+                v-model="inputData.status"
+                :label="inputData.status ? 'Active' : 'Inactive'"
               />
             </VCol>
           </VRow>
@@ -136,7 +122,7 @@ const handleSubmitForm = async () => {
           >
           <VBtn
             type="submit"
-            :color="formData.image ? 'primary' : '#A09BA1'"
+            :color="inputData.file ? 'primary' : '#A09BA1'"
             variant="flat"
             class="px-7"
           >
