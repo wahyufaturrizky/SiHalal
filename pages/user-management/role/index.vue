@@ -41,13 +41,19 @@ const dialogVisible = ref(false);
 const handleDialogvisible = () => {
   dialogVisible.value = true;
 };
-const handleCloseButton = (data:any) => {
+const handleCloseButton = (data: any) => {
   dialogVisible.value = data;
 };
-const handleDelete = async (item:any) => {
-  try {
-  
+const handleEditButton = (data: any) => {
+  dialogVisible.value = data;
+};
+const handleAddButton = (data: any) => {
+  dialogVisible.value = data;
+  debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
+};
 
+const handleDelete = async (item: any) => {
+  try {
     const response = await $api(
       `/user-management/role/delete-user/${item.id}`,
       {
@@ -63,11 +69,7 @@ const handleDelete = async (item:any) => {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
 
-    debouncedFetch(
-    page.value,
-    itemPerPage.value,
-    searchQuery.value,
-  )
+    debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loading.value = false;
@@ -82,9 +84,15 @@ const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
 
-
-
-const loadItem = async ({ page, size,keyword }: { page: number; size: number;keyword: string }) => {
+const loadItem = async ({
+  page,
+  size,
+  keyword,
+}: {
+  page: number;
+  size: number;
+  keyword: string;
+}) => {
   try {
     loading.value = true;
 
@@ -93,7 +101,7 @@ const loadItem = async ({ page, size,keyword }: { page: number; size: number;key
       params: {
         page,
         size,
-        keyword
+        keyword,
       },
     });
 
@@ -114,15 +122,11 @@ const loadItem = async ({ page, size,keyword }: { page: number; size: number;key
     loading.value = false;
   }
 };
-const searchQuery = ref('')
+const searchQuery = ref("");
 
 const handleInput = () => {
-  debouncedFetch(
-    page.value,
-    itemPerPage.value,
-    searchQuery.value,
-  )
-}
+  debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
+};
 
 const debouncedFetch = debounce(loadItem, 500);
 
@@ -132,7 +136,6 @@ onMounted(async () => {
       page: page.value,
       size: itemPerPage.value,
     }),
-  
   ]);
 
   const checkResIfUndefined = res.every((item: any) => {
@@ -145,7 +148,6 @@ onMounted(async () => {
     loadingAll.value = false;
   }
 });
-
 </script>
 
 <template>
@@ -168,8 +170,12 @@ onMounted(async () => {
               </VBtn>
 
               <VDialog v-model="dialogVisible" max-width="100svh">
-                <VCard style="padding: 1.5svw;">
-                  <AddRoleForm @visible="handleCloseButton" :action="true" />
+                <VCard style="padding: 1.5svw">
+                  <AddRoleForm
+                    @visible="handleCloseButton"
+                    :action="true"
+                    @add="handleAddButton"
+                  />
                 </VCard>
               </VDialog>
             </VCardTitle>
@@ -205,7 +211,7 @@ onMounted(async () => {
                 >
                   <template #no-data>
                     <VCard variant="outlined" class="w-full mt-7 mb-5">
-                      <div class="pt-2" style="justify-items: center;">
+                      <div class="pt-2" style="justify-items: center">
                         <img
                           src="~/assets/images/empty-data.png"
                           alt="empty_data"
@@ -249,9 +255,10 @@ onMounted(async () => {
                           <VListItemTitle>Ubah</VListItemTitle>
                         </VListItem>
                         <VDialog v-model="dialogVisible" max-width="100svh">
-                          <VCard style="padding: 1.5svw;">
+                          <VCard style="padding: 1.5svw">
                             <AddRoleForm
                               @visible="handleCloseButton"
+                              @edit="handleEditButton"
                               :id_role="item.id"
                               :action="false"
                             />
