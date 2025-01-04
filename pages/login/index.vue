@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import InformationLoginPopUp from "@/components/halalCommon/InformationLoginPopUp.vue";
 import { themeConfig } from "@themeConfig";
 import { useDisplay } from "vuetify";
 import { VForm } from "vuetify/components/VForm";
@@ -156,6 +155,38 @@ const getDate = (): string => {
 
   return formattedDate;
 };
+
+const currentImage = ref("");
+const handleLoadImageAuth = async () => {
+  try {
+    const response: any = await $api("/admin/images/random-image", {
+      method: "get",
+    } as any);
+
+    if (response.code === 2000) {
+      handleLoadImageFile(response.data.file_name);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+const handleLoadImageFile = async (filename: string) => {
+  try {
+    const response: any = await $api("/admin/images/download", {
+      method: "post",
+      query: {
+        filename,
+      },
+    } as any);
+    currentImage.value = response.url;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+onMounted(() => {
+  handleLoadImageAuth();
+});
 </script>
 
 <template>
@@ -352,6 +383,9 @@ const getDate = (): string => {
 .responsive-image {
   block-size: 100%;
   inline-size: 100%;
+  object-fit: fill;
+}
+.v-img__img--contain {
   object-fit: fill;
 }
 </style>
