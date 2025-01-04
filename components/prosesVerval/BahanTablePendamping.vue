@@ -86,6 +86,7 @@ watch(
           <ModalBahanPendampingVerval
             :modal-type="modalTypeEnum.ADD"
             :id-reg="props.idReg"
+            :list-bahan="content"
             @emit-add="handleAddBahan"
           ></ModalBahanPendampingVerval
         ></VCol>
