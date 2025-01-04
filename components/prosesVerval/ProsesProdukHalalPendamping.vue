@@ -25,10 +25,34 @@ const props = defineProps({
   },
 });
 
+const countPersyaratan = ref({
+  countProses: 0,
+  countSjph: 0,
+});
+
+const disableAddProses = ref(false);
+
 watch(
   () => props.data,
   async (newData) => {
     content.value = newData;
+
+    if (newData) {
+      content.value.forEach((val) => {
+        if (parseInt(val.persyaratan) == 0) {
+          countPersyaratan.value.countProses += 1;
+        } else if (parseInt(val.persyaratan) == 1) {
+          countPersyaratan.value.countSjph += 1;
+        }
+      });
+
+      if (
+        countPersyaratan.value.countSjph > 0 &&
+        countPersyaratan.value.countProses > 0
+      ) {
+        disableAddProses.value = true;
+      }
+    }
   },
   { immediate: true }
 );
@@ -69,6 +93,16 @@ const handleDeleteProsesProduk = async (idProses: string) => {
   }
 };
 
+const validationErrorRibbon = ref(false);
+
+const openValidationErrorRibbon = () => {
+  validationErrorRibbon.value = true;
+};
+
+defineExpose({
+  openValidationErrorRibbon,
+});
+
 const onOpenModal = async () => {
   // resetForm();
 };
@@ -80,6 +114,7 @@ const onOpenModal = async () => {
         <VCol cols="6"><h3>Proses Produk Halal</h3></VCol>
         <VCol cols="6" style="display: flex; justify-content: end">
           <ModalProsesProdukHalalVerval
+            :disable-add="disableAddProses"
             :modal-type="modalTypeEnum.ADD"
             @emit-add="handleAddBahan"
           ></ModalProsesProdukHalalVerval>
@@ -87,6 +122,17 @@ const onOpenModal = async () => {
       </VRow>
     </VCardTitle>
     <VCardItem>
+      <VRow>
+        <VCol cols="12">
+          <VAlert
+            closable
+            type="error"
+            text="Proses Produk belum sepenuhnya dipilih"
+            v-if="validationErrorRibbon"
+          ></VAlert>
+        </VCol>
+      </VRow>
+      <br />
       <VDataTable :headers="tableHeader" :items="content" hide-default-footer>
         <template #item.no="{ index }">
           {{ index + 1 }}
