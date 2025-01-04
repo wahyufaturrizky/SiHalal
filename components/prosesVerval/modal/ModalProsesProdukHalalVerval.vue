@@ -10,6 +10,9 @@ const props = defineProps({
   disableAdd: {
     type: Boolean,
   },
+  data: {
+    type: Object,
+  },
 });
 
 const isVisible = ref(false);
@@ -18,10 +21,7 @@ const route = useRoute();
 
 const emit = defineEmits(["emit-add"]);
 
-const persyaratanItem = [
-  { name: "Proses", value: 0 },
-  { name: "Kriteria SJPH", value: 1 },
-];
+const persyaratanItem = ref();
 
 const form = ref({
   persyaratan: null,
@@ -29,6 +29,8 @@ const form = ref({
 });
 
 const refVForm = ref<VForm>();
+
+const disabledPenjelasan = ref(true);
 
 const insertProsesProduk = async () => {
   // submitAddBahanButton.value = true;
@@ -63,16 +65,6 @@ const onSubmit = async () => {
   });
 };
 
-const handleChangePersyaratan = async (value: number) => {
-  if (value === 0) {
-    // get api proses pph
-    getProsesProdukData();
-  } else if (value === 1) {
-    form.value.penjelasan =
-      "Pemenuhan Kriteria Sistem Jaminan Produk Halal telah diverifikasi langsung ke lokasi Pelaku Usaha";
-  }
-};
-
 const getProsesProdukData = async () => {
   try {
     const response: any = await $api(
@@ -84,7 +76,7 @@ const getProsesProdukData = async () => {
 
     if (response.code === 2000) {
       form.value.penjelasan = response.data.narasi;
-      if (response.data.narasi.length > 0) {
+      if (form.value.penjelasan?.length > 0) {
         Object.assign(form.value.penjelasan, response.data.narasi.split("\n"));
       }
     }
@@ -94,10 +86,47 @@ const getProsesProdukData = async () => {
   }
 };
 
+const handleChangePersyaratan = async (value: string) => {
+  if (parseInt(value) === 0) {
+    // get api proses pph
+    await getProsesProdukData();
+    disabledPenjelasan.value = false;
+  } else if (value === 1) {
+    disabledPenjelasan.value = true;
+    form.value.penjelasan =
+      "Pemenuhan Kriteria Sistem Jaminan Produk Halal telah diverifikasi langsung ke lokasi Pelaku Usaha";
+  }
+};
+
+const tmpList = ref();
+
+watch(
+  () => props.data,
+  async (newData) => {
+    if (newData) {
+      tmpList.value = newData;
+    }
+  },
+  { immediate: true }
+);
+
 const onOpenModal = async () => {
   if (props.modalType === modalTypeEnum.EDIT) {
     await getProsesProdukData();
   } else {
+    persyaratanItem.value = [
+      { name: "Proses", value: 0 },
+      { name: "Kriteria SJPH", value: 1 },
+    ];
+    if (tmpList.value) {
+      tmpList.value?.forEach((val) => {
+        const tmpIdx = persyaratanItem.value.findIndex(
+          (val2) => val2.value == parseInt(val.persyaratan)
+        );
+        persyaratanItem.value.splice(tmpIdx, 1);
+      });
+    }
+
     form.value = {
       persyaratan: null,
       penjelasan: null,
@@ -165,7 +194,7 @@ const onOpenModal = async () => {
                     density="compact"
                     placeholder="Isi Penjelasan"
                     v-model="form.penjelasan"
-                    disabled
+                    :disabled="disabledPenjelasan"
                   ></VTextarea>
                 </VItemGroup>
               </VCol>

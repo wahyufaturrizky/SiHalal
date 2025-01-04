@@ -13,6 +13,9 @@ const props = defineProps({
   idReg: {
     type: String,
   },
+  listBahan: {
+    type: Object,
+  },
 });
 
 const isVisible = ref(false);
@@ -161,11 +164,31 @@ const getDetailBahan = async () => {
   }
 };
 
+const tmpList = ref();
+
+watch(
+  () => props.listBahan,
+  async (newData) => {
+    if (newData) {
+      tmpList.value = newData;
+    }
+  },
+  { immediate: true }
+);
+
 const onOpenModal = async () => {
   await getIngredientListDropdown();
+  if (tmpList) {
+    tmpList.value.forEach((val) => {
+      const tmpIdx = dataBahanList.value.findIndex(
+        (val2) => val2.id == val.id_bahan
+      );
+      dataBahanList.value.splice(tmpIdx, 1);
+    });
+  }
   if (props.modalType === modalTypeEnum.EDIT) {
     console.log("edit");
-    getDetailBahan();
+    await getDetailBahan();
   } else {
     form.value = {
       id: null,
