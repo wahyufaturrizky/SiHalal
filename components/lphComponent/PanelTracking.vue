@@ -30,7 +30,11 @@ const props = defineProps<{
             class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
           >
             <span class="app-timeline-title">
-              {{ (item as any).status }}
+              {{
+                (item.comment as any).length > 38
+                  ? (item.comment as any).slice(0, 38) + "..."
+                  : (item.comment as any)
+              }}
             </span>
             <span class="app-timeline-meta">{{
               formatDate((item as any).date)
@@ -39,13 +43,13 @@ const props = defineProps<{
           <div class="app-timeline-text mt-1">
             {{ (item as any).username }}
           </div>
-          <div v-if="item.comment" class="app-timeline-text mt-1">
+          <!-- <div v-if="item.comment" class="app-timeline-text mt-1">
             {{
               (item.comment as any).length > 38
                 ? (item.comment as any).slice(0, 38) + "..."
                 : (item.comment as any)
             }}
-          </div>
+          </div> -->
         </VTimelineItem>
       </VTimeline>
     </VCardText>
