@@ -105,9 +105,9 @@ onMounted(() => {
         @click="handleLoadUserDetail"
       >
         <template #prepend>
-          <VIcon icon="fa-rotate-right" :size="16" />
+          <VIcon icon="mdi-pencil" />
         </template>
-        <VListItemTitle>Reset Password</VListItemTitle>
+        <VListItemTitle>Edit</VListItemTitle>
       </VListItem>
     </template>
     <template #default="{ isActive }">

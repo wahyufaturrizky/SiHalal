@@ -58,10 +58,7 @@ const handleSubmitForm = async () => {
 
   if (status.valid) {
     const formData = new FormData();
-    formData.append(
-      "file",
-      inputData.file ? inputData.file : inputData.file_name
-    );
+    if (inputData.file) formData.append("file", inputData.file);
     formData.append("status", inputData.status);
     emit("submit:update", formData);
     isModalOpen.value = false;
