@@ -1,12 +1,13 @@
 <script setup lang="ts">
 type DataImage = {
   id: string;
-  image: string | null;
+  file_name: string | null;
+  group_code: string;
   status: boolean;
 };
 const tableHeaders: any[] = [
   { title: "No", key: "no", sortable: false, width: "30px" },
-  { title: "Image", key: "image", nowrap: true },
+  { title: "Image", key: "file_name", nowrap: true },
   { title: "Status", key: "status", nowrap: true },
   {
     title: "Action",
@@ -16,34 +17,57 @@ const tableHeaders: any[] = [
     width: "30px",
   },
 ];
-const tableItems = ref<Array<DataImage>>([
-  {
-    id: "1",
-    image: "SiHalalBanner_2024.jpg",
-    status: false,
-  },
-  {
-    id: "2",
-    image: "SiHalalBanner_2023.jpg",
-    status: true,
-  },
-  {
-    id: "3",
-    image: null,
-    status: true,
-  },
-]);
+const tableItems = ref<Array<DataImage>>([]);
 const currentPage = ref(1);
 const itemPerPage = ref(10);
 const totalItems = ref(tableItems.value.length);
 const isLoading = ref(false);
 
 const searchQuery = ref("");
+const handleLoadList = async () => {
+  try {
+    const response: any = await $api("/admin/images/list", {
+      method: "get",
+      params: {
+        page: currentPage.value,
+        size: itemPerPage.value,
+        search: searchQuery.value,
+      },
+    } as any);
+
+    if (response.code === 2000) {
+      if (response.data !== null) {
+        tableItems.value = response.data;
+        currentPage.value = response.current_page;
+        totalItems.value = response.total_item;
+      } else {
+        tableItems.value = [];
+        currentPage.value = 1;
+        totalItems.value = 0;
+      }
+      return response;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const { refresh } = await useAsyncData(
+  "image-auth-list",
+  async () => await handleLoadList(),
+  {
+    watch: [currentPage, itemPerPage],
+  }
+);
+onMounted(() => {
+  handleLoadList();
+});
+
 const handleSearchUser = useDebounceFn((val: string) => {
   searchQuery.value = val;
   currentPage.value = 1;
 
-  // refresh();
+  refresh();
 }, 350);
 
 const handleDownload = async (filename: string) => {
@@ -54,36 +78,68 @@ const isOpenAddModal = ref(false);
 const handleOpenAddModal = () => {
   isOpenAddModal.value = !isOpenAddModal.value;
 };
-const handleAddImage = (payload: any) => {
-  console.log(payload, "< submit payload");
-  useSnackbar().sendSnackbar("Data Successfully Added", "success");
-  // useSnackbar().sendSnackbar("Add Data Failed", "error");
+const handleAddImage = async (payload: any) => {
+  try {
+    const response: any = await $api("/admin/images/create", {
+      method: "post",
+      body: payload,
+    } as any);
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar("Data Successfully Added", "success");
+      refresh();
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Add Data Failed", "error");
+    console.error(error);
+  }
 };
-const handleUpdateUser = (payload: any) => {
-  console.log(payload, "< update payload");
-  useSnackbar().sendSnackbar("Data Successfully Updated", "success");
-  // useSnackbar().sendSnackbar("Update Data Failed", "error");
+const handleUpdateImage = async (payload: any) => {
+  try {
+    const response: any = await $api("/admin/images/update", {
+      method: "put",
+      query: {
+        image_id: selectedImage.value,
+      },
+      body: payload,
+    } as any);
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar("Data Successfully Edited", "success");
+      refresh();
+    } else {
+      useSnackbar().sendSnackbar("Update Data Failed", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Update Data Failed", "error");
+    console.error(error);
+  }
 };
 
 const selectedImage = ref("");
-const detailData = ref();
-// remove this function on integrating update
-const handleLoadDetail = (id: string) => {
-  selectedImage.value = id;
-  const detail = tableItems.value.find((item) => {
-    return item.id === selectedImage.value;
-  });
-  if (detail) detailData.value = detail;
-};
 const isOpenDeleteModal = ref(false);
 const handleOpenDeleteModal = (id?: string | null) => {
   if (id) selectedImage.value = id;
   isOpenDeleteModal.value = !isOpenDeleteModal.value;
 };
 
-const handleConfirmDelete = () => {
-  useSnackbar().sendSnackbar("Data Successfully Deleted", "success");
-  // useSnackbar().sendSnackbar("Delete Data Failed", "error");
+const handleConfirmDelete = async () => {
+  try {
+    const response: any = await $api("/admin/images/remove", {
+      method: "delete",
+      query: {
+        image_id: selectedImage.value,
+      },
+    } as any);
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar("Data Successfully Deleted", "success");
+      refresh();
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Delete Data Failed", "error");
+    console.error(error);
+  }
 };
 </script>
 
@@ -143,15 +199,15 @@ const handleConfirmDelete = () => {
               <template #item.no="{ index }">
                 {{ index + 1 + (currentPage - 1) * itemPerPage }}
               </template>
-              <template #item.image="{ item }">
-                <div v-if="item.image" class="d-flex align-center">
+              <template #item.file_name="{ item }">
+                <div v-if="item.file_name" class="d-flex align-center">
                   <div class="text-primary font-weight-bold">
-                    {{ item.image }}
+                    {{ item.file_name }}
                   </div>
                   <VBtn variant="flat" class="px-3 ms-2">
                     <VIcon
                       icon="fa-download"
-                      @click="handleDownload(item.image)"
+                      @click="handleDownload(item.file_name)"
                     ></VIcon>
                   </VBtn>
                 </div>
@@ -174,13 +230,13 @@ const handleConfirmDelete = () => {
                       v-bind="props"
                       icon="fa-ellipsis-v"
                       color="primary"
-                      @click="handleLoadDetail(item.id)"
+                      @click="selectedImage = item.id"
                     />
                   </template>
                   <VList>
                     <UpdateImageForm
-                      :detail="detailData"
-                      @submit:update="handleUpdateUser"
+                      :image-id="selectedImage"
+                      @submit:update="handleUpdateImage"
                     />
                     <VListItem
                       class="cursor-pointer"

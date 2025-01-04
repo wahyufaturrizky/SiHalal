@@ -22,34 +22,10 @@ const invoiceHeader: any[] = [
   { title: "Nama PU", value: "nama_pu", nowrap: true },
   { title: "Jenis Daftar", value: "jenis_daftar", nowrap: true },
   { title: "Jenis Produk", value: "jenis_produk", nowrap: true },
-  { title: "Jenis Usaha dan Jumlah", value: "businessType", nowrap: true },
   { title: "Status", value: "status", nowrap: true },
   { title: "Tanggal Dikirim Oleh BPJPH", value: "tgl_dikirim", nowrap: true },
   { title: "Action", value: "actions", align: "center" },
 ]
-
-const invoiceData = [
-  {
-    regisNumber: "SH2024-225-29480",
-    date: "22/08/2024",
-    businessName: "Dapoer Boenda",
-    regisType: "Baru",
-    productType: "Produk Bakteri",
-    businessType: ["4", "32"],
-    status: "Proses di LPH",
-    sentDate: "22/08/2024 06:38 (500 hari)",
-  },
-  {
-    regisNumber: "SH2024-225-29480",
-    date: "22/08/2024",
-    businessName: "Dapoer Boenda",
-    regisType: "SIUP",
-    productType: "Produk Bakteri",
-    businessType: ["4", "32"],
-    status: "Proses di LPH",
-    sentDate: "22/08/2024 06:38 (500 hari)",
-  },
-];
 
 const isInfoModalOpen = ref(false)
 

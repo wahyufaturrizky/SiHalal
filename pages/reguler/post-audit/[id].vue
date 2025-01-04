@@ -17,6 +17,7 @@ const fileLihatDraft = ref<any>(null);
 const isSendModalOpen = ref(false);
 const showReturn = ref(false);
 const returnNote = ref("");
+const draftCertif = ref("");
 
 const assignAuditorHeader: any[] = [
   { title: 'No', key: 'index' },
@@ -137,6 +138,22 @@ const getDetailData = async (type: string) => {
   }
 };
 
+const getDraftSertif = async () => {
+  try {
+    const response: any = await $api('/reguler/lph/draft-certif', {
+      method: 'get',
+      params: { id },
+    });
+
+    if (response?.code === 2000) {
+      draftCertif.value = response?.data?.file
+      return response?.data;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error');
+  }
+};
+
 const handleOpenSendModal = () => {
   isSendModalOpen.value = false
 }
@@ -151,7 +168,10 @@ const handleUpdateStatus = async () => {
       },
     });
 
-    if (response?.code === 2000) return response?.data;
+    if (response?.code === 2000) {
+      useSnackbar().sendSnackbar('Sukses kirim data', 'success')
+      return response?.data;
+    }
     else
       useSnackbar().sendSnackbar(
         response.errors.list_error.join(', '),
@@ -171,6 +191,7 @@ onMounted(async () => {
     getDownloadForm('setifikasi-halal'),
     getDownloadForm('surat-pernyataan'),
     getDownloadForm('surat-permohonan'),
+    getDraftSertif(),
   ]);
 
   if (dataPengajuan) {
@@ -263,7 +284,7 @@ onMounted(async () => {
                 Pengembalian
               </VBtn>
               <VBtn
-                @click="downloadDocument(fileLihatDraft)"
+                @click="downloadDocument(draftCertif)"
                 variant="outlined"
               >
                 Lihat Draft Sertif
