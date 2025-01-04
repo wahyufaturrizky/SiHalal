@@ -5,14 +5,14 @@ const data = {
 
 const tableHeader = [
   { title: "No", value: "index" },
-  { title: "No Invoice", value: "no" },
-  { title: "Tanggal Invoice", value: "date" },
-  { title: "Register Number", value: "shln_no" },
-  { title: "Payment Code", value: "payment_code" },
-  { title: "Importer's Name", value: "importer_name" },
-  { title: "Due Date", value: "due_date" },
-  { title: "Payment Date", value: "va" },
-  { title: "Amount", value: "amount" },
+  { title: "No Invoice", value: "no_inv" },
+  { title: "Tanggal Invoice", value: "tgl_inv" },
+  { title: "Register Number", value: "no_daftar" },
+  { title: "Payment Code", value: "va" },
+  { title: "Importer's Name", value: "nama" },
+  { title: "Due Date", value: "duedate" },
+  { title: "Payment Date", value: "tgl_bayar" },
+  { title: "Amount", value: "total_inv" },
   { title: "Status", value: "status" },
   { title: "Action", value: "action" },
 ];
@@ -37,7 +37,7 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
   try {
     loading.value = true;
 
-    const response = await $api("/shln/invoice", {
+    const response = await $api("/shln/finance/invoice", {
       method: "get",
       params: {
         page,
@@ -45,6 +45,12 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
         keyword,
       },
     });
+    if (response.code != 2000) {
+      loading.value = false;
+
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      return;
+    }
 
     items.value = response.data;
     totalItems.value = response.total_item;
@@ -160,6 +166,18 @@ const selectedDate = ref([]);
             >
               <template #item.index="{ index }">
                 {{ index + 1 + (page - 1) * itemPerPage }}
+              </template>
+              <template #item.total_inv="{ item }">
+                {{ formatToIDR(item.total_inv) }}
+              </template>
+              <template #item.tgl_inv="{ item }">
+                {{ formatToISOString(item.tgl_inv) }}
+              </template>
+              <template #item.duedate="{ item }">
+                {{ formatToISOString(item.duedate) }}
+              </template>
+              <template #item.tgl_bayar="{ item }">
+                {{ formatToISOString(item.tgl_bayar) }}
               </template>
               <template #item.status="{ item }">
                 <VChip
