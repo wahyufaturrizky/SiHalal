@@ -101,6 +101,7 @@ const productName = ref({
     { title: 'No.', key: 'no', nowrap: true },
     { title: 'Nama Produk', key: 'nama', nowrap: true },
     { title: 'Foto Produk', key: 'foto', nowrap: true },
+    { title: 'Jumlah Bahan', key: 'qtyBahan', nowrap: true },
     {
       title: 'Action',
       value: 'actionPopOver4',
@@ -333,8 +334,48 @@ const loadItemProductRincian = async (kode_rincian: string) => {
   }
 }
 
+const getListIngredients = async () => {
+  try {
+    const response: any = await $api(
+      '/self-declare/business-actor/ingredient/list',
+      {
+        method: 'get',
+        query: {
+          id_reg: id,
+        },
+      },
+    )
+
+    if (response.code === 2000) {
+      materialName.value = {
+        ...materialName.value,
+        value: response.data || [],
+      }
+
+      if(response.data !== null){
+        const jenisBahan = response.data?.map(i => i.jenis_bahan)
+
+        if (['Bahan', 'Cleaning Agent', 'Kemasan'].every(item => jenisBahan.includes(item))){
+          emit('complete', true)
+        }else {
+          const missing = ['Bahan', 'Cleaning Agent', 'Kemasan'].filter(item => !jenisBahan.includes(item))
+          emit('failed', missing)
+        }
+      }else{
+        emit('failed', ['Bahan', 'Cleaning Agent', 'Kemasan'])
+      }
+      reRender.value = !reRender.value
+    }
+
+    return response
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
 const refresh = async () => {
-  await Promise.allSettled([getListCatatan(), getListFormulir()])
+  await Promise.allSettled([getListCatatan(), getListFormulir(), getListIngredients()])
 }
 
 const addProduct = async () => {
@@ -592,6 +633,9 @@ const deleteIngredient = async (productId: string) => {
     reRender.value = !reRender.value
     useSnackbar().sendSnackbar('Sukses menghapus data', 'success')
   }
+  else {
+    useSnackbar().sendSnackbar(response.errors?.list_error?.[0], 'error');
+  }
 }
 
 const deleteProduct = async (productId: string) => {
@@ -606,47 +650,6 @@ const deleteProduct = async (productId: string) => {
   if (response.code === 2000) {
     reRender.value = !reRender.value
     useSnackbar().sendSnackbar('Sukses menghapus data', 'success')
-  }
-}
-
-const getListIngredients = async () => {
-  try {
-    const response: any = await $api(
-      '/self-declare/business-actor/ingredient/list',
-      {
-        method: 'get',
-        query: {
-          id_reg: id,
-        },
-      },
-    )
-
-    if (response.code === 2000) {
-      materialName.value = {
-        ...materialName.value,
-        value: response.data || [],
-      }
-
-      if(response.data !== null){
-        const jenisBahan = response.data?.map(i => i.jenis_bahan)
-
-        if (['Bahan', 'Cleaning Agent', 'Kemasan'].every(item => jenisBahan.includes(item))){
-          emit('complete', true)
-        }else {
-          const missing = ['Bahan', 'Cleaning Agent', 'Kemasan'].filter(item => !jenisBahan.includes(item))
-          emit('failed', missing)
-        }
-      }else{
-        emit('failed', ['Bahan', 'Cleaning Agent', 'Kemasan'])
-      }
-
-      reRender.value = !reRender.value
-    }
-
-    return response
-  }
-  catch (error) {
-    console.log(error)
   }
 }
 
