@@ -134,62 +134,88 @@ const detail = async (id: any) => {
       }
     );
 
-    if (response2.code === 2000) {
-      formData.roleName = response.data.name;
-      formData.description = response.data.desc;
+    const id_permissions = response.data.permissions.map(
+      (i) => i.id_permissions
+    );
 
-      response.data.permissions.forEach((permit: any) => {
-        console.log(permit.id_permissions, "ini id permission");
+    console.log("list id permissions ; ", id_permissions);
 
-        response2.data.forEach((el) => {
-          let temp = [];
-          if (el.child !== undefined) {
-            el.child.forEach((child) => {
-              if (permit.id_permissions === child.id) {
-                temp.push({
-                  label_child: child.name,
-                  id_child: child.id,
-                  checked: true,
-                });
-              } else {
-                temp.push({
-                  label_child: child.name,
-                  id_child: child.id,
-                  checked: false,
-                });
-              }
-            });
-            if (permit.id_permissions === el.id) {
-              menuItems.value.push({
-                role_label: el.name,
-                role_id: el.id,
-                expanded: false,
-                checked: false,
-                children: temp,
-              });
-            } else {
-              menuItems.value.push({
-                role_label: el.name,
-                role_id: el.id,
-                expanded: false,
-                checked: false,
-                children: temp,
-              });
-            }
-          } else {
-            menuItems.value.push({
-              role_label: el.name,
-              role_id: el.id,
-              expanded: false,
-              checked: false,
-            });
-          }
-        });
-      });
-      console.log(menuItems, "ini menu Items x");
-    } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan detail", "error");
-    }
+    console.log("response2.data ; ", response2.data);
+
+    const item = response2.data.map((i) => ({
+      role_label: i.name,
+      role_id: i.id,
+      expanded: false,
+      checked: id_permissions.includes(i.id),
+      children: i.child.map((j) => ({
+        label_child: j.name,
+        id_child: j.id,
+        checked: id_permissions.includes(j.id),
+      })),
+    }));
+
+    console.log("item ; ", item);
+
+    //     {
+    //   role_label: "Registrasi SH",
+    //   role_id: "ii2isd0sasd0",
+    //   expanded: false,
+    //   checked: false,
+    //   children: [
+    //     { label_child: "Pengajuan 2", id_child: "29sdas", checked: false },
+    //     { label_child: "Pengajuan 3", id_child: "29sdax", checked: true },
+    //     { label_child: "Pengajuan 5", id_child: "29sdaa", checked: false },
+    //   ],
+    // },
+
+    // if (response2.code === 2000) {
+    //   formData.roleName = response.data.name;
+    //   formData.description = response.data.desc;
+
+    //   response.data.forEach((el) => {
+    //     let temp = [];
+    //     if (el.child !== undefined) {
+    //       el.child.forEach((child) => {
+    //         response2.data.permissions.forEach((permit: any) => {
+    //           console.log(permit.id_permissions, "ini id permission");
+    //           if (permit.id_permissions === true) {
+    //             temp.push({
+    //               checked: true,
+    //             });
+    //           } else {
+    //             temp.push({
+    //               checked: false,
+    //             });
+    //             temp.push({
+    //               label_child: child.name,
+    //               id_child: child.id,
+    //             });
+    //           }
+    //         });
+    //       });
+
+    //       // parent
+    //       menuItems.value.push({
+    //         role_label: el.name,
+    //         role_id: el.id,
+    //         expanded: false,
+    //         checked: false,
+    //         children: temp,
+    //       });
+    //     } else {
+    //       menuItems.value.push({
+    //         role_label: el.name,
+    //         role_id: el.id,
+    //         expanded: false,
+    //         checked: false,
+    //       });
+    //     }
+    //   });
+
+    //   console.log(menuItems, "ini menu Items x");
+    // } else {
+    //   useSnackbar().sendSnackbar("Ada Kesalahan detail", "error");
+    // }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan detail", "error");
   }
