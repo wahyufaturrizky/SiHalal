@@ -1,56 +1,65 @@
 <script setup lang="ts">
-const dataTable = ref<any[]>([])
-const loading = ref<boolean>(false)
-const page = ref<number>(1)
-const size = ref<number>(10)
-const searchQuery = ref<string>('')
+const dataTable = ref<any[]>([]);
+const loading = ref<boolean>(false);
+const page = ref<number>(1);
+const size = ref<number>(10);
+const searchQuery = ref<string>("");
 
 const tableHeader = [
-  { title: 'No', value: 'no' },
-  { title: 'No. Daftar', value: 'no_daftar' },
-  { title: 'Tanggal', value: 'tgl_daftar' },
-  { title: 'Nama PU', value: 'nama_pu' },
-  { title: 'Jenis Daftar', value: 'jenis_daftar' },
-  { title: 'Jenis Produk', value: 'jenis_produk' },
-  { title: 'Status', value: 'status' },
-  { title: 'Action', value: 'action' },
-]
+  { title: "No", value: "no" },
+  { title: "No. Daftar", value: "no_daftar" },
+  { title: "Tanggal", value: "tgl_daftar" },
+  { title: "Nama PU", value: "nama_pu" },
+  { title: "Jenis Daftar", value: "jenis_daftar" },
+  { title: "Jenis Produk", value: "jenis_produk" },
+  { title: "Status", value: "status" },
+  { title: "Action", value: "action" },
+];
 
-const navigateToDetail = (id: string) => {
-  navigateTo(`/sh-domestic/status/${id}`)
-}
+const navigateToDetail = (item: any) => {
+  if (item.channel_id == "CH003") {
+    navigateTo(`/sh-domestic/status/self-declare/${item.id_reg}`);
+  } else {
+    navigateTo(`/sh-domestic/status/reguler/${item.id_reg}`);
+  }
+};
 
-const loadItem = async (pageNumber: number, sizeData: number, keyword: string = '', path: string) => {
+const loadItem = async (
+  pageNumber: number,
+  sizeData: number,
+  keyword: string = "",
+  path: string
+) => {
   try {
-    const response: any = await $api('/reguler/list', {
-      method: 'get',
+    const response: any = await $api("/reguler/list", {
+      method: "get",
       params: {
         pageNumber,
         sizeData,
         keyword,
         url: path,
       },
-    })
+    });
 
-    if (response?.code === 2000)
-      dataTable.value = response?.data
-    else
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    if (response?.code === 2000) dataTable.value = response?.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const handleInput = (e: any) => {
-  debounce(loadItem(page.value, size.value, e.target.value, LIST_MENU_STATUS), 500)
-}
+  debounce(
+    loadItem(page.value, size.value, e.target.value, LIST_MENU_STATUS),
+    500
+  );
+};
 
 onMounted(async () => {
-  loading.value = true
-  loadItem(page.value, size.value, searchQuery.value, LIST_MENU_STATUS)
-  loading.value = false
-})
+  loading.value = true;
+  loadItem(page.value, size.value, searchQuery.value, LIST_MENU_STATUS);
+  loading.value = false;
+});
 </script>
 
 <template>
@@ -95,10 +104,8 @@ onMounted(async () => {
                       <img
                         src="~/assets/images/empty-data.png"
                         alt="empty_data"
-                      >
-                      <div class="pt-2 pb-2 font-weight-bold">
-                        Data Kosong
-                      </div>
+                      />
+                      <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
                     </div>
                   </div>
                 </template>
@@ -168,7 +175,7 @@ onMounted(async () => {
                   <VIcon
                     color="primary"
                     icon="mdi-arrow-right"
-                    @click="navigateToDetail(item.id_reg)"
+                    @click="navigateToDetail(item)"
                   />
                 </template>
               </VDataTable>

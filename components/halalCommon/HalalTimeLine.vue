@@ -40,7 +40,7 @@ const props = defineProps<{
         v-if="item.comment !== ''"
         class="app-timeline-text mt-1"
       >
-        {{ item.comment }}
+        <!-- {{ item.comment }} -->
       </div>
     </VTimelineItem>
   </VTimeline>
