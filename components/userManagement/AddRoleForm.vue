@@ -47,7 +47,44 @@ const formSubmit = async () => {
 };
 
 const formEdit = () => {
-  emit("edit", false);
+  console.log(menuItems, "menu items");
+
+  try {
+    menuItems.value.forEach((el) => {
+      if (el.checked === true) {
+        formData.id_permission.push(el.role_id);
+      }
+
+      if (el.children !== undefined) {
+        el.children.forEach((child) => {
+          if (child.checked === true) {
+            formData.id_permission.push(child.id_child);
+          }
+        });
+      }
+    });
+    console.log(formData, "ini dari formData edit");
+
+    // const response: any = await $api(`/user-management/role/add`, {
+    //   method: "post",
+    //   body: {
+    //     role_name: formData.roleName,
+    //     desc: formData.description,
+    //     id_permission: formData.id_permission,
+    //   },
+    // });
+    // console.log(response, "response");
+    formData.id_permission = [];
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar("Data Berhasil di ditambah", "success");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan submit", "error");
+    }
+    emit("edit", false);
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan  submit", "error");
+  }
 };
 
 const props = defineProps({
@@ -127,6 +164,9 @@ const detail = async (id: any) => {
     const response: any = await $api(`/user-management/role/${id}`, {
       method: "get",
     });
+    formData.roleName = response.data.name;
+    formData.description = response.data.desc;
+
     const response2: any = await $api(
       "/user-management/role/menu-list-permission",
       {
@@ -134,25 +174,30 @@ const detail = async (id: any) => {
       }
     );
 
-    const idPermissions = response.data.permissions.map(i => i.id_permissions);
+    const idPermissions = response.data.permissions.map(
+      (i) => i.id_permissions
+    );
 
     console.log("list id permissions ; ", idPermissions);
 
     console.log("response2.data ; ", response2.data);
 
-    const item = response2.data.map(i => ({
+    const item = response2.data.map((i) => ({
       role_label: i.name,
       role_id: i.id,
       expanded: false,
       checked: idPermissions.includes(i.id),
-      children: i.child !== undefined && i.child !== null ? i.child.map(j => ({
-        label_child: j.name,
-        id_child: j.id,
-        checked: idPermissions.includes(j.id)
-      })) : [],
+      children:
+        i.child !== undefined && i.child !== null
+          ? i.child.map((j) => ({
+              label_child: j.name,
+              id_child: j.id,
+              checked: idPermissions.includes(j.id),
+            }))
+          : [],
     }));
 
-    menuItems.value = item
+    menuItems.value = item;
 
     console.log("item ; ", item);
 
