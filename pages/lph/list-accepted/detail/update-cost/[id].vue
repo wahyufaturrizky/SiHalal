@@ -680,7 +680,7 @@ onMounted(async () => {
                     Total
                   </td>
                   <td colspan="2" class="d-flex align-center font-weight-bold">
-                    {{ formatToIDR(data?.biaya_indo?.total_biaya) || 0 }}
+                    {{ formatToIDR(data?.biaya_ln?.total_biaya) || 0 }}
                   </td>
                 </tr>
               </template>
@@ -811,6 +811,9 @@ onMounted(async () => {
                 rounded="xl"
                 density="compact"
                 placeholder="2"
+                type="number"
+                @update:model-value="detailDataLn.total = detailDataLn.qty * detailDataLn.harga"
+                :min="0"
               />
             </VCol>
             <VCol>
@@ -821,6 +824,7 @@ onMounted(async () => {
                 rounded="xl"
                 density="compact"
                 placeholder="Rp 400.000"
+                @update:model-value="detailDataLn.total = detailDataLn.qty * detailDataLn.harga"
               />
             </VCol>
             <VCol>
@@ -831,6 +835,7 @@ onMounted(async () => {
                 rounded="xl"
                 density="compact"
                 placeholder="Rp 800.000"
+                disabled
               />
             </VCol>
           </VRow>

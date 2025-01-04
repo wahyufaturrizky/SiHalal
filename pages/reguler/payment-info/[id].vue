@@ -52,10 +52,13 @@ const handleUpdateStatus = async () => {
       },
     })
 
-    if (response?.code === 2000)
+    if (response?.code === 2000) {
+      useSnackbar().sendSnackbar('Sukses kirim ke LPH', 'success')
       return response?.data
-    else
+    }
+    else {
       useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
   }
   catch (error) {
     useSnackbar().sendSnackbar('Ada Kesalahan', 'error')

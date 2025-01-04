@@ -101,6 +101,7 @@ const productName = ref({
     { title: 'No.', key: 'no', nowrap: true },
     { title: 'Nama Produk', key: 'nama', nowrap: true },
     { title: 'Foto Produk', key: 'foto', nowrap: true },
+    { title: 'Jumlah Bahan', key: 'qtyBahan', nowrap: true },
     {
       title: 'Action',
       value: 'actionPopOver4',
@@ -332,7 +333,6 @@ const loadItemProductRincian = async (kode_rincian: string) => {
     loadingRincian.value = false
   }
 }
-
 
 const getListIngredients = async () => {
   try {
