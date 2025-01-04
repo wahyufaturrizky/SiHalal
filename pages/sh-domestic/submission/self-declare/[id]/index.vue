@@ -54,7 +54,7 @@
               <InfoRow name="Tanggal" :name-style="{ fontWeight: '600' }">
                 {{
                   submissionDetail.tanggal_buat
-                    ? formatToISOString(submissionDetail.tanggal_buat)
+                    ? formatFromIsoString(submissionDetail.tanggal_buat)
                     : "-"
                 }}
               </InfoRow>
@@ -73,7 +73,7 @@
               >
                 {{
                   submissionDetail.tgl_mohon
-                    ? formatToISOString(submissionDetail.tgl_mohon)
+                    ? formatFromIsoString(submissionDetail.tgl_mohon)
                     : "-"
                 }}
               </InfoRow>
@@ -267,8 +267,12 @@
                 <template #item.no="{ index }">
                   {{ index + 1 }}
                 </template>
-                <template #item.tgl_surat="{ item }: any">
-                  {{ item.tgl_surat ? item.tgl_surat : "-" }}
+                <template #item.tanggal_surat="{ item }: any">
+                  {{
+                    item.tanggal_surat
+                      ? formatFromIsoString(item.tanggal_surat)
+                      : "-"
+                  }}
                 </template>
                 <template #item.masa_berlaku="{ item }: any">
                   {{ item.masa_berlaku ? item.masa_berlaku : "-" }}
@@ -741,7 +745,7 @@
                 {{
                   registrationDetail.status != "OF1"
                     ? registrationDetail.tgl_daftar
-                      ? formatToISOString(registrationDetail.tgl_daftar)
+                      ? formatFromIsoString(registrationDetail.tgl_daftar)
                       : "-"
                     : ""
                 }}
@@ -976,11 +980,18 @@ const statusItem = new Proxy(
     OF11: { color: "success", desc: "Verification" },
     OF15: { color: "success", desc: "Verified" },
     OF2: { color: "error", desc: "Returned" },
-    OF280: { color: "error", desc: "Returned to PU" },
-    OF285: { color: "error", desc: "Returned By KF" },
     OF290: { color: "error", desc: "Rejected" },
     OF5: { color: "success", desc: "Invoice issued" },
     OF300: { color: "success", desc: "Halal Certified Issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+    OF50: { color: "success", desc: "Dikirim ke LPH" },
+    OF285: { color: "success", desc: "Dikembalikan Oleh Fatwa" },
+    OF74: { color: "success", desc: "Sent to Komite Fatwa" },
+    OF280: { color: "success", desc: "Dikembalikan Ke PU" },
+    OF100: { color: "success", desc: "Selesai Sidang Fatwa" },
+    OF120: { color: "success", desc: "Certificate Issued" },
+    OF900: { color: "error", desc: "Dibatalkan" },
+    OF71: { color: "success", desc: "Selesai P3H" },
   },
   {
     get(target: any, prop: string) {
@@ -1076,7 +1087,7 @@ const aspectLegalHeader = [
   { title: "No", key: "no", nowrap: true, sortable: false },
   { title: "Jenis", key: "jenis_surat", nowrap: true },
   { title: "No. Dokumen", key: "no_surat", nowrap: true },
-  { title: "Tanggal", key: "tgl_surat", nowrap: true },
+  { title: "Tanggal", key: "tanggal_surat", nowrap: true },
   { title: "Masa Berlaku", key: "masa_berlaku", nowrap: true },
   { title: "Instansi Penerbit", key: "instansi_penerbit", nowrap: true },
 ];
@@ -1247,10 +1258,10 @@ onMounted(async () => {
     getDownloadForm("surat-pernyataan", "surat_pernyataan"),
     // getDownloadForm("ikrar", "ikrar"),
     getIkrarFile(),
-    getDownloadForm("surat-verval", "surat_verval"),
+    // getDownloadForm("surat-verval", "hasil_verval"),
     getDownloadForm("rekomendasi", "rekomendasi"),
     getDownloadForm("sjph", "sjph"),
-    getDownloadForm("laporan", "laporan"),
+    getDownloadForm("laporan", "hasil_verval"),
     getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
   ]);
   if (registrationDetail.status == "") {

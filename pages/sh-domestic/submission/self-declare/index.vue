@@ -119,6 +119,7 @@ const handleLoadList = async () => {
         page: currentPage.value,
         size: itemPerPage.value,
         keyword: searchQuery.value,
+        status: "OF1,OF280,OF285",
       },
     });
 

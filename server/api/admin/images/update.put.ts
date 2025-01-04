@@ -12,24 +12,15 @@ export default defineEventHandler(async (event: any) => {
 
   try {
     const runtimeConfig = useRuntimeConfig();
+    const payload = await readFormData(event);
     const query: any = await getQuery(event);
-    const params = {
-      page: isNaN(Number.parseInt(query.page, 10))
-        ? 1
-        : Number.parseInt(query.page, 10),
-      size: isNaN(Number.parseInt(query.size, 10))
-        ? 1
-        : Number.parseInt(query.size, 10),
-      keyword: query.keyword,
-      status: query.status,
-    };
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/submission/self-declare`,
+      `${runtimeConfig.authBaseUrl}/api/v1/admin/image-auth/edit/${query.image_id}`,
       {
-        method: "get",
+        method: "put",
         headers: { Authorization: authHeader },
-        params,
+        body: payload,
       } as any
     );
 

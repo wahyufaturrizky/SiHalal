@@ -237,7 +237,7 @@ onMounted(async () => {
             </div>
           </div>
           <div v-if="activeTab === 2">
-            <Bahan :isviewonly="isViewOnly" @complete="bahanComplete" @failed="bahanFailed"/>
+            <Bahan :isviewonly="isViewOnly" @complete="() => bahanComplete(true)" @failed="() => bahanComplete(false)"/>
           </div>
           <div v-if="activeTab === 3">
             <div v-if="!approveRequirements">

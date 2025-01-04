@@ -20,12 +20,11 @@ export default defineEventHandler(async (event: any) => {
       size: isNaN(Number.parseInt(query.size, 10))
         ? 1
         : Number.parseInt(query.size, 10),
-      keyword: query.keyword,
-      status: query.status,
+      search: query.search,
     };
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/submission/self-declare`,
+      `${runtimeConfig.authBaseUrl}/api/v1/admin/image-auth/list`,
       {
         method: "get",
         headers: { Authorization: authHeader },

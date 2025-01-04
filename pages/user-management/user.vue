@@ -7,95 +7,135 @@ type DataUser = {
   password?: string;
   phone_no: string;
   is_verify: boolean;
-  role: string;
+  roles: Array<{ name: string }>;
 };
 const tableHeaders: any[] = [
   { title: "No", key: "no", sortable: false },
   { title: "User Name", key: "username", nowrap: true },
-  { title: "Name", key: "nama", nowrap: true },
+  { title: "Name", key: "name", nowrap: true },
   { title: "Email", key: "email", nowrap: true },
   { title: "Phone Number", key: "phone_no", nowrap: true },
   { title: "Verify", key: "is_verify", nowrap: true },
-  { title: "Role", key: "role", nowrap: true },
+  { title: "Role", key: "roles", nowrap: true },
   { title: "Action", key: "actions", sortable: false, align: "center" },
 ];
-const tableItems = ref<Array<DataUser>>([
-  {
-    id: "1",
-    username: "Banawadmnk",
-    nama: "Banawa Damanik",
-    email: "juli18@palastri.in",
-    password: "123",
-    phone_no: "0839 9981 7991",
-    is_verify: true,
-    role: "Pelaku Usaha",
-  },
-  {
-    id: "2",
-    username: "Zelda_Zulaika",
-    nama: "Zelda Zulaika",
-    email: "ibrani.pradana@yahoo.co.id",
-    phone_no: "0839 9981 7991",
-    is_verify: true,
-    role: "Verifikator HLN",
-  },
-  {
-    id: "3",
-    username: "Genta_Halimah",
-    nama: "Genta Halimah",
-    email: "gmulyani@tamba.sch.id",
-    phone_no: "0759 9443 896",
-    is_verify: false,
-    role: "Fasilitator",
-  },
-]);
+const tableItems = ref<Array<DataUser>>([]);
 const currentPage = ref(1);
 const itemPerPage = ref(10);
-const totalItems = ref(tableItems.value.length);
+const totalItems = ref(0);
 const isLoading = ref(false);
 
 const searchQuery = ref("");
+const handleLoadList = async () => {
+  try {
+    const response: any = await $api("/admin/users/list", {
+      method: "get",
+      params: {
+        page: currentPage.value,
+        size: itemPerPage.value,
+        search: searchQuery.value,
+      },
+    } as any);
+
+    if (response.code === 2000) {
+      if (response.data !== null) {
+        tableItems.value = response.data;
+        currentPage.value = response.current_page;
+        totalItems.value = response.total_item;
+      } else {
+        tableItems.value = [];
+        currentPage.value = 1;
+        totalItems.value = 0;
+      }
+      return response;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const { refresh } = await useAsyncData(
+  "user-list",
+  async () => await handleLoadList(),
+  {
+    watch: [currentPage, itemPerPage],
+  }
+);
+onMounted(() => {
+  handleLoadList();
+});
+
 const handleSearchUser = useDebounceFn((val: string) => {
   searchQuery.value = val;
   currentPage.value = 1;
 
-  // refresh();
+  refresh();
 }, 350);
 
 const isOpenAddModal = ref(false);
 const handleOpenAddModal = () => {
   isOpenAddModal.value = !isOpenAddModal.value;
 };
-const handleAddNewUser = (payload: any) => {
-  console.log(payload, "< submit payload");
-  useSnackbar().sendSnackbar("Data Successfully Added", "success");
-  // useSnackbar().sendSnackbar("Add Data Failed", "error");
+const handleAddNewUser = async (payload: any) => {
+  try {
+    const response: any = await $api("/admin/users/create", {
+      method: "post",
+      body: payload,
+    } as any);
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar("Data Successfully Added", "success");
+      refresh();
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Add Data Failed", "error");
+    console.error(error);
+  }
 };
-const handleUpdateUser = (payload: any) => {
-  console.log(payload, "< update payload");
-  useSnackbar().sendSnackbar("Data Successfully Edited", "success");
-  // useSnackbar().sendSnackbar("Update Data Failed", "error");
+const handleUpdateUser = async (payload: any) => {
+  try {
+    const response: any = await $api("/admin/users/update", {
+      method: "put",
+      query: {
+        user_id: selectedUser.value,
+      },
+      body: payload,
+    } as any);
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar("Data Successfully Edited", "success");
+      refresh();
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Update Data Failed", "error");
+    console.error(error);
+  }
 };
 
 const selectedUser = ref("");
-const detailData = ref();
-// remove this function on integrating update
-const handleLoadDetail = (id: string) => {
-  selectedUser.value = id;
-  const detail = tableItems.value.find((item) => {
-    return item.id === selectedUser.value;
-  });
-  if (detail) detailData.value = detail;
-};
 const isOpenDeleteModal = ref(false);
 const handleOpenDeleteModal = (id?: string | null) => {
   if (id) selectedUser.value = id;
   isOpenDeleteModal.value = !isOpenDeleteModal.value;
 };
 
-const handleConfirmDelete = () => {
-  useSnackbar().sendSnackbar("Data Successfully Deleted", "success");
-  // useSnackbar().sendSnackbar("Delete Data Failed", "error");
+const handleConfirmDelete = async () => {
+  try {
+    const response: any = await $api("/admin/users/remove", {
+      method: "delete",
+      query: {
+        user_id: selectedUser.value,
+      },
+    } as any);
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar("Data Successfully Deleted", "success");
+      refresh();
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Delete Data Failed", "error");
+    console.error(error);
+  }
 };
 </script>
 
@@ -143,7 +183,7 @@ const handleConfirmDelete = () => {
             >
               <template #no-data>
                 <VCard variant="outlined" class="w-full mt-7 mb-5">
-                  <div class="pt-2" style="justify-items: center">
+                  <div class="pt-2" style="justify-items: center;">
                     <img
                       src="~/assets/images/empty-data.png"
                       alt="empty_data"
@@ -155,8 +195,21 @@ const handleConfirmDelete = () => {
               <template #item.no="{ index }">
                 {{ index + 1 + (currentPage - 1) * itemPerPage }}
               </template>
+              <template #item.phone_no="{ item }">
+                {{ item.phone_no ? item.phone_no : "-" }}
+              </template>
               <template #item.is_verify="{ item }">
                 {{ item.is_verify ? "Yes" : "No" }}
+              </template>
+              <template #item.roles="{ item }">
+                <div v-if="item.roles.length">
+                  <div v-for="(el, idx) in item.roles" class="d-inline-block">
+                    <div>
+                      <span v-if="idx != 0" class="mx-2">|</span>{{ el.name }}
+                    </div>
+                  </div>
+                </div>
+                <div v-else>-</div>
               </template>
               <template #item.actions="{ item }">
                 <VMenu>
@@ -165,12 +218,12 @@ const handleConfirmDelete = () => {
                       v-bind="props"
                       icon="fa-ellipsis-v"
                       color="primary"
-                      @click="handleLoadDetail(item.id)"
+                      @click="selectedUser = item.id"
                     />
                   </template>
                   <VList>
                     <UpdateUserForm
-                      :detail="detailData"
+                      :user-id="selectedUser"
                       @submit:update="handleUpdateUser"
                     />
                     <VListItem
@@ -222,15 +275,16 @@ const handleConfirmDelete = () => {
 :deep(.v-data-table.custom-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }

@@ -122,6 +122,11 @@ const getListProducts = async () => {
     );
 
     if (response.code === 2000) {
+      if (response.data !== []) {
+        response.data.map((item: any) => {
+          item.qtyBahan = item.bahan_selected !== null ? item.bahan_selected.length : 0
+        })
+      }
       productItems.value = response.data || [];
     }
     return response;
@@ -194,19 +199,24 @@ const editDaftarBahan = async () => {
 };
 
 const deleteIngredient = async (productId: string) => {
-  const response: any = await $api(
-    "/reguler/pelaku-usaha/tab-bahan/ingredients/remove",
-    {
-      method: "delete",
-      params: { id_reg: id, product_id: productId },
-    }
-  );
+  try {
+    const response: any = await $api(
+      "/reguler/pelaku-usaha/tab-bahan/ingredients/remove",
+      {
+        method: "delete",
+        params: { id_reg: id, product_id: productId },
+      }
+    );
 
-  if (response.code === 2000) {
-    getListIngredients();
-    useSnackbar().sendSnackbar("Sukses menghapus data", "success");
-  } else {
-    useSnackbar().sendSnackbar(response.data, "success");
+    if (response.code === 2000) {
+      getListIngredients();
+      props.refresh();
+      useSnackbar().sendSnackbar("Sukses menghapus data", "success");
+    } else {
+      useSnackbar().sendSnackbar(response.errors?.list_error?.[0], "error");
+    }
+  } catch (err) {
+    useSnackbar().sendSnackbar('Hapus gagal! Bahan ini digunakan sebagai bahan produk', "error");
   }
 };
 
