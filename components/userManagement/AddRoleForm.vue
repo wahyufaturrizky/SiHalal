@@ -134,25 +134,25 @@ const detail = async (id: any) => {
       }
     );
 
-    const id_permissions = response.data.permissions.map(
-      (i) => i.id_permissions
-    );
+    const idPermissions = response.data.permissions.map(i => i.id_permissions);
 
-    console.log("list id permissions ; ", id_permissions);
+    console.log("list id permissions ; ", idPermissions);
 
     console.log("response2.data ; ", response2.data);
 
-    const item = response2.data.map((i) => ({
+    const item = response2.data.map(i => ({
       role_label: i.name,
       role_id: i.id,
       expanded: false,
-      checked: id_permissions.includes(i.id),
-      children: i.child.map((j) => ({
+      checked: idPermissions.includes(i.id),
+      children: i.child !== undefined && i.child !== null ? i.child.map(j => ({
         label_child: j.name,
         id_child: j.id,
-        checked: id_permissions.includes(j.id),
-      })),
+        checked: idPermissions.includes(j.id)
+      })) : [],
     }));
+
+    menuItems.value = item
 
     console.log("item ; ", item);
 
