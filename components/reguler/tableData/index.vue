@@ -122,7 +122,11 @@ const getListProducts = async () => {
     );
 
     if (response.code === 2000) {
-      response.data.map((item: any) => item.qtyBahan = item.bahan_selected.length)
+      if (response.data !== []) {
+        response.data.map((item: any) => {
+          item.qtyBahan = item.bahan_selected !== null ? item.bahan_selected.length : 0
+        })
+      }
       productItems.value = response.data || [];
     }
     return response;
