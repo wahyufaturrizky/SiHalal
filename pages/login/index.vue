@@ -5,6 +5,7 @@ import { VForm } from "vuetify/components/VForm";
 
 import { emailValidator, requiredValidator } from "#imports";
 import { VNodeRenderer } from "@/@layouts/components/VNodeRenderer";
+import HelpButton from "@/views/pages/HelpButton.vue";
 import bseImage from "@images/bse.png";
 import NoImage from "@images/no-image.png";
 import ossImage from "@images/oss.png";
@@ -196,16 +197,22 @@ await useAsyncData(
     immediate: true,
   }
 );
+const items = [
+  {
+    title: "Option 1",
+    value: "Option 1",
+    props: {
+      prependIcon: "fa-whatsapp",
+    },
+  },
+];
 </script>
 
 <template>
-  <VRow no-gutters class="auth-wrapper">
-    <VCol
-      cols="12"
-      md="6"
-      class="auth-card-v2 d-flex align-center justify-center login-bg"
-    >
-      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
+  <HelpButton />
+  <VRow no-gutters>
+    <VCol cols="12" md="6" class="d-flex align-center justify-center login-bg">
+      <VCard flat :max-width="500" class="mt-3 mt-sm-0 pa-2 pa-lg-3">
         <VCardText>
           <NuxtLink to="/">
             <div class="auth-logo app-logo">
@@ -222,7 +229,6 @@ await useAsyncData(
           </h4>
           <p class="mb-0">
             Login untuk mengakses fitur pada web {{ themeConfig.app.title }}
-            {{ status }}
           </p>
         </VCardText>
 
@@ -270,7 +276,7 @@ await useAsyncData(
                   </NuxtLink>
                 </VCol>
 
-                <div class="my-6 gap-x-2 d-flex justify-center">
+                <div class="my-4 gap-x-2 d-flex justify-center">
                   <RecaptchaV2
                     :sitekey="config.public.recaptcha.siteKey"
                     @widget-id="handleWidgetId"
@@ -318,21 +324,6 @@ await useAsyncData(
                   Daftar di sini
                 </NuxtLink>
               </VCol>
-
-              <!--
-                <VCol cols="12" class="d-flex align-center">
-                <VDivider />
-                <span class="mx-4 text-high-emphasis">or</span>
-                <VDivider />
-                </VCol>
-              -->
-
-              <!-- auth providers -->
-              <!--
-                <VCol cols="12" class="text-center">
-                <AuthProvider />
-                </VCol>
-              -->
             </VRow>
           </VForm>
         </VCardText>
@@ -342,10 +333,10 @@ await useAsyncData(
           </VCol>
           <VRow align="center" justify="center">
             <VCol cols="12" md="auto" class="d-flex align-center">
-              <VImg :src="ossImage" width="100" height="48" />
+              <VImg :src="ossImage" width="100" height="44" />
             </VCol>
             <VCol cols="12" md="auto" class="d-flex align-center">
-              <VImg :src="bseImage" width="100" height="48" />
+              <VImg :src="bseImage" width="100" height="44" />
             </VCol>
           </VRow>
           <VRow>
@@ -359,14 +350,14 @@ await useAsyncData(
     </VCol>
     <VCol
       v-if="mdAndUp"
-      cols="12"
       md="6"
-      class="auth-card-v2 d-flex align-center justify-center"
+      class="d-flex align-center justify-center bg-white"
     >
       <VImg
         :src="currentImage"
         width="100%"
-        height="100%"
+        height="80dvh"
+        rounded="xl"
         class="responsive-image"
       />
     </VCol>

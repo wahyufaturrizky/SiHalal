@@ -20,7 +20,7 @@ injectSkinClasses();
 </template>
 
 <style>
-.layout-wrapper.layout-blank {
+/* .layout-wrapper.layout-blank {
   flex-direction: column;
-}
+} */
 </style>

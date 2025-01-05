@@ -4,6 +4,7 @@ import { useDisplay } from "vuetify";
 import { VForm } from "vuetify/components/VForm";
 
 import { VNodeRenderer } from "@/@layouts/components/VNodeRenderer";
+import HelpButton from "@/views/pages/HelpButton.vue";
 import bseImage from "@images/bse.png";
 import NoImage from "@images/no-image.png";
 import ossImage from "@images/oss.png";
@@ -326,6 +327,7 @@ await useAsyncData(
 </script>
 
 <template>
+  <HelpButton />
   <VRow no-gutters class="auth-wrapper">
     <VCol
       cols="12"
