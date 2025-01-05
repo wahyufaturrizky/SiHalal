@@ -36,6 +36,7 @@
     "@vueuse/core": "10.11.0",
     "@vueuse/math": "10.11.0",
     "apexcharts": "3.51.0",
+    "browser-image-compression": "^2.0.2",
     "chart.js": "4.4.3",
     "cookie-es": "1.2.2",
     "eslint-plugin-regexp": "2.6.0",
