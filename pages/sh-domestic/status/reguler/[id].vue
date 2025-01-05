@@ -307,13 +307,13 @@ onMounted(async () => {
               >
                 <VBtn
                   :color="
-                    downloadForms.sertifikasi_halal ? 'primary' : '#A09BA1'
+                    downloadForms.setifikasi_halal ? 'primary' : '#A09BA1'
                   "
                   density="compact"
                   class="px-2"
                   @click="
-                    downloadForms.sertifikasi_halal
-                      ? handleDownloadForm(downloadForms.sertifikasi_halal)
+                    downloadForms.setifikasi_halal
+                      ? handleDownloadForm(downloadForms.setifikasi_halal)
                       : null
                   "
                 >
