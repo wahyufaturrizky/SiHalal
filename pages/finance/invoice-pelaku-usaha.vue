@@ -181,11 +181,11 @@ const selectedDate = ref([]);
               </template>
               <template #item.status="{ item }">
                 <VChip
-                  :color="statusItem[item.status].color"
+                  :color="statusItem[item.status_code].color"
                   text-color="white"
                   small
                 >
-                  {{ statusItem[item.status].desc }}
+                  {{ statusItem[item.status_code].desc }}
                 </VChip>
               </template>
               <template #item.action>
