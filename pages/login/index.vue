@@ -184,9 +184,18 @@ const handleLoadImageFile = async (filename: string) => {
   }
 };
 
-onMounted(() => {
-  handleLoadImageAuth();
-});
+// onBeforeMount(() => {
+//   handleLoadImageAuth();
+// });
+await useAsyncData(
+  "random-image",
+  async () => {
+    await handleLoadImageAuth();
+  },
+  {
+    immediate: true,
+  }
+);
 </script>
 
 <template>
