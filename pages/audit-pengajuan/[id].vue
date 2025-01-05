@@ -206,7 +206,7 @@ const loadPemeriksaanProduk = async (): void => {
 
       tracking.value = data.tracking.map(
         i => ({
-          status: i.status,
+          status: i.comment,
           created_at: i.date,
           username: i.username,
         }),

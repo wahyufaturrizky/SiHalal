@@ -29,19 +29,19 @@ const props = defineProps<{
       </template>
       <div class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2">
         <span class="app-timeline-title">
-          {{ item.comment }}
+          {{ item.status }}
         </span>
         <span class="app-timeline-meta">{{ formatDate(item.created_at) }}</span>
       </div>
       <div class="app-timeline-text mt-1">
         {{ item.username }}
       </div>
-      <!-- <div
+      <div
         v-if="item.comment !== ''"
         class="app-timeline-text mt-1"
       >
-        {{ item.comment }}
-      </div> -->
+        <!-- {{ item.comment }} -->
+      </div>
     </VTimelineItem>
   </VTimeline>
 </template>
