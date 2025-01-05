@@ -4,6 +4,7 @@ const emit = defineEmits(["visible", "add", "edit"]);
 const closeDialog = () => {
   emit("visible", false);
 };
+const refVForm = ref<VForm>();
 
 const formSubmit = async () => {
   console.log(menuItems, "menu items");
@@ -46,8 +47,8 @@ const formSubmit = async () => {
   }
 };
 
-const formEdit = () => {
-  console.log(menuItems, "menu items");
+const formEdit = async () => {
+  console.log(menuItems, "menu items edit");
 
   try {
     menuItems.value.forEach((el) => {
@@ -65,25 +66,29 @@ const formEdit = () => {
     });
     console.log(formData, "ini dari formData edit");
 
-    // const response: any = await $api(`/user-management/role/add`, {
-    //   method: "post",
-    //   body: {
-    //     role_name: formData.roleName,
-    //     desc: formData.description,
-    //     id_permission: formData.id_permission,
-    //   },
-    // });
-    // console.log(response, "response");
+    const response: any = await $api(
+      `/user-management/role/edit/${props.id_role}`,
+      {
+        method: "post",
+        body: {
+          role_name: formData.roleName,
+          desc: formData.description,
+          id_permission: formData.id_permission,
+        },
+      }
+    );
+    console.log(response, "response");
     formData.id_permission = [];
 
     if (response.code === 2000) {
-      useSnackbar().sendSnackbar("Data Berhasil di ditambah", "success");
+      useSnackbar().sendSnackbar("Data Berhasil di diubah", "success");
     } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan submit", "error");
+      useSnackbar().sendSnackbar("Ada Kesalahan edit", "error");
     }
     emit("edit", false);
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan  submit", "error");
+    console.log(error);
+    useSnackbar().sendSnackbar("Ada Kesalahan  edit", "error");
   }
 };
 
@@ -271,6 +276,45 @@ if (props.action === false) {
   detail(props.id_role);
 }
 
+const toggleChildren = (item) => {
+  if (item.children && item.children.length > 0) {
+    item.children.forEach((child) => {
+      child.checked = item.checked;
+    });
+  }
+};
+const updateParentStatus = (item) => {
+  if (item.children && item.children.length > 0) {
+    item.checked = item.children.every((child) => child.checked);
+  }
+};
+
+const isFormValid = computed(() => {
+  const hasCheckedItem = menuItems.value.some(
+    (item) => item.checked || item.children?.some((child) => child.checked)
+  );
+
+  return (
+    formData.roleName.trim() !== "" &&
+    formData.description.trim() !== "" &&
+    hasCheckedItem
+  );
+});
+
+watch(
+  menuItems,
+  (newMenuItems) => {
+    newMenuItems.forEach((item) => {
+      if (item.checked && item.children) {
+        item.children.forEach((child) => {
+          child.checked = true;
+        });
+      }
+    });
+  },
+  { deep: true }
+);
+
 onMounted(() => {
   if (props.action === true) {
     menuList();
@@ -279,7 +323,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <VForm @submit.prevent="() => {}">
+  <VForm ref="refVForm" @submit.prevent="() => {}">
     <VCardTitle
       class="text-h5 font-weight-bold d-flex justify-space-between align-left"
     >
@@ -306,6 +350,7 @@ onMounted(() => {
             v-model="formData.roleName"
             placeholder="Input Role Name"
             outlined
+            :rules="[requiredValidator]"
             dense
             required
             class="input-field"
@@ -320,119 +365,131 @@ onMounted(() => {
             placeholder="Input Description"
             outlined
             dense
+            :rules="[requiredValidator]"
             required
             class="input-field"
           />
         </VCol>
       </VRow>
-      <VRow style="margin-block-end: 20px">
-        <VCol>
-          <VTable
-            style="
-              border-collapse: collapse;
-              max-block-size: 350px;
-              overflow-y: auto;
-            "
-          >
-            <thead style="background-color: #f6f6f6">
-              <tr>
-                <th
-                  class="text-left"
-                  style="
-                    font-size: 16px;
-                    inline-size: 80%;
-                    line-height: 1.5;
-                    text-align: start;
-                  "
-                >
-                  Menu List
-                </th>
-                <th
-                  class="text-center"
-                  style="
-                    font-size: 16px;
-                    inline-size: 20%;
-                    line-height: 1.5;
-                    text-align: center;
-                  "
-                >
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <template v-for="(item, index) in menuItems" :key="index">
-                <!-- Parent Item -->
+
+      <Vcard variant="outlined">
+        <VRow>
+          <VCol>
+            <VTable
+              style="
+                border-collapse: collapse;
+                max-block-size: 350px;
+                overflow-y: auto;
+              "
+            >
+              <thead style="background-color: #f6f6f6">
                 <tr>
-                  <td
+                  <th
                     class="text-left"
-                    style="font-size: 16px; line-height: 1.5"
-                  >
-                    <v-btn
-                      color="primary"
-                      variant="text"
-                      style="display: flex; align-items: center; padding: 0"
-                      @click="item.expanded = !item.expanded"
-                    >
-                      <v-icon style="margin-inline-end: 8px">
-                        {{
-                          item.expanded ? "mdi-chevron-up" : "mdi-chevron-down"
-                        }}
-                      </v-icon>
-                      <span>{{ item.role_label }}</span>
-                    </v-btn>
-                  </td>
-                  <td
                     style="
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
                       font-size: 16px;
-                      line-height: 1.5;
-                      padding-block: 10px;
-                      padding-inline: 20px;
+                      inline-size: 80%;
+                      line-height: 1;
+                      text-align: start;
                     "
                   >
-                    <VCheckbox v-model="item.checked" />
-                  </td>
-                </tr>
-
-                <!-- Child Items -->
-                <template v-if="item.expanded">
-                  <tr
-                    v-for="(child, childIndex) in item.children"
-                    :key="`${index}-${childIndex}`"
+                    Menu List
+                  </th>
+                  <th
+                    class="text-center"
+                    style="
+                      font-size: 16px;
+                      inline-size: 20%;
+                      line-height: 1;
+                      text-align: center;
+                    "
                   >
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <template v-for="(item, index) in menuItems" :key="index">
+                  <!-- Parent Item -->
+                  <tr>
                     <td
                       class="text-left"
-                      style="
-                        background-color: #fafafa;
-                        color: #555;
-                        font-size: 16px;
-                        line-height: 1.5;
-                      "
+                      style="font-size: 16px; line-height: 1.5"
                     >
-                      {{ child.label_child }}
+                      <v-btn
+                        color="primary"
+                        variant="text"
+                        style="display: flex; align-items: center; padding: 0"
+                        @click="item.expanded = !item.expanded"
+                      >
+                        <v-icon style="margin-inline-end: 8px">
+                          {{
+                            item.expanded
+                              ? "mdi-chevron-up"
+                              : "mdi-chevron-down"
+                          }}
+                        </v-icon>
+                        <span>{{ item.role_label }}</span>
+                      </v-btn>
                     </td>
                     <td
                       style="
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        background-color: #fafafa;
                         font-size: 16px;
                         line-height: 1.5;
+                        padding-block: 10px;
+                        padding-inline: 20px;
                       "
                     >
-                      <VCheckbox v-model="child.checked" />
+                      <VCheckbox
+                        v-model="item.checked"
+                        @change="toggleChildren(item)"
+                      />
                     </td>
                   </tr>
+
+                  <!-- Child Items -->
+                  <template v-if="item.expanded">
+                    <tr
+                      v-for="(child, childIndex) in item.children"
+                      :key="`${index}-${childIndex}`"
+                    >
+                      <td
+                        class="text-left"
+                        style="
+                          background-color: #fafafa;
+                          color: #555;
+                          font-size: 16px;
+                          line-height: 1.5;
+                        "
+                      >
+                        {{ child.label_child }}
+                      </td>
+                      <td
+                        style="
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                          background-color: #fafafa;
+                          font-size: 16px;
+                          line-height: 1.5;
+                        "
+                      >
+                        <VCheckbox
+                          v-model="child.checked"
+                          @change="updateParentStatus(item)"
+                        />
+                      </td>
+                    </tr>
+                  </template>
                 </template>
-              </template>
-            </tbody>
-          </VTable>
-        </VCol>
-      </VRow>
+              </tbody>
+            </VTable>
+          </VCol>
+        </VRow>
+      </Vcard>
     </VCardItem>
 
     <div class="d-flex justify-end flex-wrap gap-4">
@@ -445,6 +502,7 @@ onMounted(() => {
         color="primary"
         type="submit"
         @click="formSubmit"
+        :disabled="!isFormValid"
       >
         Tambah
       </VBtn>
@@ -454,6 +512,7 @@ onMounted(() => {
         color="primary"
         type="submit"
         @click="formEdit"
+        :disabled="!isFormValid"
       >
         Ubah
       </VBtn>
