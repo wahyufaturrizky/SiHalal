@@ -1,27 +1,28 @@
 <script setup lang="ts">
-import { themeConfig } from '@themeConfig'
-import { useDisplay } from 'vuetify'
-import type { VForm } from 'vuetify/components/VForm'
+import { themeConfig } from "@themeConfig";
+import { useDisplay } from "vuetify";
+import type { VForm } from "vuetify/components/VForm";
 
-import NoImage from '@images/no-image.png'
-import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
-import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
-import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
+import HelpButton from "@/views/pages/HelpButton.vue";
+import NoImage from "@images/no-image.png";
+import authV2LoginIllustrationBorderedDark from "@images/pages/auth-v2-login-illustration-bordered-dark.png";
+import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-illustration-bordered-light.png";
+import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
 
-const { sendSnackbar } = useSnackbar()
+const { sendSnackbar } = useSnackbar();
 
-const userVerificationStore = useUserVerificationStore()
+const userVerificationStore = useUserVerificationStore();
 
-const { signIn, data: sessionData } = useAuth()
-const { mdAndUp } = useDisplay()
+const { signIn, data: sessionData } = useAuth();
+const { mdAndUp } = useDisplay();
 
 const authThemeImg = useGenerateImageVariant(
   NoImage,
   authV2LoginIllustrationDark,
   authV2LoginIllustrationBorderedLight,
   authV2LoginIllustrationBorderedDark,
-  true,
-)
+  true
+);
 
 // const authThemeMask = useGenerateImageVariant(
 //   authV2LoginMaskLight,
@@ -29,23 +30,23 @@ const authThemeImg = useGenerateImageVariant(
 // )
 
 definePageMeta({
-  layout: 'blank',
+  layout: "blank",
   unauthenticatedOnly: true,
-})
+});
 
-const isPasswordVisible = ref(false)
+const isPasswordVisible = ref(false);
 
-const route = useRoute()
+const route = useRoute();
 
-const ability = useAbility()
+const ability = useAbility();
 
 const errors = ref<Record<string, string | undefined>>({
   email: undefined,
   noHandphone: undefined,
-})
+});
 
 // const turnstile = ref();
-const refVForm = ref<VForm>()
+const refVForm = ref<VForm>();
 
 // const credentials = ref({
 //   typeUser: '',
@@ -59,27 +60,27 @@ const refVForm = ref<VForm>()
 const form = ref({
   email: userVerificationStore.email,
   noHandphone: userVerificationStore.phone_number,
-})
+});
 
 // validasi
 
-const isDisabledEmail = ref(false)
-const isDisabledNoHp = ref(false)
+const isDisabledEmail = ref(false);
+const isDisabledNoHp = ref(false);
 
-const currentTab = ref(0)
+const currentTab = ref(0);
 
 // const isDisabledSubmitEmail = computed(() => {
 //   return !form.value.email || emailValidator(form.value.email) !== true
 // })
 
 const phoneValidator = (value: string) => {
-  const isValid = /^08\d{8,15}$/.test(value)
+  const isValid = /^08\d{8,15}$/.test(value);
 
   return (
-    isValid
-    || 'Nomor Handphone harus dimulai dengan "08" dan berjumlah 10-13 digit angka'
-  )
-}
+    isValid ||
+    'Nomor Handphone harus dimulai dengan "08" dan berjumlah 10-13 digit angka'
+  );
+};
 
 // const isDisabledSubmitNoHandphone = computed(() => {
 //   return (
@@ -87,58 +88,60 @@ const phoneValidator = (value: string) => {
 //   )
 // })
 
-const isOtpEmail = ref(false)
-const isOtpNoHandphone = ref(false)
+const isOtpEmail = ref(false);
+const isOtpNoHandphone = ref(false);
 
-const isSucess = ref(false)
+const isSucess = ref(false);
 
 const onSubmitEmail = async () => {
-  isDisabledNoHp.value = true
+  isDisabledNoHp.value = true;
 
   const payload = {
-    channel: 'email',
+    channel: "email",
     destination: userVerificationStore.email,
-  }
+  };
 
-  console.log('ON SUBMIT EMAIL PAYLOAD : ', payload)
+  console.log("ON SUBMIT EMAIL PAYLOAD : ", payload);
 
   // create
   try {
-    const response = await $api('/auth/send-otp', {
-      method: 'POST',
+    const response = await $api("/auth/send-otp", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
-    })
+    });
 
-    console.log('RESPONSE SEND OTP EMAIL : ', response)
+    console.log("RESPONSE SEND OTP EMAIL : ", response);
 
     if (response.code === 2000) {
       // Cek apakah response berhasil
-      const data = response.data
+      const data = response.data;
 
-      isOtpEmail.value = true
+      isOtpEmail.value = true;
 
-      console.log('Akun berhasil dibuat:', data)
+      console.log("Akun berhasil dibuat:", data);
 
       // router.push({ name: 'verifikasi-user', params: { id: id } })
-    }
-    else if (response.code === 4001) {
-      sendSnackbar(`${response.errors.list_error}`, 'error')
-    }
-    else if (response.code === 4000) {
-      sendSnackbar('Terdapat kesalahan memasukkan OTP, silahkan coba lagi kembali', 'error')
-    }
-    else {
+    } else if (response.code === 4001) {
+      sendSnackbar(`${response.errors.list_error}`, "error");
+    } else if (response.code === 4000) {
       sendSnackbar(
-        'Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!',
-        'error',
-      )
+        "Terdapat kesalahan memasukkan OTP, silahkan coba lagi kembali",
+        "error"
+      );
+    } else {
+      sendSnackbar(
+        "Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!",
+        "error"
+      );
     }
-  }
-  catch (error) {
-    sendSnackbar('Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!', 'error')
+  } catch (error) {
+    sendSnackbar(
+      "Gagal melakukan pembuatan akun, mohon periksa kembali kelengkapan data!",
+      "error"
+    );
   }
 
   // send otp
@@ -163,291 +166,271 @@ const onSubmitEmail = async () => {
   // catch (error) {
   //   console.log(error, 'ini error')
   // }
-}
+};
 
-const kodeOtpEmail = ref('')
-const kodeOtpNoHandphone = ref('')
+const kodeOtpEmail = ref("");
+const kodeOtpNoHandphone = ref("");
 
 const onSubmitKodeEmail = async () => {
-  console.log('SUBMIT KODE EMAIL ')
+  console.log("SUBMIT KODE EMAIL ");
 
   const payload = {
     user_id: userVerificationStore.id,
     otp: kodeOtpEmail.value,
-  }
+  };
 
-  console.log('PAYLOAD SUBMIT OTP ', payload)
+  console.log("PAYLOAD SUBMIT OTP ", payload);
 
   try {
-    const response: any = await $api('/auth/verify-otp', {
-      method: 'POST',
+    const response: any = await $api("/auth/verify-otp", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
-    })
+    });
 
-    console.log('RESPONSE VERIFY OTP EMAIL : ', response)
+    console.log("RESPONSE VERIFY OTP EMAIL : ", response);
 
     // console.log(kodeOtpEmail, "otp email");
     if (response?.code === 2000) {
-      isSucess.value = true
-    }
-
-    else if (response?.code === 4000) {
+      isSucess.value = true;
+    } else if (response?.code === 4000) {
       // isSucess.value = true
 
-      localStorage.removeItem('formData')
+      localStorage.removeItem("formData");
       sendSnackbar(
-        'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali',
-        'error',
-      )
-    }
-
-    else if (response?.code === 500) {
+        "Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali",
+        "error"
+      );
+    } else if (response?.code === 500) {
       // isSucess.value = true
 
-      localStorage.removeItem('formData')
-      console.log('error 500')
+      localStorage.removeItem("formData");
+      console.log("error 500");
 
       sendSnackbar(
-        'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
-        'error',
-      )
-    }
-
-    else {
+        "Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!",
+        "error"
+      );
+    } else {
       sendSnackbar(
-        'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
-        'error',
-      )
-      isSucess.value = false
+        "Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!",
+        "error"
+      );
+      isSucess.value = false;
     }
-  }
-  catch (error) {
+  } catch (error) {
     sendSnackbar(
-      'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
-      'error',
-    )
-    console.log('ADA ERROR NIH BANG ', error)
+      "Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!",
+      "error"
+    );
+    console.log("ADA ERROR NIH BANG ", error);
   }
-}
+};
 
 const isDisabledKodeEmail = computed(() => {
-  return !kodeOtpEmail.value || kodeOtpEmail.value.length !== 6
-})
+  return !kodeOtpEmail.value || kodeOtpEmail.value.length !== 6;
+});
 
 const isDisabledKodeNomorHandphone = computed(() => {
-  return !kodeOtpNoHandphone.value || kodeOtpNoHandphone.value.length !== 6
-})
+  return !kodeOtpNoHandphone.value || kodeOtpNoHandphone.value.length !== 6;
+});
 
-const cooldown = ref(60)
+const cooldown = ref(60);
 
 const startCooldown = () => {
-  cooldown.value = 60
+  cooldown.value = 60;
 
   const interval = setInterval(() => {
-    if (cooldown.value > 0)
-      cooldown.value--
-    else clearInterval(interval)
-  }, 1000)
-}
+    if (cooldown.value > 0) cooldown.value--;
+    else clearInterval(interval);
+  }, 1000);
+};
 
 const resendCode = async () => {
-  sendSnackbar('Kode Verifikasi Berhasil Dikirim Ulang', 'success')
+  sendSnackbar("Kode Verifikasi Berhasil Dikirim Ulang", "success");
 
   const payload = {
-    channel: currentTab.value === 0 ? 'email' : 'phone_number',
-    destination: currentTab.value === 0 ? form.value.email : form.value.noHandphone,
-  }
+    channel: currentTab.value === 0 ? "email" : "phone_number",
+    destination:
+      currentTab.value === 0 ? form.value.email : form.value.noHandphone,
+  };
 
-  console.log('RESEND CODE  PAYLOAD : ', payload)
+  console.log("RESEND CODE  PAYLOAD : ", payload);
 
-  startCooldown()
+  startCooldown();
 
   try {
-    const response = await $api('/auth/send-otp', {
-      method: 'POST', // Mengatur metode menjadi POST
+    const response = await $api("/auth/send-otp", {
+      method: "POST", // Mengatur metode menjadi POST
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
-    })
+    });
 
-    console.log('RESPONSE SEND OTP dari RESEND : ', response)
-  }
-  catch (error) {
-    console.log(error, 'ini error')
+    console.log("RESPONSE SEND OTP dari RESEND : ", response);
+  } catch (error) {
+    console.log(error, "ini error");
   }
 
   // notif();
 
   // Tambahkan logic pengiriman ulang kode di sini
-}
+};
 
 onMounted(() => {
-  startCooldown()
-})
+  startCooldown();
+});
 
 const onSubmitNomerHandphone = async () => {
-  isOtpNoHandphone.value = true
-  isDisabledEmail.value = true
+  isOtpNoHandphone.value = true;
+  isDisabledEmail.value = true;
 
   const payload = {
-    channel: 'phone_number',
+    channel: "phone_number",
     destination: userVerificationStore.phone_number,
-  }
+  };
 
-  console.log('ON SUBMIT NOMOR HP PAYLOAD : ', payload)
+  console.log("ON SUBMIT NOMOR HP PAYLOAD : ", payload);
 
   try {
-    const response = await $api('/auth/send-otp', {
-      method: 'POST',
+    const response = await $api("/auth/send-otp", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
-    })
+    });
 
-    console.log('RESPONSE SEND OTP PHONE NUMBER : ', response)
+    console.log("RESPONSE SEND OTP PHONE NUMBER : ", response);
 
     if (response.code === 2000) {
       // Cek apakah response berhasil
-      const data = response.data
+      const data = response.data;
 
-      isOtpNoHandphone.value = true
+      isOtpNoHandphone.value = true;
 
-      console.log('Akun berhasil dibuat:', data)
+      console.log("Akun berhasil dibuat:", data);
 
       // router.push({ name: 'verifikasi-user', params: { id: id } })
-    }
-    else if (response.code === 4001) {
-      sendSnackbar(`${response.errors.list_error}`, 'error')
-    }
-    else {
+    } else if (response.code === 4001) {
+      sendSnackbar(`${response.errors.list_error}`, "error");
+    } else {
       sendSnackbar(
-        'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
-        'error',
-      )
+        "Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!",
+        "error"
+      );
     }
-  }
-  catch (error) {
+  } catch (error) {
     sendSnackbar(
-      'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
-      'error',
-    )
-    console.error('Error saat membuat akun:', error)
+      "Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!",
+      "error"
+    );
+    console.error("Error saat membuat akun:", error);
   }
 
   // disini payload route
-}
+};
 
 const onSubmitKodeNomerHandphone = async () => {
-  console.log('VERIFY OTP PHONE NUMBER')
+  console.log("VERIFY OTP PHONE NUMBER");
 
   // isSucess.value = true
 
   const payload = {
     user_id: userVerificationStore.id,
     otp: kodeOtpNoHandphone.value,
-  }
+  };
 
-  console.log('ON SUBMIT KODE NOMOR HP PAYLOAD : ', payload)
+  console.log("ON SUBMIT KODE NOMOR HP PAYLOAD : ", payload);
 
   try {
-    const response: any = await $api('/auth/verify-otp', {
-      method: 'POST',
+    const response: any = await $api("/auth/verify-otp", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
-    })
+    });
 
-    console.log('RESPONSE VERIFY OTP PHONE NUMBER : ', response)
+    console.log("RESPONSE VERIFY OTP PHONE NUMBER : ", response);
 
     // console.log(kodeOtpEmail, "otp email");
     if (response?.code === 2000) {
-      localStorage.removeItem('formData')
-      isSucess.value = true
-    }
-
-    else if (response?.code === 4000) {
-      localStorage.removeItem('formData')
+      localStorage.removeItem("formData");
+      isSucess.value = true;
+    } else if (response?.code === 4000) {
+      localStorage.removeItem("formData");
       sendSnackbar(
-        'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali',
-        'error',
-      )
-    }
-
-    else if (response?.code === 500) {
-      localStorage.removeItem('formData')
-      console.log('error 500')
+        "Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali",
+        "error"
+      );
+    } else if (response?.code === 500) {
+      localStorage.removeItem("formData");
+      console.log("error 500");
 
       sendSnackbar(
-        'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
-        'error',
-      )
-    }
-
-    else {
+        "Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!",
+        "error"
+      );
+    } else {
       sendSnackbar(
-        'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
-        'error',
-      )
-      isSucess.value = false
+        "Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!",
+        "error"
+      );
+      isSucess.value = false;
     }
-  }
-  catch (error) {
+  } catch (error) {
     sendSnackbar(
-      'Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!',
-      'error',
-    )
-    console.log('ADA ERROR NIH BANG ', error)
+      "Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali!",
+      "error"
+    );
+    console.log("ADA ERROR NIH BANG ", error);
   }
 
   // sendSnackbar('Terdapat kesalahan memasukan OTP, silahkan coba lagi kembali', 'error')
-}
+};
 
 const imageArray = [
-  '/images/login-register/1.png',
-  '/images/login-register/2.png',
-  '/images/login-register/3.png',
-]
+  "/images/login-register/1.png",
+  "/images/login-register/2.png",
+  "/images/login-register/3.png",
+];
 
-const currentImage = ref('')
+const currentImage = ref("");
 
 const getRandomImage = () => {
-  const randomIndex = Math.floor(Math.random() * imageArray.length)
+  const randomIndex = Math.floor(Math.random() * imageArray.length);
 
-  console.log(currentImage, 'sini', randomIndex, '---', imageArray[randomIndex])
+  console.log(
+    currentImage,
+    "sini",
+    randomIndex,
+    "---",
+    imageArray[randomIndex]
+  );
 
-  return imageArray[randomIndex]
-}
+  return imageArray[randomIndex];
+};
 
 onMounted(() => {
-  currentImage.value = getRandomImage()
-})
+  currentImage.value = getRandomImage();
+});
 </script>
 
 <template>
-  <VRow
-    no-gutters
-    class="auth-wrapper"
-  >
+  <HelpButton />
+  <VRow no-gutters class="auth-wrapper">
     <VCol
       cols="12"
       md="6"
       class="auth-card-v2 d-flex align-center justify-center bg-white"
     >
-      <VCard
-        flat
-        :max-width="500"
-        class="mt-12 mt-sm-0 pa-5 pa-lg-7"
-      >
+      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
         <VCardText>
-          <h3 class="text-h4 mb-1">
-            Akun Kamu Berhasil Terdaftar!
-          </h3>
+          <h3 class="text-h4 mb-1">Akun Kamu Berhasil Terdaftar!</h3>
           <p class="mb-0">
             Terima kasih telah membuat akun di website
             {{ themeConfig.app.title }}, untuk proses selanjutnya verfikasi
@@ -456,29 +439,16 @@ onMounted(() => {
         </VCardText>
 
         <VCardText>
-          <VTabs
-            v-model="currentTab"
-            grow
-          >
-            <VTab :disabled="isDisabledEmail">
-              Email
-            </VTab>
-            <VTab :disabled="isDisabledNoHp">
-              NomorHandphone
-            </VTab>
+          <VTabs v-model="currentTab" grow>
+            <VTab :disabled="isDisabledEmail"> Email </VTab>
+            <VTab :disabled="isDisabledNoHp"> NomorHandphone </VTab>
           </VTabs>
 
-          <VWindow
-            v-model="currentTab"
-            class="mt-5"
-          >
+          <VWindow v-model="currentTab" class="mt-5">
             <VWindowItem key="1">
               <VCol cols="12">
                 <!-- Verifikasi Email  -->
-                <p
-                  v-if="!isSucess"
-                  class="verifikasi-title text-email"
-                >
+                <p v-if="!isSucess" class="verifikasi-title text-email">
                   Verifikasi dengan Email
                 </p>
                 <div v-if="!isOtpEmail && !isSucess">
@@ -492,19 +462,11 @@ onMounted(() => {
                     placeholder="Masukan Email"
                   />
 
-                  <VBtn
-                    block
-
-                    type="submit"
-                    @click="onSubmitEmail"
-                  >
+                  <VBtn block type="submit" @click="onSubmitEmail">
                     Kirim Kode Verifikasi
                   </VBtn>
                   <div class="back-link">
-                    <a
-                      href="/register"
-                      class="back-icon"
-                    >
+                    <a href="/register" class="back-icon">
                       ← Kembali ke Halaman Buat Akun
                     </a>
                   </div>
@@ -522,7 +484,9 @@ onMounted(() => {
                   />
                   <p>
                     Belum terima kode?
-                    <span v-if="cooldown > 0">Kirim Ulang dalam ({{ cooldown }}) detik</span>
+                    <span v-if="cooldown > 0"
+                      >Kirim Ulang dalam ({{ cooldown }}) detik</span
+                    >
                     <span v-else>
                       <a @click="resendCode">Kirim Ulang</a>
                     </span>
@@ -537,10 +501,7 @@ onMounted(() => {
                     Verifikasi Kode
                   </VBtn>
                   <div class="back-link">
-                    <a
-                      href="/register"
-                      class="back-icon"
-                    >
+                    <a href="/register" class="back-icon">
                       ← Kembali ke Halaman Buat Akun
                     </a>
                   </div>
@@ -552,10 +513,7 @@ onMounted(() => {
                   <VRow>
                     <VCol>
                       <h2 class="text-success">
-                        <VIcon
-                          color="green"
-                          size="30"
-                        >
+                        <VIcon color="green" size="30">
                           mdi-check-circle
                         </VIcon>
                         Sukses!
@@ -567,14 +525,12 @@ onMounted(() => {
                     <VCol>
                       <VBtn
                         outlined
-                        style="inline-size: 100%;"
+                        style="inline-size: 100%"
                         class="text-none text-body-1 font-weight-medium custom-btn"
                         href="/"
                       >
                         Pergi ke Halaman Login
-                        <VIcon end>
-                          mdi-arrow-right
-                        </VIcon>
+                        <VIcon end> mdi-arrow-right </VIcon>
                       </VBtn>
                     </VCol>
                   </VRow>
@@ -608,10 +564,7 @@ onMounted(() => {
                   Kirim Kode Verifikasi
                 </VBtn>
                 <div class="back-link">
-                  <a
-                    href="/register"
-                    class="back-icon"
-                  >
+                  <a href="/register" class="back-icon">
                     ← Kembali ke Halaman Buat Akun
                   </a>
                 </div>
@@ -629,7 +582,9 @@ onMounted(() => {
                 />
                 <p>
                   Belum terima kode?
-                  <span v-if="cooldown > 0">Kirim Ulang dalam ({{ cooldown }}) detik</span>
+                  <span v-if="cooldown > 0"
+                    >Kirim Ulang dalam ({{ cooldown }}) detik</span
+                  >
                   <span v-else>
                     <a @click="resendCode">Kirim Ulang</a>
                   </span>
@@ -643,10 +598,7 @@ onMounted(() => {
                   Verifikasi Kode
                 </VBtn>
                 <div class="back-link">
-                  <a
-                    href="/"
-                    class="back-icon"
-                  >
+                  <a href="/" class="back-icon">
                     ← Kembali ke Halaman Buat Akun
                   </a>
                 </div>
@@ -658,12 +610,7 @@ onMounted(() => {
                 <VRow>
                   <VCol>
                     <h2 class="text-success">
-                      <VIcon
-                        color="green"
-                        size="30"
-                      >
-                        mdi-check-circle
-                      </VIcon>
+                      <VIcon color="green" size="30"> mdi-check-circle </VIcon>
                       Sukses!
                     </h2>
                     <p>
@@ -675,14 +622,12 @@ onMounted(() => {
                   <VCol>
                     <VBtn
                       outlined
-                      style="inline-size: 100%;"
+                      style="inline-size: 100%"
                       class="text-none text-body-1 font-weight-medium custom-btn"
                       href="/register"
                     >
                       Pergi ke Halaman Login
-                      <VIcon end>
-                        mdi-arrow-right
-                      </VIcon>
+                      <VIcon end> mdi-arrow-right </VIcon>
                     </VBtn>
                   </VCol>
                 </VRow>
@@ -716,7 +661,6 @@ onMounted(() => {
         :src="currentImage"
         width="100%"
         height="100%"
-
         class="responsive-image"
       />
     </VCol>
