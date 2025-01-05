@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import imageCompression from "browser-image-compression";
+
 const props = defineProps<{
   imageId?: string;
 }>();
@@ -30,7 +32,7 @@ const inputData = reactive<any>({
   file_name: null,
   status: false,
 });
-const uploadedFile = reactive({
+const uploadedFile = reactive<any>({
   name: null,
   file: null,
 });
@@ -39,11 +41,33 @@ const formRules = reactive({
 });
 
 const handleUploadFile = async (event: any) => {
-  if (event?.target?.files.length) {
-    const fileData = event.target.files[0];
-    uploadedFile.name = fileData.name;
-    uploadedFile.file = fileData;
-    inputData.file = fileData;
+  const fileData = event.target.files[0];
+  if (fileData) {
+    if (["image/jpeg", "image/png", "image/webp"].includes(fileData.type)) {
+      try {
+        const compressedBlob = await imageCompression(fileData, {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true,
+          fileType: "image/webp",
+        });
+        const newName = `${
+          compressedBlob.name.split(".")[0]
+        }-${Date.now()}.webp`;
+        const convertFile = new File([compressedBlob], newName, {
+          type: compressedBlob.type,
+          lastModified: Date.now(),
+        });
+        uploadedFile.file = convertFile;
+        uploadedFile.name = convertFile.name;
+        inputData.file = convertFile;
+      } catch (error) {
+        useSnackbar().sendSnackbar("Upload Image Failed", "error");
+        console.error(error);
+      }
+    } else {
+      useSnackbar().sendSnackbar("Image must be WEBP/PNG/JPEG/JPG", "error");
+    }
   }
 };
 const handleRemoveFile = () => {
@@ -58,10 +82,7 @@ const handleSubmitForm = async () => {
 
   if (status.valid) {
     const formData = new FormData();
-    formData.append(
-      "file",
-      inputData.file ? inputData.file : inputData.file_name
-    );
+    if (inputData.file) formData.append("file", inputData.file);
     formData.append("status", inputData.status);
     emit("submit:update", formData);
     isModalOpen.value = false;
@@ -93,7 +114,10 @@ const handleSubmitForm = async () => {
         <VCard class="pa-4">
           <VCardTitle class="d-flex justify-space-between align-center">
             <div class="text-h4 font-weight-bold">Edit Image</div>
-            <VIcon @click="isActive.value = false" size="large">
+            <VIcon
+              @click="[(isActive.value = false), handleRemoveFile()]"
+              size="large"
+            >
               mdi-close-thick
             </VIcon>
           </VCardTitle>
@@ -129,6 +153,7 @@ const handleSubmitForm = async () => {
                   prepend-icon=""
                   @change="handleUploadFile"
                   :rules="formRules.image"
+                  accept="image/*"
                 >
                   <template #append-inner>
                     <VBtn rounded="s-0 e-xl" text="Choose File" />

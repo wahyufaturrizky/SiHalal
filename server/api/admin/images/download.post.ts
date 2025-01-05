@@ -1,16 +1,16 @@
 import type { NuxtError } from "nuxt/app";
 
-export default defineEventHandler(async (event: any) => {
+export default defineEventHandler(async (event) => {
   try {
     const runtimeConfig = useRuntimeConfig();
-    const response = await $fetch(
-      `${runtimeConfig.authBaseUrl}/api/v1/image-auth/random`,
+    const { filename } = await getQuery(event);
+    const data = await $fetch(
+      `${runtimeConfig.coreBaseUrl}/api/documents/${filename}`,
       {
         method: "get",
       } as any
     );
-
-    return response || null;
+    return data || null;
   } catch (error) {
     setResponseStatus(event, 400);
 
