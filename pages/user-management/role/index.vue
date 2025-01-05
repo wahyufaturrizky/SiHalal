@@ -41,13 +41,21 @@ const dialogVisible = ref(false);
 const handleDialogvisible = () => {
   dialogVisible.value = true;
 };
-const handleCloseButton = (data:any) => {
+const handleCloseButton = (data: any) => {
+  debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
   dialogVisible.value = data;
 };
-const handleDelete = async (item:any) => {
-  try {
-  
+const handleEditButton = (data: any) => {
+  debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
+  // dialogVisible.value = data;
+};
+const handleAddButton = (data: any) => {
+  debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
+  dialogVisible.value = data;
+};
 
+const handleDelete = async (item: any) => {
+  try {
     const response = await $api(
       `/user-management/role/delete-user/${item.id}`,
       {
@@ -58,18 +66,17 @@ const handleDelete = async (item:any) => {
     if (response.code === 2000) {
       loading.value = false;
       useSnackbar().sendSnackbar("Data Berhasil di Hapus", "success");
+    } else if (response.code === 500000) {
+      useSnackbar().sendSnackbar(`${response.errors.list_error}`, "error");
+      loading.value = false;
     } else {
       loading.value = false;
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      useSnackbar().sendSnackbar("Ada Kesalahan delete ", "error");
     }
 
-    debouncedFetch(
-    page.value,
-    itemPerPage.value,
-    searchQuery.value,
-  )
+    debouncedFetch(page.value, itemPerPage.value, searchQuery.value);
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan delete", "error");
     loading.value = false;
   }
 };
@@ -82,9 +89,15 @@ const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
 
-
-
-const loadItem = async ({ page, size,keyword }: { page: number; size: number;keyword: string }) => {
+const loadItem = async ({
+  page,
+  size,
+  keyword,
+}: {
+  page: number;
+  size: number;
+  keyword: string;
+}) => {
   try {
     loading.value = true;
 
@@ -93,7 +106,7 @@ const loadItem = async ({ page, size,keyword }: { page: number; size: number;key
       params: {
         page,
         size,
-        keyword
+        keyword,
       },
     });
 
@@ -114,15 +127,15 @@ const loadItem = async ({ page, size,keyword }: { page: number; size: number;key
     loading.value = false;
   }
 };
-const searchQuery = ref('')
+const searchQuery = ref("");
 
 const handleInput = () => {
-  debouncedFetch(
-    page.value,
-    itemPerPage.value,
-    searchQuery.value,
-  )
-}
+  debouncedFetch({
+    page: page.value,
+    size: itemPerPage.value,
+    keyword: searchQuery.value,
+  });
+};
 
 const debouncedFetch = debounce(loadItem, 500);
 
@@ -132,7 +145,6 @@ onMounted(async () => {
       page: page.value,
       size: itemPerPage.value,
     }),
-  
   ]);
 
   const checkResIfUndefined = res.every((item: any) => {
@@ -145,7 +157,6 @@ onMounted(async () => {
     loadingAll.value = false;
   }
 });
-
 </script>
 
 <template>
@@ -168,8 +179,12 @@ onMounted(async () => {
               </VBtn>
 
               <VDialog v-model="dialogVisible" max-width="100svh">
-                <VCard style="padding: 1.5svw;">
-                  <AddRoleForm @visible="handleCloseButton" :action="true" />
+                <VCard style="padding: 1.5svw">
+                  <AddRoleForm
+                    @visible="handleCloseButton"
+                    :action="true"
+                    @add="handleAddButton"
+                  />
                 </VCard>
               </VDialog>
             </VCardTitle>
@@ -181,90 +196,95 @@ onMounted(async () => {
                   placeholder="Search Data"
                   density="compact"
                   append-inner-icon="mdi-magnify"
-                  @input="handleInput"
+                  @update:model-value="handleInput"
                 />
               </VCol>
             </VRow>
 
             <VRow>
               <VCol>
-                <VDataTableServer
-                  class="custom-table"
-                  v-model:items-per-page="itemPerPage"
-                  v-model:page="page"
-                  :headers="tableHeader"
-                  :items="items"
-                  :items-length="totalItems"
-                  @update:options="
-                    loadItem({
-                      page: page,
-                      size: itemPerPage,
-                      keyword: searchQuery,
-                    })
-                  "
-                >
-                  <template #no-data>
-                    <VCard variant="outlined" class="w-full mt-7 mb-5">
-                      <div class="pt-2" style="justify-items: center;">
-                        <img
-                          src="~/assets/images/empty-data.png"
-                          alt="empty_data"
-                        />
-                        <div class="pt-2 pb-2 font-weight-bold">
-                          Data Kosong
+                <VCard variant="outlined">
+                  <VDataTableServer
+                    class="custom-table"
+                    v-model:items-per-page="itemPerPage"
+                    v-model:page="page"
+                    :headers="tableHeader"
+                    :items="items"
+                    :loading="loading"
+                    :items-length="totalItems"
+                    loading-text="Loading..."
+                    @update:options="
+                      loadItem({
+                        page: page,
+                        size: itemPerPage,
+                        keyword: searchQuery,
+                      })
+                    "
+                  >
+                    <template #no-data>
+                      <VCard variant="outlined" class="w-full mt-7 mb-5">
+                        <div class="pt-2" style="justify-items: center">
+                          <img
+                            src="~/assets/images/empty-data.png"
+                            alt="empty_data"
+                          />
+                          <div class="pt-2 pb-2 font-weight-bold">
+                            Data Kosong
+                          </div>
                         </div>
-                      </div>
-                    </VCard>
-                  </template>
+                      </VCard>
+                    </template>
 
-                  <template #item.index="{ index }">
-                    {{ index + 1 + (page - 1) * itemPerPage }}
-                  </template>
-                  <template #item.count_menu="{ item }">
-                    {{ item.count_menu }} Access Menus(s)
-                  </template>
+                    <template #item.index="{ index }">
+                      {{ index + 1 + (page - 1) * itemPerPage }}
+                    </template>
+                    <template #item.count_menu="{ item }">
+                      {{ item.count_menu }} Access Menus(s)
+                    </template>
 
-                  <template #item.no="{ index }">
-                    {{ index + 1 + (page - 1) * itemPerPage }}
-                  </template>
-                  <template #item.action="{ item }">
-                    <VMenu :close-on-content-click="false">
-                      <template #activator="{ props }">
-                        <VBtn
-                          icon="mdi-dots-vertical"
-                          variant="text"
-                          v-bind="props"
-                          color="primary"
-                        />
-                      </template>
-                      <VList>
-                        <VListItem
-                          v-bind="props"
-                          class="cursor-pointer"
-                          @click="handleDialogvisible"
-                        >
-                          <template #prepend>
-                            <VIcon icon="ri-edit-line" :size="16" />
-                          </template>
-                          <VListItemTitle>Ubah</VListItemTitle>
-                        </VListItem>
-                        <VDialog v-model="dialogVisible" max-width="100svh">
-                          <VCard style="padding: 1.5svw;">
-                            <AddRoleForm
-                              @visible="handleCloseButton"
-                              :id_role="item.id"
-                              :action="false"
-                            />
-                          </VCard>
-                        </VDialog>
+                    <template #item.no="{ index }">
+                      {{ index + 1 + (page - 1) * itemPerPage }}
+                    </template>
+                    <template #item.action="{ item }">
+                      <VMenu :close-on-content-click="false">
+                        <template #activator="{ props }">
+                          <VBtn
+                            icon="mdi-dots-vertical"
+                            variant="text"
+                            v-bind="props"
+                            color="primary"
+                          />
+                        </template>
+                        <VList>
+                          <VListItem
+                            v-bind="props"
+                            class="cursor-pointer"
+                            @click="handleDialogvisible"
+                          >
+                            <template #prepend>
+                              <VIcon icon="ri-edit-line" :size="16" />
+                            </template>
+                            <VListItemTitle>Ubah</VListItemTitle>
+                          </VListItem>
+                          <VDialog v-model="dialogVisible" max-width="100svh">
+                            <VCard style="padding: 1.5svw">
+                              <AddRoleForm
+                                @visible="handleCloseButton"
+                                @edit="handleEditButton"
+                                :id_role="item.id"
+                                :action="false"
+                              />
+                            </VCard>
+                          </VDialog>
 
-                        <DeleteConfirmation
-                          @delete-confirm="handleDelete(item)"
-                        />
-                      </VList>
-                    </VMenu>
-                  </template>
-                </VDataTableServer>
+                          <DeleteConfirmation
+                            @delete-confirm="handleDelete(item)"
+                          />
+                        </VList>
+                      </VMenu>
+                    </template>
+                  </VDataTableServer>
+                </VCard>
               </VCol>
             </VRow>
           </VCardItem>

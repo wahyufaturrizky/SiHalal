@@ -9,12 +9,19 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-
+  const { role_name, desc, id_permission } = await readBody(event);
   const data = await $fetch<any>(
-    `${runtimeConfig.authBaseUrl}/api/v1/admin/users/d36fa568-b88d-4eb4-bc77-cba43d16f5e3/detail`,
+    `${runtimeConfig.authBaseUrl}/api/v1/admin/users-type/add`,
     {
-      method: "get",
-      headers: { Authorization: authorizationHeader },
+      method: "post",
+      headers: {
+        Authorization: authorizationHeader,
+      },
+      body: {
+        role_name,
+        desc,
+        id_permission,
+      },
     }
   ).catch((err: NuxtError) => {
     console.log(err);
