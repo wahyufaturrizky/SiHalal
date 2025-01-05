@@ -106,6 +106,7 @@ const selectedProductType = ref();
 const selectedFasilitas = ref();
 const selectedLembaga = ref();
 const selectedPendamping = ref();
+const searchBy: Ref<Number> = ref(1);
 const handleLoadList = async () => {
   try {
     const response: any = await $api(
@@ -119,7 +120,8 @@ const handleLoadList = async () => {
           pendamping: selectedPendamping.value,
           page: currentPage.value,
           size: itemPerPage.value,
-          keyword: searchQuery.value,
+          keyword: searchBy.value === 1 ? searchQuery.value : null,
+          no_daftar: searchBy.value === 2 ? searchQuery.value : null,
         },
       } as any
     );
@@ -389,7 +391,25 @@ onMounted(() => {
             /> -->
           </VRow>
         </VCol>
-        <VCol class="d-flex justify-sm-space-between align-center" cols="9">
+        <!-- <VCol class="d-flex justify-sm-space-between align-center" cols="9">
+          <VTextField
+            v-model="searchQuery"
+            density="compact"
+            placeholder="Cari Nama Pengajuan"
+            append-inner-icon="ri-search-line"
+            style="max-inline-size: 100%"
+            @update:model-value="handleSearchSubmission"
+            clearable
+          />
+        </VCol> -->
+      </VRow>
+      <VRow>
+        <VCol cols="12">
+          <VRadioGroup v-model="searchBy" inline label="Cari berdasarkan:">
+            <VRadio label="Nama PU" :value="1"></VRadio>
+            <VRadio label="No Daftar" :value="2"></VRadio>
+          </VRadioGroup>
+          <br />
           <VTextField
             v-model="searchQuery"
             density="compact"
