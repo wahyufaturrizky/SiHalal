@@ -112,8 +112,7 @@ const loadItem = async (): void => {
         { title: 'Alamat Perusahaan', value: data.pengajuan_sertifikat?.alamat, type: 'text' },
         { title: 'NIB', value: data.pengajuan_sertifikat?.nib, type: 'text' },
         { title: 'Skala Usaha', value: data.pengajuan_sertifikat?.skala_usaha, type: 'select', disabled: true },
-        { title: 'Nama Pimpinan', value: data.pengajuan_sertifikat?.nama_pimpinan, type: 'text' },
-        { title: 'Nama Fasilitas', value: '' , type: 'select-fasillitasi', },
+        { title: 'Jenis Produk', value: data.pengajuan_sertifikat?.jenis_produk, type: 'text', },
         { title: 'Alamat Fasilitas', value: '' , type: 'text-fasilitasi' },
         {
           type: 'date',
