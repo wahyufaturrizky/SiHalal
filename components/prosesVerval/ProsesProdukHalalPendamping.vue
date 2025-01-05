@@ -36,6 +36,8 @@ watch(
   () => props.data,
   async (newData) => {
     content.value = newData;
+    countPersyaratan.value.countProses = parseInt("0");
+    countPersyaratan.value.countSjph = parseInt("0");
 
     if (newData) {
       content.value.forEach((val) => {
@@ -45,13 +47,6 @@ watch(
           countPersyaratan.value.countSjph += 1;
         }
       });
-
-      if (
-        countPersyaratan.value.countSjph > 0 &&
-        countPersyaratan.value.countProses > 0
-      ) {
-        disableAddProses.value = true;
-      }
     }
   },
   { immediate: true }
@@ -103,6 +98,15 @@ defineExpose({
   openValidationErrorRibbon,
 });
 
+const disableAddBtn = computed(() => {
+  if (
+    countPersyaratan.value.countSjph > 0 &&
+    countPersyaratan.value.countProses > 0
+  ) {
+    return true;
+  }
+});
+
 const onOpenModal = async () => {
   // resetForm();
 };
@@ -114,8 +118,9 @@ const onOpenModal = async () => {
         <VCol cols="6"><h3>Proses Produk Halal</h3></VCol>
         <VCol cols="6" style="display: flex; justify-content: end">
           <ModalProsesProdukHalalVerval
-            :disable-add="disableAddProses"
+            :disable-add="disableAddBtn"
             :modal-type="modalTypeEnum.ADD"
+            :data="content"
             @emit-add="handleAddBahan"
           ></ModalProsesProdukHalalVerval>
         </VCol>

@@ -280,6 +280,7 @@ const vervalReturn = async (notesPengembalian: string) => {
       return;
     }
     useSnackbar().sendSnackbar("Kembalikan data sukses", "success");
+    navigateTo("/pengajuan/verval-pendamping");
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
