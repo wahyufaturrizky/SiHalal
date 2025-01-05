@@ -1,34 +1,37 @@
 <script lang="ts" setup>
-import navItems from '@/navigation/index'
-import { useConfigStore } from '@core/stores/config'
-import { themeConfig } from '@themeConfig'
+import navItems from "@/navigation/index";
+import { useConfigStore } from "@core/stores/config";
+import { themeConfig } from "@themeConfig";
 
 // Components
-import Footer from '@/layouts/components/Footer.vue'
-import NavBarNotifications from '@/layouts/components/NavBarNotifications.vue'
-import NavSearchBar from '@/layouts/components/NavSearchBar.vue'
-import NavbarShortcuts from '@/layouts/components/NavbarShortcuts.vue'
-import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
-import UserProfile from '@/layouts/components/UserProfile.vue'
-import NavBarI18n from '@core/components/I18n.vue'
+import Footer from "@/layouts/components/Footer.vue";
+import UserProfile from "@/layouts/components/UserProfile.vue";
+import NavBarI18n from "@core/components/I18n.vue";
 
 // @layouts plugin
-import { VerticalNavLayout } from '@layouts'
+import { VerticalNavLayout } from "@layouts";
 
-const configStore = useConfigStore()
+const configStore = useConfigStore();
 
 // ℹ️ Provide animation name for vertical nav collapse icon.
-const verticalNavHeaderActionAnimationName = ref<'rotate-180' | 'rotate-back-180' | null>(null)
+const verticalNavHeaderActionAnimationName = ref<
+  "rotate-180" | "rotate-back-180" | null
+>(null);
 
-watch([
-  () => configStore.isVerticalNavCollapsed,
-  () => configStore.isAppRTL,
-], val => {
-  if (configStore.isAppRTL)
-    verticalNavHeaderActionAnimationName.value = val[0] ? 'rotate-back-180' : 'rotate-180'
-  else
-    verticalNavHeaderActionAnimationName.value = val[0] ? 'rotate-180' : 'rotate-back-180'
-}, { immediate: true })
+watch(
+  [() => configStore.isVerticalNavCollapsed, () => configStore.isAppRTL],
+  (val) => {
+    if (configStore.isAppRTL)
+      verticalNavHeaderActionAnimationName.value = val[0]
+        ? "rotate-back-180"
+        : "rotate-180";
+    else
+      verticalNavHeaderActionAnimationName.value = val[0]
+        ? "rotate-180"
+        : "rotate-back-180";
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -44,17 +47,20 @@ watch([
           <VIcon icon="ri-menu-line" />
         </IconBtn>
 
-        <NavSearchBar class="ms-lg-n2" />
+        <!-- <NavSearchBar class="ms-lg-n2" /> -->
 
         <VSpacer />
 
         <NavBarI18n
-          v-if="themeConfig.app.i18n.enable && themeConfig.app.i18n.langConfig?.length"
+          v-if="
+            themeConfig.app.i18n.enable &&
+            themeConfig.app.i18n.langConfig?.length
+          "
           :languages="themeConfig.app.i18n.langConfig"
         />
-        <NavbarThemeSwitcher />
-        <NavbarShortcuts />
-        <NavBarNotifications class="me-2" />
+        <!-- <NavbarThemeSwitcher />
+        <NavbarShortcuts /> -->
+        <!-- <NavBarNotifications class="me-2" /> -->
         <UserProfile />
       </div>
     </template>
@@ -74,13 +80,23 @@ watch([
 
 <style lang="scss">
 @keyframes rotate-180 {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(180deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(180deg);
+  }
 }
 
 @keyframes rotate-back-180 {
-  from { transform: rotate(180deg); }
-  to { transform: rotate(0deg); }
+  from {
+    transform: rotate(180deg);
+  }
+
+  to {
+    transform: rotate(0deg);
+  }
 }
 
 .layout-vertical-nav {
