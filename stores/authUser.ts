@@ -2,6 +2,7 @@ import type { SessionData } from "#auth";
 import { defineStore } from "pinia";
 export const useMyAuthUserStore = defineStore("myAuthUserStore", () => {
   const user = ref<void | SessionData | null>(null);
+  const role = ref<void | SessionData | null>(null);
   const auth = useAuth();
   async function getSession() {
     if (user.value == null) {
