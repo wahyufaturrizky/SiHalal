@@ -463,11 +463,15 @@ watch(loaFile, (newValue, oldValue) => {
               label="Unggah Sertifikat Kompetensi Penyelia Halal"
               outlined
               dense
-              accept=".pdf,.jpg,.png,.jpeg"
+              accept=".pdf,.doc,.docx"
               class="mb-2"
               :rules="[
                 requiredValidator,
-                fileExtensionValidator,
+                fileExtensionTypeValidator([
+                  'application/msword',
+                  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                  'application/pdf',
+                ]),
                 (value) => {
                   return (
                     !value ||
@@ -521,11 +525,11 @@ watch(loaFile, (newValue, oldValue) => {
               label="Unggah Foreign Halal Certificate"
               outlined
               dense
-              accept=".pdf,.jpg,.png,.jpeg"
+              accept=".pdf"
               class="mb-2"
               :rules="[
                 requiredValidator,
-                fileExtensionValidator,
+                fileExtensionTypeValidator(['application/pdf']),
                 (value) => {
                   return (
                     !value ||
@@ -613,7 +617,11 @@ watch(loaFile, (newValue, oldValue) => {
                   v-model="reqFile[index]"
                   :rules="[
                     requiredValidator,
-                    fileExtensionValidator,
+                    fileExtensionTypeValidator([
+                      'application/msword',
+                      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                      'application/pdf',
+                    ]),
                     fileNameLengthValidator,
                     (value) => {
                       return (
