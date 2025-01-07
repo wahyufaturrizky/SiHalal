@@ -19,7 +19,7 @@
           <v-list-item
             value="whatsapp"
             color="primary"
-            href="https://wa.me/081180103146"
+            href="https://wa.me/6281180103146"
             target="-blank"
           >
             <template v-slot:prepend>
