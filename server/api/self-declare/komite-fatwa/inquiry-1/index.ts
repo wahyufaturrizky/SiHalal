@@ -18,6 +18,7 @@ export default defineEventHandler(async (event) => {
     selectedFilterFasilitasi,
     selectedFilterLembaga,
     selectedFilterPendamping,
+    filterBy,
     searchQuery,
     jenisPermohonan,
     statusPermohonan,
@@ -32,6 +33,7 @@ export default defineEventHandler(async (event) => {
     selectedFilterFasilitasi: string;
     selectedFilterLembaga: string;
     selectedFilterPendamping: string;
+    filterBy: string;
     searchQuery: string;
     jenisPermohonan: string;
     statusPermohonan: string;
@@ -48,6 +50,7 @@ export default defineEventHandler(async (event) => {
     size: Number.isNaN(Number.parseInt(size, 10))
       ? 10
       : Number.parseInt(size, 10),
+    filter_by: "nama_pu",
   };
 
   if (selectedFilterProduk !== "")
@@ -57,7 +60,7 @@ export default defineEventHandler(async (event) => {
     params["pendamping"] = selectedFilterPendamping;
   if (selectedFilterFasilitasi !== "")
     params["fasilitas"] = selectedFilterFasilitasi;
-  if (searchQuery !== "") params["keywords"] = searchQuery;
+  if (searchQuery !== "") params["filter_value"] = searchQuery;
   if (jenisPermohonan !== "") params["jenisPermohonan"] = jenisPermohonan;
   if (statusPermohonan !== "") params["status_permohonan"] = statusPermohonan;
   if (wilayah !== "" && wilayah !== undefined)
@@ -66,6 +69,7 @@ export default defineEventHandler(async (event) => {
     params["kabupaten"] = kabupaten.toUpperCase();
   if (fasilitas !== "") params["fasilitas"] = fasilitas;
   if (namaFasilitator !== "") params["fasilitator"] = namaFasilitator;
+  if (filterBy !== undefined) params["filter_by"] = filterBy;
 
   console.log(params);
   const data = await $fetch<any>(
