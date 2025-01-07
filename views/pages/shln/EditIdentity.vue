@@ -278,6 +278,16 @@ onMounted(async () => {
 const saveForm = () => {
   // console.log("Form saved", form.value);
 };
+const now = new Date();
+const currentMonth = now.toLocaleString("default", { month: "2-digit" });
+const currentYear = now.getFullYear();
+const currentDay = now.getDate();
+const date = ref("");
+const expiredKey = ref(0);
+const changeExpired = (item) => {
+  formIdentity.value.hcn.expired_date = "";
+  expiredKey.value += 1;
+};
 </script>
 
 <template>
@@ -447,20 +457,20 @@ const saveForm = () => {
 
             <!-- Issued Date -->
             <VCol cols="12">
-              <!-- <VTextField
-                v-model="formIdentity.hcn.issued_date"
-                label="Issued Date"
-                outlined
-                dense
-                required
-                :rules="[requiredValidator]"
-                type="date"
-                class="custom-date-input"
-              /> -->
               <AppDateTimePicker
                 v-model="formIdentity.hcn.issued_date"
                 label="Issued Date"
                 placeholder="Issued Date"
+                @update:modelValue="changeExpired"
+                :config="{
+                  dateFormat: 'd-m-Y',
+                  disable: [
+                    {
+                      from: `${currentDay + 1}-${currentMonth}-${currentYear}`,
+                      to: `99-99-9999`,
+                    },
+                  ],
+                }"
                 required
                 :rules="[requiredValidator]"
               />
@@ -468,21 +478,21 @@ const saveForm = () => {
 
             <!-- Expired Date -->
             <VCol cols="12">
-              <!-- <VTextField
-                v-model="formIdentity.hcn.expired_date"
-                label="Expired Date"
-                outlined
-                dense
-                required
-                :rules="[requiredValidator]"
-                type="date"
-                class="custom-date-input"
-              /> -->
               <AppDateTimePicker
                 v-model="formIdentity.hcn.expired_date"
+                :key="expiredKey"
                 label="Expired Date"
                 placeholder="Expired Date"
                 required
+                :config="{
+                  dateFormat: 'd-m-Y',
+                  disable: [
+                    {
+                      from: `01-01-0001`,
+                      to: `${formIdentity.hcn.issued_date}`,
+                    },
+                  ],
+                }"
                 :rules="[requiredValidator]"
               />
             </VCol>
