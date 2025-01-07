@@ -185,13 +185,14 @@ const handleLoadImageFile = async (filename: string) => {
   }
 };
 
-// onBeforeMount(() => {
+// onMounted(() => {
 //   handleLoadImageAuth();
 // });
-await useAsyncData(
-  "random-image",
+useAsyncData(
+  "random-login-image",
   async () => {
     await handleLoadImageAuth();
+    return true;
   },
   {
     immediate: true,
@@ -332,11 +333,11 @@ const items = [
             <span class="d-inline-block">Terhubung Ke</span>
           </VCol>
           <VRow align="center" justify="center">
-            <VCol cols="12" md="auto" class="d-flex align-center">
-              <VImg :src="ossImage" width="100" height="44" />
+            <VCol cols="auto" class="d-flex align-center">
+              <img :src="ossImage" width="100" height="44" />
             </VCol>
-            <VCol cols="12" md="auto" class="d-flex align-center">
-              <VImg :src="bseImage" width="100" height="44" />
+            <VCol cols="auto" class="d-flex align-center">
+              <img :src="bseImage" width="100" height="44" />
             </VCol>
           </VRow>
           <VRow>
@@ -353,10 +354,11 @@ const items = [
       md="6"
       class="d-flex align-center justify-center bg-white"
     >
+      <div :style="`background-image: url('${currentImage}')`" />
       <VImg
         :src="currentImage"
         width="100%"
-        height="80dvh"
+        height="100%"
         rounded="xl"
         class="responsive-image"
       />
