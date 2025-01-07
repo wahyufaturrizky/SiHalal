@@ -226,7 +226,7 @@ onMounted(async () => {
           <VCol cols="12">
             <VRow>
               <VCol cols="8">
-                <h3>Unggahan Sertifikat Pelatihan Penyelia Halal (SPPH)</h3>
+                <h3>Unggah File KH</h3>
               </VCol>
               <VCol cols="4">
                 <HalalFileInput
