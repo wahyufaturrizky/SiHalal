@@ -349,4 +349,24 @@ export default [
       },
     ],
   },
+
+  {
+    title: "navbar.facilitate_registration.title",
+    icon: { icon: "ri-more-line" },
+    roles: ["role1"],
+    children: [
+      {
+        title: "navbar.facilitate_registration.menu.entry",
+        to: "user-management-role",
+        icon: { icon: "mdi-card-account-details-outline" },
+        roles: ["role1"],
+      },
+      {
+        title: "navbar.facilitate_registration.menu.entry",
+        to: "user-management-role",
+        icon: { icon: "mdi-card-account-details-outline" },
+        roles: ["role1"],
+      },
+    ],
+  },
 ];

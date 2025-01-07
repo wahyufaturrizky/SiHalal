@@ -344,4 +344,16 @@ export default [
     to: "administrator-image-auth",
     roles: ["Admin"],
   },
+  {
+    title: "navbar.facilitate_registration.menu.entry",
+    to: "user-management-role",
+    icon: { icon: "mdi-card-account-details-outline" },
+    roles: ["role1"],
+  },
+  {
+    title: "navbar.facilitate_registration.menu.entry",
+    to: "user-management-role",
+    icon: { icon: "mdi-card-account-details-outline" },
+    roles: ["role1"],
+  },
 ];
