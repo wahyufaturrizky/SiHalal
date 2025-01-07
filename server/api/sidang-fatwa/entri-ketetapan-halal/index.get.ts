@@ -20,10 +20,11 @@ export default defineEventHandler(async (event) => {
   const params: any = {
     page: isNaN(Number.parseInt(page, 10)) ? 1 : Number.parseInt(page, 10),
     size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
+    keywords: "",
   };
 
-  if (keyword !== "") {
-    params["keyword"] = keyword;
+  if (keyword !== "" && keyword !== undefined) {
+    params["keywords"] = keyword;
   }
 
   const data = await $fetch<any>(
