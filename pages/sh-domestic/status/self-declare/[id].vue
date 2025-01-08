@@ -1247,10 +1247,11 @@ onMounted(async () => {
     getDownloadForm("surat-pernyataan", "surat_pernyataan"),
     // getDownloadForm("ikrar", "ikrar"),
     getIkrarFile(),
-    getDownloadForm("surat-verval", "surat_verval"),
+    // getDownloadForm("surat-verval", "surat_verval"),
+    getDownloadForm("laporan", "hasil_verval"),
     getDownloadForm("rekomendasi", "rekomendasi"),
     getDownloadForm("sjph", "sjph"),
-    getDownloadForm("laporan", "laporan"),
+    // getDownloadForm("laporan", "laporan"),
     getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
   ]);
   if (registrationDetail.status == "") {
