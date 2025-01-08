@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/halal-certificate-reguler/self-declare/${id}/return`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/halal-certificate-reguler/self-declare/${id}/decline`,
     {
       method: "put",
       headers: { Authorization: authorizationHeader },
