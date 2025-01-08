@@ -26,6 +26,7 @@ export default defineEventHandler(async (event: any) => {
         : Number.parseInt(query.size, 10),
       keywords: query.keyword,
       no_daftar: query.no_daftar,
+      status_permohonan: "OF74",
     };
 
     const response = await $fetch(
