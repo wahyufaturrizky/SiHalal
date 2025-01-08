@@ -83,6 +83,10 @@ const dibatalkan = async () => {
 };
 
 const emit = defineEmits(["onSubmitPengembalian"]);
+
+const onOpenModal = () => {
+  form.value.notes = null;
+};
 </script>
 <template>
   <VDialog>
@@ -92,6 +96,7 @@ const emit = defineEmits(["onSubmitPengembalian"]);
         variant="outlined"
         class="mx-2"
         v-bind="openModal"
+        @click="onOpenModal"
       >
         Pengembalian
       </VBtn>
@@ -101,6 +106,7 @@ const emit = defineEmits(["onSubmitPengembalian"]);
         color="error"
         class="mx-2"
         v-bind="openModal"
+        @click="onOpenModal"
       >
         Pembatalan
       </VBtn>
