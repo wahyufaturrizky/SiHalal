@@ -183,6 +183,13 @@ const saveImporter = async () => {
     importerPOCButton.value = false;
     await loadTracking();
     if (response.code != 2000) {
+      if (response.code == 400000) {
+        useSnackbar().sendSnackbar(
+          "Update failed, The validity period of the halal certificate is only 1 day remaining !",
+          "error"
+        );
+        return;
+      }
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
       return;
     }
