@@ -184,6 +184,11 @@ export const fileExtensionValidator = (value: unknown) => {
     "image/jpeg",
     "image/png",
     "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "text/csv",
   ];
   const result = useArrayIncludes(allowedFileExtensionList, file.type).value;
   // console.log("file extension match = ", result);

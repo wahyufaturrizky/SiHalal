@@ -463,15 +463,11 @@ watch(loaFile, (newValue, oldValue) => {
               label="Unggah Sertifikat Kompetensi Penyelia Halal"
               outlined
               dense
-              accept=".pdf,.doc,.docx"
+              accept=".doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.pdf,.csv"
               class="mb-2"
               :rules="[
                 requiredValidator,
-                fileExtensionTypeValidator([
-                  'application/msword',
-                  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                  'application/pdf',
-                ]),
+                fileExtensionValidator,
                 (value) => {
                   return (
                     !value ||
@@ -525,11 +521,11 @@ watch(loaFile, (newValue, oldValue) => {
               label="Unggah Foreign Halal Certificate"
               outlined
               dense
-              accept=".pdf"
+              accept=".doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.pdf,.csv"
               class="mb-2"
               :rules="[
                 requiredValidator,
-                fileExtensionTypeValidator(['application/pdf']),
+                fileExtensionValidator,
                 (value) => {
                   return (
                     !value ||
@@ -615,13 +611,10 @@ watch(loaFile, (newValue, oldValue) => {
                 </VBtn>
                 <HalalFileInput
                   v-model="reqFile[index]"
+                  accept=".doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.pdf,.csv"
                   :rules="[
                     requiredValidator,
-                    fileExtensionTypeValidator([
-                      'application/msword',
-                      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                      'application/pdf',
-                    ]),
+                    fileExtensionValidator,
                     fileNameLengthValidator,
                     (value) => {
                       return (
