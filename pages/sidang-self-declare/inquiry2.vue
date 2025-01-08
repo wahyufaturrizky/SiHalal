@@ -31,10 +31,11 @@ const totalItems = ref(0);
 const loading = ref(false);
 const loadingAll = ref(true);
 const page = ref(1);
-
+const selectedFilterBy = ref("nama_pu");
 const loadItem = async (
   page: number,
   size: number,
+  filterBy: string,
   searchQuery: string,
   jenisPermohonan: string,
   statusPermohonan: string,
@@ -58,6 +59,7 @@ const loadItem = async (
         kabupaten: kabupaten.split("||")[1],
         fasilitas,
         namaFasilitator,
+        filterBy,
       },
     });
 
@@ -198,6 +200,21 @@ const handleInput = () => {
   debouncedFetch(
     page.value,
     itemPerPage.value,
+    selectedFilterBy.value,
+    searchQuery.value,
+    selectedFilterPermohonan.value,
+    selectedFilterStatusPermhonan.value,
+    selectedFilterWilayah.value,
+    selectedFilterKabupaten.value,
+    selectedFilterFasilitaas.value,
+    selectedFilterNameFasilitator.value
+  );
+};
+const changeFilterBy = (item) => {
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    item,
     searchQuery.value,
     selectedFilterPermohonan.value,
     selectedFilterStatusPermhonan.value,
@@ -217,6 +234,7 @@ const reset = () => {
   debouncedFetch(
     page.value,
     itemPerPage.value,
+    selectedFilterBy.value,
     searchQuery.value,
     selectedFilterPermohonan.value,
     selectedFilterStatusPermhonan.value,
@@ -231,6 +249,7 @@ const applyFilters = () => {
   debouncedFetch(
     page.value,
     itemPerPage.value,
+    selectedFilterBy.value,
     searchQuery.value,
     selectedFilterPermohonan.value,
     selectedFilterStatusPermhonan.value,
@@ -442,8 +461,18 @@ const provinceValue = (item: MasterDistrict) => {
                 </VList>
               </VMenu>
             </VCol>
-            <VCol cols="1" />
-            <VCol cols="8">
+            <VCol cols="12">
+              <VLabel>Cari Berdasarkan : </VLabel>
+              <VRadioGroup
+                v-model="selectedFilterBy"
+                inline
+                @update:model-value="changeFilterBy"
+              >
+                <VRadio :label="`Nama PU`" value="nama_pu" />
+                <VRadio :label="`Nomor Daftar`" value="no_daftar" />
+              </VRadioGroup>
+            </VCol>
+            <VCol cols="12">
               <VTextField
                 density="compact"
                 v-model="searchQuery"
@@ -467,6 +496,7 @@ const provinceValue = (item: MasterDistrict) => {
                   loadItem(
                     page,
                     itemPerPage,
+                    selectedFilterBy,
                     searchQuery,
                     selectedFilterPermohonan,
                     selectedFilterStatusPermhonan,

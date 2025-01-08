@@ -39,7 +39,7 @@ const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
-const status = ref("OF10,OF5,OF15,OF11");
+const status = ref("OF11");
 
 const loadItem = async (
   page: number,

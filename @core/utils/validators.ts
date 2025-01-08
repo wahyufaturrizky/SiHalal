@@ -184,8 +184,35 @@ export const fileExtensionValidator = (value: unknown) => {
     "image/jpeg",
     "image/png",
     "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "text/csv",
   ];
   const result = useArrayIncludes(allowedFileExtensionList, file.type).value;
+  // console.log("file extension match = ", result);
+  if (result) {
+    return true;
+  }
+  return "File extension not allowed";
+};
+export const fileExtensionTypeValidator = (
+  value: unknown,
+  allowed: string[] = [
+    "image/jpg",
+    "image/jpeg",
+    "image/png",
+    "application/pdf",
+  ]
+) => {
+  // use this reference for allowed extension: https://developer.mozilla.org/en-US/docs/Web/HTTP/MIME_types/Common_types
+  let file = value;
+  if (Array.isArray(value)) {
+    file = value[0];
+  }
+  console.log("file attribute = ", value[0].type);
+  const result = useArrayIncludes(allowed, file.type).value;
   // console.log("file extension match = ", result);
   if (result) {
     return true;

@@ -463,7 +463,7 @@ watch(loaFile, (newValue, oldValue) => {
               label="Unggah Sertifikat Kompetensi Penyelia Halal"
               outlined
               dense
-              accept=".pdf,.jpg,.png,.jpeg"
+              accept=".doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.pdf,.csv"
               class="mb-2"
               :rules="[
                 requiredValidator,
@@ -521,7 +521,7 @@ watch(loaFile, (newValue, oldValue) => {
               label="Unggah Foreign Halal Certificate"
               outlined
               dense
-              accept=".pdf,.jpg,.png,.jpeg"
+              accept=".doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.pdf,.csv"
               class="mb-2"
               :rules="[
                 requiredValidator,
@@ -611,6 +611,7 @@ watch(loaFile, (newValue, oldValue) => {
                 </VBtn>
                 <HalalFileInput
                   v-model="reqFile[index]"
+                  accept=".doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.pdf,.csv"
                   :rules="[
                     requiredValidator,
                     fileExtensionValidator,

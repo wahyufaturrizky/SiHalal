@@ -222,7 +222,7 @@ const changeData = (item) => {
           <VCol cols="12" md="8">
             <VTextField
               v-model="searchQuery"
-              placeholder="Cari Nama Pengajuan"
+              placeholder="Cari User ID"
               append-inner-icon="ri-search-line"
               @input="handleInput"
             />

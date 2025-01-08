@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { VDataTableServer } from "vuetify/components";
+import { VCol, VDataTableServer } from "vuetify/components";
 
 const items = ref<
   {
@@ -40,7 +40,7 @@ const filterPendamping = ref<any[]>([]);
 const filterProduk = ref([]);
 const searchQuery = ref("");
 const showFilterMenu = ref(false);
-
+const selectedFilterBy = ref("nama_pu");
 const loadItem = async (
   page: number,
   size: number,
@@ -48,6 +48,7 @@ const loadItem = async (
   selectedFilterFasilitasi: string,
   selectedFilterLembaga: string,
   selectedFilterPendamping: string,
+  filterBy: string,
   searchQuery: string
 ) => {
   try {
@@ -62,6 +63,7 @@ const loadItem = async (
         selectedFilterFasilitasi,
         selectedFilterLembaga,
         selectedFilterPendamping,
+        filterBy,
         searchQuery,
       },
     });
@@ -94,6 +96,7 @@ const handleInput = () => {
     selectedFilterFasilitasi.value,
     selectedFilterLembaga.value,
     selectedFilterPendamping.value,
+    selectedFilterBy.value,
     searchQuery.value
   );
 };
@@ -199,6 +202,7 @@ onMounted(async () => {
     selectedFilterFasilitasi.value,
     selectedFilterLembaga.value,
     selectedFilterPendamping.value,
+    selectedFilterBy.value,
     searchQuery.value
   );
   await loadPendamping(pagePendamping.value, itemPerPagePendamping.value, "");
@@ -214,6 +218,7 @@ const applyFilters = () => {
     selectedFilterFasilitasi.value,
     selectedFilterLembaga.value,
     selectedFilterPendamping.value,
+    selectedFilterBy.value,
     searchQuery.value
   );
   showFilterMenu.value = false;
@@ -233,6 +238,7 @@ const reset = () => {
     selectedFilterFasilitasi.value,
     selectedFilterLembaga.value,
     selectedFilterPendamping.value,
+    selectedFilterBy.value,
     searchQuery.value
   );
 
@@ -244,6 +250,18 @@ const findProdukByCode = (code) => {
     return produk.name;
   }
   return code;
+};
+const changeFilterBy = (item) => {
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    selectedFilterProduk.value,
+    selectedFilterFasilitasi.value,
+    selectedFilterLembaga.value,
+    selectedFilterPendamping.value,
+    item,
+    searchQuery.value
+  );
 };
 </script>
 
@@ -354,8 +372,18 @@ const findProdukByCode = (code) => {
                 </VCard>
               </VMenu>
             </VCol>
-            <VCol cols="1" />
-            <VCol cols="8">
+            <VCol cols="12">
+              <VLabel>Cari Berdasarkan : </VLabel>
+              <VRadioGroup
+                v-model="selectedFilterBy"
+                inline
+                @update:model-value="changeFilterBy"
+              >
+                <VRadio :label="`Nama PU`" value="nama_pu" />
+                <VRadio :label="`Nomor Daftar`" value="no_daftar" />
+              </VRadioGroup>
+            </VCol>
+            <VCol cols="12">
               <VTextField
                 v-model="searchQuery"
                 density="compact"
@@ -376,7 +404,18 @@ const findProdukByCode = (code) => {
                 :loading="loading"
                 :items-length="totalItems"
                 loading-text="Loading..."
-                @update:options="loadItem(page, itemPerPage)"
+                @update:options="
+                  loadItem(
+                    page,
+                    itemPerPage,
+                    selectedFilterProduk,
+                    selectedFilterFasilitasi,
+                    selectedFilterLembaga,
+                    selectedFilterBy,
+                    selectedFilterPendamping,
+                    searchQuery
+                  )
+                "
               >
                 <template #item.no="{ index }">
                   {{ index + 1 + (page - 1) * itemPerPage }}
