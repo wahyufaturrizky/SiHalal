@@ -467,11 +467,7 @@ watch(loaFile, (newValue, oldValue) => {
               class="mb-2"
               :rules="[
                 requiredValidator,
-                fileExtensionTypeValidator([
-                  'application/msword',
-                  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                  'application/pdf',
-                ]),
+                fileExtensionValidator,
                 (value) => {
                   return (
                     !value ||
@@ -529,7 +525,7 @@ watch(loaFile, (newValue, oldValue) => {
               class="mb-2"
               :rules="[
                 requiredValidator,
-                fileExtensionTypeValidator(['application/pdf']),
+                fileExtensionValidator,
                 (value) => {
                   return (
                     !value ||
@@ -617,11 +613,7 @@ watch(loaFile, (newValue, oldValue) => {
                   v-model="reqFile[index]"
                   :rules="[
                     requiredValidator,
-                    fileExtensionTypeValidator([
-                      'application/msword',
-                      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                      'application/pdf',
-                    ]),
+                    fileExtensionValidator,
                     fileNameLengthValidator,
                     (value) => {
                       return (
