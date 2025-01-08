@@ -14,7 +14,6 @@ const loadingAll = ref(true);
 const loadingTandaiOK = ref(false);
 const loadingTandaiNotOK = ref(false);
 const loadingLihatLaporan = ref(false);
-const loadingPengembalian = ref(false);
 const itemsPabrik = ref([]);
 const itemsOutlet = ref([]);
 const listKodeDaftarFasilitasi = ref([]);
@@ -67,7 +66,6 @@ const formatDate = (date: string): string => {
 
 const showTimeline = ref(true);
 const showDetail = ref(true);
-const loadingDibatalkan = ref(false);
 const loadingBahan = ref(false);
 const loadingTableProduk = ref(false);
 
@@ -869,62 +867,6 @@ const batalkanStatusHijau = async () => {
   }
 };
 
-const pengembalian = async () => {
-  try {
-    loadingPengembalian.value = true;
-
-    const res: any = await $api(
-      `/self-declare/verificator/return/${selfDeclareId}`,
-      {
-        method: "put",
-      }
-    );
-
-    if (res?.code === 2000) {
-      useSnackbar().sendSnackbar("Success", "success");
-      loadingPengembalian.value = false;
-
-      setTimeout(() => {
-        router.go(-1);
-      }, 1000);
-    } else {
-      useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
-      loadingPengembalian.value = false;
-    }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingPengembalian.value = false;
-  }
-};
-
-const dibatalkan = async () => {
-  try {
-    loadingDibatalkan.value = true;
-
-    const res: any = await $api(
-      `/self-declare/verificator/decline/${selfDeclareId}`,
-      {
-        method: "put",
-      }
-    );
-
-    if (res?.code === 2000) {
-      useSnackbar().sendSnackbar("Success", "success");
-      loadingDibatalkan.value = false;
-
-      setTimeout(() => {
-        router.go(-1);
-      }, 1000);
-    } else {
-      useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
-      loadingDibatalkan.value = false;
-    }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingDibatalkan.value = false;
-  }
-};
-
 const lokasiPendamping = ref([
   { title: "Kabupaten", value: "Kabupaten" },
   { title: "Provinsi", value: "Provinsi" },
@@ -1011,22 +953,28 @@ const onSelectFasilitator = (selectedId: string) => {
         >
           Batalkan Status Hijau
         </VBtn>
-        <VBtn
+        <!-- <VBtn
           :loading="loadingPengembalian"
           @click="pengembalian"
           variant="outlined"
           class="mx-2"
         >
           Pengembalian
-        </VBtn>
-        <VBtn
+        </VBtn> -->
+        <ModalPengembalianSelfDecVer
+          :modal-type="'return'"
+        ></ModalPengembalianSelfDecVer>
+        <ModalPengembalianSelfDecVer
+          :modal-type="'reject'"
+        ></ModalPengembalianSelfDecVer>
+        <!-- <VBtn
           :loading="loadingDibatalkan"
           @click="dibatalkan"
           color="#E1442E"
           class="mx-2"
         >
           Dibatalkan
-        </VBtn>
+        </VBtn> -->
       </VCol>
     </VRow>
 
