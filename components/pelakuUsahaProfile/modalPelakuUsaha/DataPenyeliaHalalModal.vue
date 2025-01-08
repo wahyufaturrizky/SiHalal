@@ -273,48 +273,69 @@ watch(
                 />
               </VCol>
             </VRow>
-            <VFileInput
-              :rules="[
-                requiredValidator,
-                fileSizeValidator,
-                fileNameLengthValidator,
-                fileExtensionValidator,
-              ]"
-              v-model="form.sertifikatKompetensi"
-              label="Unggah Sertifikat Kompetensi Penyelia Halal"
-              outlined
-              dense
-              accept=".pdf,.jpg,.png,.jpeg"
-              class="mb-2"
-            />
-            <VFileInput
-              :rules="[
-                requiredValidator,
-                fileSizeValidator,
-                fileNameLengthValidator,
-                fileExtensionValidator,
-              ]"
-              v-model="form.sertifikatPelatihan"
-              label="Unggah Sertifikat Pelatihan Penyelia Halal"
-              outlined
-              dense
-              accept=".pdf,.jpg,.png,.jpeg"
-              class="mb-2"
-            />
-            <VFileInput
-              :rules="[
-                requiredValidator,
-                fileSizeValidator,
-                fileNameLengthValidator,
-                fileExtensionValidator,
-              ]"
-              v-model="form.ktpFile"
-              label="Unggah KTP"
-              outlined
-              dense
-              accept=".pdf,.jpg,.png,.jpeg"
-              class="mb-2"
-            />
+            <v-tooltip
+              text="Upload file hanya untuk - pdf, png, jpeg, jpg dan Max file-size 2MB"
+            >
+              <template v-slot:activator="{ props: tooltipOpen }">
+                <VFileInput
+                  :rules="[
+                    requiredValidator,
+                    fileSizeValidator,
+                    fileNameLengthValidator,
+                    fileExtensionValidator,
+                  ]"
+                  v-model="form.sertifikatKompetensi"
+                  label="Unggah Sertifikat Kompetensi Penyelia Halal"
+                  outlined
+                  dense
+                  accept=".pdf,.jpg,.png,.jpeg"
+                  class="mb-2"
+                  v-bind="tooltipOpen"
+                />
+              </template>
+            </v-tooltip>
+            <v-tooltip
+              text="Upload file hanya untuk - pdf, png, jpeg, jpg dan Max file-size 2MB"
+            >
+              <template v-slot:activator="{ props: tooltipPelatihan }">
+                <VFileInput
+                  :rules="[
+                    requiredValidator,
+                    fileSizeValidator,
+                    fileNameLengthValidator,
+                    fileExtensionValidator,
+                  ]"
+                  v-model="form.sertifikatPelatihan"
+                  label="Unggah Sertifikat Pelatihan Penyelia Halal"
+                  outlined
+                  dense
+                  accept=".pdf,.jpg,.png,.jpeg"
+                  class="mb-2"
+                  v-bind="tooltipPelatihan"
+                />
+              </template>
+            </v-tooltip>
+            <v-tooltip
+              text="Upload file hanya untuk - pdf, png, jpeg, jpg dan Max file-size 2MB"
+            >
+              <template v-slot:activator="{ props: tooltipKtp }">
+                <VFileInput
+                  :rules="[
+                    requiredValidator,
+                    fileSizeValidator,
+                    fileNameLengthValidator,
+                    fileExtensionValidator,
+                  ]"
+                  v-model="form.ktpFile"
+                  label="Unggah KTP"
+                  outlined
+                  dense
+                  accept=".pdf,.jpg,.png,.jpeg"
+                  class="mb-2"
+                  v-bind="tooltipKtp"
+                />
+              </template>
+            </v-tooltip>
           </VForm>
         </VCardText>
 
