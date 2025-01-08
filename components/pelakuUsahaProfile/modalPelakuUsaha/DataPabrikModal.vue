@@ -11,10 +11,10 @@
     <VBtn
       v-else-if="props.mode === 'edit'"
       @click="openDialog"
-      variant="outlined"
+      variant="text"
       prepend-icon="ri-edit-line"
     >
-      Edit
+      Ubah
     </VBtn>
     <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
