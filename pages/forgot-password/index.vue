@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ForgotPassLayout from "@/layouts/forgotPassLayout.vue";
+import HelpButton from "@/views/pages/HelpButton.vue";
 definePageMeta({
   layout: "blank",
   unauthenticatedOnly: true,
@@ -21,6 +22,7 @@ const emailAddrEmitted = (val: string) => {
 </script>
 
 <template>
+  <HelpButton />
   <ForgotPassLayout>
     <template #pageTitle>
       <VRow>
@@ -30,11 +32,11 @@ const emailAddrEmitted = (val: string) => {
             type="success"
             :text="'Verifikasi berhasil dikirim ke ' + newEmailAddr"
           ></VAlert>
-<!--          <VAlert-->
-<!--            v-if="newEmailFail"-->
-<!--            type="error"-->
-<!--            text="Email gagal dikirim"-->
-<!--          ></VAlert>-->
+          <!--          <VAlert-->
+          <!--            v-if="newEmailFail"-->
+          <!--            type="error"-->
+          <!--            text="Email gagal dikirim"-->
+          <!--          ></VAlert>-->
         </VCol>
       </VRow>
       <br />

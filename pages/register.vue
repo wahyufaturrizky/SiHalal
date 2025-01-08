@@ -4,6 +4,7 @@ import { useDisplay } from "vuetify";
 import { VForm } from "vuetify/components/VForm";
 
 import { VNodeRenderer } from "@/@layouts/components/VNodeRenderer";
+import HelpButton from "@/views/pages/HelpButton.vue";
 import bseImage from "@images/bse.png";
 import NoImage from "@images/no-image.png";
 import ossImage from "@images/oss.png";
@@ -314,10 +315,11 @@ const handleLoadImageFile = async (filename: string) => {
 //   // currentImage.value = getRandomImage()
 //   handleLoadImageAuth();
 // });
-await useAsyncData(
-  "random-image",
+useAsyncData(
+  "random-regis-image",
   async () => {
     await handleLoadImageAuth();
+    return true;
   },
   {
     immediate: true,
@@ -326,12 +328,9 @@ await useAsyncData(
 </script>
 
 <template>
+  <HelpButton />
   <VRow no-gutters class="auth-wrapper">
-    <VCol
-      cols="12"
-      md="6"
-      class="auth-card-v2 d-flex align-center justify-center bg-white"
-    >
+    <VCol cols="12" md="6" class="d-flex align-center justify-center bg-white">
       <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
         <VCardText>
           <NuxtLink to="/">
@@ -488,11 +487,11 @@ await useAsyncData(
             <span class="d-inline-block">Terhubung Ke</span>
           </VCol>
           <VRow align="center" justify="center">
-            <VCol cols="12" md="auto" class="d-flex align-center">
-              <VImg :src="ossImage" width="100" height="48" />
+            <VCol cols="auto" class="d-flex align-center">
+              <img :src="ossImage" width="100" height="48" />
             </VCol>
-            <VCol cols="12" md="auto" class="d-flex align-center">
-              <VImg :src="bseImage" width="100" height="48" />
+            <VCol cols="auto" class="d-flex align-center">
+              <img :src="bseImage" width="100" height="48" />
             </VCol>
           </VRow>
           <VRow>
@@ -503,13 +502,15 @@ await useAsyncData(
         </VCardText>
       </VCard>
     </VCol>
-    <VCol
-      v-if="mdAndUp"
-      cols="12"
-      md="6"
-      class="auth-card-v2 d-flex align-center justify-center"
-    >
-      <VImg :src="currentImage" class="responsive-image" />
+    <VCol v-if="mdAndUp" md="6" class="d-flex align-center justify-center">
+      <VImg
+        :src="currentImage"
+        eager
+        width="100%"
+        height="100%"
+        rounded="xl"
+        class="responsive-image"
+      />
     </VCol>
   </VRow>
 </template>
@@ -541,6 +542,7 @@ await useAsyncData(
   block-size: 100%;
   inline-size: 100%;
   object-fit: fill;
+  pointer-events: none !important;
 }
 .v-img__img--contain {
   object-fit: fill;

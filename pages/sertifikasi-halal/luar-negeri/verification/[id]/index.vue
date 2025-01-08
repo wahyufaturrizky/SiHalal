@@ -4,21 +4,17 @@ import SHLNVerfikasiLayout from "@/layouts/SHLNVerfikasiLayout.vue";
 const panelOpenImporter = ref(0);
 const panelOpenImporterContract = ref(0);
 const openPanelRegisterData = ref(0);
-const loading = ref(false);
-const loadingTracking = ref(false);
-const loadingDetailRegistration = ref(false);
+const loadingAll = ref(true);
 const data = ref();
 const dataDetailRegistration = ref();
 const dataTracking = ref();
 
 const route = useRoute();
-const shlnId = route.params.id;
+const shlnId = (route.params as any).id;
 
 const loadItemDetailRegistrationById = async () => {
   try {
-    loadingDetailRegistration.value = true;
-
-    const response = await $api(
+    const response: any = await $api(
       `/shln/verificator/detail/registration/${shlnId}`,
       {
         method: "get",
@@ -27,63 +23,65 @@ const loadItemDetailRegistrationById = async () => {
 
     if (response.code === 2000) {
       dataDetailRegistration.value = response.data;
-      loadingDetailRegistration.value = false;
+      return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-      loadingDetailRegistration.value = false;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingDetailRegistration.value = false;
   }
 };
 
 const loadItemById = async () => {
   try {
-    loading.value = true;
-
-    const response = await $api(`/shln/verificator/${shlnId}`, {
+    const response: any = await $api(`/shln/verificator/${shlnId}`, {
       method: "get",
     });
 
     if (response.code === 2000) {
       data.value = response.data;
-      loading.value = false;
+      return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-      loading.value = false;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loading.value = false;
   }
 };
 
 const loadItemTrackingById = async () => {
   try {
-    loadingTracking.value = true;
-
-    const response = await $api(`/shln/verificator/tracking/${shlnId}`, {
+    const response: any = await $api(`/shln/verificator/tracking/${shlnId}`, {
       method: "get",
     });
 
     if (response.code === 2000) {
       dataTracking.value = response.data;
-      loadingTracking.value = false;
+      return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-      loadingTracking.value = false;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingTracking.value = false;
   }
 };
 
 onMounted(async () => {
-  await loadItemById();
-  await loadItemTrackingById();
-  await loadItemDetailRegistrationById();
+  const res = await Promise.all([
+    loadItemById(),
+    loadItemTrackingById(),
+    loadItemDetailRegistrationById(),
+  ]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
 });
 
 const navigateAction = () => {
@@ -92,9 +90,7 @@ const navigateAction = () => {
 </script>
 
 <template>
-  <SHLNVerfikasiLayout
-    v-if="!loading && !loadingTracking && !loadingDetailRegistration"
-  >
+  <SHLNVerfikasiLayout v-if="!loadingAll">
     <template #pageTitle>
       <VRow>
         <VCol><h3>Foreign Halal Certificate Requirements Details</h3></VCol>
@@ -184,4 +180,9 @@ const navigateAction = () => {
       </VRow>
     </template>
   </SHLNVerfikasiLayout>
+
+  <VSkeletonLoader
+    type="table-heading, list-item-two-line, image, table-tfoot"
+    v-else
+  />
 </template>

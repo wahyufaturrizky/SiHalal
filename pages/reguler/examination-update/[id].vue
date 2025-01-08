@@ -233,7 +233,7 @@ onMounted(async () => {
               Daftar Nama Produk
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelDaftarProduk />
+              <PanelDaftarProduk :data="dataProduk" />
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="3" class="pt-3">

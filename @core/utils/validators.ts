@@ -192,6 +192,28 @@ export const fileExtensionValidator = (value: unknown) => {
   }
   return "File extension not allowed";
 };
+export const fileExtensionTypeValidator = (
+  value: unknown,
+  allowed: string[] = [
+    "image/jpg",
+    "image/jpeg",
+    "image/png",
+    "application/pdf",
+  ]
+) => {
+  // use this reference for allowed extension: https://developer.mozilla.org/en-US/docs/Web/HTTP/MIME_types/Common_types
+  let file = value;
+  if (Array.isArray(value)) {
+    file = value[0];
+  }
+  console.log("file attribute = ", value[0].type);
+  const result = useArrayIncludes(allowed, file.type).value;
+  // console.log("file extension match = ", result);
+  if (result) {
+    return true;
+  }
+  return "File extension not allowed";
+};
 
 export const fileNameLengthValidator = (value: unknown) => {
   console.log("file attribute = ", value[0].name);
