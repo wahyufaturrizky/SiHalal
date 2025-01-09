@@ -13,11 +13,14 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  const body = await readBody(event);
+
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/verificator/halal-certificate-reguler/self-declare/${id}/decline`,
     {
       method: "put",
       headers: { Authorization: authorizationHeader },
+      body,
     }
   ).catch((err: NuxtError) => {
     return err.data;
