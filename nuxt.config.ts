@@ -112,7 +112,7 @@ export default defineNuxtConfig({
           new_user: "boolean",
           phone_number: "string",
           roles:
-            "{ name: string, permissions: { group: string, name: string, url: string }[] }[]",
+            "{ code : string,name: string, permissions: { group: string, name: string, url: string,parent_id : string, id : string }[] }[]",
           username: "string",
         },
         dataResponsePointer: "/user",
