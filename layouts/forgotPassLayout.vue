@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import NoImage from "@images/no-image.png";
 import { computed } from "vue";
 import { useDisplay } from "vuetify";
 
@@ -8,6 +7,38 @@ const { mdAndUp } = useDisplay();
 
 const maxWidth = computed(() => {
   return mdAndUp ? 700 : "80%";
+});
+
+const currentImage = ref("");
+const handleLoadImageAuth = async () => {
+  try {
+    const response: any = await $api("/admin/images/random-image", {
+      method: "get",
+    } as any);
+
+    if (response.code === 2000) {
+      handleLoadImageFile(response.data.file_name);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+const handleLoadImageFile = async (filename: string) => {
+  try {
+    const response: any = await $api("/admin/images/download", {
+      method: "post",
+      query: {
+        filename,
+      },
+    } as any);
+    currentImage.value = response.url;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+onMounted(() => {
+  handleLoadImageAuth();
 });
 </script>
 
@@ -45,11 +76,10 @@ const maxWidth = computed(() => {
     </VCol>
     <VCol
       v-if="mdAndUp"
-      cols="12"
       md="6"
-      class="auth-card-v2 d-flex align-center justify-center"
+      class="d-flex align-center justify-center bg-white"
     >
-      <VImg :src="NoImage" height="100dvh" cover />
+      <VImg :src="currentImage" width="100%" height="100%" rounded="xl" />
     </VCol>
   </VRow>
 </template>
