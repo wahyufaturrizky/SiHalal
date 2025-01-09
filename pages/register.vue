@@ -311,20 +311,10 @@ const handleLoadImageFile = async (filename: string) => {
   }
 };
 
-// onMounted(() => {
-//   // currentImage.value = getRandomImage()
-//   handleLoadImageAuth();
-// });
-useAsyncData(
-  "random-regis-image",
-  async () => {
-    await handleLoadImageAuth();
-    return true;
-  },
-  {
-    immediate: true,
-  }
-);
+onMounted(() => {
+  // currentImage.value = getRandomImage()
+  handleLoadImageAuth();
+});
 </script>
 
 <template>
