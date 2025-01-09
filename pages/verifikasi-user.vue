@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import NoImage from "@images/no-image.png";
 import { themeConfig } from "@themeConfig";
 import { useDisplay } from "vuetify";
 import type { VForm } from "vuetify/components/VForm";
 
 import HelpButton from "@/views/pages/HelpButton.vue";
-import NoImage from "@images/no-image.png";
 import authV2LoginIllustrationBorderedDark from "@images/pages/auth-v2-login-illustration-bordered-dark.png";
 import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-illustration-bordered-light.png";
 import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
@@ -422,8 +422,11 @@ const handleLoadImageAuth = async () => {
 
     if (response.code === 2000) {
       handleLoadImageFile(response.data.file_name);
+    } else {
+      currentImage.value = NoImage;
     }
   } catch (error) {
+    currentImage.value = NoImage;
     console.error(error);
   }
 };
@@ -442,14 +445,13 @@ const handleLoadImageFile = async (filename: string) => {
 };
 
 onMounted(() => {
-  // currentImage.value = getRandomImage();
   handleLoadImageAuth();
 });
 </script>
 
 <template>
   <HelpButton />
-  <VRow no-gutters class="auth-wrapper">
+  <VRow no-gutters>
     <VCol
       cols="12"
       md="6"
@@ -680,16 +682,10 @@ onMounted(() => {
     </VCol>
     <VCol
       v-if="mdAndUp"
-      cols="12"
       md="6"
-      class="auth-card-v2 d-flex align-center justify-center"
+      class="d-flex align-center justify-center pb-3 pt-2 pe-2 bg-white"
     >
-      <VImg
-        :src="currentImage"
-        width="100%"
-        height="100%"
-        class="responsive-image"
-      />
+      <VImg :src="currentImage" width="100%" height="100%" rounded="xl" />
     </VCol>
   </VRow>
 </template>
@@ -763,9 +759,9 @@ onMounted(() => {
   text-transform: none !important;
 }
 
-.responsive-image {
-  block-size: 100%;
-  inline-size: 100%;
-  object-fit: fill;
-}
+// .responsive-image {
+//   block-size: 100%;
+//   inline-size: 100%;
+//   object-fit: fill;
+// }
 </style>

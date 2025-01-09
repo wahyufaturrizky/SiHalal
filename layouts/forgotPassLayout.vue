@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import NoImage from "@images/no-image.png";
 import { computed } from "vue";
 import { useDisplay } from "vuetify";
 
@@ -18,8 +19,11 @@ const handleLoadImageAuth = async () => {
 
     if (response.code === 2000) {
       handleLoadImageFile(response.data.file_name);
+    } else {
+      currentImage.value = NoImage;
     }
   } catch (error) {
+    currentImage.value = NoImage;
     console.error(error);
   }
 };
@@ -77,7 +81,7 @@ onMounted(() => {
     <VCol
       v-if="mdAndUp"
       md="6"
-      class="d-flex align-center justify-center bg-white"
+      class="d-flex align-center justify-center pb-3 pt-2 pe-2 bg-white"
     >
       <VImg :src="currentImage" width="100%" height="100%" rounded="xl" />
     </VCol>

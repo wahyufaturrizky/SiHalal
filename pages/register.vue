@@ -292,8 +292,11 @@ const handleLoadImageAuth = async () => {
 
     if (response.code === 2000) {
       handleLoadImageFile(response.data.file_name);
+    } else {
+      currentImage.value = NoImage;
     }
   } catch (error) {
+    currentImage.value = NoImage;
     console.error(error);
   }
 };
@@ -319,7 +322,7 @@ onMounted(() => {
 
 <template>
   <HelpButton />
-  <VRow no-gutters class="auth-wrapper">
+  <VRow no-gutters>
     <VCol cols="12" md="6" class="d-flex align-center justify-center bg-white">
       <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
         <VCardText>
@@ -492,10 +495,13 @@ onMounted(() => {
         </VCardText>
       </VCard>
     </VCol>
-    <VCol v-if="mdAndUp" md="6" class="d-flex align-center justify-center">
+    <VCol
+      v-if="mdAndUp"
+      md="6"
+      class="d-flex align-center justify-center pb-3 pt-2 pe-2 bg-white"
+    >
       <VImg
         :src="currentImage"
-        eager
         width="100%"
         height="100%"
         rounded="xl"
@@ -528,13 +534,10 @@ onMounted(() => {
   margin-block-start: 4px;
 }
 
-.responsive-image {
-  block-size: 100%;
-  inline-size: 100%;
-  object-fit: fill;
-  pointer-events: none !important;
-}
-.v-img__img--contain {
-  object-fit: fill;
-}
+// .responsive-image {
+//   block-size: 100%;
+//   inline-size: 100%;
+//   object-fit: fill;
+//   pointer-events: none !important;
+// }
 </style>
