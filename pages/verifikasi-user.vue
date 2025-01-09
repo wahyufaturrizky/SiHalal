@@ -401,22 +401,49 @@ const imageArray = [
 
 const currentImage = ref("");
 
-const getRandomImage = () => {
-  const randomIndex = Math.floor(Math.random() * imageArray.length);
+// const getRandomImage = () => {
+//   const randomIndex = Math.floor(Math.random() * imageArray.length);
 
-  console.log(
-    currentImage,
-    "sini",
-    randomIndex,
-    "---",
-    imageArray[randomIndex]
-  );
+//   console.log(
+//     currentImage,
+//     "sini",
+//     randomIndex,
+//     "---",
+//     imageArray[randomIndex]
+//   );
 
-  return imageArray[randomIndex];
+//   return imageArray[randomIndex];
+// };
+const handleLoadImageAuth = async () => {
+  try {
+    const response: any = await $api("/admin/images/random-image", {
+      method: "get",
+    } as any);
+
+    if (response.code === 2000) {
+      handleLoadImageFile(response.data.file_name);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+const handleLoadImageFile = async (filename: string) => {
+  try {
+    const response: any = await $api("/admin/images/download", {
+      method: "post",
+      query: {
+        filename,
+      },
+    } as any);
+    currentImage.value = response.url;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
 };
 
 onMounted(() => {
-  currentImage.value = getRandomImage();
+  // currentImage.value = getRandomImage();
+  handleLoadImageAuth();
 });
 </script>
 
