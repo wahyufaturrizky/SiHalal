@@ -185,19 +185,9 @@ const handleLoadImageFile = async (filename: string) => {
   }
 };
 
-// onMounted(() => {
-//   handleLoadImageAuth();
-// });
-useAsyncData(
-  "random-login-image",
-  async () => {
-    await handleLoadImageAuth();
-    return true;
-  },
-  {
-    immediate: true,
-  }
-);
+onMounted(() => {
+  handleLoadImageAuth();
+});
 const items = [
   {
     title: "Option 1",
@@ -354,7 +344,6 @@ const items = [
       md="6"
       class="d-flex align-center justify-center bg-white"
     >
-      <div :style="`background-image: url('${currentImage}')`" />
       <VImg
         :src="currentImage"
         width="100%"
