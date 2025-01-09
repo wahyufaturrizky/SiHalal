@@ -24,39 +24,33 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const { getSession } = useMyAuthUserStore();
   const user = await getSession();
-  // if (to.path === "/verifikasi-user" && !user.value?.is_verified) {
-  // return navigateTo({
-  //   path: "/verifikasi-user",
-  //   query: { id: user.value?.id, email: user.value?.email },
-  // });
-  // }
-  if (to.path === "/register") {
-    if (isLoggedIn) {
-      return navigateTo("/");
-    }
-  } else if (!isLoggedIn) {
-    return navigateTo("/register");
+  const isVerified = user.value?.is_verified;
+  const isPelakuUsaha = user.value?.roles.some(
+    (role) => role.name == "Pelaku Usaha"
+  );
+  const isNewUser = user.value?.new_user;
+
+  if (isLoggedIn && to.path === "/register") {
+    return navigateTo("/");
+  }
+  if (!isLoggedIn && to.path !== "/register") {
+    return navigateTo("/");
   }
 
-  if (to.path === "/verifikasi-user") {
-    if (user.value?.is_verified) {
-      return navigateTo("/");
-    }
-  } else if (!user.value?.is_verified) {
-    return navigateTo("/login");
+  if (!isVerified && to.path !== "/verifikasi-user") {
+    return navigateTo("/verifikasi-user");
+  }
+  if (isVerified && to.path === "/verifikasi-user") {
+    return;
   }
 
-  if (to.path === "/login/new-account") {
-    if (
-      !user.value?.new_user ||
-      user.value.roles.some((role) => role.name != "Pelaku Usaha")
-    ) {
-      return navigateTo("/");
-    }
-  } else if (user.value?.new_user) {
-    if (user.value.roles.some((role) => role.name == "Pelaku Usaha")) {
-      return navigateTo("/login/new-account");
-    }
+  if (
+    isVerified &&
+    isNewUser &&
+    isPelakuUsaha &&
+    to.path !== "/login/new-account"
+  ) {
+    return navigateTo("/login/new-account");
   }
 
   // if (!canNavigate(to) && to.matched.length) {
