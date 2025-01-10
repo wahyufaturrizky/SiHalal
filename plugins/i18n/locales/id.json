@@ -69,7 +69,7 @@
                 "list_acc_submission": "Daftar Ajuan Diterima",
                 "payment_info": "Informasi Pembayaran",
                 "update_check": "Update Pemeriksaan",
-                "settlement_data": "Penyelesaian Data Post Audit"
+                "settlement_data": "Audit Data Pengajuan"
             }
         },
         "data_pu_submission": {

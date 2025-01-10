@@ -192,7 +192,6 @@ const changeData = (item) => {
 
 <template>
   <VContainer>
-    <KembaliButton class="pl-0" />
     <h3 class="text-h3">Rekapitulasi</h3>
     <br />
 

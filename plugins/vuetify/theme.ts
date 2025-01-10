@@ -48,6 +48,7 @@ export const themes: Record<string, ThemeDefinition> = {
       "navbar-background": "#471B50",
       "navbar-item-color": "#FFFFFF",
       "navbar-section-color": "#A09BA1",
+      black: "#000000",
     },
 
     variables: {
@@ -119,6 +120,7 @@ export const themes: Record<string, ThemeDefinition> = {
       "expansion-panel-text-custom-bg": "#333851",
       "track-bg": "#3C3F59",
       "chat-bg": "#343752",
+      black: "#000000",
     },
 
     variables: {
