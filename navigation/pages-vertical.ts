@@ -1,6 +1,75 @@
 // title ambil dari locales
+let menuList: any[] = [];
+let storedData: string | null = null;
+
+if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
+  storedData = localStorage.getItem("authUser");
+}
+// const storedData = "";
+if (storedData) {
+  try {
+    const userData: SessionData = JSON.parse(storedData);
+    console.log(userData, " data dari vertikal");
+
+    menuList = userData.roles.map((el) => {
+      return {
+        title: el.name,
+        icon: { icon: "ri-more-line" },
+        roles: [`${el.name}`],
+        children: el.permissions.map((el2) => {
+          if (el2.group === "api") {
+            return {};
+          } else if (el2.group === "heading") {
+            return {
+              heading: el2.name,
+              roles: [`${el.name}`],
+            };
+          } else if (el2.group === "web") {
+            return {
+              title: el2.name,
+              to: el2.url,
+              icon: { icon: "mdi-card-account-details-outline" },
+              roles: [`${el.name}`],
+            };
+          }
+        }),
+      };
+    });
+    console.log(menuList, "menuList");
+
+    // let object = {
+    //   title: userData.roles[0].name,
+    //   icon: { icon: "ri-more-line" },
+    //   roles: ["role1"],
+    //   children: [
+    //     {
+    //       heading: "navbar.halal_cert_submission.title",
+    //       roles: ["Pendamping", "Admin"],
+    //     },
+    //     {
+    //       title: "navbar.facilitate_registration.menu.entry",
+    //       to: "user-management-role",
+    //       icon: { icon: "mdi-card-account-details-outline" },
+    //       roles: ["role1"],
+    //     },
+    //     {
+    //       title: "navbar.facilitate_registration.menu.entry",
+    //       to: "user-management-role",
+    //       icon: { icon: "mdi-card-account-details-outline" },
+    //       roles: ["role1"],
+    //     },
+    //   ],
+    // };
+  } catch (error) {
+    console.error("Error parsing JSON from localStorage", error);
+  }
+} else {
+  console.log("No data found in localStorage for key 'authUser'");
+}
+
 export default [
   //Main Menu
+  menuList,
   {
     heading: "navbar.main_menu",
     roles: [
