@@ -18,6 +18,7 @@ const isSendModalOpen = ref(false);
 const showReturn = ref(false);
 const returnNote = ref("");
 const draftCertif = ref("");
+const detailLph = ref("");
 
 const assignAuditorHeader: any[] = [
   { title: 'No', key: 'index' },
@@ -154,6 +155,21 @@ const getDraftSertif = async () => {
   }
 };
 
+const getDetailLph = async () => {
+  try {
+    const response: any = await $api('/reguler/lph/post-audit/get-profile', {
+      method: 'get',
+    });
+
+    if (response?.code === 2000) {
+      detailLph.value = response?.data
+      return response?.data;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error');
+  }
+};
+
 const handleOpenSendModal = () => {
   isSendModalOpen.value = false
 }
@@ -192,6 +208,7 @@ onMounted(async () => {
     getDownloadForm('surat-pernyataan'),
     getDownloadForm('surat-permohonan'),
     getDraftSertif(),
+    getDetailLph(),
   ]);
 
   if (dataPengajuan) {
@@ -212,12 +229,76 @@ onMounted(async () => {
           <VIcon @click="handleOpenSendModal"> fa-times </VIcon>
         </VCardTitle>
         <VCardText>
-          <VRow>
-            <VCol>
-              Pastikan dokumen persyaratan lengkap dan semua biaya pemeriksaan
-              sudah dimasukkan. Invoice akan diterbitkan saat Anda klik tombol
-              ”kirim” dan invoice tidak dapat diedit kembali
+          <p class="text-h4 font-weight-bold" style="justify-self: center">
+            Pernyataan Lembaga Pemeriksa Halal
+          </p>
+          <VRow class="mt-5">
+            <p>Yang bertanda tangan dibawah ini:</p>
+          </VRow>
+          <VRow style="margin-top: -20px;">
+            <VCol sm="2">
+              Nama
             </VCol>
+            <VCol>
+              {{ detailLph?.nama_pimpinan }}
+            </VCol>
+          </VRow>
+          <VRow style="margin-top: -20px;">
+            <VCol sm="2">
+              Jabatan
+            </VCol>
+            <VCol>
+              Pemimpin
+            </VCol>
+          </VRow>
+          <VRow style="margin-top: -20px;">
+            <VCol sm="2">
+              Nama LPH
+            </VCol>
+            <VCol>
+              {{ detailLph?.nama_lph }}
+            </VCol>
+          </VRow>
+          <VRow style="margin-top: -20px;">
+            <VCol sm="2">
+              Alamat LPH
+            </VCol>
+            <VCol>
+              {{ detailLph?.alamat }}
+            </VCol>
+          </VRow>
+          <VRow style="margin-top: -20px;">
+            <VCol sm="2">
+              No. Telepon
+            </VCol>
+            <VCol>
+              {{ detailLph?.no_hp }}
+            </VCol>
+          </VRow>
+          <VRow style="margin-top: -20px;">
+            <VCol sm="2">
+              Email
+            </VCol>
+            <VCol>
+              {{ detailLph?.email }}
+            </VCol>
+          </VRow>
+          <VRow>
+            <p>
+              Menyatakan bahwa hasil audit yang dilaporkan telah sesuai dengan fakta pemeriksaan dan/atau pengujian pada pelaku usaha.
+              Apabila di kemudian hari data dan informasi dalam pernyataan ini terbukti tidak benar, maka kami bersedia menerima sanksi sesuai dengan ketentuan yang berlaku.
+              Demikian pernyataan ini dibuat untuk digunakan sebagaimana mestinya.
+            </p>
+          </VRow>
+          <VRow>
+            <p>
+              {{ detailLph?.kota }}, {{ formatMonthId(new Date()) }}
+            </p>
+          </VRow>
+          <VRow>
+            <p class="mt-10">
+              {{ detailLph?.nama_pimpinan }}
+            </p>
           </VRow>
         </VCardText>
         <VCardActions class="px-4">

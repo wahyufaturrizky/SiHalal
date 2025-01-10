@@ -844,7 +844,7 @@ onMounted(async () => {
       </template>
     </TableData>
     <br />
-    <TableData
+    <!-- <TableData
       :on-submit="() => (confirmSaveDialog = true)"
       :on-add="() => toggleAdd('Tanda Tangan')"
       :on-delete="(item) => deleteTtd(item)"
@@ -873,7 +873,7 @@ onMounted(async () => {
           </div>
         </div>
       </template>
-    </TableData>
+    </TableData> -->
     <br />
     <TableData
       :on-submit="() => (confirmSaveDialog = true)"
