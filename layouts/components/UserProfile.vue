@@ -54,26 +54,56 @@ const userProfileList = [
   >
     <VAvatar
       class="cursor-pointer"
-      size="38"
-      :color="'primary'"
+      size="42"
+      :color="'secondary'"
       :variant="'tonal'"
     >
       <!-- <VImg v-if="userData && userData.avatar" :src="userData.avatar" /> -->
-      <VIcon icon="ri-user-line" />
+      <VIcon icon="fa-user" />
 
       <!-- SECTION Menu -->
-      <VMenu activator="parent" width="230" location="bottom end" offset="15px">
+      <VMenu activator="parent" width="270" location="bottom end" offset="15px">
         <VList>
           <PerfectScrollbar :options="{ wheelPropagation: false }">
+            <VListItem>
+              <div class="d-flex gap-x-2 align-center">
+                <VAvatar variant="tonal" color="secondary">
+                  <VIcon icon="fa-user" />
+                </VAvatar>
+
+                <div>
+                  <div class="text-h5 font-weight-medium">
+                    {{ userData.name }}
+                  </div>
+                  <div class="text-caption text-disabled">
+                    {{ userData.email }}
+                  </div>
+                </div>
+              </div>
+            </VListItem>
+            <VListItem>
+              <div class="d-flex gap-x-2 align-center">
+                <VAvatar variant="tonal" color="secondary">
+                  <VIcon icon="fa-shield" />
+                </VAvatar>
+
+                <div>
+                  <div class="text-caption text-disabled">Role:</div>
+                  <div class="text-h5 font-weight-medium">
+                    {{ userData.roles[0].name }}
+                  </div>
+                </div>
+              </div>
+            </VListItem>
             <VListItem class="px-4">
               <VBtn
                 block
                 color="error"
-                size="small"
+                size="large"
                 append-icon="ri-logout-box-r-line"
                 @click="logout"
               >
-                Logout
+                Keluar
               </VBtn>
             </VListItem>
           </PerfectScrollbar>
