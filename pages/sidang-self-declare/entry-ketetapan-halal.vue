@@ -133,18 +133,7 @@ const getJenisProduk = async () => {
   } catch (error) {}
 };
 onMounted(async () => {
-  const res = await Promise.all([
-    getJenisProduk(),
-    loadItem(
-      page.value,
-      itemPerPage.value,
-      startDate.value,
-      endDate.value,
-      ketetapan.value,
-      searchQuery.value,
-      totalWorkingDays.value
-    ),
-  ]);
+  const res = await Promise.all([getJenisProduk()]);
 
   const checkResIfUndefined = res.every((item) => {
     return item !== undefined;
@@ -219,7 +208,6 @@ const dialogMaxWidth = computed(() => {
 
 <template>
   <VContainer>
-    <KembaliButton class="pl-0" />
     <h3 class="text-h3">Hasil Penetapan</h3>
     <br />
 
@@ -322,7 +310,17 @@ const dialogMaxWidth = computed(() => {
           :loading="loading"
           :items-length="totalItems"
           loading-text="Loading..."
-          @update:options="loadItem(page, itemPerPage, searchQuery, status)"
+          @update:options="
+            loadItem(
+              page,
+              itemPerPage,
+              startDate,
+              endDate,
+              ketetapan,
+              searchQuery,
+              totalWorkingDays
+            )
+          "
         >
           <template #item.no="{ index }">
             {{ index + 1 + (page - 1) * itemPerPage }}
