@@ -56,7 +56,8 @@ const loadItem = async (
   startDate: string,
   endDate: string,
   ketetapan: string,
-  searchQuery: string
+  searchQuery: string,
+  workingDays: number
 ) => {
   try {
     loading.value = true;
@@ -72,16 +73,15 @@ const loadItem = async (
           endDate,
           ketetapan,
           searchQuery,
+          workingDays,
         },
       }
     );
 
     if (response.code === 2000) {
-      console.log(response.data, "ini response data");
       items.value = response.data || [];
       totalItems.value = response.total_item || 0;
       loading.value = false;
-      console.log("Total Items:", totalItems.value);
 
       return response;
     } else {
@@ -107,6 +107,7 @@ const loadItem = async (
 // }
 
 const selectable = [
+  { id: 0, value: "", title: "semua" },
   { id: 1, value: "Ditetapkan Halal", title: "Ditetapkan Halal" },
   { id: 2, value: "Dikembalikan", title: "Dikembalikan" },
   { id: 3, value: "Ditolak", title: "Ditolak" },
@@ -140,7 +141,8 @@ onMounted(async () => {
       startDate.value,
       endDate.value,
       ketetapan.value,
-      searchQuery.value
+      searchQuery.value,
+      totalWorkingDays.value
     ),
   ]);
 
@@ -161,7 +163,8 @@ const handleInput = () => {
     startDate.value,
     endDate.value,
     ketetapan.value,
-    searchQuery.value
+    searchQuery.value,
+    totalWorkingDays.value
   );
 };
 
@@ -172,7 +175,8 @@ const applyFilters = () => {
     startDate.value,
     endDate.value,
     ketetapan.value,
-    searchQuery.value
+    searchQuery.value,
+    totalWorkingDays.value
   );
   showFilterMenu.value = false;
 };
@@ -181,13 +185,15 @@ const reset = () => {
   startDate.value = "";
   endDate.value = "";
   ketetapan.value = "";
+  totalWorkingDays.value = 0;
   debouncedFetch(
     page.value,
     itemPerPage.value,
     startDate.value,
     endDate.value,
     ketetapan.value,
-    searchQuery.value
+    searchQuery.value,
+    totalWorkingDays.value
   );
   showFilterMenu.value = false;
 };
@@ -255,12 +261,15 @@ const dialogMaxWidth = computed(() => {
                       <VTextField id="endDate" v-model="endDate" type="date" />
                     </VCol>
                   </VRow>
-                  <VSelect
-                    v-model="ketetapan"
-                    :items="selectable"
-                    placeholder="Pilih Ketetapan"
-                    class="mb-1"
-                  />
+                  <VCardText class="pa-0 mb-1">
+                    <VLabel>Ketetapan</VLabel>
+                    <VSelect
+                      v-model="ketetapan"
+                      :items="selectable"
+                      placeholder="Pilih Ketetapan"
+                      class="mb-1"
+                    />
+                  </VCardText>
                   <VCardText class="pa-0 mb-1">
                     <VLabel>Jumlah Hari Kerja</VLabel>
                     <VTextField
@@ -274,6 +283,7 @@ const dialogMaxWidth = computed(() => {
                     <VTextField
                       v-model="average"
                       type="number"
+                      disabled
                       placeholder="Isi Rata-Rata"
                     />
                   </VCardText>
