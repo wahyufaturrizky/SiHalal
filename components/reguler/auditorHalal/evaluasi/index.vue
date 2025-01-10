@@ -845,6 +845,7 @@ onMounted(async () => {
     </TableData>
     <br />
     <TableData
+      v-if="!isviewonly"
       :on-submit="() => (confirmSaveDialog = true)"
       :on-add="() => toggleAdd('Tanda Tangan')"
       :on-delete="(item) => deleteTtd(item)"

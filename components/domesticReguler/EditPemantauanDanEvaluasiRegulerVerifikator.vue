@@ -13,9 +13,11 @@ const props = defineProps({
       ><UploadDocumentVerifikator></UploadDocumentVerifikator
     ></VCol>
   </VRow>
-  <!-- <VRow>
-    <VCol cols="12"><SignagePemantauanVerifikator></SignagePemantauanVerifikator></VCol>
-  </VRow> -->
+  <VRow>
+    <VCol cols="12"
+      ><SignagePemantauanVerifikator></SignagePemantauanVerifikator
+    ></VCol>
+  </VRow>
   <VRow>
     <VCol cols="12"
       ><FormulirAuditInternalVerifikator></FormulirAuditInternalVerifikator
