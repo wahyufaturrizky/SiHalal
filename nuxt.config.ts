@@ -111,6 +111,7 @@ export default defineNuxtConfig({
           is_verified: "boolean",
           new_user: "boolean",
           phone_number: "string",
+          name: "string",
           roles:
             "{ code : string,name: string, permissions: { group: string, name: string, url: string,parent_id : string, id : string }[] }[]",
           username: "string",
