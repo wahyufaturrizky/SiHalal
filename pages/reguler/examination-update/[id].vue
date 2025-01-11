@@ -55,7 +55,7 @@ const handleAddAuditor = () => {
 }
 
 const handleDeleteAuditor = (index: number) => {
-  assignAuditorData.value.splice(index, 1)
+  dataPemeriksaanProduk.value.auditor.splice(index, 1)
 }
 
 const handleSaveAuditor = async () => {
@@ -63,27 +63,35 @@ const handleSaveAuditor = async () => {
 }
 
 const handleUpdateStatus = async () => {
-  let auditorToAdd = localStorage.getItem('lovAuditor')
-  if (auditorToAdd) {
-    auditorToAdd = JSON.parse(auditorToAdd)
-    const ids = auditorToAdd.map((item:any) => item.id_auditor || null)
-    try {
-      const response: any = await $api('/reguler/auditor/assign', {
-        method: 'post',
-        query: { id },
-        body: { id_auditor: ids },
-      })
-
-      if (response?.code === 2000) {
-        useSnackbar().sendSnackbar('Berhasil menambah auditor', 'success')
-        return response?.data
+  const auditorToAdd = localStorage.getItem('lovAuditor')
+  const dataArray = JSON.parse(auditorToAdd)
+  if (dataArray === []) {
+    return useSnackbar().sendSnackbar('Harap isi auditor terlebih dahulu', 'error')
+  }
+  else {
+    const ids = dataArray.map((item: any) => item.id_auditor || null)
+    if (dataPemeriksaanProduk?.value?.auditor.length === 0) {
+      return useSnackbar().sendSnackbar('Harap isi auditor terlebih dahulu', 'error')
+    }
+    else {
+      try {
+        const response: any = await $api('/reguler/auditor/assign', {
+          method: 'post',
+          query: { id },
+          body: { id_auditor: ids },
+        })
+  
+        if (response?.code === 2000) {
+          useSnackbar().sendSnackbar('Berhasil menambah auditor', 'success')
+          return response?.data
+        }
+        else {
+          useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+        }
       }
-      else {
+      catch (error) {
         useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
       }
-    }
-    catch (error) {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
     }
   }
 }
@@ -179,6 +187,7 @@ onMounted(async () => {
   dataPengajuan.value = responseData?.[0]?.value || {}
   dataProduk.value = responseData?.[1]?.value || []
   dataPemeriksaanProduk.value = responseData?.[2]?.value || {}
+  localStorage.setItem('lovAuditor', JSON.stringify(responseData?.[2]?.value.auditor))
   loading.value = false
 })
 </script>
@@ -432,7 +441,7 @@ onMounted(async () => {
                   <VIcon
                     icon="mdi-delete"
                     color="error"
-                    @click="() => dataPemeriksaanProduk.auditor.splice(index, 1)"
+                    @click="() => handleDeleteAuditor(index)"
                   />
                 </template>
               </VDataTable>
