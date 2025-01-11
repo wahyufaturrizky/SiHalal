@@ -42,7 +42,8 @@ const loadItem = async (
   wilayah: string,
   kabupaten: string,
   fasilitas: string,
-  namaFasilitator: string
+  namaFasilitator: string,
+  download: boolean
 ) => {
   try {
     loading.value = true;
@@ -60,16 +61,31 @@ const loadItem = async (
         fasilitas,
         namaFasilitator,
         filterBy,
+        download,
       },
     });
+    if (download) {
+      const url = window.URL.createObjectURL(response);
+      const a = document.createElement("a");
+      a.href = url;
+      // Set the file name for the download
+      a.download = "report.xlsx";
+      console.log("ini url", url);
 
+      // Trigger the download
+      document.body.appendChild(a);
+      a.click();
+
+      // Cleanup
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      reset();
+      return;
+    }
     if (response.code === 2000) {
-      console.log(response.data, "ini response data");
       items.value = response.data || [];
       totalItems.value = response.total_item || 0;
       loading.value = false;
-      console.log("Total Items:", totalItems.value);
-
       return response;
     } else {
       loading.value = false;
@@ -97,24 +113,23 @@ const totalItemFasilitator = ref(0);
 const pageFasilitator = ref(1);
 const getFasilitator = async (page) => {
   try {
-    const response4: any = await $api("/facilitate/verifikator/list", {
-      method: "get",
-      params: {
-        status: "OF320",
-        page: page,
-      },
-    });
+    const response4: any = await $api(
+      "/self-declare/komite-fatwa/inquiry-1/filter/fasilitator",
+      {
+        method: "get",
+        params: {
+          page: page,
+        },
+      }
+    );
     if (response4.code === 2000) {
       if (page === 1) {
-        nameFasilitatorItems.value = [
-          { id: "", fac_name: "Semua" },
+        fasilitatorItems.value = [
+          { fac_id: "", fac_name: "Semua" },
           ...response4.data,
-        ] || [{ id: "", fac_name: "Semua" }];
+        ] || [{ fac_id: "", fac_name: "Semua" }];
       } else {
-        nameFasilitatorItems.value = [
-          ...nameFasilitatorItems.value,
-          ...response4.data,
-        ];
+        fasilitatorItems.value = [...fasilitatorItems.value, ...response4.data];
       }
       totalItemFasilitator.value = response4.total_item;
     }
@@ -123,9 +138,48 @@ const getFasilitator = async (page) => {
   }
 };
 const loadMoreFasilitator = () => {
-  if (nameFasilitatorItems.value.length < totalItemFasilitator.value) {
+  if (fasilitatorItems.value.length < totalItemFasilitator.value) {
     pageFasilitator.value += 1;
     getFasilitator(pageFasilitator.value);
+  }
+};
+
+const totalItemFasilitasi = ref(0);
+const pageFasilitasi = ref(1);
+const getFasilitasi = async (page) => {
+  try {
+    const response4: any = await $api(
+      "/self-declare/komite-fatwa/inquiry-1/filter/fasilitasi",
+      {
+        method: "get",
+        params: {
+          page: page,
+        },
+      }
+    );
+    if (response4.code === 2000) {
+      if (page === 1) {
+        nameFasilitasiItems.value = [
+          { fac_id: "", fac_name: "Semua" },
+          ...response4.data,
+        ] || [{ fac_id: "", fac_name: "Semua" }];
+      } else {
+        nameFasilitasiItems.value = [
+          ...nameFasilitasiItems.value,
+          ...response4.data,
+        ];
+      }
+      console.log(nameFasilitasiItems.value);
+      totalItemFasilitasi.value = response4.total_item;
+    }
+  } catch (error) {
+    return [];
+  }
+};
+const loadMoreFasilitasi = () => {
+  if (nameFasilitasiItems.value.length < totalItemFasilitasi.value) {
+    pageFasilitasi.value += 1;
+    getFasilitasi(pageFasilitasi.value);
   }
 };
 const getProvince = async () => {
@@ -172,7 +226,7 @@ const kabupatenItems = ref([{ code: "", name: "Semua" }]);
 
 const selectedFilterFasilitaas = ref("");
 
-const fasilitasItems = ref([
+const fasilitatorItems = ref([
   { name: "X", value: 1 },
   { name: "Y", value: 2 },
   { name: "Z", value: 3 },
@@ -180,23 +234,24 @@ const fasilitasItems = ref([
 
 const selectedFilterNameFasilitator = ref("");
 
-const nameFasilitatorItems = ref([
+const nameFasilitasiItems = ref([
   { name: "X", value: 1 },
   { name: "Y", value: 2 },
   { name: "Z", value: 3 },
 ]);
 
-const selectedFilterLayer = ref("Layar");
+const selectedFilterLayer = ref(false);
 
 const layerItems = ref([
-  { name: "Layar", code: "layar" },
-  { name: "Excel", code: "excel" },
+  { name: "Layar", code: false },
+  { name: "Excel", code: true },
 ]);
 const showFilterMenu = ref(false);
 
 const debouncedFetch = debounce(loadItem, 500);
 const searchQuery = ref("");
 const handleInput = () => {
+  selectedFilterLayer.value = false;
   debouncedFetch(
     page.value,
     itemPerPage.value,
@@ -207,7 +262,8 @@ const handleInput = () => {
     selectedFilterWilayah.value,
     selectedFilterKabupaten.value,
     selectedFilterFasilitaas.value,
-    selectedFilterNameFasilitator.value
+    selectedFilterNameFasilitator.value,
+    selectedFilterLayer.value
   );
 };
 const changeFilterBy = (item) => {
@@ -221,7 +277,8 @@ const changeFilterBy = (item) => {
     selectedFilterWilayah.value,
     selectedFilterKabupaten.value,
     selectedFilterFasilitaas.value,
-    selectedFilterNameFasilitator.value
+    selectedFilterNameFasilitator.value,
+    selectedFilterLayer.value
   );
 };
 const reset = () => {
@@ -231,6 +288,7 @@ const reset = () => {
   selectedFilterKabupaten.value = "";
   selectedFilterFasilitaas.value = "";
   selectedFilterNameFasilitator.value = "";
+  selectedFilterLayer.value = false;
   debouncedFetch(
     page.value,
     itemPerPage.value,
@@ -241,7 +299,8 @@ const reset = () => {
     selectedFilterWilayah.value,
     selectedFilterKabupaten.value,
     selectedFilterFasilitaas.value,
-    selectedFilterNameFasilitator.value
+    selectedFilterNameFasilitator.value,
+    selectedFilterLayer.value
   );
   showFilterMenu.value = false;
 };
@@ -256,7 +315,8 @@ const applyFilters = () => {
     selectedFilterWilayah.value,
     selectedFilterKabupaten.value,
     selectedFilterFasilitaas.value,
-    selectedFilterNameFasilitator.value
+    selectedFilterNameFasilitator.value,
+    selectedFilterLayer.value
   );
   showFilterMenu.value = false;
 };
@@ -271,10 +331,10 @@ const filterProduk = ref([]);
 const statusMohon = ref([]);
 onMounted(async () => {
   await getProvince();
-  fasilitasItems.value = [
-    { code: "", name: "Semua", name_eng: "All" },
-    ...(await getCommonCode(MasterRef.CHANL)),
-  ];
+  // fasilitasItems.value = [
+  //   { code: "", name: "Semua", name_eng: "All" },
+  //   ...(await getCommonCode(MasterRef.CHANL)),
+  // ];
   statusPermhonanItems.value = [
     {
       code: "",
@@ -292,6 +352,7 @@ onMounted(async () => {
     ...(await getCommonCode(MasterRef.JNDAF)),
   ];
   await getFasilitator(pageFasilitator.value);
+  await getFasilitasi(pageFasilitator.value);
 
   const response4: any = await $api(
     "/self-declare/komite-fatwa/proses-sidang/filter-produk",
@@ -391,28 +452,37 @@ const provinceValue = (item: MasterDistrict) => {
                       />
                     </VItemGroup>
                   </VListItem>
-
                   <VListItem>
                     <VItemGroup>
-                      <VLabel><b>Fasilitas</b></VLabel>
-                      <VSelect
+                      <VLabel><b>Fasilitasi </b></VLabel>
+                      <VAutocomplete
+                        :items="nameFasilitasiItems"
                         v-model="selectedFilterFasilitaas"
-                        :items="fasilitasItems"
-                        item-value="code"
-                        item-title="name"
+                        item-value="fac_id"
+                        item-title="fac_name"
                         density="compact"
-                        placeholder="Semua"
-                      />
+                        placeholder="Pilih Fasilitasi"
+                      >
+                        <template #item="{ props, item }">
+                          <VListItem
+                            v-bind="props"
+                            :title="(item.raw as any).fac_name"
+                          >
+                          </VListItem>
+                        </template>
+                        <template #append-item>
+                          <div v-intersect="loadMoreFasilitasi" />
+                        </template>
+                      </VAutocomplete>
                     </VItemGroup>
                   </VListItem>
-
                   <VListItem>
                     <VItemGroup>
-                      <VLabel><b>Nama Fasilitator </b></VLabel>
+                      <VLabel><b>Nama Fasilitator</b></VLabel>
                       <VAutocomplete
-                        :items="nameFasilitatorItems"
                         v-model="selectedFilterNameFasilitator"
-                        item-value="id"
+                        :items="fasilitatorItems"
+                        item-value="fac_id"
                         item-title="fac_name"
                         density="compact"
                         placeholder="Pilih Fasilitator"
@@ -503,7 +573,8 @@ const provinceValue = (item: MasterDistrict) => {
                     selectedFilterWilayah,
                     selectedFilterKabupaten,
                     selectedFilterFasilitaas,
-                    selectedFilterNameFasilitator
+                    selectedFilterNameFasilitator,
+                    selectedFilterLayer
                   )
                 "
               >

@@ -468,7 +468,6 @@ const changeExpired = (item) => {
                 v-model="formIdentity.hcn.issued_date"
                 label="Issued Date"
                 placeholder="Issued Date"
-                @update:modelValue="changeExpired"
                 :config="{
                   dateFormat: 'd-m-Y',
                   disable: [
@@ -496,7 +495,7 @@ const changeExpired = (item) => {
                   disable: [
                     {
                       from: `01-01-0001`,
-                      to: `${formIdentity.hcn.issued_date}`,
+                      to: `${currentDay + 1}-${currentMonth}-${currentYear}`,
                     },
                   ],
                 }"
