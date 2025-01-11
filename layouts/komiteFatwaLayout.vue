@@ -1,15 +1,10 @@
 <template>
   <VRow>
-    <VCol :cols="12">
-      <KembaliButton />
-    </VCol>
-  </VRow>
-  <VRow>
     <VCol cols="12">
       <slot name="pageTitle" />
     </VCol>
   </VRow>
-  <br>
+  <br />
   <VRow>
     <VCol cols="12">
       <slot name="centerContent" />

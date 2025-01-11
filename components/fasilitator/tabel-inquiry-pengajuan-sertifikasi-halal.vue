@@ -29,12 +29,14 @@ const emit = defineEmits<{
 const { items, size, page, totalitems, loading } = props || {};
 
 const headers = [
-  { title: "No", key: "id_reg" },
+  { title: "No", key: "no" },
+  { title: "No Daftar", key: "no_daftar" },
+  { title: "Tanggal", key: "tgl_daftar" },
+  { title: "Jenis Daftar", key: "jenis_daftar" },
+  { title: "Jenis Produk", key: "jenis_produk" },
+  { title: "Merk Dagang", key: "merk_dagang" },
   { title: "Kode Fasilitasi", key: "kode_fac" },
-  { title: "Tahun", key: "tgl_daftar" },
-  { title: "Nama Fasilitasi", key: "nama_pu" },
-  { title: "Sumber Pembiayaan", key: "merek_dagang" },
-  { title: "Jenis", key: "jenis_produk" },
+  { title: "Status", key: "status" },
 ];
 </script>
 
@@ -59,7 +61,15 @@ const headers = [
                 {{ index + 1 + (page - 1) * size }}
               </template>
               <template #item.tgl_daftar="{ item }">
-                {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+                {{ formatDateIntl(new Date((item as any).tgl_daftar)) }}
+              </template>
+              <template #item.merk_dagang="{ item }">
+                {{ (item as any).merk_dagang || "NA" }}
+              </template>
+              <template #item.status="{ item }">
+                <div class="status-box py-1 px-3 cursor-pointer">
+                  {{ (item as any).status }}
+                </div>
               </template>
             </VDataTableServer>
           </VCol>
@@ -68,3 +78,16 @@ const headers = [
     </VCard>
   </div>
 </template>
+
+<style scoped lang="scss">
+.status-box {
+  color: #652672;
+  background-color: #f0e9f1;
+  border: 1px solid #652672;
+  border-radius: 8px;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>
