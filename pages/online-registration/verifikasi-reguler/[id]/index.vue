@@ -182,9 +182,15 @@ const submitData = async () => {
     useSnackbar().sendSnackbar("Ada kesalahan", "error");
   }
 };
-const router = useRouter();
+
 const route = useRoute();
-const navigateAction = () => navigateTo(`${route.path}/detail`);
+const navigateAction = () =>
+  navigateTo({
+    path: `${route.path}/detail`,
+    query: {
+      isViewOnly: true,
+    },
+  });
 const returnDocument = async () => {
   try {
     const response = await $api("/reguler/verifikator/detail/decline", {
