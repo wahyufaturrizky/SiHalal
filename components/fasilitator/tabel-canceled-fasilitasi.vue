@@ -68,7 +68,7 @@ const filterOptions = [
 const headers = [
   {
     title: "No",
-    key: "id",
+    key: "no",
   },
   {
     title: "No Daftar",
@@ -96,7 +96,7 @@ const headers = [
   },
   {
     title: "Status",
-    key: "status_code",
+    key: "status",
   },
 ];
 
@@ -150,10 +150,10 @@ const handleSearch = () => {
         <template #item.tgl_daftar="{ item }">
           {{ formatDateIntl(new Date((item as any).tgl_daftar)) }}
         </template>
-        <template #item.status_code="{ item }">
-          <VChip label :color="statusItem[(item as any).status_code].color">
-            {{ statusItem[(item as any).status_code].desc }}
-          </VChip>
+        <template #item.status="{ item }">
+          <div class="status-box py-1 px-3 cursor-pointer">
+            {{ (item as any).status }}
+          </div>
         </template>
       </VDataTableServer>
     </VCard>
@@ -166,5 +166,16 @@ th {
   font-size: 14px; /* Sesuaikan ukuran font */
   font-weight: normal; /* Tidak terlalu tebal */
   text-transform: none !important; /* Tidak mengubah teks menjadi uppercase */
+}
+
+.status-box {
+  color: #652672;
+  background-color: #f0e9f1;
+  border: 1px solid #652672;
+  border-radius: 8px;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

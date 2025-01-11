@@ -78,7 +78,7 @@ const saveReqDocument = async () => {
 
     if (response.code != 2000) {
       useSnackbar().sendSnackbar(
-        "ada kesalahan asdasd, gagal menyimpan!",
+        "ada kesalahan, gagal menyimpan!",
         "error"
       );
       loading.value = false;
