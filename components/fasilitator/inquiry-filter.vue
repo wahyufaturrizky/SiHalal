@@ -10,6 +10,8 @@ const props = defineProps({
   },
 });
 
+const loadingDownloadExcel = ref(false);
+
 const emit = defineEmits<{
   (event: "formvalue", value: any): void;
 }>();
@@ -20,14 +22,44 @@ const form = ref({
   no_daftar: null,
   nama_pu: null,
   merek_dagang: null,
-  statusPermohonan: null,
   kode_fac: null,
   jenis: null,
   status: null,
 });
 
+const downloadExcel = async () => {
+  loadingDownloadExcel.value = true;
+
+  try {
+    const { no_daftar, merek_dagang, kode_fac, status } = form.value;
+
+    const response: any = await $api("/inquiry/download", {
+      method: "get",
+      params: {
+        no_daftar,
+        merek_dagang,
+        kode_fac,
+        status,
+      },
+    });
+
+    if (response) {
+      downloadFileExcel(response);
+      loadingDownloadExcel.value = false;
+    } else {
+      loadingDownloadExcel.value = false;
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingDownloadExcel.value = false;
+  }
+};
+
 const typePengajuanOptions = ["Reguler", "Self Declare"];
-const layarExcelOptions = ["1excel", "2layar"];
 
 const viewResults = () => {
   emit("formvalue", form.value);
@@ -55,7 +87,7 @@ const viewResults = () => {
         </VCol>
         <VCol cols="12" sm="4">
           <VSelect
-            v-model="form.statusPermohonan"
+            v-model="form.status"
             placeholder="Pilih Status Permohonanan"
             :items="itemsstatus"
             item-title="name"
@@ -81,11 +113,12 @@ const viewResults = () => {
         </VCol>
 
         <VCol cols="12" sm="4">
-          <VSelect
-            v-model="form.status"
-            placeholder="Pilih Layer/ Excel"
-            :items="layarExcelOptions"
-          />
+          <VBtn
+            :loading="loadingDownloadExcel"
+            @click="downloadExcel"
+            variant="flat"
+            >Download Excel</VBtn
+          >
         </VCol>
       </VRow>
     </VCardText>

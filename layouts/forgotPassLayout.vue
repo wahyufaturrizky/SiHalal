@@ -9,6 +9,41 @@ const { mdAndUp } = useDisplay();
 const maxWidth = computed(() => {
   return mdAndUp ? 700 : "80%";
 });
+
+const currentImage = ref("");
+const handleLoadImageAuth = async () => {
+  try {
+    const response: any = await $api("/admin/images/random-image", {
+      method: "get",
+    } as any);
+
+    if (response.code === 2000) {
+      handleLoadImageFile(response.data.file_name);
+    } else {
+      currentImage.value = NoImage;
+    }
+  } catch (error) {
+    currentImage.value = NoImage;
+    console.error(error);
+  }
+};
+const handleLoadImageFile = async (filename: string) => {
+  try {
+    const response: any = await $api("/admin/images/download", {
+      method: "post",
+      query: {
+        filename,
+      },
+    } as any);
+    currentImage.value = response.url;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+onMounted(() => {
+  handleLoadImageAuth();
+});
 </script>
 
 <template>
@@ -45,11 +80,10 @@ const maxWidth = computed(() => {
     </VCol>
     <VCol
       v-if="mdAndUp"
-      cols="12"
       md="6"
-      class="auth-card-v2 d-flex align-center justify-center"
+      class="d-flex align-start justify-center pb-3 pt-2 pe-2 bg-white"
     >
-      <VImg :src="NoImage" height="100dvh" cover />
+      <img :src="currentImage" width="100%" style="border-radius: 20px" />
     </VCol>
   </VRow>
 </template>

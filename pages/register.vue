@@ -292,8 +292,11 @@ const handleLoadImageAuth = async () => {
 
     if (response.code === 2000) {
       handleLoadImageFile(response.data.file_name);
+    } else {
+      currentImage.value = NoImage;
     }
   } catch (error) {
+    currentImage.value = NoImage;
     console.error(error);
   }
 };
@@ -311,25 +314,15 @@ const handleLoadImageFile = async (filename: string) => {
   }
 };
 
-// onMounted(() => {
-//   // currentImage.value = getRandomImage()
-//   handleLoadImageAuth();
-// });
-useAsyncData(
-  "random-regis-image",
-  async () => {
-    await handleLoadImageAuth();
-    return true;
-  },
-  {
-    immediate: true,
-  }
-);
+onMounted(() => {
+  // currentImage.value = getRandomImage()
+  handleLoadImageAuth();
+});
 </script>
 
 <template>
   <HelpButton />
-  <VRow no-gutters class="auth-wrapper">
+  <VRow no-gutters>
     <VCol cols="12" md="6" class="d-flex align-center justify-center bg-white">
       <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
         <VCardText>
@@ -354,7 +347,7 @@ useAsyncData(
         <VCardText>
           <VForm ref="refVForm" @submit.prevent="onSubmit">
             <VRow>
-              <VCol cols="12" style="max-block-size: 45svh; overflow-y: auto">
+              <VCol cols="12">
                 <!-- Tipe Pengguna -->
                 <VCol cols="12">
                   <b> Tipe Pengguna</b>
@@ -502,15 +495,12 @@ useAsyncData(
         </VCardText>
       </VCard>
     </VCol>
-    <VCol v-if="mdAndUp" md="6" class="d-flex align-center justify-center">
-      <VImg
-        :src="currentImage"
-        eager
-        width="100%"
-        height="100%"
-        rounded="xl"
-        class="responsive-image"
-      />
+    <VCol
+      v-if="mdAndUp"
+      md="6"
+      class="d-flex align-start justify-center pb-3 pt-2 pe-2 bg-white"
+    >
+      <img :src="currentImage" width="100%" style="border-radius: 20px" />
     </VCol>
   </VRow>
 </template>
@@ -536,15 +526,5 @@ useAsyncData(
   color: red;
   font-size: 0.875rem;
   margin-block-start: 4px;
-}
-
-.responsive-image {
-  block-size: 100%;
-  inline-size: 100%;
-  object-fit: fill;
-  pointer-events: none !important;
-}
-.v-img__img--contain {
-  object-fit: fill;
 }
 </style>

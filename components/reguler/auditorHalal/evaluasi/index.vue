@@ -216,33 +216,33 @@ const uploadFile = async (file) => {
   return response;
 };
 
-const deleteTtd = async (item) => {
-  try {
-    const response = await $api(
-      "/reguler/pelaku-usaha/tab-evaluasi/delete-ttd",
-      {
-        method: "delete",
-        query: { id, docId: item.id_reg_ttd },
-      }
-    );
-
-    if (response.code === 2000) {
-      useSnackbar().sendSnackbar("Sukses menghapus data", "success");
-      uploadedFileTTdPj.value = {
-        name: "",
-        file: null,
-      };
-      uploadedFileTTdPh.value = {
-        name: "",
-        file: null,
-      };
-      await getTtd();
-      await getListPenyelia();
-    }
-  } catch (error) {
-    console.log("ERROR : ", error);
-  }
-};
+// const deleteTtd = async (item) => {
+//   try {
+//     const response = await $api(
+//       "/reguler/pelaku-usaha/tab-evaluasi/delete-ttd",
+//       {
+//         method: "delete",
+//         query: { id, docId: item.id_reg_ttd },
+//       }
+//     );
+//
+//     if (response.code === 2000) {
+//       useSnackbar().sendSnackbar("Sukses menghapus data", "success");
+//       uploadedFileTTdPj.value = {
+//         name: "",
+//         file: null,
+//       };
+//       uploadedFileTTdPh.value = {
+//         name: "",
+//         file: null,
+//       };
+//       await getTtd();
+//       await getListPenyelia();
+//     }
+//   } catch (error) {
+//     console.log("ERROR : ", error);
+//   }
+// };
 
 const addTtd = async () => {
   try {
@@ -845,6 +845,7 @@ onMounted(async () => {
     </TableData>
     <br />
     <TableData
+      v-if="!isviewonly"
       :on-submit="() => (confirmSaveDialog = true)"
       :on-add="() => toggleAdd('Tanda Tangan')"
       :on-delete="(item) => deleteTtd(item)"

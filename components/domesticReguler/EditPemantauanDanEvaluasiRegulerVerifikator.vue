@@ -4,6 +4,9 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  isviewonly: {
+    type: Boolean,
+  },
 });
 </script>
 
@@ -13,9 +16,11 @@ const props = defineProps({
       ><UploadDocumentVerifikator></UploadDocumentVerifikator
     ></VCol>
   </VRow>
-  <!-- <VRow>
-    <VCol cols="12"><SignagePemantauanVerifikator></SignagePemantauanVerifikator></VCol>
-  </VRow> -->
+  <VRow v-if="!isviewonly">
+    <VCol cols="12"
+      ><SignagePemantauanVerifikator></SignagePemantauanVerifikator
+    ></VCol>
+  </VRow>
   <VRow>
     <VCol cols="12"
       ><FormulirAuditInternalVerifikator></FormulirAuditInternalVerifikator

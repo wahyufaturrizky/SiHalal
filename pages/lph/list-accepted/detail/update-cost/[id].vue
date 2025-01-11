@@ -106,9 +106,7 @@ const domesticTotal = {
 const overseaAuditHeader: any[] = [
   { title: 'No', key: 'index' },
   { title: 'Keterangan Biaya', key: 'costName', nowrap: true },
-  { title: 'Jumlah', key: 'quantity' },
-  { title: 'Harga', key: 'price', nowrap: true },
-  { title: 'Sub Tot', key: 'subTotal', nowrap: true },
+  { title: 'Total', key: 'harga', nowrap: true },
   {
     title: 'Action',
     key: 'actions',
@@ -245,6 +243,7 @@ const getDetailBiaya = async () => {
       let total = response.data.biaya_indo.total_biaya
 
       response.data.biaya_indo.list.map((item: any) => {
+        item.isShowDelete = item.tiket_pesawat_awal !== 0
         item.unit_cost_awal = formatToIDR(item.unit_cost_awal)
         item.unit_cost_akhir = formatToIDR(item.unit_cost_akhir)
         item.uhpd_awal = formatToIDR(item.uhpd_awal)
@@ -272,7 +271,7 @@ const getDetailBiaya = async () => {
       })
 
       arrayAudit.push({ keterangan: 'Biaya Pemeriksaan LPH', subtotal: formatToIDR(total) })
-      response?.data?.biaya_ln?.list?.map((item: any) => arrayAudit.push({ keterangan: item.keterangan, subtotal: item?.sub_total }))
+      // response?.data?.biaya_ln?.list?.map((item: any) => arrayAudit.push({ keterangan: item.keterangan, subtotal: item?.harga }))
       data.value = response.data
       dataDomestic.value = response.data?.biaya_indo?.list
       dataLn.value = response.data?.biaya_ln?.list
@@ -464,6 +463,26 @@ const validateInput = (event: any) => {
     event.preventDefault()
 }
 
+const onDeletePesawat = async (el: any) => {
+  try {
+    const response: any = await $api('/reguler/lph/update-cost/delete-biaya-pesawat', {
+      method: 'delete',
+      body: {
+        id,
+        idPesawat: el.id_pabrik,
+      },
+    })
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar('Berhasil hapus biaya pesawat', 'success')
+      getDetailBiaya()
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
 onMounted(async () => {
   loading.value = true
   await Promise.allSettled([
@@ -568,6 +587,14 @@ onMounted(async () => {
                           title="Ubah"
                           @click="() => openModalEditDalamNegri(item)"
                         />
+                        <div class="pr-4">
+                          <DialogDeletePlane
+                            v-if="item.isShowDelete"
+                            :on-delete="() => onDeletePesawat(item)"
+                            title="Hapus tiket Pesawat"
+                            button-text="Hapus"
+                          />
+                        </div>
                       </VList>
                     </VMenu>
                   </td>
@@ -627,12 +654,11 @@ onMounted(async () => {
           </VCardTitle>
           <VCardText>
             <VDataTable
-              class="oversea-table border rounded"
               :headers="overseaAuditHeader"
               :items="dataLn"
               hide-default-footer
             >
-              <template #body="{ items }">
+              <!-- <template #body="{ items }">
                 <tr v-if="items.length === 0">
                   <td colspan="3" class="text-center">
                     <div class="pt-2">
@@ -644,9 +670,7 @@ onMounted(async () => {
                 <tr v-for="(item, idx) in dataLn" :key="idx">
                   <td>{{ idx + 1 }}</td>
                   <td>{{ item.keterangan }}</td>
-                  <td>{{ item.jumlah }}</td>
                   <td>{{ item.harga }}</td>
-                  <td>{{ item.sub_total }}</td>
                   <td class="text-center">
                     <VMenu>
                       <template #activator="{ props }">
@@ -676,6 +700,56 @@ onMounted(async () => {
                 </tr>
                 <tr v-if="dataLn.length">
                   <td colspan="3" />
+                  <td colspan="1" class="text-right font-weight-bold">
+                    Total
+                  </td>
+                  <td colspan="2" class="d-flex align-center font-weight-bold">
+                    {{ formatToIDR(data?.biaya_ln?.total_biaya) || 0 }}
+                  </td>
+                </tr>
+              </template> -->
+              <template #body="{ items }">
+                <tr v-if="items.length === 0">
+                  <td colspan="3" class="text-center">
+                    <div class="pt-2">
+                      <img src="~/assets/images/empty-data.png" alt="" />
+                      <div class="pt-2 font-weight-bold">Data Kosong</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr v-for="(item, idx) in dataLn" :key="idx">
+                  <td>{{ idx + 1 }}</td>
+                  <td>{{ item.keterangan }}</td>
+                  <td>{{ item.harga }}</td>
+                  <td class="text-center">
+                    <VMenu>
+                      <template #activator="{ props }">
+                        <VIcon
+                          icon="fa-ellipsis-v"
+                          color="primary"
+                          class="cursor-pointer"
+                          v-bind="props"
+                        />
+                      </template>
+                      <VList>
+                        <VListItem
+                          prepend-icon="mdi-pencil"
+                          title="Ubah"
+                          @click="() => {
+                            editDataLn = {
+                              ...item,
+                              harga: idrToNumber(item.harga),
+                              sub_total: idrToNumber(item.sub_total),
+                            }
+                            editLn = true
+                          }"
+                        />
+                      </VList>
+                    </VMenu>
+                  </td>
+                </tr>
+                <tr v-if="dataLn.length">
+                  <td colspan="1" />
                   <td colspan="1" class="text-right font-weight-bold">
                     Total
                   </td>
@@ -804,7 +878,7 @@ onMounted(async () => {
                 placeholder="Biaya Admin"
               />
             </VCol>
-            <VCol>
+            <!-- <VCol>
               <div class="text-h6">Jumlah</div>
               <VTextField
                 v-model="detailDataLn.qty"
@@ -815,7 +889,7 @@ onMounted(async () => {
                 @update:model-value="detailDataLn.total = detailDataLn.qty * detailDataLn.harga"
                 :min="0"
               />
-            </VCol>
+            </VCol> -->
             <VCol>
               <div class="text-h6">Harga</div>
               <VTextField
@@ -827,7 +901,7 @@ onMounted(async () => {
                 @update:model-value="detailDataLn.total = detailDataLn.qty * detailDataLn.harga"
               />
             </VCol>
-            <VCol>
+            <!-- <VCol>
               <div class="text-h6">Sub Total</div>
               <VTextField
                 v-model="detailDataLn.total"
@@ -837,7 +911,7 @@ onMounted(async () => {
                 placeholder="Rp 800.000"
                 disabled
               />
-            </VCol>
+            </VCol> -->
           </VRow>
         </VCardText>
         <VCardActions class="pt-2 px-4">

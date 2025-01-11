@@ -9,7 +9,7 @@ const searchQuery = ref<string>('')
 
 const invoiceHeader: any[] = [
   { title: 'No', value: 'index' },
-  { title: 'Nomor Daftar', value: 'no_tagihan', nowrap: true },
+  { title: 'Nomor Daftar', value: 'no_daftar', nowrap: true },
   { title: 'Tanggal Tagihan', value: 'tanggal_tagihan', nowrap: true },
   { title: 'No Ref', value: 'no_tagihan', nowrap: true },
   { title: 'Nama PU', value: 'nama_pu', nowrap: true },
