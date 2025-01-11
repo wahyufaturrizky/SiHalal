@@ -63,11 +63,11 @@ onMounted(async () => {
 </script>
 
 <template>
-  <VRow>
+  <!-- <VRow>
     <VCol cols="12">
       <KembaliButton />
     </VCol>
-  </VRow>
+  </VRow> -->
   <VRow>
     <VCol cols="12">
       <h2>Status Permohonan</h2>

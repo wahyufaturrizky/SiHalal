@@ -108,7 +108,7 @@ onMounted(async () => {
 
 <template>
   <v-container v-if="!loadingAll">
-    <kembali-button class="pl-0" />
+    <!-- <kembali-button class="pl-0" /> -->
     <h3 class="text-h3">Cek Data Pengajuan PU</h3>
     <br />
 

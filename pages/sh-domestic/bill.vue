@@ -1,45 +1,44 @@
 <!-- eslint-disable camelcase -->
 <script setup lang="ts">
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
-import { useDisplay } from 'vuetify'
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+import { useDisplay } from "vuetify";
 
 const page = ref(1);
 const size = ref(10);
-const status = ref('');
+const status = ref("");
 const outDated = ref(null);
-const searchQuery = ref('');
+const searchQuery = ref("");
 const data = ref<any[]>([]);
 const lovStatus = ref<any[]>([]);
-const loading = ref(false)
-const totalItems = ref(0)
+const loading = ref(false);
+const totalItems = ref(0);
 
 const headers = [
-  { title: 'No', key: 'no' },
-  { title: 'No. Pembayaran', key: 'no_payment', nowrap: true },
-  { title: 'No. Tagihan', key: 'no_inv', nowrap: true },
-  { title: 'Tanggal Tagihan', key: 'tgl_inv',nowrap: true },
-  { title: 'No. Ref', key: 'no_ref' , nowrap: true},
-  { title: 'Nama PU', key: 'nama' , nowrap: true},
-  { title: 'Jenis Transaksi', key: 'jenis_transaksi', nowrap: true },
-  { title: 'Jatuh Tempo', key: 'duedate', nowrap: true },
-  { title: 'Jumlah Tagihan', key: 'total_inv', nowrap: true },
-  { title: 'Status', key: 'status', nowrap: true },
-  { title: 'Catatan', key: 'catatan', nowrap: true },
-  { title: 'Action', value: 'action', sortable: false, nowrap: true },
-
+  { title: "No", key: "no" },
+  { title: "No. Pembayaran", key: "no_payment", nowrap: true },
+  { title: "No. Tagihan", key: "no_inv", nowrap: true },
+  { title: "Tanggal Tagihan", key: "tgl_inv", nowrap: true },
+  { title: "No. Ref", key: "no_ref", nowrap: true },
+  { title: "Nama PU", key: "nama", nowrap: true },
+  { title: "Jenis Transaksi", key: "jenis_transaksi", nowrap: true },
+  { title: "Jatuh Tempo", key: "duedate", nowrap: true },
+  { title: "Jumlah Tagihan", key: "total_inv", nowrap: true },
+  { title: "Status", key: "status", nowrap: true },
+  { title: "Catatan", key: "catatan", nowrap: true },
+  { title: "Action", value: "action", sortable: false, nowrap: true },
 ];
 
-const { mdAndUp } = useDisplay()
+const { mdAndUp } = useDisplay();
 
 const dialogMaxWidth = computed(() => {
-  return mdAndUp.value ? 400 : '90%'
-})
+  return mdAndUp.value ? 400 : "90%";
+});
 
 // TODO -> BIKIN LOGIC BUAT SET CHIP COLOR
 const getChipColor = (stats: string) => {
-  if (stats === 'Lunas') return 'success';
-  return 'primary';
+  if (stats === "Lunas") return "success";
+  return "primary";
 };
 
 const loadItem = async (
@@ -47,26 +46,26 @@ const loadItem = async (
   sizeData: number,
   statusData: string,
   jatuh_tempo,
-  search: string,
+  search: string
 ) => {
   try {
-    let datePayload: any = null
+    let datePayload: any = null;
     let params = {
       page: pageNumber,
       size: sizeData,
       status: statusData,
       search,
-    }
+    };
     if (outDated.value) {
-      datePayload = new Intl.DateTimeFormat('en-CA', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      }).format(outDated.value)
+      datePayload = new Intl.DateTimeFormat("en-CA", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(outDated.value);
       params = {
         ...params,
         jatuh_tempo: datePayload,
-      }
+      };
     }
 
     const response: any = await $api("/reguler/pelaku-usaha/list-bill", {
@@ -78,7 +77,7 @@ const loadItem = async (
       response?.data?.map((item: any) => {
         item.typeAndTotal = [item?.jenis_usaha, item?.jumlah_produk];
       });
-      totalItems.value = response.total_page
+      totalItems.value = response.total_page;
       data.value = response.data;
       return response;
     } else {
@@ -95,7 +94,7 @@ const getListStatus = async () => {
     const response: any = await $api("/reguler/pelaku-usaha/list-status", {
       method: "get",
     });
-  
+
     if (response?.code === 2000) {
       lovStatus.value = [{ code: "", name: "Semua" }, ...response.data];
       loading.value = false;
@@ -108,44 +107,63 @@ const getListStatus = async () => {
     loading.value = false;
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-}
+};
 
 const navigateToDetail = (id: string) => {
   navigateTo(`/lph/list-register/detail/${id}`);
 };
 
 const unduhFile = () => {
-  window.open('/files/Cara Bayar.pdf', '_blank')
-}
-
-const handleInput = (e: any) => {
-  debounce(loadItem(page.value, size.value, status.value, outDated.value, e.target.value), 500);
+  window.open("/files/Cara Bayar.pdf", "_blank");
 };
 
-const downloadInvoice = async(item: any) => {
-  if (item.file_inv)
-    await downloadDocument(item.file_inv)
-}
+const handleInput = (e: any) => {
+  debounce(
+    loadItem(
+      page.value,
+      size.value,
+      status.value,
+      outDated.value,
+      e.target.value
+    ),
+    500
+  );
+};
+
+const downloadInvoice = async (item: any) => {
+  if (item.file_inv) await downloadDocument(item.file_inv);
+};
 
 onMounted(async () => {
-  loading.value = true
+  loading.value = true;
   await Promise.all([
-    loadItem(page.value, size.value, status.value, outDated.value, searchQuery.value),
-    getListStatus()
+    loadItem(
+      page.value,
+      size.value,
+      status.value,
+      outDated.value,
+      searchQuery.value
+    ),
+    getListStatus(),
   ]);
-  loading.value = false
+  loading.value = false;
 });
 
 watch([status, outDated, page], () => {
-  loadItem(page.value, size.value, status.value, outDated.value, searchQuery.value)
-})
-
+  loadItem(
+    page.value,
+    size.value,
+    status.value,
+    outDated.value,
+    searchQuery.value
+  );
+});
 </script>
 
 <template>
   <div v-if="!loading">
     <VContainer>
-      <KembaliButton class="pl-0" />
+      <!-- <KembaliButton class="pl-0" /> -->
       <div class="d-flex" style="justify-content: space-between">
         <h3 class="text-h3">Tagihan/Invoice</h3>
         <VBtn
@@ -172,7 +190,11 @@ watch([status, outDated, page], () => {
                 min-width="160px"
               >
                 Filter
-                <VMenu activator="parent" :close-on-content-click="false" @update:modelValue="onUpdate">
+                <VMenu
+                  activator="parent"
+                  :close-on-content-click="false"
+                  @update:modelValue="onUpdate"
+                >
                   <VCard :min-width="dialogMaxWidth">
                     <VCardItem>
                       <VLabel for="status">Status</VLabel>
@@ -265,7 +287,7 @@ watch([status, outDated, page], () => {
                       @click="() => downloadInvoice(item)"
                       block
                       class="text-left"
-                      style="width: 100%; justify-content: flex-start;"
+                      style="width: 100%; justify-content: flex-start"
                     >
                       Lihat Invoice
                     </VBtn>

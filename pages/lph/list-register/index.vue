@@ -91,11 +91,11 @@ onMounted(async () => {
 
 <template>
   <VContainer v-if="!loadingAll">
-    <VRow>
+    <!-- <VRow>
       <VCol cols="12">
         <KembaliButton />
       </VCol>
-    </VRow>
+    </VRow> -->
     <VRow>
       <VCol cols="12">
         <h2>Tabel Daftar Ajuan</h2>

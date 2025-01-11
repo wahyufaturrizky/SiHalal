@@ -177,10 +177,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="d-flex align-center cursor-pointer" @click="router.go(-1)">
+  <!-- <div class="d-flex align-center cursor-pointer" @click="router.go(-1)">
     <VIcon icon="mdi-chevron-left" size="40px" color="primary" />
     <div class="text-primary">Kembali</div>
-  </div>
+  </div> -->
   <VRow no-gutters>
     <VCol>
       <h1>Audit Data Pengajuan</h1>
