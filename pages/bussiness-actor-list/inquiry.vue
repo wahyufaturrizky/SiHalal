@@ -66,7 +66,7 @@ const loadItem = async ({
 
 const loadItemStatusApplication = async () => {
   try {
-    const response = await $api("/master/application-status", {
+    const response: any = await $api("/master/application-status", {
       method: "get",
     });
 
@@ -75,6 +75,24 @@ const loadItemStatusApplication = async () => {
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const loadSOF = async () => {
+  try {
+    const response: any = await $api("/master/source-of-fund", {
+      method: "get",
+    });
+
+    if (response) {
+      dataSOF.value = response;
+
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan asd", "error");
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -94,6 +112,7 @@ onMounted(async () => {
       kode_fac: kode_fac.value,
     }),
     loadItemStatusApplication(),
+    loadSOF(),
   ]);
 
   const checkResIfUndefined = res.every((item) => {
@@ -152,4 +171,6 @@ const debouncedFetch = debounce(loadItem, 500);
       "
     />
   </div>
+
+  <VSkeletonLoader type="card" v-else />
 </template>
