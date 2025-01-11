@@ -10,17 +10,19 @@ interface TimelineItem {
   title: string;
   user: string;
   date: string;
+  comment?: string;
   color: string;
 }
 
 const timelineItems = ref<TimelineItem[]>([]);
 timelineItems.value = props.data?.map((item: any) => {
-  const { status, username, tanggal } = item || {};
+  const { status, username, tanggal, comment } = item || {};
 
   return {
     title: status,
     user: username,
     date: tanggal,
+    comment: comment,
     color: "grey",
   };
 });
@@ -81,6 +83,9 @@ const statusItem = new Proxy(
               </div>
               <div class="text-caption text-grey">
                 {{ item.user }}
+              </div>
+              <div class="text-caption text-grey">
+                {{ item.comment }}
               </div>
             </div>
             <div class="text-caption text-grey">
