@@ -180,7 +180,6 @@ onMounted(async () => {
 
   <VDialog v-model="addDialog" :max-width="dialogMaxWidth">
     <VCard v-if="!loadingAll">
-      >
       <VCardTitle>
         <VRow>
           <VCol cols="10"><h3>Unggah Ketetapan Halal</h3></VCol>
