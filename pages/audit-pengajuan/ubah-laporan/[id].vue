@@ -479,7 +479,6 @@ const loadBahanDukung = async () => {
 
     if (response.code === 2000) {
       const data = response.data
-
       materialData.value = {
         label: materialData.value.label,
         value: data.bahan?.map(
@@ -490,7 +489,7 @@ const loadBahanDukung = async () => {
             materialName: v.reg_nama_bahan,
             priority: v.DataDukung?.kriteria_bahan,
             findings: v.DataDukung?.temuan,
-            information: v.DataDukung?.keterangan,
+            information: v.DataDukung?.Mref?.ref_desc,
             diragukan: v.DataDukung?.diragukan,
           })),
       }

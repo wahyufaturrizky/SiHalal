@@ -183,7 +183,7 @@ onMounted(async () => {
   </div>
   <VRow no-gutters>
     <VCol>
-      <h1>Penyelesaian Data Post Audit</h1>
+      <h1>Audit Data Pengajuan</h1>
     </VCol>
   </VRow>
   <div v-if="!loadingAll">

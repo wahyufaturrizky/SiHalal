@@ -57,6 +57,7 @@ watch(
             themeConfig.app.i18n.langConfig?.length
           "
           :languages="themeConfig.app.i18n.langConfig"
+          class="mr-5"
         />
         <!-- <NavbarThemeSwitcher />
         <NavbarShortcuts /> -->
