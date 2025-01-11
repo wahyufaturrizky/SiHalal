@@ -37,7 +37,6 @@ export default defineEventHandler(async (event) => {
   if (kode_fac != "") {
     params["kode_fac"] = kode_fac;
   }
-  console.log("@params", params);
 
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/inquiry/download-excel`,

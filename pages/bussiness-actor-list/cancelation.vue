@@ -3,6 +3,7 @@ const items = ref();
 const size = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
+const loadingAll = ref(true);
 const page = ref(1);
 const keyword = ref();
 const query_by = ref();
@@ -21,7 +22,7 @@ const loadItem = async ({
   try {
     loading.value = true;
 
-    const response = await $api("/cancelation", {
+    const response: any = await $api("/cancelation", {
       method: "get",
       params: {
         page,
@@ -35,6 +36,7 @@ const loadItem = async ({
       items.value = response.data;
       totalItems.value = response.total_item;
       loading.value = false;
+      return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
       loading.value = false;
@@ -46,17 +48,29 @@ const loadItem = async ({
 };
 
 onMounted(async () => {
-  await loadItem({
-    page: 1,
-    size: size.value,
-    keyword: "",
-    query_by: "",
+  const res = await Promise.all([
+    loadItem({
+      page: 1,
+      size: size.value,
+      keyword: "",
+      query_by: "",
+    }),
+  ]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
   });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
 });
 
 const debouncedFetch = debounce(loadItem, 500);
 
-const handleSearch = (event) => {
+const handleSearch = (event: any) => {
   debouncedFetch({
     page: page.value,
     size: size.value,
@@ -72,6 +86,7 @@ const handleSearch = (event) => {
 <template>
   <h2 class="mt-3">Pembatalan</h2>
   <TabelCanceledFasilitasi
+    v-if="!loadingAll"
     :page="page"
     :size="size"
     :items="items"
@@ -87,4 +102,6 @@ const handleSearch = (event) => {
     "
     @formvalue="handleSearch($event)"
   />
+
+  <VSkeletonLoader type="card" v-else />
 </template>
