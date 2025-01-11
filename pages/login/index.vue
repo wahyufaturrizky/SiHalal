@@ -166,8 +166,11 @@ const handleLoadImageAuth = async () => {
 
     if (response.code === 2000) {
       handleLoadImageFile(response.data.file_name);
+    } else {
+      currentImage.value = NoImage;
     }
   } catch (error) {
+    currentImage.value = NoImage;
     console.error(error);
   }
 };
@@ -185,19 +188,9 @@ const handleLoadImageFile = async (filename: string) => {
   }
 };
 
-// onMounted(() => {
-//   handleLoadImageAuth();
-// });
-useAsyncData(
-  "random-login-image",
-  async () => {
-    await handleLoadImageAuth();
-    return true;
-  },
-  {
-    immediate: true,
-  }
-);
+onMounted(() => {
+  handleLoadImageAuth();
+});
 const items = [
   {
     title: "Option 1",
@@ -352,16 +345,9 @@ const items = [
     <VCol
       v-if="mdAndUp"
       md="6"
-      class="d-flex align-center justify-center bg-white"
+      class="d-flex align-start justify-center pb-3 pt-2 pe-2 bg-white"
     >
-      <div :style="`background-image: url('${currentImage}')`" />
-      <VImg
-        :src="currentImage"
-        width="100%"
-        height="100%"
-        rounded="xl"
-        class="responsive-image"
-      />
+      <img :src="currentImage" width="100%" style="border-radius: 20px" />
     </VCol>
   </VRow>
 </template>
@@ -380,14 +366,5 @@ const items = [
 
 .login-bg {
   background-color: rgb(var(--v-theme-surface));
-}
-
-.responsive-image {
-  block-size: 100%;
-  inline-size: 100%;
-  object-fit: fill;
-}
-.v-img__img--contain {
-  object-fit: fill;
 }
 </style>

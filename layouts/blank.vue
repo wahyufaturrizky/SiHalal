@@ -6,7 +6,7 @@ injectSkinClasses();
 </script>
 
 <template>
-  <div class="layout-wrapper layout-blank">
+  <div class="layout-wrapper layout-blank bg-white">
     <VSnackbar
       v-model="isSnackbarVisible"
       location="top"
