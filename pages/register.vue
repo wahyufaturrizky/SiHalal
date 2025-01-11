@@ -347,7 +347,7 @@ onMounted(() => {
         <VCardText>
           <VForm ref="refVForm" @submit.prevent="onSubmit">
             <VRow>
-              <VCol cols="12" style="max-block-size: 45svh; overflow-y: auto">
+              <VCol cols="12">
                 <!-- Tipe Pengguna -->
                 <VCol cols="12">
                   <b> Tipe Pengguna</b>
@@ -498,15 +498,9 @@ onMounted(() => {
     <VCol
       v-if="mdAndUp"
       md="6"
-      class="d-flex align-center justify-center pb-3 pt-2 pe-2 bg-white"
+      class="d-flex align-start justify-center pb-3 pt-2 pe-2 bg-white"
     >
-      <VImg
-        :src="currentImage"
-        width="100%"
-        height="100%"
-        rounded="xl"
-        class="responsive-image"
-      />
+      <img :src="currentImage" width="100%" style="border-radius: 20px" />
     </VCol>
   </VRow>
 </template>
@@ -533,11 +527,4 @@ onMounted(() => {
   font-size: 0.875rem;
   margin-block-start: 4px;
 }
-
-// .responsive-image {
-//   block-size: 100%;
-//   inline-size: 100%;
-//   object-fit: fill;
-//   pointer-events: none !important;
-// }
 </style>

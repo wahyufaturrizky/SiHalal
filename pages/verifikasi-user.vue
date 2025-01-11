@@ -683,9 +683,9 @@ onMounted(() => {
     <VCol
       v-if="mdAndUp"
       md="6"
-      class="d-flex align-center justify-center pb-3 pt-2 pe-2 bg-white"
+      class="d-flex align-start justify-center pb-3 pt-2 pe-2 bg-white"
     >
-      <VImg :src="currentImage" width="100%" height="100%" rounded="xl" />
+      <img :src="currentImage" width="100%" style="border-radius: 20px" />
     </VCol>
   </VRow>
 </template>
@@ -758,10 +758,4 @@ onMounted(() => {
 .v-btn {
   text-transform: none !important;
 }
-
-// .responsive-image {
-//   block-size: 100%;
-//   inline-size: 100%;
-//   object-fit: fill;
-// }
 </style>
