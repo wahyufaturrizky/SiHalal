@@ -8,6 +8,7 @@ const route = useRoute();
 const selfDeclareId = (route.params as any).id;
 const isFormError = ref(false);
 const loadingAll = ref(false);
+const uploadType = ref("UNGGAH");
 const listPenetapan = ref([]);
 
 const emit = defineEmits(["refresh"]);
@@ -143,7 +144,15 @@ const loadItemPenetapan = async () => {
 };
 
 const checkIsFieldEMpty = (data: any) => {
-  return Object.keys(data)?.find((key: any) => !data[key]);
+  return Object.keys(data)?.find((key: any) => {
+    if (uploadType.value === "GENERATE") {
+      if (key !== "dokumen" && key !== "no_penetapan") {
+        return !data[key];
+      }
+    } else {
+      return !data[key];
+    }
+  });
 };
 
 const { mdAndUp } = useDisplay();
@@ -175,13 +184,51 @@ onMounted(async () => {
       <VCardTitle>
         <VRow>
           <VCol cols="10"><h3>Unggah Ketetapan Halal</h3></VCol>
+
           <VCol cols="2" style="display: flex; justify-content: end">
             <VIcon size="small" icon="fa-times" @click="addDialog = false" />
           </VCol>
         </VRow>
+
+        <VRow justify="center">
+          <VCol cols="4">
+            <VSheet
+              rounded="pill"
+              color="#6526721A"
+              class="pa-2 d-flex justify-space-between"
+              style="width: max-content"
+            >
+              <VBtn
+                @click="
+                  () => {
+                    resetForm();
+                    uploadType = 'UNGGAH';
+                  }
+                "
+                :variant="uploadType === 'UNGGAH' ? 'flat' : 'text'"
+                rounded="pill"
+                size="large"
+                class="me-5"
+                >Unggah</VBtn
+              >
+              <VBtn
+                @click="
+                  () => {
+                    resetForm();
+                    uploadType = 'GENERATE';
+                  }
+                "
+                :variant="uploadType === 'GENERATE' ? 'flat' : 'text'"
+                rounded="pill"
+                size="large"
+                >Generate</VBtn
+              >
+            </VSheet>
+          </VCol>
+        </VRow>
       </VCardTitle>
       <VCardItem>
-        <VRow>
+        <VRow v-if="uploadType !== 'GENERATE'">
           <VCol cols="12">
             <VItemGroup>
               <VLabel>No. Penetapan</VLabel>
@@ -222,7 +269,7 @@ onMounted(async () => {
           </VCol>
         </VRow>
 
-        <VRow>
+        <VRow v-if="uploadType !== 'GENERATE'">
           <VCol cols="12">
             <VRow>
               <VCol cols="8">
@@ -266,7 +313,9 @@ onMounted(async () => {
             :disabled="checkIsFieldEMpty(formData) || isFormError"
             @click="addDataPenyeliaHalal"
             variant="flat"
-            >Tambah</VBtn
+            >{{
+              uploadType === "UNGGAH" ? "Simpan" : "Generate Ketetapan"
+            }}</VBtn
           >
         </div>
       </VCardActions>
