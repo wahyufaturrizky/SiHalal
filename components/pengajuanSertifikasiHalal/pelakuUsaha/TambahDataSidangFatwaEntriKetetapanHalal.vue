@@ -70,6 +70,7 @@ const formData = ref({
   no_penetapan: "",
   penetapan: "",
   tgl_penetapan: "",
+  keterangan: "",
   dokumen: null,
 });
 
@@ -77,6 +78,7 @@ const resetForm = () => {
   formData.value = {
     no_penetapan: "",
     penetapan: "",
+    keterangan: "",
     tgl_penetapan: "",
     dokumen: null,
   };
@@ -263,6 +265,18 @@ onMounted(async () => {
                 item-value="code"
                 placeholder="Pilih Jenis Dokumen"
                 density="compact"
+              />
+            </VItemGroup>
+          </VCol>
+        </VRow>
+
+        <VRow v-if="formData.penetapan === 'SF004'">
+          <VCol cols="12">
+            <VItemGroup>
+              <VLabel>Alasan</VLabel>
+              <VTextarea
+                v-model="formData.keterangan"
+                placeholder="Masukkan Alasan"
               />
             </VItemGroup>
           </VCol>
