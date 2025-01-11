@@ -216,33 +216,33 @@ const uploadFile = async (file) => {
   return response;
 };
 
-const deleteTtd = async (item) => {
-  try {
-    const response = await $api(
-      "/reguler/pelaku-usaha/tab-evaluasi/delete-ttd",
-      {
-        method: "delete",
-        query: { id, docId: item.id_reg_ttd },
-      }
-    );
-
-    if (response.code === 2000) {
-      useSnackbar().sendSnackbar("Sukses menghapus data", "success");
-      uploadedFileTTdPj.value = {
-        name: "",
-        file: null,
-      };
-      uploadedFileTTdPh.value = {
-        name: "",
-        file: null,
-      };
-      await getTtd();
-      await getListPenyelia();
-    }
-  } catch (error) {
-    console.log("ERROR : ", error);
-  }
-};
+// const deleteTtd = async (item) => {
+//   try {
+//     const response = await $api(
+//       "/reguler/pelaku-usaha/tab-evaluasi/delete-ttd",
+//       {
+//         method: "delete",
+//         query: { id, docId: item.id_reg_ttd },
+//       }
+//     );
+//
+//     if (response.code === 2000) {
+//       useSnackbar().sendSnackbar("Sukses menghapus data", "success");
+//       uploadedFileTTdPj.value = {
+//         name: "",
+//         file: null,
+//       };
+//       uploadedFileTTdPh.value = {
+//         name: "",
+//         file: null,
+//       };
+//       await getTtd();
+//       await getListPenyelia();
+//     }
+//   } catch (error) {
+//     console.log("ERROR : ", error);
+//   }
+// };
 
 const addTtd = async () => {
   try {
@@ -844,37 +844,38 @@ onMounted(async () => {
       </template>
     </TableData>
     <br />
-    <!-- <TableData
-      :on-submit="() => (confirmSaveDialog = true)"
-      :on-add="() => toggleAdd('Tanda Tangan')"
-      :on-delete="(item) => deleteTtd(item)"
-      :on-edit="(item) => toggleEdit('Tanda Tangan', item)"
-      :data="ttdData"
-      title="Tanda Tangan"
-      with-add-button
-      :isviewonly="isviewonly"
-    >
-      <template #headerDialog>
-        <div class="bgContent">
-          <div
-            class="d-flex flex-wrap mt-5"
-            style="
-              padding-left: 10px !important;
-              padding-top: 5px !important;
-              padding-bottom: 5px !important;
-            "
-          >
-            <div>
-              <VIcon icon="ri-error-warning-line" color="#652672" />
-            </div>
-            <label class="subText"
-              >Format file tanda tangan berupa foto(jpeg,jpg,png)</label
-            >
-          </div>
-        </div>
-      </template>
-    </TableData> -->
-    <br />
+<!--    <TableData-->
+<!--      v-if="!isviewonly"-->
+<!--      :on-submit="() => (confirmSaveDialog = true)"-->
+<!--      :on-add="() => toggleAdd('Tanda Tangan')"-->
+<!--      :on-delete="(item) => deleteTtd(item)"-->
+<!--      :on-edit="(item) => toggleEdit('Tanda Tangan', item)"-->
+<!--      :data="ttdData"-->
+<!--      title="Tanda Tangan"-->
+<!--      with-add-button-->
+<!--      :isviewonly="isviewonly"-->
+<!--    >-->
+<!--      <template #headerDialog>-->
+<!--        <div class="bgContent">-->
+<!--          <div-->
+<!--            class="d-flex flex-wrap mt-5"-->
+<!--            style="-->
+<!--              padding-left: 10px !important;-->
+<!--              padding-top: 5px !important;-->
+<!--              padding-bottom: 5px !important;-->
+<!--            "-->
+<!--          >-->
+<!--            <div>-->
+<!--              <VIcon icon="ri-error-warning-line" color="#652672" />-->
+<!--            </div>-->
+<!--            <label class="subText"-->
+<!--              >Format file tanda tangan berupa foto(jpeg,jpg,png)</label-->
+<!--            >-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </template>-->
+<!--    </TableData>-->
+<!--    <br />-->
     <TableData
       :on-submit="() => (confirmSaveDialog = true)"
       :data="auditInternal"
