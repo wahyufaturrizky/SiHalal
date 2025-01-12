@@ -1,4 +1,4 @@
-export const formatCurrency = (value) => {
+export const formatCurrencyIntl = (value) => {
   const trim = value.replace(/\$|,/g, "");
   // console.log("currency modal dasar = ", trim);
   return new Intl.NumberFormat("id-ID", {

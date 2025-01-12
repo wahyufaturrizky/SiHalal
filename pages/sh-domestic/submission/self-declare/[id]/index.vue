@@ -206,7 +206,7 @@
               <InfoRow name="Modal Dasar" :name-style="{ fontWeight: '600' }">
                 {{
                   submissionDetail.modal_usaha
-                    ? formatCurrency(String(submissionDetail.modal_usaha))
+                    ? formatCurrencyIntl(String(submissionDetail.modal_usaha))
                     : "Rp 0"
                 }}
               </InfoRow>
@@ -971,7 +971,7 @@
 </template>
 
 <script setup lang="ts">
-import { formatCurrency } from "@/utils/conversionIntl";
+import { formatCurrencyIntl } from "@/utils/conversionIntl";
 const defaultStatus = { color: "error", desc: "Unknown Status" };
 const statusItem = new Proxy(
   {
