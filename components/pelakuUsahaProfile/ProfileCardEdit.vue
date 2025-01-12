@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { profileMain } from "@/stores/interface/pelakuUsahaProfileIntf";
-import { formatCurrency } from "@/utils/conversionIntl";
+import { formatCurrencyIntl } from "@/utils/conversionIntl";
 const panelOpen = ref(0);
 
 const props = defineProps({
@@ -29,7 +29,7 @@ const convertFln = (code: string): string => {
   if (!code) {
     return "Instansi Pemerintah";
   } else {
-    return code == "1" || code == "Luar Negeri" ? "Luar Negeri" : "Domestik";
+    return code == "Luar Negeri" ? "Luar Negeri" : "Domestik";
   }
 };
 
@@ -44,7 +44,7 @@ const convertFumk = (code: string): string => {
 const disableEdit = (asalUsaha: string): boolean => {
   if (asalUsaha == "Luar Negeri") {
     return false;
-  } else if (asalUsaha == "Dalam Negeri") {
+  } else if (asalUsaha === "Dalam Negeri") {
     return true;
   } else {
     return true;
@@ -204,7 +204,10 @@ onMounted(async () => {
           <VCol cols="4"> Modal Dasar </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
-            <VTextField>{{ formatCurrency(form.modal_dasar) }}</VTextField>
+            <VTextField
+              :disabled="disableEdit(props.profileData?.asal_usaha)"
+              >{{ formatCurrencyIntl(form.modal_dasar) }}</VTextField
+            >
           </VCol>
         </VRow>
         <VRow>
@@ -213,7 +216,7 @@ onMounted(async () => {
           <VCol cols="7">
             <!-- {{ props.profileData?.asal_usaha || "-" }} -->
             <VSelect
-              :disabled="!disableEdit(props.profileData?.asal_usaha)"
+              :disabled="disableEdit(props.profileData?.asal_usaha)"
               :model-value="form.asal_usaha"
               :items="['Dalam Negeri', 'Luar Negeri']"
             ></VSelect>

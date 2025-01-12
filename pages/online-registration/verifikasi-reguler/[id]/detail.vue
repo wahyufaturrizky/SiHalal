@@ -255,6 +255,9 @@ const dataDetail = ref<DetailVerifikatorReguler>({
   produk: [],
 });
 const route = useRoute();
+
+const isViewOnly = (route?.query as any)?.isViewOnly;
+
 const getDetail = async () => {
   try {
     const response = await $api("/reguler/pelaku-usaha/detail", {
@@ -320,7 +323,7 @@ onMounted(async () => {
     </VTabsWindowItem>
 
     <VTabsWindowItem value="6">
-      <EditPemantauanDanEvaluasiRegulerVerifikator />
+      <EditPemantauanDanEvaluasiRegulerVerifikator :isviewonly="isViewOnly" />
     </VTabsWindowItem>
 
     <VTabsWindowItem value="7">

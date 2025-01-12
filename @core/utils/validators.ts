@@ -111,7 +111,10 @@ export const regexValidator = (
   if (Array.isArray(value))
     return value.every((val) => regexValidator(val, regeX));
 
-  return regeX.test(String(value)) || "Format kolom Regex tidak valid";
+  return (
+    regeX.test(String(value)) ||
+    (message ? message : "Format kolom Regex tidak valid")
+  );
 };
 export const phoneNumberIdValidator = (value: unknown): string | boolean => {
   if (isEmpty(value)) return true;

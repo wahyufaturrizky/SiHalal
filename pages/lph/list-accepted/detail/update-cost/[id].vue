@@ -430,6 +430,8 @@ const onAddDataDalamNegri = async () => {
       useSnackbar().sendSnackbar('Berhasil ubah data', 'success')
       addPesawat.value = false
       getDetailBiaya()
+      getLovPabrik()
+      pabrikId.value = ''
     }
   }
   catch (error) {
@@ -447,6 +449,7 @@ const onUpdateTotal = async () => {
     if (response.code === 2000) {
       useSnackbar().sendSnackbar('Berhasil perbaharui data', 'success')
       getDetailBiaya()
+      getLovPabrik()
     }
   }
   catch (error) {
@@ -476,6 +479,7 @@ const onDeletePesawat = async (el: any) => {
     if (response.code === 2000) {
       useSnackbar().sendSnackbar('Berhasil hapus biaya pesawat', 'success')
       getDetailBiaya()
+      getLovPabrik()
     }
   }
   catch (error) {

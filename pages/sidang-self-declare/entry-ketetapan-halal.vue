@@ -82,6 +82,7 @@ const loadItem = async (
       items.value = response.data || [];
       totalItems.value = response.total_item || 0;
       loading.value = false;
+      average.value = response.rata_rata || 0;
 
       return response;
     } else {

@@ -26,6 +26,7 @@ export default defineEventHandler(async (event) => {
     kabupaten,
     fasilitas,
     namaFasilitator,
+    download
   } = (await getQuery(event)) as {
     page: string;
     size: string;
@@ -41,6 +42,7 @@ export default defineEventHandler(async (event) => {
     kabupaten: string;
     fasilitas: string;
     namaFasilitator: string;
+    download : boolean;
   };
 
   const params: any = {
@@ -70,6 +72,7 @@ export default defineEventHandler(async (event) => {
   if (fasilitas !== "") params["fasilitas"] = fasilitas;
   if (namaFasilitator !== "") params["fasilitator"] = namaFasilitator;
   if (filterBy !== undefined) params["filter_by"] = filterBy;
+  if (download) params['download'] = download;
 
   console.log(params);
   const data = await $fetch<any>(
