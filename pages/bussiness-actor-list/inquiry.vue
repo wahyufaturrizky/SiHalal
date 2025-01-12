@@ -14,6 +14,17 @@ const kode_fac = ref("");
 const dataSOF = ref([]);
 const loadingAll = ref(true);
 
+const headers = [
+  { title: "No", key: "no" },
+  { title: "No Daftar", key: "no_daftar" },
+  { title: "Tanggal", key: "tgl_daftar" },
+  { title: "Jenis Daftar", key: "jenis_daftar" },
+  { title: "Jenis Produk", key: "jenis_produk" },
+  { title: "Merk Dagang", key: "merk_dagang" },
+  { title: "Kode Fasilitasi", key: "kode_fac" },
+  { title: "Status", key: "status" },
+];
+
 const loadItem = async ({
   page,
   size,
@@ -36,7 +47,7 @@ const loadItem = async ({
   try {
     loading.value = true;
 
-    const response = await $api("/inquiry", {
+    const response: any = await $api("/inquiry", {
       method: "get",
       params: {
         page,
@@ -150,27 +161,66 @@ const debouncedFetch = debounce(loadItem, 500);
         })
       "
     />
-    <TabelInquiryPengajuanSertifikasiHalal
-      :loading="loading"
-      :totalitems="totalItems"
-      :page="page"
-      :items="items"
-      :size="size"
-      class="mt-12"
-      @updatetable="
-        loadItem({
-          page,
-          size,
-          no_daftar,
-          nama_pu,
-          merek_dagang,
-          status,
-          jenis,
-          kode_fac,
-        })
-      "
-    />
+
+    <VCard class="w-100">
+      <VCardTitle class="mt-3"> Data Pengajuan Sertifikasi Halal </VCardTitle>
+      <VCardItem>
+        <VRow>
+          <VCol>
+            <VDataTableServer
+              v-model:items-per-page="size"
+              v-model:page="page"
+              :headers="headers"
+              :items="items"
+              :loading="loading"
+              :items-length="totalItems"
+              loading-text="Loading..."
+              @update:options="
+                loadItem({
+                  page,
+                  size,
+                  no_daftar,
+                  nama_pu,
+                  merek_dagang,
+                  status,
+                  jenis,
+                  kode_fac,
+                })
+              "
+            >
+              <template #item.no="{ index }">
+                {{ index + 1 + (page - 1) * size }}
+              </template>
+              <template #item.tgl_daftar="{ item }">
+                {{ formatDateIntl(new Date((item as any).tgl_daftar)) }}
+              </template>
+              <template #item.merk_dagang="{ item }">
+                {{ (item as any).merk_dagang || "NA" }}
+              </template>
+              <template #item.status="{ item }">
+                <div class="status-box py-1 px-3 cursor-pointer">
+                  {{ (item as any).status }}
+                </div>
+              </template>
+            </VDataTableServer>
+          </VCol>
+        </VRow>
+      </VCardItem>
+    </VCard>
   </div>
 
   <VSkeletonLoader type="card" v-else />
 </template>
+
+<style scoped lang="scss">
+.status-box {
+  color: #652672;
+  background-color: #f0e9f1;
+  border: 1px solid #652672;
+  border-radius: 8px;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>
