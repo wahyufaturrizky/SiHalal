@@ -323,8 +323,8 @@ onMounted(() => {
 <template>
   <HelpButton />
   <VRow no-gutters>
-    <VCol cols="12" md="6" class="d-flex align-center justify-center bg-white">
-      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
+    <VCol cols="12" md="6" class="d-flex align-start justify-center bg-white">
+      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-3">
         <VCardText>
           <NuxtLink to="/">
             <div class="auth-logo app-logo">
@@ -498,9 +498,10 @@ onMounted(() => {
     <VCol
       v-if="mdAndUp"
       md="6"
-      class="d-flex align-start justify-center pb-3 pt-2 pe-2 bg-white"
+      class="d-flex align-start justify-start py-1 pe-2 bg-white"
+      style="max-height: calc(100vh - 48px)"
     >
-      <img :src="currentImage" width="100%" style="border-radius: 20px" />
+      <img :src="currentImage" height="100%" style="border-radius: 20px" />
     </VCol>
   </VRow>
 </template>
