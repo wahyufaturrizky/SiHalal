@@ -600,14 +600,16 @@ onMounted(async () => {
               <HalalTimeLine
                 :event="
                   detailSubmission.tracking.map(
-                    ({ status, username, tanggal, comment } : any) => ({
-                      status: statusItem[status].desc ,
+                    ({ status, username, tanggal, comment, keterangan } : any) => ({
+                      status: statusItem[status].desc,
                       created_at: formatDate(tanggal),
                       username,
                       comment,
-                    })
+                      keterangan,
+                    }),
                   )
                 "
+                show-keterangan
               />
             </VExpansionPanelText>
           </VExpansionPanel>

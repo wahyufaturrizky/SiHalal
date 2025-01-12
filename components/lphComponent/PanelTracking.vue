@@ -43,13 +43,13 @@ const props = defineProps<{
           <div class="app-timeline-text mt-1">
             {{ (item as any).username }}
           </div>
-          <!-- <div v-if="item.comment" class="app-timeline-text mt-1">
+          <div v-if="item.keterangan" class="app-timeline-text mt-1">
             {{
-              (item.comment as any).length > 38
-                ? (item.comment as any).slice(0, 38) + "..."
-                : (item.comment as any)
+              (item.keterangan as any).length > 38
+                ? (item.keterangan as any).slice(0, 38) + "..."
+                : (item.keterangan as any)
             }}
-          </div> -->
+          </div>
         </VTimelineItem>
       </VTimeline>
     </VCardText>
