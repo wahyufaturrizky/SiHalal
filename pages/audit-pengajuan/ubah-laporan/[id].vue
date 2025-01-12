@@ -399,7 +399,7 @@ const loadJenisKeteranganBahan = async () => {
       jenisKeteranganBahan.value = response.map(
         i => ({
           title: i.name,
-          value: i.code,
+          value: i.name,
         }),
       )
 
@@ -448,7 +448,17 @@ const updateDataDukung = async item => {
       keterangan: item.information,
     }
 
-    const response: any = await $api(`/reguler/auditor/${id}/update-bahan-dukung`, {
+    const response: any = item.id_bahan_data_dukung === '00000000-0000-0000-0000-000000000000' ?
+      await $api(`/reguler/auditor/${id}/add-bahan-dukung`, {
+        method: 'post',
+        body: {
+          id_reg_bahan: body.id_reg_bahan,
+          nama_bahan: body.nama_bahan,
+          diragukan: body.diragukan,
+          kriteria_bahan: body.kriteria_bahan,
+          keterangan: body.keterangan,
+        },
+      }) : await $api(`/reguler/auditor/${id}/update-bahan-dukung`, {
       method: 'put',
       body,
     })
@@ -488,8 +498,8 @@ const loadBahanDukung = async () => {
             id_bahan_data_dukung: v.DataDukung?.id_bahan_data_dukung,
             materialName: v.reg_nama_bahan,
             priority: v.DataDukung?.kriteria_bahan,
-            findings: v.DataDukung?.temuan,
-            information: v.DataDukung?.Mref?.ref_desc,
+            findings: v.DataDukung?.diragukan,
+            information: v.DataDukung?.keterangan,
             diragukan: v.DataDukung?.diragukan,
           })),
       }
