@@ -472,6 +472,7 @@ onMounted(async () => {
                     rounded="xl"
                     density="compact"
                     class="px-2"
+                    :disabled="!dataProduk?.file_laporan"
                   >
                     <template #default>
                       <VIcon icon="fa-download" />

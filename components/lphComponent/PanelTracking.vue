@@ -43,7 +43,10 @@ const props = defineProps<{
           <div class="app-timeline-text mt-1">
             {{ (item as any).username }}
           </div>
-          <div v-if="item.keterangan" class="app-timeline-text mt-1">
+          <div
+            v-if="(item.status === 'OF280' || item.status === 'OF290' || item.status === 'OF900' || item.status === 'OF285') && item.keterangan"
+            class="app-timeline-text mt-1"
+          >
             {{
               (item.keterangan as any).length > 38
                 ? (item.keterangan as any).slice(0, 38) + "..."
