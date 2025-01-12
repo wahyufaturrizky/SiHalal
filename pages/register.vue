@@ -427,15 +427,12 @@ onMounted(async () => {
                         density="comfortable"
                         hide-details
                         hide-selected
-                        variant="solo"
+                        variant="outlined"
                         :items="country"
                         item-value="cc"
                         item-title="name"
                         v-model="selectedPhoneCode"
-                        style="
-                          border-style: groove;
-                          border-radius: 10px 0 0 10px;
-                        "
+                        style="border-radius: 10px 0 0 10px"
                       >
                         <!-- Custom item slot -->
                         <template v-slot:item="{ props, item }">
