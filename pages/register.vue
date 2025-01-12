@@ -154,7 +154,7 @@ const onSubmit = async () => {
         phone_number: form.value.noHandphone,
         password: form.value.password,
         confirm_password: form.value.passwordConfirm,
-        code_country: selectedPhoneCode,
+        code_country: selectedPhoneCode.value,
       };
 
       const payloadcheck = {
