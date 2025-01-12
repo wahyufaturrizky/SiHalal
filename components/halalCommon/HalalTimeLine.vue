@@ -3,6 +3,7 @@ import type { ShlnTracking } from "@/pages/sertifikasi-halal/luar-negeri/submiss
 
 const props = defineProps<{
   event: ShlnTracking[];
+  showKeterangan?: boolean
 }>();
 </script>
 
@@ -36,6 +37,9 @@ const props = defineProps<{
       </div>
       <div v-if="item.comment !== ''" class="app-timeline-text mt-1">
         {{ item.comment }}
+      </div>
+      <div v-if="item.keterangan !== '' && props.showKeterangan === true" class="app-timeline-text mt-1">
+        {{ item.keterangan }}
       </div>
     </VTimelineItem>
   </VTimeline>

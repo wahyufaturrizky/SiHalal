@@ -17,6 +17,7 @@ const statusItem: any = new Proxy(
     OF2: { color: "error", desc: "Returned" },
     OF290: { color: "error", desc: "Rejected" },
     OF5: { color: "success", desc: "Invoice issued" },
+    OF55: { color: "success", desc: "Penetapan Biaya" },
     OF320: { color: "success", desc: "Code Issued" },
     OF11: { color: "success", desc: "Verification" },
     OF50: { color: "success", desc: "Dikirim ke LPH" },
@@ -600,14 +601,18 @@ onMounted(async () => {
               <HalalTimeLine
                 :event="
                   detailSubmission.tracking.map(
-                    ({ status, username, tanggal, comment } : any) => ({
-                      status: statusItem[status].desc ,
+                    ({ status, username, tanggal, comment, keterangan } : any) => ({
+                      status: statusItem[status].desc,
                       created_at: formatDate(tanggal),
                       username,
                       comment,
-                    })
+                      keterangan: (
+                        status === 'OF280' || status === 'OF290' || status === 'OF900' || status === 'OF285'
+                      ) ? keterangan : '',
+                    }),
                   )
                 "
+                show-keterangan
               />
             </VExpansionPanelText>
           </VExpansionPanel>
