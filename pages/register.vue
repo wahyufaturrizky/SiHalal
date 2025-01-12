@@ -154,7 +154,7 @@ const onSubmit = async () => {
         phone_number: form.value.noHandphone,
         password: form.value.password,
         confirm_password: form.value.passwordConfirm,
-        code_country: selectedPhoneCode,
+        code_country: selectedPhoneCode.value,
       };
 
       const payloadcheck = {
@@ -432,10 +432,6 @@ onMounted(async () => {
                         item-value="cc"
                         item-title="name"
                         v-model="selectedPhoneCode"
-                        style="
-                          border-style: groove;
-                          border-radius: 10px 0 0 10px;
-                        "
                       >
                         <!-- Custom item slot -->
                         <template v-slot:item="{ props, item }">
