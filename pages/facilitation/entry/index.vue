@@ -1,120 +1,118 @@
 <script setup lang="ts">
-const items = ref()
-const itemPerPage = ref(10)
-const totalItems = ref(0)
-const loading = ref(false)
+const items = ref();
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const loading = ref(false);
 
-const page = ref(1)
-const searchQuery = ref('')
-const status = ref('OF1,OF10,OF5,OF2,OF290,OF15')
-const loadingAll = ref(true)
+const page = ref(1);
+const searchQuery = ref("");
+const status = ref("OF1,OF10,OF5,OF2,OF290,OF15");
+const loadingAll = ref(true);
 
-const defaultStatus = { color: 'error', desc: 'Unknown Status' }
+const defaultStatus = { color: "error", desc: "Unknown Status" };
 
 const statusItem: any = new Proxy(
   {
-    OF1: { color: 'grey-300', desc: 'Draft' },
-    OF10: { color: 'success', desc: 'Submitted' },
-    OF15: { color: 'success', desc: 'Verified' },
-    OF2: { color: 'error', desc: 'Returned' },
-    OF290: { color: 'error', desc: 'Rejected' },
-    OF5: { color: 'success', desc: 'Invoice issued' },
-    OF320: { color: 'success', desc: 'Code Issued' },
-    OF11: { color: 'success', desc: 'Verification' },
+    OF1: { color: "grey-300", desc: "Draft" },
+    OF10: { color: "success", desc: "Submitted" },
+    OF15: { color: "success", desc: "Verified" },
+    OF2: { color: "error", desc: "Returned" },
+    OF290: { color: "error", desc: "Rejected" },
+    OF5: { color: "success", desc: "Invoice issued" },
+    OF320: { color: "success", desc: "Code Issued" },
+    OF11: { color: "success", desc: "Verification" },
   },
   {
     get(target: any, prop: any) {
-      return prop in target ? target[prop] : defaultStatus
+      return prop in target ? target[prop] : defaultStatus;
     },
-  },
-)
+  }
+);
 
 const loadItem = async (
   page: number,
   size: number,
-  keyword: string = '',
-  status: string = '',
+  keyword: string = "",
+  status: string = ""
 ) => {
   try {
-    loading.value = true
+    loading.value = true;
 
-    const response = await $api('/facilitate/entry', {
-      method: 'get',
+    const response = await $api("/facilitate/entry", {
+      method: "get",
       params: {
         page,
         size,
         keyword,
         status,
       },
-    })
+    });
 
     if (response) {
-      items.value = response.data
-      totalItems.value = response.total_item
-      loading.value = false
+      items.value = response.data;
+      totalItems.value = response.total_item;
+      loading.value = false;
 
-      return response
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loading.value = false;
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-      loading.value = false
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    loading.value = false
-  }
-}
+};
 
-const debouncedFetch = debounce(loadItem, 500)
+const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
   const res = await Promise.all([
-    loadItem(1, itemPerPage.value, '', status.value),
-  ])
+    loadItem(1, itemPerPage.value, "", status.value),
+  ]);
 
-  const checkResIfUndefined = res.every(item => {
-    return item !== undefined
-  })
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
 
-  if (checkResIfUndefined)
-    loadingAll.value = false
-  else
-    loadingAll.value = false
-})
+  if (checkResIfUndefined) loadingAll.value = false;
+  else loadingAll.value = false;
+});
 
 const handleInput = () => {
   debouncedFetch(
     page.value,
     itemPerPage.value,
     searchQuery.value,
-    status.value,
-  )
-}
+    status.value
+  );
+};
 
 const tableHeader = [
-  { title: 'No', key: 'id' },
-  { title: 'Kode Fasilitasi', key: 'kode_fac' },
-  { title: 'Tahun', key: 'tahun' },
-  { title: 'Nama Fasilitasi', key: 'fac_name' },
-  { title: 'Sumber Pembiayaan', key: 'sumber_biaya_name' },
-  { title: 'Jenis', key: 'jenis' },
-  { title: 'Tanggal Aktif', key: 'tgl_selesai' },
-  { title: 'Tanggal Selesai', key: 'tgl_aktif' },
-  { title: 'Kuota', key: 'kuota' },
-  { title: 'Sisa', key: 'sisa' },
-  { title: 'Status', key: 'status_code' },
-  { title: 'Action', key: 'action' },
-]
+  { title: "No", key: "id" },
+  { title: "Kode Fasilitasi", key: "kode_fac" },
+  { title: "Tahun", key: "tahun" },
+  { title: "Nama Fasilitasi", key: "fac_name" },
+  { title: "Sumber Pembiayaan", key: "sumber_biaya_name" },
+  { title: "Jenis", key: "jenis" },
+  { title: "Tanggal Aktif", key: "tgl_selesai" },
+  { title: "Tanggal Selesai", key: "tgl_aktif" },
+  { title: "Kuota", key: "kuota" },
+  { title: "Sisa", key: "sisa" },
+  { title: "Status", key: "status_code" },
+  { title: "Action", key: "action" },
+];
 
 const navigateAction = (id: string) => {
-  navigateTo(`/facilitation/entry/${id}`)
-}
+  navigateTo(`/facilitation/entry/${id}`);
+};
 </script>
 
 <template>
   <VRow>
-    <VCol><h3>Entri Fasilitasi</h3></VCol>
+    <VCol>
+      <h2 style="font-size: 32px">Entri Fasilitasi</h2>
+    </VCol>
   </VRow>
   <VRow v-if="!loadingAll">
     <VCol>
@@ -130,10 +128,7 @@ const navigateAction = (id: string) => {
                 @input="handleInput"
               />
             </VCol>
-            <VCol
-              cols="6"
-              style="display: flex; justify-content: end;"
-            >
+            <VCol cols="6" style="display: flex; justify-content: end">
               <EntryFacilitateModal />
             </VCol>
           </VRow>

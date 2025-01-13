@@ -107,9 +107,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-container v-if="!loadingAll">
+  <div v-if="!loadingAll">
     <!-- <kembali-button class="pl-0" /> -->
-    <h3 class="text-h3">Cek Data Pengajuan PU</h3>
+    <h2 style="font-size: 32px">Cek Data Pengajuan PU</h2>
     <br />
 
     <v-card class="pa-4">
@@ -181,6 +181,6 @@ onMounted(async () => {
         </v-data-table>
       </v-card-item>
     </v-card>
-  </v-container>
+  </div>
   <VSkeletonLoader type="card" v-else />
 </template>

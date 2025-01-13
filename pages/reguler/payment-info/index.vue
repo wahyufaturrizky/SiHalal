@@ -107,7 +107,7 @@ onMounted(async () => {
   </div> -->
   <VRow no-gutters>
     <VCol>
-      <h1>Informasi Pembayaran</h1>
+      <h2 style="font-size: 32px">Informasi Pembayaran</h2>
     </VCol>
   </VRow>
   <VRow>

@@ -146,7 +146,7 @@ const handleConfirmDelete = async () => {
 <template>
   <VRow>
     <VCol>
-      <h1 class="mb-1 font-weight-bold">Image Authorization</h1>
+      <h1 style="font-size: 32px">Image Authorization</h1>
     </VCol>
   </VRow>
   <VRow>

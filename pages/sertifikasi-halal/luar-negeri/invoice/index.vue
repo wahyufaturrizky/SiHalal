@@ -71,7 +71,7 @@ const statusInvoice = {
 <template>
   <VRow>
     <VCol cols="12">
-      <h2>Invoice</h2>
+      <h2 style="font-size: 32px">Invoice</h2>
     </VCol>
   </VRow>
   <VRow>

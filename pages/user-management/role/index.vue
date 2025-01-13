@@ -165,9 +165,10 @@ onMounted(async () => {
       <VCol>
         <VRow>
           <VCol>
-            <h1 class="mb-1 font-weight-bold">Role</h1>
+            <h2 style="font-size: 32px">Role</h2>
           </VCol>
         </VRow>
+        <br />
         <VCard>
           <VCardItem>
             <VCardTitle

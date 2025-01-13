@@ -81,9 +81,9 @@ const handleInput = () => debouncedFetch(1, size.value, searchQuery.value);
 </script>
 
 <template>
-  <VContainer>
+  <div>
     <!-- <KembaliButton class="pl-0" /> -->
-    <h3 class="text-h3">Audit Pengajuan</h3>
+    <h2 style="font-size: 32px">Audit Pengajuan</h2>
     <br />
 
     <VCard class="pa-4">
@@ -149,7 +149,7 @@ const handleInput = () => debouncedFetch(1, size.value, searchQuery.value);
         </VDataTableServer>
       </VCardItem>
     </VCard>
-  </VContainer>
+  </div>
 </template>
 
 <style lang="scss" scoped>

@@ -212,7 +212,7 @@ watch(dataTable, () => {
   </div> -->
   <VRow no-gutters>
     <VCol>
-      <h1>Update Pemeriksaan</h1>
+      <h2 style="font-size: 32px">Update Pemeriksaan</h2>
     </VCol>
   </VRow>
   <VRow>

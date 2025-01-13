@@ -142,7 +142,7 @@ const handleConfirmDelete = async () => {
 <template>
   <VRow>
     <VCol>
-      <h1 class="mb-1 font-weight-bold">User</h1>
+      <h2 style="font-size: 32px">User</h2>
     </VCol>
   </VRow>
   <VRow>
@@ -183,7 +183,7 @@ const handleConfirmDelete = async () => {
             >
               <template #no-data>
                 <VCard variant="outlined" class="w-full mt-7 mb-5">
-                  <div class="pt-2" style="justify-items: center;">
+                  <div class="pt-2" style="justify-items: center">
                     <img
                       src="~/assets/images/empty-data.png"
                       alt="empty_data"

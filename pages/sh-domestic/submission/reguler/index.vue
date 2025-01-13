@@ -122,14 +122,14 @@ onMounted(async () => {
   <div v-if="loading">
     <VSkeletonLoader v-for="i in 1" :key="i" type="table" />
   </div>
-  <VContainer v-else-if="!loading">
+  <div v-else-if="!loading">
     <!-- <KembaliButton class="no-padding" /> -->
-    <h3 class="text-h3">Pengajuan Reguler</h3>
+    <h2 style="font-size: 32px">Pengajuan Reguler</h2>
     <br />
 
-    <VCard class="pa-4">
+    <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
-        <span class="text-h5 font-weight-bold">Daftar Pengajuan Reguler</span>
+        <h3 style="font-size: 24px">Daftar Pengajuan Reguler</h3>
         <NewRegulerSertificationHalalDialog
           :new-register="newRegister"
           :additional-register="additionalRegister"
@@ -191,7 +191,7 @@ onMounted(async () => {
         </VDataTable>
       </VCardItem>
     </VCard>
-  </VContainer>
+  </div>
 </template>
 
 <style lang="scss" scoped>

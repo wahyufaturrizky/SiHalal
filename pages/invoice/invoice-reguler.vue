@@ -219,7 +219,9 @@ const downloadExcel = async () => {
 
 <template>
   <VRow>
-    <VCol cols="12"><h2>Bukti Bayar Reguler</h2></VCol>
+    <VCol cols="12">
+      <h2 style="font-size: 32px">Bukti Bayar Reguler</h2>
+    </VCol>
   </VRow>
   <VRow>
     <VCol cols="12">

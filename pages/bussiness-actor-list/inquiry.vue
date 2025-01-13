@@ -141,9 +141,8 @@ const debouncedFetch = debounce(loadItem, 500);
 </script>
 
 <template>
-  <h1 class="mb-3">
-    <b> Inquiry </b>
-  </h1>
+  <h2 style="font-size: 32px">Inquiry</h2>
+  <br />
   <div v-if="!loadingAll">
     <InquiryFilter
       :itemsstatus="itemsStatus"

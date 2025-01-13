@@ -84,7 +84,8 @@ const handleSearch = (event: any) => {
 </script>
 
 <template>
-  <h2 class="mt-3">Pembatalan</h2>
+  <h2 style="font-size: 32px">Pembatalan</h2>
+  <br />
   <TabelCanceledFasilitasi
     v-if="!loadingAll"
     :page="page"
