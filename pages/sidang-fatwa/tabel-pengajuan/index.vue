@@ -71,7 +71,7 @@ onMounted(async () => {
 });
 
 const verifikatorTableHeader = [
-  { title: "No", key: "id" },
+  { title: "No", key: "no" },
   { title: "Nomor Daftar", key: "no_daftar" },
   { title: "Tanggal Daftar", key: "tgl_daftar" },
   { title: "Nama PU", key: "nama_pu" },
