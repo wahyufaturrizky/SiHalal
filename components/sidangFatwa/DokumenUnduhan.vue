@@ -6,6 +6,8 @@ const props = defineProps({
 });
 
 const { detaildata } = props || {};
+console.log("@detaildata", detaildata);
+
 const { dokumen } = detaildata || {};
 const { file_kh, file_laporan_lph } = dokumen || {};
 
@@ -33,7 +35,7 @@ const panelOpen = ref(0); // Menentukan panel yang terbuka
               color="primary"
               variant="flat"
               icon="mdi-download"
-              @click="downloadDocument(file_laporan_lph)"
+              @click="downloadDocument(file_kh)"
               :disabled="!file_kh"
             />
           </VCol>
@@ -50,7 +52,7 @@ const panelOpen = ref(0); // Menentukan panel yang terbuka
               color="primary"
               variant="flat"
               icon="mdi-download"
-              @click="downloadDocument(file_kh)"
+              @click="downloadDocument(file_laporan_lph)"
               :disabled="!file_laporan_lph"
             />
           </VCol>
