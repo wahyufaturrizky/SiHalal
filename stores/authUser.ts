@@ -7,7 +7,6 @@ export const useMyAuthUserStore = defineStore("myAuthUserStore", () => {
   async function getSession() {
     if (user.value == null) {
       user.value = await auth.getSession();
-      console.log(user.value, "ini value");
     }
     return user;
   }
