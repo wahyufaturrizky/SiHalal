@@ -305,8 +305,26 @@ const getDetail = async () => {
     loading.value = false;
   }
 };
+const sttdData = ref("");
+const getSttd = async () => {
+  try {
+    const response = await $api("/reguler/verifikator/detail/sttd", {
+      method: "get",
+      params: {
+        id: route.params.id,
+      },
+    });
+    if (response.code != 2000) {
+      return;
+    }
+    sttdData.value = response.data.file;
+  } catch (error) {
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+  }
+};
 onMounted(async () => {
   await getDetail();
+  await getSttd();
 });
 </script>
 
@@ -452,6 +470,8 @@ onMounted(async () => {
                       class="rounded"
                       variant="flat"
                       density="compact"
+                      @click="downloadDocument(sttdData)"
+                      :disabled="sttdData == ''"
                     />
                   </VCol>
                 </VRow>
