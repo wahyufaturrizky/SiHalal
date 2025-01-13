@@ -1,74 +1,5 @@
 // // title ambil dari locales
-// let menuList: any[] = [];
-// let storedData: string | null = null;
-//
-// if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
-//   storedData = localStorage.getItem("authUser");
-// }
-// // const storedData = "";
-// if (storedData) {
-//   try {
-//     const userData: SessionData = JSON.parse(storedData);
-//     console.log(userData, " data dari vertikal");
-//
-//     menuList = userData.roles.map((el) => {
-//       return {
-//         title: el.name,
-//         icon: { icon: "ri-more-line" },
-//         roles: [`${el.name}`],
-//         children: el.permissions.map((el2) => {
-//           if (el2.group === "api") {
-//             return {};
-//           } else if (el2.group === "heading") {
-//             return {
-//               heading: el2.name,
-//               roles: [`${el.name}`],
-//             };
-//           } else if (el2.group === "web") {
-//             return {
-//               title: el2.name,
-//               to: el2.url,
-//               icon: { icon: "mdi-card-account-details-outline" },
-//               roles: [`${el.name}`],
-//             };
-//           }
-//         }),
-//       };
-//     });
-//     console.log(menuList, "menuList");
-//
-//     // let object = {
-//     //   title: userData.roles[0].name,
-//     //   icon: { icon: "ri-more-line" },
-//     //   roles: ["role1"],
-//     //   children: [
-//     //     {
-//     //       heading: "navbar.halal_cert_submission.title",
-//     //       roles: ["Pendamping", "Admin"],
-//     //     },
-//     //     {
-//     //       title: "navbar.facilitate_registration.menu.entry",
-//     //       to: "user-management-role",
-//     //       icon: { icon: "mdi-card-account-details-outline" },
-//     //       roles: ["role1"],
-//     //     },
-//     //     {
-//     //       title: "navbar.facilitate_registration.menu.entry",
-//     //       to: "user-management-role",
-//     //       icon: { icon: "mdi-card-account-details-outline" },
-//     //       roles: ["role1"],
-//     //     },
-//     //   ],
-//     // };
-//   } catch (error) {
-//     console.error("Error parsing JSON from localStorage", error);
-//   }
-// } else {
-//   console.log("No data found in localStorage for key 'authUser'");
-// }
 
-const toPath = (str) =>
-  (str.charAt(0) === "/" ? str.substring(1) : str).replace(/\//g, "-");
 const userStore = useMyAuthUserStore();
 
 const menuList = [
@@ -115,7 +46,6 @@ const menuList = [
     to: "pelaku-usaha",
     roles: ["Pelaku Usaha", "Admin"],
   },
-
   //Pendaftar
   { heading: "navbar.applicant.title", roles: ["Fasilitator", "Admin"] },
   {
@@ -124,7 +54,6 @@ const menuList = [
     icon: { icon: "mdi-account" },
     roles: ["Fasilitator", "Admin"],
   },
-
   //Facilitate Registration
   {
     heading: "navbar.facilitate_registration.title",
@@ -142,7 +71,6 @@ const menuList = [
     icon: { icon: "mdi-list-box-outline" },
     roles: ["Fasilitator", "Admin"],
   },
-
   //Daftar Pelaku Usaha
   { heading: "navbar.list_ba.title", roles: ["Fasilitator", "Admin"] },
   {
@@ -157,7 +85,6 @@ const menuList = [
     icon: { icon: "mdi-calendar-remove-outline" },
     roles: ["Fasilitator", "Admin"],
   },
-
   //Invoice
   {
     heading: "navbar.invoice.title",
@@ -187,7 +114,6 @@ const menuList = [
     icon: { icon: "mdi-invoice-text-outline" },
     roles: ["Keuangan", "Admin"],
   },
-
   //pengajuan sh
   { heading: "navbar.sh_registration.title", roles: ["Pelaku Usaha", "Admin"] },
   {
@@ -214,7 +140,6 @@ const menuList = [
     to: "sh-domestic-bill",
     roles: ["Pelaku Usaha", "Admin"],
   },
-
   //SH LUAR NEGERI
   {
     heading: "navbar.shln.title",
@@ -237,7 +162,6 @@ const menuList = [
     to: "sertifikasi-halal-luar-negeri-verification",
     roles: ["Verifikator HLN", "Admin"],
   },
-
   // ONLINE REGISTRATION
   {
     heading: "navbar.online_registration.title",
@@ -272,7 +196,6 @@ const menuList = [
     to: "online-registration-verifikasi-reguler",
     roles: ["Verifikator Reguler", "Admin"],
   },
-
   //SERTIFIKASI HALAL
   {
     heading: "navbar.halal_cert_submission.title",
@@ -290,7 +213,6 @@ const menuList = [
     to: "pengajuan-verval-pendamping",
     roles: ["Pendamping", "Admin"],
   },
-
   //PROSES DI LPH
   {
     heading: "navbar.process_on_lph.title",
@@ -326,7 +248,6 @@ const menuList = [
     to: "reguler-post-audit",
     roles: ["Lembaga Pemeriksa Halal", "Admin"],
   },
-
   //Data Pengajuan Pelaku Usaha
   {
     heading: "navbar.data_pu_submission.title",
@@ -338,7 +259,6 @@ const menuList = [
     to: "audit-pengajuan",
     roles: ["Auditor", "Admin"],
   },
-
   //SIDANG FATWA
   {
     heading: "navbar.sidang_fatwa.title",
@@ -356,7 +276,6 @@ const menuList = [
     to: "sidang-fatwa-entri-ketetapan-halal",
     roles: ["Komisi Fatwa", "Admin"],
   },
-
   //Self Declare
   {
     heading: "navbar.self_declare.title",
@@ -415,42 +334,54 @@ const menuList = [
     to: "administrator-image-auth",
     roles: ["Admin"],
   },
-  {
-    title: "navbar.facilitate_registration.menu.entry",
-    to: "user-management-role",
-    icon: { icon: "mdi-card-account-details-outline" },
-    roles: ["role1"],
-  },
-  {
-    title: "navbar.facilitate_registration.menu.entry",
-    to: "user-management-role",
-    icon: { icon: "mdi-card-account-details-outline" },
-    roles: ["role1"],
-  },
 ];
 
 const heading = [];
 const child = [];
-const role = userStore.user.roles.map((i) => i.name);
 
-userStore.user.roles.forEach((role) => {
-  heading.push(...role.permissions.filter((i) => i.group === "heading"));
-  child.push(...role.permissions.filter((i) => i.group === "web"));
-});
+const role = userStore.user.roles[0].name;
+const toPath = (str) =>
+  (str.charAt(0) === "/" ? str.substring(1) : str).replace(/\//g, "-");
 
-heading.forEach((i) => {
-  menuList.push({ heading: i.name, roles: [...role] });
-  child
-    .filter((j) => j.parent_id === i.id)
-    .forEach((k) => {
+userStore.user.roles[0].permissions.forEach((index) => {
+  if (index.group === "heading") {
+    menuList.push({
+      heading: index.name,
+      roles: [role],
+    });
+  }
+  if (index.child.length >= 1) {
+    index.child.forEach((j) => {
       menuList.push({
-        title: k.name,
-        icon: { icon: "...." },
-        to: toPath(k.url),
-        roles: role,
+        title: j.name,
+        to: toPath(j.url),
+        icon: { icon: j.icon },
+        roles: [role],
       });
     });
+  }
 });
+
+// const role = userStore.user.roles.map((i) => i.name);
+
+// userStore.user.roles.forEach((role) => {
+//   heading.push(...role.permissions.filter((i) => i.group === "heading"));
+//   child.push(...role.permissions.filter((i) => i.group === "web"));
+// });
+
+// heading.forEach((i) => {
+//   menuList.push({ heading: i.name, roles: [...role] });
+//   child
+//     .filter((j) => j.parent_id === i.id)
+//     .forEach((k) => {
+//       menuList.push({
+//         title: k.name,
+//         icon: { icon: "...." },
+//         to: toPath(k.url),
+//         roles: role,
+//       });
+//     });
+// });
 export default menuList;
 
 // export default [
