@@ -191,7 +191,7 @@ const refresh = async () => {
 };
 
 const verifikatorTableHeader = [
-  { title: "No", key: "id" },
+  { title: "No", key: "no" },
   { title: "Nomor Daftar", key: "no_daftar", nowrap: true },
   { title: "Tanggal Daftar", key: "tgl_daftar", nowrap: true },
   { title: "Nama PU", key: "nama_pu" },
@@ -362,7 +362,7 @@ const reset = () => {
             loading-text="Loading..."
             @update:options="loadItem(page, itemPerPage, searchQuery)"
           >
-            <template #item.id="{ index }">
+            <template #item.no="{ index }">
               {{ index + 1 + (page - 1) * itemPerPage }}
             </template>
             <!--
