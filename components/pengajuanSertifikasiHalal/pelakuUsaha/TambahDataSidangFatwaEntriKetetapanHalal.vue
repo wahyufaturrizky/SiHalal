@@ -90,9 +90,13 @@ const addDataPenyeliaHalal = async () => {
 
     const { dokumen } = formData.value;
 
-    const fileSpph = await uploadDocument(dokumen);
-    if (fileSpph.code !== 2000) {
-      return;
+    let fileSpph;
+
+    if (dokumen) {
+      fileSpph = await uploadDocument(dokumen);
+      if (fileSpph.code !== 2000) {
+        return;
+      }
     }
 
     const res: any = await $api(
@@ -101,7 +105,7 @@ const addDataPenyeliaHalal = async () => {
         method: "put",
         body: {
           ...formData.value,
-          dokumen: fileSpph.data.file_url,
+          dokumen: fileSpph?.data?.file_url || "",
         },
       }
     );
