@@ -10,7 +10,7 @@ const props = defineProps({
 const { isviewonly } = props || {};
 
 const route = useRoute();
-const id = route.params.id;
+const id = (route.params as any).id;
 const addDialog = ref(false);
 const confirmSaveDialog = ref(false);
 const loadingAll = ref(true);
@@ -27,7 +27,7 @@ const emptyFormTtd = {
   id: null,
 };
 
-const resetFormEditTtd = () => (formEdit.value = emptyFormTtd);
+const formAddTtd = ref(emptyFormTtd);
 
 const uploadedFileTTdPj = ref({
   name: "",
@@ -50,11 +50,6 @@ const formDokumenLainnya = ref({
   file_dok: "",
   id: null,
 });
-
-const documentList = ref([
-  { nama: "Izin Edar", fileName: "Surat Izin Usaha.pdf", file: null },
-  { nama: "Izin Masuk", fileName: "", file: null },
-]);
 
 const ttdData = ref({
   label: [
@@ -216,33 +211,33 @@ const uploadFile = async (file) => {
   return response;
 };
 
-// const deleteTtd = async (item) => {
-//   try {
-//     const response = await $api(
-//       "/reguler/pelaku-usaha/tab-evaluasi/delete-ttd",
-//       {
-//         method: "delete",
-//         query: { id, docId: item.id_reg_ttd },
-//       }
-//     );
-//
-//     if (response.code === 2000) {
-//       useSnackbar().sendSnackbar("Sukses menghapus data", "success");
-//       uploadedFileTTdPj.value = {
-//         name: "",
-//         file: null,
-//       };
-//       uploadedFileTTdPh.value = {
-//         name: "",
-//         file: null,
-//       };
-//       await getTtd();
-//       await getListPenyelia();
-//     }
-//   } catch (error) {
-//     console.log("ERROR : ", error);
-//   }
-// };
+const deleteTtd = async (item) => {
+  try {
+    const response = await $api(
+      "/reguler/pelaku-usaha/tab-evaluasi/delete-ttd",
+      {
+        method: "delete",
+        query: { id, docId: item.id_reg_ttd },
+      }
+    );
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar("Sukses menghapus data", "success");
+      uploadedFileTTdPj.value = {
+        name: "",
+        file: null,
+      };
+      uploadedFileTTdPh.value = {
+        name: "",
+        file: null,
+      };
+      await getTtd();
+      await getListPenyelia();
+    }
+  } catch (error) {
+    console.log("ERROR : ", error);
+  }
+};
 
 const addTtd = async () => {
   try {
