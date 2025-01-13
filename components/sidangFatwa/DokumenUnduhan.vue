@@ -6,7 +6,6 @@ const props = defineProps({
 });
 
 const { detaildata } = props || {};
-console.log("@detaildata", detaildata);
 
 const { dokumen } = detaildata || {};
 const { file_kh, file_laporan_lph } = dokumen || {};
