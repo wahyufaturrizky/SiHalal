@@ -5,6 +5,9 @@ import { ref } from "vue";
 const snackbar = useSnackbar();
 const panelOpen = ref(0);
 
+const addPabrikRef = ref();
+const editPabrikRef = ref();
+
 const tablePabrikHeader = [
   { title: "No", key: "no" },
   { title: "Nama", key: "name" },
@@ -44,6 +47,9 @@ function handleEdit(item, idPabrik) {
         // store.updateFactory(item.id, item);
         store.fetchProfile();
         snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+        editPabrikRef.value.hideErrorProhbName();
+      } else if (val.code == 4007) {
+        editPabrikRef.value.showErrorProhbName();
       } else {
         snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
       }
@@ -98,6 +104,9 @@ const handleAddAspekLegalConfirm = (formData) => {
       if (val.code == 2000) {
         store.fetchProfile();
         snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+        addPabrikRef.value.hideErrorProhbName();
+      } else if (val.code == 4007) {
+        addPabrikRef.value.showErrorProhbName();
       } else {
         snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
       }
@@ -122,6 +131,7 @@ const initialDataForEdit = (item: any) => ({
         </VCol>
         <VCol cols="6" style="display: flex; justify-content: end">
           <DataPabrikModal
+            ref="addPabrikRef"
             mode="add"
             @confirm-add="handleAddAspekLegalConfirm"
             @cancel="() => console.log('Add cancelled')"
@@ -152,6 +162,7 @@ const initialDataForEdit = (item: any) => ({
                   <!-- <VIcon class="mr-2"> mdi-pencil </VIcon>
                     Ubah -->
                   <DataPabrikModal
+                    ref="editPabrikRef"
                     mode="edit"
                     :initial-data="initialDataForEdit(item)"
                     @confirm-edit="handleEdit"

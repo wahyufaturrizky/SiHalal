@@ -66,6 +66,11 @@
                   required
                   class="input-field"
                 />
+                <br />
+                <span v-if="errorProhibitedName" class="error-text">
+                  <VIcon icon="mdi-alert-circle" color="error" size="small" />
+                  Maaf, Anda menggunakan kata dilarang!
+                </span>
               </VCol>
             </VRow>
 
@@ -84,19 +89,9 @@
               </VCol>
             </VRow>
 
-            <VRow class="mb-1">
-              <VCol cols="6" class="ps-1">
+            <VRow class="mb-1" v-if="form.lokasiPabrik == 'Dalam Negeri'">
+              <VCol cols="6">
                 <VLabel>Provinsi</VLabel>
-                <VTextField
-                  :rules="[requiredValidator]"
-                  v-model="form.provinsi"
-                  placeholder="Isi Provinsi"
-                  outlined
-                  dense
-                  required
-                  class="input-field"
-                  v-if="form.lokasiPabrik == 'Luar Negeri'"
-                />
                 <VAutocomplete
                   v-model="form.provinsi"
                   v-on:update:model-value="getDistrict"
@@ -109,20 +104,10 @@
                   dense
                   required
                   class="input-field"
-                  v-if="form.lokasiPabrik == 'Dalam Negeri'"
                 />
               </VCol>
-              <VCol cols="6" class="pe-1">
+              <VCol cols="6">
                 <VLabel>Kab/Kota</VLabel>
-                <VTextField
-                  v-model="form.kabKota"
-                  placeholder="Isi Kab/Kota"
-                  outlined
-                  dense
-                  required
-                  class="input-field"
-                  v-if="form.lokasiPabrik == 'Luar Negeri'"
-                />
                 <VAutocomplete
                   :rules="[requiredValidator]"
                   v-model="form.kabKota"
@@ -134,7 +119,31 @@
                   dense
                   required
                   class="input-field"
-                  v-if="form.lokasiPabrik == 'Dalam Negeri'"
+                />
+              </VCol>
+            </VRow>
+            <VRow class="mb-1" v-if="form.lokasiPabrik == 'Luar Negeri'">
+              <VCol cols="6">
+                <VLabel>Provinsi</VLabel>
+                <VTextField
+                  :rules="[requiredValidator]"
+                  v-model="form.provinsi"
+                  placeholder="Isi Provinsi"
+                  outlined
+                  dense
+                  required
+                  class="input-field"
+                />
+              </VCol>
+              <VCol cols="6">
+                <VLabel>Kab/Kota</VLabel>
+                <VTextField
+                  v-model="form.kabKota"
+                  placeholder="Isi Kab/Kota"
+                  outlined
+                  dense
+                  required
+                  class="input-field"
                 />
               </VCol>
             </VRow>
@@ -213,6 +222,16 @@ const props = defineProps({
   initialData: { type: Object, default: () => ({}) },
 });
 
+const errorProhibitedName = ref(false);
+const showErrorProhbName = () => {
+  errorProhibitedName.value = true;
+};
+const hideErrorProhbName = () => {
+  errorProhibitedName.value = false;
+};
+
+defineExpose({ showErrorProhbName, hideErrorProhbName });
+
 const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
 
 const isVisible = ref(false);
@@ -230,6 +249,11 @@ const convertstfas = async (code: string) => {
 const openDialog = async () => {
   if (props.mode == "add") {
     resetForm();
+  }
+
+  form.value.lokasiPabrik = "Dalam Negeri";
+  if (form.value.negara?.toLowerCase() != "indonesia") {
+    form.value.lokasiPabrik = "Luar Negeri";
   }
 
   await getProvince();
@@ -250,7 +274,7 @@ const confirm = () => {
     pabrikFormRef.value?.validate().then(({ valid: isValid }) => {
       if (isValid) {
         emit("confirmAdd", form.value);
-        closeDialog();
+        // closeDialog();
       }
     });
   } else {
@@ -258,7 +282,7 @@ const confirm = () => {
       if (isValid) {
         console.log("form edited = ", form.value);
         emit("confirmEdit", form.value, selectedIdPabrik.value);
-        closeDialog();
+        // closeDialog();
       }
     });
   }
