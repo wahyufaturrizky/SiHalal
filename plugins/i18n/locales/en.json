@@ -108,7 +108,8 @@
       "menu": {
         "user": "User",
         "role": "Role",
-        "image": "Image Authorization"
+        "image": "Image Authorization",
+        "announcement": "Announcement"
       }
     }
   },
