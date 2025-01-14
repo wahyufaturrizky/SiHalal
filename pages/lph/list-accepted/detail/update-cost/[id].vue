@@ -498,6 +498,26 @@ const onDeletePesawat = async (el: any) => {
   }
 };
 
+const onDeletePenetapanBiayaAuditLuarNegeri = async (el: any) => {
+  try {
+    const response: any = await $api("/reguler/lph/update-cost/delete-biaya", {
+      method: "delete",
+      body: {
+        id,
+        idPesawat: el.id_pabrik,
+      },
+    });
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar("Berhasil hapus biaya pesawat", "success");
+      getDetailBiaya();
+      getLovPabrik();
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
 onMounted(async () => {
   loading.value = true;
   await Promise.allSettled([getDetailBiaya(), getLovPabrik()]);
@@ -764,6 +784,15 @@ onMounted(async () => {
                             }
                           "
                         />
+                        <div class="pr-4">
+                          <DialogDeletePenetapanBiayaAuditLuarNegeri
+                            :on-delete="
+                              () => onDeletePenetapanBiayaAuditLuarNegeri(item)
+                            "
+                            title="Penetapan Biaya Audit untuk Fasilitas Produksi di Luar Negeri"
+                            button-text="Hapus"
+                          />
+                        </div>
                       </VList>
                     </VMenu>
                   </td>
