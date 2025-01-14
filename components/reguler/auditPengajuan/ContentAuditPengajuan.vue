@@ -21,6 +21,10 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+  withUploadButton: {
+    type: Boolean,
+    required: true,
+  },
   opsiBahan: {
     type: Array,
     required: false,
@@ -35,6 +39,8 @@ const props = defineProps({
   },
 })
 
+const route = useRoute()
+const id = route?.params?.id
 const emit = defineEmits()
 
 const emptyBahan = {
@@ -60,6 +66,9 @@ const addKriteria = ref(emptyKriteria)
 
 const updateBahanData = ref(props.bahanData)
 
+const file = ref(null);
+
+
 const submitData = () => {
   if (props.title === 'Bahan'){
     emit('submit', bahanData)
@@ -75,6 +84,10 @@ const submitData = () => {
   }
 }
 
+const uploadBahan = () => {
+  emit('upload', file)
+}
+
 const updateBahan = items => {
   emit('update', items)
 }
@@ -82,6 +95,66 @@ const updateBahan = items => {
 const remove = items => {
   emit('remove', items)
 }
+
+const downloadButton = ref(false)
+
+const enableDownloadButton = () => {
+  setTimeout(()=>{
+    downloadButton.value = false
+  }, 1000)
+}
+
+const disableDownloadButton = () => {
+  downloadButton.value = true
+}
+
+
+const handleDownloadV2 = async (filename: string) => {
+  try {
+    const response = await $api("/shln/submission/document/download", {
+      method: "post",
+      body: {
+        filename: filename,
+      },
+    });
+
+    if (response.url)
+      window.open(response.url, "_blank", "noopener,noreferrer");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+const downloadBahanDukung = async () => {
+  disableDownloadButton()
+  try {
+    const response = await $api(
+      `/reguler/auditor/${id}/download-bahan`,
+      {
+        method: 'get',
+      },
+    )
+
+    if (response.code === 2000) {
+      enableDownloadButton()
+      await handleDownloadV2(response.data)
+      return
+    }
+    else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(', '),
+        'error',
+      )
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    enableDownloadButton()
+  }
+  enableDownloadButton()
+}
+
 </script>
 
 <template>
@@ -98,6 +171,32 @@ const remove = items => {
             v-if="withAddButton"
             class="d-flex justify-end align-center ga-2"
           >
+            <DialogAuditPengajuan
+              v-if="title === 'Bahan'"
+              title="Upload Bahan"
+              button-text="Upload"
+              @submit="uploadBahan"
+            >
+              <template #content>
+                <VRow>
+                  <VCol cols="12" md="6">
+                    <VLabel > Download List Bahan Dukung </VLabel>
+                  </VCol>
+                  <VCol cols="12" md="6">
+                    <VBtn :disabled="downloadButton" @click="downloadBahanDukung">Download</VBtn>
+                  </VCol>
+                </VRow>
+                <br />
+                <VRow>
+                  <VCol cols="12" md="6">
+                    <VLabel > Upload </VLabel>
+                  </VCol>
+                  <VCol cols="12" md="6">
+                    <HalalFileInput v-model="file" label="Pilih File" />
+                  </VCol>
+                </VRow>
+              </template>
+            </DialogAuditPengajuan>
             <DialogAuditPengajuan
               v-if="title === 'Bahan'"
               title="Tambah Bahan"

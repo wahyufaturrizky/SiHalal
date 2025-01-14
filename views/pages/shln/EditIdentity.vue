@@ -58,7 +58,19 @@ const parseISO = (date: Date) => {
     date.getSeconds()
   ).padStart(2, "0")}Z`;
 };
+function isValidddmmyyy(dateString) {
+  // Regular expression to match 'dd-mm-yyyy' format
+  const datePattern = /^\d{2}-\d{2}-\d{4}$/;
+
+  // Test the string against the pattern
+  return datePattern.test(dateString);
+}
 const formatToISO = (isoDate: string) => {
+  if (isValidddmmyyy(isoDate)) {
+    const [day, month, year] = isoDate.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.toISOString();
+  }
   const date = new Date(isoDate);
   return date.toISOString();
 };
@@ -158,12 +170,12 @@ const saveImporterPOC = async () => {
 const refImporterForm = ref<VForm>();
 const openImporterDialog = () => {
   refImporterForm.value?.validate().then(({ valid: isValid }) => {
-    console.log(isValid);
     if (isValid) importerDialog.value = true;
   });
 };
 const saveImporter = async () => {
   importerPOCButton.value = true;
+
   try {
     const response = await $api("/shln/submission/identity/importer", {
       method: "put",
@@ -282,9 +294,7 @@ onMounted(async () => {
     await getSubDistrict(props.event.profile.regency);
 });
 
-const saveForm = () => {
-  // console.log("Form saved", form.value);
-};
+const saveForm = () => {};
 const now = new Date();
 const currentMonth = now.toLocaleString("default", { month: "2-digit" });
 const currentYear = now.getFullYear();

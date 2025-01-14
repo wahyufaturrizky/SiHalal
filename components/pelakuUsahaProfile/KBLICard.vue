@@ -72,19 +72,36 @@ onMounted(async () => {
 
         <VRow>
           <VCol cols="12">
-            <BasicDataPopup parent-btn-label="Lihat Data">
-              <template #content>
-                <VRow style="max-height: 60svh; overflow-y: auto">
-                  <VCol cols="12">
+            <VDialog max-width="800">
+              <template #activator="{ props: openModal }">
+                <VBtn variant="outlined" style="width: 100%" v-bind="openModal"
+                  >Lihat Data</VBtn
+                >
+              </template>
+              <template #default="{ isActive }">
+                <VCard>
+                  <VCardTitle style="padding: 3svh">
+                    <VRow>
+                      <VCol cols="10"><h3>Lihat Data KBLI</h3></VCol>
+                      <VCol cols="2" style="display: flex; justify-content: end"
+                        ><VIcon
+                          size="small"
+                          @click="isActive.value = false"
+                          icon="fa-times"
+                        ></VIcon
+                      ></VCol>
+                    </VRow>
+                  </VCardTitle>
+                  <VCardItem>
                     <VDataTable :headers="tableKBLIHeader" :items="store.kbli">
                       <template #item.no_idx="{ index }">
                         {{ index + 1 }}
                       </template>
                     </VDataTable>
-                  </VCol>
-                </VRow>
+                  </VCardItem>
+                </VCard>
               </template>
-            </BasicDataPopup>
+            </VDialog>
           </VCol>
         </VRow>
       </VExpansionPanelText>

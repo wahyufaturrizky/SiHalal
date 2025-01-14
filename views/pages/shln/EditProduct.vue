@@ -302,12 +302,22 @@ const formatItemTitle = (item) => {
       <VCol cols="12" md="8">
         <v-card>
           <v-card-text>
-            <VRow>
+            <VRow class="justify-space-between">
               <VCol cols="12" md="2">
                 <h3 class="text-h4">Product</h3>
               </VCol>
+              <VCol cols="12" md="2">
+                <v-btn
+                  color="primary"
+                  variant="outlined"
+                  block
+                  class="ma-1"
+                  @click="addProduct"
+                  >Tambah <v-icon end icon="fa-plus" />
+                </v-btn>
+              </VCol>
             </VRow>
-            <VRow class="justify-beetwen">
+            <!-- <VRow class="justify-end">
               <VCol
                 cols="12"
                 md="4"
@@ -345,7 +355,7 @@ const formatItemTitle = (item) => {
                   </VCol>
                 </VRow>
               </VCol>
-            </VRow>
+            </VRow> -->
             <VRow>
               <v-data-table-server
                 v-model:items-per-page="itemPerPage"

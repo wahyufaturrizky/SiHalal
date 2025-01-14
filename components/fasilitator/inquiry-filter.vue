@@ -82,9 +82,9 @@ const viewResults = () => {
         <VCol cols="12" sm="4">
           <VTextField v-model="form.nama_pu" label="Nama Pelaku Usaha" />
         </VCol>
-        <VCol cols="12" sm="4">
+        <!-- <VCol cols="12" sm="4">
           <VTextField v-model="form.merek_dagang" label="Merek Dagang" />
-        </VCol>
+        </VCol> -->
         <VCol cols="12" sm="4">
           <VSelect
             v-model="form.status"

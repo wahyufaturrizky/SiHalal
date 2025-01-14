@@ -115,7 +115,14 @@ const skReadyHandler = (blob) => {
                         label="Nama"
                         outlined
                         dense
-                        :rules="[requiredValidator, nameValidator]"
+                        :rules="[
+                          requiredValidator,
+                          regexValidator(
+                            formData.nameResponsible,
+                            /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
+                            'Format nama penanggung jawab tidak sesuai'
+                          ),
+                        ]"
                       />
                     </VCol>
                   </VRow>

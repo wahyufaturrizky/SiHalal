@@ -9,11 +9,20 @@ const props = defineProps({
   initialData: { type: Object, default: () => ({}) },
 });
 
+const errorProhibitedName = ref(false);
+const showErrorProhbName = () => {
+  errorProhibitedName.value = true;
+};
+const hideErrorProhbName = () => {
+  errorProhibitedName.value = false;
+};
+
 const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
 
 const isVisible = ref(false);
 
 const openDialog = async () => {
+  hideErrorProhbName();
   if (props.mode == "add") resetForm();
 
   await getProvince();
@@ -35,7 +44,7 @@ const confirm = () => {
   vformref.value?.validate().then(({ valid: isValid }) => {
     if (isValid) {
       emit(whichEmit, form.value, selectedIdOutlet.value);
-      closeDialog();
+      // closeDialog();
     }
   });
 };
@@ -108,9 +117,7 @@ watch(
       form.value.kodePos = newData.postal_code;
 
       getDistrict(newData.province_code).then((val) => {
-        form.value.kabKota = kabKotaOptions.value.filter(
-          (resp) => resp.code == newData.city_code
-        )[0]?.name;
+        form.value.kabKota = newData.city_code;
       });
 
       selectedIdOutlet.value = newData.id;
@@ -118,6 +125,8 @@ watch(
   },
   { immediate: true }
 );
+
+defineExpose({ showErrorProhbName, hideErrorProhbName, closeDialog });
 </script>
 
 <template>
@@ -170,7 +179,12 @@ watch(
                 required
                 class="mb-2"
               />
+              <span v-if="errorProhibitedName" class="error-text">
+                <VIcon icon="mdi-alert-circle" color="error" size="small" />
+                Maaf, Anda menggunakan kata dilarang!
+              </span>
             </VItemGroup>
+            <br />
             <VItemGroup>
               <VLabel>Alamat Outlet</VLabel>
               <VTextField
@@ -182,7 +196,7 @@ watch(
                 class="mb-2"
               />
             </VItemGroup>
-
+            <br />
             <VRow no-gutters class="mb-2">
               <VCol cols="5">
                 <VItemGroup>
@@ -219,7 +233,7 @@ watch(
                 </VItemGroup>
               </VCol>
             </VRow>
-
+            <br />
             <VRow no-gutters>
               <VCol cols="5" class="me-2">
                 <VItemGroup>
