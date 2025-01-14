@@ -836,14 +836,7 @@ onMounted(async () => {
 
           <br>
           <VExpansionPanels v-model="panelTracking">
-            <VExpansionPanel class="pa-4">
-              <VExpansionPanelTitle class="text-h4">
-                Melacak
-              </VExpansionPanelTitle>
-              <VExpansionPanelText class="d-flex align-center">
-                <HalalTimeLine :event="data?.tracking?.map(i => ({ status: statusItemFacilitator[i.status].desc, username: i.username, comment: i.comment, created_at: i.tanggal }))" />
-              </VExpansionPanelText>
-            </VExpansionPanel>
+            <PanelTracking :data="data?.tracking" />
           </VExpansionPanels>
         </VCol>
       </VRow>
