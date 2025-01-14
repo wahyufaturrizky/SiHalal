@@ -8,6 +8,9 @@ const props = defineProps({
   },
 });
 
+const addOutletRef = ref();
+const editOutletRef = ref();
+
 const panelOpen = ref(0);
 
 const tableOutletHeader = [
@@ -42,6 +45,10 @@ const handleAddAspekLegalConfirm = (formData) => {
     if (val.code == 2000) {
       store.fetchProfile();
       snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+      addOutletRef.value.hideErrorProhbName();
+      addOutletRef.value.closeDialog();
+    } else if (val.code == 4007) {
+      addOutletRef.value.showErrorProhbName();
     } else {
       snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
     }
@@ -68,6 +75,10 @@ const handleEditOutletConfirm = (formData, id_outlet) => {
       if (val.code == 2000) {
         store.fetchProfile();
         snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
+        editOutletRef.value.hideErrorProhbName();
+        editOutletRef.value.closeDialog();
+      } else if (val.code == 4007) {
+        editOutletRef.value.showErrorProhbName();
       } else {
         snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
       }
@@ -113,6 +124,7 @@ function handleDelete(item) {
           style="display: flex; align-items: center; justify-content: end"
         >
           <DataOuletModal
+            ref="addOutletRef"
             mode="add"
             @confirm-add="handleAddAspekLegalConfirm"
             @cancel="() => console.log('Add cancelled')"
@@ -141,6 +153,7 @@ function handleDelete(item) {
                 <!-- <FormEditOutlet :initial-data="item" /> -->
 
                 <DataOuletModal
+                  ref="editOutletRef"
                   mode="edit"
                   :initial-data="item"
                   @confirm-edit="handleEditOutletConfirm"

@@ -230,8 +230,6 @@ const hideErrorProhbName = () => {
   errorProhibitedName.value = false;
 };
 
-defineExpose({ showErrorProhbName, hideErrorProhbName });
-
 const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
 
 const isVisible = ref(false);
@@ -247,6 +245,7 @@ const convertstfas = async (code: string) => {
 };
 
 const openDialog = async () => {
+  errorProhibitedName.value = false;
   if (props.mode == "add") {
     resetForm();
   }
@@ -370,12 +369,15 @@ watch(
           // form.value = { ...val.data };
           form.value.namaPabrik = val.data.name;
           form.value.alamatPabrik = val.data.address;
-          form.value.kabKota = val.data.city;
           form.value.provinsi = val.data.province;
           form.value.negara = val.data.country;
           form.value.kodePos = val.data.zip_code;
           convertstfas(val.data.status).then((val) => {
             form.value.statusPabrik = val;
+          });
+
+          getDistrict(form.value.provinsi).then((val2: any) => {
+            form.value.kabKota = val.data.city;
           });
         } else {
           // snackbar.sendSnackbar("Gagal mendapatkan Data ", "error");
@@ -387,6 +389,8 @@ watch(
   },
   { immediate: true }
 );
+
+defineExpose({ showErrorProhbName, hideErrorProhbName, closeDialog });
 </script>
 
 <style scoped>

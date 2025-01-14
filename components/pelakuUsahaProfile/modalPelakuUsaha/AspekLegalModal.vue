@@ -12,7 +12,7 @@
     <VBtn
       v-else-if="props.mode === 'edit'"
       @click="openDialog"
-      variant="outlined"
+      variant="text"
       prepend-icon="ri-edit-line"
     >
       Edit
@@ -159,6 +159,14 @@ const openDialog = async () => {
   console.log("data document = ", documentTypesTmp);
   documentTypes.value = documentTypesTmp.filter((val) => val.name !== "NIB");
   isVisible.value = true;
+
+  if (props.mode === "add") {
+    form.value.doc_number = "";
+    form.value.expiration_date = "";
+    form.value.date = "";
+    form.value.publishing_agency = "";
+    form.value.type = "";
+  }
 };
 
 const closeDialog = () => {
