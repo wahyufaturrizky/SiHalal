@@ -18,7 +18,7 @@ const props = defineProps({
 // });
 
 const convertJnbus = (code: string) => {
-  if (code !== null || code !== "") {
+  if (!code) {
     return "JBU." + code.substring(4);
   } else {
     return "-";

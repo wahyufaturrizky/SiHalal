@@ -48,6 +48,7 @@ function handleEdit(item, idPabrik) {
         store.fetchProfile();
         snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
         editPabrikRef.value.hideErrorProhbName();
+        editPabrikRef.value.closeDialog();
       } else if (val.code == 4007) {
         editPabrikRef.value.showErrorProhbName();
       } else {
@@ -105,6 +106,7 @@ const handleAddAspekLegalConfirm = (formData) => {
         store.fetchProfile();
         snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
         addPabrikRef.value.hideErrorProhbName();
+        addPabrikRef.value.closeDialog();
       } else if (val.code == 4007) {
         addPabrikRef.value.showErrorProhbName();
       } else {
