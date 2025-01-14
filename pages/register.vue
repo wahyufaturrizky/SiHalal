@@ -159,7 +159,7 @@ const onSubmit = async () => {
 
       const payloadcheck = {
         email: form.value.email,
-        phone_number: form.value.noHandphone,
+        phone_number: `${selectedPhoneCode.value}${form.value.noHandphone}`,
       };
 
       try {
@@ -250,7 +250,12 @@ onMounted(async () => {
       },
     }).then((resp: any) => {
       console.log("fetch type = ", resp);
-      fetchType.value = resp?.filter((val: any) => val.name !== ""); // Menyimpan data ke dalam ref
+
+      const eligibleRole = ["r.10", "r.45", "r.5", "r.50"];
+      fetchType.value = resp?.filter(
+        (val: any) =>
+          val.name !== "" && eligibleRole.includes(val.code?.toLowerCase())
+      ); // Menyimpan data ke dalam ref
     });
   } catch (error) {
     console.error("Gagal mengambil data:", error);
@@ -465,16 +470,13 @@ onMounted(async () => {
                         @paste="handlePasteNomorTelepon"
                       >
                       </VTextField>
-                      <span v-if="errors.noHandphone" class="error-text">
-                        <VIcon
-                          icon="mdi-alert-circle"
-                          color="error"
-                          size="small"
-                        />
-                        {{ errors.noHandphone }}
-                      </span>
                     </VCol>
                   </VRow>
+
+                  <span v-if="errors.noHandphone" class="error-text">
+                    <VIcon icon="mdi-alert-circle" color="error" size="small" />
+                    {{ errors.noHandphone }}
+                  </span>
                 </VCol>
 
                 <!-- password -->

@@ -18,6 +18,10 @@ const handleOpenSendModal = () => {
   isSendModalOpen.value = !isSendModalOpen.value
 }
 
+const downloadForms = reactive({
+  sttd: '',
+}) as Record<string, string>
+
 const handleUpdateStatus = async () => {
   // useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
   try {
@@ -30,6 +34,7 @@ const handleUpdateStatus = async () => {
 
     if (response?.code === 2000) {
       useSnackbar().sendSnackbar('Berhasil kirim data', 'success')
+
       return response?.data
     }
     else {
@@ -58,20 +63,20 @@ const getDetailData = async (type: string) => {
   }
 }
 
-// const getDownloadForm = async (docName: string, propName: string) => {
-//   const result: any = await $api(
-//     `/self-declare/submission/${id}/file`,
-//     {
-//       method: 'get',
-//       query: {
-//         document: docName,
-//       },
-//     },
-//   )
+const getDownloadForm = async (docName: string, propName: string) => {
+  const result: any = await $api(
+    `/self-declare/submission/${id}/file`,
+    {
+      method: 'get',
+      query: {
+        document: docName,
+      },
+    },
+  )
 
-//   if (result?.code === 2000)
-//     downloadForms[propName] = result?.data?.file || ''
-// }
+  if (result?.code === 2000)
+    downloadForms[propName] = result?.data?.file || ''
+}
 
 const onUpdateBiaya = async () => {
   try {
@@ -105,7 +110,8 @@ onMounted(async () => {
     getDetailData('pengajuan'),
     getDetailData('produk'),
     getDetailData('pemeriksaanproduk'),
-    // getDownloadForm('sttd', 'sttd'),
+    getDownloadForm('sttd', 'sttd'),
+
     // getDownloadForm('setifikasi-halal', 'setifikasi_halal'),
   ])
 
@@ -125,14 +131,27 @@ onMounted(async () => {
             <h1>Detail Ajuan Diterima</h1>
           </VCol>
           <VCol class="d-flex justify-end">
-            <VBtn text="STTD" variant="outlined" class="me-4" disabled />
+            <VBtn
+              :color="downloadForms.sttd ? 'primary' : '#A09BA1'"
+              class="me-4"
+              text="STTD"
+              variant="outlined"
+              @click="
+                downloadForms.sttd
+                  ? handleDownloadForm(downloadForms.sttd)
+                  : null
+              "
+            />
             <VBtn
               text="Update Biaya"
               variant="outlined"
               class="me-4"
               @click="onUpdateBiaya"
             />
-            <VBtn text="Kirim" @click="handleOpenSendModal" />
+            <VBtn
+              text="Kirim"
+              @click="handleOpenSendModal"
+            />
           </VCol>
         </VRow>
       </template>
@@ -143,7 +162,10 @@ onMounted(async () => {
           collapse-icon="fa-chevron-up"
           multiple
         >
-          <VExpansionPanel :value="0" class="pt-3">
+          <VExpansionPanel
+            :value="0"
+            class="pt-3"
+          >
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Data Pengajuan
             </VExpansionPanelTitle>
@@ -154,7 +176,10 @@ onMounted(async () => {
               />
             </VExpansionPanelText>
           </VExpansionPanel>
-          <VExpansionPanel :value="1" class="pt-3">
+          <VExpansionPanel
+            :value="1"
+            class="pt-3"
+          >
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Pengajuan Sertifikasi
             </VExpansionPanelTitle>
@@ -162,7 +187,10 @@ onMounted(async () => {
               <PanelPengajuanSertifikasi :data-pengajuan="dataPengajuan" />
             </VExpansionPanelText>
           </VExpansionPanel>
-          <VExpansionPanel :value="2" class="pt-3">
+          <VExpansionPanel
+            :value="2"
+            class="pt-3"
+          >
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Daftar Nama Produk
             </VExpansionPanelTitle>
@@ -170,7 +198,10 @@ onMounted(async () => {
               <PanelDaftarProduk :data="dataProduk" />
             </VExpansionPanelText>
           </VExpansionPanel>
-          <VExpansionPanel :value="3" class="pt-3">
+          <VExpansionPanel
+            :value="3"
+            class="pt-3"
+          >
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Jadwal Audit
             </VExpansionPanelTitle>
@@ -178,7 +209,10 @@ onMounted(async () => {
               <PanelJadwalAudit :data="dataPemeriksaanProduk?.jadwal_audit" />
             </VExpansionPanelText>
           </VExpansionPanel>
-          <VExpansionPanel :value="4" class="pt-3">
+          <VExpansionPanel
+            :value="4"
+            class="pt-3"
+          >
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Auditor
             </VExpansionPanelTitle>
@@ -186,7 +220,10 @@ onMounted(async () => {
               <PanelAuditorTable :data="dataPemeriksaanProduk?.auditor" />
             </VExpansionPanelText>
           </VExpansionPanel>
-          <VExpansionPanel :value="5" class="pt-3">
+          <VExpansionPanel
+            :value="5"
+            class="pt-3"
+          >
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Hasil Pemeriksaan
             </VExpansionPanelTitle>
@@ -203,7 +240,10 @@ onMounted(async () => {
           collapse-icon="fa-chevron-up"
           multiple
         >
-          <VExpansionPanel :value="0" class="pt-3">
+          <VExpansionPanel
+            :value="0"
+            class="pt-3"
+          >
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               No. Pendaftaran
             </VExpansionPanelTitle>
@@ -211,7 +251,10 @@ onMounted(async () => {
               <PanelNoPendaftaran :data="dataPemeriksaanProduk?.no_pendaftaran" />
             </VExpansionPanelText>
           </VExpansionPanel>
-          <VExpansionPanel :value="1" class="pt-3">
+          <VExpansionPanel
+            :value="1"
+            class="pt-3"
+          >
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Biaya Pemeriksaan
             </VExpansionPanelTitle>
@@ -221,15 +264,25 @@ onMounted(async () => {
               </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
-          <VExpansionPanel :value="2" class="pt-3">
+          <VExpansionPanel
+            :value="2"
+            class="pt-3"
+          >
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Dokumen
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <VRow align="center">
-                <VCol cols="5" class="text-h6"> File KH </VCol>
+                <VCol
+                  cols="5"
+                  class="text-h6"
+                >
+                  File KH
+                </VCol>
                 <VCol class="d-flex align-center">
-                  <div class="me-1">:</div>
+                  <div class="me-1">
+                    :
+                  </div>
                   <VBtn
                     :color="dataPemeriksaanProduk?.file_kh ? 'primary' : '#A09BA1'"
                     density="compact"
@@ -247,9 +300,16 @@ onMounted(async () => {
                 </VCol>
               </VRow>
               <VRow align="center">
-                <VCol cols="5" class="text-h6"> File Laporan LPH </VCol>
+                <VCol
+                  cols="5"
+                  class="text-h6"
+                >
+                  File Laporan LPH
+                </VCol>
                 <VCol class="d-flex align-center">
-                  <div class="me-1">:</div>
+                  <div class="me-1">
+                    :
+                  </div>
                   <VBtn
                     :color="dataPemeriksaanProduk?.file_laporan ? 'primary' : '#A09BA1'"
                     density="compact"
@@ -274,11 +334,19 @@ onMounted(async () => {
         </div>
       </template>
     </LPHDetailLayout>
-    <VDialog v-model="isSendModalOpen" max-width="840px" persistent>
+    <VDialog
+      v-model="isSendModalOpen"
+      max-width="840px"
+      persistent
+    >
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
-          <div class="text-h3 font-weight-bold">Kirim Pengajuan</div>
-          <VIcon @click="handleOpenSendModal"> fa-times </VIcon>
+          <div class="text-h3 font-weight-bold">
+            Kirim Pengajuan
+          </div>
+          <VIcon @click="handleOpenSendModal">
+            fa-times
+          </VIcon>
         </VCardTitle>
         <VCardText>
           <VRow>
@@ -290,9 +358,13 @@ onMounted(async () => {
           </VRow>
         </VCardText>
         <VCardActions class="px-4">
-          <VBtn variant="outlined" class="px-4 me-3" @click="handleOpenSendModal"
-            >Batal</VBtn
+          <VBtn
+            variant="outlined"
+            class="px-4 me-3"
+            @click="handleOpenSendModal"
           >
+            Batal
+          </VBtn>
           <VBtn
             variant="flat"
             class="px-4"

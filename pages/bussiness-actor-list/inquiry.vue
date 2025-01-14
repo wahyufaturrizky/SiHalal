@@ -20,7 +20,7 @@ const headers = [
   { title: "Tanggal", key: "tgl_daftar" },
   { title: "Jenis Daftar", key: "jenis_daftar" },
   { title: "Jenis Produk", key: "jenis_produk" },
-  { title: "Merk Dagang", key: "merk_dagang" },
+  // { title: "Merk Dagang", key: "merk_dagang" },
   { title: "Kode Fasilitasi", key: "kode_fac" },
   { title: "Status", key: "status" },
 ];
@@ -192,9 +192,6 @@ const debouncedFetch = debounce(loadItem, 500);
               </template>
               <template #item.tgl_daftar="{ item }">
                 {{ formatDateIntl(new Date((item as any).tgl_daftar)) }}
-              </template>
-              <template #item.merk_dagang="{ item }">
-                {{ (item as any).merk_dagang || "NA" }}
               </template>
               <template #item.status="{ item }">
                 <div class="status-box py-1 px-3 cursor-pointer">

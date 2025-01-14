@@ -344,4 +344,10 @@ export default [
     to: "administrator-image-auth",
     roles: ["Admin"],
   },
+  {
+    title: "navbar.management.menu.announcement",
+    icon: { icon: "fa-image" },
+    to: "announcement",
+    roles: ["Admin"],
+  },
 ];
