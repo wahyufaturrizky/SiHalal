@@ -25,7 +25,7 @@ const panelOpen = ref(0); // Menentukan panel yang terbuka
       <VExpansionPanelText>
         <VRow class="report-info">
           <VCol cols="7">
-            <span class="label">File KH</span>
+            <span class="label">File Laporan LPH</span>
           </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="2" class="download-btn">
@@ -42,7 +42,7 @@ const panelOpen = ref(0); // Menentukan panel yang terbuka
 
         <VRow class="report-info">
           <VCol cols="7">
-            <span class="label">File Laporan LPH</span>
+            <span class="label">File KH</span>
           </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="2" class="download-btn">
