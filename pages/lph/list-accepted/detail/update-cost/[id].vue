@@ -500,13 +500,16 @@ const onDeletePesawat = async (el: any) => {
 
 const onDeletePenetapanBiayaAuditLuarNegeri = async (el: any) => {
   try {
-    const response: any = await $api("/reguler/lph/update-cost/delete-biaya", {
-      method: "delete",
-      body: {
-        id,
-        idPesawat: el.id_pabrik,
-      },
-    });
+    const response: any = await $api(
+      "/reguler/lph/update-cost/delete-penetapan-biaya-audit-luar-negeri",
+      {
+        method: "delete",
+        body: {
+          id,
+          idBiaya: el.id,
+        },
+      }
+    );
 
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil hapus biaya pesawat", "success");
