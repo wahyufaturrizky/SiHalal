@@ -191,8 +191,8 @@ const changeData = (item) => {
 </script>
 
 <template>
-  <VContainer>
-    <h3 class="text-h3">Rekapitulasi</h3>
+  <div>
+    <h2 style="font-size: 32px">Rekapitulasi</h2>
     <br />
 
     <VCard class="pa-4">
@@ -245,5 +245,5 @@ const changeData = (item) => {
         </VDataTableServer>
       </VCardItem>
     </VCard>
-  </VContainer>
+  </div>
 </template>

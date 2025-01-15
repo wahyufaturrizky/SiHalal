@@ -254,7 +254,8 @@ const reset = () => {
 
 <template>
   <div>
-    <p class="text-h4">Tabel Pengajuan Proses Sidang</p>
+    <h2 style="font-size: 32px">Tabel Pengajuan Proses Sidang</h2>
+    <br />
     <VCard class="pa-4">
       <VRow>
         <VCol>

@@ -90,7 +90,7 @@ onMounted(async () => {
 <template>
   <VRow>
     <VCol cols="12">
-      <h2>Proses Verval</h2>
+      <h2 style="font-size: 32px">Proses Verval</h2>
     </VCol>
   </VRow>
   <VRow v-if="!loadingAll">

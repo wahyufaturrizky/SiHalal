@@ -212,122 +212,115 @@ const bahanType = ref(null);
     <!-- Title and Buttons Row -->
     <VRow>
       <VCol>
-        <p class="text-h2">
-          <b>Verifikasi Dokumen Reguler</b>
-        </p>
+        <h2 style="font-size: 32px">Verifikasi Dokumen Reguler</h2>
       </VCol>
-      <VCol cols="2" style="display: flex; justify-content: end">
+      <VCol cols="4" style="display: flex; justify-content: end">
         <DataPermohonanSertifikasiBpjph @loadData="loadDataFromModal()" />
       </VCol>
     </VRow>
-    <VRow>
-      <VCard variant="flat" class="pa-4">
-        <VCardTitle>
-          <VRow>
-            <VCol cols="10"><h2>Data Pengajuan</h2></VCol>
-          </VRow>
-        </VCardTitle>
-        <VCardText>
-          <VRow>
-            <VCol />
-          </VRow>
-          <VRow>
-            <VCol
-              class="d-flex justify-sm-space-between align-center"
-              cols="12"
-            >
-              <VTextField
-                v-model="searchQuery"
-                density="compact"
-                placeholder="Cari Nama Pengajuan"
-                append-inner-icon="ri-search-line"
-                style="max-width: 100%"
-                @input="handleInput"
-              />
-            </VCol>
-          </VRow>
-          <VRow>
-            <VDataTableServer
-              :headers="permohonanHeaders"
-              v-model:items-per-page="itemPerPage"
-              v-model:page="page"
-              :items="items"
-              :loading="loading"
-              :items-length="totalItems"
-              style="white-space: nowrap"
-              loading-text="Loading..."
-              @update:options="loadItem(page, itemPerPage, searchQuery)"
-            >
-              <template #item.id="{ index }">
-                {{ index + 1 + (page - 1) * itemPerPage }}
-              </template>
-              <template #item.tgl_daftar="{ item }">
-                {{
-                  item.tgl_daftar != undefined && item.tgl_daftar != ""
-                    ? formatDateIntl(new Date(item.tgl_daftar))
-                    : ""
-                }}
-              </template>
-              <template #item.action="{ item }">
-                <div class="d-flex gap-1">
-                  <IconBtn size="small">
-                    <VIcon
-                      icon="ri-arrow-right-line"
-                      color="primary"
-                      @click="navigateAction(item.id_reg)"
-                    />
-                  </IconBtn>
-                  <!-- Right arrow icon for action -->
-                </div>
-              </template>
-              <template #item.pilih="{ item }">
-                <VCheckbox v-model="selectedItems" :value="item" />
-              </template>
-              <template #item.status="{ item }">
-                <VChip :color="statusItem[item?.id_status].color">
-                  {{ statusItem[item?.id_status].desc }}
-                </VChip>
-              </template>
-              <template #item.jenis_usaha_jumlah="{ item }">
-                <VContainer
+    <VCard class="pa-4">
+      <VCardTitle>
+        <VRow>
+          <VCol cols="10"><h2>Data Pengajuan</h2></VCol>
+        </VRow>
+      </VCardTitle>
+      <VCardText>
+        <VRow>
+          <VCol />
+        </VRow>
+        <VRow>
+          <VCol class="d-flex justify-sm-space-between align-center" cols="12">
+            <VTextField
+              v-model="searchQuery"
+              density="compact"
+              placeholder="Cari Nama Pengajuan"
+              append-inner-icon="ri-search-line"
+              style="max-width: 100%"
+              @input="handleInput"
+            />
+          </VCol>
+        </VRow>
+        <VRow>
+          <VDataTableServer
+            :headers="permohonanHeaders"
+            v-model:items-per-page="itemPerPage"
+            v-model:page="page"
+            :items="items"
+            :loading="loading"
+            :items-length="totalItems"
+            style="white-space: nowrap"
+            loading-text="Loading..."
+            @update:options="loadItem(page, itemPerPage, searchQuery)"
+          >
+            <template #item.id="{ index }">
+              {{ index + 1 + (page - 1) * itemPerPage }}
+            </template>
+            <template #item.tgl_daftar="{ item }">
+              {{
+                item.tgl_daftar != undefined && item.tgl_daftar != ""
+                  ? formatDateIntl(new Date(item.tgl_daftar))
+                  : ""
+              }}
+            </template>
+            <template #item.action="{ item }">
+              <div class="d-flex gap-1">
+                <IconBtn size="small">
+                  <VIcon
+                    icon="ri-arrow-right-line"
+                    color="primary"
+                    @click="navigateAction(item.id_reg)"
+                  />
+                </IconBtn>
+                <!-- Right arrow icon for action -->
+              </div>
+            </template>
+            <template #item.pilih="{ item }">
+              <VCheckbox v-model="selectedItems" :value="item" />
+            </template>
+            <template #item.status="{ item }">
+              <VChip :color="statusItem[item?.id_status].color">
+                {{ statusItem[item?.id_status].desc }}
+              </VChip>
+            </template>
+            <template #item.jenis_usaha_jumlah="{ item }">
+              <VContainer
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  white-space: nowrap;
+                "
+              >
+                <VChip
+                  variant="outlined"
                   style="
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    white-space: nowrap;
+                    border-color: #49a84c;
+                    border-radius: 8px;
+                    background-color: #edf6ed;
                   "
                 >
-                  <VChip
-                    variant="outlined"
-                    style="
-                      border-color: #49a84c;
-                      border-radius: 8px;
-                      background-color: #edf6ed;
-                    "
-                  >
-                    <span style="color: #49a84c">
-                      {{ item.jenis_usaha }}
-                    </span>
-                  </VChip>
-                  <VChip
-                    variant="outlined"
-                    style="
-                      border-color: #49a84c;
-                      border-radius: 8px;
-                      background-color: #edf6ed;
-                    "
-                  >
-                    <span style="color: #49a84c">
-                      {{ item.jumlah_produk }}
-                    </span>
-                  </VChip>
-                </VContainer>
-              </template>
-            </VDataTableServer>
-          </VRow>
-        </VCardText>
-      </VCard>
-    </VRow>
+                  <span style="color: #49a84c">
+                    {{ item.jenis_usaha }}
+                  </span>
+                </VChip>
+                <VChip
+                  variant="outlined"
+                  style="
+                    border-color: #49a84c;
+                    border-radius: 8px;
+                    background-color: #edf6ed;
+                  "
+                >
+                  <span style="color: #49a84c">
+                    {{ item.jumlah_produk }}
+                  </span>
+                </VChip>
+              </VContainer>
+            </template>
+          </VDataTableServer>
+        </VRow>
+      </VCardText>
+    </VCard>
   </VContainer>
 </template>
 

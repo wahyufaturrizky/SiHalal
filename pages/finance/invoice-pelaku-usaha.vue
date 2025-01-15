@@ -83,7 +83,9 @@ const selectedDate = ref([]);
 </script>
 <template>
   <VRow>
-    <VCol cols="12"><h2>Bukti Bayar SHLN</h2></VCol>
+    <VCol cols="12">
+      <h2 style="font-size: 32px">Bukti Bayar SHLN</h2>
+    </VCol>
   </VRow>
   <VRow>
     <VCol cols="12">

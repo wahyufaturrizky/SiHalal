@@ -93,9 +93,11 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <VRow
-    ><VCol cols="12"><h2>Bukti Bayar Fasilitator</h2></VCol></VRow
-  >
+  <VRow>
+    <VCol cols="12">
+      <h2 style="font-size: 32px">Bukti Bayar Fasilitator</h2>
+    </VCol>
+  </VRow>
   <VRow>
     <VCol>
       <VCard style="padding: 1.5svw">

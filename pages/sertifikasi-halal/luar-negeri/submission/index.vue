@@ -105,7 +105,10 @@ const openModalsRequest = () => {
 
 <template>
   <div>
-    <p class="text-h4">Foreign Halal Certificate Registration Submission</p>
+    <h2 style="font-size: 32px">
+      Foreign Halal Certificate Registration Submission
+    </h2>
+    <br />
     <VCard class="pa-4">
       <p class="text-h5">Submission List</p>
       <VRow>

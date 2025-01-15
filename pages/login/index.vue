@@ -205,7 +205,7 @@ const items = [
 <template>
   <HelpButton />
   <VRow no-gutters>
-    <VCol cols="12" md="6" class="d-flex align-center justify-center login-bg">
+    <VCol cols="12" md="6" class="d-flex align-start justify-center login-bg">
       <VCard flat :max-width="500" class="mt-3 mt-sm-0 pa-2 pa-lg-3">
         <VCardText>
           <NuxtLink to="/">
@@ -345,9 +345,10 @@ const items = [
     <VCol
       v-if="mdAndUp"
       md="6"
-      class="d-flex align-start justify-center pb-3 pt-2 pe-2 bg-white"
+      class="d-flex align-start justify-start py-1 pe-2 bg-white"
+      style="max-height: calc(100vh - 48px)"
     >
-      <img :src="currentImage" width="100%" style="border-radius: 20px" />
+      <img :src="currentImage" height="100%" style="border-radius: 20px" />
     </VCol>
   </VRow>
 </template>
