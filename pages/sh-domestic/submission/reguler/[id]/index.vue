@@ -13,6 +13,8 @@ const panelOutlet = ref([0, 1])
 const panelProduk = ref([0, 1])
 const panelSupervisor = ref([0, 1])
 const panelDownloadFormulir = ref([0, 1])
+const panelRegister = ref([0, 1])
+const panelHalal = ref([0, 1])
 const panelTracking = ref([0, 1])
 const data = ref<any>({})
 const dialogKirim = ref(false)
@@ -711,7 +713,7 @@ onMounted(async () => {
             </VExpansionPanels>
           </VExpansionPanels>
           <br>
-          <VExpansionPanels v-model="panelDownloadFormulir">
+          <VExpansionPanels v-model="panelRegister">
             <VExpansionPanel class="pa-5">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
                 Pendaftaran
@@ -795,7 +797,7 @@ onMounted(async () => {
             </VExpansionPanel>
           </VExpansionPanels>
           <br>
-          <VExpansionPanels v-model="panelDownloadFormulir">
+          <VExpansionPanels v-model="panelHalal">
             <VExpansionPanel class="pa-5">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
                 Sertifikasi Halal
@@ -836,7 +838,14 @@ onMounted(async () => {
 
           <br>
           <VExpansionPanels v-model="panelTracking">
-            <PanelTracking :data="data?.tracking" />
+            <VExpansionPanel class="pa-5">
+              <VExpansionPanelTitle class="text-h4 font-weight-bold">
+                Melacak
+              </VExpansionPanelTitle>
+              <VExpansionPanelText class="d-flex align-center">
+                <PanelTrackingPu :data="data?.tracking" />
+              </VExpansionPanelText>
+            </VExpansionPanel>
           </VExpansionPanels>
         </VCol>
       </VRow>
