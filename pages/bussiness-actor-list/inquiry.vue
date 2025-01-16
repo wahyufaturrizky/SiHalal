@@ -17,6 +17,7 @@ const loadingAll = ref(true);
 const headers = [
   { title: "No", key: "no" },
   { title: "No Daftar", key: "no_daftar" },
+  { title: "Nama PU", key: "nama_pu" },
   { title: "Tanggal", key: "tgl_daftar" },
   { title: "Jenis Daftar", key: "jenis_daftar" },
   { title: "Jenis Produk", key: "jenis_produk" },
