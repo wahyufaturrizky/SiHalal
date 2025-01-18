@@ -345,8 +345,8 @@ onMounted(async () => {
 
 <template>
   <HelpButton />
-  <VRow no-gutters>
-    <VCol cols="12" md="6" class="d-flex align-start justify-center bg-white">
+  <VRow no-gutters class="position-relative">
+    <VCol cols="12" md="6" class="d-flex align-center justify-center bg-white">
       <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-3">
         <VCardText>
           <NuxtLink to="/">
@@ -565,8 +565,8 @@ onMounted(async () => {
     <VCol
       v-if="mdAndUp"
       md="6"
-      class="d-flex align-start justify-start py-1 pe-2 bg-white"
-      style="max-height: calc(100vh - 48px)"
+      class="d-flex align-start justify-start py-1 pe-2 bg-white position-sticky"
+      style="max-height: calc(100vh - 48px); top: 23px"
     >
       <img :src="currentImage" height="100%" style="border-radius: 20px" />
     </VCol>
