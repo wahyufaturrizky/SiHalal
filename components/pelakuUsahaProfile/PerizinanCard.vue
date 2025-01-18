@@ -49,7 +49,9 @@ const closeModal = ref(false);
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
-      <VExpansionPanelTitle><h2>Perizinan</h2></VExpansionPanelTitle>
+      <VExpansionPanelTitle>
+        <div class="text-h4 font-weight-bold">Perizinan</div>
+      </VExpansionPanelTitle>
       <VExpansionPanelText>
         <VContainer style="max-height: 35svh; overflow-y: auto">
           <div v-if="isLoading">Loading...</div>

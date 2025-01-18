@@ -83,10 +83,10 @@ const maxWidthSearch = computed(() => (mdAndUp ? 700 : "90%"));
 
 <template>
   <div>
-    <h2 style="font-size: 32px">Verifikasi Fasilitator</h2>
+    <h1 style="font-size: 32px">Verifikasi Fasilitator</h1>
     <br />
     <VCard class="pa-4">
-      <p class="text-h5">Daftar pengajuan Fasilitasi</p>
+      <div class="text-h4 font-weight-bold">Daftar pengajuan Fasilitasi</div>
       <VRow>
         <VCol class="d-flex justify-sm-space-between align-center">
           <VTextField

@@ -152,10 +152,8 @@ const handleConfirmDelete = async () => {
   <VRow>
     <VCol>
       <VCard class="w-100 py-3">
-        <VCardTitle
-          class="d-flex justify-space-between align-center font-weight-bold text-h4"
-        >
-          <div>Image Authorization List</div>
+        <VCardTitle class="d-flex justify-space-between align-center">
+          <div class="text-h4 font-weight-bold">Image Authorization List</div>
           <VBtn append-icon="fa-plus" @click="handleOpenAddModal"
             >Add Image</VBtn
           >

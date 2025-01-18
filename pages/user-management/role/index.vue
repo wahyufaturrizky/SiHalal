@@ -165,16 +165,14 @@ onMounted(async () => {
       <VCol>
         <VRow>
           <VCol>
-            <h2 style="font-size: 32px">Role</h2>
+            <h1 style="font-size: 32px">Role</h1>
           </VCol>
         </VRow>
         <br />
         <VCard>
           <VCardItem>
-            <VCardTitle
-              class="d-flex justify-space-between align-center font-weight-bold text-h4"
-            >
-              <div>Role List</div>
+            <VCardTitle class="d-flex justify-space-between align-center">
+              <div class="text-h4 font-weight-bold">Role List</div>
               <VBtn append-icon="fa-plus" @click="handleDialogvisible">
                 Add Role
               </VBtn>

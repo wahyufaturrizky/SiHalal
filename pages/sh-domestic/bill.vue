@@ -164,7 +164,7 @@ watch([status, outDated, page], () => {
   <div v-if="!loading">
     <!-- <KembaliButton class="pl-0" /> -->
     <div class="d-flex align-center" style="justify-content: space-between">
-      <h2 style="font-size: 32px">Tagihan/Invoice</h2>
+      <h1 style="font-size: 32px">Tagihan/Invoice</h1>
       <VBtn
         v-if="!loading"
         append-icon="fa-download"
@@ -177,7 +177,7 @@ watch([status, outDated, page], () => {
     <br />
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
-        <h3 style="font-size: 24px">Daftar Tagihan/Invoice</h3>
+        <div class="text-h4 font-weight-bold">Daftar Tagihan/Invoice</div>
       </VCardTitle>
       <VCardItem>
         <VRow no-gutters class="d-flex align-center ga-2">

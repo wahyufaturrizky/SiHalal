@@ -95,7 +95,7 @@ onMounted(async () => {
 <template>
   <VRow>
     <VCol cols="12">
-      <h2 style="font-size: 32px">Bukti Bayar Fasilitator</h2>
+      <h1 style="font-size: 32px">Bukti Bayar Fasilitator</h1>
     </VCol>
   </VRow>
   <VRow>
@@ -103,9 +103,13 @@ onMounted(async () => {
       <VCard style="padding: 1.5svw">
         <VCardTitle>
           <VRow>
-            <VCol cols="6" style="display: flex; align-items: center"
-              >Daftar Lunas Invoice Fasilitator</VCol
+            <VCol
+              cols="6"
+              style="display: flex; align-items: center"
+              class="text-h4 font-weight-bold"
             >
+              Daftar Lunas Invoice Fasilitator
+            </VCol>
           </VRow>
         </VCardTitle>
         <VCardItem>
