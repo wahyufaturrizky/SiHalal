@@ -18,7 +18,7 @@ const props = defineProps({
 // });
 
 const convertJnbus = (code: string) => {
-  if (!code) {
+  if (code) {
     return "JBU." + code.substring(4);
   } else {
     return "-";
@@ -65,7 +65,7 @@ const form = ref({
   email: props.profileData?.email || "-",
   jenis_badan_usaha: convertJnbus(props.profileData?.jenis_badan_usaha) || "-",
   skala_usaha: props.profileData?.skala_usaha || "-",
-  modal_dasar: props.profileData?.modal_dasar || "-",
+  modal_dasar: formatCurrencyIntl(props.profileData?.modal_dasar) || "-",
   asal_usaha: convertFln(props.profileData?.asal_usaha),
   tingkat_usaha: convertFumk(props.profileData?.tingkat_usaha),
 });
@@ -206,7 +206,7 @@ onMounted(async () => {
           <VCol cols="7">
             <VTextField
               :disabled="disableEdit(props.profileData?.asal_usaha)"
-              >{{ formatCurrencyIntl(form.modal_dasar) }}</VTextField
+              >{{ form.modal_dasar }}</VTextField
             >
           </VCol>
         </VRow>
