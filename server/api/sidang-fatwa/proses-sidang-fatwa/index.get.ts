@@ -11,10 +11,11 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { page, size, keyword } = (await getQuery(event)) as {
+  const { page, size, keyword, provinsi_code } = (await getQuery(event)) as {
     page: string;
     size: string;
     keyword: string;
+    provinsi_code: string;
   };
 
   const params: any = {
@@ -24,6 +25,10 @@ export default defineEventHandler(async (event) => {
 
   if (keyword !== "") {
     params["keyword"] = keyword;
+  }
+
+  if (provinsi_code !== "") {
+    params["provinsi_code"] = provinsi_code;
   }
 
   const data = await $fetch<any>(
