@@ -4,6 +4,8 @@ import { VDataTableServer } from "vuetify/components";
 
 const items = ref([]);
 const loadingAll = ref(true);
+const province = ref();
+const provinsi_code = ref();
 
 const itemPerPage = ref(10);
 const totalItems = ref(0); // Total dummy data
@@ -12,14 +14,27 @@ const page = ref(1);
 
 const searchQuery = ref("");
 
+const getProvince = async () => {
+  const response: any = await $api("/master/province", {
+    method: "get",
+  });
+
+  if (response.length > 0) {
+    province.value = response;
+    return response;
+  }
+};
+
 const loadItem = async ({
   page,
   size,
   keyword,
+  provinsi_code,
 }: {
   page: number;
   size: number;
   keyword: string;
+  provinsi_code: string;
 }) => {
   try {
     loading.value = true;
@@ -30,6 +45,7 @@ const loadItem = async ({
         page,
         size,
         keyword,
+        provinsi_code,
       },
     });
 
@@ -57,6 +73,7 @@ onMounted(async () => {
       size: itemPerPage.value,
       keyword: searchQuery.value,
     }),
+    getProvince(),
   ]);
 
   const checkResIfUndefined = res.every((item: any) => {
@@ -107,13 +124,33 @@ const navigateAction = (id: string) => {
         </VCol>
       </VRow>
       <VRow v-if="!loadingAll">
-        <VCol class="d-flex justify-sm-space-between align-center">
+        <VCol :cols="6" class="d-flex justify-sm-space-between align-center">
           <VTextField
             v-model="searchQuery"
             density="compact"
             placeholder="Search Data"
             append-inner-icon="ri-search-line"
             @input="handleInput"
+          />
+        </VCol>
+        <VCol :cols="6">
+          <VSelect
+            :rules="[requiredValidator]"
+            require
+            density="compact"
+            placeholder="Pilih Provinsi"
+            v-model="provinsi_code"
+            :items="province"
+            item-value="code"
+            item-title="name"
+            v-on:update:model-value="
+              loadItem({
+                page: page,
+                size: itemPerPage,
+                keyword: searchQuery,
+                provinsi_code: provinsi_code,
+              })
+            "
           />
         </VCol>
       </VRow>
@@ -132,6 +169,7 @@ const navigateAction = (id: string) => {
                 page: page,
                 size: itemPerPage,
                 keyword: searchQuery,
+                provinsi_code: provinsi_code,
               })
             "
           >
