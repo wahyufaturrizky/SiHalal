@@ -3,9 +3,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import '@vueup/vue-quill/dist/vue-quill.snow.css'
 
 const router = useRouter()
-
+let QuillEditor
 const searchQuery = ref('')
 const loading = ref<boolean>(false)
 const isVisible = ref<boolean>(false)
@@ -14,6 +15,7 @@ const size = ref<number>(10)
 const totalItems = ref<number>(0)
 const data = ref<any[]>([])
 const listRole = ref<any[]>([])
+const roleDropdown = ref([])
 const selectedItem = ref('')
 
 const detailData = ref({
@@ -66,6 +68,20 @@ const loadItem = async (pageNumber: number, sizeData: number, keyword: string = 
   }
 }
 
+const handleLoadRoles = async () => {
+  try {
+    const response: any = await $api("/admin/users/list-role", {
+      method: "get",
+    } as any);
+
+    if (response.code === 2000) {
+      roleDropdown.value = response.data;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const getListRole = async () => {
   try {
     const response: any = await $api('/announcement/role', {
@@ -93,7 +109,7 @@ const onEdit = (item: any) => {
     announcement: item.announcement,
     id: item.id,
     is_active: item.is_active,
-    role: item.role,
+    role: item.role.map((el: any) => el.id_role || null),
   }
   isVisible.value = true
 }
@@ -120,12 +136,10 @@ const onDelete = async (item: any) => {
 }
 
 const onSubmitEdit = async () => {
-  const ids = detailData.value.role.map((item: any) => item.id_role || null)
-
   const payload = {
     announcement: detailData.value.announcement,
     is_active: detailData.value.is_active,
-    id_role: ids,
+    id_role: detailData.value.role,
   }
 
   try {
@@ -151,12 +165,36 @@ const onSubmitEdit = async () => {
 
 onMounted(async () => {
   loading.value = true
+  QuillEditor = (await import('@vueup/vue-quill')).QuillEditor
   await Promise.allSettled([
     loadItem(page.value, size.value, searchQuery.value),
     getListRole(),
+    handleLoadRoles(),
   ])
   loading.value = false
 })
+
+const formRules = reactive({
+  role: [(v: string) => !!v || "Role is required!"],
+});
+
+const editorOptions = {
+  theme: 'snow', // Choose a theme: snow, bubble, or core
+  placeholder: 'Deskripsi...',
+  modules: {
+    toolbar: [
+      ['bold', 'italic', 'underline'],
+      ['link'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      [{ align: [] }], // Alignment
+      ['clean'], // Clear formatting
+    ],
+  },
+}
+
+const onTextChange = (newValue: any) => {
+  detailData.value.announcement = newValue
+}
 </script>
 
 <template>
@@ -186,24 +224,29 @@ onMounted(async () => {
         </div>
         <div class="pa-4 ga-2">
           <label>Detail Announcement</label>
-          <VTextarea
-            v-model="detailData.announcement"
-            class="w-full"
+          <QuillEditor
+            v-model:content="detailData.announcement"
+            :options="editorOptions"
+            theme="snow"
+            content-type="html"
+            output="html"
+            :styles="{ minHeight: '100px' }"
+            @update:content="onTextChange"
           />
         </div>
         <div class="pa-4 ga-2">
           <label>Role</label>
           <VSelect
             v-model="detailData.role"
-            :items="listRole"
+            :rules="formRules.role"
+            :items="roleDropdown"
             item-value="id"
             item-title="name"
-            placeholder="select role"
+            placeholder="Select role"
             density="compact"
             menu-icon="fa-chevron-down"
             clearable
             multiple
-            deletable-chips
           />
         </div>
         <div class="pa-4 ga-2">
@@ -285,7 +328,9 @@ onMounted(async () => {
               :key="idx"
             >
               <td>{{ idx + 1 }}</td>
-              <td>{{ item.announcement }}</td>
+              <td>
+                <div v-html="item.announcement" />
+              </td>
               <td>{{ item.role.map((element: any) => element.name).join(', ') }}</td>
               <td>
                 <VChip
