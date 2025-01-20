@@ -135,8 +135,8 @@ const navigateAction = (id: string) => {
         </VCol>
         <VCol :cols="6">
           <VSelect
-            :rules="[requiredValidator]"
             require
+            :clearable="true"
             density="compact"
             placeholder="Pilih Provinsi"
             v-model="provinsi_code"
