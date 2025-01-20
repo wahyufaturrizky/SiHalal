@@ -90,15 +90,15 @@ onMounted(async () => {
 </script>
 
 <template>
-  <VContainer v-if="!loadingAll">
-    <VRow>
+  <div v-if="!loadingAll">
+    <!-- <VRow>
       <VCol cols="12">
         <KembaliButton />
       </VCol>
-    </VRow>
+    </VRow> -->
     <VRow>
       <VCol cols="12">
-        <h2>Tabel Daftar Ajuan</h2>
+        <h2 style="font-size: 32px">Tabel Daftar Ajuan</h2>
       </VCol>
     </VRow>
     <VRow>
@@ -205,7 +205,7 @@ onMounted(async () => {
         </VCard>
       </VCol>
     </VRow>
-  </VContainer>
+  </div>
 
   <VSkeletonLoader type="card" v-else />
 </template>

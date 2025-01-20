@@ -90,9 +90,13 @@ const addDataPenyeliaHalal = async () => {
 
     const { dokumen } = formData.value;
 
-    const fileSpph = await uploadDocument(dokumen);
-    if (fileSpph.code !== 2000) {
-      return;
+    let fileSpph;
+
+    if (dokumen) {
+      fileSpph = await uploadDocument(dokumen);
+      if (fileSpph.code !== 2000) {
+        return;
+      }
     }
 
     const res: any = await $api(
@@ -101,7 +105,7 @@ const addDataPenyeliaHalal = async () => {
         method: "put",
         body: {
           ...formData.value,
-          dokumen: fileSpph.data.file_url,
+          dokumen: fileSpph?.data?.file_url || "",
         },
       }
     );
@@ -148,8 +152,18 @@ const loadItemPenetapan = async () => {
 const checkIsFieldEMpty = (data: any) => {
   return Object.keys(data)?.find((key: any) => {
     if (uploadType.value === "GENERATE") {
-      if (key !== "dokumen" && key !== "no_penetapan") {
-        return !data[key];
+      if (formData.value.penetapan === "SF004") {
+        if (key !== "dokumen" && key !== "no_penetapan") {
+          return !data[key];
+        }
+      } else {
+        if (
+          key !== "dokumen" &&
+          key !== "no_penetapan" &&
+          key !== "keterangan"
+        ) {
+          return !data[key];
+        }
       }
     } else {
       return !data[key];

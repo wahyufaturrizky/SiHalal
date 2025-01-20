@@ -1,88 +1,98 @@
 <!-- eslint-disable regex/invalid -->
 <script setup lang="ts">
-const router = useRouter()
-const dataTable = ref<any[]>([])
-const loading = ref<boolean>(false)
-const page = ref<number>(1)
-const size = ref<number>(10)
-const searchQuery = ref<string>('')
+const router = useRouter();
+const dataTable = ref<any[]>([]);
+const loading = ref<boolean>(false);
+const page = ref<number>(1);
+const size = ref<number>(10);
+const searchQuery = ref<string>("");
 
 const invoiceHeader: any[] = [
-  { title: 'No', value: 'index' },
-  { title: 'Nomor Daftar', value: 'no_daftar', nowrap: true },
-  { title: 'Tanggal Tagihan', value: 'tanggal_tagihan', nowrap: true },
-  { title: 'No Ref', value: 'no_tagihan', nowrap: true },
-  { title: 'Nama PU', value: 'nama_pu', nowrap: true },
-  { title: 'Tanggal Dikirim Oleh BPJPH', value: 'tgl_dikirim', nowrap: true },
-  { title: 'Jenis Transaksi', value: 'jenis_transaksi', nowrap: true },
-  { title: 'Jatuh Tempo', value: 'tanggal_jatuh_tempo', nowrap: true },
-  { title: 'Jumlah Tagihan', value: 'jumlah_tagihan', nowrap: true },
-  { title: 'Tanggal Bayar', value: 'tanggal_bayar', nowrap: true },
-  { title: 'Action', value: 'actions', align: 'center' },
-]
+  { title: "No", value: "index" },
+  { title: "Nomor Daftar", value: "no_daftar", nowrap: true },
+  { title: "Tanggal Tagihan", value: "tanggal_tagihan", nowrap: true },
+  { title: "No Ref", value: "no_tagihan", nowrap: true },
+  { title: "Nama PU", value: "nama_pu", nowrap: true },
+  { title: "Tanggal Dikirim Oleh BPJPH", value: "tgl_dikirim", nowrap: true },
+  { title: "Jenis Transaksi", value: "jenis_transaksi", nowrap: true },
+  { title: "Jatuh Tempo", value: "tanggal_jatuh_tempo", nowrap: true },
+  { title: "Jumlah Tagihan", value: "jumlah_tagihan", nowrap: true },
+  { title: "Tanggal Bayar", value: "tanggal_bayar", nowrap: true },
+  { title: "Action", value: "actions", align: "center" },
+];
 
 const invoiceData = [
   {
-    billNumber: 'SH2024-225-29480',
-    billDate: '22/08/2024',
-    refNumber: 'SH2024-225-29480',
-    businessName: 'Dapoer Boenda',
-    sentDate: '22/08/2024 06:38 (500 hari)',
-    trxType: 'Sertifikasi Halal',
-    dueDate: '22/08/2024',
-    totalBill: 'Rp 200,000',
-    payDate: '22/08/2024',
+    billNumber: "SH2024-225-29480",
+    billDate: "22/08/2024",
+    refNumber: "SH2024-225-29480",
+    businessName: "Dapoer Boenda",
+    sentDate: "22/08/2024 06:38 (500 hari)",
+    trxType: "Sertifikasi Halal",
+    dueDate: "22/08/2024",
+    totalBill: "Rp 200,000",
+    payDate: "22/08/2024",
   },
   {
-    billNumber: 'SH2024-225-29480',
-    billDate: '22/08/2024',
-    refNumber: 'SH2024-225-29480',
-    businessName: 'Dapoer Boenda',
-    sentDate: '22/08/2024 06:38 (500 hari)',
-    trxType: 'Sertifikasi Halal',
-    dueDate: '22/08/2024',
-    totalBill: 'Rp 200,000',
-    payDate: '22/08/2024',
+    billNumber: "SH2024-225-29480",
+    billDate: "22/08/2024",
+    refNumber: "SH2024-225-29480",
+    businessName: "Dapoer Boenda",
+    sentDate: "22/08/2024 06:38 (500 hari)",
+    trxType: "Sertifikasi Halal",
+    dueDate: "22/08/2024",
+    totalBill: "Rp 200,000",
+    payDate: "22/08/2024",
   },
-]
+];
 
-const loadItem = async (pageNumber: number, sizeData: number, search: string = '', path: string) => {
+const loadItem = async (
+  pageNumber: number,
+  sizeData: number,
+  search: string = "",
+  path: string
+) => {
   try {
-    const response: any = await $api('/reguler/payment', {
-      method: 'get',
+    const response: any = await $api("/reguler/payment", {
+      method: "get",
       params: {
         pageNumber,
         sizeData,
         search,
         url: path,
       },
-    })
+    });
 
-    if (response?.code === 2000)
-      dataTable.value = response?.data
-    else
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    if (response?.code === 2000) dataTable.value = response?.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const handleInput = (e: any) => {
-  loading.value = true
-  debounce(loadItem(page.value, size.value, e.target.value, LIST_INFORMASI_PEMBAYARAN), 500)
-  loading.value = false
-}
+  loading.value = true;
+  debounce(
+    loadItem(page.value, size.value, e.target.value, LIST_INFORMASI_PEMBAYARAN),
+    500
+  );
+  loading.value = false;
+};
 
 onMounted(async () => {
-  loading.value = true
-  loadItem(page.value, size.value, searchQuery.value, LIST_INFORMASI_PEMBAYARAN)
-  loading.value = false
-})
+  loading.value = true;
+  loadItem(
+    page.value,
+    size.value,
+    searchQuery.value,
+    LIST_INFORMASI_PEMBAYARAN
+  );
+  loading.value = false;
+});
 </script>
 
 <template>
-  <div
+  <!-- <div
     class="d-flex align-center cursor-pointer"
     @click="router.go(-1)"
   >
@@ -94,10 +104,10 @@ onMounted(async () => {
     <div class="text-primary">
       Kembali
     </div>
-  </div>
+  </div> -->
   <VRow no-gutters>
     <VCol>
-      <h1>Informasi Pembayaran</h1>
+      <h2 style="font-size: 32px">Informasi Pembayaran</h2>
     </VCol>
   </VRow>
   <VRow>
@@ -126,17 +136,9 @@ onMounted(async () => {
           >
             <template #no-data>
               <div class="w-full mt-2">
-                <div
-                  class="pt-2"
-                  style="justify-items: center"
-                >
-                  <img
-                    src="~/assets/images/empty-data.png"
-                    alt="empty_data"
-                  >
-                  <div class="pt-2 pb-2 font-weight-bold">
-                    Data Kosong
-                  </div>
+                <div class="pt-2" style="justify-items: center">
+                  <img src="~/assets/images/empty-data.png" alt="empty_data" />
+                  <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
                 </div>
               </div>
             </template>

@@ -78,14 +78,14 @@ onMounted(() => {
 
 <template>
   <div v-if="!loading">
-    <VRow>
+    <!-- <VRow>
       <VCol cols="12">
         <KembaliButton></KembaliButton>
       </VCol>
-    </VRow>
+    </VRow> -->
     <VRow>
       <VCol cols="12">
-        <h2>Daftar Ajuan Diterima</h2>
+        <h2 style="font-size: 32px">Daftar Ajuan Diterima</h2>
       </VCol>
     </VRow>
     <VRow>

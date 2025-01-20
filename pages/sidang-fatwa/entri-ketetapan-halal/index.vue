@@ -97,7 +97,8 @@ const navigateAction = (id: string) => {
 
 <template>
   <div>
-    <p class="text-h4">Tabel Pengajuan Ketetapan Halal</p>
+    <h2 style="font-size: 32px">Tabel Pengajuan Ketetapan Halal</h2>
+    <br />
     <VCard class="pa-4">
       <VRow v-if="!loadingAll">
         <VCol>

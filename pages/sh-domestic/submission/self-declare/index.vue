@@ -168,16 +168,15 @@ onMounted(async () => {
 
 <template>
   <div>
-    <div class="mb-8">
-      <p class="text-h4">Pengajuan Self Declare</p>
-    </div>
+    <di>
+      <h2 style="font-size: 32px">Pengajuan Self Declare</h2>
+      <br />
+    </di>
 
-    <VContainer v-if="!loadingAll" class="bg-surface rounded">
+    <VCard v-if="!loadingAll" rounded class="bg-surface pa-4">
       <VRow>
         <VCol class="d-flex justify-sm-space-between align-center">
-          <div class="text-h4 font-weight-bold">
-            Data Pengajuan Self Declare
-          </div>
+          <h3 style="font-size: 24px">Data Pengajuan Self Declare</h3>
         </VCol>
         <VCol class="d-flex justify-end align-center">
           <VBtn
@@ -282,7 +281,7 @@ onMounted(async () => {
           </VDataTableServer>
         </VCol>
       </VRow>
-    </VContainer>
+    </VCard>
 
     <VSkeletonLoader
       type="table-heading, list-item-two-line, image, table-tfoot"

@@ -2,6 +2,31 @@
 export default [
   //Main Menu
   {
+    title: "navbar.kepkaban.title",
+    icon: { icon: "mdi-clipboard-check" },
+    roles: ["Executive"],
+    children: [
+      {
+        title: "navbar.kepkaban.menu.juleha.title",
+        to: "approval-juleha",
+        icon: { icon: "fa-genderless" },
+        roles: ["Executive"],
+      },
+      {
+        title: "navbar.kepkaban.menu.domisiliP3h.title",
+        to: 'approval-domisili-p3h',
+        icon: { icon: "fa-genderless" },
+        roles: ["Executive"],
+      },
+      {
+        title: "navbar.kepkaban.menu.lembagaLp3h.title",
+        to: 'approval-lembaga-p3h',
+        icon: { icon: "fa-genderless" },
+        roles: ["Executive"],
+      },
+    ],
+  },
+  {
     heading: "navbar.main_menu",
     roles: [
       "Pelaku Usaha",
@@ -342,6 +367,12 @@ export default [
     title: "navbar.management.menu.image",
     icon: { icon: "fa-image" },
     to: "administrator-image-auth",
+    roles: ["Admin"],
+  },
+  {
+    title: "navbar.management.menu.announcement",
+    icon: { icon: "fa-image" },
+    to: "announcement",
     roles: ["Admin"],
   },
 ];

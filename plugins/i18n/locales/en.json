@@ -108,8 +108,23 @@
       "menu": {
         "user": "User",
         "role": "Role",
-        "image": "Image Authorization"
+        "image": "Image Authorization",
+        "announcement": "Announcement"
       }
+    },
+    "kepkaban": {
+        "menu": {
+            "juleha": {
+                "title": "Persetujuan Sertifikat Juleha"
+            },
+            "domisiliP3h": {
+              "title": "Persetujuan Pindah Domisili P3H"
+            },
+            "lembagaLp3h": {
+              "title": "Persetujuan Pindah Lembaga P3H"
+            }
+        },
+        "title": "Approval"
     }
   },
   "uam_role": "Role",

@@ -276,7 +276,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <VCard variant="flat" class="pa-4">
+  <VRow>
+    <VCol>
+      <h2 style="font-size: 32px">Verifikasi Self Declare</h2>
+    </VCol>
+  </VRow>
+  <br />
+  <VCard class="pa-4">
     <VCardTitle class="mb-6 px-2">
       <VRow>
         <VCol cols="10">

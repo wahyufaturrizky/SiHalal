@@ -45,8 +45,10 @@ onMounted(() => {
 <template>
   <SubPelakuUsahaLayout>
     <template #pageTitle>
-      <VRow>
-        <VCol><h3>Detail Pelaku Usaha</h3></VCol>
+      <VRow align="center">
+        <VCol>
+          <h2 style="font-size: 32px">Detail Pelaku Usaha</h2>
+        </VCol>
         <VCol style="display: flex; justify-content: end">
           <VBtn
             density="compact"

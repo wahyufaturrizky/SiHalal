@@ -68,7 +68,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <h2>Daftar Fasilitasi</h2>
+  <h2 style="font-size: 32px">Daftar Fasilitasi</h2>
   <br />
   <VCard>
     <VCardTitle><h3>List Fasilitasi</h3></VCardTitle>

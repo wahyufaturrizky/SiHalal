@@ -26,7 +26,6 @@ const headers: any = [
   { title: "Action", key: "action" },
 ];
 
-
 const handleInput = () => {
   debouncedFetch(
     page.value,
@@ -107,13 +106,19 @@ onMounted(async () => {
 </script>
 
 <template>
-  <VCard variant="flat" class="pa-4">
+  <VRow>
+    <VCol>
+      <h2 style="font-size: 32px">Verifikasi Self Declare</h2>
+    </VCol>
+  </VRow>
+  <br />
+  <VCard>
     <VCardTitle>
-      <VRow>
-        <VCol cols="10">
+      <VRow align="center">
+        <VCol cols="6">
           <h3>Data Pengajuan</h3>
         </VCol>
-        <VCol cols="2" style="display: flex; justify-content: end">
+        <VCol cols="6" align="end">
           <DataPermohonanSertifikasi
             @refresh="loadItem(1, itemPerPage, searchQuery, status)"
           />
