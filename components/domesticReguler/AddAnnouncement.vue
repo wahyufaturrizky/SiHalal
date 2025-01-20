@@ -2,6 +2,9 @@
 import { computed, defineProps, ref } from 'vue'
 
 import { useDisplay } from 'vuetify'
+import '@vueup/vue-quill/dist/vue-quill.snow.css'
+
+let QuillEditor
 
 const props = defineProps({
   role: {
@@ -64,6 +67,28 @@ const { mdAndUp } = useDisplay()
 const dialogMaxWidth = computed(() => {
   return mdAndUp.value ? 750 : '90%'
 })
+
+onMounted(async () => {
+  QuillEditor = (await import('@vueup/vue-quill')).QuillEditor
+})
+
+const editorOptions = {
+  theme: 'snow', // Choose a theme: snow, bubble, or core
+  placeholder: 'Deskripsi...',
+  modules: {
+    toolbar: [
+      ['bold', 'italic', 'underline'],
+      ['link'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      [{ align: [] }], // Alignment
+      ['clean'], // Clear formatting
+    ],
+  },
+}
+
+const onTextChange = (newValue: any) => {
+  body.value.detail = newValue
+}
 </script>
 
 <template>
@@ -93,9 +118,14 @@ const dialogMaxWidth = computed(() => {
         </div>
         <div class="pa-4 ga-2">
           <label>Detail Announcement</label>
-          <VTextarea
-            v-model="body.detail"
-            class="w-full"
+          <QuillEditor
+            v-model:content="body.detail"
+            :options="editorOptions"
+            theme="snow"
+            content-type="html"
+            output="html"
+            style="min-height: 100px;"
+            @update:content="onTextChange"
           />
         </div>
         <div class="pa-4 ga-2">
