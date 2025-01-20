@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { isOlderThan15Days } from '@/utils/isOlderThanFifteenDays'
+import { isOlderThan15Days } from "@/utils/isOlderThanFifteenDays";
 
-const router = useRouter()
+const router = useRouter();
 
-const dataTable = ref<any[]>([])
-const listChannel = ref<any[]>([])
-const skalaUsaha = ref<any[]>([])
-const provinceData = ref<any[]>([])
-const loading = ref<boolean>(false)
-const getWithFilter = ref<boolean>(false)
-const page = ref<number>(1)
-const size = ref<number>(10)
-const searchQuery = ref<string>('')
-const showFilterMenu = ref(false)
-const detailStatus = ref<any>(null)
+const dataTable = ref<any[]>([]);
+const listChannel = ref<any[]>([]);
+const skalaUsaha = ref<any[]>([]);
+const provinceData = ref<any[]>([]);
+const loading = ref<boolean>(false);
+const getWithFilter = ref<boolean>(false);
+const page = ref<number>(1);
+const size = ref<number>(10);
+const searchQuery = ref<string>("");
+const showFilterMenu = ref(false);
+const detailStatus = ref<any>(null);
 
 const invoiceHeader: any[] = [
   { title: "No", value: "index" },
@@ -25,182 +25,194 @@ const invoiceHeader: any[] = [
   { title: "Status", value: "status", nowrap: true },
   { title: "Tanggal Dikirim Oleh BPJPH", value: "tgl_dikirim", nowrap: true },
   { title: "Action", value: "actions", align: "center" },
-]
+];
 
-const isInfoModalOpen = ref(false)
+const isInfoModalOpen = ref(false);
 
 const selectedFilters = ref({
-  jenisLayanan: 'Semua',
-  jenisProduk: 'Semua',
-  provinsi: 'Semua',
-  lph: 'Semua',
-})
+  jenisLayanan: "Semua",
+  jenisProduk: "Semua",
+  provinsi: "Semua",
+  lph: "Semua",
+});
 
 const handleOpenInfoModal = () => {
-  isInfoModalOpen.value = !isInfoModalOpen.value
-}
+  isInfoModalOpen.value = !isInfoModalOpen.value;
+};
 
 const onStatusClicked = (item: string) => {
-  isInfoModalOpen.value = !isInfoModalOpen.value
-  detailStatus.value = item
-}
+  isInfoModalOpen.value = !isInfoModalOpen.value;
+  detailStatus.value = item;
+};
 
-const loadItem = async (pageNumber: number, sizeData: number, search: string = '', path: string) => {
+const loadItem = async (
+  pageNumber: number,
+  sizeData: number,
+  search: string = "",
+  path: string
+) => {
   try {
     let params = {
       pageNumber,
       sizeData,
       search,
       url: path,
-    }
+    };
     if (getWithFilter.value) {
       params = {
         ...params,
-        skala_code: selectedFilters.value.jenisProduk.replace('Semua', ''),
-        provinsi_code: selectedFilters.value.provinsi.replace('Semua', ''),
-        channel_code: selectedFilters.value.jenisLayanan.replace('Semua', ''),
-      }
+        skala_code: selectedFilters.value.jenisProduk.replace("Semua", ""),
+        provinsi_code: selectedFilters.value.provinsi.replace("Semua", ""),
+        channel_code: selectedFilters.value.jenisLayanan.replace("Semua", ""),
+      };
     }
 
-    const response: any = await $api('/reguler/lph/list', {
-      method: 'get',
+    const response: any = await $api("/reguler/lph/list", {
+      method: "get",
       params,
-    })
+    });
 
     if (response?.code === 2000) {
       if (path === LIST_CHANNEL_PATH) {
-        const newData: any = [{ name: 'Semua', code: '' }]
+        const newData: any = [{ name: "Semua", code: "" }];
 
         response?.data.map((item: any) => {
-          return newData.push(item)
-        })
+          return newData.push(item);
+        });
 
-        return newData
+        return newData;
       }
 
-      return response.data
+      return response.data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
-const handleSearch = async (pageNumber: number, sizeData: number, search: string = '', path: string) => {
+const handleSearch = async (
+  pageNumber: number,
+  sizeData: number,
+  search: string = "",
+  path: string
+) => {
   try {
     let params = {
       pageNumber,
       sizeData,
       search,
       url: path,
-    }
+    };
     if (getWithFilter.value) {
       params = {
         ...params,
-        skala_code: selectedFilters.value.jenisProduk.replace('Semua', ''),
-        provinsi_code: selectedFilters.value.provinsi.replace('Semua', ''),
-        channel_code: selectedFilters.value.jenisLayanan.replace('Semua', ''),
-      }
+        skala_code: selectedFilters.value.jenisProduk.replace("Semua", ""),
+        provinsi_code: selectedFilters.value.provinsi.replace("Semua", ""),
+        channel_code: selectedFilters.value.jenisLayanan.replace("Semua", ""),
+      };
     }
 
-    const response: any = await $api('/reguler/lph/list', {
-      method: 'get',
+    const response: any = await $api("/reguler/lph/list", {
+      method: "get",
       params,
-    })
+    });
 
-    if (response?.code === 2000)
-      return dataTable.value = response.data
-    else
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    if (response?.code === 2000) return (dataTable.value = response.data);
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const getMasterSkalaUsaha = async () => {
-  const response: any[] = await $api('/master/business-entity-scale',
-    { method: 'get' },
-  )
+  const response: any[] = await $api("/master/business-entity-scale", {
+    method: "get",
+  });
 
-  const newData: any = { name: 'Semua', code: '' }
+  const newData: any = { name: "Semua", code: "" };
 
-  response.unshift(newData)
+  response.unshift(newData);
 
-  return response
-}
+  return response;
+};
 
 const getMasterProvinsi = async () => {
-  const response: any[] = await $api('/master/province',
-    { method: 'get' },
-  )
+  const response: any[] = await $api("/master/province", { method: "get" });
 
-  const newData: any = { name: 'Semua', code: '' }
+  const newData: any = { name: "Semua", code: "" };
 
-  response.unshift(newData)
+  response.unshift(newData);
 
-  return response
-}
+  return response;
+};
 
 const applyFilters = async () => {
-  showFilterMenu.value = false
-  getWithFilter.value = true
-  handleSearch(page.value, size.value, searchQuery.value, LIST_PEMERIKSAAN_PATH)
-}
+  showFilterMenu.value = false;
+  getWithFilter.value = true;
+  handleSearch(
+    page.value,
+    size.value,
+    searchQuery.value,
+    LIST_PEMERIKSAAN_PATH
+  );
+};
 
 const handleInput = (e: any) => {
-  debounce(handleSearch(page.value, size.value, e.target.value, LIST_PEMERIKSAAN_PATH), 500)
-}
+  debounce(
+    handleSearch(page.value, size.value, e.target.value, LIST_PEMERIKSAAN_PATH),
+    500
+  );
+};
 
 onMounted(async () => {
-  loading.value = true
+  loading.value = true;
 
   const responseData = await Promise.allSettled([
     loadItem(page.value, 100, searchQuery.value, LIST_PEMERIKSAAN_PATH),
     loadItem(page.value, size.value, searchQuery.value, LIST_CHANNEL_PATH),
     getMasterSkalaUsaha(),
     getMasterProvinsi(),
-  ])
+  ]);
 
   if (responseData) {
-    dataTable.value = responseData?.[0]?.value || []
-    listChannel.value = responseData?.[1]?.value || []
-    skalaUsaha.value = responseData?.[2]?.value || []
-    provinceData.value = responseData?.[3]?.value || []
+    dataTable.value = responseData?.[0]?.value || [];
+    listChannel.value = responseData?.[1]?.value || [];
+    skalaUsaha.value = responseData?.[2]?.value || [];
+    provinceData.value = responseData?.[3]?.value || [];
   }
-  loading.value = false
-})
+  loading.value = false;
+});
 
 watch(dataTable, () => {
-  dataTable?.value.length > 0 && dataTable.value.map((item: any) => {
-    const dateData = item?.tgl_dikirim?.split(' ')[0] || ''
-    const dayCount = item?.tgl_dikirim?.split(' ')[1] || ''
-    if (dateData) {
-      const isFifteenDay = isOlderThan15Days(dateData)
-      if (isFifteenDay) {
-        detailStatus.value = dayCount
-        setTimeout(() => {
-          return isInfoModalOpen.value = true
-        }, 1500)
+  dataTable?.value.length > 0 &&
+    dataTable.value.map((item: any) => {
+      const dateData = item?.tgl_dikirim?.split(" ")[0] || "";
+      const dayCount = item?.tgl_dikirim?.split(" ")[1] || "";
+      if (dateData) {
+        const isFifteenDay = isOlderThan15Days(dateData);
+        if (isFifteenDay) {
+          detailStatus.value = dayCount;
+          setTimeout(() => {
+            return (isInfoModalOpen.value = true);
+          }, 1500);
+        }
       }
-    }
 
-    return false
-  })
-})
+      return false;
+    });
+});
 </script>
 
 <template>
-  <div class="d-flex align-center cursor-pointer" @click="router.go(-1)">
+  <!-- <div class="d-flex align-center cursor-pointer" @click="router.go(-1)">
     <VIcon icon="mdi-chevron-left" size="40px" color="primary" />
     <div class="text-primary">Kembali</div>
-  </div>
+  </div> -->
   <VRow no-gutters>
     <VCol>
-      <h1>Update Pemeriksaan</h1>
+      <h2 style="font-size: 32px">Update Pemeriksaan</h2>
     </VCol>
   </VRow>
   <VRow>
@@ -227,10 +239,7 @@ watch(dataTable, () => {
                     Filter
                   </VBtn>
                 </template>
-                <VCard
-                  class="pa-3"
-                  width="300"
-                >
+                <VCard class="pa-3" width="300">
                   <VSelect
                     v-model="selectedFilters.jenisLayanan"
                     label="Jenis Layanan"
@@ -285,17 +294,9 @@ watch(dataTable, () => {
           >
             <template #no-data>
               <div class="w-full mt-2">
-                <div
-                  class="pt-2"
-                  style="justify-items: center"
-                >
-                  <img
-                    src="~/assets/images/empty-data.png"
-                    alt="empty_data"
-                  >
-                  <div class="pt-2 pb-2 font-weight-bold">
-                    Data Kosong
-                  </div>
+                <div class="pt-2" style="justify-items: center">
+                  <img src="~/assets/images/empty-data.png" alt="empty_data" />
+                  <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
                 </div>
               </div>
             </template>
@@ -304,7 +305,10 @@ watch(dataTable, () => {
             </template>
             <template #item.businessType="{ item }">
               <div class="d-flex">
-                <div v-for="el in item.businessType" class="green-box py-1 px-3 me-3">
+                <div
+                  v-for="el in item.businessType"
+                  class="green-box py-1 px-3 me-3"
+                >
                   {{ el }}
                 </div>
               </div>
@@ -322,7 +326,9 @@ watch(dataTable, () => {
                 icon="mdi-arrow-right"
                 color="primary"
                 size="x-large"
-                @click="router.push(`/reguler/examination-update/${item.id_reg}`)"
+                @click="
+                  router.push(`/reguler/examination-update/${item.id_reg}`)
+                "
               />
             </template>
             <template #bottom>

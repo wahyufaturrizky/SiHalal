@@ -38,6 +38,12 @@ onMounted(async () => {
     isLoading.value = false;
   }
 });
+
+const handleOssUpdate = () => {
+  store.fetchProfile();
+};
+
+const closeModal = ref(false);
 </script>
 
 <template>
@@ -78,55 +84,85 @@ onMounted(async () => {
         </VContainer>
         <VRow>
           <VCol cols="12">
-            <BasicDataPopup parent-btn-label="Lihat Data" :card-width="700">
-              <template #content>
-                <VRow style="max-height: 60svh; overflow-y: auto">
-                  <VCol cols="12">
-                    <VDataTable
-                      :headers="tablePerizinanHeader"
-                      :items="store.perizinan ?? store.perizinan"
-                    >
-                      <template #item.no="{ index }">
-                        {{ index + 1 }}
-                      </template>
-                      <template #item.tgl_izin="{ item }">
-                        {{
-                          item?.tgl_izin == null
-                            ? "-"
-                            : new Date(item.tgl_izin)
-                                .toISOString()
-                                .substring(0, 10)
-                        }}
-                      </template>
-                      <template #item.file_izin="{ item }">
-                        <v-btn
-                          v-if="item.file_izin && item.file_izin != '-'"
-                          color="primary"
-                          variant="plain"
-                          prepend-icon="mdi-download"
-                          @click="download(item.file_izin)"
-                        >
-                          File
-                        </v-btn>
-                        <p v-else>File not available</p>
-                      </template>
-                      <template #item.file_izin_oss="{ item }">
-                        <v-btn
-                          v-if="item.file_izin_oss"
-                          color="primary"
-                          variant="plain"
-                          prepend-icon="mdi-download"
-                          @click="download(item.file_izin_oss)"
-                        >
-                          File
-                        </v-btn>
-                        <p v-else>File not available</p>
-                      </template>
-                    </VDataTable>
-                  </VCol>
-                </VRow>
+            <VDialog max-width="800">
+              <template #activator="{ props: openModal }">
+                <VBtn variant="outlined" style="width: 100%" v-bind="openModal"
+                  >Lihat Data</VBtn
+                >
               </template>
-            </BasicDataPopup>
+              <template #default="{ isActive }">
+                <VCard>
+                  <VCardTitle style="padding: 3svh">
+                    <VRow>
+                      <VCol cols="10"><h3>Lihat Data Perizinan</h3></VCol>
+                      <VCol cols="2" style="display: flex; justify-content: end"
+                        ><VIcon
+                          size="small"
+                          @click="isActive.value = false"
+                          icon="fa-times"
+                        ></VIcon
+                      ></VCol>
+                    </VRow>
+                  </VCardTitle>
+                  <VCardItem
+                    style="margin: 2svh; max-height: 60svh; overflow-y: auto"
+                  >
+                    <VRow>
+                      <VCol cols="12">
+                        <VDataTable
+                          :headers="tablePerizinanHeader"
+                          :items="store.perizinan ?? store.perizinan"
+                        >
+                          <template #item.no="{ index }">
+                            {{ index + 1 }}
+                          </template>
+                          <template #item.tgl_izin="{ item }">
+                            {{
+                              item?.tgl_izin == null
+                                ? "-"
+                                : new Date(item.tgl_izin)
+                                    .toISOString()
+                                    .substring(0, 10)
+                            }}
+                          </template>
+                          <template #item.file_izin="{ item }">
+                            <v-btn
+                              v-if="item.file_izin && item.file_izin != '-'"
+                              color="primary"
+                              variant="plain"
+                              prepend-icon="mdi-download"
+                              @click="download(item.file_izin)"
+                            >
+                              File
+                            </v-btn>
+                            <p v-else>File not available</p>
+                          </template>
+                          <template #item.file_izin_oss="{ item }">
+                            <v-btn
+                              v-if="item.file_izin_oss"
+                              color="primary"
+                              variant="plain"
+                              prepend-icon="mdi-download"
+                              @click="download(item.file_izin_oss)"
+                            >
+                              File
+                            </v-btn>
+                            <p v-else>File not available</p>
+                          </template>
+                        </VDataTable>
+                      </VCol>
+                    </VRow>
+                  </VCardItem>
+                </VCard>
+              </template>
+            </VDialog>
+          </VCol>
+        </VRow>
+        <VRow dense>
+          <VCol cols="12">
+            <VBtn @click="handleOssUpdate" style="width: 100%"
+              >Update Data OSS</VBtn
+            >
           </VCol>
         </VRow>
       </VExpansionPanelText>

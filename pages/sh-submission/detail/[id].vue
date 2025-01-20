@@ -19,7 +19,7 @@ const id_detail = (route.params as any).id as string;
   </div>
   <VRow no-gutters>
     <VCol>
-      <h1>Detail Pengajuan</h1>
+      <h1 style="font-size: 32px">Detail Pengajuan</h1>
     </VCol>
     <VCol v-if="userRoles?.includes('Verifikator')" class="d-flex justify-end">
       <VBtn

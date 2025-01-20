@@ -268,7 +268,7 @@ const changeFilterBy = (item) => {
 <template>
   <VRow>
     <VCol cols="12">
-      <h2>Inquiry / Pengajuan</h2>
+      <h2 style="font-size: 32px">Inquiry / Pengajuan</h2>
     </VCol>
   </VRow>
   <VRow>

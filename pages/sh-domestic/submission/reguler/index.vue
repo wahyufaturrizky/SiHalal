@@ -1,144 +1,135 @@
 <!-- eslint-disable vue/attribute-hyphenation -->
 <!-- eslint-disable array-callback-return -->
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 
-const router = useRouter()
+const router = useRouter();
 
-const searchQuery = ref('')
-const loading = ref<boolean>(false)
-const page = ref<number>(1)
-const size = ref<number>(10)
-const totalItems = ref<number>(0)
-const data = ref<any[]>([])
-const listOss = ref<any[]>([])
+const searchQuery = ref("");
+const loading = ref<boolean>(false);
+const page = ref<number>(1);
+const size = ref<number>(10);
+const totalItems = ref<number>(0);
+const data = ref<any[]>([]);
+const listOss = ref<any[]>([]);
 
 const headers = [
-  { title: 'No', key: 'no' },
-  { title: 'Nomor Daftar', key: 'no_daftar', nowrap: true },
-  { title: 'Tanggal Daftar', key: 'tgl_daftar', nowrap: true },
-  { title: 'Nama PU', key: 'nama_pu', nowrap: true },
-  { title: 'Jenis Daftar', key: 'jenis_daftar', nowrap: true },
-  { title: 'Jenis Produk', key: 'jenis_produk', nowrap: true },
-  { title: 'Status', key: 'newStatus', nowrap: true },
-  { title: 'Action', value: 'action', sortable: false, nowrap: true },
-]
+  { title: "No", key: "no" },
+  { title: "Nomor Daftar", key: "no_daftar", nowrap: true },
+  { title: "Tanggal Daftar", key: "tgl_daftar", nowrap: true },
+  { title: "Nama PU", key: "nama_pu", nowrap: true },
+  { title: "Jenis Daftar", key: "jenis_daftar", nowrap: true },
+  { title: "Jenis Produk", key: "jenis_produk", nowrap: true },
+  { title: "Status", key: "newStatus", nowrap: true },
+  { title: "Action", value: "action", sortable: false, nowrap: true },
+];
 
 const getChipColor = (status: string) => {
-  if (status === 'Draf')
-    return 'primary'
-  else if (status === 'Micre')
-    return 'success'
+  if (status === "Draf") return "primary";
+  else if (status === "Micre") return "success";
 
-  return 'success'
-}
+  return "success";
+};
 
 const navigateTo = (url: string) => {
-  window.location.href = url
-}
+  window.location.href = url;
+};
 
-const loadItem = async (pageNumber: number, sizeData: number, keyword: string = '') => {
+const loadItem = async (
+  pageNumber: number,
+  sizeData: number,
+  keyword: string = ""
+) => {
   try {
-    const response: any = await $api('/reguler/pelaku-usaha', {
-      method: 'get',
+    const response: any = await $api("/reguler/pelaku-usaha", {
+      method: "get",
       params: {
         pageNumber,
         sizeData,
         keyword,
       },
-    })
+    });
 
     if (response?.code === 2000) {
       response?.data?.map((item: any) => {
-        item.newStatus = [item?.jenis_usaha, item?.jumlah_produk, item.status]
-      })
-      data.value = response.data
-      totalItems.value = response.total_item
+        item.newStatus = [item?.jenis_usaha, item?.jumlah_produk, item.status];
+      });
+      data.value = response.data;
+      totalItems.value = response.total_item;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const getListOss = async () => {
   try {
-    const response: any = await $api('/reguler/pelaku-usaha/list-oss', {
-      method: 'get',
-    })
+    const response: any = await $api("/reguler/pelaku-usaha/list-oss", {
+      method: "get",
+    });
 
-    if (response?.code === 2000)
-      listOss.value = response?.data
-    else
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    if (response?.code === 2000) listOss.value = response?.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const handleInput = (e: any) => {
-  loading.value = true
-  debounce(loadItem(page.value, size.value, e.target.value), 500)
-  loading.value = false
-}
+  loading.value = true;
+  debounce(loadItem(page.value, size.value, e.target.value), 500);
+  loading.value = false;
+};
 
 const newRegister = async (type: string, id: string) => {
   try {
-    const response: any = await $api('/reguler/pelaku-usaha/draft', {
-      method: 'post',
+    const response: any = await $api("/reguler/pelaku-usaha/draft", {
+      method: "post",
       body: {
         type,
         id,
       },
-    })
+    });
 
     if (response?.code === 2000) {
       router.push(
-        `/sh-domestic/submission/reguler/${response?.data?.certificate_halal?.id_reg}`,
-      )
+        `/sh-domestic/submission/reguler/${response?.data?.certificate_halal?.id_reg}`
+      );
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
-const additionalRegister = () => {
-}
+const additionalRegister = () => {};
 
 onMounted(async () => {
-  loading.value = true
-  await Promise.allSettled([loadItem(page.value, size.value, searchQuery.value), getListOss()])
-  loading.value = false
-})
+  loading.value = true;
+  await Promise.allSettled([
+    loadItem(page.value, size.value, searchQuery.value),
+    getListOss(),
+  ]);
+  loading.value = false;
+});
 </script>
 
 <template>
   <div v-if="loading">
-    <VSkeletonLoader
-      v-for="i in 1"
-      :key="i"
-      type="table"
-    />
+    <VSkeletonLoader v-for="i in 1" :key="i" type="table" />
   </div>
-  <VContainer v-else-if="!loading">
-    <KembaliButton class="no-padding" />
-    <h3 class="text-h3">
-      Pengajuan Reguler
-    </h3>
-    <br>
+  <div v-else-if="!loading">
+    <!-- <KembaliButton class="no-padding" /> -->
+    <h2 style="font-size: 32px">Pengajuan Reguler</h2>
+    <br />
 
-    <VCard class="pa-4">
+    <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
-        <span class="text-h5 font-weight-bold">Daftar Pengajuan Reguler</span>
+        <h3 style="font-size: 24px">Daftar Pengajuan Reguler</h3>
         <NewRegulerSertificationHalalDialog
           :new-register="newRegister"
           :additional-register="additionalRegister"
@@ -170,9 +161,7 @@ onMounted(async () => {
             <div v-if="item.tgl_daftar">
               {{ formatDateIntl(new Date(item.tgl_daftar)) }}
             </div>
-            <div v-else>
-              -
-            </div>
+            <div v-else>-</div>
           </template>
           <template #[`item.newStatus`]="{ item }">
             <div class="d-flex">
@@ -192,7 +181,9 @@ onMounted(async () => {
               color="primary"
               style="cursor: pointer"
               class="ic-center"
-              @click="navigateTo(`/sh-domestic/submission/reguler/${item.id_reg}`)"
+              @click="
+                navigateTo(`/sh-domestic/submission/reguler/${item.id_reg}`)
+              "
             >
               ri-arrow-right-line
             </VIcon>
@@ -200,7 +191,7 @@ onMounted(async () => {
         </VDataTable>
       </VCardItem>
     </VCard>
-  </VContainer>
+  </div>
 </template>
 
 <style lang="scss" scoped>

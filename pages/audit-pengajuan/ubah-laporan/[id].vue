@@ -88,14 +88,12 @@ const selectedFacility = ref(null)
 const facilityAddress = ref(null)
 
 watch(selectedFacility, (newSelectedItem) => {
-  console.log("SELECT : ", newSelectedItem)
   facilityAddress.value = facility.value.filter(
     f => f.id_fas === newSelectedItem
   )[0].alamat
 });
 
 const loadItem = async (): void => {
-  console.log('loaditem')
   try {
     const response = await $api(`/reguler/auditor/ubah-laporan/${id}`, {
       method: 'GET',
@@ -112,7 +110,7 @@ const loadItem = async (): void => {
         { title: 'Alamat Perusahaan', value: data.pengajuan_sertifikat?.alamat, type: 'text' },
         { title: 'NIB', value: data.pengajuan_sertifikat?.nib, type: 'text' },
         { title: 'Skala Usaha', value: data.pengajuan_sertifikat?.skala_usaha, type: 'select', disabled: true },
-        { title: 'Jenis Produk', value: data.pengajuan_sertifikat?.jenis_produk, type: 'text', },
+        { title: 'Nama Fasilitas', value: 'Pilih', type: 'select-fasillitasi'},
         { title: 'Alamat Fasilitas', value: '' , type: 'text-fasilitasi' },
         {
           type: 'date',
@@ -338,7 +336,6 @@ const loadProsesProduk = async () => {
 }
 
 const addProsesProduk = async item => {
-  console.log('ITEM ADD PROSES PRODUK: ', item)
   try {
     const response: any = await $api(`/reguler/auditor/${id}/add-proses-produk`, {
       method: 'post',
@@ -399,7 +396,7 @@ const loadJenisKeteranganBahan = async () => {
       jenisKeteranganBahan.value = response.map(
         i => ({
           title: i.name,
-          value: i.code,
+          value: i.name,
         }),
       )
 
@@ -448,7 +445,17 @@ const updateDataDukung = async item => {
       keterangan: item.information,
     }
 
-    const response: any = await $api(`/reguler/auditor/${id}/update-bahan-dukung`, {
+    const response: any = item.id_bahan_data_dukung === '00000000-0000-0000-0000-000000000000' ?
+      await $api(`/reguler/auditor/${id}/add-bahan-dukung`, {
+        method: 'post',
+        body: {
+          id_reg_bahan: body.id_reg_bahan,
+          nama_bahan: body.nama_bahan,
+          diragukan: body.diragukan,
+          kriteria_bahan: body.kriteria_bahan,
+          keterangan: body.keterangan,
+        },
+      }) : await $api(`/reguler/auditor/${id}/update-bahan-dukung`, {
       method: 'put',
       body,
     })
@@ -488,8 +495,8 @@ const loadBahanDukung = async () => {
             id_bahan_data_dukung: v.DataDukung?.id_bahan_data_dukung,
             materialName: v.reg_nama_bahan,
             priority: v.DataDukung?.kriteria_bahan,
-            findings: v.DataDukung?.temuan,
-            information: v.DataDukung?.Mref?.ref_desc,
+            findings: v.DataDukung?.diragukan,
+            information: v.DataDukung?.keterangan,
             diragukan: v.DataDukung?.diragukan,
           })),
       }
@@ -511,6 +518,25 @@ const loadBahanDukung = async () => {
   }
   catch (error) {
     useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
+const uploadBahan = async (file) => {
+  const files = file.value;
+  try {
+    const formData = new FormData();
+    formData.append(`file`, files)
+    const response = await $api(`/reguler/auditor/${id}/upload-bahan`, {
+      method: "post",
+      body: formData,
+    });
+    await loadBahanDukung();
+    return response;
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      "ada kesalahan saat upload file, gagal menyimpan!",
+      "error"
+    );
   }
 }
 
@@ -719,8 +745,10 @@ onMounted(async () => {
           :headers-label="materialData.label"
           :items-label="materialData.value"
           with-add-button
+          with-upload-button
           @submit="addDataDukung"
           @update="updateDataDukung"
+          @upload="uploadBahan"
         />
         <br>
         <ContentAuditPengajuan

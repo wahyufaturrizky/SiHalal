@@ -82,6 +82,7 @@ const loadItem = async (
       items.value = response.data || [];
       totalItems.value = response.total_item || 0;
       loading.value = false;
+      average.value = response.rata_rata || 0;
 
       return response;
     } else {
@@ -207,8 +208,8 @@ const dialogMaxWidth = computed(() => {
 </script>
 
 <template>
-  <VContainer>
-    <h3 class="text-h3">Hasil Penetapan</h3>
+  <div>
+    <h2 style="font-size: 32px">Hasil Penetapan</h2>
     <br />
 
     <VCard class="pa-4">
@@ -349,5 +350,5 @@ const dialogMaxWidth = computed(() => {
         </VDataTableServer>
       </VCardItem>
     </VCard>
-  </VContainer>
+  </div>
 </template>

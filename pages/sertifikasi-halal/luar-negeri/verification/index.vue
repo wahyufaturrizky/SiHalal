@@ -112,7 +112,10 @@ const navigateAction = (id: string) => {
 
 <template>
   <div>
-    <p class="text-h4">Foreign Halal Certificate Registration Verification</p>
+    <h2 style="font-size: 32px">
+      Foreign Halal Certificate Registration Verification
+    </h2>
+    <br />
     <VCard class="pa-4">
       <VRow>
         <VCol>

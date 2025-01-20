@@ -63,20 +63,22 @@ onMounted(async () => {
 </script>
 
 <template>
-  <VRow>
+  <!-- <VRow>
     <VCol cols="12">
       <KembaliButton />
     </VCol>
-  </VRow>
+  </VRow> -->
   <VRow>
     <VCol cols="12">
-      <h2>Status Permohonan</h2>
+      <h2 style="font-size: 32px">Status Permohonan</h2>
     </VCol>
   </VRow>
   <VRow>
     <VCol cols="12">
       <VCard>
-        <VCardTitle><h3>Data Pengajuan</h3></VCardTitle>
+        <VCardTitle>
+          <h3 style="font-size: 24px">Data Pengajuan</h3>
+        </VCardTitle>
         <VCardItem>
           <VRow>
             <VCol cols="12">

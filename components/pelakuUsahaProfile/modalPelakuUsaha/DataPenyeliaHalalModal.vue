@@ -207,7 +207,14 @@ watch(
             <VRow>
               <VCol cols="6">
                 <VTextField
-                  :rules="[requiredValidator, alphaValidator]"
+                  :rules="[
+                    requiredValidator,
+                    regexValidator(
+                      form.namaPenyelia,
+                      /^(?!.*\s\s)[a-zA-Z\s']+$/,
+                      'Format nama penyelia tidak sesuai'
+                    ),
+                  ]"
                   v-model="form.namaPenyelia"
                   label="Nama Penyelia"
                   outlined

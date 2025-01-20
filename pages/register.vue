@@ -4,6 +4,7 @@ import { useDisplay } from "vuetify";
 import { VForm } from "vuetify/components/VForm";
 
 import { VNodeRenderer } from "@/@layouts/components/VNodeRenderer";
+import type { MasterCountry } from "@/server/interface/master.iface";
 import HelpButton from "@/views/pages/HelpButton.vue";
 import bseImage from "@images/bse.png";
 import NoImage from "@images/no-image.png";
@@ -74,6 +75,10 @@ const validateNomorHandphone = async (event: Event) => {
   const target = event.target as HTMLInputElement;
   target.value = target.value.replace(/\D/g, "");
 
+  if (target.value.startsWith(0)) {
+    target.value = target.value.substring(1);
+  }
+
   form.value.noHandphone = target.value;
   if (!form.value.noHandphone) errors.noHandphone = "Wajib diisi";
   else errors.noHandphone = "";
@@ -136,6 +141,7 @@ watch([() => form.value.password, () => form.value.passwordConfirm], () => {
 
 const router = useRouter();
 
+const selectedPhoneCode = ref();
 const onSubmit = async () => {
   // localStorage.setItem('formData', JSON.stringify(form.value))
 
@@ -148,11 +154,12 @@ const onSubmit = async () => {
         phone_number: form.value.noHandphone,
         password: form.value.password,
         confirm_password: form.value.passwordConfirm,
+        code_country: selectedPhoneCode.value,
       };
 
       const payloadcheck = {
         email: form.value.email,
-        phone_number: form.value.noHandphone,
+        phone_number: `${selectedPhoneCode.value}${form.value.noHandphone}`,
       };
 
       try {
@@ -243,7 +250,12 @@ onMounted(async () => {
       },
     }).then((resp: any) => {
       console.log("fetch type = ", resp);
-      fetchType.value = resp?.filter((val: any) => val.name !== ""); // Menyimpan data ke dalam ref
+
+      const eligibleRole = ["r.10", "r.45", "r.5", "r.50"];
+      fetchType.value = resp?.filter(
+        (val: any) =>
+          val.name !== "" && eligibleRole.includes(val.code?.toLowerCase())
+      ); // Menyimpan data ke dalam ref
     });
   } catch (error) {
     console.error("Gagal mengambil data:", error);
@@ -318,13 +330,24 @@ onMounted(() => {
   // currentImage.value = getRandomImage()
   handleLoadImageAuth();
 });
+
+const country = ref();
+onMounted(async () => {
+  const response: MasterCountry[] = await $api("/master/country", {
+    method: "get",
+  });
+  country.value = response.map((item) => {
+    return { name: item.name, cc: item.kode_telepon };
+  });
+  selectedPhoneCode.value = "62";
+});
 </script>
 
 <template>
   <HelpButton />
   <VRow no-gutters>
-    <VCol cols="12" md="6" class="d-flex align-center justify-center bg-white">
-      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
+    <VCol cols="12" md="6" class="d-flex align-start justify-center bg-white">
+      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-3">
         <VCardText>
           <NuxtLink to="/">
             <div class="auth-logo app-logo">
@@ -397,15 +420,59 @@ onMounted(() => {
 
                 <!-- no Handphone -->
                 <VCol cols="12">
-                  <b> Nomor Handphone</b>
-                  <VTextField
-                    v-model="form.noHandphone"
-                    type="tel"
-                    :maxlength="MAX_LENGTH_PHONE_NUMBER"
-                    placeholder="Masukan Nomor Handphone"
-                    @input="validateNomorHandphone"
-                    @paste="handlePasteNomorTelepon"
-                  />
+                  <VRow no-gutters>
+                    <VCol cols="12">
+                      <b> Nomor Handphone</b>
+                    </VCol>
+                  </VRow>
+                  <VRow no-gutters>
+                    <VCol cols="4" style="padding-right: 0">
+                      <VSelect
+                        rounded="s-xl e-0"
+                        density="comfortable"
+                        hide-details
+                        hide-selected
+                        variant="outlined"
+                        :items="country"
+                        item-value="cc"
+                        item-title="name"
+                        v-model="selectedPhoneCode"
+                        style="border-radius: 10px 0 0 10px"
+                      >
+                        <!-- Custom item slot -->
+                        <template v-slot:item="{ props, item }">
+                          <VListItem
+                            v-bind="props"
+                            :title="item.raw.cc"
+                            :subtitle="item.raw.name"
+                            style="width: 200px"
+                          >
+                          </VListItem>
+                        </template>
+
+                        <!-- Custom selection slot -->
+                        <template v-slot:selection="{ item }">
+                          <p style="margin-block-end: 0">
+                            {{ `+${item.raw.cc}` }}
+                          </p>
+                        </template>
+                      </VSelect>
+                    </VCol>
+                    <VCol cols="8" style="padding-left: 0">
+                      <VTextField
+                        style="padding: 0"
+                        rounded="s-0 e-xl"
+                        v-model="form.noHandphone"
+                        type="tel"
+                        :maxlength="MAX_LENGTH_PHONE_NUMBER"
+                        placeholder="Masukan Nomor Handphone"
+                        @input="validateNomorHandphone"
+                        @paste="handlePasteNomorTelepon"
+                      >
+                      </VTextField>
+                    </VCol>
+                  </VRow>
+
                   <span v-if="errors.noHandphone" class="error-text">
                     <VIcon icon="mdi-alert-circle" color="error" size="small" />
                     {{ errors.noHandphone }}
@@ -498,9 +565,10 @@ onMounted(() => {
     <VCol
       v-if="mdAndUp"
       md="6"
-      class="d-flex align-start justify-center pb-3 pt-2 pe-2 bg-white"
+      class="d-flex align-start justify-start py-1 pe-2 bg-white"
+      style="max-height: calc(100vh - 48px)"
     >
-      <img :src="currentImage" width="100%" style="border-radius: 20px" />
+      <img :src="currentImage" height="100%" style="border-radius: 20px" />
     </VCol>
   </VRow>
 </template>
@@ -526,5 +594,9 @@ onMounted(() => {
   color: red;
   font-size: 0.875rem;
   margin-block-start: 4px;
+}
+
+.v-field--prepended {
+  padding-inline-start: 0 !important;
 }
 </style>
