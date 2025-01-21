@@ -81,7 +81,7 @@
         "sidang_fatwa": {
             "title": "Sidang Fatwa",
             "menu": {
-                "proses_sidang_fatwa": "Proses Sidang Fatwa",
+                "proses_sidang_fatwa": "Hasil Sidang Fatwa",
                 "entri_ketetapan_halal": "Entri Ketetapan Halal"
             }
         },
@@ -95,7 +95,7 @@
         "self_declare": {
             "title": "Self Declare",
             "menu": {
-                "proses_sidang_fatwa": "Proses Sidang Fatwa",
+                "proses_sidang_fatwa": "Hasil Sidang Fatwa",
                 "hasil_penetapan": "Hasil Penetapan",
                 "inquiry_1": "Inquiry 1",
                 "inquiry_2": "Inquiry 2",
