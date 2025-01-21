@@ -55,5 +55,3 @@ definePageMeta({
 <template>
   <InformationLoginPopUp :data="listAnnouncement" />
 </template>
-
-<style></style>

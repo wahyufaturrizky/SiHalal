@@ -44,21 +44,23 @@ const dialogMaxWidth = computed(() => {
           <VNodeRenderer :nodes="themeConfig.app.logo" />
         </div>
       </VCardTitle>
-
-      <VCardText align="center">
-        <span class="text-h3">Pengumuman</span>
-      </VCardText>
-
       <VCardText class="">
-        <ul>
-          <li
-            v-for="(item, index) in props.data"
-            :key="index"
-          >
-            <div v-html="item.announcement" />
-          </li>
-        </ul>
+        <div
+          v-for="(item, index) in props.data"
+          :key="index"
+        >
+          <div v-html="item.announcement.replace(/<ul>/g, `<ul class='ml-10' style='margin-top: -12px;'>`).replace(/<ol>/g, `<ol class='ml-10' style='margin-top: -12px;'>`)" />
+        </div>
       </VCardText>
     </VCard>
   </VDialog>
 </template>
+
+<style>
+.ql-align-center {
+    text-align: center !important;
+}
+.ql-align-right {
+    text-align: right !important;
+}
+</style>
