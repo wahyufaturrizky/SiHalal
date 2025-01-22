@@ -169,6 +169,7 @@ const handleLoadImageAuth = async () => {
     } else {
       currentImage.value = NoImage;
     }
+    // currentImage.value = ExVid;
   } catch (error) {
     currentImage.value = NoImage;
     console.error(error);
@@ -348,7 +349,12 @@ const items = [
       class="d-flex align-start justify-start py-1 pe-2 bg-white"
       style="max-height: calc(100vh - 48px)"
     >
-      <img :src="currentImage" height="100%" style="border-radius: 20px" />
+      <!-- <img :src="currentImage" height="100%" style="border-radius: 20px" /> -->
+      <video v-if="currentImage" height="100%" autoplay muted loop>
+        <source :src="currentImage" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      <!-- <iframe :src="currentImage" frameborder="0" allowfullscreen /> -->
     </VCol>
   </VRow>
 </template>
