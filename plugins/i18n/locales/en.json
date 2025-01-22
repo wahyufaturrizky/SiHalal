@@ -81,7 +81,7 @@
     "sidang_fatwa": {
       "title": "Sidang Fatwa",
       "menu": {
-        "proses_sidang_fatwa": "Proses Sidang Fatwa",
+        "proses_sidang_fatwa": "Hasil Sidang Fatwa",
         "entri_ketetapan_halal": "Entri Ketetapan Halal"
       }
     },
@@ -95,7 +95,7 @@
     "self_declare": {
       "title": "Self Declare",
       "menu": {
-        "proses_sidang_fatwa": "Proses Sidang Fatwa",
+        "proses_sidang_fatwa": "Hasil Sidang Fatwa",
         "hasil_penetapan": "Hasil Penetapan",
         "inquiry_1": "Inquiry 1",
         "inquiry_2": "Inquiry 2",
@@ -113,39 +113,42 @@
       }
     },
     "kepkaban": {
-        "menu": {
-            "pendampingCertificate": {
+      "menu": {
+          "pendampingCertificate": {
               "title": "Sertifikat Pendamping"
-            },
-            "akreditasiLphCertificate": {
+          },
+          "akreditasiLphCertificate": {
               "title": "Sertifikat Akreditasi LPH"
-            },
-            "akreditasiLphLnCertificate": {
+          },
+          "akreditasiLphLnCertificate": {
               "title": "Sertifikat Akreditasi LPH LN"
-            },
-            "asesorCertificate": {
+          },
+          "asesorCertificate": {
               "title": "Sertifikat Asesor"
-            },
-            "registrationAuditor": {
+          },
+          "registrationAuditor": {
               "title": "Registrasi Auditor Halal"
-            },
-            "auditorLembagaPelatihan": {
+          },
+          "auditorLembagaPelatihan": {
               "title": "Sertifikat Auditor Lembaga Pelatihan"
-            },
-            "penyeliaLembagaPelatihan": {
+          },
+          "penyeliaLembagaPelatihan": {
               "title": "Persetujuan Sertifikat Penyelia Lembaga Pelatihan"
-            },
-            "juleha": {
-                "title": "Persetujuan Sertifikat Juleha"
-            },
-            "domisiliP3h": {
+          },
+          "penyeliaBpjph": {
+            "title": "Persetujuan Sertifikat Penyelia dari BPJPH"
+          },
+          "juleha": {
+              "title": "Persetujuan Sertifikat Juleha"
+          },
+          "domisiliP3h": {
               "title": "Persetujuan Pindah Domisili P3H"
-            },
-            "lembagaLp3h": {
+          },
+          "lembagaLp3h": {
               "title": "Persetujuan Pindah Lembaga P3H"
-            }
-        },
-        "title": "Approval"
+          }
+      },
+      "title": "Approval"
     }
   },
   "uam_role": "Role",
@@ -203,3 +206,4 @@
     "detail": "Check Submission Data"
   }
 }
+

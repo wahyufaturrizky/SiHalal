@@ -49,6 +49,12 @@ export default [
         roles: ["Executive"],
       },
       {
+        title: "navbar.kepkaban.menu.penyeliaBpjph.title",
+        to: 'approval-penyelia-lembaga-bpjph',
+        icon: { icon: "fa-genderless" },
+        roles: ["Executive"],
+      },
+      {
         title: "navbar.kepkaban.menu.juleha.title",
         to: "approval-juleha",
         icon: { icon: "fa-genderless" },
