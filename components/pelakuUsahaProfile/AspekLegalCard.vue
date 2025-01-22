@@ -10,7 +10,7 @@ const props = defineProps({
   hideDefaultFooter: {
     type: Boolean,
     required: false,
-  }
+  },
 });
 
 const legalHeader = [
@@ -41,7 +41,9 @@ onMounted(() => {
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
-      <VExpansionPanelTitle><h2>Aspek Legal</h2></VExpansionPanelTitle>
+      <VExpansionPanelTitle>
+        <div class="text-h4 font-weight-bold">Aspek Legal</div>
+      </VExpansionPanelTitle>
       <VExpansionPanelText>
         <VDataTable
           :headers="legalHeader"

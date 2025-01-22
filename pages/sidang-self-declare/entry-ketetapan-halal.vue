@@ -209,12 +209,12 @@ const dialogMaxWidth = computed(() => {
 
 <template>
   <div>
-    <h2 style="font-size: 32px">Hasil Penetapan</h2>
+    <h1 style="font-size: 32px">Hasil Penetapan</h1>
     <br />
 
     <VCard class="pa-4">
       <VCardTitle class="d-flex justify-space-between align-center">
-        <span class="text-h5 font-weight-bold">Daftar Hasil</span>
+        <div class="text-h4 font-weight-bold">Daftar Hasil</div>
       </VCardTitle>
       <VCardItem>
         <VRow no-gutters class="d-flex align-center">

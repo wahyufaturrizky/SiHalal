@@ -212,14 +212,14 @@ watch(dataTable, () => {
   </div> -->
   <VRow no-gutters>
     <VCol>
-      <h2 style="font-size: 32px">Update Pemeriksaan</h2>
+      <h1 style="font-size: 32px">Update Pemeriksaan</h1>
     </VCol>
   </VRow>
   <VRow>
     <VCol>
       <VCard>
         <VCardTitle class="my-3 d-flex justify-space-between align-center">
-          <div class="font-weight-bold text-h4">Daftar Pemeriksaan Produk</div>
+          <div class="text-h4 font-weight-bold">Daftar Pemeriksaan Produk</div>
         </VCardTitle>
         <VCardText>
           <VRow class="mb-4">

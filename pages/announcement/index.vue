@@ -1,9 +1,9 @@
 <!-- eslint-disable vue/attribute-hyphenation -->
 <!-- eslint-disable array-callback-return -->
 <script setup lang="ts">
+import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import '@vueup/vue-quill/dist/vue-quill.snow.css'
 
 const router = useRouter()
 let QuillEditor
@@ -23,50 +23,51 @@ const detailData = ref({
   id: null,
   is_active: false,
   role: [],
-})
+});
 
 const headers = [
-  { title: 'No.', key: 'no' },
-  { title: 'Pengumuman', key: 'no_daftar', nowrap: true },
-  { title: 'Role', key: 'tgl_daftar', nowrap: true },
-  { title: 'Status', key: 'nama_pu', nowrap: true },
-  { title: 'Action', value: 'action', sortable: false, nowrap: true },
-]
+  { title: "No.", key: "no" },
+  { title: "Pengumuman", key: "no_daftar", nowrap: true },
+  { title: "Role", key: "tgl_daftar", nowrap: true },
+  { title: "Status", key: "nama_pu", nowrap: true },
+  { title: "Action", value: "action", sortable: false, nowrap: true },
+];
 
 const getChipColor = (status: string) => {
-  if (status)
-    return 'primary'
+  if (status) return "primary";
 
-  return 'warning'
-}
+  return "warning";
+};
 
 const navigateTo = (url: string) => {
-  window.location.href = url
-}
+  window.location.href = url;
+};
 
-const loadItem = async (pageNumber: number, sizeData: number, keyword: string = '') => {
+const loadItem = async (
+  pageNumber: number,
+  sizeData: number,
+  keyword: string = ""
+) => {
   try {
-    const response: any = await $api('/announcement/list', {
-      method: 'get',
+    const response: any = await $api("/announcement/list", {
+      method: "get",
       params: {
         page: pageNumber,
         size: sizeData,
         search: keyword,
       },
-    })
+    });
 
     if (response?.code === 2000) {
-      data.value = response.data
-      totalItems.value = response.total_item
+      data.value = response.data;
+      totalItems.value = response.total_item;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const handleLoadRoles = async () => {
   try {
@@ -84,25 +85,22 @@ const handleLoadRoles = async () => {
 
 const getListRole = async () => {
   try {
-    const response: any = await $api('/announcement/role', {
-      method: 'get',
-    })
+    const response: any = await $api("/announcement/role", {
+      method: "get",
+    });
 
-    if (response?.code === 2000)
-      listRole.value = response?.data
-    else
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    if (response?.code === 2000) listRole.value = response?.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const handleInput = (e: any) => {
-  loading.value = true
-  debounce(loadItem(page.value, size.value, e.target.value), 500)
-  loading.value = false
-}
+  loading.value = true;
+  debounce(loadItem(page.value, size.value, e.target.value), 500);
+  loading.value = false;
+};
 
 const onEdit = (item: any) => {
   detailData.value = {
@@ -116,24 +114,22 @@ const onEdit = (item: any) => {
 
 const onDelete = async (item: any) => {
   try {
-    const response: any = await $api('/announcement/remove', {
-      method: 'delete',
+    const response: any = await $api("/announcement/remove", {
+      method: "delete",
       query: { id: item.id },
-    })
+    });
 
     if (response?.code === 2000) {
-      loadItem(page.value, size.value, searchQuery.value)
-      isVisible.value = false
-      useSnackbar().sendSnackbar('Data Successfully Deleted', 'success')
+      loadItem(page.value, size.value, searchQuery.value);
+      isVisible.value = false;
+      useSnackbar().sendSnackbar("Data Successfully Deleted", "success");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const onSubmitEdit = async () => {
   const payload = {
@@ -143,25 +139,23 @@ const onSubmitEdit = async () => {
   }
 
   try {
-    const response: any = await $api('/announcement/edit', {
-      method: 'put',
+    const response: any = await $api("/announcement/edit", {
+      method: "put",
       body: payload,
       query: { id: detailData.value.id },
-    })
+    });
 
     if (response?.code === 2000) {
-      loadItem(page.value, size.value, searchQuery.value)
-      isVisible.value = false
-      useSnackbar().sendSnackbar('Data Successfully Edited', 'success')
+      loadItem(page.value, size.value, searchQuery.value);
+      isVisible.value = false;
+      useSnackbar().sendSnackbar("Data Successfully Edited", "success");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 onMounted(async () => {
   loading.value = true
@@ -199,22 +193,12 @@ const onTextChange = (newValue: any) => {
 
 <template>
   <div v-if="loading">
-    <VSkeletonLoader
-      v-for="i in 1"
-      :key="i"
-      type="table"
-    />
+    <VSkeletonLoader v-for="i in 1" :key="i" type="table" />
   </div>
   <VContainer v-else-if="!loading">
-    <VDialog
-      v-model="isVisible"
-      :max-width="dialogMaxWidth"
-    >
+    <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
-        <div
-          class="d-flex"
-          style="justify-content: space-between;"
-        >
+        <div class="d-flex" style="justify-content: space-between">
           <VCardTitle>Edit Announcement</VCardTitle>
           <DialogCloseBtn
             variant="text"
@@ -258,34 +242,18 @@ const onTextChange = (newValue: any) => {
             :class="detailData.is_active ? 'custom-true' : 'custom-false'"
           />
         </div>
-        <div
-          style="align-self: self-end;"
-          class="d-flex gap-5"
-        >
-          <VBtn
-            variant="outlined"
-            @click="isVisible = false"
-          >
-            Cancel
-          </VBtn>
-          <VBtn
-            type="submit"
-            variant="flat"
-            @click="onSubmitEdit"
-          >
-            Save
-          </VBtn>
+        <div style="align-self: self-end" class="d-flex gap-5">
+          <VBtn variant="outlined" @click="isVisible = false"> Cancel </VBtn>
+          <VBtn type="submit" variant="flat" @click="onSubmitEdit"> Save </VBtn>
         </div>
       </VCard>
     </VDialog>
-    <h3 class="text-h3">
-      Announcement
-    </h3>
-    <br>
+    <h1 style="font-size: 32px">Announcement</h1>
+    <br />
 
     <VCard class="pa-4">
       <VCardTitle class="d-flex justify-space-between align-center">
-        <span class="text-h5 font-weight-bold">Announcement List</span>
+        <div class="text-h4 font-weight-bold">Announcement List</div>
         <AddAnnouncement
           :role="listRole"
           :refresh="() => loadItem(page, size, searchQuery)"
@@ -315,30 +283,21 @@ const onTextChange = (newValue: any) => {
               class="pt-2"
               style="justify-items: center"
             >
-              <img
-                src="~/assets/images/empty-data.png"
-                alt="empty_data"
-              >
-              <div class="pt-2 pb-2 font-weight-bold">
-                Data Kosong
-              </div>
+              <img src="~/assets/images/empty-data.png" alt="empty_data" />
+              <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
             </div>
-            <tr
-              v-for="(item, idx) in data"
-              :key="idx"
-            >
+            <tr v-for="(item, idx) in data" :key="idx">
               <td>{{ idx + 1 }}</td>
               <td>
                 <div v-html="item.announcement" />
               </td>
               <td>{{ item.role.map((element: any) => element.name).join(', ') }}</td>
               <td>
-                <VChip
-                  :color="getChipColor(item.is_active)"
-                  label
-                  class="ma-1"
-                >
-                  {{ item.is_active ? 'Active' : 'Inactive' }}
+                {{ item.role.map((element: any) => element.name).join(", ") }}
+              </td>
+              <td>
+                <VChip :color="getChipColor(item.is_active)" label class="ma-1">
+                  {{ item.is_active ? "Active" : "Inactive" }}
                 </VChip>
               </td>
               <td>

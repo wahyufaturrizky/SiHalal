@@ -192,11 +192,11 @@ const changeData = (item) => {
 
 <template>
   <div>
-    <h2 style="font-size: 32px">Rekapitulasi</h2>
+    <h1 style="font-size: 32px">Rekapitulasi</h1>
     <br />
 
     <VCard class="pa-4">
-      <VCardTitle class="text-h5 font-weight-bold">
+      <VCardTitle class="text-h4 font-weight-bold">
         Daftar Rekapitulasi
       </VCardTitle>
       <VCardItem>

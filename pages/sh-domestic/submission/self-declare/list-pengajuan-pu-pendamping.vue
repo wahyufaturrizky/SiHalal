@@ -109,13 +109,13 @@ onMounted(async () => {
 <template>
   <div v-if="!loadingAll">
     <!-- <kembali-button class="pl-0" /> -->
-    <h2 style="font-size: 32px">Cek Data Pengajuan PU</h2>
+    <h1 style="font-size: 32px">Cek Data Pengajuan PU</h1>
     <br />
 
     <v-card class="pa-4">
-      <v-card-title class="text-h5 font-weight-bold"
-        >Data Pengajuan</v-card-title
-      >
+      <v-card-title class="text-h4 font-weight-bold">
+        Data Pengajuan
+      </v-card-title>
       <v-card-item>
         <VRadioGroup inline v-model="queryBy" label="Cari Berdasarkan">
           <v-radio label="Pelaku Usaha" value="pelaku_usaha"></v-radio>

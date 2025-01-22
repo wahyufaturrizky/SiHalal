@@ -111,13 +111,15 @@ const navigateAction = (id: string) => {
 <template>
   <VRow>
     <VCol>
-      <h2 style="font-size: 32px">Entri Fasilitasi</h2>
+      <h1 style="font-size: 32px">Entri Fasilitasi</h1>
     </VCol>
   </VRow>
   <VRow v-if="!loadingAll">
     <VCol>
       <VCard>
-        <VCardTitle><h4>List Fasilitasi</h4></VCardTitle>
+        <VCardTitle>
+          <div class="text-h4 font-weight-bold">List Fasilitasi</div>
+        </VCardTitle>
         <VCardItem>
           <VRow>
             <VCol cols="6">

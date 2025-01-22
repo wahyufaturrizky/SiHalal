@@ -71,7 +71,7 @@ const statusInvoice = {
 <template>
   <VRow>
     <VCol cols="12">
-      <h2 style="font-size: 32px">Invoice</h2>
+      <h1 style="font-size: 32px">Invoice</h1>
     </VCol>
   </VRow>
   <VRow>
@@ -79,7 +79,9 @@ const statusInvoice = {
       <VCard>
         <VCardTitle class="pa-5">
           <VRow>
-            <VCol cols="6"><h3>Invoice List</h3></VCol>
+            <VCol cols="6">
+              <div class="text-h4 font-weight-bold">Invoice List</div>
+            </VCol>
           </VRow>
         </VCardTitle>
         <VCardItem>

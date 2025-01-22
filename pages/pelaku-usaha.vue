@@ -47,7 +47,7 @@ onMounted(() => {
     <template #pageTitle>
       <VRow align="center">
         <VCol>
-          <h2 style="font-size: 32px">Detail Pelaku Usaha</h2>
+          <h1 style="font-size: 32px">Detail Pelaku Usaha</h1>
         </VCol>
         <VCol style="display: flex; justify-content: end">
           <VBtn
@@ -89,7 +89,9 @@ onMounted(() => {
         <VCol cols="12">
           <VExpansionPanels v-model="panelOpenPabrik">
             <VExpansionPanel>
-              <VExpansionPanelTitle><h2>Pabrik</h2></VExpansionPanelTitle>
+              <VExpansionPanelTitle>
+                <div class="text-h4 font-weight-bold">Pabrik</div>
+              </VExpansionPanelTitle>
 
               <VExpansionPanelText>
                 <VDataTable
@@ -109,7 +111,9 @@ onMounted(() => {
         <VCol cols="12">
           <VExpansionPanels v-model="panelOpenOutlet">
             <VExpansionPanel>
-              <VExpansionPanelTitle><h2>Outlet</h2></VExpansionPanelTitle>
+              <VExpansionPanelTitle>
+                <div class="text-h4 font-weight-bold">Outlet</div>
+              </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
                   :headers="tableOutletHeader"
@@ -129,7 +133,7 @@ onMounted(() => {
           <VExpansionPanels v-model="panelOpenPenyeliaHallal">
             <VExpansionPanel>
               <VExpansionPanelTitle>
-                <h2>Penyelia Halal</h2>
+                <div class="text-h4 font-weight-bold">Penyelia Halal</div>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable

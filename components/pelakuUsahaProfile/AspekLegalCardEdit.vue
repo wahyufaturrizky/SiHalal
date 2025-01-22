@@ -136,7 +136,9 @@ onMounted(() => {
   <VCard>
     <VCardTitle>
       <VRow>
-        <VCol cols="6"><h3>Aspek Legal</h3></VCol>
+        <VCol cols="6">
+          <div class="text-h4 font-weight-bold">Aspek Legal</div>
+        </VCol>
         <VCol cols="6" style="display: flex; justify-content: end">
           <AspekLegalModal
             mode="add"
