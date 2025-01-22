@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import imageCompression from "browser-image-compression";
+
 const props = defineProps<{
   dialogVisible: boolean;
   closeHandler: Function;
@@ -10,6 +12,7 @@ const form = ref();
 const inputData = reactive<any>({
   file: null,
   status: false,
+  type: ""
 });
 const uploadedFile = reactive<any>({
   name: null,
@@ -21,43 +24,79 @@ const formRules = reactive({
 
 const handleUploadFile = async (event: any) => {
   const fileData = event.target.files[0];
-  console.log(fileData, "< fileData");
-  if (fileData) {
-    if (["image/jpeg", "image/png", "image/webp"].includes(fileData.type)) {
-      try {
-        const compressedBlob = await imageCompression(fileData, {
-          maxSizeMB: 1,
-          maxWidthOrHeight: 1920,
-          useWebWorker: true,
-          fileType: "image/webp",
-        });
-        const newName = `${
-          compressedBlob.name.split(".")[0]
-        }-${Date.now()}.webp`;
-        const convertFile = new File([compressedBlob], newName, {
-          type: compressedBlob.type,
-          lastModified: Date.now(),
-        });
-        uploadedFile.file = convertFile;
-        uploadedFile.name = convertFile.name;
-        inputData.file = convertFile;
-      } catch (error) {
-        useSnackbar().sendSnackbar("Upload Image Failed", "error");
-        console.error(error);
-      }
-    } else {
-      // useSnackbar().sendSnackbar("Image must be WEBP/PNG/JPEG/JPG", "error");
-      try {
-        inputData.file = fileData;
-        uploadedFile.file = fileData;
-        uploadedFile.name = fileData.name + "-" + Date.now();
-      } catch (error) {
-        useSnackbar().sendSnackbar("Upload Image Failed", "error");
-        console.error(error);
-      }
+  if (!fileData) return
+
+  const fileType = fileData.type.split("/")[0]
+  inputData.type = fileType === "video" ? "VID" : "IMG"
+  if (fileType === "image") {
+    const validImageTypes = ["image/jpeg", "image/png", "image/webp"].includes(fileData.type)
+    if (!validImageTypes) useSnackbar().sendSnackbar("Image must be WEBP/PNG/JPEG/JPG", "error");
+
+    try {
+      const compressedBlob = await imageCompression(fileData, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+        fileType: "image/webp",
+      });
+      const newName = `${
+        compressedBlob.name.split(".")[0]
+      }-${Date.now()}.webp`;
+      const convertFile = new File([compressedBlob], newName, {
+        type: compressedBlob.type,
+        lastModified: Date.now(),
+      });
+      uploadedFile.file = convertFile;
+      uploadedFile.name = convertFile.name;
+      inputData.file = convertFile;
+    } catch (error) {
+      useSnackbar().sendSnackbar("Upload Image Failed", "error");
+      console.error(error);
+    }
+  } else {
+    const validVideoTypes = ["video/mp4"].includes(fileData.type)
+    if (!validVideoTypes) useSnackbar().sendSnackbar("Video must be MP4", "error");
+
+    try {
+      const result = await getVideoOrientation(fileData)
+      const newName = `${fileData.name.split(".")[0]}-${result}-${Date.now()}.mp4`;
+      const renameFile = new File([fileData], newName, {
+        type: "video/mp4",
+        lastModified: Date.now()
+      })
+      inputData.file = renameFile;
+      uploadedFile.file = renameFile;
+      uploadedFile.name = newName
+    } catch (error) {
+      useSnackbar().sendSnackbar("Upload Video Failed", "error");
+      console.error(error);
     }
   }
 };
+const getVideoOrientation = async (file: any) => {
+  return new Promise((resolve, reject) => {
+    const videoElement = document.createElement("video")
+    const videoReader = new FileReader()
+
+    videoReader.readAsDataURL(file)
+    videoReader.onload = (e: any) => {
+      if (!e.target?.result) {
+        return reject(new Error("Failed to load the file."))
+      }
+      videoElement.src = e.target?.result
+    }
+    videoReader.onerror = () => reject(new Error("Failed to read the file."))
+
+    videoElement.onloadedmetadata = () => {
+      const width = videoElement.videoWidth
+      const height = videoElement.videoHeight
+      const result = (width > height) ? "LANDSCAPE" : "POTRAIT"
+      resolve(result)
+    }
+
+    videoElement.onerror = () => reject(new Error("Failed to load video metadata."))
+  })
+}
 const handleRemoveFile = () => {
   uploadedFile.name = null;
   uploadedFile.file = null;
@@ -71,6 +110,7 @@ const handleSubmitForm = async () => {
     const formData = new FormData();
     formData.append("file", inputData.file);
     formData.append("status", inputData.status);
+    formData.append("type", inputData.type)
     emit("submit:add", formData);
     props.closeHandler();
 
