@@ -510,7 +510,7 @@ watch(loaFile, (newValue, oldValue) => {
         <v-form ref="refFhcForm" @submit.prevent="openFhcDialog">
           <VCol cols="12" class="d-flex align-center gap-5 justify-center">
             <VBtn
-              @click="downloadDOcument(fhc.file)"
+              @click="downloadDocument(fhc.file)"
               v-if="fhc.file != ''"
               color="primary"
             >
@@ -603,7 +603,7 @@ watch(loaFile, (newValue, oldValue) => {
             <template #item.file="{ item, index }">
               <div class="d-flex align-center justify-center py-3 gap-2">
                 <VBtn
-                  @click="downloadDOcument(item.file)"
+                  @click="downloadDocument(item.file)"
                   v-if="item.file != ''"
                   color="primary"
                 >
@@ -647,7 +647,7 @@ watch(loaFile, (newValue, oldValue) => {
               variant="outlined"
               append-icon="ri-download-line"
               @click="
-                downloadDOcument(
+                downloadDocument(
                   '7b6c4e03-9ae0-4ee2-b045-53882314443d_sample_template_surat_permohonan_dan_perpanjangan_rshln (3).docx'
                 )
               "
