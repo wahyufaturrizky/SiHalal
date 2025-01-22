@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import navItems from "@/navigation/index";
+// import navItems from "@/navigation/index";
 import { useConfigStore } from "@core/stores/config";
 import { themeConfig } from "@themeConfig";
 
@@ -12,6 +12,7 @@ import NavBarI18n from "@core/components/I18n.vue";
 import { VerticalNavLayout } from "@layouts";
 
 const configStore = useConfigStore();
+const menu = useMyAuthUserStore().getMenuVertical();
 
 // ℹ️ Provide animation name for vertical nav collapse icon.
 const verticalNavHeaderActionAnimationName = ref<
@@ -35,7 +36,7 @@ watch(
 </script>
 
 <template>
-  <VerticalNavLayout :nav-items="navItems.vertical">
+  <VerticalNavLayout :nav-items="menu">
     <!-- 👉 navbar -->
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="d-flex h-100 align-center">
