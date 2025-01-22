@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
+import { useDisplay } from 'vuetify'
+
+const { mdAndUp } = useDisplay()
 
 const tablePerizinanHeader = [
   { title: "No", key: "no" },
@@ -49,7 +52,7 @@ const closeModal = ref(false);
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
-      <VExpansionPanelTitle><h2>Perizinan</h2></VExpansionPanelTitle>
+      <VExpansionPanelTitle><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">Perizinan</p></VExpansionPanelTitle>
       <VExpansionPanelText>
         <VContainer style="max-height: 35svh; overflow-y: auto">
           <div v-if="isLoading">Loading...</div>

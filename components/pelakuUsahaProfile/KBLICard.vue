@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
+import { useDisplay } from 'vuetify'
+
+const { mdAndUp } = useDisplay()
 
 const tableKBLIHeader = [
   { title: "No", key: "no_idx" },
@@ -31,7 +34,7 @@ onMounted(async () => {
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
-      <VExpansionPanelTitle><h2>KBLI</h2></VExpansionPanelTitle>
+      <VExpansionPanelTitle><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">KBLI</p></VExpansionPanelTitle>
       <VExpansionPanelText>
         <!-- Check if KBLI data exists -->
         <p v-if="!store.kbli || store.kbli.length === 0">No data</p>

@@ -91,7 +91,7 @@ onMounted(() => {
         <VCol cols="12">
           <VExpansionPanels v-model="panelOpenPabrik">
             <VExpansionPanel>
-              <VExpansionPanelTitle><h2>Pabrik</h2></VExpansionPanelTitle>
+              <VExpansionPanelTitle><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">Pabrik</p></VExpansionPanelTitle>
 
               <VExpansionPanelText>
                 <VDataTable
@@ -111,7 +111,7 @@ onMounted(() => {
         <VCol cols="12">
           <VExpansionPanels v-model="panelOpenOutlet">
             <VExpansionPanel>
-              <VExpansionPanelTitle><h2>Outlet</h2></VExpansionPanelTitle>
+              <VExpansionPanelTitle><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">Outlet</p></VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
                   :headers="tableOutletHeader"
@@ -131,7 +131,7 @@ onMounted(() => {
           <VExpansionPanels v-model="panelOpenPenyeliaHallal">
             <VExpansionPanel>
               <VExpansionPanelTitle>
-                <h2>Penyelia Halal</h2>
+                <p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">Penyelia Halal</p>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
