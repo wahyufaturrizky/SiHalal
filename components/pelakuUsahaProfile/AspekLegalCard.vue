@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import type { legal } from "@/stores/interface/pelakuUsahaProfileIntf";
+import { useDisplay } from 'vuetify'
+import type { legal } from "@/stores/interface/pelakuUsahaProfileIntf"
+
+const { mdAndUp } = useDisplay()
 
 const panelOpen = ref(0);
 const props = defineProps({
@@ -41,7 +44,7 @@ onMounted(() => {
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
-      <VExpansionPanelTitle><h2>Aspek Legal</h2></VExpansionPanelTitle>
+      <VExpansionPanelTitle><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">Aspek Legal</p></VExpansionPanelTitle>
       <VExpansionPanelText>
         <VDataTable
           :headers="legalHeader"

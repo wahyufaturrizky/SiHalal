@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDisplay } from 'vuetify'
 import AspekLegalCard from "@/components/pelakuUsahaProfile/AspekLegalCard.vue";
 import PerizinanCard from "@/components/pelakuUsahaProfile/PerizinanCard.vue";
 import SubPelakuUsahaLayout from "@/layouts/subPelakuUsahaLayout.vue";
@@ -36,6 +37,7 @@ const onEdit = () => {
 };
 
 const store = pelakuUsahaProfile();
+const { mdAndUp } = useDisplay()
 
 onMounted(() => {
   store.fetchProfile();
@@ -47,7 +49,7 @@ onMounted(() => {
     <template #pageTitle>
       <VRow align="center">
         <VCol>
-          <h2 style="font-size: 32px">Detail Pelaku Usaha</h2>
+          <h2 :class="mdAndUp ? 'text-menu' : 'mobile-text-menu'">Detail Pelaku Usaha</h2>
         </VCol>
         <VCol style="display: flex; justify-content: end">
           <VBtn
