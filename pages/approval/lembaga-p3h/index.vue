@@ -210,7 +210,7 @@ const handleConfirmDelete = async () => {
             >
               <template #no-data>
                 <VCard
-                  variant="outlined"
+                  variant=""
                   class="w-full mt-7 mb-5"
                 >
                   <div

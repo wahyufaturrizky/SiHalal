@@ -52,7 +52,10 @@ const dialog = ref(false)
           style="justify-content: space-between;"
         >
           {{ title }}
-          <div style="margin-right: 10px;">
+          <div
+            style="margin-right: 10px;"
+            @click="dialog = false"
+          >
             <VIcon icon="fa-times" size="20px" />
           </div>
         </div>

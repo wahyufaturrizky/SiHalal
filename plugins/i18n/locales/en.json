@@ -114,15 +114,39 @@
     },
     "kepkaban": {
       "menu": {
-        "juleha": {
-          "title": "Persetujuan Sertifikat Juleha"
-        },
-        "domisiliP3h": {
-          "title": "Persetujuan Pindah Domisili P3H"
-        },
-        "lembagaLp3h": {
-          "title": "Persetujuan Pindah Lembaga P3H"
-        }
+          "pendampingCertificate": {
+              "title": "Sertifikat Pendamping"
+          },
+          "akreditasiLphCertificate": {
+              "title": "Sertifikat Akreditasi LPH"
+          },
+          "akreditasiLphLnCertificate": {
+              "title": "Sertifikat Akreditasi LPH LN"
+          },
+          "asesorCertificate": {
+              "title": "Sertifikat Asesor"
+          },
+          "registrationAuditor": {
+              "title": "Registrasi Auditor Halal"
+          },
+          "auditorLembagaPelatihan": {
+              "title": "Sertifikat Auditor Lembaga Pelatihan"
+          },
+          "penyeliaLembagaPelatihan": {
+              "title": "Persetujuan Sertifikat Penyelia Lembaga Pelatihan"
+          },
+          "penyeliaBpjph": {
+            "title": "Persetujuan Sertifikat Penyelia dari BPJPH"
+          },
+          "juleha": {
+              "title": "Persetujuan Sertifikat Juleha"
+          },
+          "domisiliP3h": {
+              "title": "Persetujuan Pindah Domisili P3H"
+          },
+          "lembagaLp3h": {
+              "title": "Persetujuan Pindah Lembaga P3H"
+          }
       },
       "title": "Approval"
     }
@@ -182,3 +206,4 @@
     "detail": "Check Submission Data"
   }
 }
+

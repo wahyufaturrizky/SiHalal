@@ -15,8 +15,6 @@ const tableHeaders: any[] = [
   { title: 'NIK', key: 'username', nowrap: true },
   { title: 'Nama', key: 'name', nowrap: true },
   { title: 'Angkatan', key: 'email', nowrap: true },
-  { title: 'Nama Lembaga', key: 'phone_no', nowrap: true },
-  { title: 'No. Invoice', key: 'is_verify', nowrap: true },
   { title: 'Status', key: 'status', nowrap: true },
   { title: 'Sertifikat', key: 'actions', sortable: false, align: 'center' },
 ]
@@ -74,15 +72,15 @@ onMounted(() => {
   handleLoadList()
 })
 
+const onApprove = async () => {
+  useSnackbar().sendSnackbar(`${selectedItem.value.length} Auditor Disetujui`, 'success')
+}
+
 const getChipColor = (status: string) => {
   if (status === 'lunas')
     return 'success'
 
   return 'primary'
-}
-
-const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} Pendamping Disetujui`, 'success');
 }
 
 const unduhFile = () => {
@@ -94,7 +92,7 @@ const unduhFile = () => {
   <VRow>
     <VCol>
       <h2 style="font-size: 32px">
-        Persetujuan Sertifikat Juleha Lembaga Pelatihan
+        Sertifikat Auditor Lembaga Pelatihan
       </h2>
     </VCol>
   </VRow>
@@ -102,7 +100,7 @@ const unduhFile = () => {
     <VCol>
       <VCard class="w-100 py-3">
         <VCardTitle class="d-flex justify-space-between align-center font-weight-bold text-h4">
-          <div>List Persetujuan Sertifikat Juleha Lembaga Pelatihan</div>
+          <div>List Sertifikat Auditor Lembaga Pelatihan</div>
           <DialogApprovalData
             title="Persetujui data"
             button-text="Ya, Setujui"
