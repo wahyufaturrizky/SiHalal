@@ -12,12 +12,13 @@ interface DataUser {
 
 const tableHeaders: any[] = [
   { title: 'No', key: 'no', sortable: false },
-  { title: 'NIK', key: 'username', nowrap: true },
-  { title: 'Nama', key: 'name', nowrap: true },
-  { title: 'Angkatan', key: 'email', nowrap: true },
-  { title: 'Nama Lembaga', key: 'phone_no', nowrap: true },
-  { title: 'No. Invoice', key: 'is_verify', nowrap: true },
-  { title: 'Status', key: 'status', nowrap: true },
+  { title: 'Nama LPH', key: 'username', nowrap: true },
+  { title: 'Alamat', key: 'name', nowrap: true },
+  { title: 'Jenis', key: 'email', nowrap: true },
+  { title: 'Nama Pimpinan', key: 'phone_no', nowrap: true },
+  { title: 'Nama Kontak', key: 'is_verify', nowrap: true },
+  { title: 'No. HP', key: 'phone', nowrap: true },
+  { title: 'Email', key: 'email', nowrap: true },
   { title: 'Sertifikat', key: 'actions', sortable: false, align: 'center' },
 ]
 
@@ -70,20 +71,13 @@ const { refresh } = await useAsyncData(
   },
 )
 
+const onApprove = async () => {
+  useSnackbar().sendSnackbar(`${selectedItem.value.length} LPH Disetujui`, 'success');
+}
+
 onMounted(() => {
   handleLoadList()
 })
-
-const getChipColor = (status: string) => {
-  if (status === 'lunas')
-    return 'success'
-
-  return 'primary'
-}
-
-const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} Pendamping Disetujui`, 'success');
-}
 
 const unduhFile = () => {
   window.open('/files/Cara Bayar.pdf', '_blank')
@@ -94,7 +88,7 @@ const unduhFile = () => {
   <VRow>
     <VCol>
       <h2 style="font-size: 32px">
-        Persetujuan Sertifikat Juleha Lembaga Pelatihan
+        Sertifikat Akreditasi LPH
       </h2>
     </VCol>
   </VRow>
@@ -102,7 +96,7 @@ const unduhFile = () => {
     <VCol>
       <VCard class="w-100 py-3">
         <VCardTitle class="d-flex justify-space-between align-center font-weight-bold text-h4">
-          <div>List Persetujuan Sertifikat Juleha Lembaga Pelatihan</div>
+          <div>List Sertifikat Akreditasi LPH</div>
           <DialogApprovalData
             title="Persetujui data"
             button-text="Ya, Setujui"
@@ -110,25 +104,11 @@ const unduhFile = () => {
             :disabled="selectedItem.length === 0"
           >
             <template #contentDelete>
-              Anda yakin setujui {{ selectedItem.length }} data ?
+              Anda yakin setujui {{selectedItem.length}} data ?
             </template>
           </DialogApprovalData>
         </VCardTitle>
         <VCardItem>
-          <VRow>
-            <VCol
-              cols="12"
-              sm="4"
-            >
-              <VSelect
-                v-model="tableType"
-                :items="['1']"
-                item-title="name"
-                item-value="code"
-                class="mb-5"
-              />
-            </VCol>
-          </VRow>
           <VCard variant="outlined">
             <VDataTableServer
               v-model:items-per-page="itemPerPage"
@@ -188,18 +168,6 @@ const unduhFile = () => {
                 </div>
                 <div v-else>
                   -
-                </div>
-              </template>
-              <template #item.status="{ item }">
-                <div class="d-flex flex-wrap">
-                  <VChip
-                    :key="item.id"
-                    :color="getChipColor('lunas')"
-                    label
-                    class="ma-1"
-                  >
-                    Lunas
-                  </VChip>
                 </div>
               </template>
               <template #item.actions="{ item }">

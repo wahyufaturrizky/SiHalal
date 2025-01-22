@@ -14,11 +14,12 @@ const tableHeaders: any[] = [
   { title: 'No', key: 'no', sortable: false },
   { title: 'NIK', key: 'username', nowrap: true },
   { title: 'Nama', key: 'name', nowrap: true },
-  { title: 'Angkatan', key: 'email', nowrap: true },
-  { title: 'Nama Lembaga', key: 'phone_no', nowrap: true },
-  { title: 'No. Invoice', key: 'is_verify', nowrap: true },
+  { title: 'Tanggal Lahir', key: 'email', nowrap: true },
+  { title: 'Pendidikan', key: 'phone_no', nowrap: true },
+  { title: 'Lembaga', key: 'is_verify', nowrap: true },
+  { title: 'JenisLembaga', key: 'roles', nowrap: true },
   { title: 'Status', key: 'status', nowrap: true },
-  { title: 'Sertifikat', key: 'actions', sortable: false, align: 'center' },
+  { title: 'Action', key: 'actions', sortable: false, align: 'center' },
 ]
 
 const tableItems = ref<Array[]>([])
@@ -70,19 +71,19 @@ const { refresh } = await useAsyncData(
   },
 )
 
+const onApprove = async () => {
+  useSnackbar().sendSnackbar(`${selectedItem.value.length} Pendamping Disetujui`, 'success');
+}
+
 onMounted(() => {
   handleLoadList()
 })
 
 const getChipColor = (status: string) => {
-  if (status === 'lunas')
+  if (status === 'Pengajuan')
     return 'success'
 
   return 'primary'
-}
-
-const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} Pendamping Disetujui`, 'success');
 }
 
 const unduhFile = () => {
@@ -94,7 +95,7 @@ const unduhFile = () => {
   <VRow>
     <VCol>
       <h2 style="font-size: 32px">
-        Persetujuan Sertifikat Juleha Lembaga Pelatihan
+        Sertifikat Pendamping
       </h2>
     </VCol>
   </VRow>
@@ -102,7 +103,7 @@ const unduhFile = () => {
     <VCol>
       <VCard class="w-100 py-3">
         <VCardTitle class="d-flex justify-space-between align-center font-weight-bold text-h4">
-          <div>List Persetujuan Sertifikat Juleha Lembaga Pelatihan</div>
+          <div>List Sertifikat Pendamping</div>
           <DialogApprovalData
             title="Persetujui data"
             button-text="Ya, Setujui"
@@ -110,7 +111,7 @@ const unduhFile = () => {
             :disabled="selectedItem.length === 0"
           >
             <template #contentDelete>
-              Anda yakin setujui {{ selectedItem.length }} data ?
+              Anda yakin setujui {{selectedItem.length}} data ?
             </template>
           </DialogApprovalData>
         </VCardTitle>
@@ -194,11 +195,11 @@ const unduhFile = () => {
                 <div class="d-flex flex-wrap">
                   <VChip
                     :key="item.id"
-                    :color="getChipColor('lunas')"
+                    :color="getChipColor(item.status)"
                     label
                     class="ma-1"
                   >
-                    Lunas
+                    Pengajuan
                   </VChip>
                 </div>
               </template>

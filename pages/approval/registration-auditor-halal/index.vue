@@ -12,13 +12,16 @@ interface DataUser {
 
 const tableHeaders: any[] = [
   { title: 'No', key: 'no', sortable: false },
-  { title: 'NIK', key: 'username', nowrap: true },
-  { title: 'Nama', key: 'name', nowrap: true },
-  { title: 'Angkatan', key: 'email', nowrap: true },
-  { title: 'Nama Lembaga', key: 'phone_no', nowrap: true },
-  { title: 'No. Invoice', key: 'is_verify', nowrap: true },
-  { title: 'Status', key: 'status', nowrap: true },
-  { title: 'Sertifikat', key: 'actions', sortable: false, align: 'center' },
+  { title: 'Jenis Pendaftaran', key: 'username', nowrap: true },
+  { title: 'No. Registrasi', key: 'name', nowrap: true },
+  { title: 'Tanggal Registrasi', key: 'name', nowrap: true },
+  { title: 'Nama Auditor/LPH', key: 'name', nowrap: true },
+  { title: 'Jenis Kelamin', key: 'name', nowrap: true },
+  { title: 'Pendidikan', key: 'name', nowrap: true },
+  { title: 'Status Payment', key: 'status', nowrap: true },
+  { title: 'Tanggal Bayar', key: 'name', nowrap: true },
+  { title: 'invoice', key: 'invoice', nowrap: true },
+  { title: 'Draft Sertifikat', key: 'draft', sortable: false},
 ]
 
 const tableItems = ref<Array[]>([])
@@ -70,6 +73,10 @@ const { refresh } = await useAsyncData(
   },
 )
 
+const onApprove = async () => {
+  useSnackbar().sendSnackbar(`${selectedItem.value.length} Asesor Disetujui`, 'success');
+}
+
 onMounted(() => {
   handleLoadList()
 })
@@ -81,10 +88,6 @@ const getChipColor = (status: string) => {
   return 'primary'
 }
 
-const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} Pendamping Disetujui`, 'success');
-}
-
 const unduhFile = () => {
   window.open('/files/Cara Bayar.pdf', '_blank')
 }
@@ -94,7 +97,7 @@ const unduhFile = () => {
   <VRow>
     <VCol>
       <h2 style="font-size: 32px">
-        Persetujuan Sertifikat Juleha Lembaga Pelatihan
+        Registrasi Auditor Halal
       </h2>
     </VCol>
   </VRow>
@@ -102,7 +105,7 @@ const unduhFile = () => {
     <VCol>
       <VCard class="w-100 py-3">
         <VCardTitle class="d-flex justify-space-between align-center font-weight-bold text-h4">
-          <div>List Persetujuan Sertifikat Juleha Lembaga Pelatihan</div>
+          <div>List Registrasi Auditor Halal</div>
           <DialogApprovalData
             title="Persetujui data"
             button-text="Ya, Setujui"
@@ -110,25 +113,11 @@ const unduhFile = () => {
             :disabled="selectedItem.length === 0"
           >
             <template #contentDelete>
-              Anda yakin setujui {{ selectedItem.length }} data ?
+              Anda yakin setujui {{selectedItem.length}} data ?
             </template>
           </DialogApprovalData>
         </VCardTitle>
         <VCardItem>
-          <VRow>
-            <VCol
-              cols="12"
-              sm="4"
-            >
-              <VSelect
-                v-model="tableType"
-                :items="['1']"
-                item-title="name"
-                item-value="code"
-                class="mb-5"
-              />
-            </VCol>
-          </VRow>
           <VCard variant="outlined">
             <VDataTableServer
               v-model:items-per-page="itemPerPage"
@@ -171,6 +160,18 @@ const unduhFile = () => {
               <template #item.is_verify="{ item }">
                 {{ item.is_verify ? "Yes" : "No" }}
               </template>
+              <template #item.status="{ item }">
+                <div class="d-flex flex-wrap">
+                  <VChip
+                    :key="item.id"
+                    :color="getChipColor('lunas')"
+                    label
+                    class="ma-1"
+                  >
+                    Lunas
+                  </VChip>
+                </div>
+              </template>
               <template #item.roles="{ item }">
                 <div v-if="item.roles.length">
                   <div
@@ -190,24 +191,40 @@ const unduhFile = () => {
                   -
                 </div>
               </template>
-              <template #item.status="{ item }">
-                <div class="d-flex flex-wrap">
-                  <VChip
-                    :key="item.id"
-                    :color="getChipColor('lunas')"
-                    label
-                    class="ma-1"
-                  >
-                    Lunas
-                  </VChip>
-                </div>
-              </template>
               <template #item.actions="{ item }">
                 <div class="d-flex gap-1">
                   <IconBtn size="small">
                     <div>
                       <VIcon
                         icon="ri-arrow-right-line"
+                        color="primary"
+                        @click="unduhFile"
+                      />
+                    </div>
+                  </IconBtn>
+                <!-- Right arrow icon for action -->
+                </div>
+              </template>
+              <template #item.invoice="{ item }">
+                <div class="d-flex gap-1">
+                  <IconBtn size="small">
+                    <div>
+                      <VIcon
+                        icon="fa-file"
+                        color="primary"
+                        @click="unduhFile"
+                      />
+                    </div>
+                  </IconBtn>
+                <!-- Right arrow icon for action -->
+                </div>
+              </template>
+              <template #item.draft="{ item }">
+                <div class="d-flex gap-1">
+                  <IconBtn size="small">
+                    <div>
+                      <VIcon
+                        icon="fa-file"
                         color="primary"
                         @click="unduhFile"
                       />
@@ -228,15 +245,12 @@ const unduhFile = () => {
 :deep(.v-data-table.custom-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      position: sticky;
-      border-inline-start: 1px solid rgba(#000, 0.12);
       inset-inline-end: 0;
+      width: auto;
     }
 
     tbody > tr > td:last-of-type {
-      position: sticky;
       background: white;
-      border-inline-start: 1px solid rgba(#000, 0.12);
       inset-inline-end: 0;
       justify-items: center,
     }
