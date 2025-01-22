@@ -157,6 +157,7 @@ const getDate = (): string => {
   return formattedDate;
 };
 
+const fileType = ref("VID")
 const currentImage = ref("");
 const handleLoadImageAuth = async () => {
   try {
@@ -165,6 +166,7 @@ const handleLoadImageAuth = async () => {
     } as any);
 
     if (response.code === 2000) {
+      if (response.data?.type) fileType.value = response.data?.type
       handleLoadImageFile(response.data.file_name);
     } else {
       currentImage.value = NoImage;
@@ -205,7 +207,7 @@ const items = [
 
 <template>
   <HelpButton />
-  <VRow no-gutters class="position-relative">
+  <VRow no-gutters class="position-relative" style="min-height: calc(100vh - 48px)">
     <VCol cols="12" md="6" class="d-flex align-center justify-center login-bg">
       <VCard flat :max-width="500" class="mt-3 mt-sm-0 pa-2 pa-lg-3">
         <VCardText>
@@ -346,15 +348,18 @@ const items = [
     <VCol
       v-if="mdAndUp"
       md="6"
-      class="d-flex align-start justify-start py-1 pe-2 bg-white position-sticky"
+      class="py-1 pe-2 bg-white position-sticky"
       style="max-height: calc(100vh - 48px); top: 23px"
     >
-      <!-- <img :src="currentImage" height="100%" style="border-radius: 20px" /> -->
-      <video v-if="currentImage" height="100%" autoplay muted loop>
-        <source :src="currentImage" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-      <!-- <iframe :src="currentImage" frameborder="0" allowfullscreen /> -->
+      <div v-if="fileType === 'IMG'" class="d-flex align-center justify-start">
+        <img :src="currentImage" height="100%" style="border-radius: 20px" />
+      </div>
+      <div v-else class="h-100 d-flex align-center justify-start">
+        <video v-if="currentImage" height="100%" autoplay muted loop style="border-radius: 20px">
+          <source :src="currentImage" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
     </VCol>
   </VRow>
 </template>
