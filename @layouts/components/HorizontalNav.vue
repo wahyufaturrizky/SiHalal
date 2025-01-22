@@ -13,7 +13,6 @@ const resolveNavItemComponent = (item: NavLink | NavGroup) => {
 };
 const sessionData = await useMyAuthUserStore().getSession();
 const userRole = sessionData.value?.roles.map((role) => role.name);
-console.log(userRole, "ini role");
 </script>
 
 <template>

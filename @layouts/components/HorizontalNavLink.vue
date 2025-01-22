@@ -19,6 +19,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   isSubItem: false,
+  roles: [],
 });
 const isShown = props.roles.some((item) => props.item.roles?.includes(item));
 </script>
