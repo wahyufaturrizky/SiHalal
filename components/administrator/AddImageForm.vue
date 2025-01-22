@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import imageCompression from "browser-image-compression";
-
 const props = defineProps<{
   dialogVisible: boolean;
   closeHandler: Function;
@@ -23,6 +21,7 @@ const formRules = reactive({
 
 const handleUploadFile = async (event: any) => {
   const fileData = event.target.files[0];
+  console.log(fileData, "< fileData");
   if (fileData) {
     if (["image/jpeg", "image/png", "image/webp"].includes(fileData.type)) {
       try {
@@ -47,7 +46,15 @@ const handleUploadFile = async (event: any) => {
         console.error(error);
       }
     } else {
-      useSnackbar().sendSnackbar("Image must be WEBP/PNG/JPEG/JPG", "error");
+      // useSnackbar().sendSnackbar("Image must be WEBP/PNG/JPEG/JPG", "error");
+      try {
+        inputData.file = fileData;
+        uploadedFile.file = fileData;
+        uploadedFile.name = fileData.name + "-" + Date.now();
+      } catch (error) {
+        useSnackbar().sendSnackbar("Upload Image Failed", "error");
+        console.error(error);
+      }
     }
   }
 };
@@ -123,7 +130,7 @@ const handleSubmitForm = async () => {
                 prepend-icon=""
                 @change="handleUploadFile"
                 :rules="formRules.image"
-                accept="image/*"
+                accept="image/*,video/mp4"
               >
                 <template #append-inner>
                   <VBtn rounded="s-0 e-xl" text="Choose File" />
