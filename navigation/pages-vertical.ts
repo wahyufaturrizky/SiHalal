@@ -4,6 +4,79 @@ const userStore = useMyAuthUserStore();
 
 const menuList = [
   {
+    title: "navbar.kepkaban.title",
+    icon: { icon: "mdi-clipboard-check" },
+    roles: ["Executive"],
+    children: [
+      {
+        title: "navbar.kepkaban.menu.pendampingCertificate.title",
+        to: 'approval-sertifikat-pendamping',
+        icon: { icon: "fa-genderless" },
+        roles: ["Executive"],
+      },
+      {
+        title: "navbar.kepkaban.menu.akreditasiLphCertificate.title",
+        to: 'approval-sertifikat-akreditasi-lph',
+        icon: { icon: "fa-genderless" },
+        roles: ["Executive"],
+      },
+      {
+        title: "navbar.kepkaban.menu.akreditasiLphLnCertificate.title",
+        to: 'approval-sertifikat-akreditasi-lph-ln',
+        icon: { icon: "fa-genderless" },
+        roles: ["Executive"],
+      },
+      {
+        title: "navbar.kepkaban.menu.asesorCertificate.title",
+        to: 'approval-sertifikat-asesor',
+        icon: { icon: "fa-genderless" },
+        roles: ["Executive"],
+      },
+      {
+        title: "navbar.kepkaban.menu.registrationAuditor.title",
+        to: 'approval-registration-auditor-halal',
+        icon: { icon: "fa-genderless" },
+        roles: ["Executive"],
+      },
+      {
+        title: "navbar.kepkaban.menu.auditorLembagaPelatihan.title",
+        to: 'approval-auditor-lembaga-pelatihan',
+        icon: { icon: "fa-genderless" },
+        roles: ["Executive"],
+      },
+      {
+        title: "navbar.kepkaban.menu.penyeliaLembagaPelatihan.title",
+        to: 'approval-penyelia-lembaga-pelatihan',
+        icon: { icon: "fa-genderless" },
+        roles: ["Executive"],
+      },
+      {
+        title: "navbar.kepkaban.menu.penyeliaBpjph.title",
+        to: 'approval-penyelia-lembaga-bpjph',
+        icon: { icon: "fa-genderless" },
+        roles: ["Executive"],
+      },
+      {
+        title: "navbar.kepkaban.menu.juleha.title",
+        to: "approval-juleha",
+        icon: { icon: "fa-genderless" },
+        roles: ["Executive"],
+      },
+      {
+        title: "navbar.kepkaban.menu.domisiliP3h.title",
+        to: 'approval-domisili-p3h',
+        icon: { icon: "fa-genderless" },
+        roles: ["Executive"],
+      },
+      {
+        title: "navbar.kepkaban.menu.lembagaLp3h.title",
+        to: 'approval-lembaga-p3h',
+        icon: { icon: "fa-genderless" },
+        roles: ["Executive"],
+      },
+    ],
+  },
+  {
     heading: "navbar.main_menu",
     roles: [
       "Pelaku Usaha",

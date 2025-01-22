@@ -3,6 +3,10 @@ import { useDisplay } from 'vuetify'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
 
+const props = defineProps<{
+  data: any[];
+}>();
+
 const dialog = ref(true)
 
 const openDialog = () => {
@@ -18,39 +22,6 @@ const { mdAndUp } = useDisplay()
 const dialogMaxWidth = computed(() => {
   return mdAndUp.value ? 1100 : '90%'
 })
-
-const items = ref([
-  {
-    title: 'Tanggal 2 Februari 2024', subtitle: `
-    Sehubungan dengan kewajiban menggunakan dokumen SJPH bagi Pelaku Usaja, terhitung mulai
-    tanggal 2 Februari 2024, seluruh Pelaku Usaha wajib melampirkan dokumen SJPH pada
-    pendaftaran Sertifikat Halal jalur Mandiri.
-  `,
-  },
-  {
-    title: 'Tanggal 3 Februari', subtitle: `
-    Terhitung mulai tanggal 3 Februari 2023 pendaftaran Sertifikat Halal jalur Self Declare telah bisa
-    dilakukan submit oleh PU dengan catatan telah dilakukan kurasi/verifikasi oleh Pendamping.
-  `,
-  },
-  {
-    title: 'Tanggal 2 Februari 2023', subtitle: `
-    Sehubungan dengan kewajiban bersertifikat Penyelia Halal Untuk Pelaku Usaha Non UMK
-    terhitung mulai tanggal 2 Februari 2023, seluruh pelaku Usaha Non UMK Wajib melampirkan
-    Sertifikat Pelatihan Penyelia Halal dan Sertifikat Kompetensi Penyelia Halal pada pendaftaran
-    Sertifikar Halal jalur Mandiri
-  `,
-  },
-])
-
-const signed = ref({
-  date: 'Jakarta, 2 Februari 2023',
-  head: 'Muhammad Aqil Irham',
-})
-
-const clickDownload = () => {
-  console.log('DONWLOAD FILE ')
-}
 </script>
 
 <template>
@@ -73,44 +44,23 @@ const clickDownload = () => {
           <VNodeRenderer :nodes="themeConfig.app.logo" />
         </div>
       </VCardTitle>
-
-      <VCardText align="center">
-        <span class="text-h3">Pengumuman</span>
-      </VCardText>
-
-      <VCardText class="px-8 mb-4">
-        <ul>
-          <li
-            v-for="(item, index) in items"
-            :key="index"
-          >
-            <div>
-              <span class="font-weight-bold">{{ item.title }}</span>
-            </div>
-            <div>
-              <p>{{ item.subtitle }}</p>
-            </div>
-          </li>
-          <li>
-            Informasi detail teknis tambahan pengajuan sertifikasi halal self declare dapat
-            <a
-              class="text-primary"
-              style="cursor: pointer; text-decoration: underline;"
-              href="https://test.halal.go.id/selfdeclare.pdf"
-            >
-              download di sini
-            </a>
-          </li>
-        </ul>
-      </VCardText>
-      <VCardText class="text-right">
-        <p class="font-weight-bold">
-          {{ signed.date }} <br>
-          Kepala, <br>
-          ttd <br>
-          {{ signed.head }}
-        </p>
+      <VCardText class="">
+        <div
+          v-for="(item, index) in props.data"
+          :key="index"
+        >
+          <div v-html="item.announcement.replace(/<ul>/g, `<ul class='ml-10' style='margin-top: -12px;'>`).replace(/<ol>/g, `<ol class='ml-10' style='margin-top: -12px;'>`)" />
+        </div>
       </VCardText>
     </VCard>
   </VDialog>
 </template>
+
+<style>
+.ql-align-center {
+    text-align: center !important;
+}
+.ql-align-right {
+    text-align: right !important;
+}
+</style>

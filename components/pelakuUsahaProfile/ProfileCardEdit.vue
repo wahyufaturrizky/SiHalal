@@ -166,7 +166,8 @@ onMounted(async () => {
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
             <VSelect
-              disabled
+              density="compact"
+              :disabled="disableEdit(props.profileData?.asal_usaha)"
               :model-value="form.jenis_badan_usaha"
               :items="jenisBadanUsahaOption"
               item-title="name"
@@ -179,6 +180,7 @@ onMounted(async () => {
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
             <VSelect
+              density="compact"
               :model-value="form.tingkat_usaha"
               :items="['UMK', 'Non UMK']"
               disabled
@@ -192,6 +194,7 @@ onMounted(async () => {
           <VCol cols="1" style="display: flex; align-items: center"> : </VCol>
           <VCol cols="7">
             <VSelect
+              density="compact"
               disabled
               :model-value="form.skala_usaha"
               :items="skalaUsahaOption"
@@ -205,6 +208,7 @@ onMounted(async () => {
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
             <VTextField
+              density="compact"
               :disabled="disableEdit(props.profileData?.asal_usaha)"
               >{{ form.modal_dasar }}</VTextField
             >
@@ -216,10 +220,15 @@ onMounted(async () => {
           <VCol cols="7">
             <!-- {{ props.profileData?.asal_usaha || "-" }} -->
             <VSelect
+              v-if="props.profileData?.asal_usaha !== 'Luar Negeri'"
+              density="compact"
               :disabled="disableEdit(props.profileData?.asal_usaha)"
               :model-value="form.asal_usaha"
               :items="['Dalam Negeri', 'Luar Negeri']"
             ></VSelect>
+            <VTextField v-else density="compact" disabled>{{
+              props.profileData?.asal_usaha
+            }}</VTextField>
           </VCol>
         </VRow>
         <br />
