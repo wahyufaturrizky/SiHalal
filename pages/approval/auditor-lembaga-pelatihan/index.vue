@@ -12,36 +12,36 @@ interface DataUser {
 
 const tableHeaders: any[] = [
   { title: 'No', key: 'no', sortable: false },
-  { title: 'NIK', key: 'username', nowrap: true },
+  { title: 'NIK', key: 'nik', nowrap: true },
   { title: 'Nama', key: 'name', nowrap: true },
-  { title: 'Angkatan', key: 'email', nowrap: true },
+  { title: 'Angkatan', key: 'angkatan', nowrap: true },
   { title: 'Status', key: 'status', nowrap: true },
   { title: 'Sertifikat', key: 'actions', sortable: false, align: 'center' },
 ]
 
 const tableItems = ref<Array[]>([])
+const lembagaItems = ref<Array[]>([])
 const currentPage = ref(1)
 const itemPerPage = ref(10)
 const totalItems = ref(0)
 const selectedItem = ref([])
 const isLoading = ref(false)
-const tableType = ref('Semua')
-
-const searchQuery = ref('')
+const tableType = ref('')
 
 const handleLoadList = async () => {
   try {
-    const response: any = await $api('/admin/users/list', {
+    const response: any = await $api('/approval/auditor-lembaga/list', {
       method: 'get',
       params: {
         page: currentPage.value,
         size: itemPerPage.value,
-        search: searchQuery.value,
+        keyword: tableType.value,
       },
     } as any)
 
     if (response.code === 2000) {
       if (response.data !== null) {
+        response.data.map((el: any) => el.id = el.id_sertifikat_auditor)
         tableItems.value = response.data
         currentPage.value = response.current_page
         totalItems.value = response.total_item
@@ -64,16 +64,64 @@ const { refresh } = await useAsyncData(
   'user-list',
   async () => await handleLoadList(),
   {
-    watch: [currentPage, itemPerPage],
+    watch: [currentPage, itemPerPage, tableType],
   },
 )
 
-onMounted(() => {
-  handleLoadList()
+const getMasterLembaga = async () => {
+  try {
+    const response: any = await $api('/approval/juleha/lembaga', {
+      method: 'get',
+      params: {
+        page: currentPage.value,
+        size: itemPerPage.value,
+      },
+    } as any)
+
+    if (response.code === 2000) {
+      if (response.data !== null) {
+        response.data.unshift({ nama_lebaga: 'Semua', id_lembaga_pelatihan: '' })
+        lembagaItems.value = response.data
+      }
+
+      return response
+    }
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+
+onMounted(async () => {
+  await Promise.allSetled([
+    handleLoadList(),
+    getMasterLembaga(),
+  ])
 })
 
 const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} Auditor Disetujui`, 'success')
+  try {
+    const response: any = await $api(
+      '/approval/auditor-lembaga/approve',
+      {
+        method: 'put',
+        body: {
+          id_sertifikat_auditor: selectedItem.value,
+        },
+      },
+    )
+
+    if (response.code !== 2000) {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+
+      return
+    }
+    useSnackbar().sendSnackbar(`${selectedItem.value.length} Auditor Disetujui`, 'success')
+    refresh()
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
 }
 
 const getChipColor = (status: string) => {
@@ -83,8 +131,8 @@ const getChipColor = (status: string) => {
   return 'primary'
 }
 
-const unduhFile = () => {
-  window.open('/files/Cara Bayar.pdf', '_blank')
+const unduhFile = async (link: string) => {
+  await downloadDocument(link)
 }
 </script>
 
@@ -120,9 +168,9 @@ const unduhFile = () => {
             >
               <VSelect
                 v-model="tableType"
-                :items="['1']"
-                item-title="name"
-                item-value="code"
+                :items="lembagaItems"
+                item-title="nama_lebaga"
+                item-value="id_lembaga_pelatihan"
                 class="mb-5"
               />
             </VCol>
@@ -207,7 +255,7 @@ const unduhFile = () => {
                       <VIcon
                         icon="ri-arrow-right-line"
                         color="primary"
-                        @click="unduhFile"
+                        @click="() => unduhFile(item.file_sertifikat)"
                       />
                     </div>
                   </IconBtn>
