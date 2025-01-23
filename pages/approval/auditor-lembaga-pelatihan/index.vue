@@ -26,6 +26,7 @@ const itemPerPage = ref(10)
 const totalItems = ref(0)
 const selectedItem = ref([])
 const isLoading = ref(false)
+const isLoadingLembaga = ref(false)
 const tableType = ref('')
 
 const handleLoadList = async () => {
@@ -70,7 +71,9 @@ const { refresh } = await useAsyncData(
 
 const getMasterLembaga = async () => {
   try {
-    const response: any = await $api('/approval/juleha/lembaga', {
+    isLoadingLembaga.value = true
+
+    const response: any = await $api('/approval/lembaga', {
       method: 'get',
       params: {
         page: currentPage.value,
@@ -83,11 +86,13 @@ const getMasterLembaga = async () => {
         response.data.unshift({ nama_lebaga: 'Semua', id_lembaga_pelatihan: '' })
         lembagaItems.value = response.data
       }
+      isLoadingLembaga.value = false
 
       return response
     }
   }
   catch (error) {
+    isLoadingLembaga.value = false
     console.error(error)
   }
 }
@@ -172,6 +177,8 @@ const unduhFile = async (link: string) => {
                 item-title="nama_lebaga"
                 item-value="id_lembaga_pelatihan"
                 class="mb-5"
+                :loading="isLoadingLembaga"
+                :disabled="isLoadingLembaga"
               />
             </VCol>
           </VRow>
