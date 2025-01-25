@@ -140,7 +140,7 @@ onMounted(async () => {
           style="margin-right: 0px;"
         >
           <!-- <VBtn variant="outlined"> Lihat Draft Sertif </VBtn> -->
-          <DialogReturn
+          <!-- <DialogReturn
             title="Dikembalikan"
             button-text="Ya, Kembalikan"
             :on-return="onReturn"
@@ -151,7 +151,7 @@ onMounted(async () => {
               </label>
               <VTextarea v-model="returnNote" />
             </template>
-          </DialogReturn>
+          </DialogReturn> -->
           <DialogApproval
             title="Pindah Domisili Disetujui"
             button-text="Ya, Setujui"

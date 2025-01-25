@@ -13,10 +13,8 @@ interface DataUser {
 const tableHeaders: any[] = [
   { title: 'No', key: 'no', sortable: false },
   { title: 'NIK', key: 'nik', nowrap: true },
-  { title: 'Nama', key: 'nama', nowrap: true },
+  { title: 'Nama', key: 'name', nowrap: true },
   { title: 'Angkatan', key: 'angkatan', nowrap: true },
-  { title: 'Nama Lembaga', key: 'nama_lebaga', nowrap: true },
-  { title: 'No. Invoice', key: 'no_invoice', nowrap: true },
   { title: 'Status', key: 'status', nowrap: true },
   { title: 'Sertifikat', key: 'actions', sortable: false, align: 'center' },
 ]
@@ -33,9 +31,9 @@ const tableType = ref('')
 
 const handleLoadList = async () => {
   try {
-    const response: any = await $api('/approval/juleha/list', {
+    const response: any = await $api('/approval/auditor-lembaga/list', {
       method: 'get',
-      query: {
+      params: {
         page: currentPage.value,
         size: itemPerPage.value,
         keyword: tableType.value,
@@ -44,6 +42,7 @@ const handleLoadList = async () => {
 
     if (response.code === 2000) {
       if (response.data !== null) {
+        response.data.map((el: any) => el.id = el.id_sertifikat_auditor)
         tableItems.value = response.data
         currentPage.value = response.current_page
         totalItems.value = response.total_item
@@ -56,16 +55,19 @@ const handleLoadList = async () => {
 
       return response
     }
-    else {
-      tableItems.value = []
-      currentPage.value = 1
-      totalItems.value = 0
-    }
   }
   catch (error) {
     console.error(error)
   }
 }
+
+const { refresh } = await useAsyncData(
+  'user-list',
+  async () => await handleLoadList(),
+  {
+    watch: [currentPage, itemPerPage, tableType],
+  },
+)
 
 const getMasterLembaga = async () => {
   try {
@@ -95,14 +97,6 @@ const getMasterLembaga = async () => {
   }
 }
 
-const { refresh } = await useAsyncData(
-  'user-list',
-  async () => await handleLoadList(),
-  {
-    watch: [currentPage, itemPerPage, tableType],
-  },
-)
-
 onMounted(async () => {
   await Promise.allSetled([
     handleLoadList(),
@@ -110,15 +104,36 @@ onMounted(async () => {
   ])
 })
 
+const onApprove = async () => {
+  try {
+    const response: any = await $api(
+      '/approval/auditor-lembaga/approve',
+      {
+        method: 'put',
+        body: {
+          id_sertifikat_auditor: selectedItem.value,
+        },
+      },
+    )
+
+    if (response.code !== 2000) {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+
+      return
+    }
+    useSnackbar().sendSnackbar(`${selectedItem.value.length} Auditor Disetujui`, 'success')
+    refresh()
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
 const getChipColor = (status: string) => {
   if (status === 'lunas')
     return 'success'
 
   return 'primary'
-}
-
-const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} Pendamping Disetujui`, 'success');
 }
 
 const unduhFile = async (link: string) => {
@@ -130,7 +145,7 @@ const unduhFile = async (link: string) => {
   <VRow>
     <VCol>
       <h2 style="font-size: 32px">
-        Persetujuan Sertifikat Juleha Lembaga Pelatihan
+        Sertifikat Auditor Lembaga Pelatihan
       </h2>
     </VCol>
   </VRow>
@@ -138,7 +153,7 @@ const unduhFile = async (link: string) => {
     <VCol>
       <VCard class="w-100 py-3">
         <VCardTitle class="d-flex justify-space-between align-center font-weight-bold text-h4">
-          <div>List Persetujuan Sertifikat Juleha Lembaga Pelatihan</div>
+          <div>List Sertifikat Auditor Lembaga Pelatihan</div>
           <DialogApprovalData
             title="Persetujui data"
             button-text="Ya, Setujui"

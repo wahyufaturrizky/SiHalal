@@ -16,12 +16,16 @@ const props = defineProps({
     type: String,
     required: false,
   },
-  onReturn: {
+  onApprove: {
     type: Function,
     default: () => {},
     required: false,
   },
   withLabelHeader: {
+    type: Boolean,
+    required: false,
+  },
+  disabled: {
     type: Boolean,
     required: false,
   },
@@ -37,11 +41,10 @@ const dialog = ref(false)
   >
     <template #activator="{ props }">
       <VBtn
-        append-icon="fa-undo"
         v-bind="props"
-        variant="outlined"
+        :disabled="disabled"
       >
-        Dikembalikan
+        Persetujuan
       </VBtn>
     </template>
 
@@ -79,7 +82,7 @@ const dialog = ref(false)
             color="primary"
             @click="() => {
               dialog = false
-              props.onReturn()
+              props.onApprove()
             }"
           >
             {{ props.buttonText }}

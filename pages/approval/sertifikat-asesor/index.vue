@@ -12,33 +12,31 @@ interface DataUser {
 
 const tableHeaders: any[] = [
   { title: 'No', key: 'no', sortable: false },
-  { title: 'NIK', key: 'nik', nowrap: true },
-  { title: 'Nama', key: 'nama', nowrap: true },
-  { title: 'Angkatan', key: 'angkatan', nowrap: true },
-  { title: 'Nama Lembaga', key: 'nama_lebaga', nowrap: true },
-  { title: 'No. Invoice', key: 'no_invoice', nowrap: true },
-  { title: 'Status', key: 'status', nowrap: true },
+  { title: 'Nama Asesor', key: 'username', nowrap: true },
+  { title: 'Instansi', key: 'name', nowrap: true },
+  { title: 'No. Sertifikat', key: 'name', nowrap: true },
+  { title: 'Keterangan', key: 'name', nowrap: true },
   { title: 'Sertifikat', key: 'actions', sortable: false, align: 'center' },
 ]
 
 const tableItems = ref<Array[]>([])
-const lembagaItems = ref<Array[]>([])
 const currentPage = ref(1)
 const itemPerPage = ref(10)
 const totalItems = ref(0)
 const selectedItem = ref([])
 const isLoading = ref(false)
-const isLoadingLembaga = ref(false)
-const tableType = ref('')
+const tableType = ref('Semua')
+
+const searchQuery = ref('')
 
 const handleLoadList = async () => {
   try {
-    const response: any = await $api('/approval/juleha/list', {
+    const response: any = await $api('/admin/users/list', {
       method: 'get',
-      query: {
+      params: {
         page: currentPage.value,
         size: itemPerPage.value,
-        keyword: tableType.value,
+        search: searchQuery.value,
       },
     } as any)
 
@@ -56,41 +54,8 @@ const handleLoadList = async () => {
 
       return response
     }
-    else {
-      tableItems.value = []
-      currentPage.value = 1
-      totalItems.value = 0
-    }
   }
   catch (error) {
-    console.error(error)
-  }
-}
-
-const getMasterLembaga = async () => {
-  try {
-    isLoadingLembaga.value = true
-
-    const response: any = await $api('/approval/lembaga', {
-      method: 'get',
-      params: {
-        page: currentPage.value,
-        size: itemPerPage.value,
-      },
-    } as any)
-
-    if (response.code === 2000) {
-      if (response.data !== null) {
-        response.data.unshift({ nama_lebaga: 'Semua', id_lembaga_pelatihan: '' })
-        lembagaItems.value = response.data
-      }
-      isLoadingLembaga.value = false
-
-      return response
-    }
-  }
-  catch (error) {
-    isLoadingLembaga.value = false
     console.error(error)
   }
 }
@@ -99,30 +64,20 @@ const { refresh } = await useAsyncData(
   'user-list',
   async () => await handleLoadList(),
   {
-    watch: [currentPage, itemPerPage, tableType],
+    watch: [currentPage, itemPerPage],
   },
 )
 
-onMounted(async () => {
-  await Promise.allSetled([
-    handleLoadList(),
-    getMasterLembaga(),
-  ])
+const onApprove = async () => {
+  useSnackbar().sendSnackbar(`${selectedItem.value.length} Asesor Disetujui`, 'success');
+}
+
+onMounted(() => {
+  handleLoadList()
 })
 
-const getChipColor = (status: string) => {
-  if (status === 'lunas')
-    return 'success'
-
-  return 'primary'
-}
-
-const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} Pendamping Disetujui`, 'success');
-}
-
-const unduhFile = async (link: string) => {
-  await downloadDocument(link)
+const unduhFile = () => {
+  window.open('/files/Cara Bayar.pdf', '_blank')
 }
 </script>
 
@@ -130,7 +85,7 @@ const unduhFile = async (link: string) => {
   <VRow>
     <VCol>
       <h2 style="font-size: 32px">
-        Persetujuan Sertifikat Juleha Lembaga Pelatihan
+        Sertifikat Asesor
       </h2>
     </VCol>
   </VRow>
@@ -138,7 +93,7 @@ const unduhFile = async (link: string) => {
     <VCol>
       <VCard class="w-100 py-3">
         <VCardTitle class="d-flex justify-space-between align-center font-weight-bold text-h4">
-          <div>List Persetujuan Sertifikat Juleha Lembaga Pelatihan</div>
+          <div>List Sertifikat Asesor</div>
           <DialogApprovalData
             title="Persetujui data"
             button-text="Ya, Setujui"
@@ -146,27 +101,11 @@ const unduhFile = async (link: string) => {
             :disabled="selectedItem.length === 0"
           >
             <template #contentDelete>
-              Anda yakin setujui {{ selectedItem.length }} data ?
+              Anda yakin setujui {{selectedItem.length}} data ?
             </template>
           </DialogApprovalData>
         </VCardTitle>
         <VCardItem>
-          <VRow>
-            <VCol
-              cols="12"
-              sm="4"
-            >
-              <VSelect
-                v-model="tableType"
-                :items="lembagaItems"
-                item-title="nama_lebaga"
-                item-value="id_lembaga_pelatihan"
-                class="mb-5"
-                :loading="isLoadingLembaga"
-                :disabled="isLoadingLembaga"
-              />
-            </VCol>
-          </VRow>
           <VCard variant="outlined">
             <VDataTableServer
               v-model:items-per-page="itemPerPage"
@@ -228,18 +167,6 @@ const unduhFile = async (link: string) => {
                   -
                 </div>
               </template>
-              <template #item.status="{ item }">
-                <div class="d-flex flex-wrap">
-                  <VChip
-                    :key="item.id"
-                    :color="getChipColor('lunas')"
-                    label
-                    class="ma-1"
-                  >
-                    Lunas
-                  </VChip>
-                </div>
-              </template>
               <template #item.actions="{ item }">
                 <div class="d-flex gap-1">
                   <IconBtn size="small">
@@ -247,7 +174,7 @@ const unduhFile = async (link: string) => {
                       <VIcon
                         icon="ri-arrow-right-line"
                         color="primary"
-                        @click="() => unduhFile(item.file_sertifikat)"
+                        @click="unduhFile"
                       />
                     </div>
                   </IconBtn>
