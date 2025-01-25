@@ -8,7 +8,7 @@
       <v-form ref="nibForm" @submit.prevent="onSubmitNib">
         <v-card-text>
           <p class="text-h5 font-weight-bold">
-            {{ t("new-domestic.nib-title") }}
+            {{ t("new-domestic-nib.title") }}
           </p>
           <VRow>
             <VCol cols="12">
@@ -17,7 +17,7 @@
               ></div>
               <VTextField
                 v-model="nib"
-                :placeholder="t('new-domestic.nib-attr-1')"
+                :placeholder="t('new-domestic-nib.attr-1')"
                 :rules="[requiredValidator, integerValidator]"
                 :error="!!nibError"
                 :error-messages="nibError"
@@ -28,7 +28,7 @@
           <VRow class="flex-row-reverse">
             <VCol cols="12" md="auto">
               <VBtn block type="submit" :disabled="buttonClicked">
-                {{ t("new-domestic.nib-btn-2") }}
+                {{ t("new-domestic-nib.btn-2") }}
               </VBtn>
             </VCol>
             <VCol cols="12" md="auto">
@@ -38,7 +38,7 @@
                 type="reset"
                 @click="stepStore.goToStep(1)"
               >
-                {{ t("new-domestic.nib-btn-1") }}
+                {{ t("new-domestic-nib.btn-1") }}
               </VBtn>
             </VCol>
           </VRow>
@@ -183,8 +183,11 @@ const onSubmitNib = async () => {
   // sendSnackbar("error bang", "success");
   buttonClicked.value = true;
   nibForm.value?.validate().then(({ valid: isValid }) => {
-    if (isValid) checkNib();
-    else buttonClicked.value = false;
+    if (isValid) {
+      checkNib();
+    } else {
+      buttonClicked.value = false;
+    }
   });
 };
 const submitDalamNegeri = async () => {
@@ -246,9 +249,7 @@ const checkNib = async () => {
 
     domesticWindow.value = 2;
   } else {
-    nibError.value = `${t(
-      "new-domestic-nib-data.msg"
-    )} “sanditama74@gmail.com” ${t("new-domestic-nib-data.msg-1")}`;
+    nibError.value = `${t("new-domestic-nib-data.msg-error")}`;
     // useSnackbar().sendSnackbar("NIB tidak ditemukan", "error");
   }
   buttonClicked.value = false;

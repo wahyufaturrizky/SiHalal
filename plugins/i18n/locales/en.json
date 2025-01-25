@@ -243,13 +243,13 @@
     "btn-1": "Back",
     "btn-2": "Submit"
   },
-  "new-domestic": {
+  "new-domestic-nib": {
     "title": "Fill in the Business Identification Number",
     "attr-1": "Business Identification Number",
     "btn-1": "Back",
     "btn-2": "Submit"
   },
-  " new-domestic-nib-data": {
+  "new-domestic-nib-data": {
     "title": "Business Identification Number Data",
     "attr-1": "Business Identification Number (NIB)",
     "attr-2": "Company Name",
@@ -266,6 +266,7 @@
     "th-5": "Business Capital",
     "msg": "The Business Identification Number (NIB) has been registered under the user “sanditama74@gmail.com.”",
     "msg-1": ",Please log in using that email address.",
+    "msg-error": "NIB not Found",
     "btn-1": "Back",
     "btn-2": "Submit"
   },

@@ -243,11 +243,11 @@
         "btn-1": "Kembali",
         "btn-2": "Kirim"
     },
-    "new-domestic": {
-        "nib-title": "Isi Nomor Induk Berusaha",
-        "nib-attr-1": "Nomor Induk Berusaha",
-        "nib-btn-1": "Kembali",
-        "nib-btn-2": "Kirim"
+    "new-domestic-nib": {
+        "title": "Isi Nomor Induk Berusaha",
+        "attr-1": "Nomor Induk Berusaha",
+        "btn-1": "Kembali",
+        "btn-2": "Kirim"
     },
     "new-domestic-nib-data": {
         "title": "Data Nomor Induk Berusaha",
@@ -266,6 +266,7 @@
         "th-5": "Modal Usaha",
         "msg": "NIB sudah didaftarkan oleh user",
         "msg-1": ",Silakan login dengan menggunakan email tersebut.",
+        "msg-error": "NIB tidak ditemukan",
         "btn-1": "Kembali",
         "btn-2": "Kirim"
     },
