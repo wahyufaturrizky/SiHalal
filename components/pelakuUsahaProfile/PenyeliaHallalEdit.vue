@@ -193,7 +193,7 @@ const downloadSkHandler = () => {
     <VCardTitle>
       <VRow>
         <VCol cols="8" style="display: inline-flex; align-items: center">
-          <h3 class="mr-4">Penyelia Halal</h3>
+          <div class="text-h4 font-weight-bold mr-4">Penyelia Halal</div>
           <!-- <VChip
             color="primary"
             style="
@@ -306,10 +306,10 @@ const downloadSkHandler = () => {
   <!-- <VExpansionPanels v-model="panelOpenPenyeliaHallal">
     <VExpansionPanel>
       <VExpansionPanelTitle>
-        
+
       </VExpansionPanelTitle>
       <VExpansionPanelText>
-        
+
       </VExpansionPanelText>
     </VExpansionPanel>
   </VExpansionPanels> -->

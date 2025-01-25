@@ -165,7 +165,7 @@ onMounted(async () => {
 <template>
   <VRow align="center">
     <VCol :cols="6">
-      <h2 style="font-size: 32px">Profile Pendaftar</h2>
+      <h1 style="font-size: 32px">Profile Pendaftar</h1>
     </VCol>
     <VCol :cols="6" style="display: flex; justify-content: flex-end"
       ><VBtn @click="onSubmit" :disabled="buttonClicked"
@@ -338,7 +338,9 @@ onMounted(async () => {
     <VCol class="v-col-12">
       <VExpansionPanels v-model="closeDefault">
         <VExpansionPanel>
-          <VExpansionPanelTitle><h3>Data Registrasi</h3></VExpansionPanelTitle>
+          <VExpansionPanelTitle>
+            <div class="text-h4 font-weight-bold">Data Registrasi</div>
+          </VExpansionPanelTitle>
           <VExpansionPanelText>
             <RegistrasiFasilitatorTable></RegistrasiFasilitatorTable>
           </VExpansionPanelText>

@@ -14,6 +14,7 @@ import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-il
 import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
 import authV2LoginMaskDark from "@images/pages/auth-v2-login-mask-dark.png";
 import authV2LoginMaskLight from "@images/pages/auth-v2-login-mask-light.png";
+import { useI18n } from "vue-i18n";
 import { RecaptchaV2, useRecaptcha } from "vue3-recaptcha-v2";
 const { signIn, data: sessionData, status, signOut } = useAuth();
 const { mdAndUp } = useDisplay();
@@ -94,18 +95,15 @@ async function login() {
       return;
     }
     if (error.data.data.code === 400000) {
-      errors.value.password = "Kata sandi tidak tepat!";
-      errors.value.email = "Alamat Email tidak ditemukan!";
+      errors.value.password = t("login.msg-err-password");
+      errors.value.email = t("login.msg-err-email");
     }
     if (error.data.data.success == false) {
       useSnackbar().sendSnackbar("Captcha Failed", "error");
 
       return;
     }
-    useSnackbar().sendSnackbar(
-      "Gagal masuk, mohon periksa kembali kelengkapan data!",
-      "error"
-    );
+    useSnackbar().sendSnackbar(t("login.msg-err-logi"), "error");
     buttonClicked.value = false;
   }
 
@@ -138,7 +136,7 @@ const handleErrorCallback = () => {
 const handleExpiredCallback = () => {
   token.value = "";
 };
-const token = ref("");
+const token = ref<unknown | string>("");
 const handleLoadCallback = (response: unknown) => {
   token.value = response;
 };
@@ -157,7 +155,9 @@ const getDate = (): string => {
   return formattedDate;
 };
 
-const currentImage = ref("");
+const fileType = ref("IMG");
+const videOrientation = ref("PORTRAIT");
+const currentDisplayFile = ref("");
 const handleLoadImageAuth = async () => {
   try {
     const response: any = await $api("/admin/images/random-image", {
@@ -165,12 +165,20 @@ const handleLoadImageAuth = async () => {
     } as any);
 
     if (response.code === 2000) {
+      // if (response.data?.type) fileType.value = response.data?.type
+      const fileExt = response.data.file_name.split(".").pop();
+      fileType.value = !["webp"].includes(fileExt) ? "VID" : "IMG";
+      if (fileType.value === "VID") {
+        const orientationStr = response.data.file_name.split("-").pop();
+        videOrientation.value = orientationStr.split(".")[0];
+      }
+
       handleLoadImageFile(response.data.file_name);
     } else {
-      currentImage.value = NoImage;
+      currentDisplayFile.value = NoImage;
     }
   } catch (error) {
-    currentImage.value = NoImage;
+    currentDisplayFile.value = NoImage;
     console.error(error);
   }
 };
@@ -182,7 +190,7 @@ const handleLoadImageFile = async (filename: string) => {
         filename,
       },
     } as any);
-    currentImage.value = response.url;
+    currentDisplayFile.value = response.url;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -200,12 +208,18 @@ const items = [
     },
   },
 ];
+
+const { t } = useI18n();
 </script>
 
 <template>
   <HelpButton />
-  <VRow no-gutters>
-    <VCol cols="12" md="6" class="d-flex align-start justify-center login-bg">
+  <VRow
+    no-gutters
+    class="position-relative"
+    style="min-block-size: calc(100vh - 48px)"
+  >
+    <VCol cols="12" md="6" class="d-flex align-center justify-center login-bg">
       <VCard flat :max-width="500" class="mt-3 mt-sm-0 pa-2 pa-lg-3">
         <VCardText>
           <NuxtLink to="/">
@@ -216,13 +230,13 @@ const items = [
         </VCardText>
         <VCardText>
           <h4 class="text-h4 mb-1">
-            Selamat Datang di
+            {{ t("login.header") }}
             <span class="text-capitalize" color="#652672">{{
               themeConfig.app.title
             }}</span>
           </h4>
           <p class="mb-0">
-            Login untuk mengakses fitur pada web {{ themeConfig.app.title }}
+            {{ t("login.subheader") }} {{ themeConfig.app.title }}
           </p>
         </VCardText>
 
@@ -233,8 +247,8 @@ const items = [
               <VCol cols="12">
                 <VTextField
                   v-model="credentials.email"
-                  label="Email"
-                  placeholder="Masukkan Email"
+                  :label="t('login.email-attr')"
+                  :placeholder="t('login.email-tip')"
                   type="email"
                   :autofocus="false"
                   :rules="[requiredValidator, emailValidator]"
@@ -247,8 +261,8 @@ const items = [
               <VCol cols="12">
                 <VTextField
                   v-model="credentials.password"
-                  label="Password"
-                  placeholder="············"
+                  :label="t('login.password-attr')"
+                  :placeholder="t('login.password-tip')"
                   :rules="[requiredValidator]"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   :error-messages="errors.password"
@@ -266,7 +280,7 @@ const items = [
                     class="text-primary ms-1 d-inline-block text-body-1"
                     :to="{ name: 'forgot-password' }"
                   >
-                    Lupa Kata Sandi?
+                    {{ t("login.action-forgot-password") }}
                   </NuxtLink>
                 </VCol>
 
@@ -310,12 +324,12 @@ const items = [
 
               <!-- create account -->
               <VCol cols="12" class="text-body-1 text-center">
-                <span class="d-inline-block"> Belum punya akun ?</span>
+                <span class="d-inline-block"> {{ t("login.tip-1") }}</span>
                 <NuxtLink
                   class="text-primary ms-1 d-inline-block text-body-1"
                   :to="{ name: 'register' }"
                 >
-                  Daftar di sini
+                  {{ t("login.tip-1a") }}
                 </NuxtLink>
               </VCol>
             </VRow>
@@ -323,7 +337,7 @@ const items = [
         </VCardText>
         <VCardText>
           <VCol cols="12" class="text-body-1 text-center">
-            <span class="d-inline-block">Terhubung Ke</span>
+            <span class="d-inline-block"> {{ t("login.tip-2") }}</span>
           </VCol>
           <VRow align="center" justify="center">
             <VCol cols="auto" class="d-flex align-center">
@@ -345,10 +359,50 @@ const items = [
     <VCol
       v-if="mdAndUp"
       md="6"
-      class="d-flex align-start justify-start py-1 pe-2 bg-white"
-      style="max-height: calc(100vh - 48px)"
+      class="py-1 pe-2 bg-white position-sticky"
+      style="inset-block-start: 23px; max-block-size: calc(100vh - 48px)"
     >
-      <img :src="currentImage" height="100%" style="border-radius: 20px" />
+      <div
+        v-if="fileType === 'IMG'"
+        class="h-100 d-flex align-center justify-start"
+      >
+        <img
+          :src="currentDisplayFile"
+          height="100%"
+          style="border-radius: 20px"
+        />
+      </div>
+      <div v-else class="h-100">
+        <div
+          v-if="videOrientation === 'POTRAIT'"
+          class="h-100 d-flex align-center justify-start"
+        >
+          <video
+            v-if="currentDisplayFile"
+            height="100%"
+            autoplay
+            muted
+            loop
+            style="border-radius: 20px"
+          >
+            <source :src="currentDisplayFile" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        <div v-else class="h-100 d-flex align-center justify-center">
+          <video
+            v-if="currentDisplayFile"
+            width="100%"
+            autoplay
+            muted
+            loop
+            style="border-radius: 20px"
+          >
+            <source :src="currentDisplayFile" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
     </VCol>
   </VRow>
 </template>

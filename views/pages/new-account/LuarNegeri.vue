@@ -1,11 +1,11 @@
 <template>
   <v-card-text>
-    <p class="text-h5 font-weight-bold">Company Profile Form</p>
+    <p class="text-h5 font-weight-bold">{{ t("new-foreign.title") }}</p>
     <v-form ref="refVForm" @submit.prevent="onSubmit">
       <VRow>
         <VCol cols="12">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Company Name
+            {{ t("new-foreign.attr-1") }}
           </div>
           <VTextField
             v-model="form.company_name"
@@ -16,7 +16,7 @@
         </VCol>
         <VCol cols="12">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Address
+            {{ t("new-foreign.attr-2") }}
           </div>
           <VTextField
             v-model="form.address"
@@ -27,7 +27,7 @@
         </VCol>
         <VCol cols="12" md="6">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            City
+            {{ t("new-foreign.attr-3") }}
           </div>
           <VTextField
             v-model="form.city"
@@ -38,7 +38,7 @@
         </VCol>
         <VCol cols="12" md="6">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Province
+            {{ t("new-foreign.attr-4") }}
           </div>
           <VTextField
             v-model="form.province"
@@ -49,7 +49,7 @@
         </VCol>
         <VCol cols="12">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Country
+            {{ t("new-foreign.attr-5") }}
           </div>
           <VSelect
             :items="country"
@@ -61,7 +61,7 @@
         </VCol>
         <VCol cols="12">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Postal Code
+            {{ t("new-foreign.attr-6") }}
           </div>
           <VTextField
             v-model="form.postal_code"
@@ -72,7 +72,7 @@
         </VCol>
         <VCol cols="12">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Phone Number
+            {{ t("new-foreign.attr-7") }}
           </div>
           <VTextField
             v-model="form.phone"
@@ -83,7 +83,7 @@
         </VCol>
         <VCol cols="12">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Email
+            {{ t("new-foreign.attr-8") }}
           </div>
           <VTextField
             v-model="form.email"
@@ -95,7 +95,9 @@
       </VRow>
       <VRow class="flex-row-reverse">
         <VCol cols="12" md="auto">
-          <VBtn block type="submit" :disabled="buttonClicked"> Kirim </VBtn>
+          <VBtn block type="submit" :disabled="buttonClicked">
+            {{ t("new-foreign.btn-2") }}
+          </VBtn>
         </VCol>
         <VCol cols="12" md="auto">
           <VBtn
@@ -104,7 +106,7 @@
             type="reset"
             @click="stepStore.goToStep(1)"
           >
-            Kembali
+            {{ t("new-foreign.btn-1") }}
           </VBtn>
         </VCol>
       </VRow>
@@ -116,7 +118,10 @@
 import { emailValidator, integerValidator, requiredValidator } from "#imports";
 import type MasterCountry from "@/server/interface/master.iface";
 import NewAccountForeign from "@/server/interface/new-account.iface";
+import { useI18n } from "vue-i18n";
 import type { VForm } from "vuetify/components";
+
+const { t } = useI18n();
 
 const form = ref<NewAccountForeign>({
   company_name: "",
@@ -133,7 +138,7 @@ const refVForm = ref<VForm>();
 const stepStore = useMyNewAccountStepStore();
 const country = ref();
 
-const authUserStore = useMyAuthUserStore()
+const authUserStore = useMyAuthUserStore();
 
 onMounted(async () => {
   const response: MasterCountry[] = await $api("/master/country", {
@@ -156,16 +161,16 @@ const submitForm = async () => {
     body: form.value,
   });
 
-  console.log("SUBMIT BUSSINESS ACTOR : FOREIGN COUNTRY ", res)
+  // console.log("SUBMIT BUSSINESS ACTOR : FOREIGN COUNTRY ", res);
 
   if (res) {
     // useAuth().signOut();
-    authUserStore.resetUser()
+    authUserStore.resetUser();
     useSnackbar().sendSnackbar(
       "Bussiness Actor data save successfully. Please relogin",
       "success"
     );
-    navigateTo("/")
+    navigateTo("/");
   } else {
     useSnackbar().sendSnackbar(
       "Bussiness Actor data save unsuccessfully",
@@ -177,5 +182,5 @@ const submitForm = async () => {
 </script>
 
 <style lang="scss">
-@use "@core/scss/template/pages/page-auth.scss";
+@use "@core/scss/template/pages/page-auth";
 </style>

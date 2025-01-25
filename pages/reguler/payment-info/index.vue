@@ -107,14 +107,14 @@ onMounted(async () => {
   </div> -->
   <VRow no-gutters>
     <VCol>
-      <h2 style="font-size: 32px">Informasi Pembayaran</h2>
+      <h1 style="font-size: 32px">Informasi Pembayaran</h1>
     </VCol>
   </VRow>
   <VRow>
     <VCol>
       <VCard>
         <VCardTitle class="my-3 d-flex justify-space-between align-center">
-          <div class="font-weight-bold text-h4">
+          <div class="text-h4 font-weight-bold">
             Daftar Invoice Yang Sudah Dibayar
           </div>
         </VCardTitle>

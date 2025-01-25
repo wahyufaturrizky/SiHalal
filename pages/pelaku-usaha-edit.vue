@@ -75,8 +75,10 @@ const skReadyHandler = (blob) => {
   <SubPelakuUsahaLayout>
     <template #pageTitle>
       <VRow>
-        <VCol><h3>Ubah Pelaku Usaha</h3></VCol>
-        <VCol style="display: flex; justify-content: end">
+        <VCol>
+          <h1 style="font-size: 32px">Ubah Pelaku Usaha</h1>
+        </VCol>
+        <VCol style="display: flex; align-items: center; justify-content: end">
           <!-- <DeleteConfirmation /> -->
           <VBtn variant="outlined" @click="navigatePage()">Batal</VBtn>
           <SaveConfirmation
@@ -104,7 +106,7 @@ const skReadyHandler = (blob) => {
           <VExpansionPanels v-model="panelOpen">
             <VExpansionPanel>
               <VExpansionPanelTitle>
-                <h2>Penanggung Jawab</h2>
+                <div class="text-h4 font-weight-bold">Penanggung Jawab</div>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VForm ref="penanggungJawabRef">

@@ -322,6 +322,30 @@ onMounted(async () => {
                   </template>
                 </VBtn>
               </InfoRowV2>
+              <InfoRowV2
+                class="d-flex align-center"
+                name="Download QR Label"
+                :style="{ fontWeight: '600' }"
+              >
+                <VBtn
+                  :color="
+                    detailData?.certificate_halal.status == 'Terbit SH'
+                      ? 'primary'
+                      : '#A09BA1'
+                  "
+                  density="compact"
+                  class="px-2"
+                  @click="
+                    detailData?.certificate_halal.status == 'Terbit SH'
+                      ? downloadCert(id)
+                      : null
+                  "
+                >
+                  <template #default>
+                    <VIcon icon="fa-download" />
+                  </template>
+                </VBtn>
+              </InfoRowV2>
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="1" class="pt-3">

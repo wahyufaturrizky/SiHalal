@@ -83,14 +83,14 @@ const handleInput = () => debouncedFetch(1, size.value, searchQuery.value);
 <template>
   <div>
     <!-- <KembaliButton class="pl-0" /> -->
-    <h2 style="font-size: 32px">Audit Pengajuan</h2>
+    <h1 style="font-size: 32px">Audit Pengajuan</h1>
     <br />
 
     <VCard class="pa-4">
       <VCardTitle class="d-flex justify-space-between align-center">
-        <span class="text-h5 font-weight-bold"
-          >Daftar Pengajuan untuk Dilakukan Audit</span
-        >
+        <div class="text-h4 font-weight-bold">
+          Daftar Pengajuan untuk Dilakukan Audit
+        </div>
       </VCardTitle>
       <VCardItem>
         <VTextField

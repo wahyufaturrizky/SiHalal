@@ -90,13 +90,15 @@ onMounted(async () => {
 <template>
   <VRow>
     <VCol cols="12">
-      <h2 style="font-size: 32px">Proses Verval</h2>
+      <h1 style="font-size: 32px">Proses Verval</h1>
     </VCol>
   </VRow>
   <VRow v-if="!loadingAll">
     <VCol cols="12">
       <VCard>
-        <VCardTitle><h3>Data Proses Verval</h3></VCardTitle>
+        <VCardTitle>
+          <div class="text-h4 font-weight-bold">Data Proses Verval</div>
+        </VCardTitle>
         <VCardItem>
           <VRow>
             <VCol cols="7">
