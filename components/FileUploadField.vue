@@ -11,7 +11,7 @@ const updatedFileName = computed(() => props.fileName);
 
 <template>
   <VTextField
-    v-if="updatedFileData"
+    v-if="updatedFileData || updatedFileName"
     :model-value="updatedFileName"
     density="compact"
     placeholder="No file choosen"

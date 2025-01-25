@@ -2,52 +2,70 @@
 const router = useRouter();
 
 const profileData = reactive({
-  institutionName: "Lembaga AB761",
-  institutionType: "Komisi Fatwa MUI Provinsi",
-  address: "Jl. Jend. Sudirman No. 1",
-  province: "Pusat",
-  city: "Kab. Enrekang",
-  district: null,
-  email: "",
-});
-const responsiblerData = reactive({
-  chairman: {
-    name: "Albert Flores",
-    phone: "082178958123",
-    tteFile: {
-      fileData: null,
-      fileName: null,
-    },
-  },
-  secretary: {
-    name: "Robert Fox",
-    phone: "082167247818",
-    tteFile: {
-      fileData: null,
-      fileName: null,
-    },
-  },
-  fatwaLead: {
-    name: "Kathryn Murphy",
-    phone: "082167126781",
-    tteFile: {
-      fileData: null,
-      fileName: null,
-    },
-  },
-  contact: {
-    name: "Savannah Nguyen",
-    phone: "082189897921",
+  // Data -> Profil Komisi Fatwa
+  id: null,
+  nama_mui: null,
+  jenis: null,
+  alamat: null,
+  kd_prov: null,
+  provinsi: null,
+  kd_kab: null,
+  kota: null,
+  kd_kec: null,
+  wilayah_id: null,
+  email: null,
+  // Data -> Penanggung Jawab
+  nama_pimpinan: null,
+  no_hp_pimpinan: null,
+  pimpinan_tte: null,
+  nama_sekretaris: null,
+  no_hp_sekretaris: null,
+  sekretaris_tte: null,
+  nama_bidang_fatwa: null,
+  no_hp_bidang_fatwa: null,
+  bidang_fatwa_tte: null,
+  nama_kontak: null,
+  no_hp_kontak: null,
+  // Data -> Rekening Bank & NPWP
+  rekening: {
+    unik_id: null,
+    bank: null,
+    no_rekening: null,
+    nama: null,
+    filefotorek: null,
+    npwp: null,
+    nama_npwp: null,
+    filefotonpwp: null,
+    terverifikasi: 0,
+    verfikasi_bpjph: 0,
   },
 });
 
+const handleLoadProfile = async () => {
+  try {
+    const response: any = await $api("/komisi-fatwa/profile", {
+      method: "get",
+    } as any);
+    if (response.code === 2000) {
+      Object.assign(profileData, response.data);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const selectedTteFile = reactive<any>({
+  pimpinan: null,
+  sekretaris: null,
+  ketuaBidang: null,
+});
 const handleSelectChairmanTTE = async (event: any) => {
   const fileData = event.target.files[0];
   if (!fileData) return;
 
   try {
-    responsiblerData.chairman.tteFile.fileName = fileData.name;
-    responsiblerData.chairman.tteFile.fileData = fileData;
+    profileData.pimpinan_tte = fileData.name;
+    selectedTteFile.pimpinan = fileData;
   } catch (error) {
     useSnackbar().sendSnackbar("Upload Image Failed", "error");
     console.error(error);
@@ -58,8 +76,8 @@ const handleSelectSecretaryTTE = async (event: any) => {
   if (!fileData) return;
 
   try {
-    responsiblerData.secretary.tteFile.fileName = fileData.name;
-    responsiblerData.secretary.tteFile.fileData = fileData;
+    profileData.sekretaris_tte = fileData.name;
+    selectedTteFile.sekretaris = fileData;
   } catch (error) {
     useSnackbar().sendSnackbar("Upload Image Failed", "error");
     console.error(error);
@@ -70,123 +88,145 @@ const handleSelectFatwaLeadTTE = async (event: any) => {
   if (!fileData) return;
 
   try {
-    responsiblerData.fatwaLead.tteFile.fileName = fileData.name;
-    responsiblerData.fatwaLead.tteFile.fileData = fileData;
+    profileData.bidang_fatwa_tte = fileData.name;
+    selectedTteFile.ketuaBidang = fileData;
   } catch (error) {
     useSnackbar().sendSnackbar("Upload Image Failed", "error");
     console.error(error);
   }
 };
 const handleRemoveChaimanTTE = () => {
-  responsiblerData.chairman.tteFile.fileName = null;
-  responsiblerData.chairman.tteFile.fileData = null;
+  selectedTteFile.pimpinan = null;
+  profileData.pimpinan_tte = null;
 };
 const handleRemoveSecretaryTTE = () => {
-  responsiblerData.secretary.tteFile.fileName = null;
-  responsiblerData.secretary.tteFile.fileData = null;
+  selectedTteFile.sekretaris = null;
+  profileData.sekretaris_tte = null;
 };
 const handleRemoveFatwaLeadTTE = () => {
-  responsiblerData.fatwaLead.tteFile.fileName = null;
-  responsiblerData.fatwaLead.tteFile.fileData = null;
+  selectedTteFile.ketuaBidang = null;
+  profileData.bidang_fatwa_tte = null;
 };
 
-const accountData = reactive({
-  bankName: "BRI",
-  accountNumber: "1234-0008-7771-9871",
-  accountName: "Lembaga ABX771",
-  accountPhoto: "RekeningBRI.JPG",
-  npwpNumber: "0198.6358.9912.8172.1",
-  npwpPhoto: "NPWP.JPG",
-});
-
-const bankAccPhoto = reactive({
-  name: null,
-  file: null,
-});
+const bankAccPhoto = ref(null);
 const handleSelectBankAccPhoto = async (event: any) => {
   const fileData = event.target.files[0];
   if (!fileData) return;
 
   try {
-    bankAccPhoto.name = fileData.name;
-    bankAccPhoto.file = fileData;
-    // inputData.file = fileData;
+    profileData.rekening.filefotorek = fileData.name;
+    bankAccPhoto.value = fileData;
   } catch (error) {
     useSnackbar().sendSnackbar("Upload Image Failed", "error");
     console.error(error);
   }
 };
 const handleRemoveBankAccPhoto = () => {
-  bankAccPhoto.name = null;
-  bankAccPhoto.file = null;
-  // inputData.file = null;
+  profileData.rekening.filefotorek = null;
+  bankAccPhoto.value = null;
 };
 
-const npwpPhoto = reactive({
-  name: null,
-  file: null,
-});
+const npwpPhoto = ref(null);
 const handleSelectNpwpPhoto = async (event: any) => {
   const fileData = event.target.files[0];
   if (!fileData) return;
 
   try {
-    npwpPhoto.name = fileData.name;
-    npwpPhoto.file = fileData;
-    // inputData.file = fileData;
+    profileData.rekening.filefotonpwp = fileData.name;
+    npwpPhoto.value = fileData;
   } catch (error) {
     useSnackbar().sendSnackbar("Upload Image Failed", "error");
     console.error(error);
   }
 };
 const handleRemoveNpwpPhoto = () => {
-  npwpPhoto.name = null;
-  npwpPhoto.file = null;
-  // inputData.file = null;
+  profileData.rekening.filefotonpwp = null;
+  npwpPhoto.value = null;
 };
 
-const isOpenSaveModal = ref(false);
-const handleOpenSaveModal = () => {
-  isOpenSaveModal.value = !isOpenSaveModal.value;
+const isOpenUpdateModal = ref(false);
+const handleOpenUpdateModal = () => {
+  isOpenUpdateModal.value = !isOpenUpdateModal.value;
 };
-const handleConfirmSave = async () => {
-  useSnackbar().sendSnackbar("Berhasil menyimpan data", "success");
-  router.push("/komisi-fatwa/profile");
-  // try {
-  // const response: any = await $api("/admin/users/remove", {
-  //   method: "delete",
-  //   query: {
-  //     user_id: selectedUser.value,
-  //   },
-  // } as any);
 
-  // if (response.code === 2000) {
-  //   useSnackbar().sendSnackbar("Berhasil menyimpan data", "success");
-  //   router.push("/komisi-fatwa/profile");
-  // }
-  // } catch (error) {
-  //   useSnackbar().sendSnackbar("Gagal menyimpan data", "error");
-  //   console.error(error);
-  // }
+const updatePayload: Record<string, any> = {
+  nama_mui: profileData.nama_mui,
+  jenis: profileData.jenis,
+  alamat: profileData.alamat,
+  provinsi: profileData.provinsi,
+  kd_prov: profileData.kd_prov,
+  kota: profileData.kota,
+  kd_kab: profileData.kd_kab,
+  wilayah_id: profileData.wilayah_id,
+  kd_kec: profileData.kd_kec,
+  email: profileData.email,
+  nama_pimpinan: profileData.nama_pimpinan,
+  no_hp_pimpinan: profileData.no_hp_pimpinan,
+  nama_sekretaris: profileData.nama_sekretaris,
+  no_hp_sekretaris: profileData.no_hp_sekretaris,
+  nama_bidang_fatwa: profileData.nama_bidang_fatwa,
+  no_hp_bidang_fatwa: profileData.no_hp_bidang_fatwa,
+  nama_kontak: profileData.nama_kontak,
+  no_hp_kontak: profileData.no_hp_kontak,
+  bank: profileData.rekening.bank,
+  no_rekening: profileData.rekening.no_rekening,
+  nama: profileData.rekening.nama,
+  npwp: profileData.rekening.npwp,
+  nama_npwp: profileData.rekening.nama_npwp,
 };
+const handleConfirmUpdate = async () => {
+  try {
+    const payloadData = new FormData();
+    if (selectedTteFile.pimpinan)
+      payloadData.append("pimpinan_tte", selectedTteFile.pimpinan);
+    if (selectedTteFile.sekretaris)
+      payloadData.append("sekretaris_tte", selectedTteFile.sekretaris);
+    if (selectedTteFile.ketuaBidang)
+      payloadData.append("bidang_fatwa_tte", selectedTteFile.ketuaBidang);
+    if (bankAccPhoto.value)
+      payloadData.append("filefotorek", bankAccPhoto.value);
+    if (npwpPhoto.value) payloadData.append("filefotonpwp", npwpPhoto.value);
+
+    for (const key in updatePayload) {
+      const value = updatePayload[key];
+      payloadData.append(key, value);
+    }
+    const response: any = await $api("/admin/users/remove", {
+      method: "delete",
+      body: payloadData,
+    } as any);
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar("Berhasil menyimpan data", "success");
+      router.push("/komisi-fatwa/profile");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Gagal menyimpan data", "error");
+    console.error(error);
+  }
+};
+
+onMounted(() => {
+  handleLoadProfile();
+});
 </script>
 
 <template>
   <ConfirmModal
     dialog-title="Simpan Perubahan"
-    :dialog-visible="isOpenSaveModal"
-    @update:dialog-visible="isOpenSaveModal = $event"
+    :dialog-visible="isOpenUpdateModal"
+    @update:dialog-visible="isOpenUpdateModal = $event"
   >
     <VCardText> Apakah yakin ingin menyimpan perubahan data ini? </VCardText>
     <VCardActions class="px-4">
-      <VBtn variant="outlined" class="px-4 me-3" @click="handleOpenSaveModal"
+      <VBtn variant="outlined" class="px-4 me-3" @click="handleOpenUpdateModal"
         >Batal</VBtn
       >
       <VBtn
         variant="flat"
         class="px-4"
         color="error"
-        @click="[handleConfirmSave(), handleOpenSaveModal()]"
+        @click="[handleConfirmUpdate(), handleOpenUpdateModal()]"
       >
         Ya, Simpan
       </VBtn>
@@ -208,7 +248,7 @@ const handleConfirmSave = async () => {
         color="primary"
         text="Simpan"
         class="px-3"
-        @click="handleOpenSaveModal"
+        @click="handleOpenUpdateModal"
       />
     </VCol>
   </VRow>
@@ -223,7 +263,7 @@ const handleConfirmSave = async () => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">Nama Lembaga</h4>
               <VTextField
-                v-model="profileData.institutionName"
+                v-model="profileData.nama_mui"
                 placeholder="Isi nama lembaga"
                 density="compact"
                 rounded="xl"
@@ -234,7 +274,7 @@ const handleConfirmSave = async () => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">Jenis Lembaga</h4>
               <VSelect
-                v-model="profileData.institutionType"
+                v-model="profileData.jenis"
                 placeholder="Pilih jenis lembaga"
                 density="compact"
                 rounded="xl"
@@ -246,7 +286,7 @@ const handleConfirmSave = async () => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">Alamat</h4>
               <VTextField
-                v-model="profileData.address"
+                v-model="profileData.alamat"
                 placeholder="Isi alamat"
                 density="compact"
                 rounded="xl"
@@ -257,7 +297,7 @@ const handleConfirmSave = async () => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">Provinsi</h4>
               <VSelect
-                v-model="profileData.province"
+                v-model="profileData.provinsi"
                 placeholder="Pilih provinsi"
                 density="compact"
                 rounded="xl"
@@ -269,7 +309,7 @@ const handleConfirmSave = async () => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">Kota/Kab</h4>
               <VSelect
-                v-model="profileData.city"
+                v-model="profileData.kota"
                 placeholder="Pilih kota/kabupaten"
                 density="compact"
                 rounded="xl"
@@ -281,7 +321,7 @@ const handleConfirmSave = async () => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">Kecamatan</h4>
               <VSelect
-                v-model="profileData.district"
+                v-model="profileData.wilayah_id"
                 placeholder="Pilih kecamatan"
                 density="compact"
                 rounded="xl"
@@ -313,7 +353,7 @@ const handleConfirmSave = async () => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">Nama Pimpinan</h4>
               <VTextField
-                v-model="responsiblerData.chairman.name"
+                v-model="profileData.nama_pimpinan"
                 placeholder="Isi nama pimpinan"
                 density="compact"
                 rounded="xl"
@@ -322,7 +362,7 @@ const handleConfirmSave = async () => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">No. HP</h4>
               <VTextField
-                v-model="responsiblerData.chairman.phone"
+                v-model="profileData.no_hp_pimpinan"
                 placeholder="Isi no. HP"
                 density="compact"
                 rounded="xl"
@@ -331,8 +371,8 @@ const handleConfirmSave = async () => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">Upload TTE</h4>
               <FileUploadField
-                :file-data="responsiblerData.chairman.tteFile.fileData"
-                :file-name="responsiblerData.chairman.tteFile.fileName"
+                :file-data="selectedTteFile.pimpinan"
+                :file-name="profileData.pimpinan_tte"
                 @on-select="handleSelectChairmanTTE"
                 @on-remove="handleRemoveChaimanTTE"
               />
@@ -343,7 +383,7 @@ const handleConfirmSave = async () => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">Nama Sekretaris</h4>
               <VTextField
-                v-model="responsiblerData.secretary.name"
+                v-model="profileData.nama_sekretaris"
                 placeholder="Isi nama sekretaris"
                 density="compact"
                 rounded="xl"
@@ -352,7 +392,7 @@ const handleConfirmSave = async () => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">No. HP</h4>
               <VTextField
-                v-model="responsiblerData.secretary.phone"
+                v-model="profileData.no_hp_sekretaris"
                 placeholder="Isi no. HP"
                 density="compact"
                 rounded="xl"
@@ -361,8 +401,8 @@ const handleConfirmSave = async () => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">Upload TTE</h4>
               <FileUploadField
-                :file-data="responsiblerData.secretary.tteFile.fileData"
-                :file-name="responsiblerData.secretary.tteFile.fileName"
+                :file-data="selectedTteFile.sekretaris"
+                :file-name="profileData.sekretaris_tte"
                 @on-select="handleSelectSecretaryTTE"
                 @on-remove="handleRemoveSecretaryTTE"
               />
@@ -373,7 +413,7 @@ const handleConfirmSave = async () => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">Nama Ketua Bidang Fatwa</h4>
               <VTextField
-                v-model="responsiblerData.fatwaLead.name"
+                v-model="profileData.nama_bidang_fatwa"
                 placeholder="Isi nama ketua bidang fatwa"
                 density="compact"
                 rounded="xl"
@@ -382,7 +422,7 @@ const handleConfirmSave = async () => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">No. HP</h4>
               <VTextField
-                v-model="responsiblerData.fatwaLead.phone"
+                v-model="profileData.no_hp_bidang_fatwa"
                 placeholder="Isi no. HP"
                 density="compact"
                 rounded="xl"
@@ -391,8 +431,8 @@ const handleConfirmSave = async () => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">Upload TTE</h4>
               <FileUploadField
-                :file-data="responsiblerData.fatwaLead.tteFile.fileData"
-                :file-name="responsiblerData.fatwaLead.tteFile.fileName"
+                :file-data="selectedTteFile.ketuaBidang"
+                :file-name="profileData.bidang_fatwa_tte"
                 @on-select="handleSelectFatwaLeadTTE"
                 @on-remove="handleRemoveFatwaLeadTTE"
               />
@@ -403,7 +443,7 @@ const handleConfirmSave = async () => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">Nama Kontak</h4>
               <VTextField
-                v-model="responsiblerData.contact.name"
+                v-model="profileData.nama_kontak"
                 placeholder="Isi nama kontak"
                 density="compact"
                 rounded="xl"
@@ -412,7 +452,7 @@ const handleConfirmSave = async () => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">No. HP</h4>
               <VTextField
-                v-model="responsiblerData.contact.phone"
+                v-model="profileData.no_hp_kontak"
                 placeholder="Isi no. HP"
                 density="compact"
                 rounded="xl"
@@ -432,7 +472,7 @@ const handleConfirmSave = async () => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">Nama Bank</h4>
               <VTextField
-                v-model="accountData.bankName"
+                v-model="profileData.rekening.bank"
                 placeholder="Isi nama bank"
                 density="compact"
                 rounded="xl"
@@ -443,7 +483,7 @@ const handleConfirmSave = async () => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">No. Rekening</h4>
               <VTextField
-                v-model="accountData.accountNumber"
+                v-model="profileData.rekening.no_rekening"
                 placeholder="Isi no. rekening"
                 density="compact"
                 rounded="xl"
@@ -454,7 +494,7 @@ const handleConfirmSave = async () => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">Atas Nama</h4>
               <VTextField
-                v-model="accountData.accountName"
+                v-model="profileData.rekening.nama"
                 placeholder="Isi atas nama"
                 density="compact"
                 rounded="xl"
@@ -465,8 +505,8 @@ const handleConfirmSave = async () => {
             <VCol cols="6">
               <h4 class="mb-1 font-weight-bold">Upload Foto Rekening</h4>
               <FileUploadField
-                :file-data="bankAccPhoto.file"
-                :file-name="bankAccPhoto.name"
+                :file-data="bankAccPhoto"
+                :file-name="profileData.rekening.filefotorek"
                 @on-select="handleSelectBankAccPhoto"
                 @on-remove="handleRemoveBankAccPhoto"
               />
@@ -476,7 +516,7 @@ const handleConfirmSave = async () => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">NPWP</h4>
               <VTextField
-                v-model="accountData.npwpNumber"
+                v-model="profileData.rekening.npwp"
                 placeholder="Isi NPWP"
                 density="compact"
                 rounded="xl"
@@ -487,8 +527,8 @@ const handleConfirmSave = async () => {
             <VCol cols="6">
               <h4 class="mb-1 font-weight-bold">Upload Foto NPWP</h4>
               <FileUploadField
-                :file-data="npwpPhoto.file"
-                :file-name="npwpPhoto.name"
+                :file-data="npwpPhoto"
+                :file-name="profileData.rekening.filefotonpwp"
                 @on-select="handleSelectNpwpPhoto"
                 @on-remove="handleRemoveNpwpPhoto"
               />

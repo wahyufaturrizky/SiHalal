@@ -1,47 +1,60 @@
 <script setup lang="ts">
 const router = useRouter();
 const profileData = reactive({
-  institutionName: "Lembaga AB761",
-  institutionType: "Komisi Fatwa MUI Provinsi",
-  address: "Jl. Jend. Sudirman No. 1",
-  province: "Pusat",
-  city: "Kab. Enrekang",
-  district: "-",
+  // Data -> Profil Komisi Fatwa
+  id: "",
+  nama_mui: "",
+  jenis: "",
+  alamat: "",
+  kd_prov: "",
+  provinsi: "",
+  kd_kab: "",
+  kota: "",
+  kd_kec: "",
+  wilayah_id: "",
   email: "",
+  // Data -> Penanggung Jawab
+  nama_pimpinan: "",
+  no_hp_pimpinan: "",
+  pimpinan_tte: "",
+  nama_sekretaris: "",
+  no_hp_sekretaris: "",
+  sekretaris_tte: "",
+  nama_bidang_fatwa: "",
+  no_hp_bidang_fatwa: "",
+  bidang_fatwa_tte: "",
+  nama_kontak: "",
+  no_hp_kontak: "",
+  // Data -> Rekening Bank & NPWP
+  rekening: {
+    unik_id: "",
+    bank: "",
+    no_rekening: "",
+    nama: "",
+    filefotorek: "",
+    npwp: "",
+    nama_npwp: "",
+    filefotonpwp: "",
+    terverifikasi: 0,
+    verfikasi_bpjph: 0,
+  },
 });
-const responsiblerData = reactive([
-  {
-    position: "Pimpinan",
-    name: "Albert Flores",
-    phone: "082178958123",
-    tteFile: "TTE_Pimpinan.JPG",
-  },
-  {
-    position: "Sekretaris",
-    name: "Robert Fox",
-    phone: "082167247818",
-    tteFile: "TTE_Sekretaris.JPG",
-  },
-  {
-    position: "Ketua Bidang Fatwa",
-    name: "Kathryn Murphy",
-    phone: "082167126781",
-    tteFile: "TTE_KetuaBidang.JPG",
-  },
-  {
-    position: "Kontak",
-    name: "Savannah Nguyen",
-    phone: "082189897921",
-    tteFile: "",
-  },
-]);
-const accountData = reactive({
-  bankName: "BRI",
-  accountNumber: "1234-0008-7771-9871",
-  accountName: "Lembaga ABX771",
-  accountPhoto: "RekeningBRI.JPG",
-  npwpNumber: "0198.6358.9912.8172.1",
-  npwpPhoto: "NPWP.JPG",
+
+const handleLoadProfile = async () => {
+  try {
+    const response: any = await $api("/komisi-fatwa/profile", {
+      method: "get",
+    } as any);
+    if (response.code === 2000) {
+      Object.assign(profileData, response.data);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+onMounted(() => {
+  handleLoadProfile();
 });
 </script>
 
@@ -77,7 +90,9 @@ const accountData = reactive({
             </VCol>
             <VCol cols="9" class="d-flex">
               <span class="me-2">:</span>
-              <span>{{ profileData.institutionName }}</span>
+              <span>{{
+                profileData.nama_mui ? profileData.nama_mui : "-"
+              }}</span>
             </VCol>
           </VRow>
           <VRow>
@@ -86,7 +101,7 @@ const accountData = reactive({
             </VCol>
             <VCol cols="9" class="d-flex">
               <span class="me-2">:</span>
-              <span>{{ profileData.institutionType }}</span>
+              <span>{{ profileData.jenis ? profileData.jenis : "-" }}</span>
             </VCol>
           </VRow>
           <VRow>
@@ -95,7 +110,7 @@ const accountData = reactive({
             </VCol>
             <VCol cols="9" class="d-flex">
               <span class="me-2">:</span>
-              <span>{{ profileData.address }}</span>
+              <span>{{ profileData.alamat ? profileData.alamat : "-" }}</span>
             </VCol>
           </VRow>
           <VRow>
@@ -104,7 +119,9 @@ const accountData = reactive({
             </VCol>
             <VCol cols="9" class="d-flex">
               <span class="me-2">:</span>
-              <span>{{ profileData.province }}</span>
+              <span>{{
+                profileData.provinsi ? profileData.provinsi : "-"
+              }}</span>
             </VCol>
           </VRow>
           <VRow>
@@ -113,7 +130,7 @@ const accountData = reactive({
             </VCol>
             <VCol cols="9" class="d-flex">
               <span class="me-2">:</span>
-              <span>{{ profileData.city }}</span>
+              <span>{{ profileData.kota ? profileData.kota : "-" }}</span>
             </VCol>
           </VRow>
           <VRow>
@@ -122,7 +139,9 @@ const accountData = reactive({
             </VCol>
             <VCol cols="9" class="d-flex">
               <span class="me-2">:</span>
-              <span>{{ profileData.district }}</span>
+              <span>{{
+                profileData.wilayah_id ? profileData.wilayah_id : "-"
+              }}</span>
             </VCol>
           </VRow>
           <VRow>
@@ -131,7 +150,7 @@ const accountData = reactive({
             </VCol>
             <VCol cols="9" class="d-flex">
               <span class="me-2">:</span>
-              <span>{{ profileData.email }}</span>
+              <span>{{ profileData.email ? profileData.email : "-" }}</span>
             </VCol>
           </VRow>
         </VCardItem>
@@ -143,45 +162,197 @@ const accountData = reactive({
           <h3 class="text-h4 font-weight-bold">Penanggung Jawab</h3>
         </VCardTitle>
         <VCardItem>
-          <VRow v-for="(item, idx) in responsiblerData">
+          <VRow>
             <VCol cols="6">
               <VRow>
-                <VCol cols="6" class="font-weight-bold">
-                  <h4>Nama {{ item.position }}</h4>
+                <VCol cols="5">
+                  <h4 class="font-weight-bold">Nama Pimpinan</h4>
                 </VCol>
-                <VCol cols="6" class="d-flex">
+                <VCol cols="7" class="d-flex">
                   <span class="me-2">:</span>
-                  <span>{{ item.name }}</span>
+                  <span>{{
+                    profileData.nama_pimpinan ? profileData.nama_pimpinan : "-"
+                  }}</span>
                 </VCol>
               </VRow>
               <VRow>
-                <VCol cols="6" class="font-weight-bold">
-                  <h4>No. HP</h4>
+                <VCol cols="5">
+                  <h4 class="font-weight-bold">No. HP</h4>
                 </VCol>
-                <VCol cols="6" class="d-flex">
+                <VCol cols="7" class="d-flex">
                   <span class="me-2">:</span>
-                  <span>{{ item.phone }}</span>
+                  <span>{{
+                    profileData.no_hp_pimpinan
+                      ? profileData.no_hp_pimpinan
+                      : "-"
+                  }}</span>
                 </VCol>
               </VRow>
             </VCol>
-            <VCol cols="6" v-if="item.tteFile">
+            <VCol cols="6">
               <VRow>
-                <VCol cols="6" class="font-weight-bold">
+                <VCol cols="4" class="font-weight-bold">
                   <h4>Upload TTE</h4>
                 </VCol>
-                <VCol cols="6" class="d-flex">
+                <VCol cols="8" class="d-flex">
                   <span class="me-2">:</span>
-                  <div v-if="item.tteFile" class="d-flex text-primary">
-                    <VIcon icon="fa-download" color="primary" />
-                    <span class="ms-3">
-                      {{ item.tteFile }}
+                  <div class="d-flex">
+                    <VIcon
+                      v-if="profileData.pimpinan_tte"
+                      icon="fa-download"
+                      color="primary"
+                      class="me-3"
+                    />
+                    <span class="text-primary">
+                      {{
+                        profileData.pimpinan_tte
+                          ? profileData.pimpinan_tte
+                          : "-"
+                      }}
                     </span>
                   </div>
-                  <span v-else>-</span>
                 </VCol>
               </VRow>
             </VCol>
-            <VDivider v-if="idx !== responsiblerData.length - 1" />
+          </VRow>
+          <VDivider class="mt-5 mb-3" />
+          <VRow>
+            <VCol cols="6">
+              <VRow>
+                <VCol cols="5">
+                  <h4 class="font-weight-bold">Nama Sekretaris</h4>
+                </VCol>
+                <VCol cols="7" class="d-flex">
+                  <span class="me-2">:</span>
+                  <span>{{
+                    profileData.nama_sekretaris
+                      ? profileData.nama_sekretaris
+                      : "-"
+                  }}</span>
+                </VCol>
+              </VRow>
+              <VRow>
+                <VCol cols="5">
+                  <h4 class="font-weight-bold">No. HP</h4>
+                </VCol>
+                <VCol cols="7" class="d-flex">
+                  <span class="me-2">:</span>
+                  <span>{{
+                    profileData.no_hp_sekretaris
+                      ? profileData.no_hp_sekretaris
+                      : "-"
+                  }}</span>
+                </VCol>
+              </VRow>
+            </VCol>
+            <VCol cols="6">
+              <VRow>
+                <VCol cols="4" class="font-weight-bold">
+                  <h4>Upload TTE</h4>
+                </VCol>
+                <VCol cols="8" class="d-flex">
+                  <span class="me-2">:</span>
+                  <div class="d-flex">
+                    <VIcon
+                      v-if="profileData.sekretaris_tte"
+                      icon="fa-download"
+                      color="primary"
+                      class="me-3"
+                    />
+                    <span class="text-primary">
+                      {{
+                        profileData.sekretaris_tte
+                          ? profileData.sekretaris_tte
+                          : "-"
+                      }}
+                    </span>
+                  </div>
+                </VCol>
+              </VRow>
+            </VCol>
+          </VRow>
+          <VDivider class="mt-5 mb-3" />
+          <VRow>
+            <VCol cols="6">
+              <VRow>
+                <VCol cols="5">
+                  <h4 class="font-weight-bold">Nama Ketua Bidang Fatwa</h4>
+                </VCol>
+                <VCol cols="7" class="d-flex">
+                  <span class="me-2">:</span>
+                  <span>{{
+                    profileData.nama_bidang_fatwa
+                      ? profileData.nama_bidang_fatwa
+                      : "-"
+                  }}</span>
+                </VCol>
+              </VRow>
+              <VRow>
+                <VCol cols="5">
+                  <h4 class="font-weight-bold">No. HP</h4>
+                </VCol>
+                <VCol cols="7" class="d-flex">
+                  <span class="me-2">:</span>
+                  <span>{{
+                    profileData.no_hp_bidang_fatwa
+                      ? profileData.no_hp_bidang_fatwa
+                      : "-"
+                  }}</span>
+                </VCol>
+              </VRow>
+            </VCol>
+            <VCol cols="6">
+              <VRow>
+                <VCol cols="4" class="font-weight-bold">
+                  <h4>Upload TTE</h4>
+                </VCol>
+                <VCol cols="8" class="d-flex">
+                  <span class="me-2">:</span>
+                  <div class="d-flex">
+                    <VIcon
+                      v-if="profileData.bidang_fatwa_tte"
+                      icon="fa-download"
+                      color="primary"
+                      class="me-3"
+                    />
+                    <span class="text-primary">
+                      {{
+                        profileData.bidang_fatwa_tte
+                          ? profileData.bidang_fatwa_tte
+                          : "-"
+                      }}
+                    </span>
+                  </div>
+                </VCol>
+              </VRow>
+            </VCol>
+          </VRow>
+          <VDivider class="mt-5 mb-3" />
+          <VRow>
+            <VCol cols="6">
+              <VRow>
+                <VCol cols="5">
+                  <h4 class="font-weight-bold">Nama Kontak</h4>
+                </VCol>
+                <VCol cols="7" class="d-flex">
+                  <span class="me-2">:</span>
+                  <span>{{
+                    profileData.nama_kontak ? profileData.nama_kontak : "-"
+                  }}</span>
+                </VCol>
+              </VRow>
+              <VRow>
+                <VCol cols="5">
+                  <h4 class="font-weight-bold">No. HP</h4>
+                </VCol>
+                <VCol cols="7" class="d-flex">
+                  <span class="me-2">:</span>
+                  <span>{{
+                    profileData.no_hp_kontak ? profileData.no_hp_kontak : "-"
+                  }}</span>
+                </VCol>
+              </VRow>
+            </VCol>
           </VRow>
         </VCardItem>
       </VCard>
@@ -198,7 +369,9 @@ const accountData = reactive({
             </VCol>
             <VCol cols="9" class="d-flex">
               <span class="me-2">:</span>
-              <span>{{ accountData.bankName }}</span>
+              <span>{{
+                profileData.rekening.bank ? profileData.rekening.bank : "-"
+              }}</span>
             </VCol>
           </VRow>
           <VRow>
@@ -207,7 +380,11 @@ const accountData = reactive({
             </VCol>
             <VCol cols="9" class="d-flex">
               <span class="me-2">:</span>
-              <span>{{ accountData.accountNumber }}</span>
+              <span>{{
+                profileData.rekening.no_rekening
+                  ? profileData.rekening.no_rekening
+                  : "-"
+              }}</span>
             </VCol>
           </VRow>
           <VRow>
@@ -216,7 +393,9 @@ const accountData = reactive({
             </VCol>
             <VCol cols="9" class="d-flex">
               <span class="me-2">:</span>
-              <span>{{ accountData.accountName }}</span>
+              <span>{{
+                profileData.rekening.nama ? profileData.rekening.nama : "-"
+              }}</span>
             </VCol>
           </VRow>
           <VRow>
@@ -225,13 +404,21 @@ const accountData = reactive({
             </VCol>
             <VCol cols="9" class="d-flex">
               <span class="me-2">:</span>
-              <div v-if="accountData.accountPhoto" class="d-flex text-primary">
-                <VIcon icon="fa-download" color="primary" />
-                <span class="ms-3">
-                  {{ accountData.accountPhoto }}
+              <div class="d-flex">
+                <VIcon
+                  v-if="profileData.rekening.filefotorek"
+                  icon="fa-download"
+                  color="primary"
+                  class="me-3"
+                />
+                <span class="text-primary">
+                  {{
+                    profileData.rekening.filefotorek
+                      ? profileData.rekening.filefotorek
+                      : "-"
+                  }}
                 </span>
               </div>
-              <span v-else>-</span>
             </VCol>
           </VRow>
           <VRow>
@@ -240,7 +427,9 @@ const accountData = reactive({
             </VCol>
             <VCol cols="9" class="d-flex">
               <span class="me-2">:</span>
-              <span>{{ accountData.npwpNumber }}</span>
+              <span>{{
+                profileData.rekening.npwp ? profileData.rekening.npwp : "-"
+              }}</span>
             </VCol>
           </VRow>
           <VRow>
@@ -249,13 +438,21 @@ const accountData = reactive({
             </VCol>
             <VCol cols="9" class="d-flex">
               <span class="me-2">:</span>
-              <div v-if="accountData.npwpPhoto" class="d-flex text-primary">
-                <VIcon icon="fa-download" color="primary" />
-                <span class="ms-3">
-                  {{ accountData.npwpPhoto }}
+              <div class="d-flex">
+                <VIcon
+                  v-if="profileData.rekening.filefotonpwp"
+                  icon="fa-download"
+                  color="primary"
+                  class="me-3"
+                />
+                <span class="text-primary">
+                  {{
+                    profileData.rekening.filefotonpwp
+                      ? profileData.rekening.filefotonpwp
+                      : "-"
+                  }}
                 </span>
               </div>
-              <span v-else>-</span>
             </VCol>
           </VRow>
         </VCardItem>
