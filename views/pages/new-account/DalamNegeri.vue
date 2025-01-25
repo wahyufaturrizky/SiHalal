@@ -1,19 +1,23 @@
 <template>
-  <VWindow v-model="domesticWindow" :touch="false" style="max-width: 90dvw">
-    <VWindowItem :value="1" style="min-width: 30dvw">
+  <VWindow
+    v-model="domesticWindow"
+    :touch="false"
+    style="max-inline-size: 90dvw"
+  >
+    <VWindowItem :value="1" style="min-inline-size: 30dvw">
       <v-form ref="nibForm" @submit.prevent="onSubmitNib">
         <v-card-text>
-          <p class="text-h5 font-weight-bold">Form Profil perusahaan</p>
+          <p class="text-h5 font-weight-bold">
+            {{ t("new-domestic.nib-title") }}
+          </p>
           <VRow>
             <VCol cols="12">
               <div
                 class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1"
-              >
-                Nomor Induk Berusaha
-              </div>
+              ></div>
               <VTextField
                 v-model="nib"
-                placeholder="Masukkan Nomor Induk Berusaha"
+                :placeholder="t('new-domestic.nib-attr-1')"
                 :rules="[requiredValidator, integerValidator]"
                 :error="!!nibError"
                 :error-messages="nibError"
@@ -23,7 +27,9 @@
           </VRow>
           <VRow class="flex-row-reverse">
             <VCol cols="12" md="auto">
-              <VBtn block type="submit" :disabled="buttonClicked"> Kirim </VBtn>
+              <VBtn block type="submit" :disabled="buttonClicked">
+                {{ t("new-domestic.nib-btn-2") }}
+              </VBtn>
             </VCol>
             <VCol cols="12" md="auto">
               <VBtn
@@ -32,36 +38,38 @@
                 type="reset"
                 @click="stepStore.goToStep(1)"
               >
-                Kembali
+                {{ t("new-domestic.nib-btn-1") }}
               </VBtn>
             </VCol>
           </VRow>
         </v-card-text>
       </v-form>
     </VWindowItem>
-    <VWindowItem :value="2" style="min-width: 50dvw">
+    <VWindowItem :value="2" style="min-inline-size: 50dvw">
       <v-card-text>
-        <p class="text-h5 font-weight-bold">Data Nomor Induk Berusaha</p>
+        <p class="text-h5 font-weight-bold">
+          {{ t("new-domestic-nib-data.title") }}
+        </p>
         <VRow>
-          <VCol cols="4"> Nomor Induk Bersama </VCol>
+          <VCol cols="4"> {{ t("new-domestic-nib-data.attr-1") }} </VCol>
           <VCol cols="8"> : {{ domesticForm?.nib }} </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4"> Nama Perusahaan </VCol>
+          <VCol cols="4"> {{ t("new-domestic-nib-data.attr-2") }} </VCol>
           <VCol cols="8"> : {{ domesticForm?.company_name }} </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4"> Alamat </VCol>
+          <VCol cols="4"> {{ t("new-domestic-nib-data.attr-3") }} </VCol>
           <VCol cols="8">
             {{ domesticForm?.address }}
           </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4"> NPWP </VCol>
+          <VCol cols="4"> {{ t("new-domestic-nib-data.attr-4") }} </VCol>
           <VCol cols="8"> : {{ domesticForm?.npwp }} </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4"> Status NIB </VCol>
+          <VCol cols="4"> {{ t("new-domestic-nib-data.attr-5") }} </VCol>
           <VCol cols="8">
             :
             <span :class="`${registeredNib?.status ? 'text-error' : ''}`">{{
@@ -70,19 +78,21 @@
           </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4"> Kategori Pelaku Usaha </VCol>
+          <VCol cols="4"> {{ t("new-domestic-nib-data.attr-6") }} </VCol>
           <VCol cols="8">
             : {{ nibData?.pelaku_usaha.flag_umk == "Y" ? "UMK" : "Non UMK" }}
           </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4"> Modal Dasar </VCol>
+          <VCol cols="4"> {{ t("new-domestic-nib-data.attr-7") }} </VCol>
           <VCol cols="8">
             : {{ IDRupiah.format(domesticForm?.authorized_capital) }}
           </VCol>
         </VRow>
         <VDivider class="my-5" />
-        <p class="text-h5 font-weight-bold">Daftar Usaha/Kegiatan</p>
+        <p class="text-h5 font-weight-bold">
+          {{ t("new-domestic-nib-data.subtitle") }}
+        </p>
         <VRow>
           <VDataTable
             :headers="headers"
@@ -112,13 +122,13 @@
           <VCol cols="12" md="auto">
             <v-form @submit.prevent="submitDalamNegeri">
               <VBtn block type="submit" :disabled="buttonClicked2">
-                Kirim
+                {{ t("new-domestic-nib-data.btn-2") }}
               </VBtn>
             </v-form>
           </VCol>
           <VCol cols="12" md="auto">
             <VBtn block variant="outlined" type="reset" @click="form2Back">
-              Kembali
+              {{ t("new-domestic-nib-data.btn-1") }}
             </VBtn>
           </VCol>
         </VRow>
@@ -138,7 +148,10 @@ import {
   type NIBData,
   type RegisteredNib,
 } from "@/server/interface/nib.iface";
+import { useI18n } from "vue-i18n";
 import type { VForm } from "vuetify/components";
+const { t } = useI18n();
+
 const nib = ref("");
 const nibData = ref<NIBData>();
 const nibAlamat = ref<AlamatNib>();
@@ -233,7 +246,9 @@ const checkNib = async () => {
 
     domesticWindow.value = 2;
   } else {
-    nibError.value = "NIB tidak ditemukan.";
+    nibError.value = `${t(
+      "new-domestic-nib-data.msg"
+    )} “sanditama74@gmail.com” ${t("new-domestic-nib-data.msg-1")}`;
     // useSnackbar().sendSnackbar("NIB tidak ditemukan", "error");
   }
   buttonClicked.value = false;
@@ -254,11 +269,11 @@ const getAddressString = (alamatNib: AlamatNib) => {
 const stepStore = useMyNewAccountStepStore();
 const domesticWindow = ref(1);
 const headers = [
-  { title: "No", key: "index" },
-  { title: "KBLI", key: "kbli" },
-  { title: "Nama Usaha", key: "namausaha" },
-  { title: "Alamat", key: "address" },
-  { title: "Modal Usaha", key: "modalusaha" },
+  { title: `${t("new-domestic-nib-data.th-1")}`, key: "index" },
+  { title: `${t("new-domestic-nib-data.th-2")}`, key: "kbli" },
+  { title: `${t("new-domestic-nib-data.th-3")}`, key: "namausaha" },
+  { title: `${t("new-domestic-nib-data.th-4")}`, key: "address" },
+  { title: `${t("new-domestic-nib-data.th-5")}`, key: "modalusaha" },
 ];
 let IDRupiah = new Intl.NumberFormat("id-ID", {
   style: "currency",
@@ -267,5 +282,5 @@ let IDRupiah = new Intl.NumberFormat("id-ID", {
 </script>
 
 <style lang="scss">
-@use "@core/scss/template/pages/page-auth.scss";
+@use "@core/scss/template/pages/page-auth";
 </style>

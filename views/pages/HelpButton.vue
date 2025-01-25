@@ -10,7 +10,7 @@
             v-bind="props"
           >
             <VIcon start icon="fa-solid fa-question-circle" />
-            Butuh Bantuan ?
+            {{ t("login.nav-1") }}
             <VIcon end icon="mdi-chevron-down" />
           </VBtn>
         </template>
@@ -47,7 +47,7 @@
             <template v-slot:prepend>
               <v-icon icon="fa-phone"></v-icon>
             </template>
-            <v-list-item-title>Telepon</v-list-item-title>
+            <v-list-item-title> {{ t("login.nav-1-phone") }}</v-list-item-title>
           </v-list-item>
         </v-list>
       </VMenu>
@@ -55,6 +55,10 @@
   </VRow>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+</script>
 
 <style></style>

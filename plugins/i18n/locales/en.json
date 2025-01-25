@@ -114,39 +114,39 @@
     },
     "kepkaban": {
       "menu": {
-          "pendampingCertificate": {
-              "title": "Sertifikat Pendamping"
-          },
-          "akreditasiLphCertificate": {
-              "title": "Sertifikat Akreditasi LPH"
-          },
-          "akreditasiLphLnCertificate": {
-              "title": "Sertifikat Akreditasi LPH LN"
-          },
-          "asesorCertificate": {
-              "title": "Sertifikat Asesor"
-          },
-          "registrationAuditor": {
-              "title": "Registrasi Auditor Halal"
-          },
-          "auditorLembagaPelatihan": {
-              "title": "Sertifikat Auditor Lembaga Pelatihan"
-          },
-          "penyeliaLembagaPelatihan": {
-              "title": "Persetujuan Sertifikat Penyelia Lembaga Pelatihan"
-          },
-          "penyeliaBpjph": {
-            "title": "Persetujuan Sertifikat Penyelia dari BPJPH"
-          },
-          "juleha": {
-              "title": "Persetujuan Sertifikat Juleha"
-          },
-          "domisiliP3h": {
-              "title": "Persetujuan Pindah Domisili P3H"
-          },
-          "lembagaLp3h": {
-              "title": "Persetujuan Pindah Lembaga P3H"
-          }
+        "pendampingCertificate": {
+          "title": "Sertifikat Pendamping"
+        },
+        "akreditasiLphCertificate": {
+          "title": "Sertifikat Akreditasi LPH"
+        },
+        "akreditasiLphLnCertificate": {
+          "title": "Sertifikat Akreditasi LPH LN"
+        },
+        "asesorCertificate": {
+          "title": "Sertifikat Asesor"
+        },
+        "registrationAuditor": {
+          "title": "Registrasi Auditor Halal"
+        },
+        "auditorLembagaPelatihan": {
+          "title": "Sertifikat Auditor Lembaga Pelatihan"
+        },
+        "penyeliaLembagaPelatihan": {
+          "title": "Persetujuan Sertifikat Penyelia Lembaga Pelatihan"
+        },
+        "penyeliaBpjph": {
+          "title": "Persetujuan Sertifikat Penyelia dari BPJPH"
+        },
+        "juleha": {
+          "title": "Persetujuan Sertifikat Juleha"
+        },
+        "domisiliP3h": {
+          "title": "Persetujuan Pindah Domisili P3H"
+        },
+        "lembagaLp3h": {
+          "title": "Persetujuan Pindah Lembaga P3H"
+        }
       },
       "title": "Approval"
     }
@@ -204,6 +204,90 @@
   "sh-submission": {
     "title": "Halal Certificate Submission",
     "detail": "Check Submission Data"
+  },
+  "login": {
+    "nav-1": "Need Help?",
+    "nav-1-phone": "Phone",
+    "header": "Welcome to",
+    "subheader": "Log in to access the features on the SIHALAL website",
+    "email-attr": "Email",
+    "email-tip": "Enter your email",
+    "password-attr": "Password",
+    "password-tip": "Enter your password",
+    "action-forgot-password": "Forgot Password",
+    "action-login": "Log In",
+    "tip-1": "Don't have an account?",
+    "tip-1a": "Register here",
+    "tip-2": "Connected To",
+    "msg-err-login": "Login failed, please recheck the completeness of your data!",
+    "msg-err-email": "Email address not found.",
+    "msg-err-password": "Incorrect password!",
+    "msg-err-ishuman": "Please verify that you are not a robot"
+  },
+  "new-account": {
+    "asal-attr-1": "Select the Origin of the Business Entity",
+    "asal-attr-2": "Overseas",
+    "asal-attr-3": "Domestic",
+    "asal-attr-4": "Government Institution"
+  },
+  "new-foreign": {
+    "title": "Company Profile Form",
+    "attr-1": "Company Name",
+    "attr-2": "Address",
+    "attr-3": "City",
+    "attr-4": "Province",
+    "attr-5": "Country",
+    "attr-6": "Postal Code",
+    "attr-7": "Phone",
+    "attr-8": "Email",
+    "btn-1": "Back",
+    "btn-2": "Submit"
+  },
+  "new-domestic": {
+    "title": "Fill in the Business Identification Number",
+    "attr-1": "Business Identification Number",
+    "btn-1": "Back",
+    "btn-2": "Submit"
+  },
+  " new-domestic-nib-data": {
+    "title": "Business Identification Number Data",
+    "attr-1": "Business Identification Number (NIB)",
+    "attr-2": "Company Name",
+    "attr-3": "Address",
+    "attr-4": "Taxpayer Identification Number (NPWP)",
+    "attr-5": "NIB Status",
+    "attr-6": "Business Actor Category",
+    "attr-7": "Authorized Capital",
+    "subtitle": "List of Businesses/Activities:",
+    "th-1": "No",
+    "th-2": "KBLI (Standard Classification of Indonesian Business Fields)",
+    "th-3": "Business Name",
+    "th-4": "Address",
+    "th-5": "Business Capital",
+    "msg": "The Business Identification Number (NIB) has been registered under the user “sanditama74@gmail.com.”",
+    "msg-1": ",Please log in using that email address.",
+    "btn-1": "Back",
+    "btn-2": "Submit"
+  },
+  "new-gov": {
+    "title": "Business Owner Registration",
+    "subtitle-1": "Personal Information",
+    "sub1-attr-1": "Business Owner Name (As per ID Card)",
+    "sub1-attr-2": "ID Card Number / National Identification Number (NIK)",
+    "sub1-attr-3": "Phone Number",
+    "sub1-attr-4": "Email Address",
+    "sub1-attr-5": "Address (As per ID Card)",
+    "sub1-attr-6": "Province",
+    "sub1-attr-7": "Regency / City",
+    "sub1-attr-8": "District",
+    "sub1-attr-9": "Village / Sub-district",
+    "sub1-attr-10": "Postal Code",
+    "subtitle-2": "Business Entity Information**",
+    "sub2-attr-1": "Type of Business Entity",
+    "sub2-attr-2": "Business Scale",
+    "sub2-attr-3": "Business Capital",
+    "sub2-attr-4": "KBLI (Standard Classification of Indonesian Business Fields)",
+    "btn-1": "Back",
+    "btn-2": "Submit"
   }
 }
-
