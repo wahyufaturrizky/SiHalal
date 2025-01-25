@@ -45,6 +45,7 @@ export default defineNuxtConfig({
     authSecret: process.env.NUXT_AUTH_SECRET || "",
     authBaseUrl: process.env.NUXT_AUTH_BASE_URL || "",
     coreBaseUrl: process.env.NUXT_CORE_BASE_URL || "",
+    certificateBaseUrl: process.env.NUXT_CERTIFICATE_BASE_URL || "",
 
     // Public keys that are exposed to the client.
     public: {
