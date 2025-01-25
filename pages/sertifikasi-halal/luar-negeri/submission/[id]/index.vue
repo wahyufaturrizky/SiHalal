@@ -540,6 +540,18 @@ const timelineEvents = ref([
               <VIcon icon="ri-download-line" />
             </VBtn>
           </InfoRow>
+          <InfoRow name="Download QR Label">
+            <VBtn
+              @click="
+                registration?.status_code == 'OF300'
+                  ? downloadCert(shlnId)
+                  : () => {}
+              "
+              target="_blank"
+            >
+              <VIcon icon="ri-download-line" />
+            </VBtn>
+          </InfoRow>
         </ExpandCard>
 
         <ExpandCard title="Tracking">
