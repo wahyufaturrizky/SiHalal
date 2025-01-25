@@ -70,7 +70,7 @@ const viewResults = () => {
   <VCard>
     <VCardTitle>
       <div class="d-flex mb-3 mt-3 justify-space-between align-center">
-        <span class="text-h4 font-weight-bold">Filter</span>
+        <div class="text-h4 font-weight-bold">Filter</div>
         <VBtn color="primary" @click="viewResults"> Cari </VBtn>
       </div>
     </VCardTitle>

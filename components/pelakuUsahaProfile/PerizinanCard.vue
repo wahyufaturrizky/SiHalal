@@ -49,7 +49,9 @@ const closeModal = ref(false);
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
-      <VExpansionPanelTitle><h2>Perizinan</h2></VExpansionPanelTitle>
+      <VExpansionPanelTitle>
+        <div class="text-h4 font-weight-bold">Perizinan</div>
+      </VExpansionPanelTitle>
       <VExpansionPanelText>
         <VContainer style="max-height: 35svh; overflow-y: auto">
           <div v-if="isLoading">Loading...</div>
@@ -94,7 +96,11 @@ const closeModal = ref(false);
                 <VCard>
                   <VCardTitle style="padding: 3svh">
                     <VRow>
-                      <VCol cols="10"><h3>Lihat Data Perizinan</h3></VCol>
+                      <VCol cols="10">
+                        <div class="text-h4 font-weight-bold">
+                          Lihat Data Perizinan
+                        </div>
+                      </VCol>
                       <VCol cols="2" style="display: flex; justify-content: end"
                         ><VIcon
                           size="small"

@@ -84,7 +84,7 @@ const selectedDate = ref([]);
 <template>
   <VRow>
     <VCol cols="12">
-      <h2 style="font-size: 32px">Bukti Bayar SHLN</h2>
+      <h1 style="font-size: 32px">Bukti Bayar SHLN</h1>
     </VCol>
   </VRow>
   <VRow>
@@ -92,7 +92,9 @@ const selectedDate = ref([]);
       <VCard>
         <VCardTitle>
           <VRow>
-            <VCol cols="6"><h4>Invoice List</h4></VCol>
+            <VCol cols="6">
+              <div class="text-h4 font-weight-bold">Invoice List</div>
+            </VCol>
             <VCol cols="6" style="display: flex; justify-content: end">
               <VBtn variant="flat">Download Excel</VBtn>
             </VCol>

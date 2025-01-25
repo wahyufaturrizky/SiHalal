@@ -132,10 +132,13 @@ const headers = [
 </script>
 
 <template>
-  <h2 class="mt-3">Pembatalan</h2>
+  <h1 style="font-size: 32px">Pembatalan</h1>
+  <br />
 
   <VCard v-if="!loadingAll" class="pa-4">
-    <h2 class="text-h5 mb-4">Data Pengajuan Sertifikasi Halal</h2>
+    <div class="text-h4 font-weight-bold mb-4">
+      Data Pengajuan Sertifikasi Halal
+    </div>
 
     <div class="d-flex gap-4 mb-4">
       <VSelect

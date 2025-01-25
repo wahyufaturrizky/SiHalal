@@ -108,7 +108,7 @@ onMounted(async () => {
 <template>
   <VRow>
     <VCol>
-      <h2 style="font-size: 32px">Verifikasi Self Declare</h2>
+      <h1 style="font-size: 32px">Verifikasi Self Declare</h1>
     </VCol>
   </VRow>
   <br />
@@ -116,7 +116,7 @@ onMounted(async () => {
     <VCardTitle>
       <VRow align="center">
         <VCol cols="6">
-          <h3>Data Pengajuan</h3>
+          <div class="text-h4 font-weight-bold">Data Pengajuan</div>
         </VCol>
         <VCol cols="6" align="end">
           <DataPermohonanSertifikasi

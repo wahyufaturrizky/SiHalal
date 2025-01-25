@@ -31,7 +31,9 @@ onMounted(async () => {
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
-      <VExpansionPanelTitle><h2>KBLI</h2></VExpansionPanelTitle>
+      <VExpansionPanelTitle>
+        <div class="text-h4 font-weight-bold">KBLI</div>
+      </VExpansionPanelTitle>
       <VExpansionPanelText>
         <!-- Check if KBLI data exists -->
         <p v-if="!store.kbli || store.kbli.length === 0">No data</p>
@@ -82,7 +84,11 @@ onMounted(async () => {
                 <VCard>
                   <VCardTitle style="padding: 3svh">
                     <VRow>
-                      <VCol cols="10"><h3>Lihat Data KBLI</h3></VCol>
+                      <VCol cols="10">
+                        <div class="text-h4 font-weight-bold">
+                          Lihat Data KBLI
+                        </div>
+                      </VCol>
                       <VCol cols="2" style="display: flex; justify-content: end"
                         ><VIcon
                           size="small"

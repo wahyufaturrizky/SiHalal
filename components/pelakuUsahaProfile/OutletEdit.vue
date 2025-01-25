@@ -117,7 +117,7 @@ function handleDelete(item) {
     <VCardTitle>
       <VRow>
         <VCol cols="6">
-          <h3>Outlet</h3>
+          <div class="text-h4 font-weight-bold">Outlet</div>
         </VCol>
         <VCol
           cols="6"
