@@ -61,6 +61,8 @@ const factoryData = ref({});
 const outletData = ref({});
 const halalData = ref({});
 const payloadData = ref({});
+const facId = ref('');
+const inputFacId = ref('');
 
 const listFactory = ref<any>({
   label: [
@@ -184,6 +186,8 @@ const getDetailData = async () => {
       const outlet = response?.data?.outlet;
       const penyelia = response?.data?.penyelia_halal;
 
+      facId.value = certificateHalal?.kode_fac
+
       requestCertificateData.value = [
         {
           title: "Nama Perusahaan yang Tertera pada Sertifikat",
@@ -254,7 +258,7 @@ const getDetailData = async () => {
         },
         {
           title: "Jenis Pendaftaran",
-          value: certificateHalal.fac_id || "",
+          value: certificateHalal.channel || "",
           type: "select",
           disabled: false,
           required: false,
@@ -473,6 +477,10 @@ const deleteFactoryOrOutlet = async (type: string, el: any) => {
   }
 };
 
+const withFacilitator = async (idData: string) => {
+  inputFacId.value = idData
+}
+
 const handleSubmit = () => {
   let payload: any = {};
   if (submitContentType.value === "Pengajuan Sertifikasi Halal") {
@@ -480,7 +488,19 @@ const handleSubmit = () => {
       confirmSaveDialog.value = false;
       useSnackbar().sendSnackbar("Lengkapi semua data", "error");
     } else {
-      payload = payloadData.value;
+      if (requestCertificateData.value?.[9].value === 'Pendaftaran Melalui Fasilitasi' || requestCertificateData.value?.[9].value === 'CH002') {
+        payload = {
+          ...payloadData.value,
+          channel_id: 'CH002',
+          fac_id: inputFacId.value,
+        }
+      } else {
+        payload = {
+          ...payloadData.value,
+          channel_id: 'CH001',
+          fac_id: '',
+        }
+      }
       editResponsibility({
         ...payload,
       });
@@ -675,6 +695,8 @@ onMounted(async () => {
       :service_type="props?.list_channel"
       title="Pengajuan Sertifikasi Halal"
       :isviewonly="props?.isviewonly"
+      :facId="facId"
+      @complete="withFacilitator"
     />
     <br />
     <FormData

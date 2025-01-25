@@ -124,12 +124,12 @@ onMounted(async () => {
   </div>
   <div v-else-if="!loading">
     <!-- <KembaliButton class="no-padding" /> -->
-    <h2 style="font-size: 32px">Pengajuan Reguler</h2>
+    <h1 style="font-size: 32px">Pengajuan Reguler</h1>
     <br />
 
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
-        <h3 style="font-size: 24px">Daftar Pengajuan Reguler</h3>
+        <div class="text-h4 font-weight-bold">Daftar Pengajuan Reguler</div>
         <NewRegulerSertificationHalalDialog
           :new-register="newRegister"
           :additional-register="additionalRegister"

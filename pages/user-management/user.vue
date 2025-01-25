@@ -142,16 +142,14 @@ const handleConfirmDelete = async () => {
 <template>
   <VRow>
     <VCol>
-      <h2 style="font-size: 32px">User</h2>
+      <h1 style="font-size: 32px">User</h1>
     </VCol>
   </VRow>
   <VRow>
     <VCol>
       <VCard class="w-100 py-3">
-        <VCardTitle
-          class="d-flex justify-space-between align-center font-weight-bold text-h4"
-        >
-          <div>User List</div>
+        <VCardTitle class="d-flex justify-space-between align-center">
+          <div class="text-h4 font-weight-bold">User List</div>
           <VBtn append-icon="fa-plus" @click="handleOpenAddModal"
             >Add User</VBtn
           >

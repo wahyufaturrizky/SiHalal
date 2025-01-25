@@ -97,7 +97,9 @@ onMounted(async () => {
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
-      <VExpansionPanelTitle><h2>Profil</h2></VExpansionPanelTitle>
+      <VExpansionPanelTitle>
+        <div class="text-h4 font-weight-bold">Profil</div>
+      </VExpansionPanelTitle>
       <VExpansionPanelText>
         <VRow v-for="data in profilData" :key="data.id">
           <VCol cols="4">

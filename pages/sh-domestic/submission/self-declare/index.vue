@@ -169,14 +169,16 @@ onMounted(async () => {
 <template>
   <div>
     <di>
-      <h2 style="font-size: 32px">Pengajuan Self Declare</h2>
+      <h1 style="font-size: 32px">Pengajuan Self Declare</h1>
       <br />
     </di>
 
     <VCard v-if="!loadingAll" rounded class="bg-surface pa-4">
       <VRow>
         <VCol class="d-flex justify-sm-space-between align-center">
-          <h3 style="font-size: 24px">Data Pengajuan Self Declare</h3>
+          <div class="text-h4 font-weight-bold">
+            Data Pengajuan Self Declare
+          </div>
         </VCol>
         <VCol class="d-flex justify-end align-center">
           <VBtn

@@ -28,7 +28,9 @@ const profilData = [
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
-      <VExpansionPanelTitle><h2>Penanggung Jawab</h2></VExpansionPanelTitle>
+      <VExpansionPanelTitle>
+        <div class="text-h4 font-weight-bold">Penanggung Jawab</div>
+      </VExpansionPanelTitle>
       <VExpansionPanelText>
         <VRow v-for="data in profilData" :key="data.id">
           <VCol cols="4">

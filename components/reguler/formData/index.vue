@@ -3,6 +3,8 @@
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 
+const emit = defineEmits();
+
 const props = defineProps({
   id: {
     type: String,
@@ -44,10 +46,14 @@ const props = defineProps({
   isviewonly: {
     type: Boolean,
   },
+  facId: {
+    type: String,
+    required: false,
+  },
 });
 
 const itemsLph = ref<any>([]);
-const searchRegisType = ref<string>("");
+const searchRegisType = ref<string>(props?.facId);
 const messageFasilitator = ref<string>("");
 const productList = ref<any[]>([]);
 
@@ -213,8 +219,23 @@ const lphValidation = async (title: string, value: string, index: number) => {
 };
 
 const checkCodeFasilitas = async () => {
-  messageFasilitator.value =
-    "Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada fasilitator sebagai kode untuk mendaftarkan sertifikasi halal gratis";
+  try {
+    const response: any = await $api("/reguler/pelaku-usaha/find-facility", {
+      method: 'get',
+      query: { facCode: searchRegisType.value },
+    });
+
+    if (response) {
+      console.log(response.data)
+      messageFasilitator.value = response?.message
+      emit('complete', response?.data?.[0]?.id);
+
+      return response
+    }
+  } catch (error) {
+    console.log(error)
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
 };
 
 onMounted(async () => {
@@ -349,12 +370,15 @@ watchEffect(async () => {
             </div>
           </div>
         </VCol>
-        <VCol v-if="props.data?.[9]?.value === 'CH002'" cols="12">
+        <VCol
+          v-if="props.data?.[9]?.value === 'CH002' || props?.data?.[9]?.value === 'Pendaftaran Melalui Fasilitasi'"
+          cols="12"
+        >
           <label>Kode Daftar/Fasilitasi</label>
           <div class="d-flex gap-10 mt-3">
             <VTextField
               v-model="searchRegisType"
-              value="tes"
+              placeholder="masukkan kode fasilitas"
               style="max-width: 10rem"
             />
             <VBtn
@@ -372,8 +396,7 @@ watchEffect(async () => {
             color="#652672"
             class="mt-3"
           >
-            Kode unik yang diterbitkan oleh BPJPH yang diberikan kepada
-            fasilitator sebagai kode untuk mendaftarkan sertifikasi halal gratis
+            {{ messageFasilitator }}
           </VAlert>
         </VCol>
       </VRow>

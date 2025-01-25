@@ -129,7 +129,7 @@ const initialDataForEdit = (item: any) => ({
     <VCardTitle>
       <VRow>
         <VCol cols="6">
-          <h3>Pabrik</h3>
+          <div class="text-h4 font-weight-bold">Pabrik</div>
         </VCol>
         <VCol cols="6" style="display: flex; justify-content: end">
           <DataPabrikModal
