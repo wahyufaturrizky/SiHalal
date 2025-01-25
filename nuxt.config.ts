@@ -54,7 +54,7 @@ export default defineNuxtConfig({
         siteKey: process.env.NUXT_TURNSTILE_SITE_KEY || "",
       },
       recaptcha: {
-        siteKey: process.env.NUXT_RECAPTCHA_SITE_KEY || "",
+        siteKey: process.env.NUXT_PUBLIC_RECAPTCHA_SITE_KEY || "",
       },
     },
     turnstile: {
