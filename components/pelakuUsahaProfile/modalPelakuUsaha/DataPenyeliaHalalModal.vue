@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { defineEmits, defineProps, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
 import { VForm } from "vuetify/components";
 
@@ -127,6 +128,8 @@ watch(
   },
   { immediate: true }
 );
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -137,13 +140,13 @@ watch(
       variant="outlined"
       append-icon="ri-add-line"
     >
-      Tambah
+      {{ t("detail-pu-pu.pu-edit-add") }}
     </VBtn>
 
     <VItemGroup
       v-else-if="props.mode === 'edit'"
       @click="openDialog"
-      style="cursor: pointer; display: inline-flex"
+      style="display: inline-flex; cursor: pointer"
     >
       <VIcon class="mr-2"> mdi-pencil </VIcon>
       <p>Edit</p>

@@ -1,15 +1,18 @@
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 const props = defineProps<{
-  type?: 'READ' | 'EDIT'
-  dataPengajuan?: object
-}>()
+  type?: "READ" | "EDIT";
+  dataPengajuan?: object;
+}>();
 
-const route = useRoute()
-const id = route.params.id
+const route = useRoute();
+const id = route.params.id;
 
-const detail = ref(props?.dataPengajuan)
+const detail = ref(props?.dataPengajuan);
 
-const panelType = computed(() => (props.type ? props.type : 'READ'))
+const panelType = computed(() => (props.type ? props.type : "READ"));
 </script>
 
 <template>
@@ -17,7 +20,9 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
     <VRow no-gutters>
       <VCol cols="5">
         <div class="d-flex justify-space-between">
-          <div class="text-h6">No. ID</div>
+          <div class="text-h6">
+            {{ t("status-permohoanan.reguler-detail-pengajuan-noid") }}
+          </div>
           <div class="me-2">:</div>
         </div>
       </VCol>
@@ -28,7 +33,9 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
     <VRow no-gutters>
       <VCol cols="5">
         <div class="d-flex justify-space-between">
-          <div class="text-h6">Tanggal</div>
+          <div class="text-h6">
+            {{ t("status-permohoanan.reguler-detail-pengajuan-tgl") }}
+          </div>
           <div class="me-2">:</div>
         </div>
       </VCol>
@@ -40,7 +47,9 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
     <VRow no-gutters>
       <VCol cols="5">
         <div class="d-flex justify-space-between">
-          <div class="text-h6">No. Surat Permohonan</div>
+          <div class="text-h6">
+            {{ t("status-permohoanan.reguler-detail-pengajuan-nomohon") }}
+          </div>
           <div class="me-2">:</div>
         </div>
       </VCol>
@@ -51,7 +60,9 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
     <VRow no-gutters>
       <VCol cols="5">
         <div class="d-flex justify-space-between">
-          <div class="text-h6">Tanggal Permohonan</div>
+          <div class="text-h6">
+            {{ t("status-permohoanan.reguler-detail-pengajuan-tglmohon") }}
+          </div>
           <div class="me-2">:</div>
         </div>
       </VCol>
@@ -62,7 +73,9 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
     <VRow no-gutters>
       <VCol cols="5">
         <div class="d-flex justify-space-between">
-          <div class="text-h6">Jenis Layanan</div>
+          <div class="text-h6">
+            {{ t("status-permohoanan.reguler-detail-pengajuan-jnslay") }}
+          </div>
           <div class="me-2">:</div>
         </div>
       </VCol>
@@ -73,7 +86,9 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
     <VRow no-gutters>
       <VCol cols="5">
         <div class="d-flex justify-space-between">
-          <div class="text-h6">Jenis Produk</div>
+          <div class="text-h6">
+            {{ t("status-permohoanan.reguler-detail-pengajuan-jnsprod") }}
+          </div>
           <div class="me-2">:</div>
         </div>
       </VCol>
@@ -84,7 +99,9 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
     <VRow no-gutters>
       <VCol cols="5">
         <div class="d-flex justify-space-between">
-          <div class="text-h6">Merek Dagang</div>
+          <div class="text-h6">
+            {{ t("status-permohoanan.reguler-detail-pengajuan-merk") }}
+          </div>
           <div class="me-2">:</div>
         </div>
       </VCol>
@@ -95,7 +112,9 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
     <VRow no-gutters>
       <VCol cols="5">
         <div class="d-flex justify-space-between">
-          <div class="text-h6">Area Pemasaran</div>
+          <div class="text-h6">
+            {{ t("status-permohoanan.reguler-detail-pengajuan-area") }}
+          </div>
           <div class="me-2">:</div>
         </div>
       </VCol>
@@ -107,7 +126,9 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
     <VRow no-gutters>
       <VCol cols="5">
         <div class="d-flex justify-space-between">
-          <div class="text-h6">Nama Perusahaan</div>
+          <div class="text-h6">
+            {{ t("status-permohoanan.reguler-detail-pengajuan-namapu") }}
+          </div>
           <div class="me-2">:</div>
         </div>
       </VCol>
@@ -117,7 +138,9 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
     </VRow>
     <VRow no-gutters>
       <VCol cols="5" class="d-flex align-center justify-space-between">
-        <div class="text-h6">Nama Perusahaan Tertera di SH</div>
+        <div class="text-h6">
+          {{ t("status-permohoanan.reguler-detail-pengajuan-lph") }}
+        </div>
         <div class="me-2">:</div>
       </VCol>
       <VCol cols="7">
@@ -126,7 +149,9 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
     </VRow>
     <VRow no-gutters>
       <VCol cols="5" class="d-flex align-center justify-space-between">
-        <div class="text-h6">Nama KBLI</div>
+        <div class="text-h6">
+          {{ t("status-permohoanan.reguler-detail-pengajuan-namakbli") }}
+        </div>
         <div class="me-2">:</div>
       </VCol>
       <VCol cols="7">
@@ -135,7 +160,9 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
     </VRow>
     <VRow no-gutters>
       <VCol cols="5" class="d-flex align-center justify-space-between">
-        <div class="text-h6">Alamat</div>
+        <div class="text-h6">
+          {{ t("status-permohoanan.reguler-detail-pengajuan-address") }}
+        </div>
         <div class="me-2">:</div>
       </VCol>
       <VCol cols="7">
@@ -144,7 +171,9 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
     </VRow>
     <VRow no-gutters>
       <VCol cols="5" class="d-flex align-center justify-space-between">
-        <div class="text-h6">Kota/Kab</div>
+        <div class="text-h6">
+          {{ t("status-permohoanan.reguler-detail-pengajuan-city") }}
+        </div>
         <div class="me-2">:</div>
       </VCol>
       <VCol cols="7">
@@ -153,7 +182,9 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
     </VRow>
     <VRow no-gutters>
       <VCol cols="5" class="d-flex align-center justify-space-between">
-        <div class="text-h6">Provinsi</div>
+        <div class="text-h6">
+          {{ t("status-permohoanan.reguler-detail-pengajuan-province") }}
+        </div>
         <div class="me-2">:</div>
       </VCol>
       <VCol cols="7">
@@ -162,7 +193,9 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
     </VRow>
     <VRow no-gutters>
       <VCol cols="5" class="d-flex align-center justify-space-between">
-        <div class="text-h6">Kode Pos</div>
+        <div class="text-h6">
+          {{ t("status-permohoanan.reguler-detail-pengajuan-kodepos") }}
+        </div>
         <div class="me-2">:</div>
       </VCol>
       <VCol cols="7">
@@ -171,16 +204,20 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
     </VRow>
     <VRow no-gutters>
       <VCol cols="5" class="d-flex align-center justify-space-between">
-        <div class="text-h6">Negara</div>
+        <div class="text-h6">
+          {{ t("status-permohoanan.reguler-detail-pengajuan-negara") }}
+        </div>
         <div class="me-2">:</div>
       </VCol>
       <VCol cols="7">
-        {{ detail?.negara_pu || 'Indonesia' }}
+        {{ detail?.negara_pu || "Indonesia" }}
       </VCol>
     </VRow>
     <VRow no-gutters>
       <VCol cols="5" class="d-flex align-center justify-space-between">
-        <div class="text-h6">Telepon</div>
+        <div class="text-h6">
+          {{ t("status-permohoanan.reguler-detail-pengajuan-telp") }}
+        </div>
         <div class="me-2">:</div>
       </VCol>
       <VCol cols="7">
@@ -189,7 +226,9 @@ const panelType = computed(() => (props.type ? props.type : 'READ'))
     </VRow>
     <VRow no-gutters>
       <VCol cols="5" class="d-flex align-center justify-space-between">
-        <div class="text-h6">Email</div>
+        <div class="text-h6">
+          {{ t("status-permohoanan.reguler-detail-pengajuan-email") }}
+        </div>
         <div class="me-2">:</div>
       </VCol>
       <VCol cols="7">

@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
+import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
 
 const page = ref(1);
@@ -14,19 +15,61 @@ const lovStatus = ref<any[]>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 
+const { t } = useI18n();
+
 const headers = [
   { title: "No", key: "no" },
-  { title: "No. Pembayaran", key: "no_payment", nowrap: true },
-  { title: "No. Tagihan", key: "no_inv", nowrap: true },
-  { title: "Tanggal Tagihan", key: "tgl_inv", nowrap: true },
-  { title: "No. Ref", key: "no_ref", nowrap: true },
-  { title: "Nama PU", key: "nama", nowrap: true },
-  { title: "Jenis Transaksi", key: "jenis_transaksi", nowrap: true },
-  { title: "Jatuh Tempo", key: "duedate", nowrap: true },
-  { title: "Jumlah Tagihan", key: "total_inv", nowrap: true },
-  { title: "Status", key: "status", nowrap: true },
-  { title: "Catatan", key: "catatan", nowrap: true },
-  { title: "Action", value: "action", sortable: false, nowrap: true },
+  {
+    title: `${t("reguler-invoice.invoice-list-nobayar")}`,
+    key: "no_payment",
+    nowrap: true,
+  },
+  {
+    title: `${t("reguler-invoice.invoice-list-noinv")}`,
+    key: "no_inv",
+    nowrap: true,
+  },
+  {
+    title: `${t("reguler-invoice.invoice-list-notagihan")}`,
+    key: "tgl_inv",
+    nowrap: true,
+  },
+  {
+    title: `${t("reguler-invoice.invoice-list-noref")}`,
+    key: "no_ref",
+    nowrap: true,
+  },
+  {
+    title: `${t("reguler-invoice.invoice-list-namapu")}`,
+    key: "nama",
+    nowrap: true,
+  },
+  {
+    title: `${t("reguler-invoice.invoice-list-jnstrans")}`,
+    key: "jenis_transaksi",
+    nowrap: true,
+  },
+  {
+    title: `${t("reguler-invoice.invoice-list-jatuhtempo")}`,
+    key: "duedate",
+    nowrap: true,
+  },
+  {
+    title: `${t("reguler-invoice.invoice-list-jmltagihan")}`,
+    key: "total_inv",
+    nowrap: true,
+  },
+  {
+    title: `${t("reguler-invoice.invoice-list-status")}`,
+    key: "status",
+    nowrap: true,
+  },
+  {
+    title: `${t("reguler-invoice.invoice-list-catatan")}`,
+    key: "catatan",
+    nowrap: true,
+  },
+  { title: `${t("reguler-invoice.invoice-list-action")}`,, value: "action", sortable: false, nowrap: true },
 ];
 
 const { mdAndUp } = useDisplay();
@@ -164,20 +207,24 @@ watch([status, outDated, page], () => {
   <div v-if="!loading">
     <!-- <KembaliButton class="pl-0" /> -->
     <div class="d-flex align-center" style="justify-content: space-between">
-      <h1 style="font-size: 32px">Tagihan/Invoice</h1>
+      <h1 style="font-size: 32px">
+        {{ t("reguler-invoice.invoice-list-title") }}
+      </h1>
       <VBtn
         v-if="!loading"
         append-icon="fa-download"
         variant="flat"
         @click="() => unduhFile()"
       >
-        Unduh Cara Bayar
+        {{ t("reguler-invoice.invoice-list-donwloadstep") }}
       </VBtn>
     </div>
     <br />
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
-        <div class="text-h4 font-weight-bold">Daftar Tagihan/Invoice</div>
+        <div class="text-h4 font-weight-bold">
+          {{ t("reguler-invoice.invoice-list-subtitle") }}
+        </div>
       </VCardTitle>
       <VCardItem>
         <VRow no-gutters class="d-flex align-center ga-2">
@@ -188,7 +235,7 @@ watch([status, outDated, page], () => {
               variant="outlined"
               min-width="160px"
             >
-              Filter
+              {{ t("reguler-invoice.invoice-list-filter") }}
               <VMenu
                 activator="parent"
                 :close-on-content-click="false"
@@ -196,18 +243,24 @@ watch([status, outDated, page], () => {
               >
                 <VCard :min-width="dialogMaxWidth">
                   <VCardItem>
-                    <VLabel for="status">Status</VLabel>
+                    <VLabel for="status">
+                      {{ t("reguler-invoice.invoice-list-status") }}</VLabel
+                    >
                     <VSelect
                       v-model="status"
                       id="status"
                       :items="lovStatus"
-                      placeholder="Pilih Status"
+                      :placeholder="
+                        t(`reguler-invoice.invoice-list-search-status`)
+                      "
                       class="mb-1"
                       item-value="code"
                       item-title="name"
                       @update:modelValue="searchQuery = ''"
                     />
-                    <VLabel for="outDated">Tanggal Jatuh Tempo</VLabel>
+                    <VLabel for="outDated">{{
+                      t("reguler-invoice.invoice-list-search-duedate")
+                    }}</VLabel>
                     <VueDatePicker
                       v-model="outDated"
                       teleport-center
@@ -224,7 +277,7 @@ watch([status, outDated, page], () => {
             <VTextField
               v-model="searchQuery"
               density="compact"
-              placeholder="Search Data"
+              :placeholder="t(`reguler-invoice.invoice-list-cari`)"
               append-inner-icon="ri-search-line"
               @input="handleInput"
             />
@@ -286,9 +339,9 @@ watch([status, outDated, page], () => {
                     @click="() => downloadInvoice(item)"
                     block
                     class="text-left"
-                    style="width: 100%; justify-content: flex-start"
+                    style="justify-content: flex-start; inline-size: 100%"
                   >
-                    Lihat Invoice
+                    {{ t("reguler-invoice.invoice-list-action-downloadinv") }}
                   </VBtn>
                 </VCard>
               </VMenu>
