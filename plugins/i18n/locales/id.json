@@ -1,483 +1,676 @@
 {
-    "navbar": {
-        "main_menu": "Menu Utama",
-        "dashboard": "Dashboard",
-        "applicant": {
-            "title": "Pendaftar",
-            "menu": {
-                "profile": "Profile"
-            }
+  "navbar": {
+    "main_menu": "Menu Utama",
+    "dashboard": "Dashboard",
+    "applicant": {
+      "title": "Pendaftar",
+      "menu": {
+        "profile": "Profile"
+      }
+    },
+    "facilitate_registration": {
+      "title": "Facilitate Registration",
+      "menu": {
+        "entry": "Entri Fasilitas",
+        "list": "Daftar Fasilitas"
+      }
+    },
+    "list_ba": {
+      "title": "Daftar Pelaku Usaha",
+      "menu": {
+        "fa_inquiry": "Inquiry",
+        "fa_cancelation": "Pembatalan"
+      }
+    },
+    "invoice": {
+      "title": "Invoice",
+      "menu": {
+        "facilitate": "Invoice Fasilitasi",
+        "facilitator": "Invoice Fasilitator",
+        "shln": "Invoice SHLN",
+        "regular": "Invoice Reguler"
+      }
+    },
+    "shln": {
+      "title": "Registrasi SHLN",
+      "menu": {
+        "submission": "Submission",
+        "invoice": "Invoice",
+        "verification": "Verifikasi SHLN"
+      }
+    },
+    "sh_registration": {
+      "title": "Sertifikasi Halal",
+      "menu": {
+        "self_declare_submission": "Pengajuan Self Declare",
+        "regular_submission": "Pengajuan Reguler"
+      }
+    },
+    "online_registration": {
+      "title": "Pendaftaran Online",
+      "menu": {
+        "fa_verification": "Verifikasi Fasilitator",
+        "sd_verification": "Verifikasi Self Declare",
+        "sd_distribusi": "Distribusi Ke Komite",
+        "rg_verification": "Verifikasi Reguler"
+      }
+    },
+    "halal_cert_submission": {
+      "title": "Pengajuan Sertifikasi Halal",
+      "menu": {
+        "check_pu_submission": "Cek Data Pengajuan PU",
+        "verval": "Proses Verval"
+      }
+    },
+    "process_on_lph": {
+      "title": "Proses di LPH",
+      "menu": {
+        "list_submission": "Daftar Ajuan",
+        "list_acc_submission": "Daftar Ajuan Diterima",
+        "payment_info": "Informasi Pembayaran",
+        "update_check": "Update Pemeriksaan",
+        "settlement_data": "Audit Data Pengajuan"
+      }
+    },
+    "data_pu_submission": {
+      "title": "Data Pengajuan Pelaku Usaha",
+      "menu": {
+        "audit_submission": "Audit Pengajuan"
+      }
+    },
+    "sidang_fatwa": {
+      "title": "Sidang Fatwa",
+      "menu": {
+        "proses_sidang_fatwa": "Hasil Sidang Fatwa",
+        "entri_ketetapan_halal": "Entri Ketetapan Halal"
+      }
+    },
+    "bill": {
+      "title": "Tagihan",
+      "menu": {
+        "create_bill_bpjph": "Buat Tagihan Ke BPJPH",
+        "list_bill_bpjph": "Daftar Tagihan Ke BPJPH"
+      }
+    },
+    "self_declare": {
+      "title": "Self Declare",
+      "menu": {
+        "proses_sidang_fatwa": "Hasil Sidang Fatwa",
+        "hasil_penetapan": "Hasil Penetapan",
+        "inquiry_1": "Inquiry 1",
+        "inquiry_2": "Inquiry 2",
+        "recapitulation": "Rekapitulasi"
+      }
+    },
+    "business_actor": "Pelaku Usaha",
+    "management": {
+      "title": "Administrator",
+      "menu": {
+        "user": "User",
+        "role": "Role",
+        "image": "Image Authorization",
+        "announcement": "Announcement"
+      }
+    },
+    "kepkaban": {
+      "menu": {
+        "pendampingCertificate": {
+          "title": "Sertifikat Pendamping"
         },
-        "facilitate_registration": {
-            "title": "Facilitate Registration",
-            "menu": {
-                "entry": "Entri Fasilitas",
-                "list": "Daftar Fasilitas"
-            }
+        "akreditasiLphCertificate": {
+          "title": "Sertifikat Akreditasi LPH"
         },
-        "list_ba": {
-            "title": "Daftar Pelaku Usaha",
-            "menu": {
-                "fa_inquiry": "Inquiry",
-                "fa_cancelation": "Pembatalan"
-            }
+        "akreditasiLphLnCertificate": {
+          "title": "Sertifikat Akreditasi LPH LN"
         },
-        "invoice": {
-            "title": "Invoice",
-            "menu": {
-                "facilitate": "Invoice Fasilitasi",
-                "facilitator": "Invoice Fasilitator",
-                "shln": "Invoice SHLN",
-                "regular": "Invoice Reguler"
-            }
+        "asesorCertificate": {
+          "title": "Sertifikat Asesor"
         },
-        "shln": {
-            "title": "Registrasi SHLN",
-            "menu": {
-                "submission": "Submission",
-                "invoice": "Invoice",
-                "verification": "Verifikasi SHLN"
-            }
+        "registrationAuditor": {
+          "title": "Registrasi Auditor Halal"
         },
-        "sh_registration": {
-            "title": "Sertifikasi Halal",
-            "menu": {
-                "self_declare_submission": "Pengajuan Self Declare",
-                "regular_submission": "Pengajuan Reguler"
-            }
+        "auditorLembagaPelatihan": {
+          "title": "Sertifikat Auditor Lembaga Pelatihan"
         },
-        "online_registration": {
-            "title": "Pendaftaran Online",
-            "menu": {
-                "fa_verification": "Verifikasi Fasilitator",
-                "sd_verification": "Verifikasi Self Declare",
-                "sd_distribusi": "Distribusi Ke Komite",
-                "rg_verification": "Verifikasi Reguler"
-            }
+        "penyeliaLembagaPelatihan": {
+          "title": "Persetujuan Sertifikat Penyelia Lembaga Pelatihan"
         },
-        "halal_cert_submission": {
-            "title": "Pengajuan Sertifikasi Halal",
-            "menu": {
-                "check_pu_submission": "Cek Data Pengajuan PU",
-                "verval": "Proses Verval"
-            }
+        "penyeliaBpjph": {
+          "title": "Persetujuan Sertifikat Penyelia dari BPJPH"
         },
-        "process_on_lph": {
-            "title": "Proses di LPH",
-            "menu": {
-                "list_submission": "Daftar Ajuan",
-                "list_acc_submission": "Daftar Ajuan Diterima",
-                "payment_info": "Informasi Pembayaran",
-                "update_check": "Update Pemeriksaan",
-                "settlement_data": "Audit Data Pengajuan"
-            }
+        "juleha": {
+          "title": "Persetujuan Sertifikat Juleha"
         },
-        "data_pu_submission": {
-            "title": "Data Pengajuan Pelaku Usaha",
-            "menu": {
-                "audit_submission": "Audit Pengajuan"
-            }
+        "domisiliP3h": {
+          "title": "Persetujuan Pindah Domisili P3H"
         },
-        "sidang_fatwa": {
-            "title": "Sidang Fatwa",
-            "menu": {
-                "proses_sidang_fatwa": "Hasil Sidang Fatwa",
-                "entri_ketetapan_halal": "Entri Ketetapan Halal"
-            }
-        },
-        "bill": {
-            "title": "Tagihan",
-            "menu": {
-                "create_bill_bpjph": "Buat Tagihan Ke BPJPH",
-                "list_bill_bpjph": "Daftar Tagihan Ke BPJPH"
-            }
-        },
-        "self_declare": {
-            "title": "Self Declare",
-            "menu": {
-                "proses_sidang_fatwa": "Hasil Sidang Fatwa",
-                "hasil_penetapan": "Hasil Penetapan",
-                "inquiry_1": "Inquiry 1",
-                "inquiry_2": "Inquiry 2",
-                "recapitulation": "Rekapitulasi"
-            }
-        },
-        "business_actor": "Pelaku Usaha",
-        "management": {
-            "title": "Administrator",
-            "menu": {
-                "user": "User",
-                "role": "Role",
-                "image": "Image Authorization",
-                "announcement": "Announcement"
-            }
-        },
-        "kepkaban": {
-            "menu": {
-                "pendampingCertificate": {
-                    "title": "Sertifikat Pendamping"
-                },
-                "akreditasiLphCertificate": {
-                    "title": "Sertifikat Akreditasi LPH"
-                },
-                "akreditasiLphLnCertificate": {
-                    "title": "Sertifikat Akreditasi LPH LN"
-                },
-                "asesorCertificate": {
-                    "title": "Sertifikat Asesor"
-                },
-                "registrationAuditor": {
-                    "title": "Registrasi Auditor Halal"
-                },
-                "auditorLembagaPelatihan": {
-                    "title": "Sertifikat Auditor Lembaga Pelatihan"
-                },
-                "penyeliaLembagaPelatihan": {
-                    "title": "Persetujuan Sertifikat Penyelia Lembaga Pelatihan"
-                },
-                "penyeliaBpjph": {
-                    "title": "Persetujuan Sertifikat Penyelia dari BPJPH"
-                },
-                "juleha": {
-                    "title": "Persetujuan Sertifikat Juleha"
-                },
-                "domisiliP3h": {
-                    "title": "Persetujuan Pindah Domisili P3H"
-                },
-                "lembagaLp3h": {
-                    "title": "Persetujuan Pindah Lembaga P3H"
-                }
-            },
-            "title": "Approval"
+        "lembagaLp3h": {
+          "title": "Persetujuan Pindah Lembaga P3H"
         }
-    },
-    "uam_role": "Role",
-    "uam_user": "User",
-    "Error": "Error",
-    "$vuetify": {
-        "badge": "Badge",
-        "noDataText": "No data available",
-        "loading": "loading",
-        "close": "Close",
-        "open": "open",
-        "dataFooter": {
-            "itemsPerPageText": "Items per page:",
-            "itemsPerPageAll": "All",
-            "pageText": "{0}-{1} of {2}",
-            "firstPage": "First Page",
-            "prevPage": "Previous Page",
-            "nextPage": "Next Page",
-            "lastPage": "Last Page"
-        },
-        "pagination": {
-            "ariaLabel": {
-                "root": "root",
-                "previous": "previous",
-                "next": "next",
-                "currentPage": "currentPage",
-                "page": "page",
-                "first": "first",
-                "last": "last"
-            }
-        },
-        "carousel": {
-            "ariaLabel": {
-                "delimiter": "Carousel slide {0} of {1}"
-            }
-        },
-        "input": {
-            "clear": "clear",
-            "appendAction": "appendAction",
-            "prependAction": "prependAction",
-            "counterSize": "counterSize",
-            "otp": "otp"
-        },
-        "fileInput": {
-            "counterSize": "counterSize"
-        },
-        "rating": {
-            "ariaLabel": {
-                "item": "item"
-            }
-        }
-    },
-    "sh-submission": {
-        "title": "Halal Certificate Submission",
-        "detail": "Check Submission Data"
-    },
-    "login": {
-        "nav-1": "Butuh Bantuan?",
-        "nav-1-phone": "Telepon",
-        "header": "Selamat Datang di",
-        "subheader": "Login untuk mengakses fitur pada web SIHALAL",
-        "email-attr": "Email",
-        "email-tip": "Masukkan email",
-        "password-attr": "Kata Sandi",
-        "password-tip": "Masukkan kata sandi",
-        "action-forgot-password": "Lupa Kata Sandi",
-        "action-login": "Login",
-        "tip-1": "Belum punya akun?",
-        "tip-1a": "Daftar di sini",
-        "tip-2": "Terhubung Ke",
-        "msg-err-login": "Gagal masuk, mohon periksa kembali kelengkapan data!",
-        "msg-err-email": "Alamat email tidak ditemukan",
-        "msg-err-password": "Kata sandi tidak tepat!",
-        "msg-err-ishuman": "Silakan verifikasi bahwa Anda bukan robot."
-    },
-    "new-account": {
-        "asal-attr-1": "Pilih Asal Pelaku Usaha",
-        "asal-attr-2": "Luar Negeri",
-        "asal-attr-3": "Dalam Negeri",
-        "asal-attr-4": "Instansi Pemerintah"
-    },
-    "new-foreign": {
-        "title": "Formulir Profil Perusahaan",
-        "attr-1": "Nama Perusahaan",
-        "attr-2": "Alamat",
-        "attr-3": "Kota",
-        "attr-4": "Provinsi",
-        "attr-5": "Negara",
-        "attr-6": "Kode Pos",
-        "attr-7": "Telepon",
-        "attr-8": "Email",
-        "btn-1": "Kembali",
-        "btn-2": "Kirim"
-    },
-    "new-domestic-nib": {
-        "title": "Isi Nomor Induk Berusaha",
-        "attr-1": "Nomor Induk Berusaha",
-        "btn-1": "Kembali",
-        "btn-2": "Kirim"
-    },
-    "new-domestic-nib-data": {
-        "title": "Data Nomor Induk Berusaha",
-        "attr-1": "Nomor Induk Berusaha",
-        "attr-2": "Nama Perusahaan",
-        "attr-3": "Alamat",
-        "attr-4": "NPWP",
-        "attr-5": "Status NIB",
-        "attr-6": "Kategori Pelaku Usaha",
-        "attr-7": "Modal Dasar",
-        "subtitle": "Daftar Usaha / Kegiatan",
-        "th-1": "No",
-        "th-2": "KBLI",
-        "th-3": "Nama Usaha",
-        "th-4": "Alamat",
-        "th-5": "Modal Usaha",
-        "msg": "NIB sudah didaftarkan oleh user",
-        "msg-1": ",Silakan login dengan menggunakan email tersebut.",
-        "msg-error": "NIB tidak ditemukan",
-        "btn-1": "Kembali",
-        "btn-2": "Kirim"
-    },
-    "new-gov-data": {
-        "title": "Pendaftaran Pelaku Usaha",
-        "subtitle-1": "Informasi Pribadi",
-        "sub1-attr-1": "Nama Pelaku Usaha (Sesuai KTP)",
-        "sub1-attr-2": "Nomor KTP / NIK",
-        "sub1-attr-3": "Nomor Telepon",
-        "sub1-attr-4": "Email",
-        "sub1-attr-5": "Alamat (Sesuai KTP)",
-        "sub1-attr-6": "Provinsi",
-        "sub1-attr-7": "Kabupaten / Kota",
-        "sub1-attr-8": "Kecamatan",
-        "sub1-attr-9": "Kelurahan / Desa",
-        "sub1-attr-10": "Kode Pos",
-        "subtitle-2": "Informasi Badan Usaha",
-        "sub2-attr-1": "Jenis Badan Usaha",
-        "sub2-attr-2": "Skala Usaha",
-        "sub2-attr-3": "Modal Usaha",
-        "sub2-attr-4": "KBLI",
-        "btn-1": "Kembali",
-        "btn-2": "Kirim"
-    },
-    "detail-pu": {
-        "pu-head-back": "Kembali",
-        "pu-title": "Detail Pelaku Usaha",
-        "pu-head-edit": "Ubah",
-        "pu-izin-title": "Perizinan",
-        "pu-izin-penerbit": "Penerbit",
-        "pu-izin-namaizin": "Nama izin",
-        "pu-izin-act-detail": "Lihat Data",
-        "pu-kbli-nama": "Nama KBLI",
-        "pu-kbli-profil": "Alamat",
-        "pu-profil-title": "Profil",
-        "pu-profi-namapu": "Nama Perusahaan",
-        "pu-profil-address": "Alamat",
-        "pu-profil-kota": "Kota/Kab",
-        "pu-profil-prov": "Provinsi",
-        "pu-profil-kodepos": "Kodepos",
-        "pu-profil-negara": "Negara",
-        "pu-profil-telp": "Telepon",
-        "pu-profil-email": "Email",
-        "pu-profil-jbu": "Jenis Badan Usaha",
-        "pu-profil-tingkatu": "Tingkat Usaha",
-        "pu-profil-skala": "Skala Usaha",
-        "pu-profil-modal": "Modal Dasar",
-        "pu-profil-asal": "Asal Usaha",
-        "pu-pj-title": "Penanggung Jawab",
-        "pu-pj-nama": "Nama",
-        "pu-pj-telp": "Nomor Kontak",
-        "pu-pj-email": "Email",
-        "pu-legal-title": "Aspek Legal",
-        "pu-legal-jenis": "Jenis",
-        "pu-legal-nodoc": "No. Dokumen",
-        "pu-legal-tgl": "Tanggal",
-        "pu-legal-tgl-exp": "Masa Berlaku",
-        "pu-legal-issuer": "Instansi Penerbit",
-        "pu-legal-action": "Aksi",
-        "pu-fac-title": "Pabrik",
-        "pu-fac-nama": "Nama",
-        "pu-fac-address": "Alamat",
-        "pu-fac-action": "Aksi",
-        "pu-out-title": "Outlet",
-        "pu-out-nama": "Nama",
-        "pu-out-address": "Alamat",
-        "pu-ph-title": "Penyelia halal",
-        "pu-ph-nama": "Nama",
-        "pu-ph-ktp": "No KTP",
-        "pu-ph-telp": "No Kontak",
-        "pu-ph-sertif": "No/Tgl Sertif Penyelia Halal",
-        "pu-ph-sk": "No/Tanggal SK",
-        "pu-izin-penerbit": "Penerbit",
-        "pu-izin-namaizin": "Nama Izin",
-        "pu-izin-nomor": "Nomor",
-        "pu-izin-date": "Tanggal",
-        "pu-izin-document": "Dokumen",
-        "pu-kbli-no": "No KBLI",
-        "pu-kbli-nama": "Nama KBLI",
-        "pu-kbli-namausaha": "Nama Usaha",
-        "pu-kbli-address": "Alamat",
-        "pu-kbli-modal": "Modal Usaha",
-        "pu-edit-title": "Ubah Pelaku Usaha",
-        "pu-edit-cancel": "Batal",
-        "pu-edit-save": "Simpan Perubahan",
-        "pu-edit-add": "Tambah",
-        "pu-edit-sk": "SK Penetapan Penyelia Halal"
-    },
-    "status-permohoanan": {
-        "permohonan-list-back": "Kembali",
-        "permohonan-list-no-data": "Data Kosong",
-        "permohonan-list-title": "Status Permohonan",
-        "permohonan-list-subtitle": "Data Pengajuan",
-        "permohonan-list-search": "Cari",
-        "permohonan-list-tanggal": "Tanggal",
-        "permohonan-list-namapu": "Nama PU",
-        "permohonan-list-jnsdaftar": "Jenis Daftar",
-        "permohonan-list-jnsprod": "Jenis Produk",
-        "permohonan-list-status": "Status",
-        "permohonan-list-action": "Aksi",
-        "reguler-detail-header-back": "Kembali",
-        "reguler-detail-header-title": "Detail Pengajuan Sertifikasi",
-        "reguler-detail-pengajuan-title": "Pengajuan Sertifikat Halal",
-        "reguler-detail-pengajuan-noid": "No. ID",
-        "reguler-detail-pengajuan-tgl": "Tanggal",
-        "reguler-detail-pengajuan-nomohon": "No. Surat Permohonan",
-        "reguler-detail-pengajuan-tglmohon": "Tanggal Permohonan",
-        "reguler-detail-pengajuan-jnslay": "Jenis Layanan",
-        "reguler-detail-pengajuan-jnsprod": "Jenis Produk",
-        "reguler-detail-pengajuan-merk": "Merk Dagang",
-        "reguler-detail-pengajuan-area": "Area Pemasaran",
-        "reguler-detail-pengajuan-lph": "LPH",
-        "reguler-detail-pengajuan-namapu": "Nama Perusahaan",
-        "reguler-detail-pengajuan-namapush": "Nama Perusahaan tertera di SH",
-        "reguler-detail-pengajuan-namakbli": "Nama KBLI",
-        "reguler-detail-pengajuan-address": "Alamat",
-        "reguler-detail-pengajuan-city": "Kota/Kab",
-        "reguler-detail-pengajuan-province": "Provinsi",
-        "reguler-detail-pengajuan-kodepos": "Kode Pos",
-        "reguler-detail-pengajuan-negara": "Negara",
-        "reguler-detail-pengajuan-telp": "Telepon",
-        "reguler-detail-pengajuan-email": "Email",
-        "reguler-detail-form-title": "Formulir Unduhan",
-        "reguler-detail-form-sttd": "STTD",
-        "reguler-detail-form-sh": "Sertifikat Halal",
-        "reguler-detail-reg-title": "Pendaftaran",
-        "reguler-detail-reg-nodaftar": "Nomor Daftar",
-        "reguler-detail-reg-tanggal": "Tanggal",
-        "reguler-detail-reg-tempatdaftar": "Tempat Pendaftaran",
-        "reguler-detail-reg-jnsdaftar": "Jenis Daftar",
-        "reguler-detail-reg-status": "Status",
-        "reguler-detail-reg-channel": "Channel",
-        "reguler-detail-reg-fasilitator": "Fasilitator",
-        "reguler-detail-reg-kodefas": "Kode Fasilitasi",
-        "reguler-detail-sh-title": "Sertifikasi Halal",
-        "reguler-detail-sh-nosert": "Nomor Sertifikat",
-        "reguler-detail-sh-tglsert": "Tanggal Sertifikat",
-        "reguler-detail-pic-title": "Penanggung Jawab",
-        "reguler-detail-pic-nama": "Nama",
-        "reguler-detail-pic-telp": "Nomor Kontak",
-        "reguler-detail-pic-email": "Email",
-        "reguler-detail-legal-title": "Aspek Legal",
-        "reguler-detail-legal-jenis": "Jenis",
-        "reguler-detail-legal-nodok": "No Dokumen",
-        "reguler-detail-legal-tanggal": "Tanggal",
-        "reguler-detail-legal-expired": "Masa Berlaku",
-        "reguler-detail-legal-issuer": "Instansi Penerbit",
-        "reguler-detail-fac-title": "Pabrik",
-        "reguler-detail-fac-nama": "Nama",
-        "reguler-detail-fac-alamat": "Alamat",
-        "reguler-detail-fac-status": "Status",
-        "reguler-detail-out-title": "Outlet",
-        "reguler-detail-out-nama": "Nama",
-        "reguler-detail-out-alamat": "Alamat",
-        "reguler-detail-out-status": "Status",
-        "reguler-detail-ph-title": "Penyelia Halal",
-        "reguler-detail-ph-nama": "Nama",
-        "reguler-detail-ph-ktp": "No KTP",
-        "reguler-detail-ph-telp": "No Kontak",
-        "reguler-detail-ph-sertif": "No/Tgl Sertif Penyelia Halal",
-        "reguler-detail-ph-sk": "No/Tgl SK",
-        "reguler-detail-produk-title": "Daftar Nama Produk",
-        "reguler-detail-produk-nama": "Nama Produk",
-        "reguler-detail-produk-publikasi": "Publikasi",
-        "reguler-detail-inspection-title": "Pemeriksaan",
-        "reguler-detail-inspection-lph": "LPH",
-        "reguler-detail-inspection-tglfinlph": "Tanggal Selesai LPH",
-        "reguler-detail-inspection-hasil": "Hasil",
-        "reguler-detail-inspection-dok": "Dokumen",
-        "reguler-detail-sidang-title": "Sidang Fatwa",
-        "reguler-detail-sidang-nokh": "Nomor Penetapan",
-        "reguler-detail-sidang-tglkh": "Tanggal Penetapan",
-        "reguler-detail-sidang-hsilkh": "Hasil Penetapan",
-        "reguler-detail-sidang-dok": "Dokumen",
-        "reguler-detail-track-title": "Melacak"
-    },
-    "reguler-invoice": {
-        "invoice-list-back": "Kembali",
-        "invoice-list-title": "Tagihan",
-        "invoice-list-subtitle": "Daftar Tagihan",
-        "invoice-list-donwloadstep": "Unduh Cara Bayar",
-        "invoice-list-filter": "Filter",
-        "invoice-list-cari": "Cari",
-        "invoice-list-nobayar": "No Pembayaran",
-        "invoice-list-noinv": "No Tagihan",
-        "invoice-list-notagihan": "Tanggal Tagihan",
-        "invoice-list-noref": "No Ref",
-        "invoice-list-namapu": "Nama PU",
-        "invoice-list-jnstrans": "Jenis Transaksi",
-        "invoice-list-jatuhtempo": "Jatuh Tempo",
-        "invoice-list-jmltagihan": "Jumlah Tagihan",
-        "invoice-list-status": "Status",
-        "invoice-list-catatan": "Catatan",
-        "invoice-list-action": "Aksi",
-        "invoice-list-search-status": "Status",
-        "invoice-list-search-duedate": "Tanggal Jatuh Tempo",
-        "invoice-list-action-downloadinv": "Lihat Invoice"
-    },
-    "shln-invoice": {
-        "invoice-list-title": "Tagihan",
-        "invoice-list-subtitle": "Daftar Tagihan",
-        "invoice-list-cari": "Cari Data",
-        "invoice-list-downloadpaymentinst": "Unduh Cara Bayar",
-        "invoice-list-noinv": "No Invoice",
-        "invoice-list-tglinv": "Tanggal Invoice",
-        "invoice-list-noreg": "No Daftar",
-        "invoice-list-nova": "No VA",
-        "invoice-list-importir": "Nama Importir",
-        "invoice-list-duedate": "Tanggal Jatuh Tempo",
-        "invoice-list-amount": "Jumlah",
-        "invoice-list-status": "Status",
-        "invoice-list-invfile": "File Invoice"
+      },
+      "title": "Approval"
     }
+  },
+  "uam_role": "Role",
+  "uam_user": "User",
+  "Error": "Error",
+  "$vuetify": {
+    "badge": "Badge",
+    "noDataText": "No data available",
+    "loading": "loading",
+    "close": "Close",
+    "open": "open",
+    "dataFooter": {
+      "itemsPerPageText": "Items per page:",
+      "itemsPerPageAll": "All",
+      "pageText": "{0}-{1} of {2}",
+      "firstPage": "First Page",
+      "prevPage": "Previous Page",
+      "nextPage": "Next Page",
+      "lastPage": "Last Page"
+    },
+    "pagination": {
+      "ariaLabel": {
+        "root": "root",
+        "previous": "previous",
+        "next": "next",
+        "currentPage": "currentPage",
+        "page": "page",
+        "first": "first",
+        "last": "last"
+      }
+    },
+    "carousel": {
+      "ariaLabel": {
+        "delimiter": "Carousel slide {0} of {1}"
+      }
+    },
+    "input": {
+      "clear": "clear",
+      "appendAction": "appendAction",
+      "prependAction": "prependAction",
+      "counterSize": "counterSize",
+      "otp": "otp"
+    },
+    "fileInput": {
+      "counterSize": "counterSize"
+    },
+    "rating": {
+      "ariaLabel": {
+        "item": "item"
+      }
+    }
+  },
+  "sh-submission": {
+    "title": "Halal Certificate Submission",
+    "detail": "Check Submission Data"
+  },
+  "login": {
+    "nav-1": "Butuh Bantuan?",
+    "nav-1-phone": "Telepon",
+    "header": "Selamat Datang di",
+    "subheader": "Login untuk mengakses fitur pada web SIHALAL",
+    "email-attr": "Email",
+    "email-tip": "Masukkan email",
+    "password-attr": "Kata Sandi",
+    "password-tip": "Masukkan kata sandi",
+    "action-forgot-password": "Lupa Kata Sandi",
+    "action-login": "Login",
+    "tip-1": "Belum punya akun?",
+    "tip-1a": "Daftar di sini",
+    "tip-2": "Terhubung Ke",
+    "msg-err-login": "Gagal masuk, mohon periksa kembali kelengkapan data!",
+    "msg-err-email": "Alamat email tidak ditemukan",
+    "msg-err-password": "Kata sandi tidak tepat!",
+    "msg-err-ishuman": "Silakan verifikasi bahwa Anda bukan robot."
+  },
+  "new-account": {
+    "asal-attr-1": "Pilih Asal Pelaku Usaha",
+    "asal-attr-2": "Luar Negeri",
+    "asal-attr-3": "Dalam Negeri",
+    "asal-attr-4": "Instansi Pemerintah"
+  },
+  "new-foreign": {
+    "title": "Formulir Profil Perusahaan",
+    "attr-1": "Nama Perusahaan",
+    "attr-2": "Alamat",
+    "attr-3": "Kota",
+    "attr-4": "Provinsi",
+    "attr-5": "Negara",
+    "attr-6": "Kode Pos",
+    "attr-7": "Telepon",
+    "attr-8": "Email",
+    "btn-1": "Kembali",
+    "btn-2": "Kirim"
+  },
+  "new-domestic-nib": {
+    "title": "Isi Nomor Induk Berusaha",
+    "attr-1": "Nomor Induk Berusaha",
+    "btn-1": "Kembali",
+    "btn-2": "Kirim"
+  },
+  "new-domestic-nib-data": {
+    "title": "Data Nomor Induk Berusaha",
+    "attr-1": "Nomor Induk Berusaha",
+    "attr-2": "Nama Perusahaan",
+    "attr-3": "Alamat",
+    "attr-4": "NPWP",
+    "attr-5": "Status NIB",
+    "attr-6": "Kategori Pelaku Usaha",
+    "attr-7": "Modal Dasar",
+    "subtitle": "Daftar Usaha / Kegiatan",
+    "th-1": "No",
+    "th-2": "KBLI",
+    "th-3": "Nama Usaha",
+    "th-4": "Alamat",
+    "th-5": "Modal Usaha",
+    "msg": "NIB sudah didaftarkan oleh user",
+    "msg-1": ",Silakan login dengan menggunakan email tersebut.",
+    "msg-error": "NIB tidak ditemukan",
+    "btn-1": "Kembali",
+    "btn-2": "Kirim"
+  },
+  "new-gov-data": {
+    "title": "Pendaftaran Pelaku Usaha",
+    "subtitle-1": "Informasi Pribadi",
+    "sub1-attr-1": "Nama Pelaku Usaha (Sesuai KTP)",
+    "sub1-attr-2": "Nomor KTP / NIK",
+    "sub1-attr-3": "Nomor Telepon",
+    "sub1-attr-4": "Email",
+    "sub1-attr-5": "Alamat (Sesuai KTP)",
+    "sub1-attr-6": "Provinsi",
+    "sub1-attr-7": "Kabupaten / Kota",
+    "sub1-attr-8": "Kecamatan",
+    "sub1-attr-9": "Kelurahan / Desa",
+    "sub1-attr-10": "Kode Pos",
+    "subtitle-2": "Informasi Badan Usaha",
+    "sub2-attr-1": "Jenis Badan Usaha",
+    "sub2-attr-2": "Skala Usaha",
+    "sub2-attr-3": "Modal Usaha",
+    "sub2-attr-4": "KBLI",
+    "btn-1": "Kembali",
+    "btn-2": "Kirim"
+  },
+  "detail-pu": {
+    "pu-head-back": "Kembali",
+    "pu-title": "Detail Pelaku Usaha",
+    "pu-head-edit": "Ubah",
+    "pu-izin-title": "Perizinan",
+    "pu-izin-penerbit": "Penerbit",
+    "pu-izin-namaizin": "Nama izin",
+    "pu-izin-act-detail": "Lihat Data",
+    "pu-kbli-nama": "Nama KBLI",
+    "pu-kbli-profil": "Alamat",
+    "pu-profil-title": "Profil",
+    "pu-profi-namapu": "Nama Perusahaan",
+    "pu-profil-address": "Alamat",
+    "pu-profil-kota": "Kota/Kab",
+    "pu-profil-prov": "Provinsi",
+    "pu-profil-kodepos": "Kodepos",
+    "pu-profil-negara": "Negara",
+    "pu-profil-telp": "Telepon",
+    "pu-profil-email": "Email",
+    "pu-profil-jbu": "Jenis Badan Usaha",
+    "pu-profil-tingkatu": "Tingkat Usaha",
+    "pu-profil-skala": "Skala Usaha",
+    "pu-profil-modal": "Modal Dasar",
+    "pu-profil-asal": "Asal Usaha",
+    "pu-pj-title": "Penanggung Jawab",
+    "pu-pj-nama": "Nama",
+    "pu-pj-telp": "Nomor Kontak",
+    "pu-pj-email": "Email",
+    "pu-legal-title": "Aspek Legal",
+    "pu-legal-jenis": "Jenis",
+    "pu-legal-nodoc": "No. Dokumen",
+    "pu-legal-tgl": "Tanggal",
+    "pu-legal-tgl-exp": "Masa Berlaku",
+    "pu-legal-issuer": "Instansi Penerbit",
+    "pu-legal-action": "Aksi",
+    "pu-fac-title": "Pabrik",
+    "pu-fac-nama": "Nama",
+    "pu-fac-address": "Alamat",
+    "pu-fac-action": "Aksi",
+    "pu-out-title": "Outlet",
+    "pu-out-nama": "Nama",
+    "pu-out-address": "Alamat",
+    "pu-ph-title": "Penyelia halal",
+    "pu-ph-nama": "Nama",
+    "pu-ph-ktp": "No KTP",
+    "pu-ph-telp": "No Kontak",
+    "pu-ph-sertif": "No/Tgl Sertif Penyelia Halal",
+    "pu-ph-sk": "No/Tanggal SK",
+    "pu-izin-penerbit": "Penerbit",
+    "pu-izin-namaizin": "Nama Izin",
+    "pu-izin-nomor": "Nomor",
+    "pu-izin-date": "Tanggal",
+    "pu-izin-document": "Dokumen",
+    "pu-kbli-no": "No KBLI",
+    "pu-kbli-nama": "Nama KBLI",
+    "pu-kbli-namausaha": "Nama Usaha",
+    "pu-kbli-address": "Alamat",
+    "pu-kbli-modal": "Modal Usaha",
+    "pu-edit-title": "Ubah Pelaku Usaha",
+    "pu-edit-cancel": "Batal",
+    "pu-edit-save": "Simpan Perubahan",
+    "pu-edit-add": "Tambah",
+    "pu-edit-sk": "SK Penetapan Penyelia Halal"
+  },
+  "status-permohoanan": {
+    "permohonan-list-back": "Kembali",
+    "permohonan-list-no-data": "Data Kosong",
+    "permohonan-list-title": "Status Permohonan",
+    "permohonan-list-subtitle": "Data Pengajuan",
+    "permohonan-list-search": "Cari",
+    "permohonan-list-tanggal": "Tanggal",
+    "permohonan-list-namapu": "Nama PU",
+    "permohonan-list-jnsdaftar": "Jenis Daftar",
+    "permohonan-list-jnsprod": "Jenis Produk",
+    "permohonan-list-status": "Status",
+    "permohonan-list-action": "Aksi",
+    "reguler-detail-header-back": "Kembali",
+    "reguler-detail-header-title": "Detail Pengajuan Sertifikasi",
+    "reguler-detail-pengajuan-title": "Pengajuan Sertifikat Halal",
+    "reguler-detail-pengajuan-noid": "No. ID",
+    "reguler-detail-pengajuan-tgl": "Tanggal",
+    "reguler-detail-pengajuan-nomohon": "No. Surat Permohonan",
+    "reguler-detail-pengajuan-tglmohon": "Tanggal Permohonan",
+    "reguler-detail-pengajuan-jnslay": "Jenis Layanan",
+    "reguler-detail-pengajuan-jnsprod": "Jenis Produk",
+    "reguler-detail-pengajuan-merk": "Merk Dagang",
+    "reguler-detail-pengajuan-area": "Area Pemasaran",
+    "reguler-detail-pengajuan-lph": "LPH",
+    "reguler-detail-pengajuan-namapu": "Nama Perusahaan",
+    "reguler-detail-pengajuan-namapush": "Nama Perusahaan tertera di SH",
+    "reguler-detail-pengajuan-namakbli": "Nama KBLI",
+    "reguler-detail-pengajuan-address": "Alamat",
+    "reguler-detail-pengajuan-city": "Kota/Kab",
+    "reguler-detail-pengajuan-province": "Provinsi",
+    "reguler-detail-pengajuan-kodepos": "Kode Pos",
+    "reguler-detail-pengajuan-negara": "Negara",
+    "reguler-detail-pengajuan-telp": "Telepon",
+    "reguler-detail-pengajuan-email": "Email",
+    "reguler-detail-form-title": "Formulir Unduhan",
+    "reguler-detail-form-sttd": "STTD",
+    "reguler-detail-form-sh": "Sertifikat Halal",
+    "reguler-detail-reg-title": "Pendaftaran",
+    "reguler-detail-reg-nodaftar": "Nomor Daftar",
+    "reguler-detail-reg-tanggal": "Tanggal",
+    "reguler-detail-reg-tempatdaftar": "Tempat Pendaftaran",
+    "reguler-detail-reg-jnsdaftar": "Jenis Daftar",
+    "reguler-detail-reg-status": "Status",
+    "reguler-detail-reg-channel": "Channel",
+    "reguler-detail-reg-fasilitator": "Fasilitator",
+    "reguler-detail-reg-kodefas": "Kode Fasilitasi",
+    "reguler-detail-sh-title": "Sertifikasi Halal",
+    "reguler-detail-sh-nosert": "Nomor Sertifikat",
+    "reguler-detail-sh-tglsert": "Tanggal Sertifikat",
+    "reguler-detail-pic-title": "Penanggung Jawab",
+    "reguler-detail-pic-nama": "Nama",
+    "reguler-detail-pic-telp": "Nomor Kontak",
+    "reguler-detail-pic-email": "Email",
+    "reguler-detail-legal-title": "Aspek Legal",
+    "reguler-detail-legal-jenis": "Jenis",
+    "reguler-detail-legal-nodok": "No Dokumen",
+    "reguler-detail-legal-tanggal": "Tanggal",
+    "reguler-detail-legal-expired": "Masa Berlaku",
+    "reguler-detail-legal-issuer": "Instansi Penerbit",
+    "reguler-detail-fac-title": "Pabrik",
+    "reguler-detail-fac-nama": "Nama",
+    "reguler-detail-fac-alamat": "Alamat",
+    "reguler-detail-fac-status": "Status",
+    "reguler-detail-out-title": "Outlet",
+    "reguler-detail-out-nama": "Nama",
+    "reguler-detail-out-alamat": "Alamat",
+    "reguler-detail-out-status": "Status",
+    "reguler-detail-ph-title": "Penyelia Halal",
+    "reguler-detail-ph-nama": "Nama",
+    "reguler-detail-ph-ktp": "No KTP",
+    "reguler-detail-ph-telp": "No Kontak",
+    "reguler-detail-ph-sertif": "No/Tgl Sertif Penyelia Halal",
+    "reguler-detail-ph-sk": "No/Tgl SK",
+    "reguler-detail-produk-title": "Daftar Nama Produk",
+    "reguler-detail-produk-nama": "Nama Produk",
+    "reguler-detail-produk-publikasi": "Publikasi",
+    "reguler-detail-inspection-title": "Pemeriksaan",
+    "reguler-detail-inspection-lph": "LPH",
+    "reguler-detail-inspection-tglfinlph": "Tanggal Selesai LPH",
+    "reguler-detail-inspection-hasil": "Hasil",
+    "reguler-detail-inspection-dok": "Dokumen",
+    "reguler-detail-sidang-title": "Sidang Fatwa",
+    "reguler-detail-sidang-nokh": "Nomor Penetapan",
+    "reguler-detail-sidang-tglkh": "Tanggal Penetapan",
+    "reguler-detail-sidang-hsilkh": "Hasil Penetapan",
+    "reguler-detail-sidang-dok": "Dokumen",
+    "reguler-detail-track-title": "Melacak",
+    "produk-serivices": "Layanan Produk",
+    "produk-type": "Jenis Produk",
+    "produk-class": "Kelas Produk",
+    "produk-rincian": "Rincian Produk",
+    "produk-name": "Nama Produk",
+    "produk-publication": "Publikasi",
+    "pabrik-name": "Nama",
+    "pabrik-address": "Alamat",
+    "pabrik-status": "Status"
+  },
+  "pengajuan-reguler": {
+    "reguler-list-btn-back": "Kembali",
+    "reguler-list-title": "Pengajuan Reguler",
+    "reguler-list-subtitle": "Daftar Pengajuan Reguler",
+    "reguler-list-btn-ajukan": "Ajukan Layanan",
+    "reguler-list-head-nodaftar": "Nomor Daftar",
+    "reguler-list-head-tgldaftar": "Tanggal Daftar",
+    "reguler-list-head-namapu": "Nama PU",
+    "reguler-list-head-jnsdaftar": "Jenis Daftar",
+    "reguler-list-head-jnsproduk": "Jenis Produk",
+    "reguler-list-head-status": "Status",
+    "reguler-list-head-action": "Aksi",
+    "popup-title": "Layanan Sertifikat Halal",
+    "popup-content": "Ajukan Permohonan Anda untuk mendapatkan sertifikasi halal dari BPJPH dengan memilih salah satu diantara layanan di bawah ini",
+    "popup-new-title": "Baru",
+    "popup-newp-title": "Baru (Pengembangan)",
+    "popup-new-desc": "Proses sertifikasi halal untuk produk baru",
+    "popup-new-desc-1": "yang ",
+    "popup-new-desc-2": "belum pernah ",
+    "popup-new-desc-3": " belum memiliki",
+    "popup-new-desc-4": " sertifikat halal sebelumnya",
+    "popup-new-btn": "Daftar",
+    "popup-kbli-title": "Nama Usaha / Kegiatan (Nama yang ditampilkan pada sertifikat)",
+    "popup-kbli-combo-text": "Pilih Nama Usaha",
+    "reguler-detail-header-back": "Kembali",
+    "reguler-detail-header-title": "Pengajuan Sertifikasi Halal: Detail",
+    "reguler-detail-header-act-edt": "Ubah Laporan",
+    "reguler-detail-header-act-send": "Kirim",
+    "reguler-detail-pengajuan-title": "Pengajuan Sertifikat Halal",
+    "reguler-detail-pengajuan-noid": "No. ID",
+    "reguler-detail-pengajuan-tgl": "Tanggal",
+    "reguler-detail-pengajuan-nomohon": "No. Surat Permohonan",
+    "reguler-detail-pengajuan-tglmohon": "Tanggal Permohonan",
+    "reguler-detail-pengajuan-jnslay": "Jenis Layanan",
+    "reguler-detail-pengajuan-jnsprod": "Jenis Produk",
+    "reguler-detail-pengajuan-merk": "Merk Dagang",
+    "reguler-detail-pengajuan-area": "Area Pemasaran",
+    "reguler-detail-pengajuan-lph": "LPH",
+    "reguler-detail-pengajuan-namapu": "Nama Perusahaan",
+    "reguler-detail-pengajuan-namapush": "Nama Perusahaan tertera di SH",
+    "reguler-detail-pengajuan-namakbli": "Nama KBLI",
+    "reguler-detail-pengajuan-address": "Alamat",
+    "reguler-detail-pengajuan-city": "Kota/Kab",
+    "reguler-detail-pengajuan-province": "Provinsi",
+    "reguler-detail-pengajuan-kodepos": "Kode Pos",
+    "reguler-detail-pengajuan-negara": "Negara",
+    "reguler-detail-pengajuan-telp": "Telepon",
+    "reguler-detail-pengajuan-email": "Email",
+    "reguler-detail-pengajuan-jnsbu": "Jenis badan usaha",
+    "reguler-detail-pengajuan-skala": "Skala Usaha",
+    "reguler-detail-pengajuan-tingkatusaha": "Tingkat Usaha",
+    "reguler-detail-pengajuan-modal": "Modal Dasar",
+    "reguler-detail-pengajuan-asalusaha": "Asal Usaha",
+    "reguler-detail-form-title": "Formulir Unduhan",
+    "reguler-detail-form-sttd": "STTD",
+    "reguler-detail-form-sh": "Sertifikat Halal",
+    "reguler-detail-reg-title": "Pendaftaran",
+    "reguler-detail-reg-nodaftar": "Nomor Daftar",
+    "reguler-detail-reg-tanggal": "Tanggal",
+    "reguler-detail-reg-tempatdaftar": "Tempat Pendaftaran",
+    "reguler-detail-reg-jnsdaftar": "Jenis Daftar",
+    "reguler-detail-reg-status": "Status",
+    "reguler-detail-reg-channel": "Channel",
+    "reguler-detail-reg-fasilitator": "Fasilitator",
+    "reguler-detail-sh-title": "Sertifikasi Halal",
+    "reguler-detail-sh-nosert": "Nomor Sertifikat",
+    "reguler-detail-sh-tglsert": "Tanggal Sertifikat",
+    "reguler-detail-track-title": "Melacak",
+    "reguler-detail-pic-title": "Penanggung Jawab",
+    "reguler-detail-pic-nama": "Nama",
+    "reguler-detail-pic-telp": "Nomor Kontak",
+    "reguler-detail-pic-email": "Email",
+    "reguler-detail-legal-title": "Aspek Legal",
+    "reguler-detail-legal-jenis": "Jenis",
+    "reguler-detail-legal-nodok": "No Dokumen",
+    "reguler-detail-legal-tanggal": "Tanggal",
+    "reguler-detail-legal-expired": "Masa Berlaku",
+    "reguler-detail-legal-issuer": "Instansi Penerbit",
+    "reguler-detail-fac-title": "Pabrik",
+    "reguler-detail-fac-nama": "Nama",
+    "reguler-detail-fac-alamat": "Alamat",
+    "reguler-detail-fac-status": "Status",
+    "reguler-detail-out-title": "Outlet",
+    "reguler-detail-out-nama": "Nama",
+    "reguler-detail-out-alamat": "Alamat",
+    "reguler-detail-out-status": "Status",
+    "reguler-detail-ph-title": "Penyelia Halal",
+    "reguler-detail-ph-nama": "Nama",
+    "reguler-detail-ph-ktp": "No KTP",
+    "reguler-detail-ph-telp": "No Kontak",
+    "reguler-detail-ph-sertif": "No/Tgl Sertif Penyelia Halal",
+    "reguler-detail-ph-sk": "No/Tgl SK",
+    "reguler-detail-produk-title": "Daftar Nama Produk",
+    "reguler-detail-produk-nama": "Nama Produk",
+    "reguler-detail-produk-publikasi": "Publikasi",
+    "reguler-form-head-back": "Kembali",
+    "reguler-form-head-title": "Ubah Data",
+    "reguler-form-head-cancel": "Batal",
+    "reguler-form-head-simpan": "Simpan Perubahan",
+    "reguler-form-head-datapengajuan": "Data Pengajuan",
+    "reguler-form-head-komitmen": "Komitmen Dan Tanggung Jawab",
+    "reguler-form-head-bahan": "Bahan",
+    "reguler-form-head-proses": "Proses",
+    "reguler-form-head-produk": "Produk",
+    "reguler-form-head-eval": "Pemantauan Dan Evaluasi",
+    "reguler-form-head-dokumen": "Dokumen",
+    "reguler-form--pengajuan-pengajuan-title": "Pengajuan Sertifikasi Halal",
+    "reguler-form--pengajuan-pengajuan-namapu": "Nama Perusahaan yang Tertera pada Sertifikat",
+    "reguler-form--pengajuan-pengajuan-nomohon": "Nomor Surat Permohonan",
+    "reguler-form--pengajuan-pengajuan-tglmohon": "Tanggal Surat Permohonan",
+    "reguler-form--pengajuan-pengajuan-jnslay": "Jenis Layanan",
+    "reguler-form--pengajuan-pengajuan-jnsprod": "Jenis Produk",
+    "reguler-form--pengajuan-pengajuan-merek": "Merek Dagang",
+    "reguler-form--pengajuan-pengajuan-marketing": "Area Pemasaran",
+    "reguler-form--pengajuan-pengajuan-lph": "LPH",
+    "reguler-form--pengajuan-pengajuan-jnspengajuan": "Jenis Pengajuan",
+    "reguler-form--pengajuan-pengajuan-jnsdaftar": "Jenis Pendaftaran",
+    "reguler-form--pengajuan-pengajuan-save": "Simpan",
+    "reguler-form--pengajuan-pic-title": "Penanggung Jawab",
+    "reguler-form--pengajuan-pic-nama": "Nama",
+    "reguler-form--pengajuan-pic-telp": "Nomor Kontak",
+    "reguler-form--pengajuan-pic-email": "Email",
+    "reguler-form--pengajuan-pic-save": "Simpan",
+    "reguler-form--pengajuan-legal-title": "Aspek Legal",
+    "reguler-form--pengajuan-legal-add": "Tambah",
+    "reguler-form--pengajuan-legal-jenis": "Jenis",
+    "reguler-form--pengajuan-legal-nodok": "No Dokumen",
+    "reguler-form--pengajuan-legal-tanggal": "Tanggal",
+    "reguler-form--pengajuan-legal-expired": "Masa Berlaku",
+    "reguler-form--pengajuan-legal-issuer": "Instansi Penerbit",
+    "reguler-form--pengajuan-legal-action": "Aksi",
+    "reguler-form--pengajuan-legal-popup-title": "Tambah Data Aspek Legal",
+    "reguler-form--pengajuan-legal-popup-jenis": "Jenis Dokumen",
+    "reguler-form--pengajuan-legal-popup-nodok": "No Dokumen",
+    "reguler-form--pengajuan-legal-popup-tanggal": "Tanggal Dokumen",
+    "reguler-form--pengajuan-legal-popup-expired": "Masa Berlaku",
+    "reguler-form--pengajuan-legal-popup-issuer": "Instansi Penerbit",
+    "reguler-form--pengajuan-legal-popup-cancel": "Batal",
+    "reguler-form--pengajuan-legal-popup-add": "Tambah",
+    "reguler-form--pengajuan-fac-title": "Pabrik",
+    "reguler-form--pengajuan-fac-add": "Tambah",
+    "reguler-form--pengajuan-fac-nama": "Nama",
+    "reguler-form--pengajuan-fac-alamat": "Alamat",
+    "reguler-form--pengajuan-fac-status": "Status",
+    "reguler-form--pengajuan-fac-action": "Aksi",
+    "reguler-form--pengajuan-fac-popup-title": "Tambah Data Pabrik",
+    "reguler-form--pengajuan-fac-popup-nama": "Nama",
+    "reguler-form--pengajuan-fac-popup-alamat": "Alamat",
+    "reguler-form--pengajuan-fac-popup-status": "Status",
+    "reguler-form--pengajuan-fac-popup-action": "Aksi",
+    "reguler-form--pengajuan-fac-popup-add": "Tambah",
+    "reguler-form--pengajuan-fac-popup-cancel": "Batal",
+    "reguler-form--pengajuan-out-title": "Outlet",
+    "reguler-form--pengajuan-out-add": "Tambah",
+    "reguler-form--pengajuan-out-nama": "Nama",
+    "reguler-form--pengajuan-out-alamat": "Alamat",
+    "reguler-form--pengajuan-out-status": "Status",
+    "reguler-form--pengajuan-out-action": "Aksi",
+    "reguler-form--pengajuan-out-popup-title": "Tambah Data Outlet",
+    "reguler-form--pengajuan-out-popup-nama": "Nama",
+    "reguler-form--pengajuan-out-popup-alamat": "Alamat",
+    "reguler-form--pengajuan-out-popup-status": "Status",
+    "reguler-form--pengajuan-out-popup-action": "Aksi",
+    "reguler-form--pengajuan-out-popup-add": "Tambah",
+    "reguler-form--pengajuan-out-popup-cancel": "Batal",
+    "reguler-form--pengajuan-ph-title": "Penyelia Halal",
+    "reguler-form--pengajuan-ph-add": "Tambah",
+    "reguler-form--pengajuan-ph-nama": "Nama",
+    "reguler-form--pengajuan-ph-downloadskph": "Unduh SKPH",
+    "reguler-form--pengajuan-ph-downloadspph": "Unduh SPPH",
+    "reguler-form--pengajuan-ph-downloadktp": "Unduh KTP",
+    "reguler-form--pengajuan-ph-ktp": "No KTP",
+    "reguler-form--pengajuan-ph-telp": "No Kontak",
+    "reguler-form--pengajuan-ph-sertif": "No/Tgl Sertif Penyelia Halal",
+    "reguler-form--pengajuan-ph-sk": "No/Tgl SK",
+    "reguler-form--pengajuan-ph-popup-title": "Tambah Data Penyelia Halal",
+    "reguler-form--pengajuan-ph-popup-nama": "Nama",
+    "reguler-form--pengajuan-ph-popup-ktp": "No KTP",
+    "reguler-form--pengajuan-ph-popup-agama": "Agama",
+    "reguler-form--pengajuan-ph-popup-sertif": "No/Tgl Sertif Penyelia Halal",
+    "reguler-form--pengajuan-ph-popup-action": "Aksi",
+    "reguler-form--pengajuan-ph-popup-add": "Tambah",
+    "reguler-form--pengajuan-ph-popup-cancel": "Batal"
+  },
+  "reguler-invoice": {
+    "invoice-list-back": "Kembali",
+    "invoice-list-title": "Tagihan",
+    "invoice-list-subtitle": "Daftar Tagihan",
+    "invoice-list-donwloadstep": "Unduh Cara Bayar",
+    "invoice-list-filter": "Filter",
+    "invoice-list-cari": "Cari",
+    "invoice-list-nobayar": "No Pembayaran",
+    "invoice-list-noinv": "No Tagihan",
+    "invoice-list-notagihan": "Tanggal Tagihan",
+    "invoice-list-noref": "No Ref",
+    "invoice-list-namapu": "Nama PU",
+    "invoice-list-jnstrans": "Jenis Transaksi",
+    "invoice-list-jatuhtempo": "Jatuh Tempo",
+    "invoice-list-jmltagihan": "Jumlah Tagihan",
+    "invoice-list-status": "Status",
+    "invoice-list-catatan": "Catatan",
+    "invoice-list-action": "Aksi",
+    "invoice-list-search-status": "Status",
+    "invoice-list-search-duedate": "Tanggal Jatuh Tempo",
+    "invoice-list-action-downloadinv": "Lihat Invoice"
+  },
+  "shln-invoice": {
+    "invoice-list-title": "Tagihan",
+    "invoice-list-subtitle": "Daftar Tagihan",
+    "invoice-list-cari": "Cari Data",
+    "invoice-list-downloadpaymentinst": "Unduh Cara Bayar",
+    "invoice-list-noinv": "No Invoice",
+    "invoice-list-tglinv": "Tanggal Invoice",
+    "invoice-list-noreg": "No Daftar",
+    "invoice-list-nova": "No VA",
+    "invoice-list-importir": "Nama Importir",
+    "invoice-list-duedate": "Tanggal Jatuh Tempo",
+    "invoice-list-amount": "Jumlah",
+    "invoice-list-status": "Status",
+    "invoice-list-invfile": "File Invoice"
+  }
 }
