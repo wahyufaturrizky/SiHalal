@@ -50,7 +50,7 @@ const profilData = [
     value:
       props.profileData?.asal_usaha == "Dalam Negeri"
         ? "Indonesia"
-        : props.profileData?.country_name,
+        : props.profileData?.negara,
   },
   {
     id: 7,
