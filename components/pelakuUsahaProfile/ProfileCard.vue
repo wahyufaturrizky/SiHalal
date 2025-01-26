@@ -37,7 +37,7 @@ const profilData = [
     value:
       props.profileData?.asal_usaha == "Dalam Negeri"
         ? "Indonesia"
-        : props.profileData?.country_name,
+        : props.profileData?.negara,
   },
   { id: 7, field: "Telepon", value: props.profileData?.phone || "-" },
   { id: 8, field: "Email", value: props.profileData?.email || "-" },
