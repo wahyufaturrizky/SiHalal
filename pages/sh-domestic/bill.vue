@@ -69,7 +69,12 @@ const headers = [
     key: "catatan",
     nowrap: true,
   },
-  { title: `${t("reguler-invoice.invoice-list-action")}`,, value: "action", sortable: false, nowrap: true },
+  {
+    title: `${t("reguler-invoice.invoice-list-action")}`,
+    value: "action",
+    sortable: false,
+    nowrap: true,
+  },
 ];
 
 const { mdAndUp } = useDisplay();
