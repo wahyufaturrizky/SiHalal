@@ -62,7 +62,7 @@ const form = ref({
   negara:
     props.profileData?.asal_usaha == "Dalam Negeri"
       ? "Indonesia"
-      : props.profileData?.country_name || "-",
+      : props.profileData?.negara || "-",
   phone: props.profileData?.phone || "-",
   email: props.profileData?.email || "-",
   jenis_badan_usaha: convertJnbus(props.profileData?.jenis_badan_usaha) || "-",
