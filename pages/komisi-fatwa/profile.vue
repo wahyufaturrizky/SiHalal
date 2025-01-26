@@ -11,6 +11,7 @@ const profileData = reactive({
   kd_kab: "",
   kota: "",
   kd_kec: "",
+  kecamatan: "",
   wilayah_id: "",
   email: "",
   // Data -> Penanggung Jawab
@@ -40,6 +41,17 @@ const profileData = reactive({
   },
 });
 
+const getSubDistrict = async (kode: string) => {
+  const response = await $api("/master/subdistrict", {
+    method: "post",
+    body: {
+      district: kode,
+    },
+  } as any);
+  profileData.kecamatan = (response as any[]).filter((item: any) => {
+    return item.code === profileData.kd_kec;
+  })[0]?.name;
+};
 const handleLoadProfile = async () => {
   try {
     const response: any = await $api("/komisi-fatwa/profile", {
@@ -47,6 +59,9 @@ const handleLoadProfile = async () => {
     } as any);
     if (response.code === 2000) {
       Object.assign(profileData, response.data);
+      if (profileData.kd_kec && profileData.kd_kab) {
+        getSubDistrict(profileData.kd_kab);
+      }
     }
   } catch (error) {
     console.error(error);
@@ -140,7 +155,7 @@ onMounted(() => {
             <VCol cols="9" class="d-flex">
               <span class="me-2">:</span>
               <span>{{
-                profileData.wilayah_id ? profileData.wilayah_id : "-"
+                profileData.kecamatan ? profileData.kecamatan : "-"
               }}</span>
             </VCol>
           </VRow>

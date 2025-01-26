@@ -41,6 +41,34 @@ const profileData = reactive({
   },
 });
 
+const provinceList = ref();
+const districtList = ref();
+const subDistrictList = ref();
+const getProvince = async () => {
+  const response = await $api("/master/province", {
+    method: "get",
+  } as any);
+  provinceList.value = response;
+};
+const getDistrict = async (kode: string) => {
+  const response = await $api("/master/district", {
+    method: "post",
+    body: {
+      province: kode,
+    },
+  } as any);
+  districtList.value = response;
+};
+const getSubDistrict = async (kode: string) => {
+  const response = await $api("/master/subdistrict", {
+    method: "post",
+    body: {
+      district: kode,
+    },
+  } as any);
+  subDistrictList.value = response;
+};
+
 const handleLoadProfile = async () => {
   try {
     const response: any = await $api("/komisi-fatwa/profile", {
@@ -48,6 +76,15 @@ const handleLoadProfile = async () => {
     } as any);
     if (response.code === 2000) {
       Object.assign(profileData, response.data);
+      if (profileData.jenis == "") profileData.jenis = null;
+      if (profileData.kd_prov == "") profileData.kd_prov = null;
+      if (profileData.kd_kab == "") profileData.kd_kab = null;
+      if (profileData.kd_kec == "") profileData.kd_kec = null;
+
+      if (profileData.kd_prov && profileData.kd_prov != "00") {
+        await getDistrict(profileData.kd_prov);
+      }
+      if (profileData.kd_kab) await getSubDistrict(profileData.kd_kab);
     }
   } catch (error) {
     console.error(error);
@@ -154,10 +191,10 @@ const updatePayload: Record<string, any> = {
   jenis: profileData.jenis,
   alamat: profileData.alamat,
   provinsi: profileData.provinsi,
-  kd_prov: profileData.kd_prov,
   kota: profileData.kota,
-  kd_kab: profileData.kd_kab,
   wilayah_id: profileData.wilayah_id,
+  kd_prov: profileData.kd_prov,
+  kd_kab: profileData.kd_kab,
   kd_kec: profileData.kd_kec,
   email: profileData.email,
   nama_pimpinan: profileData.nama_pimpinan,
@@ -206,8 +243,9 @@ const handleConfirmUpdate = async () => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
   handleLoadProfile();
+  getProvince();
 });
 </script>
 
@@ -263,8 +301,9 @@ onMounted(() => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">Nama Lembaga</h4>
               <VTextField
-                v-model="profileData.nama_mui"
                 placeholder="Isi nama lembaga"
+                :rules="[requiredValidator]"
+                v-model="profileData.nama_mui"
                 density="compact"
                 rounded="xl"
               />
@@ -274,8 +313,9 @@ onMounted(() => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">Jenis Lembaga</h4>
               <VSelect
-                v-model="profileData.jenis"
                 placeholder="Pilih jenis lembaga"
+                :rules="[requiredValidator]"
+                v-model="profileData.jenis"
                 density="compact"
                 rounded="xl"
                 menu-icon="fa-chevron-down"
@@ -286,8 +326,9 @@ onMounted(() => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">Alamat</h4>
               <VTextField
-                v-model="profileData.alamat"
                 placeholder="Isi alamat"
+                :rules="[requiredValidator]"
+                v-model="profileData.alamat"
                 density="compact"
                 rounded="xl"
               />
@@ -297,8 +338,13 @@ onMounted(() => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">Provinsi</h4>
               <VSelect
-                v-model="profileData.provinsi"
                 placeholder="Pilih provinsi"
+                :rules="[requiredValidator]"
+                v-model="profileData.kd_prov"
+                @update:model-value="getDistrict"
+                :items="provinceList"
+                item-title="name"
+                item-value="code"
                 density="compact"
                 rounded="xl"
                 menu-icon="fa-chevron-down"
@@ -309,8 +355,13 @@ onMounted(() => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">Kota/Kab</h4>
               <VSelect
-                v-model="profileData.kota"
                 placeholder="Pilih kota/kabupaten"
+                :rules="[requiredValidator]"
+                v-model="profileData.kd_kab"
+                @update:model-value="getSubDistrict"
+                :items="districtList"
+                item-title="name"
+                item-value="code"
                 density="compact"
                 rounded="xl"
                 menu-icon="fa-chevron-down"
@@ -321,8 +372,12 @@ onMounted(() => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">Kecamatan</h4>
               <VSelect
-                v-model="profileData.wilayah_id"
                 placeholder="Pilih kecamatan"
+                :rules="[requiredValidator]"
+                v-model="profileData.kd_kec"
+                :items="subDistrictList"
+                item-title="name"
+                item-value="code"
                 density="compact"
                 rounded="xl"
                 menu-icon="fa-chevron-down"
@@ -333,8 +388,9 @@ onMounted(() => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">Email</h4>
               <VTextField
-                v-model="profileData.email"
                 placeholder="Isi email"
+                :rules="[requiredValidator]"
+                v-model="profileData.email"
                 density="compact"
                 rounded="xl"
               />
@@ -353,8 +409,9 @@ onMounted(() => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">Nama Pimpinan</h4>
               <VTextField
-                v-model="profileData.nama_pimpinan"
                 placeholder="Isi nama pimpinan"
+                :rules="[requiredValidator]"
+                v-model="profileData.nama_pimpinan"
                 density="compact"
                 rounded="xl"
               />
@@ -362,8 +419,9 @@ onMounted(() => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">No. HP</h4>
               <VTextField
-                v-model="profileData.no_hp_pimpinan"
                 placeholder="Isi no. HP"
+                :rules="[requiredValidator]"
+                v-model="profileData.no_hp_pimpinan"
                 density="compact"
                 rounded="xl"
               />
@@ -383,8 +441,9 @@ onMounted(() => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">Nama Sekretaris</h4>
               <VTextField
-                v-model="profileData.nama_sekretaris"
                 placeholder="Isi nama sekretaris"
+                :rules="[requiredValidator]"
+                v-model="profileData.nama_sekretaris"
                 density="compact"
                 rounded="xl"
               />
@@ -392,8 +451,9 @@ onMounted(() => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">No. HP</h4>
               <VTextField
-                v-model="profileData.no_hp_sekretaris"
                 placeholder="Isi no. HP"
+                :rules="[requiredValidator]"
+                v-model="profileData.no_hp_sekretaris"
                 density="compact"
                 rounded="xl"
               />
@@ -413,8 +473,9 @@ onMounted(() => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">Nama Ketua Bidang Fatwa</h4>
               <VTextField
-                v-model="profileData.nama_bidang_fatwa"
                 placeholder="Isi nama ketua bidang fatwa"
+                :rules="[requiredValidator]"
+                v-model="profileData.nama_bidang_fatwa"
                 density="compact"
                 rounded="xl"
               />
@@ -422,8 +483,9 @@ onMounted(() => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">No. HP</h4>
               <VTextField
-                v-model="profileData.no_hp_bidang_fatwa"
                 placeholder="Isi no. HP"
+                :rules="[requiredValidator]"
+                v-model="profileData.no_hp_bidang_fatwa"
                 density="compact"
                 rounded="xl"
               />
@@ -443,8 +505,9 @@ onMounted(() => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">Nama Kontak</h4>
               <VTextField
-                v-model="profileData.nama_kontak"
                 placeholder="Isi nama kontak"
+                :rules="[requiredValidator]"
+                v-model="profileData.nama_kontak"
                 density="compact"
                 rounded="xl"
               />
@@ -452,8 +515,9 @@ onMounted(() => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">No. HP</h4>
               <VTextField
-                v-model="profileData.no_hp_kontak"
                 placeholder="Isi no. HP"
+                :rules="[requiredValidator]"
+                v-model="profileData.no_hp_kontak"
                 density="compact"
                 rounded="xl"
               />
@@ -472,8 +536,9 @@ onMounted(() => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">Nama Bank</h4>
               <VTextField
-                v-model="profileData.rekening.bank"
                 placeholder="Isi nama bank"
+                :rules="[requiredValidator]"
+                v-model="profileData.rekening.bank"
                 density="compact"
                 rounded="xl"
               />
@@ -483,8 +548,9 @@ onMounted(() => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">No. Rekening</h4>
               <VTextField
-                v-model="profileData.rekening.no_rekening"
                 placeholder="Isi no. rekening"
+                :rules="[requiredValidator]"
+                v-model="profileData.rekening.no_rekening"
                 density="compact"
                 rounded="xl"
               />
@@ -494,8 +560,9 @@ onMounted(() => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">Atas Nama</h4>
               <VTextField
-                v-model="profileData.rekening.nama"
                 placeholder="Isi atas nama"
+                :rules="[requiredValidator]"
+                v-model="profileData.rekening.nama"
                 density="compact"
                 rounded="xl"
               />
@@ -516,8 +583,9 @@ onMounted(() => {
             <VCol cols="12">
               <h4 class="mb-1 font-weight-bold">NPWP</h4>
               <VTextField
-                v-model="profileData.rekening.npwp"
                 placeholder="Isi NPWP"
+                :rules="[requiredValidator]"
+                v-model="profileData.rekening.npwp"
                 density="compact"
                 rounded="xl"
               />
