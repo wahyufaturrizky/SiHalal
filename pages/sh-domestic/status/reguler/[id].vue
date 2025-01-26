@@ -345,7 +345,9 @@ onMounted(async () => {
                   class="px-2"
                   @click="
                     detailData?.certificate_halal.status == 'Terbit SH'
-                      ? downloadCert(id)
+                      ? downloadCert(
+                          detailData?.sertifikat_halal_info.nomor_sertifikat
+                        )
                       : null
                   "
                 >

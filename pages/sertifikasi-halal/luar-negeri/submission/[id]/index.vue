@@ -544,7 +544,7 @@ const timelineEvents = ref([
             <VBtn
               @click="
                 registration?.status_code == 'OF300'
-                  ? downloadCert(shlnId)
+                  ? downloadCert(item?.hcn.hcn_number)
                   : () => {}
               "
               target="_blank"
