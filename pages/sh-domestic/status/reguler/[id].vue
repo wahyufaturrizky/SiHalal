@@ -23,7 +23,11 @@ const assignAuditorHeader: any[] = [
 
 const aspectLegalHeader = [
   { title: "No.", key: "id_reg_legal", nowrap: true },
-  { title: "Jenis", key: "jenis_surat", nowrap: true },
+  {
+    title: ` ${t("status-permohoanan.reguler-detail-legal-jenis")}`,
+    key: "jenis_surat",
+    nowrap: true,
+  },
   { title: "No. Dokumen", key: "no_surat", nowrap: true },
   { title: "Tanggal", key: "tanggal_surat", nowrap: true },
   { title: "Masa Berlaku", key: "masa_berlaku", nowrap: true },
@@ -186,14 +190,14 @@ onMounted(async () => {
           </VExpansionPanel>
           <VExpansionPanel :value="1" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Penanggung Jawab
+              {{ t("status-permohoanan.reguler-detail-pic-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <InfoRow
                 cols-name="5"
                 cols-separator="1"
                 cols-value="6"
-                name="Nama"
+                :name="t(`status-permohoanan.reguler-detail-pic-nama`)"
               >
                 {{ detailData?.penanggung_jawab?.nama_pj || "-" }}
               </InfoRow>
@@ -201,7 +205,7 @@ onMounted(async () => {
                 cols-name="5"
                 cols-separator="1"
                 cols-value="6"
-                name="Nomor Kontak"
+                :name="t(`status-permohoanan.reguler-detail-pic-telp`)"
               >
                 {{ detailData?.penanggung_jawab?.nomor_kontak_pj || "-" }}
               </InfoRow>
@@ -209,7 +213,7 @@ onMounted(async () => {
                 cols-name="5"
                 cols-separator="1"
                 cols-value="6"
-                name="Email"
+                :name="t(`status-permohoanan.reguler-detail-pic-email`)"
               >
                 {{ detailData?.penanggung_jawab?.email_pj || "-" }}
               </InfoRow>
@@ -217,7 +221,7 @@ onMounted(async () => {
           </VExpansionPanel>
           <VExpansionPanel :value="2" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Aspek Legal
+              {{ t("status-permohoanan.reguler-detail-legal-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <TableSertifikasiHalal
@@ -436,7 +440,9 @@ onMounted(async () => {
                   </VRow>
                   <VRow>
                     <VCol cols="3">
-                      {{ detailData?.certificate_halal.fasilitator }}</VCol
+                      {{
+                        t("status-permohoanan.reguler-detail-reg-fasilitator")
+                      }}</VCol
                     >
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
@@ -444,7 +450,11 @@ onMounted(async () => {
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Kode Fasilitasi </VCol>
+                    <VCol cols="3">
+                      {{
+                        t("status-permohoanan.reguler-detail-reg-kodefas")
+                      }}</VCol
+                    >
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       {{ detailData?.certificate_halal.kode_fac }}
@@ -456,20 +466,26 @@ onMounted(async () => {
           </VExpansionPanel>
           <VExpansionPanel :value="2" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Sertifikat Halal
+              {{ t("status-permohoanan.reguler-detail-sh-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <div v-if="detailData?.sertifikat_halal_info">
                 <VContainer>
                   <VRow>
-                    <VCol cols="3"> Nomor Sertifikat </VCol>
+                    <VCol cols="3">
+                      {{ t("status-permohoanan.reguler-detail-sh-nosert") }}
+                    </VCol>
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       {{ detailData?.sertifikat_halal_info.nomor_sertifikat }}
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Tanggal Terbit </VCol>
+                    <VCol cols="3">
+                      {{
+                        t("status-permohoanan.reguler-detail-sh-tglsert")
+                      }}</VCol
+                    >
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8"
                       >{{
