@@ -270,7 +270,7 @@
     "btn-1": "Back",
     "btn-2": "Submit"
   },
-  "new-gov": {
+  "new-gov-data": {
     "title": "Business Owner Registration",
     "subtitle-1": "Personal Information",
     "sub1-attr-1": "Business Owner Name (As per ID Card)",
