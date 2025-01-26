@@ -9,6 +9,10 @@ const openedRightPanels = ref([0, 1, 2]);
 const loading = ref(false);
 const detailData = ref<any>(null);
 
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+
 const assignAuditorHeader: any[] = [
   { title: "No", key: "index" },
   { title: "Nama", key: "name" },
@@ -158,7 +162,7 @@ onMounted(async () => {
       <template #page-title>
         <VRow no-gutters>
           <VCol>
-            <h1>Detail Pengajuan Sertifikasi</h1>
+            <h1>{{ t("status-permohoanan.reguler-detail-header-title") }}</h1>
           </VCol>
         </VRow>
       </template>
@@ -171,7 +175,7 @@ onMounted(async () => {
         >
           <VExpansionPanel :value="0" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Pengajuan Sertifikasi Halal
+              {{ t("status-permohoanan.reguler-detail-pengajuan-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <PengajuanSertifikasiHalal
@@ -277,12 +281,12 @@ onMounted(async () => {
         >
           <VExpansionPanel :value="0" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Formulir Unduhan
+              {{ t("status-permohoanan.reguler-detail-form-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <InfoRowV2
                 class="d-flex align-center"
-                name="STTD"
+                :name="t(`status-permohoanan.reguler-detail-form-sttd`)"
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
@@ -302,7 +306,7 @@ onMounted(async () => {
               </InfoRowV2>
               <InfoRowV2
                 class="d-flex align-center"
-                name="Sertifikasi Halal"
+                :name="t(`status-permohoanan.reguler-detail-form-sh`)"
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
@@ -350,21 +354,25 @@ onMounted(async () => {
           </VExpansionPanel>
           <VExpansionPanel :value="1" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Pendaftaran
+              {{ t("status-permohoanan.reguler-detail-reg-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <div v-if="detailData?.certificate_halal">
                 <!-- <Pendaftaran :data="detailData?.certificate_halal" /> -->
                 <VContainer>
                   <VRow>
-                    <VCol cols="3"> Nomor Daftar </VCol>
+                    <VCol cols="3">
+                      {{ t("status-permohoanan.reguler-detail-reg-nodaftar") }}
+                    </VCol>
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       {{ detailData?.certificate_halal.no_daftar }}
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Tanggal </VCol>
+                    <VCol cols="3">
+                      {{ t("status-permohoanan.reguler-detail-reg-tanggal") }}
+                    </VCol>
                     <VCol cols="1"> : </VCol>
                     <VCol
                       cols="8"
@@ -378,28 +386,38 @@ onMounted(async () => {
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Jenis Daftar </VCol>
+                    <VCol cols="3">
+                      {{ t("status-permohoanan.reguler-detail-reg-jnsdaftar") }}
+                    </VCol>
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       {{ detailData?.certificate_halal.jenis_pengajuan }}
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Tempat Pendaftaran </VCol>
+                    <VCol cols="3">
+                      {{
+                        t("status-permohoanan.reguler-detail-reg-tempatdaftar")
+                      }}
+                    </VCol>
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       {{ detailData?.certificate_halal.tempat }}
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Channel Pendaftaran </VCol>
+                    <VCol cols="3">
+                      {{ t("status-permohoanan.reguler-detail-reg-channel") }}
+                    </VCol>
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       {{ detailData?.certificate_halal.channel }}
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Status </VCol>
+                    <VCol cols="3">
+                      {{ t("status-permohoanan.reguler-detail-reg-status") }}
+                    </VCol>
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       <VChip
@@ -417,7 +435,9 @@ onMounted(async () => {
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Fasilitator </VCol>
+                    <VCol cols="3">
+                      {{ detailData?.certificate_halal.fasilitator }}</VCol
+                    >
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       {{ detailData?.certificate_halal.fasilitator_name }}
@@ -747,21 +767,22 @@ onMounted(async () => {
     .v-expansion-panel--active:not(:first-child),
     .v-expansion-panel--active + .v-expansion-panel
   ) {
-  margin-top: 40px !important;
+  margin-block-start: 40px !important;
 }
 
 :deep(.v-data-table.auditor-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }

@@ -4,16 +4,36 @@ const loading = ref<boolean>(false);
 const page = ref<number>(1);
 const size = ref<number>(10);
 const searchQuery = ref<string>("");
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const tableHeader = [
   { title: "No", value: "no" },
   { title: "No. Daftar", value: "no_daftar" },
-  { title: "Tanggal", value: "tgl_daftar" },
-  { title: "Nama PU", value: "nama_pu" },
-  { title: "Jenis Daftar", value: "jenis_daftar" },
-  { title: "Jenis Produk", value: "jenis_produk" },
-  { title: "Status", value: "status" },
-  { title: "Action", value: "action" },
+  {
+    title: `${t("status-permohoanan.permohonan-list-tanggal")}`,
+    value: "tgl_daftar",
+  },
+  {
+    title: `${t("status-permohoanan.permohonan-list-namapu")}`,
+    value: "nama_pu",
+  },
+  {
+    title: `${t("status-permohoanan.permohonan-list-jnsdaftar")}`,
+    value: "jenis_daftar",
+  },
+  {
+    title: `${t("status-permohoanan.permohonan-list-jnsprod")}`,
+    value: "jenis_produk",
+  },
+  {
+    title: `${t("status-permohoanan.permohonan-list-status")}`,
+    value: "status",
+  },
+  {
+    title: `${t("status-permohoanan.permohonan-list-action")}`,
+    value: "action",
+  },
 ];
 
 const navigateToDetail = (item: any) => {
@@ -70,21 +90,25 @@ onMounted(async () => {
   </VRow> -->
   <VRow>
     <VCol cols="12">
-      <h1 style="font-size: 32px">Status Permohonan</h1>
+      <h1 style="font-size: 32px">
+        {{ t("status-permohoanan.permohonan-list-title") }}
+      </h1>
     </VCol>
   </VRow>
   <VRow>
     <VCol cols="12">
       <VCard>
         <VCardTitle>
-          <div class="text-h4 font-weight-bold">Data Pengajuan</div>
+          <div class="text-h4 font-weight-bold">
+            {{ t("status-permohoanan.permohonan-list-subtitle") }}
+          </div>
         </VCardTitle>
         <VCardItem>
           <VRow>
             <VCol cols="12">
               <VTextField
                 v-model="searchQuery"
-                placeholder="Cari data"
+                :placeholder="t(`status-permohoanan.permohonan-list-search`)"
                 density="compact"
                 append-inner-icon="ri-search-line"
                 style="max-inline-size: 100%"
@@ -107,7 +131,9 @@ onMounted(async () => {
                         src="~/assets/images/empty-data.png"
                         alt="empty_data"
                       />
-                      <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
+                      <div class="pt-2 pb-2 font-weight-bold">
+                        {{ t("status-permohoanan.permohonan-list-no-data") }}
+                      </div>
                     </div>
                   </div>
                 </template>
@@ -115,13 +141,13 @@ onMounted(async () => {
                   {{ index + 1 }}
                 </template>
                 <template #item.status="{ item }">
-                  <div style="min-width: 14rem !important">
+                  <div style="min-inline-size: 14rem !important">
                     <VChip
                       color="success"
                       text-color="white"
                       small
                       variant="outlined"
-                      style="margin-right: 1svw; background-color: #edf6ed"
+                      style="background-color: #edf6ed; margin-inline-end: 1svw"
                     >
                       {{ item?.jenis_usaha }}
                     </VChip>
@@ -130,7 +156,7 @@ onMounted(async () => {
                       text-color="white"
                       small
                       variant="outlined"
-                      style="margin-right: 1svw; background-color: #edf6ed"
+                      style="background-color: #edf6ed; margin-inline-end: 1svw"
                     >
                       {{ item?.jumlah_produk }}
                     </VChip>
@@ -139,37 +165,37 @@ onMounted(async () => {
                       text-color="white"
                       small
                       variant="outlined"
-                      style="margin-right: 1svw; background-color: #f0e9f1"
+                      style="background-color: #f0e9f1; margin-inline-end: 1svw"
                     >
                       {{ item.status }}
                     </VChip>
                   </div>
                 </template>
                 <template #item.jenis_produk="{ item }">
-                  <div style="min-width: 40rem !important">
+                  <div style="min-inline-size: 40rem !important">
                     {{ item.jenis_produk }}
                   </div>
                 </template>
                 <template #item.no_daftar="{ item }">
-                  <div style="min-width: 8rem !important">
+                  <div style="min-inline-size: 8rem !important">
                     {{ item.no_daftar }}
                   </div>
                 </template>
                 <template #item.tgl_daftar="{ item }">
                   <div
                     v-if="item?.tgl_daftar"
-                    style="min-width: 5rem !important"
+                    style="min-inline-size: 5rem !important"
                   >
                     {{ formatDateIntl(new Date(item.tgl_daftar)) }}
                   </div>
                 </template>
                 <template #item.nama_pu="{ item }">
-                  <div style="min-width: 8rem !important">
+                  <div style="min-inline-size: 8rem !important">
                     {{ item.nama_pu }}
                   </div>
                 </template>
                 <template #item.jenis_daftar="{ item }">
-                  <div style="min-width: 8rem !important">
+                  <div style="min-inline-size: 8rem !important">
                     {{ item.jenis_daftar }}
                   </div>
                 </template>

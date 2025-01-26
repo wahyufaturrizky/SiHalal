@@ -17,11 +17,14 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["confirmAdd", "cancelTx"]);
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 </script>
 
 <template>
   <ConfirmationDialog
-    parent-btn-label="Simpan Perubahan"
+    :parent-btn-label="t('detail-pu.pu-edit-save')"
     :card-width="500"
     title="Menyimpan perubahan"
     message="Apakah yakin ingin menyimpan data ini?"
