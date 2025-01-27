@@ -2,7 +2,9 @@
 <script setup lang="ts">
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const emit = defineEmits();
 
 const props = defineProps({
@@ -221,19 +223,19 @@ const lphValidation = async (title: string, value: string, index: number) => {
 const checkCodeFasilitas = async () => {
   try {
     const response: any = await $api("/reguler/pelaku-usaha/find-facility", {
-      method: 'get',
+      method: "get",
       query: { facCode: searchRegisType.value },
     });
 
     if (response) {
-      console.log(response.data)
-      messageFasilitator.value = response?.message
-      emit('complete', response?.data?.[0]?.id);
+      console.log(response.data);
+      messageFasilitator.value = response?.message;
+      emit("complete", response?.data?.[0]?.id);
 
-      return response
+      return response;
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
@@ -371,7 +373,10 @@ watchEffect(async () => {
           </div>
         </VCol>
         <VCol
-          v-if="props.data?.[9]?.value === 'CH002' || props?.data?.[9]?.value === 'Pendaftaran Melalui Fasilitasi'"
+          v-if="
+            props.data?.[9]?.value === 'CH002' ||
+            props?.data?.[9]?.value === 'Pendaftaran Melalui Fasilitasi'
+          "
           cols="12"
         >
           <label>Kode Daftar/Fasilitasi</label>
@@ -379,11 +384,11 @@ watchEffect(async () => {
             <VTextField
               v-model="searchRegisType"
               placeholder="masukkan kode fasilitas"
-              style="max-width: 10rem"
+              style="max-inline-size: 10rem"
             />
             <VBtn
               variant="outlined"
-              style="height: 45px"
+              style="block-size: 45px"
               @click="checkCodeFasilitas"
             >
               Cari Kode
@@ -407,7 +412,7 @@ watchEffect(async () => {
         variant="flat"
         @click="onSubmit"
       >
-        Simpan
+        {{ t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-save") }}
       </VBtn>
     </VCardText>
   </VCard>
@@ -418,6 +423,7 @@ watchEffect(async () => {
   color: red;
   font-size: 12px;
 }
+
 .btn-container {
   float: inline-end !important;
 }
