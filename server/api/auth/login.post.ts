@@ -12,10 +12,7 @@ export default defineEventHandler(async (event) => {
       },
     });
   }
-  console.log({
-    secret: runtimeConfig.recaptcha.secretKey,
-    response: token,
-  });
+  
   const recaptcha = await $fetch<any>(
     `https://www.google.com/recaptcha/api/siteverify`,
     {
@@ -26,13 +23,13 @@ export default defineEventHandler(async (event) => {
       },
     }
   ).catch((err: NuxtError) => {
+    console.log(recaptcha);
     throw createError({
       statusCode: 401,
       statusMessage: "captcha-failed",
       data: err.data,
     });
   });
-  console.log(recaptcha);
   if (!recaptcha.success) {
     throw createError({
       statusCode: 401,
