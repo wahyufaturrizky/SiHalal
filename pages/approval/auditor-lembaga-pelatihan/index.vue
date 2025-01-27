@@ -13,7 +13,7 @@ interface DataUser {
 const tableHeaders: any[] = [
   { title: 'No', key: 'no', sortable: false },
   { title: 'NIK', key: 'nik', nowrap: true },
-  { title: 'Nama', key: 'name', nowrap: true },
+  { title: 'Nama', key: 'nama', nowrap: true },
   { title: 'Angkatan', key: 'angkatan', nowrap: true },
   { title: 'Status', key: 'status', nowrap: true },
   { title: 'Sertifikat', key: 'actions', sortable: false, align: 'center' },
@@ -75,10 +75,6 @@ const getMasterLembaga = async () => {
 
     const response: any = await $api('/approval/lembaga', {
       method: 'get',
-      params: {
-        page: currentPage.value,
-        size: itemPerPage.value,
-      },
     } as any)
 
     if (response.code === 2000) {

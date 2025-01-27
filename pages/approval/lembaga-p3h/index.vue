@@ -12,12 +12,12 @@ interface DataUser {
 
 const tableHeaders: any[] = [
   { title: 'No', key: 'no', sortable: false },
-  { title: 'No. Registrasi', key: 'username', nowrap: true },
-  { title: 'NIK', key: 'name', nowrap: true },
-  { title: 'Nama Pendamping', key: 'email', nowrap: true },
-  { title: 'Tempat, Tanggal Lahir', key: 'phone_no', nowrap: true },
-  { title: 'LP3H Asal', key: 'is_verify', nowrap: true },
-  { title: 'LP3H Tujuan', key: 'roles', nowrap: true },
+  { title: 'No. Registrasi', key: 'no_surat', nowrap: true },
+  { title: 'NIK', key: 'nik', nowrap: true },
+  { title: 'Nama Pendamping', key: 'nama', nowrap: true },
+  { title: 'Tempat, Tanggal Lahir', key: 'ttl', nowrap: true },
+  { title: 'LP3H Asal', key: 'asal_lembaga', nowrap: true },
+  { title: 'LP3H Tujuan', key: 'tujuan_lembaga', nowrap: true },
   { title: 'Status', key: 'status', nowrap: true },
   { title: 'Action', key: 'actions', sortable: false, align: 'center' },
 ]
@@ -33,7 +33,7 @@ const searchQuery = ref('')
 
 const handleLoadList = async () => {
   try {
-    const response: any = await $api('/admin/users/list', {
+    const response: any = await $api('/approval/pindah-lembaga/list', {
       method: 'get',
       params: {
         page: currentPage.value,
@@ -206,7 +206,6 @@ const handleConfirmDelete = async () => {
               :items-length="totalItems"
               :loading="isLoading"
               :hide-default-footer="tableItems.length === 0"
-              show-select
             >
               <template #no-data>
                 <VCard
@@ -233,26 +232,8 @@ const handleConfirmDelete = async () => {
               <template #item.phone_no="{ item }">
                 {{ item.phone_no ? item.phone_no : "-" }}
               </template>
-              <template #item.is_verify="{ item }">
-                {{ item.is_verify ? "Yes" : "No" }}
-              </template>
-              <template #item.roles="{ item }">
-                <div v-if="item.roles.length">
-                  <div
-                    v-for="(el, idx) in item.roles"
-                    class="d-inline-block"
-                  >
-                    <div>
-                      <span
-                        v-if="idx != 0"
-                        class="mx-2"
-                      >|</span>{{ el.name }}
-                    </div>
-                  </div>
-                </div>
-                <div v-else>
-                  -
-                </div>
+              <template #item.ttl="{ item }">
+                {{ item.tempat_lahir }}, {{formatDateId(item.tgl_lahir)}}
               </template>
               <template #item.status="{ item }">
                 <div class="d-flex flex-wrap">
@@ -280,7 +261,7 @@ const handleConfirmDelete = async () => {
                     <Vbtn
                       variant="plain"
                       class="cursor-pointer"
-                      @click="() => navigateToDetail('1')"
+                      @click="() => navigateToDetail(item.id)"
                     >
                       <VRow>
                         <VCol sm="3">
@@ -294,11 +275,11 @@ const handleConfirmDelete = async () => {
                         </VCol>
                       </VRow>
                     </Vbtn>
-                    <DeleteApproval
+                    <!-- <DeleteApproval
                       :on-delete="() => null"
                       title="Hapus"
                       button-text="Hapus"
-                    />
+                    /> -->
                   </VList>
                 </VMenu>
               </template>
