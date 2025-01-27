@@ -3,27 +3,29 @@ import AspekLegalCard from "@/components/pelakuUsahaProfile/AspekLegalCard.vue";
 import PerizinanCard from "@/components/pelakuUsahaProfile/PerizinanCard.vue";
 import SubPelakuUsahaLayout from "@/layouts/subPelakuUsahaLayout.vue";
 import { pelakuUsahaProfile } from "@/stores/pelaku-usaha-profile";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const tablePabrikHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "name" },
-  { title: "Alamat", key: "address" },
-  { title: "Action", key: "action" },
+  { title: `${t("detail-pu.pu-title")}`, key: "name" },
+  { title: `${t("detail-pu.pu-fac-address")}`, key: "address" },
+  { title: `${t("detail-pu.pu-fac-action")}`, key: "action" },
 ];
 
 const tableOutletHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "name" },
-  { title: "Alamat", key: "address" },
+  { title: `${t("detail-pu.pu-out-nama")}`, key: "name" },
+  { title: `${t("detail-pu.pu-out-address")}`, key: "address" },
 ];
 
 const penyeliaHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "name" },
-  { title: "No. KTP", key: "ktp_no" },
-  { title: "No. Kontak", key: "no_kontak" },
-  { title: "No/Tgl Sertif Penyelia Halal", key: "certification_no" },
-  { title: "No/Tanggal SK", key: "sk_no" },
+  { title: `${t("detail-pu.pu-ph-nama")}`, key: "name" },
+  { title: `${t("detail-pu.pu-ph-ktp")}`, key: "ktp_no" },
+  { title: `${t("detail-pu.pu-ph-telp")}`, key: "no_kontak" },
+  { title: `${t("detail-pu.pu-ph-sertif")}`, key: "certification_no" },
+  { title: `${t("detail-pu.pu-ph-sk")}`, key: "sk_no" },
   // { title: "Action", key: "action" },
 ];
 // const { canAccess } = useMyAuthUserStore();
@@ -47,7 +49,7 @@ onMounted(() => {
     <template #pageTitle>
       <VRow align="center">
         <VCol>
-          <h2 style="font-size: 32px">Detail Pelaku Usaha</h2>
+          <h1 style="font-size: 32px">{{ t("detail-pu.pu-title") }}</h1>
         </VCol>
         <VCol style="display: flex; justify-content: end">
           <VBtn
@@ -56,7 +58,7 @@ onMounted(() => {
             prepend-icon=""
             @click="onEdit"
           >
-            Ubah
+            {{ t("detail-pu.pu-head-edit") }}
           </VBtn>
         </VCol>
       </VRow>
@@ -89,7 +91,11 @@ onMounted(() => {
         <VCol cols="12">
           <VExpansionPanels v-model="panelOpenPabrik">
             <VExpansionPanel>
-              <VExpansionPanelTitle><h2>Pabrik</h2></VExpansionPanelTitle>
+              <VExpansionPanelTitle>
+                <div class="text-h4 font-weight-bold">
+                  {{ t("detail-pu.pu-fac-title") }}
+                </div>
+              </VExpansionPanelTitle>
 
               <VExpansionPanelText>
                 <VDataTable
@@ -109,7 +115,11 @@ onMounted(() => {
         <VCol cols="12">
           <VExpansionPanels v-model="panelOpenOutlet">
             <VExpansionPanel>
-              <VExpansionPanelTitle><h2>Outlet</h2></VExpansionPanelTitle>
+              <VExpansionPanelTitle>
+                <div class="text-h4 font-weight-bold">
+                  {{ t("detail-pu.pu-out-title") }}
+                </div>
+              </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
                   :headers="tableOutletHeader"
@@ -129,7 +139,9 @@ onMounted(() => {
           <VExpansionPanels v-model="panelOpenPenyeliaHallal">
             <VExpansionPanel>
               <VExpansionPanelTitle>
-                <h2>Penyelia Halal</h2>
+                <div class="text-h4 font-weight-bold">
+                  {{ t("detail-pu.pu-ph-title") }}
+                </div>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable

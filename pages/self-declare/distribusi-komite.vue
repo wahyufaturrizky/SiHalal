@@ -278,7 +278,7 @@ onMounted(() => {
 <template>
   <VRow>
     <VCol>
-      <h2 style="font-size: 32px">Verifikasi Self Declare</h2>
+      <h1 style="font-size: 32px">Verifikasi Self Declare</h1>
     </VCol>
   </VRow>
   <br />
@@ -286,7 +286,7 @@ onMounted(() => {
     <VCardTitle class="mb-6 px-2">
       <VRow>
         <VCol cols="10">
-          <h3 class="font-weight-bold">Data Pengajuan</h3>
+          <div class="text-h4 font-weight-bold">Data Pengajuan</div>
         </VCol>
       </VRow>
     </VCardTitle>

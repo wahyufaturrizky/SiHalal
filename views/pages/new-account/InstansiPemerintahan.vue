@@ -1,14 +1,16 @@
 <template>
   <v-card-text>
-    <p class="text-h5 font-weight-bold">Pendaftaran Pelaku Usaha</p>
+    <p class="text-h5 font-weight-bold">{{ t("new-gov-data.title") }}</p>
     <v-form ref="governorForm" @submit.prevent="onSubmit">
       <VRow>
         <VCol cols="12" class="mb-0 pb-0">
-          <p class="text-h6 font-weight-bold">Informasi Pribadi</p>
+          <p class="text-h6 font-weight-bold">
+            {{ t("new-gov-data.subtitle-1") }}
+          </p>
         </VCol>
         <VCol cols="12" md="6">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Nama Pelaku Usaha (Sesuai KTP)
+            {{ t("new-gov-data.sub1-attr-1") }}
           </div>
           <VTextField
             v-model="formSubmit.business_actor_name"
@@ -19,7 +21,7 @@
         </VCol>
         <VCol cols="12" md="6">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Nomor KTP/NIK
+            {{ t("new-gov-data.sub1-attr-2") }}
           </div>
           <VTextField
             v-model="formSubmit.nik"
@@ -35,7 +37,7 @@
         </VCol>
         <VCol cols="12" md="6">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Nomor Telepon
+            {{ t("new-gov-data.sub1-attr-3") }}
           </div>
           <VTextField
             v-model="formSubmit.phone"
@@ -50,7 +52,7 @@
         </VCol>
         <VCol cols="12" md="6">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Email
+            {{ t("new-gov-data.sub1-attr-4") }}
           </div>
           <VTextField
             v-model="formSubmit.email"
@@ -61,7 +63,7 @@
         </VCol>
         <VCol cols="12">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Alamat (Sesuai KTP)
+            {{ t("new-gov-data.sub1-attr-5") }}
           </div>
           <VTextField
             v-model="formSubmit.address"
@@ -72,7 +74,7 @@
         </VCol>
         <VCol cols="12">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Provinsi
+            {{ t("new-gov-data.sub1-attr-6") }}
           </div>
           <VSelect
             :items="province"
@@ -87,7 +89,7 @@
         </VCol>
         <VCol cols="12">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Kabupaten/Kota
+            {{ t("new-gov-data.sub1-attr-7") }}
           </div>
           <VSelect
             :items="district"
@@ -102,7 +104,7 @@
         </VCol>
         <VCol cols="12">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Kecamatan
+            {{ t("new-gov-data.sub1-attr-8") }}
           </div>
           <VSelect
             v-model="formSubmit.sub_district_code"
@@ -116,7 +118,7 @@
         </VCol>
         <VCol cols="12">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Kelurahan/Desa
+            {{ t("new-gov-data.sub1-attr-9") }}
           </div>
           <VTextField
             v-model="formSubmit.village"
@@ -127,7 +129,7 @@
         </VCol>
         <VCol cols="12">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Kode Pos
+            {{ t("new-gov-data.sub1-attr-10") }}
           </div>
           <VTextField
             v-model="formSubmit.postal_code"
@@ -138,11 +140,13 @@
           />
         </VCol>
         <VCol cols="12" class="mb-0 pb-0">
-          <p class="text-h6 font-weight-bold">Informasi Badan Usaha</p>
+          <p class="text-h6 font-weight-bold">
+            {{ t("new-gov-data.subtitle-2") }}
+          </p>
         </VCol>
         <VCol cols="12">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Jenis Badan Usaha
+            {{ t("new-gov-data.sub2-attr-1") }}
           </div>
           <VSelect
             v-model="formSubmit.business_type"
@@ -156,7 +160,7 @@
         </VCol>
         <VCol cols="12">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Jenis Skala Usaha
+            {{ t("new-gov-data.sub2-attr-2") }}
           </div>
           <VSelect
             v-model="formSubmit.business_scale"
@@ -170,7 +174,7 @@
         </VCol>
         <VCol cols="12">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            Modal Usaha
+            {{ t("new-gov-data.sub2-attr-3") }}
           </div>
           <VTextField
             v-model="formSubmit.venture_capital"
@@ -182,7 +186,7 @@
         </VCol>
         <VCol cols="12">
           <div class="text-subtitle-1 font-weight-bold text-high-emphasis mb-1">
-            KBLI
+            {{ t("new-gov-data.sub2-attr-4") }}
           </div>
           <VSelect
             v-model="formSubmit.kbli"
@@ -197,7 +201,9 @@
       </VRow>
       <VRow class="flex-row-reverse">
         <VCol cols="12" md="auto">
-          <VBtn block type="submit" :disabled="buttonClicked"> Kirim </VBtn>
+          <VBtn block type="submit" :disabled="buttonClicked">
+            {{ t("new-gov-data.btn-2") }}
+          </VBtn>
         </VCol>
         <VCol cols="12" md="auto">
           <VBtn
@@ -206,7 +212,7 @@
             type="reset"
             @click="stepStore.goToStep(1)"
           >
-            Kembali
+            {{ t("new-gov-data.btn-1") }}
           </VBtn>
         </VCol>
       </VRow>
@@ -224,10 +230,12 @@ import type {
 } from "@/server/interface/master.iface";
 import { NewAccountGovernment } from "@/server/interface/new-account.iface";
 import onlyAcceptNumber from "@/utils/onlyAcceptNumber";
+import { useI18n } from "vue-i18n";
 import { VForm } from "vuetify/components";
 const stepStore = useMyNewAccountStepStore();
 
 const authUserStore = useMyAuthUserStore();
+const { t } = useI18n();
 
 const backToForm = () => {
   stepStore.goToStep(1);
@@ -348,5 +356,5 @@ const submitGovernor = async () => {
 </script>
 
 <style lang="scss">
-@use "@core/scss/template/pages/page-auth.scss";
+@use "@core/scss/template/pages/page-auth";
 </style>

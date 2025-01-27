@@ -112,14 +112,14 @@ const navigateAction = (id: string) => {
 
 <template>
   <div>
-    <h2 style="font-size: 32px">
+    <h1 style="font-size: 32px">
       Foreign Halal Certificate Registration Verification
-    </h2>
+    </h1>
     <br />
     <VCard class="pa-4">
       <VRow>
         <VCol>
-          <p class="text-h5">Submission List</p>
+          <div class="text-h4 font-weight-bold">Submission List</div>
         </VCol>
         <VCol class="d-flex justify-end align-center" cols="6" md="2">
           <VerificationDataTableSelectorVerificationSubmission

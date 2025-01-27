@@ -708,6 +708,28 @@
                   </template>
                 </VBtn>
               </InfoRowV2>
+              <InfoRowV2
+                class="d-flex align-center"
+                name="Download QR Label"
+                :style="{ fontWeight: '600' }"
+              >
+                <VBtn
+                  :color="
+                    registrationDetail.status == 'OF300' ? 'primary' : '#A09BA1'
+                  "
+                  density="compact"
+                  class="px-2"
+                  @click="
+                    registrationDetail.status == 'OF300'
+                      ? downloadCert(halalCertificateDetail.nomor_sertifikat)
+                      : null
+                  "
+                >
+                  <template #default>
+                    <VIcon icon="fa-download" />
+                  </template>
+                </VBtn>
+              </InfoRowV2>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>

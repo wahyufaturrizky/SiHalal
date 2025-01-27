@@ -98,13 +98,15 @@ onMounted(async () => {
     </VRow> -->
     <VRow>
       <VCol cols="12">
-        <h2 style="font-size: 32px">Tabel Daftar Ajuan</h2>
+        <h1 style="font-size: 32px">Tabel Daftar Ajuan</h1>
       </VCol>
     </VRow>
     <VRow>
       <VCol cols="12">
         <VCard>
-          <VCardTitle><h3>Data Pengajuan</h3></VCardTitle>
+          <VCardTitle>
+            <div class="text-h4 font-weight-bold">Data Pengajuan</div>
+          </VCardTitle>
           <VCardItem>
             <VRow>
               <VCol cols="12">

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { penanggungJawab } from "@/stores/interface/pelakuUsahaProfileIntf";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const panelOpen = ref(0);
 
 const props = defineProps({
@@ -21,7 +23,7 @@ const formData = ref({
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
       <VExpansionPanelTitle>
-        <h2>Penanggung Jawab</h2>
+        <h2>{{ t("detail-pu.pu-pj-title") }}b</h2>
       </VExpansionPanelTitle>
       <VExpansionPanelText>
         <VRow>

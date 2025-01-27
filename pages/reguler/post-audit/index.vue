@@ -183,7 +183,7 @@ onMounted(async () => {
   </div> -->
   <VRow no-gutters>
     <VCol>
-      <h2 style="font-size: 32px">Audit Data Pengajuan</h2>
+      <h1 style="font-size: 32px">Audit Data Pengajuan</h1>
     </VCol>
   </VRow>
   <br />
@@ -192,7 +192,7 @@ onMounted(async () => {
       <VCol>
         <VCard>
           <VCardTitle class="my-3 d-flex justify-space-between align-center">
-            <div class="font-weight-bold text-h4">Data Pemeriksaan Produk</div>
+            <div class="text-h4 font-weight-bold">Data Pemeriksaan Produk</div>
           </VCardTitle>
           <VCardText>
             <VRow class="mb-4">

@@ -115,12 +115,12 @@ const navigateAction = (id: string) => {
 
 <template>
   <div>
-    <h2 style="font-size: 32px">Tabel Pengajuan Proses Sidang</h2>
+    <h1 style="font-size: 32px">Tabel Pengajuan Proses Sidang</h1>
     <br />
     <VCard class="pa-4">
       <VRow v-if="!loadingAll">
         <VCol>
-          <p class="text-h5">Data Pengajuan</p>
+          <div class="text-h4 font-weight-bold">Data Pengajuan</div>
         </VCol>
       </VRow>
       <VRow v-if="!loadingAll">

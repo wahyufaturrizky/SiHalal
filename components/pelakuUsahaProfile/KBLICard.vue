@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const tableKBLIHeader = [
   { title: "No", key: "no_idx" },
-  { title: "No. KBLI", key: "No" },
-  { title: "Nama KBLI", key: "KBLI" },
-  { title: "Nama Usaha", key: "Name" },
-  { title: "Alamat", key: "Address" },
-  { title: "Modal Usaha", key: "BusinessCapital" },
+  { title: `${t("detail-pu.pu-kbli-no")}`, key: "No" },
+  { title: `${t("detail-pu.pu-kbli-nama")}`, key: "KBLI" },
+  { title: `${t("detail-pu.pu-kbli-namausaha")}`, key: "Name" },
+  { title: `${t("detail-pu.pu-kbli-address")}`, key: "Address" },
+  { title: `${t("detail-pu.pu-kbli-modal")}`, key: "BusinessCapital" },
 ];
 
 const panelOpen = ref(0);
@@ -31,7 +33,9 @@ onMounted(async () => {
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
-      <VExpansionPanelTitle><h2>KBLI</h2></VExpansionPanelTitle>
+      <VExpansionPanelTitle>
+        <div class="text-h4 font-weight-bold">KBLI</div>
+      </VExpansionPanelTitle>
       <VExpansionPanelText>
         <!-- Check if KBLI data exists -->
         <p v-if="!store.kbli || store.kbli.length === 0">No data</p>
@@ -58,10 +62,16 @@ onMounted(async () => {
                       <VCol cols="12">KBLI: {{ item.KBLI || "-" }} </VCol>
                     </VRow>
                     <VRow>
-                      <VCol cols="12">Nama KBLI: {{ item.Name || "-" }} </VCol>
+                      <VCol cols="12">
+                        {{ t("detail-pu.pu-kbli-nama") }}:
+                        {{ item.Name || "-" }}
+                      </VCol>
                     </VRow>
                     <VRow>
-                      <VCol cols="12">Alamat: {{ item.Address || "-" }} </VCol>
+                      <VCol cols="12">
+                        {{ t("detail-pu.pu-kbli-address") }}:
+                        {{ item.Address || "-" }}
+                      </VCol>
                     </VRow>
                   </div>
                 </div>
@@ -74,7 +84,10 @@ onMounted(async () => {
           <VCol cols="12">
             <VDialog max-width="800">
               <template #activator="{ props: openModal }">
-                <VBtn variant="outlined" style="width: 100%" v-bind="openModal"
+                <VBtn
+                  variant="outlined"
+                  style="inline-size: 100%"
+                  v-bind="openModal"
                   >Lihat Data</VBtn
                 >
               </template>
@@ -82,7 +95,11 @@ onMounted(async () => {
                 <VCard>
                   <VCardTitle style="padding: 3svh">
                     <VRow>
-                      <VCol cols="10"><h3>Lihat Data KBLI</h3></VCol>
+                      <VCol cols="10">
+                        <div class="text-h4 font-weight-bold">
+                          Lihat Data KBLI
+                        </div>
+                      </VCol>
                       <VCol cols="2" style="display: flex; justify-content: end"
                         ><VIcon
                           size="small"
