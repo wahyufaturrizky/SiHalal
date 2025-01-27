@@ -53,35 +53,83 @@ const aspectLegalHeader = [
 
 const factoryHeader = [
   { title: "No.", key: "no", nowrap: true },
-  { title: `${t("pengajuan-reguler.reguler-detail-fac-nama")}`,, key: "nama_pabrik", nowrap: true },
-  { title: `${t("pengajuan-reguler.reguler-detail-fac-alamat")}`, key: "alamat_pabrik", nowrap: true },
-  { title: `${t("pengajuan-reguler.reguler-detail-fac-status")}`, key: "status_milik", nowrap: true },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-fac-nama")}`,
+    key: "nama_pabrik",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-fac-alamat")}`,
+    key: "alamat_pabrik",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-fac-status")}`,
+    key: "status_milik",
+    nowrap: true,
+  },
 ];
 
 const outletHeader = [
   { title: "No.", key: "no", nowrap: true },
-  { title: `${t("pengajuan-reguler.reguler-detail-out-nama")}`, key: "nama_outlet", nowrap: true },
-  { title: `${t("pengajuan-reguler.reguler-detail-out-alamat")}`, key: "alamat_outlet", nowrap: true },
-  { title: `${t("pengajuan-reguler.reguler-detail-out-status")}`, key: "status_milik", nowrap: true },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-out-nama")}`,
+    key: "nama_outlet",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-out-alamat")}`,
+    key: "alamat_outlet",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-out-status")}`,
+    key: "status_milik",
+    nowrap: true,
+  },
 ];
 
 const produkHeader = [
   { title: "No.", key: "no", nowrap: true },
-  { title: `${t("pengajuan-reguler.reguler-detail-produk-nama")}`, key: "nama_produk", nowrap: true },
-  { title: `${t("pengajuan-reguler.reguler-detail-produk-publikasi")}`, key: "reg_publish", nowrap: true },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-produk-nama")}`,
+    key: "nama_produk",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-produk-publikasi")}`,
+    key: "reg_publish",
+    nowrap: true,
+  },
 ];
 
 const penyeliaHalalHeaders = [
   { title: "No.", key: "no", nowrap: true },
-  { title: `${t("pengajuan-reguler.reguler-detail-ph-nama")}`, key: "penyelia_nama", nowrap: true },
-  { title: `${t("pengajuan-reguler.reguler-detail-ph-ktp")}`, key: "no_ktp", nowrap: true },
-  { title: `${t("pengajuan-reguler.reguler-detail-ph-telp")}`, key: "no_kontak", nowrap: true },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-ph-nama")}`,
+    key: "penyelia_nama",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-ph-ktp")}`,
+    key: "no_ktp",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-ph-telp")}`,
+    key: "no_kontak",
+    nowrap: true,
+  },
   {
     title: `${t("pengajuan-reguler.reguler-detail-ph-sertif")}`,
     key: "tgl_penyelia_halal",
     nowrap: true,
   },
-  { title: `${t("pengajuan-reguler.reguler-detail-ph-sk")}`,, key: "tanggal_sk", nowrap: true },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-ph-sk")}`,
+    key: "tanggal_sk",
+    nowrap: true,
+  },
 ];
 
 const downloadForms = reactive({
