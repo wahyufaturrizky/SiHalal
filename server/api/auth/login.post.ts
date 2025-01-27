@@ -12,7 +12,8 @@ export default defineEventHandler(async (event) => {
       },
     });
   }
-  
+  console.log(runtimeConfig)
+
   const recaptcha = await $fetch<any>(
     `https://www.google.com/recaptcha/api/siteverify`,
     {
@@ -23,7 +24,7 @@ export default defineEventHandler(async (event) => {
       },
     }
   ).catch((err: NuxtError) => {
-    console.log(recaptcha);
+    console.log(err);
     throw createError({
       statusCode: 401,
       statusMessage: "captcha-failed",
@@ -46,6 +47,7 @@ export default defineEventHandler(async (event) => {
       body: JSON.stringify({ email, password }),
     }
   ).catch((err: NuxtError) => {
+    console.log("ini err", err)
     throw createError({
       statusCode: 401,
       statusMessage: "username or password wrong",
