@@ -18,7 +18,7 @@ export default defineEventHandler(async (event: any) => {
   const body: DraftBody = await readBody(event)
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/kepala-badan/list/juleha`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/kepala-badan/penyelia`,
     {
       method: 'post',
       headers: { Authorization: authorizationHeader },

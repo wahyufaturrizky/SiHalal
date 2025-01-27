@@ -103,7 +103,27 @@ onMounted(() => {
 })
 
 const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} Penyelia Disetujui`, 'success')
+  try {
+    const response: any = await $api(
+      '/approval/penyelia-lembaga/approve',
+      {
+        method: 'post',
+        body: selectedItem.value,
+      },
+    )
+
+    if (response.code !== 2000) {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      refresh()
+
+      return
+    }
+    useSnackbar().sendSnackbar(`${selectedItem.value.length} Penyelia Disetujui`, 'success')
+    refresh()
+  }
+  catch (err) {
+    console.log(err)
+  }
 }
 
 const getChipColor = (status: string) => {

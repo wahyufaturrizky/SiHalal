@@ -38,7 +38,7 @@ const handleLoadList = async () => {
       params: {
         page: currentPage.value,
         size: itemPerPage.value,
-        search: searchQuery.value,
+        keyword: searchQuery.value,
       },
     } as any)
 
@@ -248,40 +248,21 @@ const handleConfirmDelete = async () => {
                 </div>
               </template>
               <template #item.actions="{ item }">
-                <VMenu>
-                  <template #activator="{ props }">
-                    <VIcon
-                      v-bind="props"
-                      icon="fa-ellipsis-v"
-                      color="primary"
-                      @click="selectedUser = item.id"
-                    />
-                  </template>
-                  <VList>
-                    <Vbtn
-                      variant="plain"
-                      class="cursor-pointer"
-                      @click="() => navigateToDetail(item.id)"
-                    >
-                      <VRow>
-                        <VCol sm="3">
-                          <VIcon
-                            end
-                            icon="ri-arrow-right-line"
-                          />
-                        </VCol>
-                        <VCol>
-                          <label class="cursor-pointer">Lihat Detail</label>
-                        </VCol>
-                      </VRow>
-                    </Vbtn>
-                    <!-- <DeleteApproval
-                      :on-delete="() => null"
-                      title="Hapus"
-                      button-text="Hapus"
-                    /> -->
-                  </VList>
-                </VMenu>
+                <Vbtn
+                  variant="plain"
+                  class="cursor-pointer"
+                  @click="() => navigateToDetail(item.id)"
+                >
+                  <VRow>
+                    <VCol sm="3">
+                      <VIcon
+                        end
+                        icon="ri-arrow-right-line"
+                        color="primary"
+                      />
+                    </VCol>
+                  </VRow>
+                </Vbtn>
               </template>
             </VDataTableServer>
           </VCard>
