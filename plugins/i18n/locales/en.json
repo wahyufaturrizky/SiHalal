@@ -224,6 +224,34 @@
     "msg-err-password": "Incorrect password!",
     "msg-err-ishuman": "Please verify that you are not a robot"
   },
+  "register": {
+    "create": "Create Account",
+    "welcome-create": "Please create an account using the web feature",
+    "user-type": "User Type",
+    "select-type": "Select user type",
+    "name": "Name",
+    "place-name": "Enter Name",
+    "email": "Email",
+    "place-email": "Enter Email",
+    "phone": "Phone Number",
+    "place-phone": "Enter Phone Number",
+    "password": "Password",
+    "place-password": "Enter Password Confirmation",
+    "confrim-pasword": "Confirm Password",
+    "footer-register": "Already have an account?",
+    "footer-register-1": "Sign in here",
+    "connect": "Connected To",
+    "create-account": "Create Account"
+  },
+  "fogot-password": {
+    "forgot": "Forgot Password?",
+    "verify": "Verify your account via email",
+    "email": "Email",
+    "enter-email": "Enter Email",
+    "send-verif": "Send Verification via Email",
+    "resend": "Resend",
+    "back-login": "Back to Login Page"
+  },
   "new-account": {
     "asal-attr-1": "Select the Origin of the Business Entity",
     "asal-attr-2": "Overseas",

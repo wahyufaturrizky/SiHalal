@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { VForm, VTextField } from "vuetify/components"
+import { useI18n } from "vue-i18n";
+import type { VForm, VTextField } from "vuetify/components";
 
 const isVerified = ref(false);
 const inputDisabled = ref(false);
@@ -9,7 +10,7 @@ const countdownMount = ref(false);
 const emailSubmittedBtn = ref(false);
 const emailRef = ref<VTextField>();
 const emailError = ref(null);
-const disableButtonCountDown = 60000
+const disableButtonCountDown = 60000;
 
 const handleCountdownDone = () => {
   // console.log("countdown done");
@@ -24,7 +25,7 @@ const onClickEmailSubmit = () => {
   sendAgainDisabled.value = true;
   // countdownMount.value = true;
   submitEmail();
-  setTimeout(()=> sendAgainDisabled.value = false, disableButtonCountDown);
+  setTimeout(() => (sendAgainDisabled.value = false), disableButtonCountDown);
   // emailSubmittedBtn.value = true;
 };
 
@@ -33,7 +34,7 @@ const onClickSendAgain = () => {
   inputDisabled.value = true;
   sendAgainDisabled.value = true;
   submitEmail();
-  setTimeout(() => sendAgainDisabled.value = false, disableButtonCountDown);
+  setTimeout(() => (sendAgainDisabled.value = false), disableButtonCountDown);
 };
 
 const emit = defineEmits([
@@ -59,7 +60,7 @@ const emailRule = [
 const emailAddr = ref("");
 const result = ref<string | null>(null);
 const submitEmail = async () => {
-  emailError.value = null
+  emailError.value = null;
   try {
     if (emailAddr.value !== "") {
       const { data, error } = await useFetch("/api/auth/forgotinq", {
@@ -68,7 +69,7 @@ const submitEmail = async () => {
       });
 
       if (error.value) {
-        emailError.value = "Email tidak ditemukan"
+        emailError.value = "Email tidak ditemukan";
         throw error.value;
       }
       emit("emailSentSuccess", true);
@@ -83,17 +84,22 @@ const submitEmail = async () => {
     emailSubmittedBtn.value = true;
   }
 };
+
+const { t } = useI18n();
 </script>
 <template>
   <VForm>
     <VRow>
       <VCol>
         <VItemGroup>
-          <VLabel style="color: #2c222e" text="Email"></VLabel>
+          <VLabel
+            style="color: #2c222e"
+            :text="t(`fogot-password.emai`)"
+          ></VLabel>
           <VTextField
             class="placeholder-color label-color"
             type="email"
-            placeholder="Masukkan email"
+            :placeholder="t(`fogot-password.enter-email`)"
             base-color="#746D76"
             :rules="emailRule"
             v-model="emailAddr"
@@ -104,15 +110,15 @@ const submitEmail = async () => {
       </VCol>
     </VRow>
     <br />
-<!--    <VRow>-->
-<!--      <VCol>-->
-<!--        <CountdownTimer-->
-<!--          v-on:countdown-done="handleCountdownDone"-->
-<!--          v-if="countdownMount"-->
-<!--          :timer-start-in-second="60"-->
-<!--        ></CountdownTimer>-->
-<!--      </VCol>-->
-<!--    </VRow>-->
+    <!--    <VRow>-->
+    <!--      <VCol>-->
+    <!--        <CountdownTimer-->
+    <!--          v-on:countdown-done="handleCountdownDone"-->
+    <!--          v-if="countdownMount"-->
+    <!--          :timer-start-in-second="60"-->
+    <!--        ></CountdownTimer>-->
+    <!--      </VCol>-->
+    <!--    </VRow>-->
     <VRow>
       <VCol>
         <VBtn
@@ -120,21 +126,23 @@ const submitEmail = async () => {
           :disabled="submitDisabled"
           v-if="!emailSubmittedBtn"
           width="500"
-          >Kirim Verifikasi Lewat Email</VBtn
+          >{{ t(`fogot-password.send-verif`) }}</VBtn
         >
         <VBtn
           @click="onClickSendAgain"
           v-if="emailSubmittedBtn"
           :disabled="sendAgainDisabled"
           width="500"
-          >Kirim Ulang</VBtn
+          >{{ t(`fogot-password.resend`) }}</VBtn
         >
       </VCol>
     </VRow>
     <VRow>
       <VCol style="display: grid">
         <VBtn variant="text" prepend-icon="mdi-arrow-left"
-          ><NuxtLink to="/login">Kembali ke Halaman Login</NuxtLink></VBtn
+          ><NuxtLink to="/login">{{
+            t(`fogot-password.back-login`)
+          }}</NuxtLink></VBtn
         >
       </VCol>
     </VRow>
