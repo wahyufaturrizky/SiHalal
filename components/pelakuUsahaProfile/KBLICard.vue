@@ -88,7 +88,8 @@ onMounted(async () => {
                   variant="outlined"
                   style="inline-size: 100%"
                   v-bind="openModal"
-                  >Lihat Data</VBtn
+                >
+                  {{ t("detail-pu.pu-izin-act-detail") }}</VBtn
                 >
               </template>
               <template #default="{ isActive }">
@@ -97,7 +98,7 @@ onMounted(async () => {
                     <VRow>
                       <VCol cols="10">
                         <div class="text-h4 font-weight-bold">
-                          Lihat Data KBLI
+                          {{ t("detail-pu.pu-izin-act-detail") }} KBLI
                         </div>
                       </VCol>
                       <VCol cols="2" style="display: flex; justify-content: end"

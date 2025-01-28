@@ -4,10 +4,10 @@ import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 const tablePerizinanHeader = [
   { title: "No", key: "no" },
-  { title: `${t("detail-pu.pu-ipenerbitzin-penerbit")}`, key: "instansi" },
+  { title: `${t("detail-pu.pu-izin-penerbit")}`, key: "instansi" },
   { title: `${t("detail-pu.pu-izin-namaizin")}`, key: "nama_izin" },
-  { title: `${t("detail-pu.pu-izin-namaizin")}`, key: "no_izin" },
-  { title: `${t("detail-pu.pu-izin-nomor")}`, key: "tgl_izin" },
+  { title: `${t("detail-pu.pu-izin-nomor")}`, key: "no_izin" },
+  { title: `${t("detail-pu.pu-izin-date")}`, key: "tgl_izin" },
   { title: `${t("detail-pu.pu-izin-document")}`, key: "file_izin" },
   { title: `${t("detail-pu.pu-izin-document")}`, key: "file_izin_oss" },
 ];

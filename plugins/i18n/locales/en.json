@@ -205,13 +205,16 @@
     "title": "Halal Certificate Submission",
     "detail": "Check Submission Data"
   },
+  "validation": {
+    "fill": "This column is mandatory"
+  },
   "login": {
     "nav-1": "Need Help?",
     "nav-1-phone": "Phone",
     "header": "Welcome to",
     "subheader": "Log in to access the features on the SIHALAL website",
-    "email-attr": "Email",
-    "email-tip": "Enter your email",
+    "username-attr": "Username",
+    "username-tip": "Enter your username",
     "password-attr": "Password",
     "password-tip": "Enter your password",
     "action-forgot-password": "Forgot Password",
@@ -220,7 +223,7 @@
     "tip-1a": "Register here",
     "tip-2": "Connected To",
     "msg-err-login": "Login failed, please recheck the completeness of your data!",
-    "msg-err-email": "Email address not found.",
+    "msg-err-username": "Username address not found.",
     "msg-err-password": "Incorrect password!",
     "msg-err-ishuman": "Please verify that you are not a robot"
   },
@@ -369,6 +372,11 @@
     "pu-ph-telp": "Contact Number",
     "pu-ph-sertif": "Halal Supervisor Certification Number/Date",
     "pu-ph-sk": "Decree Number/Date (SK)",
+    "pu-izin-penerbit": "Issuer",
+    "pu-izin-namaizin": "License Name",
+    "pu-izin-nomor": "Number",
+    "pu-izin-date": "Date",
+    "pu-izin-document": "Document",
     "pu-kbli-no": "No KBLI",
     "pu-kbli-nama": "KBLI Name",
     "pu-kbli-namausaha": "Business Name",
@@ -377,7 +385,7 @@
     "pu-edit-title": "Edit Business Actor",
     "pu-edit-cancel": "Cancel",
     "pu-edit-save": "Save Changes",
-    "pu-edit-add": "Address",
+    "pu-edit-add": "Add",
     "pu-edit-sk": "Halal Supervisor Approintment Decree"
   },
   "status-permohoanan": {
@@ -659,7 +667,9 @@
     "reguler-form--pengajuan-ph-popup-sertif": "Supervisor Halal Certificate No/Date",
     "reguler-form--pengajuan-ph-popup-action": "Action",
     "reguler-form--pengajuan-ph-popup-add": "Add",
-    "reguler-form--pengajuan-ph-popup-cancel": "Cancel"
+    "reguler-form--pengajuan-ph-popup-cancel": "Cancel",
+    "reguler-form--pengajuan-doc-permission-circulation": "Circulation License",
+    "reguler-form--pengajuan-doc-permission": "Permission to enter"
   },
   "reguler-invoice": {
     "invoice-list-back": "Back",

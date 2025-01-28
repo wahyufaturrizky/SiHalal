@@ -51,7 +51,7 @@ const { t } = useI18n();
 <template>
   <div class="mb-2">
     <VBtn @click="openDialog" variant="flat">
-      {{ t("pengajuan-reguler.reguler-btn-ajukan") }}
+      {{ t("pengajuan-reguler.reguler-list-btn-ajukan") }}
     </VBtn>
     <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
