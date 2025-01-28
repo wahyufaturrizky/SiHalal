@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ForgotPassLayout from "@/layouts/forgotPassLayout.vue";
 import HelpButton from "@/views/pages/HelpButton.vue";
+import { useI18n } from "vue-i18n";
 definePageMeta({
   layout: "blank",
   unauthenticatedOnly: true,
@@ -19,6 +20,8 @@ const emailFailEmitted = (val: boolean) => {
 const emailAddrEmitted = (val: string) => {
   newEmailAddr.value = val;
 };
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -40,15 +43,15 @@ const emailAddrEmitted = (val: string) => {
         </VCol>
       </VRow>
       <br />
-      <h2 style="color: #2c222e">Lupa Kata Sandi?</h2>
-      <span style="color: #746d76">Verifikasi akun kamu melalui email</span>
+      <h2 style="color: #2c222e">{{ t("fogot-password.forgot") }}</h2>
+      <span style="color: #746d76">{{ t("fogot-password.verify") }}</span>
     </template>
-    <template #formSlot
-      ><EmailForm
+    <template #formSlot>
+      <EmailForm
         @emailAddrSent="emailAddrEmitted"
         @emailSentFailed="emailFailEmitted"
         @emailSentSuccess="emailSuccessEmitted"
-      ></EmailForm
-    ></template>
+      ></EmailForm>
+    </template>
   </ForgotPassLayout>
 </template>

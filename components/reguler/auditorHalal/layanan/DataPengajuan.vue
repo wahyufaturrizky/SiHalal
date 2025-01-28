@@ -81,10 +81,33 @@ const listFactory = ref<any>({
 const listOutlet = ref<any>({
   label: [
     { title: "No.", key: "no", nowrap: true },
-    { title: "Nama", key: "nama", nowrap: true },
-    { title: "Alamat", key: "alamat", nowrap: true },
-    { title: "Status", key: "status_milik", nowrap: true },
-    { title: "Action", key: "publication", sortable: false, nowrap: true },
+    {
+      title: `${t("pengajuan-reguler.reguler-form--pengajuan-out-popup-nama")}`,
+      key: "nama",
+      nowrap: true,
+    },
+    {
+      title: `${t(
+        "pengajuan-reguler.reguler-form--pengajuan-out-popup-alamat"
+      )}`,
+      key: "alamat",
+      nowrap: true,
+    },
+    {
+      title: `${t(
+        "pengajuan-reguler.reguler-form--pengajuan-out-popup-status"
+      )}`,
+      key: "status_milik",
+      nowrap: true,
+    },
+    {
+      title: `${t(
+        "pengajuan-reguler.reguler-form--pengajuan-out-popup-action"
+      )}`,
+      key: "publication",
+      sortable: false,
+      nowrap: true,
+    },
   ],
   value: props?.list_outlet || [],
 });

@@ -224,6 +224,36 @@
     "msg-err-password": "Kata sandi tidak tepat!",
     "msg-err-ishuman": "Silakan verifikasi bahwa Anda bukan robot."
   },
+  "register": {
+    "create": "Buat Akun",
+    "welcome-create": "Silahkan buat akun menggunakan fitur web",
+    "user-type": "Tipe Pengguna",
+    "select-type": "Pilih tipe pengguna",
+    "name": "Nama",
+    "place-name": "Masukan Nama",
+    "email": "Email",
+    "place-email": "Masukan Email",
+    "phone": "Nomor Handphone",
+    "place-phone": "Masukan Nomor Handphone",
+    "password": "Kata Sandi",
+    "place-password": "Masukan konfirmasi kata sandi",
+    "confrim-pasword": "Konfirmasi Kata Sandi",
+    "footer-register": "Sudah punya akun?",
+    "footer-register-1": "Masuk di sini",
+    "connect": "Terhubung Ke",
+    "create-account": "Buat Akun"
+  },
+  "fogot-password": {
+    "forgot": "Lupa Kata Sandi?",
+    "verify": "Verifikasi akun kamu melalui email",
+    "email": "Email",
+    "enter-email": "Masukan Email",
+    "send-verif": "Kirim Verifikasi Lewat Email",
+    "resend": "Kirim Ulang",
+    "back-login": "Kembali Kehalaman Login",
+    "validasi-format": "Format email tidak sesuai",
+    "validasi-not-found": "Email tidak ditemukan"
+  },
   "new-account": {
     "asal-attr-1": "Pilih Asal Pelaku Usaha",
     "asal-attr-2": "Luar Negeri",
