@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { VForm } from "vuetify/components";
 
+const predictKBLIMessage = ref("");
+const loadingPredictKBLI = ref(false);
+
 const props = defineProps<{
   dialogVisible: boolean;
   dialogTitle: string;
@@ -154,6 +157,39 @@ const uploadDocument = async (file: any) => {
   }
 };
 
+const predictKBLI = async (product: any) => {
+  try {
+    loadingPredictKBLI.value = true;
+    const response: any = await $api(
+      "/machine-learning/registration/mlclient/predict-kbli",
+      {
+        method: "post",
+        body: {
+          CREATE_MLCLIENT: {
+            Name: product,
+          },
+        },
+      }
+    );
+
+    if (response) {
+      predictKBLIMessage.value = response.CREATE_MLCLIENT.predictkbli;
+      loadingPredictKBLI.value = false;
+
+      return response;
+    }
+  } catch (error) {
+    loadingPredictKBLI.value = false;
+    useSnackbar().sendSnackbar("ada kesalahan!", "error");
+  }
+};
+
+const debouncedFetch: any = debounce(predictKBLI, 500);
+
+const handleInput = () => {
+  debouncedFetch((formData as any).value?.nama_produk);
+};
+
 const formUbahProduk = ref<VForm>();
 
 const handleSubmit = () => {
@@ -222,6 +258,9 @@ onMounted(async () => {
               placeholder="Isi Nama Produk"
               v-model="formData.nama_produk"
               :rules="[requiredValidator]"
+              @input="handleInput"
+              :loading="loadingPredictKBLI"
+              :hint="predictKBLIMessage"
             ></VTextField>
           </VItemGroup>
           <br />
