@@ -390,7 +390,7 @@ watch(loaFile, (newValue, oldValue) => {
           mra.halal_institution_name
         }}</InfoRow>
         <InfoRow name="Validity Period">{{
-          dateddmmyyy(new Date(mra.expired_date))
+          mra.expired_date != "" ? dateddmmyyy(new Date(mra.expired_date)) : "-"
         }}</InfoRow>
         <InfoRow name="Country">{{ mra.country }}</InfoRow>
       </ExpandCard>
