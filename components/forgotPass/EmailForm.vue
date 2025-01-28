@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 import type { VForm, VTextField } from "vuetify/components";
-
+const { t } = useI18n();
 const isVerified = ref(false);
 const inputDisabled = ref(false);
 const submitDisabled = ref(true);
@@ -52,7 +52,7 @@ const emailRule = [
       submitDisabled.value = false;
       return true;
     }
-    return "Format email tidak sesuai";
+    return t("fogot-password.validasi-format");
   },
   (v: string) => !!v || "This field is required",
 ];
@@ -69,7 +69,7 @@ const submitEmail = async () => {
       });
 
       if (error.value) {
-        emailError.value = "Email tidak ditemukan";
+        emailError.value = t("fogot-password.validasi-not-found");
         throw error.value;
       }
       emit("emailSentSuccess", true);
@@ -84,8 +84,6 @@ const submitEmail = async () => {
     emailSubmittedBtn.value = true;
   }
 };
-
-const { t } = useI18n();
 </script>
 <template>
   <VForm>
@@ -94,7 +92,7 @@ const { t } = useI18n();
         <VItemGroup>
           <VLabel
             style="color: #2c222e"
-            :text="t(`fogot-password.emai`)"
+            :text="t(`fogot-password.email`)"
           ></VLabel>
           <VTextField
             class="placeholder-color label-color"

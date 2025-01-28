@@ -250,7 +250,9 @@
     "enter-email": "Masukan Email",
     "send-verif": "Kirim Verifikasi Lewat Email",
     "resend": "Kirim Ulang",
-    "back-login": "Kembali Kehalaman Login"
+    "back-login": "Kembali Kehalaman Login",
+    "validasi-format": "Format email tidak sesuai",
+    "validasi-not-found": "Email tidak ditemukan"
   },
   "new-account": {
     "asal-attr-1": "Pilih Asal Pelaku Usaha",

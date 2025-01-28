@@ -250,7 +250,9 @@
     "enter-email": "Enter Email",
     "send-verif": "Send Verification via Email",
     "resend": "Resend",
-    "back-login": "Back to Login Page"
+    "back-login": "Back to Login Page",
+    "validasi-format": "The email format is not correct",
+    "validasi-not-found": "Email not found"
   },
   "new-account": {
     "asal-attr-1": "Select the Origin of the Business Entity",
