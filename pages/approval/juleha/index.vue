@@ -73,10 +73,6 @@ const getMasterLembaga = async () => {
 
     const response: any = await $api('/approval/lembaga', {
       method: 'get',
-      params: {
-        page: currentPage.value,
-        size: itemPerPage.value,
-      },
     } as any)
 
     if (response.code === 2000) {
@@ -118,7 +114,27 @@ const getChipColor = (status: string) => {
 }
 
 const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} Pendamping Disetujui`, 'success');
+  try {
+    const response: any = await $api(
+      '/approval/juleha/approve',
+      {
+        method: 'post',
+        body: selectedItem.value,
+      },
+    )
+
+    if (response.code !== 2000) {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      refresh()
+
+      return
+    }
+    useSnackbar().sendSnackbar(`${selectedItem.value.length} Pendamping Disetujui`, 'success')
+    refresh()
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
 }
 
 const unduhFile = async (link: string) => {

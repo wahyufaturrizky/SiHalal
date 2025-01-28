@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { profileMain } from "@/stores/interface/pelakuUsahaProfileIntf";
 import { formatCurrencyIntl } from "@/utils/conversionIntl";
+import { useI18n } from "vue-i18n";
 const panelOpen = ref(0);
 
+const { t } = useI18n();
 const props = defineProps({
   profileData: {
     type: Object as profileMain | any,
@@ -60,7 +62,7 @@ const form = ref({
   negara:
     props.profileData?.asal_usaha == "Dalam Negeri"
       ? "Indonesia"
-      : props.profileData?.country_name || "-",
+      : props.profileData?.negara || "-",
   phone: props.profileData?.phone || "-",
   email: props.profileData?.email || "-",
   jenis_badan_usaha: convertJnbus(props.profileData?.jenis_badan_usaha) || "-",
@@ -73,49 +75,49 @@ const form = ref({
 const profilData = [
   {
     id: 1,
-    field: "Nama Perusahaan",
+    field: `${t("detail-pu.pu-profil-namapu")}`,
     value: form.value.name,
     disable: disableEdit(props.profileData?.asal_usaha),
   },
   {
     id: 2,
-    field: "Alamat",
+    field: `${t("detail-pu.pu-profil-address")}`,
     value: form.value.alamat,
     disable: disableEdit(props.profileData?.asal_usaha),
   },
   {
     id: 3,
-    field: "Kota/Kab",
+    field: `${t("detail-pu.pu-profil-kota")}`,
     value: form.value.kota_kab,
     disable: disableEdit(props.profileData?.asal_usaha),
   },
   {
     id: 4,
-    field: "Provinsi",
+    field: `${t("detail-pu.pu-profil-prov")}`,
     value: form.value.provinsi,
     disable: disableEdit(props.profileData?.asal_usaha),
   },
   {
     id: 5,
-    field: "Kodepos",
+    field: `${t("detail-pu.pu-profil-kodepos")}`,
     value: form.value.kodepos,
     disable: disableEdit(props.profileData?.asal_usaha),
   },
   {
     id: 6,
-    field: "Negara",
+    field: `${t("detail-pu.pu-profil-negara")}`,
     value: form.value.negara,
     disable: disableEdit(props.profileData?.asal_usaha),
   },
   {
     id: 7,
-    field: "Telepon",
+    field: `${t("detail-pu.pu-profil-telp")}`,
     value: form.value.phone,
     disable: disableEdit(props.profileData?.asal_usaha),
   },
   {
     id: 8,
-    field: "Email",
+    field: `${t("detail-pu.pu-profil-email")}`,
     value: form.value.email,
     disable: disableEdit(props.profileData?.asal_usaha),
   },
@@ -142,7 +144,9 @@ onMounted(async () => {
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
       <VExpansionPanelTitle>
-        <div class="text-h4 font-weight-bold">Profil</div>
+        <div class="text-h4 font-weight-bold">
+          {{ t("detail-pu.pu-profil-title") }}
+        </div>
       </VExpansionPanelTitle>
       <VExpansionPanelText style="display: flex; align-content: center">
         <VRow v-for="data in profilData" :key="data.id">
@@ -164,7 +168,7 @@ onMounted(async () => {
         <VDivider />
         <br />
         <VRow>
-          <VCol cols="4"> Jenis Badan Usaha </VCol>
+          <VCol cols="4"> {{ t("detail-pu.pu-profil-jbu") }} </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
             <VSelect
@@ -178,7 +182,7 @@ onMounted(async () => {
           </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4"> Tingkat Usaha </VCol>
+          <VCol cols="4"> {{ t("detail-pu.pu-profil-tingkatu") }} </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
             <VSelect
@@ -191,7 +195,7 @@ onMounted(async () => {
         </VRow>
         <VRow>
           <VCol cols="4" style="display: flex; align-items: center">
-            Skala Usaha
+            {{ t("detail-pu.pu-profil-skala") }}
           </VCol>
           <VCol cols="1" style="display: flex; align-items: center"> : </VCol>
           <VCol cols="7">
@@ -206,7 +210,7 @@ onMounted(async () => {
           </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4"> Modal Dasar </VCol>
+          <VCol cols="4"> {{ t("detail-pu.pu-profil-modal") }} </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
             <VTextField
@@ -217,7 +221,7 @@ onMounted(async () => {
           </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4"> Asal Usaha </VCol>
+          <VCol cols="4"> {{ t("detail-pu.pu-profil-asal") }} </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
             <!-- {{ props.profileData?.asal_usaha || "-" }} -->

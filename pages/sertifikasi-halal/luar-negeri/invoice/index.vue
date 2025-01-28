@@ -1,19 +1,29 @@
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(true);
 const page = ref(1);
 const tableHeader = [
   { title: "No", value: "index" },
-  { title: "No Invoice", value: "no" },
-  { title: "Tanggal Invoice", value: "date" },
-  { title: "No Daftar", value: "no_daftar" },
-  { title: "Payment Code", value: "va" },
-  { title: "Importer's Name", value: "importer_name" },
-  { title: "Due Date", value: "due_date" },
-  { title: "Amount", value: "amount", align: "right" },
-  { title: "Status", value: "status" },
-  { title: "Invoice File", value: "invoice" },
+  { title: `${t("shln-invoice.invoice-list-title")}`, value: "no" },
+  { title: `${t("shln-invoice.invoice-list-tglinv")}`, value: "date" },
+  { title: `${t("shln-invoice.invoice-list-noreg")}`, value: "no_daftar" },
+  { title: `${t("shln-invoice.invoice-list-nova")}`, value: "va" },
+  {
+    title: `${t("shln-invoice.invoice-list-importir")}`,
+    value: "importer_name",
+  },
+  { title: `${t("shln-invoice.invoice-list-duedate")}`, value: "due_date" },
+  {
+    title: `${t("shln-invoice.invoice-list-amount")}`,
+    value: "amount",
+    align: "right",
+  },
+  { title: `${t("shln-invoice.invoice-list-status")}`, value: "status" },
+  { title: `${t("shln-invoice.invoice-list-invfile")}`, value: "invoice" },
 ];
 
 // const items = [
@@ -71,7 +81,9 @@ const statusInvoice = {
 <template>
   <VRow>
     <VCol cols="12">
-      <h1 style="font-size: 32px">Invoice</h1>
+      <h1 style="font-size: 32px">
+        {{ t("shln-invoice.invoice-list-title") }}
+      </h1>
     </VCol>
   </VRow>
   <VRow>
@@ -80,7 +92,9 @@ const statusInvoice = {
         <VCardTitle class="pa-5">
           <VRow>
             <VCol cols="6">
-              <div class="text-h4 font-weight-bold">Invoice List</div>
+              <div class="text-h4 font-weight-bold">
+                {{ t("shln-invoice.invoice-list-subtitle") }}
+              </div>
             </VCol>
           </VRow>
         </VCardTitle>
@@ -90,7 +104,7 @@ const statusInvoice = {
               ><VTextField
                 v-model="searchQuery"
                 append-inner-icon="mdi-magnify"
-                label="Search Data"
+                :label="t(`shln-invoice.invoice-list-cari`)"
                 @input="handleInput"
               ></VTextField
             ></VCol>
@@ -102,7 +116,7 @@ const statusInvoice = {
                     'carabayar_shln_sample_cara_bayar_rshln (2).pdf'
                   )
                 "
-                >Download Payment Instructions</VBtn
+                >{{ t("shln-invoice.invoice-list-downloadpaymentinst") }}</VBtn
               ></VCol
             >
           </VRow>
@@ -152,9 +166,9 @@ const statusInvoice = {
                   <VChip
                     :color="statusInvoice[item.status].color"
                     style="
+                      border-radius: 10px;
                       background-color: #fef8e6;
                       color: #f6bc03;
-                      border-radius: 10px;
                       outline: auto;
                     "
                     >{{ statusInvoice[item.status].desc }}</VChip

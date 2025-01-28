@@ -92,7 +92,7 @@ const unduhFile = () => {
   <VRow>
     <VCol>
       <h2 style="font-size: 32px">
-        Persetujuan Sertifikat Penyelia dari BPJHPH
+        Persetujuan Sertifikat Penyelia dari BPJPH
       </h2>
     </VCol>
   </VRow>
@@ -100,7 +100,7 @@ const unduhFile = () => {
     <VCol>
       <VCard class="w-100 py-3">
         <VCardTitle class="d-flex justify-space-between align-center font-weight-bold text-h4">
-          <div>List Persetujuan Sertifikat Penyelia dari BPJHPH</div>
+          <div>List Persetujuan Sertifikat Penyelia dari BPJPH</div>
           <DialogApprovalData
             title="Persetujui data"
             button-text="Ya, Setujui"

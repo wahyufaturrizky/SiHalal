@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 const props = defineProps({
   onSubmit: {
     type: Function,
@@ -70,7 +73,7 @@ const props = defineProps({
     type: Function,
     default: () => {},
     required: false,
-  }
+  },
 });
 
 const route = useRoute();
@@ -124,8 +127,9 @@ const getListProducts = async () => {
     if (response.code === 2000) {
       if (response.data !== []) {
         response.data.map((item: any) => {
-          item.qtyBahan = item.bahan_selected !== null ? item.bahan_selected.length : 0
-        })
+          item.qtyBahan =
+            item.bahan_selected !== null ? item.bahan_selected.length : 0;
+        });
       }
       productItems.value = response.data || [];
     }
@@ -216,7 +220,10 @@ const deleteIngredient = async (productId: string) => {
       useSnackbar().sendSnackbar(response.errors?.list_error?.[0], "error");
     }
   } catch (err) {
-    useSnackbar().sendSnackbar('Hapus gagal! Bahan ini digunakan sebagai bahan produk', "error");
+    useSnackbar().sendSnackbar(
+      "Hapus gagal! Bahan ini digunakan sebagai bahan produk",
+      "error"
+    );
   }
 };
 
@@ -278,7 +285,7 @@ watch(
             append-icon="ri-add-line"
             @click="props.onAdd"
           >
-            Tambah
+            {{ t("pengajuan-reguler.reguler-form--pengajuan-legal-add") }}
           </VBtn>
           <VBtn
             v-if="withSaveButton && !isviewonly"
@@ -511,7 +518,10 @@ watch(
                     :product-name="item.nama"
                     :product-id="item.id"
                     :bahan-selected="item.bahan_selected"
-                    @submit="(selected, produkId) => props.onInputBahan(selected, produkId)"
+                    @submit="
+                      (selected, produkId) =>
+                        props.onInputBahan(selected, produkId)
+                    "
                     :embedded-in-module="'pelakuSelfDec'"
                   />
                 </VListItem>
@@ -574,7 +584,7 @@ watch(
             <Vbtn
               v-if="item.foto"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-left: -10px"
+              style="margin-inline-start: -10px"
               @click="() => handleDownload(item.foto)"
             >
               <div>
@@ -590,7 +600,7 @@ watch(
             <Vbtn
               v-if="item.file_dok"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-left: -10px"
+              style="margin-inline-start: -10px"
               @click="() => handleDownload(item.file_dok)"
             >
               <div>
@@ -606,7 +616,7 @@ watch(
             <Vbtn
               v-if="item.file_skph"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-left: -10px"
+              style="margin-inline-start: -10px"
               @click="() => handleDownload(item.file_skph)"
             >
               <div>
@@ -622,7 +632,7 @@ watch(
             <Vbtn
               v-if="item.file_spph"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-left: -10px"
+              style="margin-inline-start: -10px"
               @click="() => handleDownload(item.file_spph)"
             >
               <div>
@@ -638,7 +648,7 @@ watch(
             <Vbtn
               v-if="item.file_ktp"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-left: -10px"
+              style="margin-inline-start: -10px"
               @click="() => handleDownload(item.file_ktp)"
             >
               <div>
@@ -654,7 +664,7 @@ watch(
             <Vbtn
               v-if="item.file_layout"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-left: -10px"
+              style="margin-inline-start: -10px"
               @click="() => handleDownload(item.file_layout)"
             >
               <div>
@@ -670,7 +680,7 @@ watch(
             <Vbtn
               v-if="item.FileDok"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-left: -10px"
+              style="margin-inline-start: -10px"
               @click="() => handleDownload(item.FileDok)"
             >
               <div>
@@ -686,7 +696,7 @@ watch(
             <Vbtn
               v-if="item.id_reg"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-left: -10px"
+              style="margin-inline-start: -10px"
               @click="() => handleDownloadV2(item)"
             >
               <div>
@@ -702,7 +712,7 @@ watch(
             <Vbtn
               v-if="item.file_dok"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-left: -10px"
+              style="margin-inline-start: -10px"
             >
               <div>
                 <VIcon
@@ -723,7 +733,7 @@ watch(
             <Vbtn
               v-if="item.ttd_pj"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-left: -10px"
+              style="margin-inline-start: -10px"
             >
               <div>
                 <VIcon
@@ -744,7 +754,7 @@ watch(
             <Vbtn
               v-if="item.ttd_ph"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-left: -10px"
+              style="margin-inline-start: -10px"
             >
               <div>
                 <VIcon
@@ -799,22 +809,28 @@ watch(
   color: red;
   font-size: 12px;
 }
+
 .p0 {
-  padding-left: 2px !important;
+  padding-inline-start: 2px !important;
 }
+
 .ml5 {
-  margin-left: 5px;
+  margin-inline-start: 5px;
 }
+
 .textRed {
   color: #e1442e;
 }
+
 .h-20 {
-  height: 20px;
+  block-size: 20px;
 }
+
 .mw30 {
-  min-width: 20rem !important;
+  min-inline-size: 20rem !important;
 }
+
 .-ml10 {
-  margin-left: -10px;
+  margin-inline-start: -10px;
 }
 </style>

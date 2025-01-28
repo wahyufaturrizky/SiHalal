@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { profileMain } from "@/stores/interface/pelakuUsahaProfileIntf";
 import { formatCurrencyIntl } from "@/utils/conversionIntl";
+import { useI18n } from "vue-i18n";
 const panelOpen = ref(0);
-
+const { t } = useI18n();
 const props = defineProps({
   profileData: {
     type: Object as profileMain | any,
@@ -20,27 +21,47 @@ const props = defineProps({
 const profilData = [
   {
     id: 1,
-    field: "Nama Perusahaan",
+    field: `${t("detail-pu.pu-profil-namapu")}`,
     value: props.profileData?.company_name || "-",
   },
   {
     id: 2,
-    field: "Alamat",
+    field: `${t("detail-pu.pu-profil-address")}`,
     value: props.profileData?.address || "-",
   },
-  { id: 3, field: "Kota/Kab", value: props.profileData?.city_name || "-" },
-  { id: 4, field: "Provinsi", value: props.profileData?.province_name || "-" },
-  { id: 5, field: "Kodepos", value: props.profileData?.kode_pos_pu || "-" },
+  {
+    id: 3,
+    field: `${t("detail-pu.pu-profil-kota")}`,
+    value: props.profileData?.city_name || "-",
+  },
+  {
+    id: 4,
+    field: `${t("detail-pu.pu-profil-prov")}`,
+    value: props.profileData?.province_name || "-",
+  },
+  {
+    id: 5,
+    field: `${t("detail-pu.pu-profil-kodepos")}`,
+    value: props.profileData?.kode_pos_pu || "-",
+  },
   {
     id: 6,
-    field: "Negara",
+    field: `${t("detail-pu.pu-profil-negara")}`,
     value:
       props.profileData?.asal_usaha == "Dalam Negeri"
         ? "Indonesia"
-        : props.profileData?.country_name,
+        : props.profileData?.negara,
   },
-  { id: 7, field: "Telepon", value: props.profileData?.phone || "-" },
-  { id: 8, field: "Email", value: props.profileData?.email || "-" },
+  {
+    id: 7,
+    field: `${t("detail-pu.pu-profil-telp")}`,
+    value: props.profileData?.phone || "-",
+  },
+  {
+    id: 8,
+    field: `${t("detail-pu.pu-profil-email")}`,
+    value: props.profileData?.email || "-",
+  },
 ];
 
 async function getMasterData(mastertype: string) {
@@ -98,7 +119,9 @@ onMounted(async () => {
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
       <VExpansionPanelTitle>
-        <div class="text-h4 font-weight-bold">Profil</div>
+        <div class="text-h4 font-weight-bold">
+          {{ t("detail-pu.pu-profil-title") }}
+        </div>
       </VExpansionPanelTitle>
       <VExpansionPanelText>
         <VRow v-for="data in profilData" :key="data.id">
@@ -115,14 +138,14 @@ onMounted(async () => {
         <VDivider />
         <br />
         <VRow>
-          <VCol cols="4"> Jenis Badan Usaha </VCol>
+          <VCol cols="4"> {{ t("detail-pu.pu-profil-jbu") }} </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
             {{ jenisBadanUsaha }}
           </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4"> Tingkat Usaha </VCol>
+          <VCol cols="4"> {{ t("detail-pu-profil-tingkatu") }} </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
             {{ convertFumk(props.profileData?.tingkat_usaha) || "-" }}
@@ -130,7 +153,7 @@ onMounted(async () => {
         </VRow>
         <VRow>
           <VCol cols="4" style="display: flex; align-items: center">
-            Skala Usaha
+            {{ t("detail-pu-profil-skala") }}
           </VCol>
           <VCol cols="1" style="display: flex; align-items: center"> : </VCol>
           <VCol cols="7">
@@ -138,14 +161,14 @@ onMounted(async () => {
           </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4"> Modal Dasar </VCol>
+          <VCol cols="4"> {{ t("detail-pu-profil-modal") }} </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
             {{ formatCurrencyIntl(props.profileData?.modal_dasar) || "-" }}
           </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4"> Asal Usaha </VCol>
+          <VCol cols="4"> {{ t("detail-pu-profil-asal") }} </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="7"> {{ props.profileData?.asal_usaha || "-" }} </VCol>
         </VRow>

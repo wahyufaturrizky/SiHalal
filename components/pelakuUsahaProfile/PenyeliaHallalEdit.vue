@@ -186,6 +186,10 @@ const downloadSkHandler = () => {
     window.open(props.fileSkBlob);
   }
 };
+
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -211,7 +215,7 @@ const downloadSkHandler = () => {
             variant="flat"
             color="primary"
           >
-            SK Penetapan Penyelia Halal</VBtn
+            {{ t("detail-pu.pu-edit-sk") }}</VBtn
           >
         </VCol>
         <VCol cols="4" style="display: flex; justify-content: end">

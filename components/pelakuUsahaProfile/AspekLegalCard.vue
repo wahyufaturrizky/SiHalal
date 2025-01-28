@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { legal } from "@/stores/interface/pelakuUsahaProfileIntf";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const panelOpen = ref(0);
 const props = defineProps({
   aspekLegalData: {
@@ -15,12 +17,12 @@ const props = defineProps({
 
 const legalHeader = [
   { title: "No", key: "no" },
-  { title: "Jenis", key: "type" },
-  { title: "No. Dokumen", key: "doc_number" },
-  { title: "Tanggal", key: "date" },
-  { title: "Masa Berlaku", key: "expiration_date" },
-  { title: "Instansi Penerbit", key: "publishing_agency" },
-  { title: "Action", key: "action" },
+  { title: `${t("detail-pu.pu-legal-jenis")}`, key: "type" },
+  { title: `${t("detail-pu.pu-legal-nodoc")}`, key: "doc_number" },
+  { title: `${t("detail-pu.pu-legal-tgl")}`, key: "date" },
+  { title: `${t("detail-pu.pu-legal-tgl-exp")}`, key: "expiration_date" },
+  { title: `${t("detail-pu.pu-legal-issuer")}`, key: "publishing_agency" },
+  { title: `${t("detail-pu.pu-legal-action")}`, key: "action" },
 ];
 
 const storeDataMaster = dataMasterStore();
@@ -42,7 +44,9 @@ onMounted(() => {
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
       <VExpansionPanelTitle>
-        <div class="text-h4 font-weight-bold">Aspek Legal</div>
+        <div class="text-h4 font-weight-bold">
+          {{ t("detail-pu.pu-legal-title") }}
+        </div>
       </VExpansionPanelTitle>
       <VExpansionPanelText>
         <VDataTable

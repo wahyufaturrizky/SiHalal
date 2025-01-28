@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Bahan, Evaluasi, Produk } from "#components";
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 
 const route = useRoute();
 
@@ -16,14 +17,16 @@ const listOutlet = ref<any>(null);
 const listPenyelia = ref<any>(null);
 const itemsChannel = ref<any>(null);
 
+const { t } = useI18n();
+
 const tabList = ref([
-  "Data Pengajuan",
-  "Komitmen dan Tanggung Jawab",
-  "Bahan",
-  "Proses",
-  "Produk",
-  "Pemantauan dan Evaluasi",
-  "Dokumen",
+  `${t("pengajuan-reguler.reguler-form-head-datapengajuan")}`,
+  `${t("pengajuan-reguler.reguler-form-head-komitmen")}`,
+  `${t("pengajuan-reguler.reguler-form-head-bahan")}`,
+  `${t("pengajuan-reguler.reguler-form-head-proses")}`,
+  `${t("pengajuan-reguler.reguler-form-head-produk")}`,
+  `${t("pengajuan-reguler.reguler-form-head-eval")}`,
+  `${t("pengajuan-reguler.reguler-form-head-dokumen")}`,
 ]);
 
 const isBahanCompleted = ref(false);
@@ -186,7 +189,9 @@ onMounted(async () => {
     <VContainer>
       <KembaliButton class="pl0" />
       <div class="headerSection">
-        <h3 class="text-h3 font-weight-bold">Ubah Data</h3>
+        <h3 class="text-h3 font-weight-bold">
+          {{ t("pengajuan-reguler.reguler-form-head-title") }}
+        </h3>
         <div
           v-if="
             (activeTab === 4 || activeTab === 5 || activeTab === 6) &&
@@ -200,11 +205,13 @@ onMounted(async () => {
                 variant="outlined"
                 style="border-color: #e1442e !important"
               >
-                Batal
+                {{ t("pengajuan-reguler.reguler-form-head-cancel") }}
               </VBtn>
             </VCol>
             <VCol>
-              <VBtn variant="elevated"> Simpan Perubahan </VBtn>
+              <VBtn variant="elevated">
+                {{ t("pengajuan-reguler.reguler-form-head-simpan") }}
+              </VBtn>
             </VCol>
           </VRow>
         </div>
@@ -289,9 +296,11 @@ onMounted(async () => {
   color: red;
   font-size: 12px;
 }
+
 .pl0 {
-  padding-left: 0px !important;
+  padding-inline-start: 0 !important;
 }
+
 .headerSection {
   display: flex;
   justify-content: space-between;
