@@ -13,20 +13,11 @@ export default defineEventHandler(async (event: any) => {
   try {
     const runtimeConfig = useRuntimeConfig();
 
-    const { type } = (await getQuery(event)) as {
-      type: string
-    }
-
-    const params = {
-      type,
-    }
-
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/list/lembaga-pelatihan`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/kepkaban/sertifikat-pendamping/type`,
       {
         method: "get",
         headers: { Authorization: authHeader },
-        params,
       } as any
     );
 

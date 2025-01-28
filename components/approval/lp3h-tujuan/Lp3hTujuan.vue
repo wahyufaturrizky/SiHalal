@@ -5,6 +5,10 @@ const props = defineProps({
     required: false,
   },
 })
+
+const unduhFile = async (link: string) => {
+  await downloadDocument(link)
+}
 </script>
 
 <template>
@@ -18,9 +22,10 @@ const props = defineProps({
   >
     <div class="d-flex ga-4">
       <VIcon
-        v-if="index === props.data.length - 1"
+        v-if="item.label === 'Upload Surat'"
         icon="fa-download"
         color="primary"
+        @click="() => unduhFile(item.value)"
       />
       {{ item.value }}
     </div>

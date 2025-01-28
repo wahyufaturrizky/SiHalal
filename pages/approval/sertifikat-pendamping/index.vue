@@ -12,12 +12,12 @@ interface DataUser {
 
 const tableHeaders: any[] = [
   { title: 'No', key: 'no', sortable: false },
-  { title: 'NIK', key: 'username', nowrap: true },
-  { title: 'Nama', key: 'name', nowrap: true },
-  { title: 'Tanggal Lahir', key: 'email', nowrap: true },
-  { title: 'Pendidikan', key: 'phone_no', nowrap: true },
-  { title: 'Lembaga', key: 'is_verify', nowrap: true },
-  { title: 'JenisLembaga', key: 'roles', nowrap: true },
+  { title: 'NIK', key: 'nik', nowrap: true },
+  { title: 'Nama', key: 'nama', nowrap: true },
+  { title: 'Tanggal Lahir', key: 'tgl_lahir', nowrap: true },
+  { title: 'Pendidikan', key: 'pendidikan', nowrap: true },
+  { title: 'Lembaga', key: 'namaLembaga', nowrap: true },
+  { title: 'JenisLembaga', key: 'jenisLembaga', nowrap: true },
   { title: 'Status', key: 'status', nowrap: true },
   { title: 'Action', key: 'actions', sortable: false, align: 'center' },
 ]
@@ -27,24 +27,27 @@ const currentPage = ref(1)
 const itemPerPage = ref(10)
 const totalItems = ref(0)
 const selectedItem = ref([])
+const pendampingItems = ref([])
 const isLoading = ref(false)
-const tableType = ref('Semua')
+const isLoadingPendamping = ref(false)
+const tableType = ref('Pilih pendamping')
 
 const searchQuery = ref('')
 
 const handleLoadList = async () => {
   try {
-    const response: any = await $api('/admin/users/list', {
+    const response: any = await $api('/approval/sertifikat-pendamping/list', {
       method: 'get',
       params: {
         page: currentPage.value,
         size: itemPerPage.value,
-        search: searchQuery.value,
+        type: tableType.value,
       },
     } as any)
 
     if (response.code === 2000) {
       if (response.data !== null) {
+        response.data.map((el: any) => el.id = el.id_pendamping)
         tableItems.value = response.data
         currentPage.value = response.current_page
         totalItems.value = response.total_item
@@ -67,7 +70,7 @@ const { refresh } = await useAsyncData(
   'user-list',
   async () => await handleLoadList(),
   {
-    watch: [currentPage, itemPerPage],
+    watch: [currentPage, itemPerPage, tableType],
   },
 )
 
@@ -75,8 +78,30 @@ const onApprove = async () => {
   useSnackbar().sendSnackbar(`${selectedItem.value.length} Pendamping Disetujui`, 'success');
 }
 
+const getTypePendamping = async () => {
+  try {
+    isLoadingPendamping.value = true
+
+    const response: any = await $api('/approval/sertifikat-pendamping/type', {
+      method: 'get',
+    } as any)
+
+    if (response) {
+      // response.data.unshift({ nama_lebaga: 'Pilih tipe pendamping', id_lembaga_pelatihan: '' })
+      pendampingItems.value = response
+    }
+    isLoadingPendamping.value = false
+
+    return response
+  }
+  catch (error) {
+    isLoadingPendamping.value = false
+    console.error(error)
+  }
+}
+
 onMounted(() => {
-  handleLoadList()
+  getTypePendamping()
 })
 
 const getChipColor = (status: string) => {
@@ -123,10 +148,11 @@ const unduhFile = () => {
             >
               <VSelect
                 v-model="tableType"
-                :items="['1']"
-                item-title="name"
-                item-value="code"
+                :items="pendampingItems"
+                item-title="nama_lembaga"
+                item-value="id_lp"
                 class="mb-5"
+                :loading="isLoadingPendamping"
               />
             </VCol>
           </VRow>
@@ -169,27 +195,11 @@ const unduhFile = () => {
               <template #item.phone_no="{ item }">
                 {{ item.phone_no ? item.phone_no : "-" }}
               </template>
-              <template #item.is_verify="{ item }">
-                {{ item.is_verify ? "Yes" : "No" }}
+              <template #item.namaLembaga="{ item }">
+                {{ item.Lembaga?.nama_lembaga }}
               </template>
-              <template #item.roles="{ item }">
-                <div v-if="item.roles.length">
-                  <div
-                    v-for="(el, idx) in item.roles"
-                    :key="idx"
-                    class="d-inline-block"
-                  >
-                    <div>
-                      <span
-                        v-if="idx !== 0"
-                        class="mx-2"
-                      >|</span>{{ el.name }}
-                    </div>
-                  </div>
-                </div>
-                <div v-else>
-                  -
-                </div>
+              <template #item.jenisLembaga="{ item }">
+                {{ item.Lembaga?.jenisLembaga }}
               </template>
               <template #item.status="{ item }">
                 <div class="d-flex flex-wrap">

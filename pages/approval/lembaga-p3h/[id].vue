@@ -8,6 +8,7 @@ const dialogToggle = ref(false)
 const titleDialog = ref('')
 const labelSaveBtn = ref('')
 const returnNote = ref('')
+const detail = ref<any>({})
 
 const loadingAll = ref(false)
 
@@ -16,90 +17,11 @@ const panelLp3hTujuan = ref([0, 1])
 const panelStatus = ref([0, 1])
 const panelTracking = ref([0, 1])
 
-const dataAsal = ref([
-  {
-    label: 'No. Registrasi',
-    value: '1',
-  },
-  {
-    label: 'NIK (Nomor Induk Kependudukan)',
-    value: '1',
-  },
-  {
-    label: 'Nama',
-    value: '1',
-  },
-  {
-    label: 'Tempat Tanggal Lahir',
-    value: '1',
-  },
-  {
-    label: 'Alamat',
-    value: '1',
-  },
-  {
-    label: 'Provinsi',
-    value: '1',
-  },
-  {
-    label: 'Kab/Kota',
-    value: '1',
-  },
-  {
-    label: 'Kecamatan',
-    value: '1',
-  },
-  {
-    label: 'Kode Pos',
-    value: '1',
-  },
-])
+const dataAsal = ref([])
 
-const lp3hDummy = ref([
-  {
-    label: 'No. Surat',
-    value: '1',
-  },
-  {
-    label: 'Tanggal Surat',
-    value: '1',
-  },
-  {
-    label: 'Alamat',
-    value: '1',
-  },
-  {
-    label: 'Provinsi',
-    value: '1',
-  },
-  {
-    label: 'Kab/Kota',
-    value: '1',
-  },
-  {
-    label: 'Kecamatan',
-    value: '1',
-  },
-  {
-    label: 'Kode Pos',
-    value: '1',
-  },
-  {
-    label: 'Upload Surat',
-    value: '1',
-  },
-])
+const lp3hDestination = ref([])
 
-const panelStatusDummy = ref([
-  {
-    label: 'Status',
-    value: 'Pengajuan',
-  },
-  {
-    label: 'Catatan',
-    value: '-',
-  },
-])
+const statusData = ref([])
 
 const toggle = (type: string) => {
   dialogToggle.value = true
@@ -116,7 +38,79 @@ const onReturn = () => {
   useSnackbar().sendSnackbar('Pengajuan pindah domisili dikembalikan', 'success')
 }
 
+const handleGetDetail = async () => {
+  try {
+    const response: any = await $api('/approval/pindah-lembaga/detail', {
+      method: 'get',
+      query: {
+        id,
+      },
+    } as any)
+
+    if (response.code === 2000) {
+      const data: any = response.data
+
+      dataAsal.value = [
+        {
+          label: 'No. Registrasi',
+          value: data.no_register,
+        },
+        {
+          label: 'NIK (Nomor Induk Kependudukan)',
+          value: data.nik,
+        },
+        {
+          label: 'Nama',
+          value: data.nama,
+        },
+        {
+          label: 'Tempat Tanggal Lahir',
+          value: `${data.tempat_lahir} ${formatDateId(data?.tgl_lahir)}`,
+        },
+        {
+          label: 'LP3H',
+          value: data?.asal_lembaga,
+        },
+      ]
+      lp3hDestination.value = [
+        {
+          label: 'No. Surat',
+          value: data?.no_surat,
+        },
+        {
+          label: 'Tanggal Surat',
+          value: data?.tgl_surat,
+        },
+        {
+          label: 'Upload Surat',
+          value: data?.file_surat,
+        },
+        {
+          label: 'LP3H Tujuan',
+          value: data?.tujuan_lembaga,
+        },
+      ]
+      statusData.value = [
+        {
+          label: 'Status',
+          value: data?.status,
+        },
+        {
+          label: 'Catatan',
+          value: data?.catatan,
+        },
+      ]
+
+      return response
+    }
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+
 onMounted(async () => {
+  handleGetDetail()
 })
 </script>
 
@@ -140,18 +134,20 @@ onMounted(async () => {
           style="margin-right: 0px;"
         >
           <!-- <VBtn variant="outlined"> Lihat Draft Sertif </VBtn> -->
-          <!-- <DialogReturn
+          <!--
+            <DialogReturn
             title="Dikembalikan"
             button-text="Ya, Kembalikan"
             :on-return="onReturn"
-          >
+            >
             <template #contentDelete>
-              <label>
-                Catatan Pengembalian
-              </label>
-              <VTextarea v-model="returnNote" />
+            <label>
+            Catatan Pengembalian
+            </label>
+            <VTextarea v-model="returnNote" />
             </template>
-          </DialogReturn> -->
+            </DialogReturn>
+          -->
           <DialogApproval
             title="Pindah Domisili Disetujui"
             button-text="Ya, Setujui"
@@ -184,7 +180,7 @@ onMounted(async () => {
               LP3H Tujuan
             </VExpansionPanelTitle>
             <VExpansionPanelText>
-              <Lp3hTujuan :data="lp3hDummy" />
+              <Lp3hTujuan :data="lp3hDestination" />
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -196,38 +192,18 @@ onMounted(async () => {
               Status
             </VExpansionPanelTitle>
             <VExpansionPanelText>
-              <PanelStatusApproval :data="panelStatusDummy" />
+              <PanelStatusApproval :data="statusData" />
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
         <br>
-        <VExpansionPanels v-model="panelTracking">
+        <!-- <VExpansionPanels v-model="panelTracking">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4">
               Melacak
             </VExpansionPanelTitle>
-            <!--
-              <VExpansionPanelText class="d-flex align-center">
-              <HalalTimeLine
-              :event="
-              detailSubmission.tracking.map(
-              ({ status, username, tanggal, comment, keterangan } : any) => ({
-              status: statusItem[status].desc,
-              created_at: formatDate(tanggal),
-              username,
-              comment,
-              keterangan: (
-              status === 'OF280' || status === 'OF290' || status === 'OF900' || status === 'OF285'
-              ) ? keterangan : '',
-              }),
-              )
-              "
-              show-keterangan
-              />
-              </VExpansionPanelText>
-            -->
           </VExpansionPanel>
-        </VExpansionPanels>
+        </VExpansionPanels> -->
       </VCol>
     </VRow>
   </VContainer>

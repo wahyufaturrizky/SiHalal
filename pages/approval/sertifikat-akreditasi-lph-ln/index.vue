@@ -12,20 +12,20 @@ interface DataUser {
 
 const tableHeaders: any[] = [
   { title: 'No', key: 'no', sortable: false },
-  { title: 'Nama LPH', key: 'username', nowrap: true },
-  { title: 'Alamat', key: 'name', nowrap: true },
-  { title: 'Kota', key: 'name', nowrap: true },
-  { title: 'Negara', key: 'name', nowrap: true },
-  { title: 'Jenis', key: 'name', nowrap: true },
-  { title: 'Nama Pimpinan', key: 'phone_no', nowrap: true },
-  { title: 'Nama Kontak', key: 'is_verify', nowrap: true },
-  { title: 'No. HP', key: 'phone', nowrap: true },
+  { title: 'Nama LPH', key: 'nama_lph', nowrap: true },
+  { title: 'Alamat', key: 'alamat', nowrap: true },
+  { title: 'Kota', key: 'kota', nowrap: true },
+  { title: 'Negara', key: 'negara', nowrap: true },
+  { title: 'Jenis', key: 'jenis', nowrap: true },
+  { title: 'Nama Pimpinan', key: 'nama_pimpinan', nowrap: true },
+  { title: 'Nama Kontak', key: 'nama_kontak', nowrap: true },
+  { title: 'No. HP', key: 'no_hp', nowrap: true },
   { title: 'Email', key: 'email', nowrap: true },
   { title: 'Sertifikat', key: 'actions', sortable: false, align: 'center' },
 ]
 
 const tableItems = ref<Array[]>([])
-const currentPage = ref(1)
+const currentPage = ref(0)
 const itemPerPage = ref(10)
 const totalItems = ref(0)
 const selectedItem = ref([])
@@ -36,7 +36,7 @@ const searchQuery = ref('')
 
 const handleLoadList = async () => {
   try {
-    const response: any = await $api('/admin/users/list', {
+    const response: any = await $api('/approval/lph-ln/list', {
       method: 'get',
       params: {
         page: currentPage.value,
@@ -81,8 +81,8 @@ onMounted(() => {
   handleLoadList()
 })
 
-const unduhFile = () => {
-  window.open('/files/Cara Bayar.pdf', '_blank')
+const unduhFile = async (link: string) => {
+  await downloadDocument(link)
 }
 </script>
 
@@ -179,7 +179,7 @@ const unduhFile = () => {
                       <VIcon
                         icon="ri-arrow-right-line"
                         color="primary"
-                        @click="unduhFile"
+                        @click="() => unduhFile(item.file_sertifikat)"
                       />
                     </div>
                   </IconBtn>

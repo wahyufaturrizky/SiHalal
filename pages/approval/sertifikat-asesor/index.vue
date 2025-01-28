@@ -12,10 +12,10 @@ interface DataUser {
 
 const tableHeaders: any[] = [
   { title: 'No', key: 'no', sortable: false },
-  { title: 'Nama Asesor', key: 'username', nowrap: true },
-  { title: 'Instansi', key: 'name', nowrap: true },
-  { title: 'No. Sertifikat', key: 'name', nowrap: true },
-  { title: 'Keterangan', key: 'name', nowrap: true },
+  { title: 'Nama Asesor', key: 'nama', nowrap: true },
+  { title: 'Instansi', key: 'instansi', nowrap: true },
+  { title: 'No. Sertifikat', key: 'no_sertifikat', nowrap: true },
+  { title: 'Keterangan', key: 'keterangan', nowrap: true },
   { title: 'Sertifikat', key: 'actions', sortable: false, align: 'center' },
 ]
 
@@ -31,7 +31,7 @@ const searchQuery = ref('')
 
 const handleLoadList = async () => {
   try {
-    const response: any = await $api('/admin/users/list', {
+    const response: any = await $api('/approval/assesor/list', {
       method: 'get',
       params: {
         page: currentPage.value,
@@ -42,6 +42,7 @@ const handleLoadList = async () => {
 
     if (response.code === 2000) {
       if (response.data !== null) {
+        response.data.map((el: any) => el.id = el.assesor_id)
         tableItems.value = response.data
         currentPage.value = response.current_page
         totalItems.value = response.total_item
@@ -69,15 +70,35 @@ const { refresh } = await useAsyncData(
 )
 
 const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} Asesor Disetujui`, 'success');
+  try {
+    const response: any = await $api(
+      '/approval/assesor/approve',
+      {
+        method: 'post',
+        body: selectedItem.value,
+      },
+    )
+
+    if (response.code !== 2000) {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      refresh()
+
+      return
+    }
+    useSnackbar().sendSnackbar(`${selectedItem.value.length} Pendamping Disetujui`, 'success')
+    refresh()
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
 }
 
 onMounted(() => {
   handleLoadList()
 })
 
-const unduhFile = () => {
-  window.open('/files/Cara Bayar.pdf', '_blank')
+const unduhFile = async (link: string) => {
+  await downloadDocument(link)
 }
 </script>
 
@@ -174,7 +195,7 @@ const unduhFile = () => {
                       <VIcon
                         icon="ri-arrow-right-line"
                         color="primary"
-                        @click="unduhFile"
+                        @click="() => unduhFile(item?.file_sertifikat)"
                       />
                     </div>
                   </IconBtn>
