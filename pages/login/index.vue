@@ -165,7 +165,7 @@ const handleLoadImageAuth = async () => {
     } as any);
 
     if (response.code === 2000) {
-      fileType.value = response.data?.type;
+      fileType.value = response.data.type.toUpperCase();
       // const fileExt = response.data.file_name.split(".").pop();
       // fileType.value = !["webp"].includes(fileExt) ? "VID" : "IMG";
       if (fileType.value === "VID") {
