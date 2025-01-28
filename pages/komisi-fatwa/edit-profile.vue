@@ -44,6 +44,11 @@ const profileData = reactive({
 const provinceList = ref();
 const districtList = ref();
 const subDistrictList = ref();
+const lembagaList = [
+  "MUI Pusat",
+  "Komisi Fatwa MUI Provinsi",
+  "Majekis Permusyawaratan Ulama Aceh",
+];
 const getProvince = async () => {
   const response = await $api("/master/province", {
     method: "get",
@@ -96,6 +101,43 @@ const selectedTteFile = reactive<any>({
   sekretaris: null,
   ketuaBidang: null,
 });
+
+const uploadDocument = async (file: any, type: any) => {
+  try {
+    const formData = new FormData();
+    formData.append("id", String(profileData.id));
+    formData.append("file", file);
+    formData.append("type", type);
+    const response = await $api("/shln/submission/document/upload", {
+      method: "post",
+      body: formData,
+    });
+    return response;
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      "ada kesalahan saat upload file, gagal menyimpan!",
+      "error"
+    );
+  }
+};
+const validationImage = ref({
+  chairmanIsValid: false,
+  secretaryIsValid: false,
+  fatwaLeadIsValid: false,
+  bankAccPhotoIsValid: false,
+  npwpPhotoIsValid: false,
+  chairmanMsgNotValid: "",
+  secretaryMsgNotValid: "",
+  fatwaLeadMsgNotValid: "",
+  bankAccMsgNotValid: "",
+  npwpMsgNotValid: "",
+});
+const chairmanTteRef = ref();
+const sekretarisTteRef = ref();
+const kabidTteRef = ref();
+const fotoRekRef = ref();
+const fotoNpwpRef = ref();
+
 const handleSelectChairmanTTE = async (event: any) => {
   const fileData = event.target.files[0];
   if (!fileData) return;
@@ -144,6 +186,101 @@ const handleRemoveFatwaLeadTTE = () => {
   selectedTteFile.ketuaBidang = null;
   profileData.bidang_fatwa_tte = null;
 };
+const handleEmitValidationChairmanTTE = async (
+  isValid: boolean,
+  event: any
+) => {
+  validationImage.value.chairmanIsValid = isValid;
+  validationImage.value.chairmanMsgNotValid = event;
+  try {
+    if (isValid) {
+      const response = await uploadDocument(selectedTteFile.pimpinan, "no_rek");
+      if (response.code === 2000) {
+        profileData.pimpinan_tte = response.data.file_url;
+      }
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Upload Image Failed", "error");
+    console.error(error);
+  }
+};
+const handleEmitValidationSecretaryTTE = async (
+  isValid: boolean,
+  event: any
+) => {
+  validationImage.value.secretaryIsValid = isValid;
+  validationImage.value.secretaryMsgNotValid = event;
+  try {
+    if (isValid) {
+      const response = await uploadDocument(
+        selectedTteFile.sekretaris,
+        "no_rek"
+      );
+      if (response.code === 2000) {
+        profileData.sekretaris_tte = response.data.file_url;
+      }
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Upload Image Failed", "error");
+    console.error(error);
+  }
+};
+const handleEmitValidationFatwaLeadTTE = async (
+  isValid: boolean,
+  event: any
+) => {
+  validationImage.value.fatwaLeadIsValid = isValid;
+  validationImage.value.fatwaLeadMsgNotValid = event;
+  try {
+    if (isValid) {
+      const response = await uploadDocument(
+        selectedTteFile.ketuaBidang,
+        "no_rek"
+      );
+      if (response.code === 2000) {
+        profileData.bidang_fatwa_tte = response.data.file_url;
+      }
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Upload Image Failed", "error");
+    console.error(error);
+  }
+};
+const handleEmitValidationBankAccPhoto = async (
+  isValid: boolean,
+  event: any
+) => {
+  validationImage.value.bankAccPhotoIsValid = isValid;
+  validationImage.value.bankAccMsgNotValid = event;
+
+  try {
+    if (isValid) {
+      const response = await uploadDocument(bankAccPhoto.value, "no_rek");
+      if (response.code === 2000) {
+        profileData.rekening.filefotorek = response.data.file_url;
+      }
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Upload Image Failed", "error");
+    console.error(error);
+  }
+};
+const handleEmitValidationNpwpPhoto = async (isValid: boolean, event: any) => {
+  validationImage.value.npwpPhotoIsValid = isValid;
+  validationImage.value.npwpMsgNotValid = event;
+  console.log("npwp msg = ", event);
+  try {
+    if (isValid) {
+      const response = await uploadDocument(npwpPhoto.value, "no_npwp");
+      if (response.code === 2000) {
+        profileData.rekening.filefotonpwp = response.data.file_url;
+      }
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Upload Image Failed", "error");
+    console.error(error);
+  }
+};
 
 const bankAccPhoto = ref(null);
 const handleSelectBankAccPhoto = async (event: any) => {
@@ -186,7 +323,7 @@ const handleOpenUpdateModal = () => {
   isOpenUpdateModal.value = !isOpenUpdateModal.value;
 };
 
-const updatePayload: Record<string, any> = {
+let updatePayload: Record<string, any> = {
   nama_mui: profileData.nama_mui,
   jenis: profileData.jenis,
   alamat: profileData.alamat,
@@ -211,31 +348,65 @@ const updatePayload: Record<string, any> = {
   npwp: profileData.rekening.npwp,
   nama_npwp: profileData.rekening.nama_npwp,
 };
+
+const findDistrictNameByCode = (code: String) => {
+  if (code)
+    return districtList.value?.filter((val) => val.code === code)[0]?.name;
+};
+
+const updatePayloadMapper = () => {
+  updatePayload = {
+    nama_mui: profileData.nama_mui,
+    jenis: profileData.jenis,
+    alamat: profileData.alamat,
+    provinsi: profileData.provinsi,
+    kota: profileData.kota || findDistrictNameByCode(profileData?.kd_kab),
+    wilayah_id: profileData.wilayah_id,
+    kd_prov: profileData.kd_prov,
+    kd_kab: profileData.kd_kab,
+    kd_kec: profileData.kd_kec,
+    email: profileData.email,
+    nama_pimpinan: profileData.nama_pimpinan,
+    no_hp_pimpinan: profileData.no_hp_pimpinan,
+    nama_sekretaris: profileData.nama_sekretaris,
+    no_hp_sekretaris: profileData.no_hp_sekretaris,
+    nama_bidang_fatwa: profileData.nama_bidang_fatwa,
+    no_hp_bidang_fatwa: profileData.no_hp_bidang_fatwa,
+    nama_kontak: profileData.nama_kontak,
+    no_hp_kontak: profileData.no_hp_kontak,
+    bank: profileData.rekening.bank,
+    no_rekening: profileData.rekening.no_rekening,
+    nama: profileData.rekening.nama,
+    npwp: profileData.rekening.npwp,
+    nama_npwp: profileData.rekening.nama_npwp,
+  };
+
+  updatePayload["sekretaris_tte"] = profileData.sekretaris_tte;
+  updatePayload["pimpinan_tte"] = profileData.pimpinan_tte;
+  updatePayload["bidang_fatwa_tte"] = profileData.bidang_fatwa_tte;
+  updatePayload["filefotorek"] = profileData.rekening.filefotorek;
+  updatePayload["filefotonpwp"] = profileData.rekening.filefotonpwp;
+};
+
 const handleConfirmUpdate = async () => {
   try {
-    const payloadData = new FormData();
-    if (selectedTteFile.pimpinan)
-      payloadData.append("pimpinan_tte", selectedTteFile.pimpinan);
-    if (selectedTteFile.sekretaris)
-      payloadData.append("sekretaris_tte", selectedTteFile.sekretaris);
-    if (selectedTteFile.ketuaBidang)
-      payloadData.append("bidang_fatwa_tte", selectedTteFile.ketuaBidang);
-    if (bankAccPhoto.value)
-      payloadData.append("filefotorek", bankAccPhoto.value);
-    if (npwpPhoto.value) payloadData.append("filefotonpwp", npwpPhoto.value);
+    updatePayloadMapper();
 
-    for (const key in updatePayload) {
-      const value = updatePayload[key];
-      payloadData.append(key, value);
-    }
-    const response: any = await $api("/admin/users/remove", {
-      method: "delete",
-      body: payloadData,
+    // for (const key in updatePayload) {
+    //   const value = updatePayload[key];
+    //   console.log(`${key} = ${value}`);
+    //   payloadData.append(key, value);
+    // }
+    const response: any = await $api("/komisi-fatwa/update-profile", {
+      method: "post",
+      body: updatePayload,
     } as any);
 
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil menyimpan data", "success");
       router.push("/komisi-fatwa/profile");
+    } else {
+      useSnackbar().sendSnackbar("Gagal menyimpan data", "error");
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal menyimpan data", "error");
@@ -302,7 +473,14 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">Nama Lembaga</h4>
               <VTextField
                 placeholder="Isi nama lembaga"
-                :rules="[requiredValidator]"
+                :rules="[
+                  requiredValidator,
+                  regexValidator(
+                    profileData.nama_mui,
+                    /^(?!.*\s\s)(?!.*'')(?!.*\-\-)[a-zA-Z\s'\-]+$/,
+                    'Format nama lembaga tidak sesuai'
+                  ),
+                ]"
                 v-model="profileData.nama_mui"
                 density="compact"
                 rounded="xl"
@@ -314,6 +492,7 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">Jenis Lembaga</h4>
               <VSelect
                 placeholder="Pilih jenis lembaga"
+                :items="lembagaList"
                 :rules="[requiredValidator]"
                 v-model="profileData.jenis"
                 density="compact"
@@ -327,7 +506,14 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">Alamat</h4>
               <VTextField
                 placeholder="Isi alamat"
-                :rules="[requiredValidator]"
+                :rules="[
+                  requiredValidator,
+                  regexValidator(
+                    profileData.alamat,
+                    /^(?!.*\s\s)(?!.*'')(?!.*\-\-)(?!.*\.\.)(?!.*,,)(?!.*[0-9]{6,})(?=.*[a-zA-Z]{5,})[a-zA-Z0-9\s'\.\,\-]+$/,
+                    'Format alamat lembaga tidak sesuai'
+                  ),
+                ]"
                 v-model="profileData.alamat"
                 density="compact"
                 rounded="xl"
@@ -389,7 +575,7 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">Email</h4>
               <VTextField
                 placeholder="Isi email"
-                :rules="[requiredValidator]"
+                :rules="[requiredValidator, emailValidator]"
                 v-model="profileData.email"
                 density="compact"
                 rounded="xl"
@@ -410,7 +596,14 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">Nama Pimpinan</h4>
               <VTextField
                 placeholder="Isi nama pimpinan"
-                :rules="[requiredValidator]"
+                :rules="[
+                  requiredValidator,
+                  regexValidator(
+                    profileData.nama_pimpinan,
+                    /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
+                    'Format nama pimpinan tidak sesuai'
+                  ),
+                ]"
                 v-model="profileData.nama_pimpinan"
                 density="compact"
                 rounded="xl"
@@ -420,7 +613,7 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">No. HP</h4>
               <VTextField
                 placeholder="Isi no. HP"
-                :rules="[requiredValidator]"
+                :rules="[requiredValidator, phoneNumberIdValidator]"
                 v-model="profileData.no_hp_pimpinan"
                 density="compact"
                 rounded="xl"
@@ -429,10 +622,17 @@ onMounted(async () => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">Upload TTE</h4>
               <FileUploadField
+                ref="chairmanTteRef"
+                @validation-is-valid="handleEmitValidationChairmanTTE"
                 :file-data="selectedTteFile.pimpinan"
                 :file-name="profileData.pimpinan_tte"
                 @on-select="handleSelectChairmanTTE"
                 @on-remove="handleRemoveChaimanTTE"
+                :validation-list="[
+                  fileExtensionValidator,
+                  fileSizeValidator,
+                  fileNameLengthValidator,
+                ]"
               />
             </VCol>
           </VRow>
@@ -442,7 +642,14 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">Nama Sekretaris</h4>
               <VTextField
                 placeholder="Isi nama sekretaris"
-                :rules="[requiredValidator]"
+                :rules="[
+                  requiredValidator,
+                  regexValidator(
+                    profileData.nama_sekretaris,
+                    /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
+                    'Format nama sekretaris tidak sesuai'
+                  ),
+                ]"
                 v-model="profileData.nama_sekretaris"
                 density="compact"
                 rounded="xl"
@@ -452,7 +659,7 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">No. HP</h4>
               <VTextField
                 placeholder="Isi no. HP"
-                :rules="[requiredValidator]"
+                :rules="[requiredValidator, phoneNumberIdValidator]"
                 v-model="profileData.no_hp_sekretaris"
                 density="compact"
                 rounded="xl"
@@ -461,10 +668,17 @@ onMounted(async () => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">Upload TTE</h4>
               <FileUploadField
+                ref="sekretarisTteRef"
+                @validation-is-valid="handleEmitValidationSecretaryTTE"
                 :file-data="selectedTteFile.sekretaris"
                 :file-name="profileData.sekretaris_tte"
                 @on-select="handleSelectSecretaryTTE"
                 @on-remove="handleRemoveSecretaryTTE"
+                :validation-list="[
+                  fileExtensionValidator,
+                  fileSizeValidator,
+                  fileNameLengthValidator,
+                ]"
               />
             </VCol>
           </VRow>
@@ -474,7 +688,14 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">Nama Ketua Bidang Fatwa</h4>
               <VTextField
                 placeholder="Isi nama ketua bidang fatwa"
-                :rules="[requiredValidator]"
+                :rules="[
+                  requiredValidator,
+                  regexValidator(
+                    profileData.nama_bidang_fatwa,
+                    /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
+                    'Format nama ketua bidang fatwa tidak sesuai'
+                  ),
+                ]"
                 v-model="profileData.nama_bidang_fatwa"
                 density="compact"
                 rounded="xl"
@@ -484,7 +705,7 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">No. HP</h4>
               <VTextField
                 placeholder="Isi no. HP"
-                :rules="[requiredValidator]"
+                :rules="[requiredValidator, phoneNumberIdValidator]"
                 v-model="profileData.no_hp_bidang_fatwa"
                 density="compact"
                 rounded="xl"
@@ -493,10 +714,17 @@ onMounted(async () => {
             <VCol cols="4">
               <h4 class="mb-1 font-weight-bold">Upload TTE</h4>
               <FileUploadField
+                ref="kabidTteRef"
+                @validation-is-valid="handleEmitValidationFatwaLeadTTE"
                 :file-data="selectedTteFile.ketuaBidang"
                 :file-name="profileData.bidang_fatwa_tte"
                 @on-select="handleSelectFatwaLeadTTE"
                 @on-remove="handleRemoveFatwaLeadTTE"
+                :validation-list="[
+                  fileExtensionValidator,
+                  fileSizeValidator,
+                  fileNameLengthValidator,
+                ]"
               />
             </VCol>
           </VRow>
@@ -506,7 +734,14 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">Nama Kontak</h4>
               <VTextField
                 placeholder="Isi nama kontak"
-                :rules="[requiredValidator]"
+                :rules="[
+                  requiredValidator,
+                  regexValidator(
+                    profileData.nama_kontak,
+                    /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
+                    'Format nama kontak tidak sesuai'
+                  ),
+                ]"
                 v-model="profileData.nama_kontak"
                 density="compact"
                 rounded="xl"
@@ -516,7 +751,7 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">No. HP</h4>
               <VTextField
                 placeholder="Isi no. HP"
-                :rules="[requiredValidator]"
+                :rules="[requiredValidator, phoneNumberIdValidator]"
                 v-model="profileData.no_hp_kontak"
                 density="compact"
                 rounded="xl"
@@ -537,7 +772,14 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">Nama Bank</h4>
               <VTextField
                 placeholder="Isi nama bank"
-                :rules="[requiredValidator]"
+                :rules="[
+                  requiredValidator,
+                  regexValidator(
+                    profileData.rekening.bank,
+                    /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
+                    'Format nama bank tidak sesuai'
+                  ),
+                ]"
                 v-model="profileData.rekening.bank"
                 density="compact"
                 rounded="xl"
@@ -549,7 +791,7 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">No. Rekening</h4>
               <VTextField
                 placeholder="Isi no. rekening"
-                :rules="[requiredValidator]"
+                :rules="[requiredValidator, integerValidator]"
                 v-model="profileData.rekening.no_rekening"
                 density="compact"
                 rounded="xl"
@@ -561,7 +803,14 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">Atas Nama</h4>
               <VTextField
                 placeholder="Isi atas nama"
-                :rules="[requiredValidator]"
+                :rules="[
+                  requiredValidator,
+                  regexValidator(
+                    profileData.rekening.nama,
+                    /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
+                    'Format nama pemegang rekening tidak sesuai'
+                  ),
+                ]"
                 v-model="profileData.rekening.nama"
                 density="compact"
                 rounded="xl"
@@ -572,10 +821,17 @@ onMounted(async () => {
             <VCol cols="6">
               <h4 class="mb-1 font-weight-bold">Upload Foto Rekening</h4>
               <FileUploadField
+                ref="fotoRekRef"
+                @validation-is-valid="handleEmitValidationBankAccPhoto"
                 :file-data="bankAccPhoto"
                 :file-name="profileData.rekening.filefotorek"
                 @on-select="handleSelectBankAccPhoto"
                 @on-remove="handleRemoveBankAccPhoto"
+                :validation-list="[
+                  fileExtensionValidator,
+                  fileSizeValidator,
+                  fileNameLengthValidator,
+                ]"
               />
             </VCol>
           </VRow>
@@ -584,7 +840,7 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">NPWP</h4>
               <VTextField
                 placeholder="Isi NPWP"
-                :rules="[requiredValidator]"
+                :rules="[requiredValidator, integerValidator]"
                 v-model="profileData.rekening.npwp"
                 density="compact"
                 rounded="xl"
@@ -595,10 +851,17 @@ onMounted(async () => {
             <VCol cols="6">
               <h4 class="mb-1 font-weight-bold">Upload Foto NPWP</h4>
               <FileUploadField
+                ref="fotoNpwpRef"
+                @validation-is-valid="handleEmitValidationNpwpPhoto"
                 :file-data="npwpPhoto"
                 :file-name="profileData.rekening.filefotonpwp"
                 @on-select="handleSelectNpwpPhoto"
                 @on-remove="handleRemoveNpwpPhoto"
+                :validation-list="[
+                  fileExtensionValidator,
+                  fileSizeValidator,
+                  fileNameLengthValidator,
+                ]"
               />
             </VCol>
           </VRow>
@@ -608,4 +871,8 @@ onMounted(async () => {
   </VRow>
 </template>
 
-<style scoped></style>
+<style>
+.v-field--appended {
+  padding-inline-end: 0;
+}
+</style>

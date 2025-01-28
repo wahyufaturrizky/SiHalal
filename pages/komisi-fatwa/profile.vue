@@ -41,6 +41,12 @@ const profileData = reactive({
   },
 });
 
+const lembagaList = [
+  { id: 1, name: "MUI Pusat" },
+  { id: 2, name: "Komisi Fatwa MUI Provinsi" },
+  { id: 3, name: "Majekis Permusyawaratan Ulama Aceh" },
+];
+
 const getSubDistrict = async (kode: string) => {
   const response = await $api("/master/subdistrict", {
     method: "post",
