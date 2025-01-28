@@ -115,15 +115,32 @@ const listOutlet = ref<any>({
 const listPenyelia = ref<any>({
   label: [
     { title: "No.", key: "no", nowrap: true },
-    { title: "Nama", key: "nama", nowrap: true },
-    { title: "No. KTP", key: "no_ktp", nowrap: true },
+    {
+      title: `${t("pengajuan-reguler.reguler-form--pengajuan-ph-popup-nama")}`,
+      key: "nama",
+      nowrap: true,
+    },
+    {
+      title: `${t("pengajuan-reguler.reguler-form--pengajuan-ph-popup-ktp")}`,
+      key: "no_ktp",
+      nowrap: true,
+    },
     { title: "Agama", key: "agama", nowrap: true },
     {
-      title: "No/Tgl Sertif Penyelia Halal",
+      title: `${t(
+        "pengajuan-reguler.reguler-form--pengajuan-ph-popup-sertif"
+      )}`,
       key: "tgl_penyelia_halal",
       nowrap: true,
     },
-    { title: "Action", key: "publication", sortable: false, nowrap: true },
+    {
+      title: `${t(
+        "pengajuan-reguler.reguler-form--pengajuan-ph-popup-action"
+      )}`,
+      key: "publication",
+      sortable: false,
+      nowrap: true,
+    },
   ],
   value:
     props?.list_penyelia.map((i) => ({
@@ -146,8 +163,18 @@ const listPenyelia = ref<any>({
 // })
 
 const documentList = ref([
-  { nama: "Izin Edar", fileName: "Surat Izin Usaha.pdf", file: null },
-  { nama: "Izin Masuk", fileName: "", file: null },
+  {
+    nama: `${t(
+      "pengajuan-reguler.reguler-form--pengajuan-doc-permission-circulation"
+    )}`,
+    fileName: "Surat Izin Usaha.pdf",
+    file: null,
+  },
+  {
+    nama: `${t("pengajuan-reguler.reguler-form--pengajuan-doc-permission")}`,
+    fileName: "",
+    file: null,
+  },
 ]);
 
 const removeFile = (index: number) => {

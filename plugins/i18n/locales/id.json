@@ -205,13 +205,16 @@
     "title": "Halal Certificate Submission",
     "detail": "Check Submission Data"
   },
+  "validation": {
+    "fill": "Kolom ini wajib diisi"
+  },
   "login": {
     "nav-1": "Butuh Bantuan?",
     "nav-1-phone": "Telepon",
     "header": "Selamat Datang di",
     "subheader": "Login untuk mengakses fitur pada web SIHALAL",
-    "email-attr": "Email",
-    "email-tip": "Masukkan email",
+    "username-attr": "username",
+    "username-tip": "Masukkan Username",
     "password-attr": "Kata Sandi",
     "password-tip": "Masukkan kata sandi",
     "action-forgot-password": "Lupa Kata Sandi",
@@ -220,7 +223,7 @@
     "tip-1a": "Daftar di sini",
     "tip-2": "Terhubung Ke",
     "msg-err-login": "Gagal masuk, mohon periksa kembali kelengkapan data!",
-    "msg-err-email": "Alamat email tidak ditemukan",
+    "msg-err-username": "Username tidak ditemukan",
     "msg-err-password": "Kata sandi tidak tepat!",
     "msg-err-ishuman": "Silakan verifikasi bahwa Anda bukan robot."
   },
@@ -664,7 +667,9 @@
     "reguler-form--pengajuan-ph-popup-sertif": "No/Tgl Sertif Penyelia Halal",
     "reguler-form--pengajuan-ph-popup-action": "Aksi",
     "reguler-form--pengajuan-ph-popup-add": "Tambah",
-    "reguler-form--pengajuan-ph-popup-cancel": "Batal"
+    "reguler-form--pengajuan-ph-popup-cancel": "Batal",
+    "reguler-form--pengajuan-doc-permission-circulation": "Izin Edar",
+    "reguler-form--pengajuan-doc-permission": "Izin Masuk"
   },
   "reguler-invoice": {
     "invoice-list-back": "Kembali",

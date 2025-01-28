@@ -3,7 +3,7 @@ import { themeConfig } from "@themeConfig";
 import { useDisplay } from "vuetify";
 import { VForm } from "vuetify/components/VForm";
 
-import { emailValidator, requiredValidator } from "#imports";
+import { requiredValidator } from "#imports";
 import { VNodeRenderer } from "@/@layouts/components/VNodeRenderer";
 import HelpButton from "@/views/pages/HelpButton.vue";
 import bseImage from "@images/bse.png";
@@ -96,14 +96,14 @@ async function login() {
     }
     if (error.data.data.code === 400000) {
       errors.value.password = t("login.msg-err-password");
-      errors.value.email = t("login.msg-err-email");
+      errors.value.username = t("login.msg-err-username");
     }
     if (error.data.data.success == false) {
       useSnackbar().sendSnackbar("Captcha Failed", "error");
 
       return;
     }
-    useSnackbar().sendSnackbar(t("login.msg-err-logi"), "error");
+    useSnackbar().sendSnackbar(t("login.msg-err-login"), "error");
     buttonClicked.value = false;
   }
 
@@ -247,15 +247,16 @@ const { t } = useI18n();
               <VCol cols="12">
                 <VTextField
                   v-model="credentials.email"
-                  :label="t('login.email-attr')"
-                  :placeholder="t('login.email-tip')"
-                  type="email"
+                  :label="t('login.username-attr')"
+                  :placeholder="t('login.username-tip')"
+                  type="text"
                   :autofocus="false"
-                  :rules="[requiredValidator, emailValidator]"
+                  :rules="[requiredValidator]"
                   :error-messages="errors.email"
-                  @input="errors.email = undefined"
                 />
               </VCol>
+              <!-- @input="errors.email = undefined" -->
+              <!-- emailValidator -->
 
               <!-- password -->
               <VCol cols="12">
@@ -265,7 +266,7 @@ const { t } = useI18n();
                   :placeholder="t('login.password-tip')"
                   :rules="[requiredValidator]"
                   :type="isPasswordVisible ? 'text' : 'password'"
-                  :error-messages="errors.password"
+                  :error-messages="errors.username"
                   :append-inner-icon="
                     isPasswordVisible
                       ? 'fa-eye-slash fa-reguler'
