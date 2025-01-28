@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import PerizinanCard from "@/components/pelakuUsahaProfile/PerizinanCard.vue";
 import SubPelakuUsahaLayout from "@/layouts/subPelakuUsahaLayout.vue";
+import { useI18n } from "vue-i18n";
 import { VForm } from "vuetify/components";
 
+const { t } = useI18n();
 const store = pelakuUsahaProfile();
 
 const navigatePage = () => navigateTo("/pelaku-usaha");
@@ -75,10 +77,14 @@ const skReadyHandler = (blob) => {
   <SubPelakuUsahaLayout>
     <template #pageTitle>
       <VRow>
-        <VCol><h3>Ubah Pelaku Usaha</h3></VCol>
-        <VCol style="display: flex; justify-content: end">
+        <VCol>
+          <h1 style="font-size: 32px">{{ t("detail-pu.pu-edit-title") }}</h1>
+        </VCol>
+        <VCol style="display: flex; align-items: center; justify-content: end">
           <!-- <DeleteConfirmation /> -->
-          <VBtn variant="outlined" @click="navigatePage()">Batal</VBtn>
+          <VBtn variant="outlined" @click="navigatePage()">{{
+            t("detail-pu.pu-edit-cancel")
+          }}</VBtn>
           <SaveConfirmation
             @confirm-add="submitPenanggungJawab"
             :responsible-data="formData"
@@ -104,7 +110,9 @@ const skReadyHandler = (blob) => {
           <VExpansionPanels v-model="panelOpen">
             <VExpansionPanel>
               <VExpansionPanelTitle>
-                <h2>Penanggung Jawab</h2>
+                <div class="text-h4 font-weight-bold">
+                  {{ t("detail-pu.pu-pj-title") }}
+                </div>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VForm ref="penanggungJawabRef">
@@ -112,7 +120,7 @@ const skReadyHandler = (blob) => {
                     <VCol cols="12">
                       <VTextField
                         v-model="formData.nameResponsible"
-                        label="Nama"
+                        :label="t('detail-pu.pu-pj-nama')"
                         outlined
                         dense
                         :rules="[
@@ -130,7 +138,7 @@ const skReadyHandler = (blob) => {
                     <VCol cols="12">
                       <VTextField
                         v-model="formData.nomorKontak"
-                        label="Nomor Kontak"
+                        :label="t('detail-pu.pu-pj-telp')"
                         outlined
                         dense
                         :rules="[requiredValidator, phoneValidator]"
@@ -141,7 +149,7 @@ const skReadyHandler = (blob) => {
                     <VCol cols="12">
                       <VTextField
                         v-model="formData.email"
-                        label="Email"
+                        :label="t('detail-pu.pu-pj-email')"
                         outlined
                         dense
                         :rules="[emailValidator, requiredValidator]"

@@ -3,14 +3,9 @@
     <VCol cols="12" class="d-flex justify-end">
       <VMenu>
         <template #activator="{ props }">
-          <VBtn
-            color="secondary"
-            size="small"
-            variant="outlined"
-            v-bind="props"
-          >
+          <VBtn color="black" size="small" variant="outlined" v-bind="props">
             <VIcon start icon="fa-solid fa-question-circle" />
-            Butuh Bantuan ?
+            {{ t("login.nav-1") }}
             <VIcon end icon="mdi-chevron-down" />
           </VBtn>
         </template>
@@ -47,14 +42,49 @@
             <template v-slot:prepend>
               <v-icon icon="fa-phone"></v-icon>
             </template>
-            <v-list-item-title>Telepon</v-list-item-title>
+            <v-list-item-title> {{ t("login.nav-1-phone") }}</v-list-item-title>
           </v-list-item>
         </v-list>
       </VMenu>
+      <v-menu>
+        <template #activator="{ props }">
+          <VBtn
+            class="ml-3 text-overline"
+            color="black"
+            size="small"
+            variant="outlined"
+            v-bind="props"
+          >
+            <VIcon start icon="fa-solid fa-globe" />
+            {{ locale }}
+            <VIcon end icon="mdi-chevron-down" />
+          </VBtn>
+        </template>
+        <VList :selected="[locale]" color="primary" mandatory>
+          <!-- List item -->
+          <VListItem
+            v-for="lang in themeConfig.app.i18n.langConfig"
+            :key="lang.i18nLang"
+            class="px-4"
+            :value="lang.i18nLang"
+            @click="locale = lang.i18nLang"
+          >
+            <!-- Language label -->
+            <VListItemTitle>
+              {{ lang.label }}
+            </VListItemTitle>
+          </VListItem>
+        </VList>
+      </v-menu>
     </VCol>
   </VRow>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { themeConfig } from "@themeConfig";
+import { useI18n } from "vue-i18n";
+
+const { t, locale } = useI18n({ useScope: "global" });
+</script>
 
 <style></style>

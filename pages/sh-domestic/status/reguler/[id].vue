@@ -9,6 +9,10 @@ const openedRightPanels = ref([0, 1, 2]);
 const loading = ref(false);
 const detailData = ref<any>(null);
 
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+
 const assignAuditorHeader: any[] = [
   { title: "No", key: "index" },
   { title: "Nama", key: "name" },
@@ -19,48 +23,105 @@ const assignAuditorHeader: any[] = [
 
 const aspectLegalHeader = [
   { title: "No.", key: "id_reg_legal", nowrap: true },
-  { title: "Jenis", key: "jenis_surat", nowrap: true },
-  { title: "No. Dokumen", key: "no_surat", nowrap: true },
-  { title: "Tanggal", key: "tanggal_surat", nowrap: true },
-  { title: "Masa Berlaku", key: "masa_berlaku", nowrap: true },
-  { title: "Instansi Penerbit", key: "instansi_penerbit", nowrap: true },
+  {
+    title: `${t("status-permohoanan.reguler-detail-legal-jenis")}`,
+    key: "jenis_surat",
+    nowrap: true,
+  },
+  {
+    title: `${t("status-permohoanan.reguler-detail-legal-nodok")}`,
+    key: "no_surat",
+    nowrap: true,
+  },
+  {
+    title: `${t("status-permohoanan.reguler-detail-legal-tanggal")}`,
+    key: "tanggal_surat",
+    nowrap: true,
+  },
+  {
+    title: `${t("status-permohoanan.reguler-detail-legal-expired")}`,
+    key: "masa_berlaku",
+    nowrap: true,
+  },
+  {
+    title: `${t("status-permohoanan.reguler-detail-legal-issuer")}`,
+    key: "instansi_penerbit",
+    nowrap: true,
+  },
 ];
 
 const outletHeaders = [
   { title: "No.", key: "no", nowrap: true },
-  { title: "Nama", key: "nama_outlet", nowrap: true },
-  { title: "Alamat", key: "alamat_outlet", nowrap: true },
-  { title: "Status", key: "status_milik", nowrap: true },
+  {
+    title: `${t("status-permohoanan.reguler-detail-out-nama")}`,
+    key: "nama_outlet",
+    nowrap: true,
+  },
+  {
+    title: `${t("status-permohoanan.reguler-detail-out-alamat")}`,
+    key: "alamat_outlet",
+    nowrap: true,
+  },
+  {
+    title: `${t("status-permohoanan.reguler-detail-out-status")}`,
+    key: "status_milik",
+    nowrap: true,
+  },
 ];
 
 const penyeliaHalalHeaders = [
   { title: "No.", key: "no", nowrap: true },
-  { title: "Nama", key: "penyelia_nama", nowrap: true },
-  { title: "No. KTP", key: "no_ktp", nowrap: true },
-  { title: "No. Kontak", key: "no_kontak", nowrap: true },
   {
-    title: "No/Tgl Sertif Penyelia Halal",
+    title: `${t("status-permohoanan.reguler-detail-produk-nama")}`,
+    key: "penyelia_nama",
+    nowrap: true,
+  },
+  {
+    title: `${t("status-permohoanan.reguler-detail-produk-nama")}`,
+    key: "no_ktp",
+    nowrap: true,
+  },
+  {
+    title: `${t("status-permohoanan.reguler-detail-produk-nama")}`,
+    key: "no_kontak",
+    nowrap: true,
+  },
+  {
+    title: `${t("status-permohoanan.reguler-detail-ph-sertif")}`,
     key: "tgl_penyelia_halal",
     nowrap: true,
   },
-  { title: "No/Tgl SK", key: "tanggal_sk", nowrap: true },
+  {
+    title: `${t("status-permohoanan.reguler-detail-ph-sk")}`,
+    key: "tanggal_sk",
+    nowrap: true,
+  },
 ];
 
 const produkHeaders = [
   { title: "No", key: "no" },
-  { title: "Layanan Produk", key: "layanan_produk" },
-  { title: "Jenis Produk", key: "jenis_produk" },
-  { title: "Kelas Produk", key: "kelas_produk" },
-  { title: "Rincian Produk", key: "rincian_prooduk" },
-  { title: "Nama Produk", key: "nama_produk" },
-  { title: "Publikasi", key: "publication" },
+  {
+    title: `${t("status-permohoanan.produk-serivices")}`,
+    key: "layanan_produk",
+  },
+  { title: `${t("status-permohoanan.produk-type")}`, key: "jenis_produk" },
+  { title: `${t("status-permohoanan.produk-class")}`, key: "kelas_produk" },
+  {
+    title: `${t("status-permohoanan.produk-rincian")}`,
+    key: "rincian_prooduk",
+  },
+  { title: `${t("status-permohoanan.produk-name")}`, key: "nama_produk" },
+  {
+    title: `${t("status-permohoanan.produk-publication")}`,
+    key: "publication",
+  },
 ];
 
 const pabrikHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "nama_pabrik" },
-  { title: "Alamat", key: "alamat_pabrik" },
-  { title: "Status", key: "status_milik" },
+  { title: `${t("status-permohoanan.pabrik-name")}`, key: "nama_pabrik" },
+  { title: `${t("status-permohoanan.pabrik-address")}`, key: "alamat_pabrik" },
+  { title: `${t("status-permohoanan.pabrik-status")}`, key: "status_milik" },
 ];
 
 const assignAuditorData = ref([
@@ -158,7 +219,7 @@ onMounted(async () => {
       <template #page-title>
         <VRow no-gutters>
           <VCol>
-            <h1>Detail Pengajuan Sertifikasi</h1>
+            <h1>{{ t("status-permohoanan.reguler-detail-header-title") }}</h1>
           </VCol>
         </VRow>
       </template>
@@ -171,7 +232,7 @@ onMounted(async () => {
         >
           <VExpansionPanel :value="0" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Pengajuan Sertifikasi Halal
+              {{ t("status-permohoanan.reguler-detail-pengajuan-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <PengajuanSertifikasiHalal
@@ -182,14 +243,14 @@ onMounted(async () => {
           </VExpansionPanel>
           <VExpansionPanel :value="1" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Penanggung Jawab
+              {{ t("status-permohoanan.reguler-detail-pic-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <InfoRow
                 cols-name="5"
                 cols-separator="1"
                 cols-value="6"
-                name="Nama"
+                :name="t(`status-permohoanan.reguler-detail-pic-nama`)"
               >
                 {{ detailData?.penanggung_jawab?.nama_pj || "-" }}
               </InfoRow>
@@ -197,7 +258,7 @@ onMounted(async () => {
                 cols-name="5"
                 cols-separator="1"
                 cols-value="6"
-                name="Nomor Kontak"
+                :name="t(`status-permohoanan.reguler-detail-pic-telp`)"
               >
                 {{ detailData?.penanggung_jawab?.nomor_kontak_pj || "-" }}
               </InfoRow>
@@ -205,7 +266,7 @@ onMounted(async () => {
                 cols-name="5"
                 cols-separator="1"
                 cols-value="6"
-                name="Email"
+                :name="t(`status-permohoanan.reguler-detail-pic-email`)"
               >
                 {{ detailData?.penanggung_jawab?.email_pj || "-" }}
               </InfoRow>
@@ -213,7 +274,7 @@ onMounted(async () => {
           </VExpansionPanel>
           <VExpansionPanel :value="2" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Aspek Legal
+              {{ t("status-permohoanan.reguler-detail-legal-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <TableSertifikasiHalal
@@ -224,7 +285,7 @@ onMounted(async () => {
           </VExpansionPanel>
           <VExpansionPanel :value="3" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Pabrik
+              {{ t("status-permohoanan.reguler-detail-fac-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <TableSertifikasiHalal
@@ -235,7 +296,7 @@ onMounted(async () => {
           </VExpansionPanel>
           <VExpansionPanel :value="4" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Outlet
+              {{ t("status-permohoanan.reguler-detail-out-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <TableSertifikasiHalal
@@ -246,7 +307,7 @@ onMounted(async () => {
           </VExpansionPanel>
           <VExpansionPanel :value="5" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Penyelia Halal
+              {{ t("status-permohoanan.reguler-detail-ph-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <TableSertifikasiHalal
@@ -257,7 +318,7 @@ onMounted(async () => {
           </VExpansionPanel>
           <VExpansionPanel :value="6" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Daftar Nama Produk
+              {{ t("status-permohoanan.reguler-detail-produk-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <TableSertifikasiHalal
@@ -277,12 +338,12 @@ onMounted(async () => {
         >
           <VExpansionPanel :value="0" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Formulir Unduhan
+              {{ t("status-permohoanan.reguler-detail-form-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <InfoRowV2
                 class="d-flex align-center"
-                name="STTD"
+                :name="t(`status-permohoanan.reguler-detail-form-sttd`)"
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
@@ -302,7 +363,7 @@ onMounted(async () => {
               </InfoRowV2>
               <InfoRowV2
                 class="d-flex align-center"
-                name="Sertifikasi Halal"
+                :name="t(`status-permohoanan.reguler-detail-form-sh`)"
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
@@ -322,25 +383,55 @@ onMounted(async () => {
                   </template>
                 </VBtn>
               </InfoRowV2>
+              <InfoRowV2
+                class="d-flex align-center"
+                name="Download QR Label"
+                :style="{ fontWeight: '600' }"
+              >
+                <VBtn
+                  :color="
+                    detailData?.certificate_halal.status == 'Terbit SH'
+                      ? 'primary'
+                      : '#A09BA1'
+                  "
+                  density="compact"
+                  class="px-2"
+                  @click="
+                    detailData?.certificate_halal.status == 'Terbit SH'
+                      ? downloadCert(
+                          detailData?.sertifikat_halal_info.nomor_sertifikat
+                        )
+                      : null
+                  "
+                >
+                  <template #default>
+                    <VIcon icon="fa-download" />
+                  </template>
+                </VBtn>
+              </InfoRowV2>
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="1" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Pendaftaran
+              {{ t("status-permohoanan.reguler-detail-reg-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <div v-if="detailData?.certificate_halal">
                 <!-- <Pendaftaran :data="detailData?.certificate_halal" /> -->
                 <VContainer>
                   <VRow>
-                    <VCol cols="3"> Nomor Daftar </VCol>
+                    <VCol cols="3">
+                      {{ t("status-permohoanan.reguler-detail-reg-nodaftar") }}
+                    </VCol>
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       {{ detailData?.certificate_halal.no_daftar }}
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Tanggal </VCol>
+                    <VCol cols="3">
+                      {{ t("status-permohoanan.reguler-detail-reg-tanggal") }}
+                    </VCol>
                     <VCol cols="1"> : </VCol>
                     <VCol
                       cols="8"
@@ -354,28 +445,38 @@ onMounted(async () => {
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Jenis Daftar </VCol>
+                    <VCol cols="3">
+                      {{ t("status-permohoanan.reguler-detail-reg-jnsdaftar") }}
+                    </VCol>
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       {{ detailData?.certificate_halal.jenis_pengajuan }}
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Tempat Pendaftaran </VCol>
+                    <VCol cols="3">
+                      {{
+                        t("status-permohoanan.reguler-detail-reg-tempatdaftar")
+                      }}
+                    </VCol>
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       {{ detailData?.certificate_halal.tempat }}
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Channel Pendaftaran </VCol>
+                    <VCol cols="3">
+                      {{ t("status-permohoanan.reguler-detail-reg-channel") }}
+                    </VCol>
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       {{ detailData?.certificate_halal.channel }}
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Status </VCol>
+                    <VCol cols="3">
+                      {{ t("status-permohoanan.reguler-detail-reg-status") }}
+                    </VCol>
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       <VChip
@@ -393,14 +494,22 @@ onMounted(async () => {
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Fasilitator </VCol>
+                    <VCol cols="3">
+                      {{
+                        t("status-permohoanan.reguler-detail-reg-fasilitator")
+                      }}</VCol
+                    >
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       {{ detailData?.certificate_halal.fasilitator_name }}
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Kode Fasilitasi </VCol>
+                    <VCol cols="3">
+                      {{
+                        t("status-permohoanan.reguler-detail-reg-kodefas")
+                      }}</VCol
+                    >
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       {{ detailData?.certificate_halal.kode_fac }}
@@ -412,20 +521,26 @@ onMounted(async () => {
           </VExpansionPanel>
           <VExpansionPanel :value="2" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Sertifikat Halal
+              {{ t("status-permohoanan.reguler-detail-sh-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <div v-if="detailData?.sertifikat_halal_info">
                 <VContainer>
                   <VRow>
-                    <VCol cols="3"> Nomor Sertifikat </VCol>
+                    <VCol cols="3">
+                      {{ t("status-permohoanan.reguler-detail-sh-nosert") }}
+                    </VCol>
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       {{ detailData?.sertifikat_halal_info.nomor_sertifikat }}
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Tanggal Terbit </VCol>
+                    <VCol cols="3">
+                      {{
+                        t("status-permohoanan.reguler-detail-sh-tglsert")
+                      }}</VCol
+                    >
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8"
                       >{{
@@ -439,7 +554,7 @@ onMounted(async () => {
           </VExpansionPanel>
           <VExpansionPanel :value="3" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Pemeriksaan
+              {{ t("status-permohoanan.reguler-detail-inspection-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <div v-if="detailData?.pemeriksaan">
@@ -447,7 +562,13 @@ onMounted(async () => {
                   <VRow no-gutters>
                     <VCol cols="5">
                       <div class="d-flex justify-space-between">
-                        <div class="text-h6">LPH</div>
+                        <div class="text-h6">
+                          {{
+                            t(
+                              "status-permohoanan.reguler-detail-inspection-lph"
+                            )
+                          }}
+                        </div>
                         <div class="me-2">:</div>
                       </div>
                     </VCol>
@@ -458,7 +579,13 @@ onMounted(async () => {
                   <VRow no-gutters>
                     <VCol cols="5">
                       <div class="d-flex justify-space-between">
-                        <div class="text-h6">Tanggal Selesai LPH</div>
+                        <div class="text-h6">
+                          {{
+                            t(
+                              "status-permohoanan.reguler-detail-inspection-tglfinlph"
+                            )
+                          }}
+                        </div>
                         <div class="me-2">:</div>
                       </div>
                     </VCol>
@@ -476,7 +603,13 @@ onMounted(async () => {
                   <VRow no-gutters>
                     <VCol cols="5">
                       <div class="d-flex justify-space-between">
-                        <div class="text-h6">Hasil</div>
+                        <div class="text-h6">
+                          {{
+                            t(
+                              "status-permohoanan.reguler-detail-inspection-hasil"
+                            )
+                          }}
+                        </div>
                         <div class="me-2">:</div>
                       </div>
                     </VCol>
@@ -487,7 +620,13 @@ onMounted(async () => {
                   <VRow no-gutters>
                     <VCol cols="5">
                       <div class="d-flex justify-space-between">
-                        <div class="text-h6">Dokumen</div>
+                        <div class="text-h6">
+                          {{
+                            t(
+                              "status-permohoanan.reguler-detail-inspection-dok"
+                            )
+                          }}
+                        </div>
                         <div class="me-2">:</div>
                       </div>
                     </VCol>
@@ -501,34 +640,46 @@ onMounted(async () => {
           </VExpansionPanel>
           <VExpansionPanel :value="4" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
-              Sidang Fatwa
+              {{ t("status-permohoanan.reguler-detail-sidang-title") }}
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <div v-if="detailData?.sidang_fatwa">
                 <VContainer>
                   <VRow>
-                    <VCol cols="3"> Nomor Penetapan </VCol>
+                    <VCol cols="3">
+                      {{ t("status-permohoanan.reguler-detail-sidang-nokh") }}
+                    </VCol>
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">{{
                       detailData?.sidang_fatwa.nomor_penetapan
                     }}</VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Tanggal Penetapan</VCol>
+                    <VCol cols="3">
+                      {{
+                        t("status-permohoanan.reguler-detail-sidang-tglkh")
+                      }}</VCol
+                    >
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       {{ detailData?.sidang_fatwa.tanggal_penetapan }}
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Hasil Penetapan</VCol>
+                    <VCol cols="3">
+                      {{
+                        t("status-permohoanan.reguler-detail-sidang-hsilkh")
+                      }}</VCol
+                    >
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       {{ detailData?.sidang_fatwa.ketetapan }}
                     </VCol>
                   </VRow>
                   <VRow>
-                    <VCol cols="3"> Dokumen </VCol>
+                    <VCol cols="3">
+                      {{ t("status-permohoanan.reguler-detail-sidang-dok") }}
+                    </VCol>
                     <VCol cols="1"> : </VCol>
                     <VCol cols="8">
                       {{ detailData?.sidang_fatwa.dokumen }}
@@ -543,7 +694,7 @@ onMounted(async () => {
               <!-- <PanelTracking :data="detailData?.tracking" /> -->
               <VCard class="pa-5">
                 <VCardlTitle class="font-weight-bold text-h4">
-                  Melacak
+                  {{ t("status-permohoanan.reguler-detail-track-title") }}
                 </VCardlTitle>
                 <VCardText class="px-0" v-if="detailData?.tracking">
                   <VTimeline side="end" align="start" hide-opposite>
@@ -723,21 +874,22 @@ onMounted(async () => {
     .v-expansion-panel--active:not(:first-child),
     .v-expansion-panel--active + .v-expansion-panel
   ) {
-  margin-top: 40px !important;
+  margin-block-start: 40px !important;
 }
 
 :deep(.v-data-table.auditor-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }

@@ -45,6 +45,7 @@ export default defineNuxtConfig({
     authSecret: process.env.NUXT_AUTH_SECRET || "",
     authBaseUrl: process.env.NUXT_AUTH_BASE_URL || "",
     coreBaseUrl: process.env.NUXT_CORE_BASE_URL || "",
+    certificateBaseUrl: process.env.NUXT_CERTIFICATE_BASE_URL || "",
 
     // Public keys that are exposed to the client.
     public: {
@@ -54,7 +55,7 @@ export default defineNuxtConfig({
         siteKey: process.env.NUXT_TURNSTILE_SITE_KEY || "",
       },
       recaptcha: {
-        siteKey: process.env.NUXT_RECAPTCHA_SITE_KEY || "",
+        siteKey: process.env.NUXT_PUBLIC_RECAPTCHA_SITE_KEY || "",
       },
     },
     turnstile: {
@@ -113,7 +114,7 @@ export default defineNuxtConfig({
           phone_number: "string",
           name: "string",
           roles:
-            "{ code : string,name: string, permissions: { group: string, name: string, url: string,parent_id : string, id : string }[] }[]",
+            "{ code : string,name: string, permissions: { group: string, name: string, url: string,parent_id : string, id : string, child : {group : string, icon : string,id : string, name : string, parent_id : string, url : string}[] }[] }[]",
           username: "string",
         },
         dataResponsePointer: "/user",

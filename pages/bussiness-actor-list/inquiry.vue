@@ -142,7 +142,7 @@ const debouncedFetch = debounce(loadItem, 500);
 </script>
 
 <template>
-  <h2 style="font-size: 32px">Inquiry</h2>
+  <h1 style="font-size: 32px">Inquiry</h1>
   <br />
   <div v-if="!loadingAll">
     <InquiryFilter
@@ -162,8 +162,10 @@ const debouncedFetch = debounce(loadItem, 500);
       "
     />
 
-    <VCard class="w-100">
-      <VCardTitle class="mt-3"> Data Pengajuan Sertifikasi Halal </VCardTitle>
+    <VCard class="w-100 mt-5">
+      <VCardTitle class="mt-3 text-h4 font-weight-bold">
+        Data Pengajuan Sertifikasi Halal
+      </VCardTitle>
       <VCardItem>
         <VRow>
           <VCol>

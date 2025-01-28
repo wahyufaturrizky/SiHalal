@@ -2,8 +2,10 @@
 <!-- eslint-disable array-callback-return -->
 <script setup lang="ts">
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 
+const { t } = useI18n();
 const router = useRouter();
 
 const searchQuery = ref("");
@@ -16,13 +18,42 @@ const listOss = ref<any[]>([]);
 
 const headers = [
   { title: "No", key: "no" },
-  { title: "Nomor Daftar", key: "no_daftar", nowrap: true },
-  { title: "Tanggal Daftar", key: "tgl_daftar", nowrap: true },
-  { title: "Nama PU", key: "nama_pu", nowrap: true },
-  { title: "Jenis Daftar", key: "jenis_daftar", nowrap: true },
-  { title: "Jenis Produk", key: "jenis_produk", nowrap: true },
-  { title: "Status", key: "newStatus", nowrap: true },
-  { title: "Action", value: "action", sortable: false, nowrap: true },
+  {
+    title: `${t("pengajuan-reguler.reguler-list-head-nodaftar")}`,
+    key: "no_daftar",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-list-head-tgldaftar")}`,
+    key: "tgl_daftar",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-list-head-namapu")}`,
+    key: "nama_pu",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-list-head-jnsdaftar")}`,
+    key: "jenis_daftar",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-list-head-jnsproduk")}`,
+    key: "jenis_produk",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-list-head-status")}`,
+    key: "newStatus",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-list-head-action")}`,
+    value: "action",
+    sortable: false,
+    nowrap: true,
+  },
 ];
 
 const getChipColor = (status: string) => {
@@ -124,12 +155,16 @@ onMounted(async () => {
   </div>
   <div v-else-if="!loading">
     <!-- <KembaliButton class="no-padding" /> -->
-    <h2 style="font-size: 32px">Pengajuan Reguler</h2>
+    <h1 style="font-size: 32px">
+      {{ t("pengajuan-reguler.reguler-list-title") }}
+    </h1>
     <br />
 
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
-        <h3 style="font-size: 24px">Daftar Pengajuan Reguler</h3>
+        <div class="text-h4 font-weight-bold">
+          {{ t("pengajuan-reguler.reguler-list-subtitle") }}
+        </div>
         <NewRegulerSertificationHalalDialog
           :new-register="newRegister"
           :additional-register="additionalRegister"
@@ -199,7 +234,8 @@ onMounted(async () => {
   display: flex;
   place-self: center;
 }
+
 .no-padding {
-  padding-left: 0px !important;
+  padding-inline-start: 0 !important;
 }
 </style>

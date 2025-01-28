@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
-import { useDisplay } from 'vuetify'
+import { useI18n } from "vue-i18n";
+import { useDisplay } from "vuetify";
 
-const { mdAndUp } = useDisplay()
-
+const { t } = useI18n();
+const { mdAndUp } = useDisplay();
 const tablePerizinanHeader = [
   { title: "No", key: "no" },
-  { title: "Penerbit", key: "instansi" },
-  { title: "Nama Izin", key: "nama_izin" },
-  { title: "Nomor", key: "no_izin" },
-  { title: "Tanggal", key: "tgl_izin" },
-  { title: "Document", key: "file_izin" },
-  { title: "Document", key: "file_izin_oss" },
+  { title: `${t("detail-pu.pu-ipenerbitzin-penerbit")}`, key: "instansi" },
+  { title: `${t("detail-pu.pu-izin-namaizin")}`, key: "nama_izin" },
+  { title: `${t("detail-pu.pu-izin-namaizin")}`, key: "no_izin" },
+  { title: `${t("detail-pu.pu-izin-nomor")}`, key: "tgl_izin" },
+  { title: `${t("detail-pu.pu-izin-document")}`, key: "file_izin" },
+  { title: `${t("detail-pu.pu-izin-document")}`, key: "file_izin_oss" },
 ];
 
 const panelOpen = ref([0]);
@@ -52,9 +53,18 @@ const closeModal = ref(false);
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
-      <VExpansionPanelTitle><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">Perizinan</p></VExpansionPanelTitle>
+      <!-- <VExpansionPanelTitle
+        ><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">
+          Perizinan
+        </p></VExpansionPanelTitle
+      > -->
+      <VExpansionPanelTitle>
+        <div class="text-h4 font-weight-bold">
+          {{ t("detail-pu.pu-izin-title") }}
+        </div>
+      </VExpansionPanelTitle>
       <VExpansionPanelText>
-        <VContainer style="max-height: 35svh; overflow-y: auto">
+        <VContainer style="max-block-size: 35svh; overflow-y: auto">
           <div v-if="isLoading">Loading...</div>
           <div
             v-else-if="store.perizinan?.length"
@@ -75,10 +85,16 @@ const closeModal = ref(false);
                 </VCol>
               </VRow>
               <VRow>
-                <VCol cols="12"> Penerbit: {{ item?.instansi || "-" }} </VCol>
+                <VCol cols="12">
+                  {{ t("detail-pu.pu-izin-penerbit") }}:
+                  {{ item?.instansi || "-" }}
+                </VCol>
               </VRow>
               <VRow>
-                <VCol cols="12">Nama Izin: {{ item?.nama_izin || "-" }}</VCol>
+                <VCol cols="12"
+                  >{{ t("detail-pu.pu-izin-namaizin") }}:
+                  {{ item?.nama_izin || "-" }}</VCol
+                >
               </VRow>
             </div>
             <br />
@@ -89,15 +105,23 @@ const closeModal = ref(false);
           <VCol cols="12">
             <VDialog max-width="800">
               <template #activator="{ props: openModal }">
-                <VBtn variant="outlined" style="width: 100%" v-bind="openModal"
-                  >Lihat Data</VBtn
+                <VBtn
+                  variant="outlined"
+                  style="inline-size: 100%"
+                  v-bind="openModal"
+                >
+                  {{ t("detail-pu.pu-izin-act-detail") }}</VBtn
                 >
               </template>
               <template #default="{ isActive }">
                 <VCard>
                   <VCardTitle style="padding: 3svh">
                     <VRow>
-                      <VCol cols="10"><h3>Lihat Data Perizinan</h3></VCol>
+                      <VCol cols="10">
+                        <div class="text-h4 font-weight-bold">
+                          Lihat Data Perizinan
+                        </div>
+                      </VCol>
                       <VCol cols="2" style="display: flex; justify-content: end"
                         ><VIcon
                           size="small"
@@ -108,7 +132,11 @@ const closeModal = ref(false);
                     </VRow>
                   </VCardTitle>
                   <VCardItem
-                    style="margin: 2svh; max-height: 60svh; overflow-y: auto"
+                    style="
+                      margin: 2svh;
+                      max-block-size: 60svh;
+                      overflow-y: auto;
+                    "
                   >
                     <VRow>
                       <VCol cols="12">
@@ -163,7 +191,7 @@ const closeModal = ref(false);
         </VRow>
         <VRow dense>
           <VCol cols="12">
-            <VBtn @click="handleOssUpdate" style="width: 100%"
+            <VBtn @click="handleOssUpdate" style="inline-size: 100%"
               >Update Data OSS</VBtn
             >
           </VCol>

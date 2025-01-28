@@ -68,10 +68,12 @@ onMounted(async () => {
 </script>
 
 <template>
-  <h2 style="font-size: 32px">Daftar Fasilitasi</h2>
+  <h1 style="font-size: 32px">Daftar Fasilitasi</h1>
   <br />
   <VCard>
-    <VCardTitle><h3>List Fasilitasi</h3></VCardTitle>
+    <VCardTitle>
+      <div class="text-h4 font-weight-bold">List Fasilitasi</div>
+    </VCardTitle>
     <VCardItem>
       <VRow>
         <VCol :cols="6">

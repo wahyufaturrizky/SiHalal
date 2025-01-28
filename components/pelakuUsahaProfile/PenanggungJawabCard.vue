@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { penanggungJawab } from "@/stores/interface/pelakuUsahaProfileIntf";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const panelOpen = ref(0);
 
 const props = defineProps({
@@ -13,22 +15,30 @@ const props = defineProps({
 const profilData = [
   {
     id: 1,
-    field: "Nama",
+    field: `${t("detail-pu.pu-pj-nama")}`,
     value: props.responsiblePersonData?.name || "-",
   },
   {
     id: 2,
-    field: "Nomor Kontak",
+    field: `${t("detail-pu.pu-pj-telp")}`,
     value: props.responsiblePersonData?.phone || "-",
   },
-  { id: 3, field: "Email", value: props.responsiblePersonData?.email || "-" },
+  {
+    id: 3,
+    field: `${t("detail-pu.pu-pj-email")}`,
+    value: props.responsiblePersonData?.email || "-",
+  },
 ];
 </script>
 
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
-      <VExpansionPanelTitle><h2>Penanggung Jawab</h2></VExpansionPanelTitle>
+      <VExpansionPanelTitle>
+        <div class="text-h4 font-weight-bold">
+          {{ t("detail-pu.pu-pj-title") }}
+        </div>
+      </VExpansionPanelTitle>
       <VExpansionPanelText>
         <VRow v-for="data in profilData" :key="data.id">
           <VCol cols="4">

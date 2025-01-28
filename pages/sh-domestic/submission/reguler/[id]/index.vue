@@ -1,173 +1,241 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { statusItemFacilitator } from '@/server/utils/statusFasilitator'
+import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 
-const router = useRouter()
-const route = useRoute()
-const id = route?.params?.id
-const panelSubmission = ref([0, 1])
-const panelPic = ref([0, 1])
-const panelAspectLegal = ref([0, 1])
-const panelFactory = ref([0, 1])
-const panelOutlet = ref([0, 1])
-const panelProduk = ref([0, 1])
-const panelSupervisor = ref([0, 1])
-const panelDownloadFormulir = ref([0, 1])
-const panelRegister = ref([0, 1])
-const panelHalal = ref([0, 1])
-const panelTracking = ref([0, 1])
-const data = ref<any>({})
-const dialogKirim = ref(false)
-const dialogData = ref<any>({})
-const loading = ref(false)
+const { t } = useI18n();
+const router = useRouter();
+const route = useRoute();
+const id = route?.params?.id;
+const panelSubmission = ref([0, 1]);
+const panelPic = ref([0, 1]);
+const panelAspectLegal = ref([0, 1]);
+const panelFactory = ref([0, 1]);
+const panelOutlet = ref([0, 1]);
+const panelProduk = ref([0, 1]);
+const panelSupervisor = ref([0, 1]);
+const panelDownloadFormulir = ref([0, 1]);
+const panelRegister = ref([0, 1]);
+const panelHalal = ref([0, 1]);
+const panelTracking = ref([0, 1]);
+const data = ref<any>({});
+const dialogKirim = ref(false);
+const dialogData = ref<any>({});
+const loading = ref(false);
 
 const aspectLegalHeader = [
-  { title: 'No.', key: 'id_reg_legal', nowrap: true },
-  { title: 'Jenis', key: 'jenis_surat', nowrap: true },
-  { title: 'No. Dokumen', key: 'no_surat', nowrap: true },
-  { title: 'Tanggal', key: 'tanggal_surat', nowrap: true },
-  { title: 'Masa Berlaku', key: 'masa_berlaku', nowrap: true },
-  { title: 'Instansi Penerbit', key: 'instansi_penerbit', nowrap: true },
-]
-
-const factoryHeader = [
-  { title: 'No.', key: 'no', nowrap: true },
-  { title: 'Nama', key: 'nama_pabrik', nowrap: true },
-  { title: 'Alamat', key: 'alamat_pabrik', nowrap: true },
-  { title: 'Status', key: 'status_milik', nowrap: true },
-
-]
-
-const outletHeader = [
-  { title: 'No.', key: 'no', nowrap: true },
-  { title: 'Nama', key: 'nama_outlet', nowrap: true },
-  { title: 'Alamat', key: 'alamat_outlet', nowrap: true },
-  { title: 'Status', key: 'status_milik', nowrap: true },
-
-]
-
-const produkHeader = [
-  { title: 'No.', key: 'no', nowrap: true },
-  { title: 'Nama Produk', key: 'nama_produk', nowrap: true },
-  { title: 'Publikasi', key: 'reg_publish', nowrap: true }
-]
-
-const penyeliaHalalHeaders = [
-  { title: 'No.', key: 'no', nowrap: true },
-  { title: 'Nama', key: 'penyelia_nama', nowrap: true },
-  { title: 'No. KTP', key: 'no_ktp', nowrap: true },
-  { title: 'No. Kontak', key: 'no_kontak', nowrap: true },
+  { title: "No.", key: "id_reg_legal", nowrap: true },
   {
-    title: 'No/Tgl Sertif Penyelia Halal',
-    key: 'tgl_penyelia_halal',
+    title: `${t("pengajuan-reguler.reguler-detail-legal-jenis")}`,
+    key: "jenis_surat",
     nowrap: true,
   },
-  { title: 'No/Tgl SK', key: 'tanggal_sk', nowrap: true },
-]
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-legal-nodok")}`,
+    key: "no_surat",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-legal-tanggal")}`,
+    key: "tanggal_surat",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-legal-expired")}`,
+    key: "masa_berlaku",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-legal-issuer")}`,
+    key: "instansi_penerbit",
+    nowrap: true,
+  },
+];
+
+const factoryHeader = [
+  { title: "No.", key: "no", nowrap: true },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-fac-nama")}`,
+    key: "nama_pabrik",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-fac-alamat")}`,
+    key: "alamat_pabrik",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-fac-status")}`,
+    key: "status_milik",
+    nowrap: true,
+  },
+];
+
+const outletHeader = [
+  { title: "No.", key: "no", nowrap: true },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-out-nama")}`,
+    key: "nama_outlet",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-out-alamat")}`,
+    key: "alamat_outlet",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-out-status")}`,
+    key: "status_milik",
+    nowrap: true,
+  },
+];
+
+const produkHeader = [
+  { title: "No.", key: "no", nowrap: true },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-produk-nama")}`,
+    key: "nama_produk",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-produk-publikasi")}`,
+    key: "reg_publish",
+    nowrap: true,
+  },
+];
+
+const penyeliaHalalHeaders = [
+  { title: "No.", key: "no", nowrap: true },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-ph-nama")}`,
+    key: "penyelia_nama",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-ph-ktp")}`,
+    key: "no_ktp",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-ph-telp")}`,
+    key: "no_kontak",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-ph-sertif")}`,
+    key: "tgl_penyelia_halal",
+    nowrap: true,
+  },
+  {
+    title: `${t("pengajuan-reguler.reguler-detail-ph-sk")}`,
+    key: "tanggal_sk",
+    nowrap: true,
+  },
+];
 
 const downloadForms = reactive({
-  sttd: '',
-  sertifikasi_halal: '',
-}) as Record<string, string>
+  sttd: "",
+  sertifikasi_halal: "",
+}) as Record<string, string>;
 
 const getChipColor = (status: string) => {
-  if (status === 'Draf')
-    return 'primary'
-  else if (status === 'Micre')
-    return 'success'
+  if (status === "Draf") return "primary";
+  else if (status === "Micre") return "success";
 
-  return 'success'
-}
+  return "success";
+};
 
 const getDetailData = async () => {
   try {
-    const response: any = await $api('/reguler/pelaku-usaha/detail', {
-      method: 'get',
+    const response: any = await $api("/reguler/pelaku-usaha/detail", {
+      method: "get",
       params: { id },
-    })
+    });
 
-    if (response?.code === 2000)
-      data.value = response.data
-    else
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    if (response?.code === 2000) data.value = response.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const handleKirim = (type: string) => {
-  if (type === 'kirim')
-    dialogData.value = { title: 'Mengirim Pengajuan', description: 'Apakah yakin ingin mengirimkan pengajuan data ini?', label: 'Ya, Kirim' }
-  else if (type === 'delete')
-    dialogData.value = { title: 'Menghapus Pengajuan', description: 'Apakah yakin ingin menghapus pengajuan data ini?', label: 'Ya, Hapus' }
-  dialogKirim.value = true
-}
+  if (type === "kirim")
+    dialogData.value = {
+      title: "Mengirim Pengajuan",
+      description: "Apakah yakin ingin mengirimkan pengajuan data ini?",
+      label: "Ya, Kirim",
+    };
+  else if (type === "delete")
+    dialogData.value = {
+      title: "Menghapus Pengajuan",
+      description: "Apakah yakin ingin menghapus pengajuan data ini?",
+      label: "Ya, Hapus",
+    };
+  dialogKirim.value = true;
+};
 
 const dialogDecision = async (type: string) => {
   try {
-    let url = ''
-    let method = ''
-    if (type === 'Hapus') {
-      url = '/reguler/pelaku-usaha/delete-data'
-      method = 'delete'
-    }
-    else {
-      url = '/reguler/pelaku-usaha/submit'
-      method = 'post'
+    let url = "";
+    let method = "";
+    if (type === "Hapus") {
+      url = "/reguler/pelaku-usaha/delete-data";
+      method = "delete";
+    } else {
+      url = "/reguler/pelaku-usaha/submit";
+      method = "post";
     }
 
     const response: any = await $api(url, {
       method,
       body: { id_reg: id },
-    })
+    });
 
-    dialogKirim.value = false
+    dialogKirim.value = false;
 
     if (response?.code === 2000) {
-      useSnackbar().sendSnackbar(`Berhasil ${type === 'Hapus' ? 'menghapus' : 'mengirim'} pengajuan data`, 'success')
+      useSnackbar().sendSnackbar(
+        `Berhasil ${
+          type === "Hapus" ? "menghapus" : "mengirim"
+        } pengajuan data`,
+        "success"
+      );
       setTimeout(() => {
-        router.push('/sh-domestic/submission/reguler')
-      }, 500)
+        router.push("/sh-domestic/submission/reguler");
+      }, 500);
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    dialogKirim.value = false;
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    dialogKirim.value = false
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const getDownloadForm = async (docName: string, propName: string) => {
-  const result: any = await $api(
-    `/self-declare/submission/${id}/file`,
-    {
-      method: 'get',
-      query: {
-        document: docName,
-      },
+  const result: any = await $api(`/self-declare/submission/${id}/file`, {
+    method: "get",
+    query: {
+      document: docName,
     },
-  )
+  });
 
-  if (result?.code === 2000)
-    downloadForms[propName] = result?.data?.file || ''
-}
+  if (result?.code === 2000) downloadForms[propName] = result?.data?.file || "";
+};
 
 const handleDownloadForm = async (fileName: string) => {
-  return await downloadDocument(fileName)
-}
+  return await downloadDocument(fileName);
+};
 
 onMounted(async () => {
-  loading.value = true
+  loading.value = true;
   await Promise.allSettled([
     getDetailData(),
-    getDownloadForm('sttd', 'sttd'),
-    getDownloadForm('setifikasi-halal', 'setifikasi_halal'),
-  ])
-  loading.value = false
-})
+    getDownloadForm("sttd", "sttd"),
+    getDownloadForm("setifikasi-halal", "setifikasi_halal"),
+  ]);
+  loading.value = false;
+});
 </script>
 
 <template>
@@ -183,18 +251,19 @@ onMounted(async () => {
           </p>
         </VCardText>
         <VCardActions>
-          <VBtn
-            color="primary"
-            variant="outlined"
-            @click="dialogKirim = false"
-          >
+          <VBtn color="primary" variant="outlined" @click="dialogKirim = false">
             Batal
           </VBtn>
           <VBtn
             text
             variant="elevated"
             :color="dialogData?.label.includes('Hapus') ? '#E1442E' : 'primary'"
-            @click="() => dialogDecision(dialogData?.label.includes('Hapus') ? 'Hapus' : 'Kirim')"
+            @click="
+              () =>
+                dialogDecision(
+                  dialogData?.label.includes('Hapus') ? 'Hapus' : 'Kirim'
+                )
+            "
           >
             {{ dialogData?.label }}
           </VBtn>
@@ -208,7 +277,7 @@ onMounted(async () => {
       <VRow class="d-flex justify-space-between align-center">
         <VCol class="">
           <h3 class="text-h3">
-            Pengajuan Sertifikasi Halal: Detail
+            {{ t("pengajuan-reguler.reguler-detail-header-title") }}
           </h3>
         </VCol>
         <VCol cols="6">
@@ -219,22 +288,20 @@ onMounted(async () => {
               class="delete-container"
               @click="() => handleKirim('delete')"
             >
-              <VIcon color="red">
-                fa-trash
-              </VIcon>
+              <VIcon color="red"> fa-trash </VIcon>
             </VBtn>
             <VBtn
               variant="outlined"
               append-icon="ri-edit-line"
               @click="navigateTo(`/sh-domestic/submission/reguler/${id}/edit`)"
             >
-              Ubah Laporan
+              {{ t("pengajuan-reguler.reguler-detail-header-act-edt") }}
             </VBtn>
             <VBtn
               append-icon="fa-paper-plane"
               @click="() => handleKirim('kirim')"
             >
-              Kirim
+              {{ t("pengajuan-reguler.reguler-detail-header-act-send") }}
             </VBtn>
           </VRow>
         </VCol>
@@ -245,14 +312,14 @@ onMounted(async () => {
           <VExpansionPanels v-model="panelSubmission">
             <VExpansionPanel class="pa-4">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
-                Pengajuan Sertifikasi Halal
+                {{ t("pengajuan-reguler.reguler-detail-pengajuan-title") }}
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <InfoRow
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="No.ID"
+                  :name="t(`pengajuan-reguler.reguler-detail-pengajuan-noid`)"
                 >
                   {{ data?.certificate_halal?.id_reg || "-" }}
                 </InfoRow>
@@ -261,16 +328,22 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Tanggal"
+                  :name="t(`pengajuan-reguler.reguler-detail-pengajuan-tgl`)"
                 >
-                  {{ formatDateIntl(new Date(data?.certificate_halal?.tanggal_buat)) || "-" }}
+                  {{
+                    formatDateIntl(
+                      new Date(data?.certificate_halal?.tanggal_buat)
+                    ) || "-"
+                  }}
                 </InfoRow>
                 <ThinLine :thickness="1" />
                 <InfoRow
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="No. Surat Permohonan"
+                  :name="
+                    t(`pengajuan-reguler.reguler-detail-pengajuan-nomohon`)
+                  "
                 >
                   {{ data?.certificate_halal?.no_mohon || "-" }}
                 </InfoRow>
@@ -280,16 +353,24 @@ onMounted(async () => {
                     cols-name="5"
                     cols-separator="1"
                     cols-value="6"
-                    name="Tanggal Permohonan"
+                    :name="
+                      t(`pengajuan-reguler.reguler-detail-pengajuan-tglmohon`)
+                    "
                   >
-                    {{ formatDateIntl(new Date(data?.certificate_halal?.tgl_mohon)) || "-" }}
+                    {{
+                      formatDateIntl(
+                        new Date(data?.certificate_halal?.tgl_mohon)
+                      ) || "-"
+                    }}
                   </InfoRow>
                   <InfoRow
                     v-else
                     cols-name="5"
                     cols-separator="1"
                     cols-value="6"
-                    name="Tanggal Permohonan"
+                    :name="
+                      t(`pengajuan-reguler.reguler-detail-pengajuan-tglmohon`)
+                    "
                   >
                     -
                   </InfoRow>
@@ -298,7 +379,7 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Jenis Layanan"
+                  :name="t(`pengajuan-reguler.reguler-detail-pengajuan-jnslay`)"
                 >
                   {{ data?.certificate_halal?.jenis_layanan || "-" }}
                 </InfoRow>
@@ -306,7 +387,9 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Jenis Produk"
+                  :name="
+                    t(`pengajuan-reguler.reguler-detail-pengajuan-jnsprod`)
+                  "
                 >
                   {{ data?.certificate_halal?.jenis_produk || "-" }}
                 </InfoRow>
@@ -314,7 +397,7 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Merk Dagang"
+                  :name="t(`pengajuan-reguler.reguler-detail-pengajuan-merk`)"
                 >
                   {{ data?.certificate_halal?.merk_dagang || "-" }}
                 </InfoRow>
@@ -322,7 +405,7 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Area Pemasaran"
+                  :name="t(`pengajuan-reguler.reguler-detail-pengajuan-area`)"
                 >
                   {{ data?.certificate_halal?.area_pemasaran || "-" }}
                 </InfoRow>
@@ -330,7 +413,7 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="LPH"
+                  :name="t(`pengajuan-reguler.reguler-detail-pengajuan-lph`)"
                 >
                   {{ data?.certificate_halal?.lembaga_pendamping || "-" }}
                 </InfoRow>
@@ -339,7 +422,7 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Nama Perusahaan"
+                  :name="t(`pengajuan-reguler.reguler-detail-pengajuan-namapu`)"
                 >
                   {{ data?.certificate_halal?.nama_pu || "-" }}
                 </InfoRow>
@@ -347,7 +430,9 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Nama Perusahaan tertera di SH"
+                  :name="
+                    t(`pengajuan-reguler.reguler-detail-pengajuan-namapush`)
+                  "
                 >
                   {{ data?.certificate_halal?.nama_pu || "-" }}
                 </InfoRow>
@@ -355,7 +440,9 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Nama KBLI"
+                  :name="
+                    t(`pengajuan-reguler.reguler-detail-pengajuan-namakbli`)
+                  "
                 >
                   {{ data?.certificate_halal?.nama_kbli || "-" }}
                 </InfoRow>
@@ -363,7 +450,9 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Alamat"
+                  :name="
+                    t(`pengajuan-reguler.reguler-detail-pengajuan-address`)
+                  "
                 >
                   {{ data?.certificate_halal?.alamat_pu || "-" }}
                 </InfoRow>
@@ -371,7 +460,7 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Kota/Kab"
+                  :name="t(`pengajuan-reguler.reguler-detail-pengajuan-city`)"
                 >
                   {{ data?.certificate_halal?.kota_pu || "-" }}
                 </InfoRow>
@@ -379,7 +468,9 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Provinsi"
+                  :name="
+                    t(`pengajuan-reguler.reguler-detail-pengajuan-province`)
+                  "
                 >
                   {{ data?.certificate_halal?.provinsi_pu || "-" }}
                 </InfoRow>
@@ -387,7 +478,9 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Kode Pos"
+                  :name="
+                    t(`pengajuan-reguler.reguler-detail-pengajuan-kodepos`)
+                  "
                 >
                   {{ data?.certificate_halal?.kode_pos_pu || "-" }}
                 </InfoRow>
@@ -395,7 +488,7 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Negara"
+                  :name="t(`pengajuan-reguler.reguler-detail-pengajuan-negara`)"
                 >
                   {{ data?.certificate_halal?.negara_pu || "Indonesia" }}
                 </InfoRow>
@@ -403,7 +496,7 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Telepon"
+                  :name="t(`pengajuan-reguler.reguler-detail-pengajuan-telp`)"
                 >
                   {{ data?.certificate_halal?.telp_pu || "-" }}
                 </InfoRow>
@@ -411,7 +504,7 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Email"
+                  :name="t(`pengajuan-reguler.reguler-detail-pengajuan-email`)"
                 >
                   {{ data?.certificate_halal?.email || "-" }}
                 </InfoRow>
@@ -420,7 +513,7 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Jenis Badan Usaha"
+                  :name="t(`pengajuan-reguler.reguler-detail-pengajuan-jnsbu`)"
                 >
                   {{ data?.certificate_halal?.jenis_badan_usaha || "PT" }}
                 </InfoRow>
@@ -428,7 +521,7 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Sekala Usaha"
+                  :name="t(`pengajuan-reguler.reguler-detail-pengajuan-skala`)"
                 >
                   {{ data?.certificate_halal?.skala_usaha || "-" }}
                 </InfoRow>
@@ -436,7 +529,9 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Tingkat Usaha"
+                  :name="
+                    t(`pengajuan-reguler.reguler-detail-pengajuan-tingkatusaha`)
+                  "
                 >
                   {{ data?.certificate_halal?.tingkat_usaha || "-" }}
                 </InfoRow>
@@ -444,7 +539,7 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Modal Dasar"
+                  :name="t(`pengajuan-reguler.reguler-detail-pengajuan-modal`)"
                 >
                   {{ data?.certificate_halal?.modal_usaha || "-" }}
                 </InfoRow>
@@ -452,7 +547,9 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Asal Usaha"
+                  :name="
+                    t(`pengajuan-reguler.reguler-detail-pengajuan-asalusaha`)
+                  "
                 >
                   {{ data?.certificate_halal?.asal_usaha || "-" }}
                 </InfoRow>
@@ -460,18 +557,18 @@ onMounted(async () => {
             </VExpansionPanel>
           </VExpansionPanels>
 
-          <br>
+          <br />
           <VExpansionPanels v-model="panelPic">
             <VExpansionPanel class="pa-4">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
-                Penanggung Jawab
+                {{ t("pengajuan-reguler.reguler-detail-pic-title") }}
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <InfoRow
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Nama"
+                  :name="t(`pengajuan-reguler.reguler-detail-pic-nama`)"
                 >
                   {{ data?.penanggung_jawab?.nama_pj || "-" }}
                 </InfoRow>
@@ -479,7 +576,7 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Nomor Kontak"
+                  :name="t(`pengajuan-reguler.reguler-detail-pic-telp`)"
                 >
                   {{ data?.penanggung_jawab?.nomor_kontak_pj || "-" }}
                 </InfoRow>
@@ -487,7 +584,7 @@ onMounted(async () => {
                   cols-name="5"
                   cols-separator="1"
                   cols-value="6"
-                  name="Email"
+                  :name="t(`pengajuan-reguler.reguler-detail-pic-email`)"
                 >
                   {{ data?.penanggung_jawab?.email_pj || "-" }}
                 </InfoRow>
@@ -495,11 +592,11 @@ onMounted(async () => {
             </VExpansionPanel>
           </VExpansionPanels>
 
-          <br>
+          <br />
           <VExpansionPanels v-model="panelAspectLegal">
             <VExpansionPanel class="pa-4">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
-                Aspek Legal
+                {{ t("pengajuan-reguler.reguler-detail-legal-title") }}
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
@@ -528,11 +625,11 @@ onMounted(async () => {
             </VExpansionPanel>
           </VExpansionPanels>
 
-          <br>
+          <br />
           <VExpansionPanels v-model="panelFactory">
             <VExpansionPanel class="pa-4">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
-                Pabrik
+                {{ t("pengajuan-reguler.reguler-detail-fac-title") }}
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
@@ -551,17 +648,14 @@ onMounted(async () => {
             </VExpansionPanel>
           </VExpansionPanels>
 
-          <br>
+          <br />
           <VExpansionPanels v-model="panelOutlet">
             <VExpansionPanel class="pa-4">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
-                Outlet
+                {{ t("pengajuan-reguler.reguler-detail-out-title") }}
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <div
-                  class="border rounded w-100"
-                  style="justify-items: center"
-                >
+                <div class="border rounded w-100" style="justify-items: center">
                   <!--                  <div -->
                   <!--                    v-if="data?.outlet?.length === 0" -->
                   <!--                    class="pt-2" -->
@@ -591,11 +685,11 @@ onMounted(async () => {
             </VExpansionPanel>
           </VExpansionPanels>
 
-          <br>
+          <br />
           <VExpansionPanels v-model="panelSupervisor">
             <VExpansionPanel class="pa-4">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
-                Penyelia Halal
+                {{ t("pengajuan-reguler.reguler-detail-ph-title") }}
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
@@ -613,11 +707,11 @@ onMounted(async () => {
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
-          <br>
+          <br />
           <VExpansionPanels v-model="panelProduk">
             <VExpansionPanel class="pa-4">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
-                Daftar Nama Produk
+                {{ t("pengajuan-reguler.reguler-detail-produk-title") }}
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
@@ -632,31 +726,28 @@ onMounted(async () => {
                     </div>
                   </template>
                 </VDataTable>
-<!--                <div-->
-<!--                  class="border rounded w-100"-->
-<!--                  style="justify-items: center"-->
-<!--                >-->
-<!--                  <div-->
-<!--                    v-if="data?.produk?.length === 0"-->
-<!--                    class="pt-2"-->
-<!--                  >-->
-<!--                    <img-->
-<!--                      src="~/assets/images/empty-data.png"-->
-<!--                      alt="empty_data"-->
-<!--                    >-->
-<!--                    <div class="pt-2 pb-2 font-weight-bold">-->
-<!--                      Data Kosong-->
-<!--                    </div>-->
-<!--                  </div>-->
-<!--                </div>-->
+                <!--                <div-->
+                <!--                  class="border rounded w-100"-->
+                <!--                  style="justify-items: center"-->
+                <!--                >-->
+                <!--                  <div-->
+                <!--                    v-if="data?.produk?.length === 0"-->
+                <!--                    class="pt-2"-->
+                <!--                  >-->
+                <!--                    <img-->
+                <!--                      src="~/assets/images/empty-data.png"-->
+                <!--                      alt="empty_data"-->
+                <!--                    >-->
+                <!--                    <div class="pt-2 pb-2 font-weight-bold">-->
+                <!--                      Data Kosong-->
+                <!--                    </div>-->
+                <!--                  </div>-->
+                <!--                </div>-->
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
         </VCol>
-        <VCol
-          cols="4"
-          class="zero-padding"
-        >
+        <VCol cols="4" class="zero-padding">
           <VExpansionPanels v-model="panelDownloadFormulir">
             <VExpansionPanels
               v-model="panelDownloadFormulir"
@@ -665,12 +756,12 @@ onMounted(async () => {
             >
               <VExpansionPanel class="py-2">
                 <VExpansionPanelTitle class="text-h4 font-weight-bold">
-                  Formulir Unduhan
+                  {{ t("pengajuan-reguler.reguler-detail-form-title") }}
                 </VExpansionPanelTitle>
                 <VExpansionPanelText class="d-flex align-center">
                   <InfoRowV2
                     class="d-flex align-center"
-                    name="STTD"
+                    :name="t(`pengajuan-reguler.reguler-detail-form-sttd`)"
                     :style="{ fontWeight: '600' }"
                   >
                     <VBtn
@@ -690,11 +781,13 @@ onMounted(async () => {
                   </InfoRowV2>
                   <InfoRowV2
                     class="d-flex align-center"
-                    name="Sertifikasi Halal"
+                    :name="t(`pengajuan-reguler.reguler-detail-form-sh`)"
                     :style="{ fontWeight: '600' }"
                   >
                     <VBtn
-                      :color="downloadForms.sertifikasi_halal ? 'primary' : '#A09BA1'"
+                      :color="
+                        downloadForms.sertifikasi_halal ? 'primary' : '#A09BA1'
+                      "
                       density="compact"
                       class="px-2"
                       @click="
@@ -712,18 +805,18 @@ onMounted(async () => {
               </VExpansionPanel>
             </VExpansionPanels>
           </VExpansionPanels>
-          <br>
+          <br />
           <VExpansionPanels v-model="panelRegister">
             <VExpansionPanel class="pa-5">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
-                Pendaftaran
+                {{ t("pengajuan-reguler.reguler-detail-reg-title") }}
               </VExpansionPanelTitle>
               <VExpansionPanelText class="d-flex align-center">
                 <InfoRow
                   cols-name="4"
                   cols-separator="1"
                   cols-value="7"
-                  name="Nomor Daftar"
+                  :name="t(`pengajuan-reguler.reguler-detail-reg-nodaftar`)"
                 >
                   {{ data?.certificate_halal?.no_daftar || "-" }}
                 </InfoRow>
@@ -733,16 +826,20 @@ onMounted(async () => {
                     cols-name="4"
                     cols-separator="1"
                     cols-value="7"
-                    name="Tanggal"
+                    :name="t(`pengajuan-reguler.reguler-detail-reg-tanggal`)"
                   >
-                    {{ formatDateIntl(new Date(data?.certificate_halal?.tgl_daftar)) || "-" }}
+                    {{
+                      formatDateIntl(
+                        new Date(data?.certificate_halal?.tgl_daftar)
+                      ) || "-"
+                    }}
                   </InfoRow>
                   <InfoRow
                     v-else
                     cols-name="4"
                     cols-separator="1"
                     cols-value="7"
-                    name="Tanggal"
+                    :name="t(`pengajuan-reguler.reguler-detail-reg-tanggal`)"
                   >
                     -
                   </InfoRow>
@@ -751,7 +848,7 @@ onMounted(async () => {
                   cols-name="4"
                   cols-separator="1"
                   cols-value="7"
-                  name="Tempat Pendaftaran"
+                  :name="t(`pengajuan-reguler.reguler-detail-reg-tempatdaftar`)"
                 >
                   {{ data?.certificate_halal?.no_daftar || "-" }}
                 </InfoRow>
@@ -759,7 +856,7 @@ onMounted(async () => {
                   cols-name="4"
                   cols-separator="1"
                   cols-value="7"
-                  name="Jenis Daftar"
+                  :name="t(`pengajuan-reguler.reguler-detail-reg-jnsdaftar`)"
                 >
                   {{ data?.certificate_halal?.jenis_pengajuan || "-" }}
                 </InfoRow>
@@ -767,10 +864,12 @@ onMounted(async () => {
                   cols-name="4"
                   cols-separator="1"
                   cols-value="7"
-                  name="Status"
+                  :name="t(`pengajuan-reguler.reguler-detail-reg-status`)"
                 >
                   <VChip
-                    :color="getChipColor(data?.certificate_halal?.status || '-')"
+                    :color="
+                      getChipColor(data?.certificate_halal?.status || '-')
+                    "
                     label
                     class="ma-1"
                   >
@@ -781,7 +880,7 @@ onMounted(async () => {
                   cols-name="4"
                   cols-separator="1"
                   cols-value="7"
-                  name="Channel"
+                  :name="t(`pengajuan-reguler.reguler-detail-reg-channel`)"
                 >
                   {{ data?.certificate_halal?.channel || "-" }}
                 </InfoRow>
@@ -789,25 +888,25 @@ onMounted(async () => {
                   cols-name="4"
                   cols-separator="1"
                   cols-value="7"
-                  name="Fasilitator"
+                  :name="t(`pengajuan-reguler.reguler-detail-reg-fasilitator`)"
                 >
                   {{ data?.certificate_halal?.fasilitator_name || "-" }}
                 </InfoRow>
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
-          <br>
+          <br />
           <VExpansionPanels v-model="panelHalal">
             <VExpansionPanel class="pa-5">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
-                Sertifikasi Halal
+                {{ t("pengajuan-reguler.reguler-detail-sh-title") }}
               </VExpansionPanelTitle>
               <VExpansionPanelText class="d-flex align-center">
                 <InfoRow
                   cols-name="4"
                   cols-separator="1"
                   cols-value="7"
-                  name="Nomor Sertifikat"
+                  :name="t(`pengajuan-reguler.reguler-detail-sh-nosert`)"
                 >
                   {{ data?.sertifikat_halal_info?.nomor_sertifikat || "-" }}
                 </InfoRow>
@@ -817,16 +916,22 @@ onMounted(async () => {
                     cols-name="4"
                     cols-separator="1"
                     cols-value="7"
-                    name="Tanggal Sertifikat"
+                    :name="t(`pengajuan-reguler.reguler-detail-sh-tglsert`)"
                   >
-                    {{ formatDateIntl(new Date(data?.sertifikat_halal_info?.tanggal_sertifikat)) || "-" }}
+                    {{
+                      formatDateIntl(
+                        new Date(
+                          data?.sertifikat_halal_info?.tanggal_sertifikat
+                        )
+                      ) || "-"
+                    }}
                   </InfoRow>
                   <InfoRow
                     v-else
                     cols-name="4"
                     cols-separator="1"
                     cols-value="7"
-                    name="Tanggal Sertifikat"
+                    :name="t(`pengajuan-reguler.reguler-detail-sh-tglsert`)"
                   >
                     -
                   </InfoRow>
@@ -834,13 +939,13 @@ onMounted(async () => {
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
-          <br>
+          <br />
 
-          <br>
+          <br />
           <VExpansionPanels v-model="panelTracking">
             <VExpansionPanel class="pa-5">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
-                Melacak
+                {{ t("pengajuan-reguler.reguler-detail-track-title") }}
               </VExpansionPanelTitle>
               <VExpansionPanelText class="d-flex align-center">
                 <PanelTrackingPu :data="data?.tracking" />
@@ -855,15 +960,17 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .mw-170 {
-  max-width: 170px;
   overflow: hidden;
-  white-space: nowrap;
+  max-inline-size: 170px;
   text-wrap: wrap;
+  white-space: nowrap;
 }
+
 .delete-container {
   border-color: #e1442e !important;
 }
+
 .zero-padding {
-  padding-right: 0px !important;
+  padding-inline-end: 0 !important;
 }
 </style>

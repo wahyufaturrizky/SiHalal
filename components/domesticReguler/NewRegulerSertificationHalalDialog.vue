@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, defineProps, ref } from 'vue'
+import { computed, defineProps, ref } from "vue";
 
-import { useDisplay } from 'vuetify'
+import { useI18n } from "vue-i18n";
+import { useDisplay } from "vuetify";
 
 const props = defineProps({
   newRegister: {
@@ -18,67 +19,69 @@ const props = defineProps({
     type: Array,
     required: false,
   },
-})
+});
 
-const isVisible = ref(false)
+const isVisible = ref(false);
 
 const openDialog = () => {
-  isVisible.value = true
-}
+  isVisible.value = true;
+};
 
-const selectedItem = ref(null)
+const selectedItem = ref(null);
 
 const onRegister = () => {
-  props.newRegister('JD.1', selectedItem.value)
-  isVisible.value = false
-}
+  props.newRegister("JD.1", selectedItem.value);
+  isVisible.value = false;
+};
 
 const onAddRegister = () => {
-  props.newRegister('JD.3', selectedItem.value)
-  isVisible.value = false
-}
+  props.newRegister("JD.3", selectedItem.value);
+  isVisible.value = false;
+};
 
-const { mdAndUp } = useDisplay()
+const { mdAndUp } = useDisplay();
 
 const dialogMaxWidth = computed(() => {
-  return mdAndUp.value ? 750 : '90%'
-})
+  return mdAndUp.value ? 750 : "90%";
+});
+
+const { t } = useI18n();
 </script>
 
 <template>
   <div class="mb-2">
-    <VBtn @click="openDialog" variant="flat"> Ajukan Layanan </VBtn>
+    <VBtn @click="openDialog" variant="flat">
+      {{ t("pengajuan-reguler.reguler-btn-ajukan") }}
+    </VBtn>
     <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
-        <VCardTitle>Layanan Sertifikasi Halal</VCardTitle>
+        <VCardTitle>{{ t("pengajuan-reguler.popup-title") }}</VCardTitle>
         <VCardText>
-          Ajukan Permohonan Anda untuk mendapatkan sertifikasi halal dari BPJPH
-          dengan memilih salah satu diantara layanan dibawah ini:
+          {{ t("pengajuan-reguler.popup-content") }}
         </VCardText>
-        <VRow
-          no-gutters
-          class="pa-4 ga-2"
-        >
+        <VRow no-gutters class="pa-4 ga-2">
           <VCol>
             <VCard class="text-center">
               <VCardTitle class="text-center text-h6">
-                Baru
+                {{ t("pengajuan-reguler.popup-new-title") }}
               </VCardTitle>
               <VDivider />
               <VCardText class="mt-0">
-                Proses sertifikasi halal untuk produk baru<br>
-                yang <strong>belum pernah</strong> /
-                <strong>belum memiliki</strong><br>
-                sertifikat halal sebelumnya
+                {{ t("pengajuan-reguler.popup-new-desc") }}<br />
+                {{ t("pengajuan-reguler.popup-new-desc-1") }}
+                <strong> {{ t("pengajuan-reguler.popup-new-desc-2") }}</strong>
+                / <strong> {{ t("pengajuan-reguler.popup-new-desc-3") }}</strong
+                ><br />
+                {{ t("pengajuan-reguler.popup-new-desc-4") }}
               </VCardText>
               <VDivider />
               <VCardActions class="pa-2 justify-center">
                 <VBtn
                   variant="flat"
-                  style="min-width: 100%"
+                  style="min-inline-size: 100%"
                   @click="onRegister"
                 >
-                  Daftar
+                  {{ t("pengajuan-reguler.popup-new-btn") }}
                 </VBtn>
               </VCardActions>
             </VCard>
@@ -86,23 +89,25 @@ const dialogMaxWidth = computed(() => {
           <VCol>
             <VCard class="text-center">
               <VCardTitle class="text-center text-h6">
-                Baru (Pengembang)
+                {{ t("pengajuan-reguler.popup-newp-title") }}
               </VCardTitle>
               <VDivider />
               <VCardText class="mt-0">
-                Proses sertifikasi halal untuk produk baru<br>
-                yang <strong>belum pernah</strong> /
-                <strong>belum memiliki</strong><br>
-                sertifikat halal sebelumnya
+                {{ t("pengajuan-reguler.popup-new-desc") }}<br />
+                {{ t("pengajuan-reguler.popup-new-desc-1") }}
+                <strong>{{ t("pengajuan-reguler.popup-new-desc-2") }}</strong> /
+                <strong>{{ t("pengajuan-reguler.popup-new-desc-3") }}</strong
+                ><br />
+                {{ t("pengajuan-reguler.popup-new-desc-4") }}
               </VCardText>
               <VDivider />
               <VCardActions class="pa-2 justify-center">
                 <VBtn
                   variant="flat"
-                  style="min-width: 100%"
+                  style="min-inline-size: 100%"
                   @click="onAddRegister"
                 >
-                  Daftar
+                  {{ t("pengajuan-reguler.popup-new-btn") }}
                 </VBtn>
               </VCardActions>
             </VCard>
@@ -111,14 +116,13 @@ const dialogMaxWidth = computed(() => {
 
         <VCardText>
           <span class="font-weight-bold mb-4">
-            Nama Usaha / Kegiatan (Nama yang di tampilkan pada
-            sertifikat)
+            {{ t("pengajuan-reguler.popup-kbli-title") }}
           </span>
           <VSelect
             v-model="selectedItem"
             :items="props?.data"
             item-title="uraian_usaha"
-            placeholder="Pilih Nama Usaha"
+            :placeholder="t(`pengajuan-reguler.popup-kbli-combo-text`)"
             item-text="uraian_usaha"
             item-value="id"
           />

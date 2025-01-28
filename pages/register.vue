@@ -14,6 +14,7 @@ import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-il
 import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
 import authV2LoginMaskDark from "@images/pages/auth-v2-login-mask-dark.png";
 import authV2LoginMaskLight from "@images/pages/auth-v2-login-mask-light.png";
+import { useI18n } from "vue-i18n";
 
 const MAX_LENGTH_PHONE_NUMBER = 16;
 
@@ -287,12 +288,14 @@ const imageArray = [
   "/images/login-register/3.png",
 ];
 
-const currentImage = ref("");
+const fileType = ref("IMG");
+const videOrientation = ref("PORTRAIT");
+const currentDisplayFile = ref("");
 
 // const getRandomImage = () => {
 //   const randomIndex = Math.floor(Math.random() * imageArray.length)
 
-//   console.log(currentImage, 'sini', randomIndex, '---', imageArray[randomIndex])
+//   console.log(currentDisplayFile, 'sini', randomIndex, '---', imageArray[randomIndex])
 
 //   return imageArray[randomIndex]
 // }
@@ -303,12 +306,20 @@ const handleLoadImageAuth = async () => {
     } as any);
 
     if (response.code === 2000) {
+      // if (response.data?.type) fileType.value = response.data?.type
+      const fileExt = response.data.file_name.split(".").pop();
+      fileType.value = !["webp"].includes(fileExt) ? "VID" : "IMG";
+      if (fileType.value === "VID") {
+        const orientationStr = response.data.file_name.split("-").pop();
+        videOrientation.value = orientationStr.split(".")[0];
+      }
+
       handleLoadImageFile(response.data.file_name);
     } else {
-      currentImage.value = NoImage;
+      currentDisplayFile.value = NoImage;
     }
   } catch (error) {
-    currentImage.value = NoImage;
+    currentDisplayFile.value = NoImage;
     console.error(error);
   }
 };
@@ -320,14 +331,14 @@ const handleLoadImageFile = async (filename: string) => {
         filename,
       },
     } as any);
-    currentImage.value = response.url;
+    currentDisplayFile.value = response.url;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
 onMounted(() => {
-  // currentImage.value = getRandomImage()
+  // currentDisplayFile.value = getRandomImage()
   handleLoadImageAuth();
 });
 
@@ -341,12 +352,18 @@ onMounted(async () => {
   });
   selectedPhoneCode.value = "62";
 });
+
+const { t } = useI18n();
 </script>
 
 <template>
   <HelpButton />
-  <VRow no-gutters>
-    <VCol cols="12" md="6" class="d-flex align-start justify-center bg-white">
+  <VRow
+    no-gutters
+    class="position-relative"
+    style="min-block-size: calc(100vh - 48px)"
+  >
+    <VCol cols="12" md="6" class="d-flex align-center justify-center bg-white">
       <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-3">
         <VCardText>
           <NuxtLink to="/">
@@ -357,13 +374,13 @@ onMounted(async () => {
         </VCardText>
         <VCardText>
           <h4 class="text-h4 mb-1">
-            Buat Akun
+            {{ t("register.create") }}
             <span class="text-capitalize" color="#652672">{{
               themeConfig.app.title
             }}</span>
           </h4>
           <p class="mb-0">
-            Silahkan buat akun menggunakan fitur web {{ themeConfig.app.title }}
+            {{ t("register.welcome-create") }} {{ themeConfig.app.title }}
           </p>
         </VCardText>
 
@@ -373,14 +390,14 @@ onMounted(async () => {
               <VCol cols="12">
                 <!-- Tipe Pengguna -->
                 <VCol cols="12">
-                  <b> Tipe Pengguna</b>
+                  <b> {{ t("register.user-type") }}</b>
 
                   <VSelect
                     v-model="form.typeUser"
                     :items="fetchType"
                     item-title="name"
                     item-value="id"
-                    label="Pilih tipe pengguna"
+                    :label="t('register.user-type')"
                     persistent-hint
                     return-object
                     single-line
@@ -389,10 +406,10 @@ onMounted(async () => {
 
                 <!-- nama -->
                 <VCol cols="12">
-                  <b> Nama</b>
+                  <b> {{ t("register.name") }}</b>
                   <VTextField
                     v-model="form.name"
-                    placeholder="Masukan Nama"
+                    :placeholder="t('register.place-name')"
                     type="text"
                     @input="validateName"
                   />
@@ -405,11 +422,11 @@ onMounted(async () => {
 
                 <!-- email -->
                 <VCol cols="12">
-                  <b> Email </b>
+                  <b> {{ t("register.email") }} </b>
                   <VTextField
                     v-model="form.email"
                     type="text"
-                    placeholder="Masukan Email"
+                    :placeholder="t('register.place-email')"
                     @input="validateEmail"
                   />
                   <span v-if="errors.email" class="error-text">
@@ -422,11 +439,11 @@ onMounted(async () => {
                 <VCol cols="12">
                   <VRow no-gutters>
                     <VCol cols="12">
-                      <b> Nomor Handphone</b>
+                      <b> {{ t("register.phone") }}</b>
                     </VCol>
                   </VRow>
                   <VRow no-gutters>
-                    <VCol cols="4" style="padding-right: 0">
+                    <VCol cols="4" style="padding-inline-end: 0">
                       <VSelect
                         rounded="s-xl e-0"
                         density="comfortable"
@@ -445,7 +462,7 @@ onMounted(async () => {
                             v-bind="props"
                             :title="item.raw.cc"
                             :subtitle="item.raw.name"
-                            style="width: 200px"
+                            style="inline-size: 200px"
                           >
                           </VListItem>
                         </template>
@@ -458,14 +475,14 @@ onMounted(async () => {
                         </template>
                       </VSelect>
                     </VCol>
-                    <VCol cols="8" style="padding-left: 0">
+                    <VCol cols="8" style="padding-inline-start: 0">
                       <VTextField
                         style="padding: 0"
                         rounded="s-0 e-xl"
                         v-model="form.noHandphone"
                         type="tel"
                         :maxlength="MAX_LENGTH_PHONE_NUMBER"
-                        placeholder="Masukan Nomor Handphone"
+                        :placeholder="t('register.place-phone')"
                         @input="validateNomorHandphone"
                         @paste="handlePasteNomorTelepon"
                       >
@@ -481,14 +498,14 @@ onMounted(async () => {
 
                 <!-- password -->
                 <VCol cols="12">
-                  <b> Kata Sandi</b>
+                  <b> {{ t("register.password") }}</b>
                   <VTextField
                     v-model="form.password"
                     :type="isPasswordVisible ? 'text' : 'password'"
                     :append-inner-icon="
                       isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'
                     "
-                    placeholder="Masukan kata sandi"
+                    :placeholder="t('register.place-password')"
                     @click:append-inner="isPasswordVisible = !isPasswordVisible"
                   />
 
@@ -500,7 +517,7 @@ onMounted(async () => {
 
                 <!-- password confrim -->
                 <VCol cols="12">
-                  <b>Konfirmasi Kata Sandi</b>
+                  <b>{{ t("register.confrim-pasword") }}</b>
                   <VTextField
                     v-model="form.passwordConfirm"
                     :type="isPasswordVisibleConfrim ? 'text' : 'password'"
@@ -509,7 +526,7 @@ onMounted(async () => {
                         ? 'ri-eye-off-line'
                         : 'ri-eye-line'
                     "
-                    placeholder="Masukan konfirmasi kata sandi"
+                    :placeholder="t('register.place-password')"
                     @click:append-inner="
                       isPasswordVisibleConfrim = !isPasswordVisibleConfrim
                     "
@@ -524,19 +541,21 @@ onMounted(async () => {
 
               <VCol cols="12">
                 <VBtn block :disabled="isDisabledSubmit" type="submit">
-                  Buat Akun
+                  {{ t("register.create-account") }}
                 </VBtn>
               </VCol>
               <!-- disabled -->
 
               <!-- create account -->
               <VCol cols="12" class="text-body-1 text-center">
-                <span class="d-inline-block"> Sudah punya akun ?</span>
+                <span class="d-inline-block">
+                  {{ t("register.footer-register") }}</span
+                >
                 <NuxtLink
                   class="text-primary ms-1 d-inline-block text-body-1"
                   :to="{ name: 'index' }"
                 >
-                  Masuk di sini
+                  {{ t("register.footer-register-1") }}
                 </NuxtLink>
               </VCol>
             </VRow>
@@ -544,7 +563,7 @@ onMounted(async () => {
         </VCardText>
         <VCardText>
           <VCol cols="12" class="text-body-1 text-center">
-            <span class="d-inline-block">Terhubung Ke</span>
+            <span class="d-inline-block">{{ t("register.connect") }}</span>
           </VCol>
           <VRow align="center" justify="center">
             <VCol cols="auto" class="d-flex align-center">
@@ -565,10 +584,50 @@ onMounted(async () => {
     <VCol
       v-if="mdAndUp"
       md="6"
-      class="d-flex align-start justify-start py-1 pe-2 bg-white"
-      style="max-height: calc(100vh - 48px)"
+      class="py-1 pe-2 bg-white position-sticky"
+      style="inset-block-start: 23px; max-block-size: calc(100vh - 48px)"
     >
-      <img :src="currentImage" height="100%" style="border-radius: 20px" />
+      <div
+        v-if="fileType === 'IMG'"
+        class="h-100 d-flex align-center justify-start"
+      >
+        <img
+          :src="currentDisplayFile"
+          height="100%"
+          style="border-radius: 20px"
+        />
+      </div>
+      <div v-else class="h-100">
+        <div
+          v-if="videOrientation === 'POTRAIT'"
+          class="h-100 d-flex align-center justify-start"
+        >
+          <video
+            v-if="currentDisplayFile"
+            height="100%"
+            autoplay
+            muted
+            loop
+            style="border-radius: 20px"
+          >
+            <source :src="currentDisplayFile" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        <div v-else class="h-100 d-flex align-center justify-center">
+          <video
+            v-if="currentDisplayFile"
+            width="100%"
+            autoplay
+            muted
+            loop
+            style="border-radius: 20px"
+          >
+            <source :src="currentDisplayFile" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
     </VCol>
   </VRow>
 </template>

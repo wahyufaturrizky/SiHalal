@@ -212,7 +212,7 @@ const bahanType = ref(null);
     <!-- Title and Buttons Row -->
     <VRow>
       <VCol>
-        <h2 style="font-size: 32px">Verifikasi Dokumen Reguler</h2>
+        <h1 style="font-size: 32px">Verifikasi Dokumen Reguler</h1>
       </VCol>
       <VCol cols="4" style="display: flex; justify-content: end">
         <DataPermohonanSertifikasiBpjph @loadData="loadDataFromModal()" />
@@ -221,7 +221,9 @@ const bahanType = ref(null);
     <VCard class="pa-4">
       <VCardTitle>
         <VRow>
-          <VCol cols="10"><h2>Data Pengajuan</h2></VCol>
+          <VCol cols="10">
+            <div class="text-h4 font-weight-bold">Data Pengajuan</div>
+          </VCol>
         </VRow>
       </VCardTitle>
       <VCardText>

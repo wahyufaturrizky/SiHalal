@@ -16,46 +16,9 @@ const panelLp3hTujuan = ref([0, 1])
 const panelStatus = ref([0, 1])
 const panelTracking = ref([0, 1])
 
-const dataAsal = ref([
-  {
-    label: 'No. Registrasi',
-    value: '1',
-  },
-  {
-    label: 'NIK (Nomor Induk Kependudukan)',
-    value: '1',
-  },
-  {
-    label: 'Nama',
-    value: '1',
-  },
-  {
-    label: 'Tempat Tanggal Lahir',
-    value: '1',
-  },
-  {
-    label: 'Alamat',
-    value: '1',
-  },
-  {
-    label: 'Provinsi',
-    value: '1',
-  },
-  {
-    label: 'Kab/Kota',
-    value: '1',
-  },
-  {
-    label: 'Kecamatan',
-    value: '1',
-  },
-  {
-    label: 'Kode Pos',
-    value: '1',
-  },
-])
+const dataAsal = ref([])
 
-const lp3hDummy = ref([
+const lp3hDestination = ref([
   {
     label: 'No. Surat',
     value: '1',
@@ -90,7 +53,7 @@ const lp3hDummy = ref([
   },
 ])
 
-const panelStatusDummy = ref([
+const statusData = ref([
   {
     label: 'Status',
     value: 'Pengajuan',
@@ -116,7 +79,111 @@ const onReturn = () => {
   useSnackbar().sendSnackbar('Pengajuan pindah domisili dikembalikan', 'success')
 }
 
+const handleGetDetail = async () => {
+  try {
+    const response: any = await $api('/approval/domisili-lp3h/detail', {
+      method: 'get',
+      query: {
+        id,
+      },
+    } as any)
+
+    if (response.code === 2000) {
+      const data: any = response.data
+
+      dataAsal.value = [
+        {
+          label: 'No. Registrasi',
+          value: data.no_register,
+        },
+        {
+          label: 'NIK (Nomor Induk Kependudukan)',
+          value: data.nik,
+        },
+        {
+          label: 'Nama',
+          value: data.nama,
+        },
+        {
+          label: 'Tempat Tanggal Lahir',
+          value: `${data.tempat_lahir} ${formatDateId(data?.tgl_lahir)}`,
+        },
+        {
+          label: 'Alamat',
+          value: data?.alamat_asal,
+        },
+        {
+          label: 'Provinsi',
+          value: data?.asal_provinsi,
+        },
+        {
+          label: 'Kab/Kota',
+          value: data?.asal_kabupaten,
+        },
+        {
+          label: 'Kecamatan',
+          value: data?.asal_kecamatan,
+        },
+        {
+          label: 'Kode Pos',
+          value: data?.asal_kodepos,
+        },
+      ]
+      lp3hDestination.value = [
+        {
+          label: 'No. Surat',
+          value: data?.no_surat,
+        },
+        {
+          label: 'Tanggal Surat',
+          value: data?.tgl_surat,
+        },
+        {
+          label: 'Alamat',
+          value: data?.alamat_tujuan,
+        },
+        {
+          label: 'Provinsi',
+          value: data?.tujuan_provinsi,
+        },
+        {
+          label: 'Kab/Kota',
+          value: data?.tujuan_kabupaten,
+        },
+        {
+          label: 'Kecamatan',
+          value: data?.tujuan_kecamatan,
+        },
+        {
+          label: 'Kode Pos',
+          value: data?.tujuan_kodepos,
+        },
+        {
+          label: 'Upload Surat',
+          value: data?.file_surat,
+        },
+      ]
+      statusData.value = [
+        {
+          label: 'Status',
+          value: data?.status,
+        },
+        {
+          label: 'Catatan',
+          value: data?.catatan,
+        },
+      ]
+
+      return response
+    }
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+
 onMounted(async () => {
+  handleGetDetail()
 })
 </script>
 
@@ -185,7 +252,7 @@ onMounted(async () => {
               LP3H Tujuan
             </VExpansionPanelTitle>
             <VExpansionPanelText>
-              <Lp3hTujuan :data="lp3hDummy" />
+              <Lp3hTujuan :data="lp3hDestination" />
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -197,38 +264,18 @@ onMounted(async () => {
               Status
             </VExpansionPanelTitle>
             <VExpansionPanelText>
-              <PanelStatusApproval :data="panelStatusDummy" />
+              <PanelStatusApproval :data="statusData" />
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
         <br>
-        <VExpansionPanels v-model="panelTracking">
+        <!-- <VExpansionPanels v-model="panelTracking">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4">
               Melacak
             </VExpansionPanelTitle>
-            <!--
-              <VExpansionPanelText class="d-flex align-center">
-              <HalalTimeLine
-              :event="
-              detailSubmission.tracking.map(
-              ({ status, username, tanggal, comment, keterangan } : any) => ({
-              status: statusItem[status].desc,
-              created_at: formatDate(tanggal),
-              username,
-              comment,
-              keterangan: (
-              status === 'OF280' || status === 'OF290' || status === 'OF900' || status === 'OF285'
-              ) ? keterangan : '',
-              }),
-              )
-              "
-              show-keterangan
-              />
-              </VExpansionPanelText>
-            -->
           </VExpansionPanel>
-        </VExpansionPanels>
+        </VExpansionPanels> -->
       </VCol>
     </VRow>
   </VContainer>

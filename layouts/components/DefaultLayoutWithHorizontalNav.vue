@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import navItems from "@/navigation/index";
-
 import { themeConfig } from "@themeConfig";
+const menu = useMyAuthUserStore().getMenuHorizontal();
 
 // Components
 import Footer from "@/layouts/components/Footer.vue";
@@ -12,7 +11,7 @@ import { VNodeRenderer } from "@layouts/components/VNodeRenderer"; /* PartiallyE
 </script>
 
 <template>
-  <HorizontalNavLayout :nav-items="navItems.horizontal">
+  <HorizontalNavLayout :nav-items="menu">
     <!-- 👉 navbar -->
     <template #navbar>
       <NuxtLink to="/" class="app-logo">

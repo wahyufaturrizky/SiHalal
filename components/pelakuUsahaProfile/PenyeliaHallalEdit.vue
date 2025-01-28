@@ -186,6 +186,10 @@ const downloadSkHandler = () => {
     window.open(props.fileSkBlob);
   }
 };
+
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -193,7 +197,7 @@ const downloadSkHandler = () => {
     <VCardTitle>
       <VRow>
         <VCol cols="8" style="display: inline-flex; align-items: center">
-          <h3 class="mr-4">Penyelia Halal</h3>
+          <div class="text-h4 font-weight-bold mr-4">Penyelia Halal</div>
           <!-- <VChip
             color="primary"
             style="
@@ -211,7 +215,7 @@ const downloadSkHandler = () => {
             variant="flat"
             color="primary"
           >
-            SK Penetapan Penyelia Halal</VBtn
+            {{ t("detail-pu.pu-edit-sk") }}</VBtn
           >
         </VCol>
         <VCol cols="4" style="display: flex; justify-content: end">
@@ -306,10 +310,10 @@ const downloadSkHandler = () => {
   <!-- <VExpansionPanels v-model="panelOpenPenyeliaHallal">
     <VExpansionPanel>
       <VExpansionPanelTitle>
-        
+
       </VExpansionPanelTitle>
       <VExpansionPanelText>
-        
+
       </VExpansionPanelText>
     </VExpansionPanel>
   </VExpansionPanels> -->

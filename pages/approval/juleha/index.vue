@@ -12,33 +12,33 @@ interface DataUser {
 
 const tableHeaders: any[] = [
   { title: 'No', key: 'no', sortable: false },
-  { title: 'NIK', key: 'username', nowrap: true },
-  { title: 'Nama', key: 'name', nowrap: true },
-  { title: 'Angkatan', key: 'email', nowrap: true },
-  { title: 'Nama Lembaga', key: 'phone_no', nowrap: true },
-  { title: 'No. Invoice', key: 'is_verify', nowrap: true },
+  { title: 'NIK', key: 'nik', nowrap: true },
+  { title: 'Nama', key: 'nama', nowrap: true },
+  { title: 'Angkatan', key: 'angkatan', nowrap: true },
+  { title: 'Nama Lembaga', key: 'nama_lebaga', nowrap: true },
+  { title: 'No. Invoice', key: 'no_invoice', nowrap: true },
   { title: 'Status', key: 'status', nowrap: true },
   { title: 'Sertifikat', key: 'actions', sortable: false, align: 'center' },
 ]
 
 const tableItems = ref<Array[]>([])
+const lembagaItems = ref<Array[]>([])
 const currentPage = ref(1)
 const itemPerPage = ref(10)
 const totalItems = ref(0)
 const selectedItem = ref([])
 const isLoading = ref(false)
-const tableType = ref('Semua')
-
-const searchQuery = ref('')
+const isLoadingLembaga = ref(false)
+const tableType = ref('')
 
 const handleLoadList = async () => {
   try {
-    const response: any = await $api('/admin/users/list', {
+    const response: any = await $api('/approval/juleha/list', {
       method: 'get',
-      params: {
+      query: {
         page: currentPage.value,
         size: itemPerPage.value,
-        search: searchQuery.value,
+        keyword: tableType.value,
       },
     } as any)
 
@@ -56,8 +56,37 @@ const handleLoadList = async () => {
 
       return response
     }
+    else {
+      tableItems.value = []
+      currentPage.value = 1
+      totalItems.value = 0
+    }
   }
   catch (error) {
+    console.error(error)
+  }
+}
+
+const getMasterLembaga = async () => {
+  try {
+    isLoadingLembaga.value = true
+
+    const response: any = await $api('/approval/lembaga', {
+      method: 'get',
+    } as any)
+
+    if (response.code === 2000) {
+      if (response.data !== null) {
+        response.data.unshift({ nama_lebaga: 'Semua', id_lembaga_pelatihan: '' })
+        lembagaItems.value = response.data
+      }
+      isLoadingLembaga.value = false
+
+      return response
+    }
+  }
+  catch (error) {
+    isLoadingLembaga.value = false
     console.error(error)
   }
 }
@@ -66,12 +95,15 @@ const { refresh } = await useAsyncData(
   'user-list',
   async () => await handleLoadList(),
   {
-    watch: [currentPage, itemPerPage],
+    watch: [currentPage, itemPerPage, tableType],
   },
 )
 
-onMounted(() => {
-  handleLoadList()
+onMounted(async () => {
+  await Promise.allSetled([
+    handleLoadList(),
+    getMasterLembaga(),
+  ])
 })
 
 const getChipColor = (status: string) => {
@@ -82,11 +114,31 @@ const getChipColor = (status: string) => {
 }
 
 const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} Pendamping Disetujui`, 'success');
+  try {
+    const response: any = await $api(
+      '/approval/juleha/approve',
+      {
+        method: 'post',
+        body: selectedItem.value,
+      },
+    )
+
+    if (response.code !== 2000) {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      refresh()
+
+      return
+    }
+    useSnackbar().sendSnackbar(`${selectedItem.value.length} Pendamping Disetujui`, 'success')
+    refresh()
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
 }
 
-const unduhFile = () => {
-  window.open('/files/Cara Bayar.pdf', '_blank')
+const unduhFile = async (link: string) => {
+  await downloadDocument(link)
 }
 </script>
 
@@ -122,10 +174,12 @@ const unduhFile = () => {
             >
               <VSelect
                 v-model="tableType"
-                :items="['1']"
-                item-title="name"
-                item-value="code"
+                :items="lembagaItems"
+                item-title="nama_lebaga"
+                item-value="id_lembaga_pelatihan"
                 class="mb-5"
+                :loading="isLoadingLembaga"
+                :disabled="isLoadingLembaga"
               />
             </VCol>
           </VRow>
@@ -209,7 +263,7 @@ const unduhFile = () => {
                       <VIcon
                         icon="ri-arrow-right-line"
                         color="primary"
-                        @click="unduhFile"
+                        @click="() => unduhFile(item.file_sertifikat)"
                       />
                     </div>
                   </IconBtn>

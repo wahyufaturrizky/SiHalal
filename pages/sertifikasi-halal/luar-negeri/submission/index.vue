@@ -105,12 +105,12 @@ const openModalsRequest = () => {
 
 <template>
   <div>
-    <h2 style="font-size: 32px">
+    <h1 style="font-size: 32px">
       Foreign Halal Certificate Registration Submission
-    </h2>
+    </h1>
     <br />
     <VCard class="pa-4">
-      <p class="text-h5">Submission List</p>
+      <div class="text-h4 font-weight-bold">Submission List</div>
       <VRow>
         <VCol class="d-flex justify-sm-space-between align-center">
           <VTextField

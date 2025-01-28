@@ -68,7 +68,7 @@ const navigateAction = (id: string) => {
 <template>
   <VRow>
     <VCol cols="12">
-      <h2 style="font-size: 32px">Invoice Fasilitasi</h2>
+      <h1 style="font-size: 32px">Invoice Fasilitasi</h1>
     </VCol>
   </VRow>
   <VRow>
@@ -76,9 +76,13 @@ const navigateAction = (id: string) => {
       <VCard style="padding: 1.5svw">
         <VCardTitle>
           <VRow>
-            <VCol cols="6" style="display: flex; align-items: center"
-              >Daftar Invoice Fasilitasi</VCol
+            <VCol
+              cols="6"
+              style="display: flex; align-items: center"
+              class="text-h4 font-weight-bold"
             >
+              Daftar Invoice Fasilitasi
+            </VCol>
             <VCol cols="6" style="display: flex; justify-content: end"
               ><VBtn variant="flat" append-icon="fa-download" @click="download"
                 >Download Cara Pembayaran</VBtn

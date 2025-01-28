@@ -1,30 +1,32 @@
 <script setup lang="ts">
-import { useDisplay } from 'vuetify'
 import AspekLegalCard from "@/components/pelakuUsahaProfile/AspekLegalCard.vue";
 import PerizinanCard from "@/components/pelakuUsahaProfile/PerizinanCard.vue";
 import SubPelakuUsahaLayout from "@/layouts/subPelakuUsahaLayout.vue";
 import { pelakuUsahaProfile } from "@/stores/pelaku-usaha-profile";
+import { useI18n } from "vue-i18n";
+import { useDisplay } from "vuetify";
 
+const { t } = useI18n();
 const tablePabrikHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "name" },
-  { title: "Alamat", key: "address" },
-  { title: "Action", key: "action" },
+  { title: `${t("detail-pu.pu-title")}`, key: "name" },
+  { title: `${t("detail-pu.pu-fac-address")}`, key: "address" },
+  { title: `${t("detail-pu.pu-fac-action")}`, key: "action" },
 ];
 
 const tableOutletHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "name" },
-  { title: "Alamat", key: "address" },
+  { title: `${t("detail-pu.pu-out-nama")}`, key: "name" },
+  { title: `${t("detail-pu.pu-out-address")}`, key: "address" },
 ];
 
 const penyeliaHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "name" },
-  { title: "No. KTP", key: "ktp_no" },
-  { title: "No. Kontak", key: "no_kontak" },
-  { title: "No/Tgl Sertif Penyelia Halal", key: "certification_no" },
-  { title: "No/Tanggal SK", key: "sk_no" },
+  { title: `${t("detail-pu.pu-ph-nama")}`, key: "name" },
+  { title: `${t("detail-pu.pu-ph-ktp")}`, key: "ktp_no" },
+  { title: `${t("detail-pu.pu-ph-telp")}`, key: "no_kontak" },
+  { title: `${t("detail-pu.pu-ph-sertif")}`, key: "certification_no" },
+  { title: `${t("detail-pu.pu-ph-sk")}`, key: "sk_no" },
   // { title: "Action", key: "action" },
 ];
 // const { canAccess } = useMyAuthUserStore();
@@ -37,7 +39,7 @@ const onEdit = () => {
 };
 
 const store = pelakuUsahaProfile();
-const { mdAndUp } = useDisplay()
+const { mdAndUp } = useDisplay();
 
 onMounted(() => {
   store.fetchProfile();
@@ -49,7 +51,8 @@ onMounted(() => {
     <template #pageTitle>
       <VRow align="center">
         <VCol>
-          <h2 :class="mdAndUp ? 'text-menu' : 'mobile-text-menu'">Detail Pelaku Usaha</h2>
+          <!-- <h2 :class="mdAndUp ? 'text-menu' : 'mobile-text-menu'">Detail Pelaku Usaha</h2> -->
+          <h1 style="font-size: 32px">{{ t("detail-pu.pu-title") }}</h1>
         </VCol>
         <VCol style="display: flex; justify-content: end">
           <VBtn
@@ -58,7 +61,7 @@ onMounted(() => {
             prepend-icon=""
             @click="onEdit"
           >
-            Ubah
+            {{ t("detail-pu.pu-head-edit") }}
           </VBtn>
         </VCol>
       </VRow>
@@ -91,7 +94,12 @@ onMounted(() => {
         <VCol cols="12">
           <VExpansionPanels v-model="panelOpenPabrik">
             <VExpansionPanel>
-              <VExpansionPanelTitle><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">Pabrik</p></VExpansionPanelTitle>
+              <!-- <VExpansionPanelTitle><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">Pabrik</p></VExpansionPanelTitle> -->
+              <VExpansionPanelTitle>
+                <div class="text-h4 font-weight-bold">
+                  {{ t("detail-pu.pu-fac-title") }}
+                </div>
+              </VExpansionPanelTitle>
 
               <VExpansionPanelText>
                 <VDataTable
@@ -111,7 +119,12 @@ onMounted(() => {
         <VCol cols="12">
           <VExpansionPanels v-model="panelOpenOutlet">
             <VExpansionPanel>
-              <VExpansionPanelTitle><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">Outlet</p></VExpansionPanelTitle>
+              <!-- <VExpansionPanelTitle><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">Outlet</p></VExpansionPanelTitle> -->
+              <VExpansionPanelTitle>
+                <div class="text-h4 font-weight-bold">
+                  {{ t("detail-pu.pu-out-title") }}
+                </div>
+              </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
                   :headers="tableOutletHeader"
@@ -131,7 +144,10 @@ onMounted(() => {
           <VExpansionPanels v-model="panelOpenPenyeliaHallal">
             <VExpansionPanel>
               <VExpansionPanelTitle>
-                <p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">Penyelia Halal</p>
+                <!-- <p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">Penyelia Halal</p> -->
+                <div class="text-h4 font-weight-bold">
+                  {{ t("detail-pu.pu-ph-title") }}
+                </div>
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable

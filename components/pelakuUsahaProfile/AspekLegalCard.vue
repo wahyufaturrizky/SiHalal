@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { useDisplay } from 'vuetify'
-import type { legal } from "@/stores/interface/pelakuUsahaProfileIntf"
+import type { legal } from "@/stores/interface/pelakuUsahaProfileIntf";
+import { useI18n } from "vue-i18n";
+import { useDisplay } from "vuetify";
 
-const { mdAndUp } = useDisplay()
-
+const { t } = useI18n();
+const { mdAndUp } = useDisplay();
 const panelOpen = ref(0);
 const props = defineProps({
   aspekLegalData: {
@@ -13,17 +14,17 @@ const props = defineProps({
   hideDefaultFooter: {
     type: Boolean,
     required: false,
-  }
+  },
 });
 
 const legalHeader = [
   { title: "No", key: "no" },
-  { title: "Jenis", key: "type" },
-  { title: "No. Dokumen", key: "doc_number" },
-  { title: "Tanggal", key: "date" },
-  { title: "Masa Berlaku", key: "expiration_date" },
-  { title: "Instansi Penerbit", key: "publishing_agency" },
-  { title: "Action", key: "action" },
+  { title: `${t("detail-pu.pu-legal-jenis")}`, key: "type" },
+  { title: `${t("detail-pu.pu-legal-nodoc")}`, key: "doc_number" },
+  { title: `${t("detail-pu.pu-legal-tgl")}`, key: "date" },
+  { title: `${t("detail-pu.pu-legal-tgl-exp")}`, key: "expiration_date" },
+  { title: `${t("detail-pu.pu-legal-issuer")}`, key: "publishing_agency" },
+  { title: `${t("detail-pu.pu-legal-action")}`, key: "action" },
 ];
 
 const storeDataMaster = dataMasterStore();
@@ -44,7 +45,16 @@ onMounted(() => {
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
-      <VExpansionPanelTitle><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">Aspek Legal</p></VExpansionPanelTitle>
+      <!-- <VExpansionPanelTitle
+        ><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">
+          Aspek Legal
+        </p></VExpansionPanelTitle
+      > -->
+      <VExpansionPanelTitle>
+        <div class="text-h4 font-weight-bold">
+          {{ t("detail-pu.pu-legal-title") }}
+        </div>
+      </VExpansionPanelTitle>
       <VExpansionPanelText>
         <VDataTable
           :headers="legalHeader"
