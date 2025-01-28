@@ -168,7 +168,7 @@ export const alphaDashValidator = (value: unknown) => {
 
 // 👉 File Size Validator
 export const fileSizeValidator = (value: unknown) => {
-  console.log("file attribute = ", value[0]);
+  // console.log("file attribute = ", value[0]);
   if (value[0].size > 2097152) {
     return "File maksimal 2MB";
   }
@@ -181,7 +181,7 @@ export const fileExtensionValidator = (value: unknown) => {
   if (Array.isArray(value)) {
     file = value[0];
   }
-  console.log("file attribute = ", value[0].type);
+  // console.log("file attribute = ", file.type);
   const allowedFileExtensionList = [
     "image/jpg",
     "image/jpeg",
@@ -214,7 +214,7 @@ export const fileExtensionTypeValidator = (
   if (Array.isArray(value)) {
     file = value[0];
   }
-  console.log("file attribute = ", value[0].type);
+  // console.log("file attribute = ", value[0].type);
   const result = useArrayIncludes(allowed, file.type).value;
   // console.log("file extension match = ", result);
   if (result) {
@@ -224,7 +224,7 @@ export const fileExtensionTypeValidator = (
 };
 
 export const fileNameLengthValidator = (value: unknown) => {
-  console.log("file attribute = ", value[0].name);
+  // console.log("file attribute = ", value[0].name);
   if (value[0].name.length > 77) {
     return "File name too long";
   }

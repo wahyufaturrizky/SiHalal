@@ -16,6 +16,18 @@ async function logout() {
     throw createError(error);
   }
 }
+const userRoleArr = userData.value?.roles;
+const isFatwaCommission = computed(() => {
+  const existData = userRoleArr?.filter((item: any) => {
+    return item.code === "R.6";
+  });
+
+  return existData && existData.length > 0;
+});
+
+const toFatwaCommissionProfile = () => {
+  return navigateTo("/komisi-fatwa/profile");
+};
 
 const userProfileList = [
   { type: "divider" },
@@ -65,7 +77,9 @@ const userProfileList = [
       <VMenu activator="parent" width="270" location="bottom end" offset="15px">
         <VList>
           <PerfectScrollbar :options="{ wheelPropagation: false }">
-            <VListItem>
+            <VListItem
+              @click="isFatwaCommission ? toFatwaCommissionProfile() : null"
+            >
               <div class="d-flex gap-x-2 align-center">
                 <VAvatar variant="tonal" color="secondary">
                   <VIcon icon="fa-user" />

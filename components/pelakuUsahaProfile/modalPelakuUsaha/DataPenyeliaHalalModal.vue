@@ -140,7 +140,7 @@ const { t } = useI18n();
       variant="outlined"
       append-icon="ri-add-line"
     >
-      {{ t("detail-pu-pu.pu-edit-add") }}
+      {{ t("detail-pu.pu-edit-add") }}
     </VBtn>
 
     <VItemGroup
