@@ -47,6 +47,10 @@ const lembagaList = [
   { id: 3, name: "Majekis Permusyawaratan Ulama Aceh" },
 ];
 
+const download = async (item: any) => {
+  await downloadDocument(item);
+};
+
 const getSubDistrict = async (kode: string) => {
   const response = await $api("/master/subdistrict", {
     method: "post",
@@ -218,19 +222,30 @@ onMounted(() => {
                 <VCol cols="8" class="d-flex">
                   <span class="me-2">:</span>
                   <div class="d-flex">
-                    <VIcon
+                    <VBtn
                       v-if="profileData.pimpinan_tte"
-                      icon="fa-download"
-                      color="primary"
-                      class="me-3"
-                    />
-                    <span class="text-primary">
-                      {{
-                        profileData.pimpinan_tte
-                          ? profileData.pimpinan_tte
-                          : "-"
-                      }}
-                    </span>
+                      variant="text"
+                      @click="download(profileData.pimpinan_tte)"
+                    >
+                      <template #default>
+                        <VIcon
+                          icon="fa-download"
+                          color="primary"
+                          class="me-3"
+                        />
+                        <span
+                          style="text-align: start"
+                          class="text-primary text-wrap"
+                        >
+                          {{
+                            profileData.pimpinan_tte
+                              ? profileData.pimpinan_tte
+                              : "-"
+                          }}
+                        </span>
+                      </template>
+                    </VBtn>
+                    <span v-else>-</span>
                   </div>
                 </VCol>
               </VRow>
@@ -274,19 +289,30 @@ onMounted(() => {
                 <VCol cols="8" class="d-flex">
                   <span class="me-2">:</span>
                   <div class="d-flex">
-                    <VIcon
+                    <VBtn
                       v-if="profileData.sekretaris_tte"
-                      icon="fa-download"
-                      color="primary"
-                      class="me-3"
-                    />
-                    <span class="text-primary">
-                      {{
-                        profileData.sekretaris_tte
-                          ? profileData.sekretaris_tte
-                          : "-"
-                      }}
-                    </span>
+                      variant="text"
+                      @click="download(profileData.sekretaris_tte)"
+                    >
+                      <template #default>
+                        <VIcon
+                          icon="fa-download"
+                          color="primary"
+                          class="me-3"
+                        />
+                        <span
+                          style="text-align: start"
+                          class="text-primary text-wrap"
+                        >
+                          {{
+                            profileData.sekretaris_tte
+                              ? profileData.sekretaris_tte
+                              : "-"
+                          }}
+                        </span>
+                      </template>
+                    </VBtn>
+                    <span v-else>-</span>
                   </div>
                 </VCol>
               </VRow>
@@ -330,19 +356,30 @@ onMounted(() => {
                 <VCol cols="8" class="d-flex">
                   <span class="me-2">:</span>
                   <div class="d-flex">
-                    <VIcon
+                    <VBtn
                       v-if="profileData.bidang_fatwa_tte"
-                      icon="fa-download"
-                      color="primary"
-                      class="me-3"
-                    />
-                    <span class="text-primary">
-                      {{
-                        profileData.bidang_fatwa_tte
-                          ? profileData.bidang_fatwa_tte
-                          : "-"
-                      }}
-                    </span>
+                      variant="text"
+                      @click="download(profileData.bidang_fatwa_tte)"
+                    >
+                      <template #default>
+                        <VIcon
+                          icon="fa-download"
+                          color="primary"
+                          class="me-3"
+                        />
+                        <span
+                          style="text-align: start"
+                          class="text-primary text-wrap"
+                        >
+                          {{
+                            profileData.bidang_fatwa_tte
+                              ? profileData.bidang_fatwa_tte
+                              : "-"
+                          }}
+                        </span>
+                      </template>
+                    </VBtn>
+                    <span v-else>-</span>
                   </div>
                 </VCol>
               </VRow>
@@ -426,19 +463,26 @@ onMounted(() => {
             <VCol cols="9" class="d-flex">
               <span class="me-2">:</span>
               <div class="d-flex">
-                <VIcon
+                <VBtn
                   v-if="profileData.rekening.filefotorek"
-                  icon="fa-download"
-                  color="primary"
-                  class="me-3"
-                />
-                <span class="text-primary">
-                  {{
-                    profileData.rekening.filefotorek
-                      ? profileData.rekening.filefotorek
-                      : "-"
-                  }}
-                </span>
+                  variant="text"
+                  @click="download(profileData.rekening.filefotorek)"
+                >
+                  <template #default>
+                    <VIcon icon="fa-download" color="primary" class="me-3" />
+                    <span
+                      style="text-align: start"
+                      class="text-primary text-wrap"
+                    >
+                      {{
+                        profileData.rekening.filefotorek
+                          ? profileData.rekening.filefotorek
+                          : "-"
+                      }}
+                    </span>
+                  </template>
+                </VBtn>
+                <span v-else>-</span>
               </div>
             </VCol>
           </VRow>
@@ -460,19 +504,26 @@ onMounted(() => {
             <VCol cols="9" class="d-flex">
               <span class="me-2">:</span>
               <div class="d-flex">
-                <VIcon
+                <VBtn
                   v-if="profileData.rekening.filefotonpwp"
-                  icon="fa-download"
-                  color="primary"
-                  class="me-3"
-                />
-                <span class="text-primary">
-                  {{
-                    profileData.rekening.filefotonpwp
-                      ? profileData.rekening.filefotonpwp
-                      : "-"
-                  }}
-                </span>
+                  variant="text"
+                  @click="download(profileData.rekening.filefotonpwp)"
+                >
+                  <template #default>
+                    <VIcon icon="fa-download" color="primary" class="me-3" />
+                    <span
+                      style="text-align: start"
+                      class="text-primary text-wrap"
+                    >
+                      {{
+                        profileData.rekening.filefotonpwp
+                          ? profileData.rekening.filefotonpwp
+                          : "-"
+                      }}
+                    </span>
+                  </template>
+                </VBtn>
+                <span v-else>-</span>
               </div>
             </VCol>
           </VRow>
