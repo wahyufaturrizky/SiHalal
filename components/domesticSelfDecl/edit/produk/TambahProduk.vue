@@ -4,9 +4,9 @@ import type { VForm } from "vuetify/components";
 const predictKBLIMessage = ref("");
 const predictMessage = ref("");
 const jenis_product = ref("");
-const loadingPredictKBLI = ref(false);
+const loadingPredictKBLI = ref(true);
 const isSesuai = ref(false);
-const loadingPredict = ref(false);
+const loadingPredict = ref(true);
 const loadingAll = ref(true);
 
 const props = defineProps<{
@@ -164,7 +164,6 @@ const uploadDocument = async (file: any) => {
 
 const predictKBLI = async (product: any) => {
   try {
-    loadingPredictKBLI.value = true;
     const response: any = await $api(
       "/machine-learning/registration/mlclient/predict-kbli",
       {
@@ -191,7 +190,6 @@ const predictKBLI = async (product: any) => {
 
 const predict = async (product: any) => {
   try {
-    loadingPredict.value = true;
     const response: any = await $api(
       "/machine-learning/registration/mlclient/predict",
       {
@@ -216,12 +214,12 @@ const predict = async (product: any) => {
   }
 };
 
-const debouncedFetch: any = debounce(predictKBLI, 500);
-const debouncedFetchPredict: any = debounce(predict, 500);
+const debouncedFetch: any = debounce(predictKBLI, 1000);
+const debouncedFetchPredict: any = debounce(predict, 1000);
 
 const handleInput = () => {
-  debouncedFetch((formData as any).value?.nama_produk);
-  debouncedFetchPredict((formData as any).value?.nama_produk);
+  debouncedFetch(formData?.nama_produk);
+  debouncedFetchPredict(formData?.nama_produk);
 };
 
 const formUbahProduk = ref<VForm>();
@@ -252,12 +250,11 @@ const getDetail = async () => {
   }
 };
 
-const handlePredict = (product) => {
+const handlePredict = (product: any) => {
   if (product) {
-    if (jenis_product.value === predictKBLIMessage.value) {
+    if (jenis_product.value === predictMessage.value) {
       isSesuai.value = true;
       const res = `Jenis Produk Sudah Sesuai ${predictMessage.value}, KBLI: ${predictKBLIMessage.value}`;
-
       return res;
     } else {
       isSesuai.value = false;
@@ -334,10 +331,12 @@ onMounted(async () => {
               v-model="formData.nama_produk"
               :rules="[requiredValidator]"
               @input="handleInput"
-              :loading="loadingPredictKBLI || loadingPredict"
             ></VTextField>
-            <p :class="isSesuai ? 'text-blue' : 'text-red'">
-              {{ handlePredict(formData.nama_produk) }}
+            <p
+              v-if="!loadingPredict && !loadingPredictKBLI"
+              :class="isSesuai ? 'text-blue' : 'text-red'"
+            >
+              {{ handlePredict(formData?.nama_produk) }}
             </p>
           </VItemGroup>
           <br />
