@@ -18,7 +18,7 @@ export default defineEventHandler(async (event: any) => {
   const body: DraftBody = await readBody(event)
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/kepala-badan/assesor`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/`, // wait for api
     {
       method: 'post',
       headers: { Authorization: authorizationHeader },
@@ -26,7 +26,6 @@ export default defineEventHandler(async (event: any) => {
     },
   ).catch((err: NuxtError) => {
     console.log(err);
-    
     setResponseStatus(event, 400)
 
     return err.data
