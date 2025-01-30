@@ -198,8 +198,8 @@ const loadItemPabrik = async (
     );
 
     if (response.code === 2000) {
-      // itemsPabrik.value = response.data || [];
-      // totalItemsPabrik.value = response.total_item || 0;
+      itemsPabrik.value = response?.data || [];
+      totalItemsPabrik.value = response?.total_item || 0;
       loadingPabrik.value = false;
       return response;
     } else {
@@ -237,8 +237,8 @@ const loadItemOutlet = async (
     console.log("@response", response);
 
     if (response.code === 2000) {
-      // itemsOutlet.value = response.data || [];
-      // totalItemsOutlet.value = response.total_item || 0;
+      itemsOutlet.value = response.data || [];
+      totalItemsOutlet.value = response.total_item || 0;
       loadingOutlet.value = false;
       return response;
     } else {
