@@ -29,8 +29,8 @@ const validateFile = async () => {
 
   try {
     const result = await fileInputRef.value.validate();
-    console.log("Validation result:", result[0]);
-    console.log("initial name = ", props.initialFileName);
+    // console.log("Validation result:", result[0]);
+    // console.log("initial name = ", props.initialFileName);
 
     if (result?.length === parseInt("0")) {
       // console.log("emited true");
@@ -40,10 +40,10 @@ const validateFile = async () => {
       emits("validationIsValid", true);
     } else {
       if (initialFileName.value === "") {
-        console.log("filename false");
+        // console.log("filename false");
         evaluatedFile.value = true;
       } else {
-        console.log("filename true");
+        // console.log("filename true");
         evaluatedFile.value = false;
       }
       fileIsValid.value = false;
@@ -93,43 +93,6 @@ defineExpose({ validateFile, setPrependFileName });
 </script>
 
 <template>
-  <!-- <div v-if="updatedFileData || updatedFileName"> -->
-  <!-- <VTextField
-      :rules="[
-        requiredValidator,
-        regexValidator(
-          updatedFileName,
-          /^[a-zA-Z0-9\s\(\)-_]+(.jpg|.png|.pdf|.jpeg)$/,
-          'File extension not allowed'
-        ),
-      ]"
-      :model-value="updatedFileName"
-      density="compact"
-      placeholder="No file choosen"
-      rounded="xl"
-    >
-      <template #append-inner>
-        <VIcon
-          icon="fa-trash"
-          color="error"
-          class="cursor-pointer"
-          @click="() => emits('onRemove')"
-        />
-      </template>
-    </VTextField> -->
-  <!-- <div class="v-input__details" v-if="evaluatedFile">
-      <div
-        class="v-messages"
-        role="alert"
-        aria-live="polite"
-        id="input-698-messages"
-        style="color: rgb(var(--v-theme-error)); padding-inline: 16px"
-      >
-        {{ fileValidationMessage }} 
-        {{ initialFileName }}
-      </div>
-    </div> -->
-  <!-- </div> -->
   <VFileInput
     ref="fileInputRef"
     :model-value="updatedFileData"
@@ -152,11 +115,6 @@ defineExpose({ validateFile, setPrependFileName });
       >
         {{ prependFileName?.substring(0, 20) + "..." }}
       </span>
-      <!-- <VTextField
-        style="white-space: nowrap; text-overflow: ellipsis"
-        v-if="initialFileName"
-        variant="plain"
-      ></VTextField> -->
     </template>
   </VFileInput>
 </template>
