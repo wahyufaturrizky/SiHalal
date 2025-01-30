@@ -27,7 +27,7 @@ const selectedItem = ref([])
 const lembagaItems = ref([])
 const isLoading = ref(false)
 const isLoadingLembaga = ref(false)
-const tableType = ref('Semua')
+const tableType = ref('')
 
 const searchQuery = ref('')
 
@@ -38,7 +38,7 @@ const handleLoadList = async () => {
       params: {
         page: currentPage.value,
         size: itemPerPage.value,
-        keyword: tableType.value,
+        lembaga_pelatihan: tableType.value,
       },
     } as any)
 
