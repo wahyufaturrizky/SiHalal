@@ -54,6 +54,7 @@ const titleAddDialog = ref("");
 const submitContentType = ref("");
 const addContentType = ref("");
 const labelSaveBtn = ref("");
+const labelBackBtn = ref("");
 const file = ref<File | null>(null);
 const selectedLegalToAdd = ref<any>(null);
 const loading = ref<boolean>(false);
@@ -190,10 +191,12 @@ const triggerSaveModal = (payload: any, type: string) => {
 
 const triggerAddModal = (type: any) => {
   addContentType.value = type;
+  console.log(addContentType.value,'isi value addconetnt')
   addDialog.value = true;
-  titleAddDialog.value = `${type}`;
+  titleAddDialog.value = `${t('pengajuan-reguler.reguler-form--pengajuan-fac-add')} ${t(type)}`;
   // titleAddDialog.value = `Tambah Data ${type}`;
-  labelSaveBtn.value = "Tambah";
+  labelSaveBtn.value = t('pengajuan-reguler.reguler-form--pengajuan-legal-add');
+  labelBackBtn.value =t(`pengajuan-reguler.reguler-form--pengajuan-legal-popup-cancel`)
 };
 
 const loadItemProduct = async () => {
@@ -341,27 +344,27 @@ const getDetailData = async () => {
             nowrap: true,
           },
           {
-            title: "pengajuan-reguler.reguler-form--pengajuan-legal-nodok",
+            title:"pengajuan-reguler.reguler-form--pengajuan-legal-nodok",
             key: "no_surat",
             nowrap: true,
           },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-legal-tanggal"),
+            title: "pengajuan-reguler.reguler-form--pengajuan-legal-tanggal",
             key: "tanggal_surat",
             nowrap: true,
           },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-legal-expired"),
+            title:"pengajuan-reguler.reguler-form--pengajuan-legal-expired",
             key: "masa_berlaku",
             nowrap: true,
           },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-legal-issuer"),
+            title:"pengajuan-reguler.reguler-form--pengajuan-legal-issuer",
             key: "instansi_penerbit",
             nowrap: true,
           },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-legal-action"),
+            title: "pengajuan-reguler.reguler-form--pengajuan-legal-action",
             key: "action",
             nowrap: true,
           },
@@ -373,22 +376,22 @@ const getDetailData = async () => {
         label: [
           { title: "No.", key: "no", nowrap: true },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-fac-nama"),
+            title: "pengajuan-reguler.reguler-form--pengajuan-fac-nama",
             key: "nama_pabrik",
             nowrap: true,
           },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-fac-alamat"),
+            title:"pengajuan-reguler.reguler-form--pengajuan-fac-alamat",
             key: "alamat_pabrik",
             nowrap: true,
           },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-fac-status"),
+            title: "pengajuan-reguler.reguler-form--pengajuan-fac-status",
             key: "status_milik",
             nowrap: true,
           },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-fac-action"),
+            title:"pengajuan-reguler.reguler-form--pengajuan-fac-action",
             value: "action",
             sortable: false,
             nowrap: true,
@@ -402,23 +405,23 @@ const getDetailData = async () => {
           { title: "No.", key: "no", nowrap: true },
           {
             title:
-             t("pengajuan-reguler.reguler-form--pengajuan-out-popup-nama"),
+             "pengajuan-reguler.reguler-form--pengajuan-out-popup-nama",
 
             key: "nama_outlet",
             nowrap: true,
           },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-out-popup-alamat"),
+            title: "pengajuan-reguler.reguler-form--pengajuan-out-popup-alamat",
             key: "alamat_outlet",
             nowrap: true,
           },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-out-popup-status"),
+            title: "pengajuan-reguler.reguler-form--pengajuan-out-popup-status",
             key: "status_milik",
             nowrap: true,
           },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-out-popup-action"),
+            title: "pengajuan-reguler.reguler-form--pengajuan-out-popup-action",
             value: "action",
             sortable: false,
             nowrap: true,
@@ -431,7 +434,7 @@ const getDetailData = async () => {
         label: [
           { title: "No.", key: "no", nowrap: true },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-ph-nama"),
+            title: "pengajuan-reguler.reguler-form--pengajuan-ph-nama",
             key: "penyelia_nama",
             nowrap: true,
           },
@@ -441,32 +444,32 @@ const getDetailData = async () => {
             nowrap: true,
           },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-ph-downloadspph"),
+            title: "pengajuan-reguler.reguler-form--pengajuan-ph-downloadspph",
             key: "file_spph",
             nowrap: true,
           },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-ph-downloadktp"),
+            title: "pengajuan-reguler.reguler-form--pengajuan-ph-downloadktp",
             key: "file_ktp",
             nowrap: true,
           },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-ph-ktp"),
+            title: "pengajuan-reguler.reguler-form--pengajuan-ph-ktp",
             key: "no_ktp",
             nowrap: true,
           },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-ph-popup-agama"),
+            title: "pengajuan-reguler.reguler-form--pengajuan-ph-popup-agama",
             key: "religion",
             nowrap: true,
           },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-ph-sertif"),
+            title: "pengajuan-reguler.reguler-form--pengajuan-ph-sertif",
             key: "tgl_penyelia_halal",
             nowrap: true,
           },
           {
-            title: t("pengajuan-reguler.reguler-form--pengajuan-ph-popup-action"),
+            title: "pengajuan-reguler.reguler-form--pengajuan-ph-popup-action",
             value: "action",
             sortable: false,
             nowrap: true,
@@ -514,7 +517,7 @@ const handleAddOrEdit = async () => {
   let url = "";
   let method = "";
   switch (titleAddDialog.value) {
-    case t("pengajuan-reguler.reguler-form--pengajuan-legal-popup-title"):
+    case t("pengajuan-reguler.reguler-detail-legal-title"):
       body = {
         ...body,
         id_legal: [selectedLegalToAdd?.value?.id_legal],
@@ -522,7 +525,7 @@ const handleAddOrEdit = async () => {
       url = "/reguler/pelaku-usaha/add-legal";
       method = "post";
       break;
-    case t("pengajuan-reguler.reguler-form--pengajuan-fac-popup-title"):
+    case t("pengajuan-reguler.reguler-detail-out-title"):
       listFactory?.value?.value?.map((el: any) => {
         if (el.checked) idPabrik.push(el.id);
       });
@@ -533,7 +536,7 @@ const handleAddOrEdit = async () => {
       url = "/reguler/pelaku-usaha/add-factory";
       method = "post";
       break;
-    case t("pengajuan-reguler.reguler-form--pengajuan-out-popup-title"):
+    case t("pengajuan-reguler.reguler-form--pengajuan-out-title"):
       listOutlet?.value?.value?.map((el: any) => {
         if (el.checked) idPabrik.push(el.id);
       });
@@ -544,7 +547,7 @@ const handleAddOrEdit = async () => {
       url = "/reguler/pelaku-usaha/add-factory";
       method = "post";
       break;
-    case t("pengajuan-reguler.reguler-form--pengajuan-ph-popup-title"):
+    case t('pengajuan-reguler.reguler-detail-ph-title'):
       url = "/self-declare/business-actor/supervisor/create";
       body = {
         ...body,
@@ -687,33 +690,34 @@ onMounted(async () => {
     :title="titleAddDialog"
     :is-open="addDialog"
     :label-save-btn="labelSaveBtn"
+    :label-back-btn="labelBackBtn"
     :toggle="() => (addDialog = false)"
     :on-save="handleAddOrEdit"
   >
     <template #content>
       <!-- ADD MODAL DATA ASPEK LEGAL START -->
-      <div v-if="addContentType === 'Aspek Legal'">
-        <p class="label-pengajuan">Jenis Dokumen</p>
+      <div v-if="t(addContentType) === t('pengajuan-reguler.reguler-detail-legal-title')">
+        <p class="label-pengajuan">{{ t('pengajuan-reguler.reguler-form--pengajuan-legal-popup-jenis') }}</p>
         <VSelect
           v-model="selectedLegalToAdd"
           :items="props?.list_legal"
           outlined
           class="-mt-5"
-          placeholder="pilih jenis dokumen"
+          :placeholder="t('pengajuan-reguler.reguler-form--pengajuan-legal-popup-jenis-1')"
           item-title="jenis_surat"
           item-text="jenis_surat"
           return-object
         />
         <br />
-        <p class="label-pengajuan">Nomor Dokumen</p>
+        <p class="label-pengajuan">{{ t('pengajuan-reguler.reguler-form--pengajuan-legal-popup-nodok') }}</p>
         <VTextField
           class="-mt-10"
-          placeholder="isi nomor dokumen"
+           :placeholder="t('pengajuan-reguler.reguler-form--pengajuan-legal-popup-nodok-1')"
           :value="selectedLegalToAdd?.no_surat"
           disabled
         />
         <br />
-        <p class="text-h6" for="startDate">Tanggal Dokumen</p>
+        <p class="text-h6" for="startDate">{{ t('pengajuan-reguler.reguler-form--pengajuan-legal-popup-tanggal') }}</p>
         <VTextField
           id="startDate"
           type="date"
@@ -723,7 +727,7 @@ onMounted(async () => {
           disabled
         />
         <br />
-        <p class="text-h6" for="startDate">Masa Berlaku</p>
+        <p class="text-h6" for="startDate">{{ t('pengajuan-reguler.reguler-form--pengajuan-legal-popup-expired') }}</p>
         <VTextField
           id="startDate"
           type="date"
@@ -733,7 +737,7 @@ onMounted(async () => {
           disabled
         />
         <br />
-        <p class="label-pengajuan">Instansi Penerbit</p>
+        <p class="label-pengajuan">{{ t('pengajuan-reguler.reguler-form--pengajuan-legal-popup-issuer') }}</p>
         <VTextField
           class="-mt-10"
           placeholder="isi nomor dokumen"
@@ -743,7 +747,7 @@ onMounted(async () => {
       </div>
       <!-- ADD MODAL DATA ASPEK LEGAL END -->
       <!-- ADD MODAL DATA PABRIK START -->
-      <div v-if="addContentType === 'Pabrik'">
+      <div v-if="t(addContentType) === t('pengajuan-reguler.reguler-form--pengajuan-fac-popup-title')">
         <VDataTable
           hide-default-footer
           class="border rounded"
@@ -769,7 +773,7 @@ onMounted(async () => {
       </div>
       <!-- ADD MODAL DATA PABRIK END -->
       <!-- ADD MODAL DATA OUTLET START -->
-      <div v-if="addContentType === 'Outlet'">
+      <div v-if="t(addContentType) === t('pengajuan-reguler.reguler-form--pengajuan-out-title')">
         <VDataTable
           hide-default-footer
           class="border rounded"
@@ -795,7 +799,8 @@ onMounted(async () => {
       </div>
       <!-- ADD MODAL DATA PABRIK END -->
       <!-- ADD MODAL DATA PENYELIA HALAL START -->
-      <div v-if="addContentType === 'Penyelia Halal'">
+       
+      <div v-if="t(addContentType) === t('pengajuan-reguler.reguler-detail-ph-title')">
         <VDataTable
           hide-default-footer
           class="border rounded"
@@ -846,8 +851,7 @@ onMounted(async () => {
       :on-submit="() => triggerSaveModal(null, 'Aspek Legal')"
       :on-add="
         () =>
-          triggerAddModal(
-            t('pengajuan-reguler.reguler-form--pengajuan-legal-popup-title')
+          triggerAddModal(  t('pengajuan-reguler.reguler-detail-legal-title')
           )
       "
       :on-delete="(el: any) => deleteFactoryOrOutlet('aspek legal', el)"
@@ -863,7 +867,7 @@ onMounted(async () => {
       :on-add="
         () =>
           triggerAddModal(
-            t('pengajuan-reguler.reguler-form--pengajuan-fac-popup-title')
+            t('pengajuan-reguler.reguler-form--pengajuan-out-title')
           )
       "
       :on-delete="(el: any) => deleteFactoryOrOutlet('pabrik', el)"
@@ -878,7 +882,7 @@ onMounted(async () => {
       :on-add="
         () =>
           triggerAddModal(
-            t('pengajuan-reguler.reguler-form--pengajuan-out-popup-title')
+            t('pengajuan-reguler.reguler-form--pengajuan-out-title')
           )
       "
       :on-delete="(el: any) => deleteFactoryOrOutlet('outlet', el)"
@@ -893,7 +897,7 @@ onMounted(async () => {
       :on-add="
         () =>
           triggerAddModal(
-            t('pengajuan-reguler.reguler-form--pengajuan-ph-popup-title')
+            t('pengajuan-reguler.reguler-detail-ph-title')
           )
       "
       :data="halalData"

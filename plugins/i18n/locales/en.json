@@ -486,6 +486,8 @@
     "pabrik-status": "Status"
   },
   "pengajuan-reguler": {
+    "reguler-alert-add": "Add data successfully",
+    "reguler-alert-delete": "Successful deletion of data",
     "reguler-list-btn-back": "Back",
     "reguler-list-title": "Reguler Submission",
     "reguler-list-subtitle": "Reguler Submission List",
@@ -618,7 +620,9 @@
     "reguler-form--pengajuan-legal-action": "Action",
     "reguler-form--pengajuan-legal-popup-title": "Legal Aspect Data Add",
     "reguler-form--pengajuan-legal-popup-jenis": "Document Type",
+    "reguler-form--pengajuan-legal-popup-jenis-1": "Select Document Type",
     "reguler-form--pengajuan-legal-popup-nodok": "Document No.",
+    "reguler-form--pengajuan-legal-popup-nodok-1": "fill in the document number.",
     "reguler-form--pengajuan-legal-popup-tanggal": "Document Date",
     "reguler-form--pengajuan-legal-popup-expired": "Validity Period",
     "reguler-form--pengajuan-legal-popup-issuer": "Issuing Agency",

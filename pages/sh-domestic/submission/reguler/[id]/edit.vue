@@ -20,13 +20,13 @@ const itemsChannel = ref<any>(null);
 const { t } = useI18n();
 
 const tabList = ref([
-  `${t("pengajuan-reguler.reguler-form-head-datapengajuan")}`,
-  `${t("pengajuan-reguler.reguler-form-head-komitmen")}`,
-  `${t("pengajuan-reguler.reguler-form-head-bahan")}`,
-  `${t("pengajuan-reguler.reguler-form-head-proses")}`,
-  `${t("pengajuan-reguler.reguler-form-head-produk")}`,
-  `${t("pengajuan-reguler.reguler-form-head-eval")}`,
-  `${t("pengajuan-reguler.reguler-form-head-dokumen")}`,
+  "pengajuan-reguler.reguler-form-head-datapengajuan",
+  "pengajuan-reguler.reguler-form-head-komitmen",
+  "pengajuan-reguler.reguler-form-head-bahan",
+  "pengajuan-reguler.reguler-form-head-proses",
+  "pengajuan-reguler.reguler-form-head-produk",
+  "pengajuan-reguler.reguler-form-head-eval",
+  "pengajuan-reguler.reguler-form-head-dokumen",
 ]);
 
 const isBahanCompleted = ref(false);
@@ -52,7 +52,6 @@ const getListLegal = async () => {
 
     if (response?.code === 2000) {
       listLegal.value = response.data;
-
       return response;
     } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
@@ -203,7 +202,7 @@ onMounted(async () => {
               <VBtn
                 color="#E1442E"
                 variant="outlined"
-                style="border-color: #e1442e !important"
+                style="border-color: #e1442e !important;"
               >
                 {{ t("pengajuan-reguler.reguler-form-head-cancel") }}
               </VBtn>
@@ -226,7 +225,7 @@ onMounted(async () => {
               :value="index"
               :disabled="index > 2 && !isBahanCompleted"
             >
-              {{ item }}
+              {{ `${t(item)}`}}
             </VTab>
           </VTabs>
         </VCol>

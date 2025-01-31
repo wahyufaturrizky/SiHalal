@@ -196,7 +196,7 @@ const editDaftarBahan = async () => {
       nama_produk: "",
       foto_produk: null,
     };
-    useSnackbar().sendSnackbar("Sukses menambah data", "success");
+    useSnackbar().sendSnackbar(t('pengajuan-reguler.reguler-alert-add'), "success");
     getListIngredients();
     dialogEdit.value = false;
   }
@@ -214,8 +214,8 @@ const deleteIngredient = async (productId: string) => {
 
     if (response.code === 2000) {
       getListIngredients();
-      props.refresh();
-      useSnackbar().sendSnackbar("Sukses menghapus data", "success");
+      props.refresh(); 
+      useSnackbar().sendSnackbar(t('reguler-alert-delete'), "success");
     } else {
       useSnackbar().sendSnackbar(response.errors?.list_error?.[0], "error");
     }
@@ -256,7 +256,7 @@ watch(
   }
 );
 
-console.log(props.data.label, "label");
+
 </script>
 
 <template>
@@ -316,15 +316,117 @@ console.log(props.data.label, "label");
               : props?.data.value
           "
         >
-          <template #header.jenis_surat="{ item }">
-            {{ t(item) }}
+          <template #header.jenis_surat="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
           </template>
-          <template #header.no_surat="{ item }">
-            {{ t(item) }}
+
+          <template #header.no_surat="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
           </template>
-          <template #header.tanggal_surat="{ item }">
-            {{ t(item) }}
+
+          <template #header.tanggal_surat="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
           </template>
+
+          <template #header.masa_berlaku="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.instansi_penerbit="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.action="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.nama_pabrik="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+        
+          <template #header.alamat_pabrik="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.status_milik="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+
+          <template #header.nama_outlet="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.alamat_outlet="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.penyelia_nama="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.file_skph="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.file_spph="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          
+          <template #header.file_ktp="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+               
+          <template #header.no_ktp="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.religion="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.tgl_penyelia_halal="{column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+     
           <template #item.no="{ index }">
             <div>
               {{ index + 1 }}
@@ -384,6 +486,8 @@ console.log(props.data.label, "label");
               @change="() => handleCheck(item)"
             />
           </template>
+
+
           <template v-if="!isviewonly" #item.action="{ item }">
             <DialogDeleteAuditPengajuan
               title="Hapus Bahan"

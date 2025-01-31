@@ -486,6 +486,8 @@
     "pabrik-status": "Status"
   },
   "pengajuan-reguler": {
+    "reguler-alert-add": "Sukses menambah data",
+    "reguler-alert-delete": "Sukses menghapus data",
     "reguler-list-btn-back": "Kembali",
     "reguler-list-title": "Pengajuan Reguler",
     "reguler-list-subtitle": "Daftar Pengajuan Reguler",
@@ -618,7 +620,9 @@
     "reguler-form--pengajuan-legal-action": "Aksi",
     "reguler-form--pengajuan-legal-popup-title": "Tambah Data Aspek Legal",
     "reguler-form--pengajuan-legal-popup-jenis": "Jenis Dokumen",
+    "reguler-form--pengajuan-legal-popup-jenis-1": "Pilih Jenis Dokumen",
     "reguler-form--pengajuan-legal-popup-nodok": "No Dokumen",
+    "reguler-form--pengajuan-legal-popup-nodok-1": "Isi Nomor Dokumen",
     "reguler-form--pengajuan-legal-popup-tanggal": "Tanggal Dokumen",
     "reguler-form--pengajuan-legal-popup-expired": "Masa Berlaku",
     "reguler-form--pengajuan-legal-popup-issuer": "Instansi Penerbit",
