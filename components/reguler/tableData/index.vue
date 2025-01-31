@@ -255,6 +255,8 @@ watch(
     loading.value = false;
   }
 );
+
+console.log(props.data.label, "label");
 </script>
 
 <template>
@@ -314,6 +316,15 @@ watch(
               : props?.data.value
           "
         >
+          <template #header.jenis_surat="{ item }">
+            {{ t(item) }}
+          </template>
+          <template #header.no_surat="{ item }">
+            {{ t(item) }}
+          </template>
+          <template #header.tanggal_surat="{ item }">
+            {{ t(item) }}
+          </template>
           <template #item.no="{ index }">
             <div>
               {{ index + 1 }}
@@ -337,6 +348,7 @@ watch(
               {{ item.productName }}
             </div>
           </template>
+
           <template #item.tgl_pembelian="{ item }">
             <div v-if="item.tgl_pembelian">
               {{ formatDateIntl(new Date(item.tgl_pembelian)) }}
@@ -584,7 +596,7 @@ watch(
             <Vbtn
               v-if="item.foto"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
               @click="() => handleDownload(item.foto)"
             >
               <div>
@@ -600,7 +612,7 @@ watch(
             <Vbtn
               v-if="item.file_dok"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
               @click="() => handleDownload(item.file_dok)"
             >
               <div>
@@ -616,7 +628,7 @@ watch(
             <Vbtn
               v-if="item.file_skph"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
               @click="() => handleDownload(item.file_skph)"
             >
               <div>
@@ -632,7 +644,7 @@ watch(
             <Vbtn
               v-if="item.file_spph"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
               @click="() => handleDownload(item.file_spph)"
             >
               <div>
@@ -648,7 +660,7 @@ watch(
             <Vbtn
               v-if="item.file_ktp"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
               @click="() => handleDownload(item.file_ktp)"
             >
               <div>
@@ -664,7 +676,7 @@ watch(
             <Vbtn
               v-if="item.file_layout"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
               @click="() => handleDownload(item.file_layout)"
             >
               <div>
@@ -680,7 +692,7 @@ watch(
             <Vbtn
               v-if="item.FileDok"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
               @click="() => handleDownload(item.FileDok)"
             >
               <div>
@@ -696,7 +708,7 @@ watch(
             <Vbtn
               v-if="item.id_reg"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
               @click="() => handleDownloadV2(item)"
             >
               <div>
@@ -712,7 +724,7 @@ watch(
             <Vbtn
               v-if="item.file_dok"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
             >
               <div>
                 <VIcon
@@ -733,7 +745,7 @@ watch(
             <Vbtn
               v-if="item.ttd_pj"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
             >
               <div>
                 <VIcon
@@ -754,7 +766,7 @@ watch(
             <Vbtn
               v-if="item.ttd_ph"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
             >
               <div>
                 <VIcon

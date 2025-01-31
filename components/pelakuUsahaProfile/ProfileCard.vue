@@ -145,7 +145,7 @@ onMounted(async () => {
           </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4"> {{ t("detail-pu-profil-tingkatu") }} </VCol>
+          <VCol cols="4"> {{ t("detail-pu.pu-profil-tingkatu") }} </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
             {{ convertFumk(props.profileData?.tingkat_usaha) || "-" }}
@@ -153,7 +153,7 @@ onMounted(async () => {
         </VRow>
         <VRow>
           <VCol cols="4" style="display: flex; align-items: center">
-            {{ t("detail-pu-profil-skala") }}
+            {{ t("detail-pu.pu-profil-skala") }}
           </VCol>
           <VCol cols="1" style="display: flex; align-items: center"> : </VCol>
           <VCol cols="7">
@@ -161,14 +161,14 @@ onMounted(async () => {
           </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4"> {{ t("detail-pu-profil-modal") }} </VCol>
+          <VCol cols="4"> {{ t("detail-pu.pu-profil-modal") }} </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
             {{ formatCurrencyIntl(props.profileData?.modal_dasar) || "-" }}
           </VCol>
         </VRow>
         <VRow>
-          <VCol cols="4"> {{ t("detail-pu-profil-asal") }} </VCol>
+          <VCol cols="4"> {{ t("detail-pu.pu-profil-asal") }} </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="7"> {{ props.profileData?.asal_usaha || "-" }} </VCol>
         </VRow>
