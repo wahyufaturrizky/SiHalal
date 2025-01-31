@@ -25,7 +25,7 @@ const tableHeaders: any[] = [
 ]
 
 const tableItems = ref<Array[]>([])
-const currentPage = ref(0)
+const currentPage = ref(1)
 const itemPerPage = ref(10)
 const totalItems = ref(0)
 const selectedItem = ref([])
