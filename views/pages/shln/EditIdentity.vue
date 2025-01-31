@@ -296,6 +296,7 @@ onMounted(async () => {
 
 const saveForm = () => {};
 const now = new Date();
+now.setDate(now.getDate()+1)
 const currentMonth = now.toLocaleString("default", { month: "2-digit" });
 const currentYear = now.getFullYear();
 const currentDay = now.getDate();
@@ -482,7 +483,7 @@ const changeExpired = (item) => {
                   dateFormat: 'd-m-Y',
                   disable: [
                     {
-                      from: `${currentDay + 1}-${currentMonth}-${currentYear}`,
+                      from: `${currentDay}-${currentMonth}-${currentYear}`,
                       to: `99-99-9999`,
                     },
                   ],
@@ -505,7 +506,7 @@ const changeExpired = (item) => {
                   disable: [
                     {
                       from: `01-01-0001`,
-                      to: `${currentDay + 1}-${currentMonth}-${currentYear}`,
+                      to: `${currentDay}-${currentMonth}-${currentYear}`,
                     },
                   ],
                 }"
