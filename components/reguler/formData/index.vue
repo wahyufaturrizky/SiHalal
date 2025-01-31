@@ -68,11 +68,12 @@ const listAreaPemasaran = [
 
 const getSelectOptions = (field: string): string => {
   let data: string[] = [];
+  field = t(field);
   switch (field) {
-    case "Jenis Layanan":
+    case t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnslay"):
       data = props?.service_type;
       break;
-    case "Jenis Produk":
+    case t("pengajuan-reguler.reguler-detail-pengajuan-jnsprod"):
       data = productList.value || [];
       break;
     case "Skala Usaha":
@@ -127,7 +128,7 @@ const getLph = async (path: string, layanan: string, area: string) => {
 };
 
 const onSubmit = async () => {
-  if (props?.title === "Pengajuan Sertifikasi Halal") {
+  if (props?.title === t("halal_cert_submission.title")) {
     const jenisLayanan = props?.service_type?.find(
       (item: any) =>
         props.data?.[3]?.value === item.name ||
@@ -191,13 +192,19 @@ const getProductType = async (id: string) => {
 };
 
 const lphValidation = async (title: string, value: string, index: number) => {
-  if (title === "Jenis Layanan") {
+  if (title === t("pengajuan-reguler.reguler-detail-pengajuan-jnslay")) {
     props.data.map((el) => {
-      if (el.title === "Jenis Produk") {
+      if (
+        el.title === t("pengajuan-reguler.reguler-detail-pengajuan-jnsprod")
+      ) {
         el.value = "";
-      } else if (el.title === "LPH") {
+      } else if (
+        el.title === t("pengajuan-reguler.reguler-detail-pengajuan-lph")
+      ) {
         el.value = "";
-      } else if (el.title === "Area Pemasaran") {
+      } else if (
+        el.title === t("pengajuan-reguler.reguler-detail-pengajuan-area")
+      ) {
         el.value = "";
       }
     });
@@ -208,11 +215,12 @@ const lphValidation = async (title: string, value: string, index: number) => {
       props.data?.[3]?.value === item.code
   );
 
-  if (title === "Jenis Layanan") await getProductType(value);
-  else if (title === "Area Pemasaran")
+  if (title === t("pengajuan-reguler.reguler-detail-pengajuan-jnslay"))
+    await getProductType(value);
+  else if (title === t("pengajuan-reguler.reguler-detail-pengajuan-area"))
     await getLph(LIST_BUSINESS_ACTOR, jenisLayanan?.code, value);
 
-  if (props.title === "Pengajuan Sertifikasi Halal") {
+  if (props.title === t("halal_cert_submission.title")) {
     const checkData = props.data.map((el: any) => {
       if (el.required && el.value === "") return false;
       return true;
@@ -292,10 +300,16 @@ watchEffect(async () => {
         >
           <div v-if="item.type === 'text'">
             <p class="label-pengajuan">
-              {{ item.title }}
+              {{ t(item.title) }}
               <span v-if="item.required" class="required">*</span>
             </p>
-            <div v-if="item.title.includes('Tanggal')">
+            <div
+              v-if="
+                item.title.includes('Tanggal') ||
+                item.title ===
+                  'pengajuan-reguler.reguler-form--pengajuan-pengajuan-tglmohon'
+              "
+            >
               <VueDatePicker
                 id="tanggal_daftar"
                 v-model="item.value"
@@ -310,7 +324,7 @@ watchEffect(async () => {
           </div>
           <div v-if="item.type === 'select'">
             <p class="label-pengajuan">
-              {{ item.title }}
+              {{ t(item.title) }}
               <span v-if="item.required" class="required">*</span>
             </p>
             <VSelect
@@ -365,7 +379,7 @@ watchEffect(async () => {
           <div v-if="item.type === 'textarea'">
             <div>
               <p class="label-pengajuan">
-                {{ item.title }}
+                {{ t(item.title) }}
                 <span v-if="item.required" class="required">*</span>
               </p>
               <VTextarea v-model="item.value" class="-mt-10" />
