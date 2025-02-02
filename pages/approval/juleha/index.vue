@@ -129,7 +129,14 @@ const onApprove = async () => {
 
       return
     }
-    useSnackbar().sendSnackbar(`${selectedItem.value.length} Pendamping Disetujui`, 'success')
+    const totalError = response?.message?.errors
+    const totalSuccess = response?.message?.success
+    const message: any[] = []
+    if (totalError > 0)
+      message.push(`Gagal setujui sebanyak ${totalError}`)
+    if (totalSuccess > 0)
+      message.push(`Sukses setujui sebanyak ${totalSuccess}`)
+    useSnackbar().sendSnackbar(`Pendamping ${message.join()}`, 'success')
     refresh()
   }
   catch (error) {

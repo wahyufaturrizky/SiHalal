@@ -17,10 +17,14 @@ export default defineEventHandler(async (event: any) => {
 
   const body: DraftBody = await readBody(event)
 
+  const { id } = (await getQuery(event)) as {
+    id: string
+  }
+
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/kepkaban/penyelia/approve`, // wait for api
+    `${runtimeConfig.coreBaseUrl}/api/v1/kepkaban/pengajuan-pindah-domisili/approve/${id}`,
     {
-      method: 'post',
+      method: 'put',
       headers: { Authorization: authorizationHeader },
       body,
     },

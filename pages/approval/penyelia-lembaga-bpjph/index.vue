@@ -95,7 +95,32 @@ onMounted(() => {
 })
 
 const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} Penyelia Disetujui`, 'success')
+  try {
+    const response: any = await $api(
+      '/approval/penyelia-bpjph/approve',
+      {
+        method: 'post',
+        body: { id: selectedItem.value },
+      },
+    )
+
+    if (response.code === 2000) {
+      const totalError = response?.message?.errors
+      const totalSuccess = response?.message?.success
+      const message: any[] = []
+      if (totalError > 0)
+        message.push(`Gagal setujui sebanyak ${totalError}`)
+      if (totalSuccess > 0)
+        message.push(`Sukses setujui sebanyak ${totalSuccess}`)
+      useSnackbar().sendSnackbar(`Penyelia ${message.join()}`, 'success')
+      refresh()
+
+      return true
+    }
+  }
+  catch (err) {
+    console.log(err)
+  }
 }
 
 const getChipColor = (status: string) => {

@@ -74,7 +74,32 @@ const { refresh } = await useAsyncData(
 )
 
 const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} LPH LN Disetujui`, 'success');
+  try {
+    const response: any = await $api(
+      '/approval/lph-ln/approve',
+      {
+        method: 'post',
+        body: { id: selectedItem.value },
+      },
+    )
+
+    if (response.code === 2000) {
+      const totalError = response?.message?.errors
+      const totalSuccess = response?.message?.success
+      const message: any[] = []
+      if (totalError > 0)
+        message.push(`Gagal setujui sebanyak ${totalError}`)
+      if (totalSuccess > 0)
+        message.push(`Sukses setujui sebanyak ${totalSuccess}`)
+      useSnackbar().sendSnackbar(`LPH ${message.join()}`, 'success')
+      refresh()
+
+      return true
+    }
+  }
+  catch (err) {
+    console.log(err)
+  }
 }
 
 onMounted(() => {
