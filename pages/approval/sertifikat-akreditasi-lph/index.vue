@@ -73,7 +73,32 @@ const { refresh } = await useAsyncData(
 )
 
 const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} LPH Disetujui`, 'success');
+  try {
+    const response: any = await $api(
+      '/approval/akreditasi-lph/approve',
+      {
+        method: 'post',
+        body: { id: selectedItem.value },
+      },
+    )
+
+    if (response.code === 2000) {
+      const totalError = response?.message?.errors
+      const totalSuccess = response?.message?.success
+      const message: any[] = []
+      if (totalError > 0)
+        message.push(`Gagal setujui sebanyak ${totalError}`)
+      if (totalSuccess > 0)
+        message.push(`Sukses setujui sebanyak ${totalSuccess}`)
+      useSnackbar().sendSnackbar(`LPH ${message.join()}`, totalSuccess > 0 ? 'success' : 'error')
+      refresh()
+
+      return true
+    }
+  }
+  catch (err) {
+    console.log(err)
+  }
 }
 
 onMounted(() => {

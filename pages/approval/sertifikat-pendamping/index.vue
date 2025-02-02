@@ -74,10 +74,6 @@ const { refresh } = await useAsyncData(
   },
 )
 
-const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} Pendamping Disetujui`, 'success');
-}
-
 const getTypePendamping = async () => {
   try {
     isLoadingPendamping.value = true
@@ -87,7 +83,6 @@ const getTypePendamping = async () => {
     } as any)
 
     if (response) {
-      // response.data.unshift({ nama_lebaga: 'Pilih tipe pendamping', id_lembaga_pelatihan: '' })
       pendampingItems.value = response
     }
     isLoadingPendamping.value = false
@@ -97,6 +92,39 @@ const getTypePendamping = async () => {
   catch (error) {
     isLoadingPendamping.value = false
     console.error(error)
+  }
+}
+
+const onApprove = async () => {
+  try {
+    const response: any = await $api(
+      '/approval/sertifikat-pendamping/approve',
+      {
+        method: 'post',
+        body: {
+          id: selectedItem.value,
+        },
+      },
+    )
+
+    if (response.code !== 2000) {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      refresh()
+
+      return
+    }
+    const totalError = response?.message?.errors
+    const totalSuccess = response?.message?.success
+    const message: any[] = []
+    if (totalError > 0)
+      message.push(`Gagal setujui sebanyak ${totalError}`)
+    if (totalSuccess > 0)
+      message.push(`Sukses setujui sebanyak ${totalSuccess}`)
+    useSnackbar().sendSnackbar(`Pendamping ${message.join()}`, totalSuccess > 0 ? 'success' : 'error')
+    refresh()
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
   }
 }
 

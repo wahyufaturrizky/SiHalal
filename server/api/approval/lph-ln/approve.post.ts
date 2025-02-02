@@ -18,7 +18,7 @@ export default defineEventHandler(async (event: any) => {
   const body: DraftBody = await readBody(event)
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/kepkaban/sertifikat-pendamping/approve`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/kepkaban/lphln/approve`,
     {
       method: 'post',
       headers: { Authorization: authorizationHeader },
@@ -26,7 +26,6 @@ export default defineEventHandler(async (event: any) => {
     },
   ).catch((err: NuxtError) => {
     console.log(err);
-    
     setResponseStatus(event, 400)
 
     return err.data
