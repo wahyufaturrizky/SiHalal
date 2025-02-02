@@ -12,16 +12,16 @@ interface DataUser {
 
 const tableHeaders: any[] = [
   { title: 'No', key: 'no', sortable: false },
-  { title: 'Jenis Pendaftaran', key: 'username', nowrap: true },
-  { title: 'No. Registrasi', key: 'name', nowrap: true },
-  { title: 'Tanggal Registrasi', key: 'name', nowrap: true },
-  { title: 'Nama Auditor/LPH', key: 'name', nowrap: true },
-  { title: 'Jenis Kelamin', key: 'name', nowrap: true },
-  { title: 'Pendidikan', key: 'name', nowrap: true },
-  { title: 'Status Payment', key: 'status', nowrap: true },
-  { title: 'Tanggal Bayar', key: 'name', nowrap: true },
-  { title: 'invoice', key: 'invoice', nowrap: true },
-  { title: 'Draft Sertifikat', key: 'draft', sortable: false},
+  { title: 'Jenis Pendaftaran', key: 'jenis', nowrap: true },
+  { title: 'No. Registrasi', key: 'no_registrasi', nowrap: true },
+  { title: 'Tanggal Registrasi', key: 'tgl_registrasi', nowrap: true },
+  { title: 'Nama Auditor/LPH', key: 'nama_auditor', nowrap: true },
+  { title: 'Jenis Kelamin', key: 'jenkel', nowrap: true },
+  { title: 'Pendidikan', key: 'jenjang_didik', nowrap: true },
+  { title: 'Status Payment', key: 'status_payment', nowrap: true },
+  { title: 'Tanggal Bayar', key: 'tgl_bayar', nowrap: true },
+  { title: 'invoice', key: 'file_inv', nowrap: true },
+  { title: 'Draft Sertifikat', key: 'file_draft', sortable: false},
 ]
 
 const tableItems = ref<Array[]>([])
@@ -30,13 +30,13 @@ const itemPerPage = ref(10)
 const totalItems = ref(0)
 const selectedItem = ref([])
 const isLoading = ref(false)
-const tableType = ref('Semua')
+const tableType = ref('')
 
 const searchQuery = ref('')
 
 const handleLoadList = async () => {
   try {
-    const response: any = await $api('/admin/users/list', {
+    const response: any = await $api('/approval/auditor-halal/list', {
       method: 'get',
       params: {
         page: currentPage.value,
@@ -47,6 +47,7 @@ const handleLoadList = async () => {
 
     if (response.code === 2000) {
       if (response.data !== null) {
+        response.data.map((el: any) => el.id = el.auditor_id)
         tableItems.value = response.data
         currentPage.value = response.current_page
         totalItems.value = response.total_item
@@ -74,7 +75,36 @@ const { refresh } = await useAsyncData(
 )
 
 const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} Asesor Disetujui`, 'success');
+  try {
+    const response: any = await $api(
+      '/approval/auditor-halal/approve',
+      {
+        method: 'post',
+        body: {
+          id: selectedItem.value,
+        },
+      },
+    )
+
+    if (response.code !== 2000) {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      refresh()
+
+      return
+    }
+    const totalError = response?.message?.errors
+    const totalSuccess = response?.message?.success
+    const message: any[] = []
+    if (totalError > 0)
+      message.push(`Gagal setujui sebanyak ${totalError}`)
+    if (totalSuccess > 0)
+      message.push(`Sukses setujui sebanyak ${totalSuccess}`)
+    useSnackbar().sendSnackbar(`Asesor ${message.join()}`, totalSuccess > 0 ? 'success' : 'error')
+    refresh()
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
 }
 
 onMounted(() => {
@@ -88,8 +118,8 @@ const getChipColor = (status: string) => {
   return 'primary'
 }
 
-const unduhFile = () => {
-  window.open('/files/Cara Bayar.pdf', '_blank')
+const unduhFile = async (path: string) => {
+  await downloadDocument(path)
 }
 </script>
 
@@ -154,11 +184,18 @@ const unduhFile = () => {
               <template #item.no="{ index }">
                 {{ index + 1 + (currentPage - 1) * itemPerPage }}
               </template>
-              <template #item.phone_no="{ item }">
-                {{ item.phone_no ? item.phone_no : "-" }}
+              <template #item.tgl_registrasi="{ item }">
+                <div v-if="item.tgl_registrasi">
+                  {{ formatDateId(item.tgl_registrasi) }}
+                </div>
               </template>
-              <template #item.is_verify="{ item }">
-                {{ item.is_verify ? "Yes" : "No" }}
+              <template #item.tgl_bayar="{ item }">
+                <div v-if="item.tgl_bayar">
+                  {{ formatDateId(item.tgl_bayar) }}
+                </div>
+              </template>
+              <template #item.jenkel="{ item }">
+                {{ item.jenkel === 'L' ? 'Laki-laki' : 'Perempuan' }}
               </template>
               <template #item.status="{ item }">
                 <div class="d-flex flex-wrap">
@@ -191,42 +228,28 @@ const unduhFile = () => {
                   -
                 </div>
               </template>
-              <template #item.actions="{ item }">
-                <div class="d-flex gap-1">
-                  <IconBtn size="small">
-                    <div>
-                      <VIcon
-                        icon="ri-arrow-right-line"
-                        color="primary"
-                        @click="unduhFile"
-                      />
-                    </div>
-                  </IconBtn>
-                <!-- Right arrow icon for action -->
-                </div>
-              </template>
-              <template #item.invoice="{ item }">
+              <template #item.file_inv="{ item }">
                 <div class="d-flex gap-1">
                   <IconBtn size="small">
                     <div>
                       <VIcon
                         icon="fa-file"
                         color="primary"
-                        @click="unduhFile"
+                        @click="() => unduhFile(item.file_inv)"
                       />
                     </div>
                   </IconBtn>
                 <!-- Right arrow icon for action -->
                 </div>
               </template>
-              <template #item.draft="{ item }">
+              <template #item.file_draft="{ item }">
                 <div class="d-flex gap-1">
                   <IconBtn size="small">
                     <div>
                       <VIcon
                         icon="fa-file"
                         color="primary"
-                        @click="unduhFile"
+                        @click="() => unduhFile(item.file_draft)"
                       />
                     </div>
                   </IconBtn>

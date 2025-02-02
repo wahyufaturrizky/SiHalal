@@ -7,6 +7,7 @@ const id = (route?.params as any)?.id
 const dialogToggle = ref(false)
 const titleDialog = ref('')
 const labelSaveBtn = ref('')
+const detailData = ref<any>({})
 const returnNote = ref('')
 
 const loadingAll = ref(false)
@@ -71,10 +72,6 @@ const toggle = (type: string) => {
   labelSaveBtn.value = type === 'add' ? 'Ya, Kirim' : 'Kembalikan'
 }
 
-const onApprove = () => {
-  useSnackbar().sendSnackbar('Pengajuan pindah domisili disetujui', 'success')
-}
-
 const onReturn = () => {
   useSnackbar().sendSnackbar('Pengajuan pindah domisili dikembalikan', 'success')
 }
@@ -90,6 +87,8 @@ const handleGetDetail = async () => {
 
     if (response.code === 2000) {
       const data: any = response.data
+
+      detailData.value = data
 
       dataAsal.value = [
         {
@@ -182,6 +181,51 @@ const handleGetDetail = async () => {
   }
 }
 
+const onApprove = async () => {
+  { /*
+    {
+    "id": "123e4567-e89b-12d3-a456-426614174000",
+    "id_lembaga": "lembaga-001",
+    "id_pendamping": "pendamping-001",
+    "tujuan_provinsi": "Jawa Barat",
+    "tujuan_kabupaten": "Bandung",
+    "tujuan_kecamatan": "Cibiru",
+    "tujuan_kodepos": "40614"
+}
+
+    */ }
+  try {
+    const response: any = await $api(
+      '/approval/domisili-lp3h/approve',
+      {
+        method: 'put',
+        body: {
+          id,
+          id_lembaga: detailData.value?.id_lembaga,
+          id_pendamping: detailData.value?.id_pendamping,
+          tujuan_provinsi: detailData.value?.tujuan_provinsi,
+          tujuan_kabupaten: detailData.value?.tujuan_kabupaten,
+          tujuan_kecamatan: detailData.value?.tujuan_kecamatan,
+          tujuan_kodepos: detailData.value?.tujuan_kodepos,
+        },
+        query: { id },
+      },
+    )
+
+    if (response.code !== 2000) {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      refresh()
+
+      return
+    }
+    useSnackbar().sendSnackbar('Pengajuan pindah domisili disetujui', 'success')
+    refresh()
+  }
+  catch (err) {
+    console.log(err)
+  }
+}
+
 onMounted(async () => {
   handleGetDetail()
 })
@@ -207,18 +251,20 @@ onMounted(async () => {
           style="margin-right: 0px;"
         >
           <!-- <VBtn variant="outlined"> Lihat Draft Sertif </VBtn> -->
-          <!-- <DialogReturn
+          <!--
+            <DialogReturn
             title="Dikembalikan"
             button-text="Ya, Kembalikan"
             :on-return="onReturn"
-          >
+            >
             <template #contentDelete>
-              <label>
-                Catatan Pengembalian
-              </label>
-              <VTextarea v-model="returnNote" />
+            <label>
+            Catatan Pengembalian
+            </label>
+            <VTextarea v-model="returnNote" />
             </template>
-          </DialogReturn> -->
+            </DialogReturn>
+          -->
           <DialogApproval
             title="Pindah Domisili Disetujui"
             button-text="Ya, Setujui"
@@ -269,13 +315,15 @@ onMounted(async () => {
           </VExpansionPanel>
         </VExpansionPanels>
         <br>
-        <!-- <VExpansionPanels v-model="panelTracking">
+        <!--
+          <VExpansionPanels v-model="panelTracking">
           <VExpansionPanel class="pa-4">
-            <VExpansionPanelTitle class="text-h4">
-              Melacak
-            </VExpansionPanelTitle>
+          <VExpansionPanelTitle class="text-h4">
+          Melacak
+          </VExpansionPanelTitle>
           </VExpansionPanel>
-        </VExpansionPanels> -->
+          </VExpansionPanels>
+        -->
       </VCol>
     </VRow>
   </VContainer>
