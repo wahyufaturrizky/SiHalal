@@ -124,7 +124,7 @@ const onApprove = async () => {
       message.push(`Gagal setujui sebanyak ${totalError}`)
     if (totalSuccess > 0)
       message.push(`Sukses setujui sebanyak ${totalSuccess}`)
-    useSnackbar().sendSnackbar(`Auditor ${message.join()}`, 'success')
+    useSnackbar().sendSnackbar(`Auditor ${message.join()}`, totalSuccess > 0 ? 'success' : 'error')
     refresh()
   }
   catch (error) {

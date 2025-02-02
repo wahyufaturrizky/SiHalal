@@ -47,6 +47,7 @@ const handleLoadList = async () => {
 
     if (response.code === 2000) {
       if (response.data !== null) {
+        response.data.map((el: any) => el.id = el.auditor_id)
         tableItems.value = response.data
         currentPage.value = response.current_page
         totalItems.value = response.total_item
@@ -74,7 +75,36 @@ const { refresh } = await useAsyncData(
 )
 
 const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} Asesor Disetujui`, 'success');
+  try {
+    const response: any = await $api(
+      '/approval/auditor-halal/approve',
+      {
+        method: 'post',
+        body: {
+          id: selectedItem.value,
+        },
+      },
+    )
+
+    if (response.code !== 2000) {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      refresh()
+
+      return
+    }
+    const totalError = response?.message?.errors
+    const totalSuccess = response?.message?.success
+    const message: any[] = []
+    if (totalError > 0)
+      message.push(`Gagal setujui sebanyak ${totalError}`)
+    if (totalSuccess > 0)
+      message.push(`Sukses setujui sebanyak ${totalSuccess}`)
+    useSnackbar().sendSnackbar(`Asesor ${message.join()}`, totalSuccess > 0 ? 'success' : 'error')
+    refresh()
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
 }
 
 onMounted(() => {
