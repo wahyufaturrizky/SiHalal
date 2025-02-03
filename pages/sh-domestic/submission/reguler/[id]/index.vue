@@ -655,7 +655,7 @@ onMounted(async () => {
                 {{ t("pengajuan-reguler.reguler-detail-out-title") }}
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <div class="border rounded w-100" style="justify-items: center">
+                <div class="border rounded w-100" style="justify-items: center;">
                   <!--                  <div -->
                   <!--                    v-if="data?.outlet?.length === 0" -->
                   <!--                    class="pt-2" -->

@@ -208,6 +208,9 @@
   "validation": {
     "fill": "This column is mandatory"
   },
+  "global-error": {
+    "error-mistake": "There is a mistake"
+  },
   "login": {
     "nav-1": "Need Help?",
     "nav-1-phone": "Phone",
@@ -634,7 +637,7 @@
     "reguler-form--pengajuan-fac-alamat": "Address",
     "reguler-form--pengajuan-fac-status": "Status",
     "reguler-form--pengajuan-fac-action": "Action",
-    "reguler-form--pengajuan-fac-popup-title": "Factory Data Add",
+    "reguler-form--pengajuan-fac-popup-title": "Factory Data",
     "reguler-form--pengajuan-fac-popup-nama": "Name",
     "reguler-form--pengajuan-fac-popup-alamat": "Address",
     "reguler-form--pengajuan-fac-popup-status": "Status",
@@ -676,7 +679,7 @@
     "reguler-form--pengajuan-doc-permission": "Permission to enter",
     "reguler-form--komitmen-title": "Commitment and Responsibility",
     "reguler-form--komitmen-1-subtitle": "Halal Policy",
-    "reguler-form--komitmen-1-content": "We are committed and responsible for consistently and sustainably producing halal products by taking the following actions:",
+    "reguler-form--komitmen-1-content": "We are committed and responsible for consistently and sustainably producing halal products by taking the following actions :",
     "reguler-form--komitmen-1-content-1": "Complying with regulations related to halal product assurance.",
     "reguler-form--komitmen-1-content-2": "Using halal ingredients and conducting Halal Product Process (PPP) according to applicable provisions.",
     "reguler-form--komitmen-1-content-3": "Preparing human resources to support the implementation of PPP in the company.",

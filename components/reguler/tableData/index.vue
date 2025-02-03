@@ -196,7 +196,10 @@ const editDaftarBahan = async () => {
       nama_produk: "",
       foto_produk: null,
     };
-    useSnackbar().sendSnackbar(t('pengajuan-reguler.reguler-alert-add'), "success");
+    useSnackbar().sendSnackbar(
+      t("pengajuan-reguler.reguler-alert-add"),
+      "success"
+    );
     getListIngredients();
     dialogEdit.value = false;
   }
@@ -214,8 +217,8 @@ const deleteIngredient = async (productId: string) => {
 
     if (response.code === 2000) {
       getListIngredients();
-      props.refresh(); 
-      useSnackbar().sendSnackbar(t('reguler-alert-delete'), "success");
+      props.refresh();
+      useSnackbar().sendSnackbar(t("reguler-alert-delete"), "success");
     } else {
       useSnackbar().sendSnackbar(response.errors?.list_error?.[0], "error");
     }
@@ -255,8 +258,6 @@ watch(
     loading.value = false;
   }
 );
-
-
 </script>
 
 <template>
@@ -316,117 +317,180 @@ watch(
               : props?.data.value
           "
         >
-          <template #header.jenis_surat="{column }">
+          <template #header.jenis_bahan="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+          <template #header.nama="{ column }">
             <div>
               {{ t(column.title) }}
             </div>
           </template>
 
-          <template #header.no_surat="{column }">
+          <template #header.addType="{ column }">
             <div>
               {{ t(column.title) }}
             </div>
           </template>
 
-          <template #header.tanggal_surat="{column }">
+          <template #header.lokasi="{ column }">
             <div>
               {{ t(column.title) }}
             </div>
           </template>
 
-          <template #header.masa_berlaku="{column }">
+          <template #header.tgl_pembelian="{ column }">
             <div>
               {{ t(column.title) }}
             </div>
           </template>
 
-          <template #header.instansi_penerbit="{column }">
+          <template #header.FileDok="{ column }">
             <div>
               {{ t(column.title) }}
             </div>
           </template>
 
-          <template #header.action="{column }">
+          <template #header.jabatan="{ column }">
             <div>
               {{ t(column.title) }}
             </div>
           </template>
-
-          <template #header.nama_pabrik="{column }">
-            <div>
-              {{ t(column.title) }}
-            </div>
-          </template>
-        
-          <template #header.alamat_pabrik="{column }">
-            <div>
-              {{ t(column.title) }}
-            </div>
-          </template>
-
-          <template #header.status_milik="{column }">
-            <div>
-              {{ t(column.title) }}
-            </div>
-          </template>
-
-
-          <template #header.nama_outlet="{column }">
-            <div>
-              {{ t(column.title) }}
-            </div>
-          </template>
-
-          <template #header.alamat_outlet="{column }">
-            <div>
-              {{ t(column.title) }}
-            </div>
-          </template>
-
-          <template #header.penyelia_nama="{column }">
-            <div>
-              {{ t(column.title) }}
-            </div>
-          </template>
-
-          <template #header.file_skph="{column }">
-            <div>
-              {{ t(column.title) }}
-            </div>
-          </template>
-
-          <template #header.file_spph="{column }">
-            <div>
-              {{ t(column.title) }}
-            </div>
-          </template>
-
           
-          <template #header.file_ktp="{column }">
+          <template #header.posisi="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+          
+
+          <template #header.nama_bahan="{ column }">
             <div>
               {{ t(column.title) }}
             </div>
           </template>
 
-               
-          <template #header.no_ktp="{column }">
+          <template #header.produsen="{ column }">
             <div>
               {{ t(column.title) }}
             </div>
           </template>
 
-          <template #header.religion="{column }">
+          <template #header.no_sertifikat="{ column }">
             <div>
               {{ t(column.title) }}
             </div>
           </template>
 
-          <template #header.tgl_penyelia_halal="{column }">
+          <template #header.jenis_surat="{ column }">
             <div>
               {{ t(column.title) }}
             </div>
           </template>
-     
+
+          <template #header.no_surat="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.tanggal_surat="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.masa_berlaku="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.instansi_penerbit="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.action="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.nama_pabrik="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.alamat_pabrik="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.status_milik="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.nama_outlet="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.alamat_outlet="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.penyelia_nama="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.file_skph="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.file_spph="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.file_ktp="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.no_ktp="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.religion="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.tgl_penyelia_halal="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
           <template #item.no="{ index }">
             <div>
               {{ index + 1 }}
@@ -486,7 +550,6 @@ watch(
               @change="() => handleCheck(item)"
             />
           </template>
-
 
           <template v-if="!isviewonly" #item.action="{ item }">
             <DialogDeleteAuditPengajuan

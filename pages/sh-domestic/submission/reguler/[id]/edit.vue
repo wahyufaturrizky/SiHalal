@@ -53,9 +53,9 @@ const getListLegal = async () => {
     if (response?.code === 2000) {
       listLegal.value = response.data;
       return response;
-    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    } else useSnackbar().sendSnackbar(t("global-error.error-mistake"), "error");
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar(t("global-error.error-mistake"), "error");
   }
 };
 
@@ -202,7 +202,7 @@ onMounted(async () => {
               <VBtn
                 color="#E1442E"
                 variant="outlined"
-                style="border-color: #e1442e !important;"
+                style="border-color: #e1442e !important"
               >
                 {{ t("pengajuan-reguler.reguler-form-head-cancel") }}
               </VBtn>
@@ -225,7 +225,7 @@ onMounted(async () => {
               :value="index"
               :disabled="index > 2 && !isBahanCompleted"
             >
-              {{ `${t(item)}`}}
+              {{ `${t(item)}` }}
             </VTab>
           </VTabs>
         </VCol>

@@ -208,6 +208,9 @@
   "validation": {
     "fill": "Kolom ini wajib diisi"
   },
+  "global-error": {
+    "error-mistake": "Ada Kesalahan"
+  },
   "login": {
     "nav-1": "Butuh Bantuan?",
     "nav-1-phone": "Telepon",
@@ -634,7 +637,7 @@
     "reguler-form--pengajuan-fac-alamat": "Alamat",
     "reguler-form--pengajuan-fac-status": "Status",
     "reguler-form--pengajuan-fac-action": "Aksi",
-    "reguler-form--pengajuan-fac-popup-title": "Tambah Data Pabrik",
+    "reguler-form--pengajuan-fac-popup-title": "Data Pabrik",
     "reguler-form--pengajuan-fac-popup-nama": "Nama",
     "reguler-form--pengajuan-fac-popup-alamat": "Alamat",
     "reguler-form--pengajuan-fac-popup-status": "Status",
@@ -676,7 +679,7 @@
     "reguler-form--pengajuan-doc-permission": "Izin Masuk",
     "reguler-form--komitmen-title": "Komitmen dan Tanggung Jawab",
     "reguler-form--komitmen-1-subtitle": "Kebijakan Halal",
-    "reguler-form--komitmen-1-content": "Kami berkomitmen dan bertanggung jawab untuk menghasilkan produk halal secara konsisten dan berkesinambungan dengan melakukan tindakan:",
+    "reguler-form--komitmen-1-content": "Kami berkomitmen dan bertanggung jawab untuk menghasilkan produk halal secara konsisten dan berkesinambungan dengan melakukan tindakan :",
     "reguler-form--komitmen-1-content-1": "Mematuhi peraturan perundangan terkait jaminan produk halal.",
     "reguler-form--komitmen-1-content-2": "Menggunakan bahan halal dan melakukan Proses Produk Halal (PPH) sesuai ketentuan yang berlaku.",
     "reguler-form--komitmen-1-content-3": "Menyiapkan sumber daya manusia yang mendukung pelaksanaan PPH di perusahaan.",
