@@ -263,7 +263,7 @@ onMounted(async () => {
                 style="cursor: pointer"
                 @click="
                   router.push(
-                    `/sh-domestic/submission/self-declare/${item.id_reg}`
+                    `/sh-domestic/submission/self-declare-mandiri/${item.id_reg}`
                   )
                 "
               >
