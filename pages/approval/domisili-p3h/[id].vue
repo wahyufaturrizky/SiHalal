@@ -182,18 +182,6 @@ const handleGetDetail = async () => {
 }
 
 const onApprove = async () => {
-  { /*
-    {
-    "id": "123e4567-e89b-12d3-a456-426614174000",
-    "id_lembaga": "lembaga-001",
-    "id_pendamping": "pendamping-001",
-    "tujuan_provinsi": "Jawa Barat",
-    "tujuan_kabupaten": "Bandung",
-    "tujuan_kecamatan": "Cibiru",
-    "tujuan_kodepos": "40614"
-}
-
-    */ }
   try {
     const response: any = await $api(
       '/approval/domisili-lp3h/approve',
@@ -214,12 +202,13 @@ const onApprove = async () => {
 
     if (response.code !== 2000) {
       useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-      refresh()
 
       return
     }
     useSnackbar().sendSnackbar('Pengajuan pindah domisili disetujui', 'success')
-    refresh()
+    setTimeout(() => {
+      navigateTo({ path: '/approval/domisili-p3h' })
+    }, 500)
   }
   catch (err) {
     console.log(err)

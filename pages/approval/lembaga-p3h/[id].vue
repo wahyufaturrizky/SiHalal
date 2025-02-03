@@ -123,12 +123,13 @@ const onApprove = async () => {
 
     if (response.code !== 2000) {
       useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-      refresh()
 
       return
     }
     useSnackbar().sendSnackbar('Pengajuan pindah domisili disetujui', 'success')
-    refresh()
+    setTimeout(() => {
+      navigateTo({ path: '/approval/lembaga-p3h' })
+    }, 500)
   }
   catch (err) {
     console.log(err)
