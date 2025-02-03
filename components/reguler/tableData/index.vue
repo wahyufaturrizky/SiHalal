@@ -322,6 +322,9 @@ watch(
               {{ t(column.title) }}
             </div>
           </template>
+
+       
+
           <template #header.nama="{ column }">
             <div>
               {{ t(column.title) }}
