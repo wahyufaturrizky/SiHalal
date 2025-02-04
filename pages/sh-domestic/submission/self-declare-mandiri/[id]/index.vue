@@ -26,7 +26,7 @@
             append-icon="ri-pencil-fill"
             @click="
               router.push(
-                `/sh-domestic/submission/self-declare/${submissionId}/edit`
+                `/sh-domestic/submission/self-declare-mandiri/${submissionId}/edit`
               )
             "
             >Ubah</VBtn
