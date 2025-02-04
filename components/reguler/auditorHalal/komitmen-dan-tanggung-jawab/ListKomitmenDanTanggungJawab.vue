@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps({
   isviewonly: {
@@ -27,11 +30,24 @@ const formAdd = ref<any>({
 const comitmentData = ref({
   label: [
     { title: "No.", key: "no", nowrap: true },
-    { title: "Nama", key: "nama", nowrap: true },
-    { title: "Jabatan", key: "jabatan", nowrap: true },
-    { title: "Posisi", key: "posisi", nowrap: true },
     {
-      title: "Action",
+      title: "pengajuan-reguler.reguler-form--komitmen-tim-nama",
+      key: "nama",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler-form--komitmen-tim-jabatan",
+      key: "jabatan",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler-form--komitmen-tim-posisi",
+      key: "posisi",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler-form--komitmen-tim-aksi",
+      key: "action",
       value: "actionPopOver2",
       sortable: false,
       nowrap: true,
@@ -174,14 +190,20 @@ onMounted(async () => {
     >
       <template #content>
         <div>
-          <p class="label-pengajuan">Nama</p>
+          <p class="label-pengajuan">
+            {{ t("pengajuan-reguler.reguler-form--komitmen-tim-popup-nama") }}
+          </p>
           <VTextField
             v-model="formAdd.nama"
             class="-mt-10"
             placeholder="isi Nama"
           />
           <br />
-          <p class="label-pengajuan">Jabatan</p>
+          <p class="label-pengajuan">
+            {{
+              t("pengajuan-reguler.reguler-form--komitmen-tim-popup-jabatan")
+            }}
+          </p>
           <VTextField
             v-model="formAdd.jabatan"
             class="-mt-10"
@@ -189,7 +211,9 @@ onMounted(async () => {
             disabled
           />
           <br />
-          <p class="label-pengajuan">Posisi</p>
+          <p class="label-pengajuan">
+            {{ t("pengajuan-reguler.reguler-form--komitmen-tim-popup-posisi") }}
+          </p>
           <VSelect
             v-model="formAdd.posisi"
             :items="[
@@ -211,7 +235,7 @@ onMounted(async () => {
       :on-edit="toggleEdit"
       :on-delete="toggleDelete"
       :data="comitmentData"
-      title="Komitmen dan Tanggung Jawab"
+      :title="t('pengajuan-reguler.reguler-form--komitmen-title')"
       with-add-button
       with-approve-button
       :isviewonly="isviewonly"
@@ -227,10 +251,12 @@ onMounted(async () => {
 .text-center {
   text-align: center;
 }
+
 .bgContent {
-  background-color: #f0e9f1;
   border-radius: 10px;
+  background-color: #f0e9f1;
 }
+
 .progress-text {
   font-size: 14px !important;
   font-weight: 700 !important;

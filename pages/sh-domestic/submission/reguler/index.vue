@@ -19,37 +19,37 @@ const listOss = ref<any[]>([]);
 const headers = [
   { title: "No", key: "no" },
   {
-    title: `${t("pengajuan-reguler.reguler-list-head-nodaftar")}`,
+    title: "pengajuan-reguler.reguler-list-head-nodaftar",
     key: "no_daftar",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-list-head-tgldaftar")}`,
+    title: "pengajuan-reguler.reguler-list-head-tgldaftar",
     key: "tgl_daftar",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-list-head-namapu")}`,
+    title: "pengajuan-reguler.reguler-list-head-namapu",
     key: "nama_pu",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-list-head-jnsdaftar")}`,
+    title: "pengajuan-reguler.reguler-list-head-jnsdaftar",
     key: "jenis_daftar",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-list-head-jnsproduk")}`,
+    title: "pengajuan-reguler.reguler-list-head-jnsproduk",
     key: "jenis_produk",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-list-head-status")}`,
+    title: "pengajuan-reguler.reguler-list-head-status",
     key: "newStatus",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-list-head-action")}`,
+    title: "pengajuan-reguler.reguler-list-head-action",
     value: "action",
     sortable: false,
     nowrap: true,
@@ -155,7 +155,7 @@ onMounted(async () => {
   </div>
   <div v-else-if="!loading">
     <!-- <KembaliButton class="no-padding" /> -->
-    <h1 style="font-size: 32px">
+    <h1 style="font-size: 32px;">
       {{ t("pengajuan-reguler.reguler-list-title") }}
     </h1>
     <br />
@@ -177,7 +177,7 @@ onMounted(async () => {
           density="compact"
           placeholder="Cari Data"
           append-inner-icon="ri-search-line"
-          style="max-inline-size: 100%"
+          style="max-inline-size: 100%;"
           @input="handleInput"
         />
       </VCardItem>
@@ -189,6 +189,33 @@ onMounted(async () => {
           class="elevation-1"
           @update:options="loadItem(page, size, searchQuery)"
         >
+          <template #header.no_daftar="{ column }">
+            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+          </template>
+
+          <template #header.tgl_daftar="{ column }">
+            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+          </template>
+
+          <template #header.nama_pu="{ column }">
+            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+          </template>
+
+          <template #header.jenis_daftar="{ column }">
+            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+          </template>
+
+          <template #header.jenis_produk="{ column }">
+            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+          </template>
+
+          <template #header.newStatus="{ column }">
+            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+          </template>
+
+          <template #header.action="{ column }">
+            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+          </template>
           <template #item.no="{ index }">
             <label>{{ index + 1 }}</label>
           </template>
@@ -214,7 +241,7 @@ onMounted(async () => {
           <template #item.action="{ item }">
             <VIcon
               color="primary"
-              style="cursor: pointer"
+              style="cursor: pointer;"
               class="ic-center"
               @click="
                 navigateTo(`/sh-domestic/submission/reguler/${item.id_reg}`)

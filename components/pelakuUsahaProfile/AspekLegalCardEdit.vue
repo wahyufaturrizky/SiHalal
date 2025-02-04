@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+
 import type { legal } from "@/stores/interface/pelakuUsahaProfileIntf";
 
 const snackbar = useSnackbar();
@@ -17,12 +21,12 @@ const storeDataMaster = dataMasterStore();
 
 const legalHeader = [
   { title: "No", key: "no" },
-  { title: "Jenis", key: "type" },
-  { title: "No. Dokumen", key: "doc_number" },
-  { title: "Tanggal", key: "date" },
-  { title: "Masa Berlaku", key: "expiration_date" },
-  { title: "Instansi Penerbit", key: "publishing_agency" },
-  { title: "Action", key: "action" },
+  { title: "pu-detail.pu-legal-jenis", key: "type" },
+  { title: "pu-detail.pu-legal-nodoc", key: "doc_number" },
+  { title: "pu-detail.pu-legal-tgl", key: "date" },
+  { title: "pu-detail.pu-legal-tgl-exp", key: "expiration_date" },
+  { title: "pu-detail.pu-legal-issuer", key: "publishing_agency" },
+  { title: "pu-detail.pu-legal-action", key: "action" },
 ];
 
 function handleDelete(item) {
@@ -154,6 +158,30 @@ onMounted(() => {
         :items="props.aspekLegalData"
         class="elevation-1"
       >
+        <template #header.type="{ column }">
+          {{ t(column.title) }}
+        </template>
+
+        <template #header.doc_number="{ column }">
+          {{ t(column.title) }}
+        </template>
+
+        <template #header.date="{ column }">
+          {{ t(column.title) }}
+        </template>
+
+        <template #header.expiration_date="{ column }">
+          {{ t(column.title) }}
+        </template>
+
+        <template #header.publishing_agency="{ column }">
+          {{ t(column.title) }}
+        </template>
+
+        <template #header.action="{ column }">
+          {{ t(column.title) }}
+        </template>
+
         <template #item.no="{ index }">
           {{ index + 1 }}
         </template>

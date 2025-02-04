@@ -1,6 +1,11 @@
 <script setup lang="ts">
 const panelOpenPenyeliaHallal = ref(0);
 
+
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+
 const tableHeaders = [
   { title: "No", key: "no", align: "start", sortable: false },
   { title: "Nama", key: "nama", align: "start", sortable: false },
@@ -187,16 +192,13 @@ const downloadSkHandler = () => {
   }
 };
 
-import { useI18n } from "vue-i18n";
-
-const { t } = useI18n();
 </script>
 
 <template>
   <VCard>
     <VCardTitle>
       <VRow>
-        <VCol cols="8" style="display: inline-flex; align-items: center">
+        <VCol cols="8" style="display: inline-flex; align-items: center;">
           <div class="text-h4 font-weight-bold mr-4">Penyelia Halal</div>
           <!-- <VChip
             color="primary"
@@ -218,7 +220,7 @@ const { t } = useI18n();
             {{ t("detail-pu.pu-edit-sk") }}</VBtn
           >
         </VCol>
-        <VCol cols="4" style="display: flex; justify-content: end">
+        <VCol cols="4" style="display: flex; justify-content: end;">
           <DataPenyeliaHalalModal
             @click.stop
             mode="add"

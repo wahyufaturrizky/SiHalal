@@ -208,6 +208,9 @@
   "validation": {
     "fill": "This column is mandatory"
   },
+  "global-error": {
+    "error-mistake": "There is a mistake"
+  },
   "login": {
     "nav-1": "Need Help?",
     "nav-1-phone": "Phone",
@@ -486,6 +489,8 @@
     "pabrik-status": "Status"
   },
   "pengajuan-reguler": {
+    "reguler-alert-add": "Add data successfully",
+    "reguler-alert-delete": "Successful deletion of data",
     "reguler-list-btn-back": "Back",
     "reguler-list-title": "Reguler Submission",
     "reguler-list-subtitle": "Reguler Submission List",
@@ -618,7 +623,9 @@
     "reguler-form--pengajuan-legal-action": "Action",
     "reguler-form--pengajuan-legal-popup-title": "Legal Aspect Data Add",
     "reguler-form--pengajuan-legal-popup-jenis": "Document Type",
+    "reguler-form--pengajuan-legal-popup-jenis-1": "Select Document Type",
     "reguler-form--pengajuan-legal-popup-nodok": "Document No.",
+    "reguler-form--pengajuan-legal-popup-nodok-1": "fill in the document number.",
     "reguler-form--pengajuan-legal-popup-tanggal": "Document Date",
     "reguler-form--pengajuan-legal-popup-expired": "Validity Period",
     "reguler-form--pengajuan-legal-popup-issuer": "Issuing Agency",
@@ -630,7 +637,7 @@
     "reguler-form--pengajuan-fac-alamat": "Address",
     "reguler-form--pengajuan-fac-status": "Status",
     "reguler-form--pengajuan-fac-action": "Action",
-    "reguler-form--pengajuan-fac-popup-title": "Factory Data Add",
+    "reguler-form--pengajuan-fac-popup-title": "Factory Data",
     "reguler-form--pengajuan-fac-popup-nama": "Name",
     "reguler-form--pengajuan-fac-popup-alamat": "Address",
     "reguler-form--pengajuan-fac-popup-status": "Status",
@@ -672,7 +679,7 @@
     "reguler-form--pengajuan-doc-permission": "Permission to enter",
     "reguler-form--komitmen-title": "Commitment and Responsibility",
     "reguler-form--komitmen-1-subtitle": "Halal Policy",
-    "reguler-form--komitmen-1-content": "We are committed and responsible for consistently and sustainably producing halal products by taking the following actions:",
+    "reguler-form--komitmen-1-content": "We are committed and responsible for consistently and sustainably producing halal products by taking the following actions :",
     "reguler-form--komitmen-1-content-1": "Complying with regulations related to halal product assurance.",
     "reguler-form--komitmen-1-content-2": "Using halal ingredients and conducting Halal Product Process (PPP) according to applicable provisions.",
     "reguler-form--komitmen-1-content-3": "Preparing human resources to support the implementation of PPP in the company.",
