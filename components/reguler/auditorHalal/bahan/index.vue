@@ -776,7 +776,7 @@ onMounted(async () => {
         </div>
         <div v-else-if="titleDialog === 'Tambah Nama Produk'">
           <div>
-            <label>Kualitas Produk</label>
+            <label>Klasifikasi Produk</label>
             <VSelect
               outlined
               placeholder="pilih kualitas produk"

@@ -30,9 +30,7 @@ const selectedItem = ref([])
 const pendampingItems = ref([])
 const isLoading = ref(false)
 const isLoadingPendamping = ref(false)
-const tableType = ref('Pilih pendamping')
-
-const searchQuery = ref('')
+const tableType = ref('Pilih lembaga')
 
 const handleLoadList = async () => {
   try {
@@ -139,8 +137,8 @@ const getChipColor = (status: string) => {
   return 'primary'
 }
 
-const unduhFile = () => {
-  window.open('/files/Cara Bayar.pdf', '_blank')
+const unduhFile = async (file: string) => {
+  await downloadDocument(file)
 }
 </script>
 
@@ -248,7 +246,7 @@ const unduhFile = () => {
                       <VIcon
                         icon="ri-arrow-right-line"
                         color="primary"
-                        @click="unduhFile"
+                        @click="() => unduhFile(item.file_sertifikat)"
                       />
                     </div>
                   </IconBtn>

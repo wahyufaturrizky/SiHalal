@@ -795,7 +795,7 @@
                   registrationDetail.channel ? registrationDetail.channel : "-"
                 }}
               </InfoRowV2>
-              <!-- <InfoRowV2
+              <InfoRowV2
                 class="d-flex align-center"
                 name="Fasilitator"
                 :style="{ fontWeight: '600' }"
@@ -805,7 +805,7 @@
                     ? registrationDetail.fasilitator_name
                     : "-"
                 }}
-              </InfoRowV2> -->
+              </InfoRowV2>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>

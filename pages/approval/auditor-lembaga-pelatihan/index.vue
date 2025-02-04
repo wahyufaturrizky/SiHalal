@@ -73,7 +73,7 @@ const getMasterLembaga = async () => {
   try {
     isLoadingLembaga.value = true
 
-    const response: any = await $api('/approval/lembaga', {
+    const response: any = await $api('/approval/auditor-lembaga/lembaga', {
       method: 'get',
     } as any)
 

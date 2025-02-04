@@ -180,7 +180,7 @@ onMounted(async () => {
             Data Pengajuan Self Declare
           </div>
         </VCol>
-        <VCol class="d-flex justify-end align-center">
+        <!-- <VCol class="d-flex justify-end align-center">
           <VBtn
             v-if="alertData.isValid"
             color="primary"
@@ -192,7 +192,7 @@ onMounted(async () => {
           <VBtn v-else color="#A09BA1" append-icon="fa-plus">
             Buat Pengajuan
           </VBtn>
-        </VCol>
+        </VCol> -->
       </VRow>
       <VRow v-if="!alertData.isValid">
         <VCol>
@@ -213,7 +213,7 @@ onMounted(async () => {
           </VAlert>
         </VCol>
       </VRow>
-      <VRow>
+      <!-- <VRow>
         <VCol cols="7" class="d-flex justify-sm-space-between align-center">
           <VTextField
             v-model="searchQuery"
@@ -224,7 +224,7 @@ onMounted(async () => {
             style="max-width: 100%"
           />
         </VCol>
-      </VRow>
+      </VRow> -->
       <VRow>
         <VCol>
           <VDataTableServer
@@ -263,7 +263,7 @@ onMounted(async () => {
                 style="cursor: pointer"
                 @click="
                   router.push(
-                    `/sh-domestic/submission/self-declare-mandiri/${item.id_reg}`
+                    `/lp3h/self-declare/verifikasi-mandiri/${item.id_reg}`
                   )
                 "
               >
