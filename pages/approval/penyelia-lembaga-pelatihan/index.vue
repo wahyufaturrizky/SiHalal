@@ -141,7 +141,7 @@ const getChipColor = (status: string) => {
 }
 
 const unduhFile = async (link: string) => {
-  await downloadDocument(link)
+  await downloadDocument(link, 'FILES')
 }
 </script>
 

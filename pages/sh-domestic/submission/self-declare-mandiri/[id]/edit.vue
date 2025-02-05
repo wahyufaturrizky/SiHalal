@@ -21,7 +21,9 @@ onMounted(async () => {
     <div
       class="d-flex align-center cursor-pointer"
       @click="
-        router.push(`/sh-domestic/submission/self-declare/${submissionId}`)
+        router.push(
+          `/sh-domestic/submission/self-declare-mandiri/${submissionId}`
+        )
       "
     >
       <VIcon icon="mdi-chevron-left" size="40px" color="primary" />
@@ -57,7 +59,7 @@ onMounted(async () => {
             <PelakuUsahaMain />
           </VTabsWindowItem>
           <VTabsWindowItem value="2">
-            <PengajuanMain />
+            <PengajuanMain :hide-kode-fasilitasi="true" />
           </VTabsWindowItem>
           <VTabsWindowItem value="3">
             <PabrikOutletMain />
