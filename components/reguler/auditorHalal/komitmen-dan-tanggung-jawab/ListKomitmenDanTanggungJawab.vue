@@ -48,10 +48,15 @@ const comitmentData = ref({
     {
       title: "pengajuan-reguler.reguler-form--komitmen-tim-aksi",
       key: "action",
-      value: "actionPopOver2",
+      value:  {
+        popupTitle: "pengajuan.reguler.reguler-remove-bahan-title",
+        popup1: "pengajuan.reguler.reguler-remove-bahan-1",
+        popup2: "pengajuan.reguler.reguler-remove-bahan-2",
+      },
       sortable: false,
       nowrap: true,
       popOver: true,
+      
     },
   ],
   value: [],

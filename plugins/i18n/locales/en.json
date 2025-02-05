@@ -861,7 +861,13 @@
     "reguler-form-produk-tambah": "Add",
     "reguler-form-produk-prodname": "Product Name",
     "reguler-form-produk-pabrikname": "Factory Name",
-    "reguler-form-produk-aksi": "Action"
+    "reguler-form-produk-aksi": "Action",
+    "reguler-kode-facilitas": "Registration/Facilitation Code",
+    "reguler-kode-facilitas-1": "Search Code",
+    "reguler-kode-facilitas-2": "Enter the Facility Code",
+    "reguler-remove-bahan-title": "Remove Ingredients",
+    "reguler-remove-bahan-1": "Yes, Delete",
+    "reguler-remove-bahan-2": "Are you sure you deleted this data?"
   },
   "reguler-invoice": {
     "invoice-list-back": "Back",
