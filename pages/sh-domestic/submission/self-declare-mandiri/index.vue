@@ -90,7 +90,9 @@ const handleCreate = async (answer: string) => {
     });
 
     if (result.code === 2000) {
-      router.push(`/sh-domestic/submission/self-declare/${result.data.id_reg}`);
+      router.push(
+        `/sh-domestic/submission/self-declare-mandiri/${result.data.id_reg}`
+      );
     }
   } catch (error) {}
 };
