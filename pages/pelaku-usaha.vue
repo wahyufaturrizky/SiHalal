@@ -55,6 +55,7 @@ onMounted(() => {
           <VBtn
             density="compact"
             variant="outlined"
+            s
             prepend-icon=""
             @click="onEdit"
           >
@@ -100,7 +101,7 @@ onMounted(() => {
               <VExpansionPanelText>
                 <VDataTable
                   :headers="tablePabrikHeader"
-                  :items="store.factory ? store.factory : []"
+                  :items="store.factory || []"
                 >
                   <template #header.name="{ column }">
                     <div>

@@ -25,27 +25,27 @@ const loading = ref(false);
 const aspectLegalHeader = [
   { title: "No.", key: "id_reg_legal", nowrap: true },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-legal-jenis")}`,
+    title: "pengajuan-reguler.reguler-detail-legal-jenis",
     key: "jenis_surat",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-legal-nodok")}`,
+    title: "pengajuan-reguler.reguler-detail-legal-nodok",
     key: "no_surat",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-legal-tanggal")}`,
+    title: "pengajuan-reguler.reguler-detail-legal-tanggal",
     key: "tanggal_surat",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-legal-expired")}`,
+    title: "pengajuan-reguler.reguler-detail-legal-expired",
     key: "masa_berlaku",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-legal-issuer")}`,
+    title: "pengajuan-reguler.reguler-detail-legal-issuer",
     key: "instansi_penerbit",
     nowrap: true,
   },
@@ -54,17 +54,17 @@ const aspectLegalHeader = [
 const factoryHeader = [
   { title: "No.", key: "no", nowrap: true },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-fac-nama")}`,
+    title: "pengajuan-reguler.reguler-detail-fac-nama",
     key: "nama_pabrik",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-fac-alamat")}`,
+    title: "pengajuan-reguler.reguler-detail-fac-alamat",
     key: "alamat_pabrik",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-fac-status")}`,
+    title: "pengajuan-reguler.reguler-detail-fac-status",
     key: "status_milik",
     nowrap: true,
   },
@@ -73,17 +73,17 @@ const factoryHeader = [
 const outletHeader = [
   { title: "No.", key: "no", nowrap: true },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-out-nama")}`,
+    title: "pengajuan-reguler.reguler-detail-out-nama",
     key: "nama_outlet",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-out-alamat")}`,
+    title: "pengajuan-reguler.reguler-detail-out-alamat",
     key: "alamat_outlet",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-out-status")}`,
+    title: "pengajuan-reguler.reguler-detail-out-status",
     key: "status_milik",
     nowrap: true,
   },
@@ -92,12 +92,12 @@ const outletHeader = [
 const produkHeader = [
   { title: "No.", key: "no", nowrap: true },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-produk-nama")}`,
+    title: "pengajuan-reguler.reguler-detail-produk-nama",
     key: "nama_produk",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-produk-publikasi")}`,
+    title: "pengajuan-reguler.reguler-detail-produk-publikasi",
     key: "reg_publish",
     nowrap: true,
   },
@@ -106,27 +106,27 @@ const produkHeader = [
 const penyeliaHalalHeaders = [
   { title: "No.", key: "no", nowrap: true },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-ph-nama")}`,
+    title: "pengajuan-reguler.reguler-detail-ph-nama",
     key: "penyelia_nama",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-ph-ktp")}`,
+    title: "pengajuan-reguler.reguler-detail-ph-ktp",
     key: "no_ktp",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-ph-telp")}`,
+    title: "pengajuan-reguler.reguler-detail-ph-telp",
     key: "no_kontak",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-ph-sertif")}`,
+    title: "pengajuan-reguler.reguler-detail-ph-sertif",
     key: "tgl_penyelia_halal",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-detail-ph-sk")}`,
+    title: "pengajuan-reguler.reguler-detail-ph-sk",
     key: "tanggal_sk",
     nowrap: true,
   },
@@ -605,6 +605,36 @@ onMounted(async () => {
                   class="border rounded"
                   hide-default-footer
                 >
+                  <template #header.jenis_surat="{ column }">
+                    <div class="mw-170">
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
+                  <template #header.no_surat="{ column }">
+                    <div class="mw-170">
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
+                  <template #header.tanggal_surat="{ column }">
+                    <div class="mw-170">
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
+                  <template #header.masa_berlaku="{ column }">
+                    <div class="mw-170">
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
+                  <template #header.instansi_penerbit="{ column }">
+                    <div class="mw-170">
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
                   <template #item.productType="{ item }">
                     <div class="mw-170">
                       {{ item.productType }}
@@ -638,6 +668,24 @@ onMounted(async () => {
                   hide-default-footer
                   class="border rounded"
                 >
+                  <template #header.nama_pabrik="{ column }">
+                    <div class="mw-170">
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
+                  <template #header.alamat_pabrik="{ column }">
+                    <div class="mw-170">
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
+                  <template #header.status_milik="{ column }">
+                    <div class="mw-170">
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
                   <template #item.no="{ index }">
                     <div class="mw-170">
                       {{ index + 1 }}
@@ -655,7 +703,7 @@ onMounted(async () => {
                 {{ t("pengajuan-reguler.reguler-detail-out-title") }}
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <div class="border rounded w-100" style="justify-items: center;">
+                <div class="border rounded w-100" style="justify-items: center">
                   <!--                  <div -->
                   <!--                    v-if="data?.outlet?.length === 0" -->
                   <!--                    class="pt-2" -->
@@ -674,6 +722,24 @@ onMounted(async () => {
                     hide-default-footer
                     class="border rounded"
                   >
+                    <template #header.nama_outlet="{ column }">
+                      <div class="mw-170">
+                        {{ t(column.title) }}
+                      </div>
+                    </template>
+
+                    <template #header.alamat_outlet="{ column }">
+                      <div class="mw-170">
+                        {{ t(column.title) }}
+                      </div>
+                    </template>
+
+                    <template #header.status_milik="{ column }">
+                      <div class="mw-170">
+                        {{ t(column.title) }}
+                      </div>
+                    </template>
+
                     <template #item.no="{ index }">
                       <div class="mw-170">
                         {{ index + 1 }}
@@ -698,6 +764,33 @@ onMounted(async () => {
                   hide-default-footer
                   class="border rounded"
                 >
+                  <template #header.penyelia_nama="{ column }">
+                    <div class="mw-170">
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+                  <template #header.no_ktp="{ column }">
+                    <div class="mw-170">
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
+                  <template #header.no_kontak="{ column }">
+                    <div class="mw-170">
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+                  <template #header.tgl_penyelia_halal="{ column }">
+                    <div class="mw-170">
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+                  <template #header.tanggal_sk="{ column }">
+                    <div class="mw-170">
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
                   <template #item.no="{ index }">
                     <div class="mw-170">
                       {{ index + 1 }}
@@ -720,6 +813,18 @@ onMounted(async () => {
                   hide-default-footer
                   class="border rounded"
                 >
+                  <template #header.nama_produk="{ column }">
+                    <div class="mw-170">
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
+                  <template #header.reg_publish="{ column }">
+                    <div class="mw-170">
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
                   <template #item.no="{ index }">
                     <div class="mw-170">
                       {{ index + 1 }}
