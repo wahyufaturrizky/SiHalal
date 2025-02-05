@@ -155,7 +155,7 @@ onMounted(async () => {
   </div>
   <div v-else-if="!loading">
     <!-- <KembaliButton class="no-padding" /> -->
-    <h1 style="font-size: 32px;">
+    <h1 style="font-size: 32px">
       {{ t("pengajuan-reguler.reguler-list-title") }}
     </h1>
     <br />
@@ -175,9 +175,9 @@ onMounted(async () => {
         <VTextField
           v-model="searchQuery"
           density="compact"
-          placeholder="Cari Data"
+          :placeholder="t('shln-invoice.invoice-list-cari')"
           append-inner-icon="ri-search-line"
-          style="max-inline-size: 100%;"
+          style="max-inline-size: 100%"
           @input="handleInput"
         />
       </VCardItem>
@@ -241,7 +241,7 @@ onMounted(async () => {
           <template #item.action="{ item }">
             <VIcon
               color="primary"
-              style="cursor: pointer;"
+              style="cursor: pointer"
               class="ic-center"
               @click="
                 navigateTo(`/sh-domestic/submission/reguler/${item.id_reg}`)

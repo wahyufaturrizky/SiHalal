@@ -74,7 +74,6 @@ const listFactory = ref<any>({
     {
       title: "pengajuan-reguler.reguler-form--pengajuan-fac-nama",
       key: "nama",
-      key: "nama",
       nowrap: true,
     },
     {
@@ -213,7 +212,7 @@ const triggerSaveModal = (payload: any, type: string) => {
 
 const triggerAddModal = (type: any) => {
   addContentType.value = type;
-  console.log(addContentType.value, "isi value addconetnt");
+
   addDialog.value = true;
   titleAddDialog.value = `${t(
     "pengajuan-reguler.reguler-form--pengajuan-fac-add"

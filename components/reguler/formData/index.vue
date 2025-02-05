@@ -73,19 +73,20 @@ const getSelectOptions = (field: string): string => {
     case t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnslay"):
       data = props?.service_type;
       break;
-    case t("pengajuan-reguler.reguler-detail-pengajuan-jnsprod"):
+
+    case t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsprod"):
       data = productList.value || [];
       break;
     case "Skala Usaha":
       data = ["Mikro", "Kecil", "Menengah", "Besar"];
       break;
-    case "Jenis Pendaftaran":
+    case t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsdaftar"):
       data = [
         { name: "Pendaftaran Mandiri/Reguler ", code: "" },
         { name: "Pendaftaran Melalui Fasilitasi", code: "CH002" },
       ];
       break;
-    case "Jenis Pengajuan":
+    case t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnspengajuan"):
       data = [{ name: "baru", code: "baru" }];
       break;
     case "Nama Fasilitas":
@@ -96,7 +97,7 @@ const getSelectOptions = (field: string): string => {
       break;
     case "Hasil Audit":
       data = ["Lulus", "Tidak Lulus"];
-    case "Area Pemasaran":
+    case t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-marketing"):
       data = listAreaPemasaran || [];
       break;
     default:
@@ -195,7 +196,8 @@ const lphValidation = async (title: string, value: string, index: number) => {
   if (title === t("pengajuan-reguler.reguler-detail-pengajuan-jnslay")) {
     props.data.map((el) => {
       if (
-        el.title === t("pengajuan-reguler.reguler-detail-pengajuan-jnsprod")
+        el.title ===
+        t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsprod")
       ) {
         el.value = "";
       } else if (
@@ -203,7 +205,8 @@ const lphValidation = async (title: string, value: string, index: number) => {
       ) {
         el.value = "";
       } else if (
-        el.title === t("pengajuan-reguler.reguler-detail-pengajuan-area")
+        el.title ===
+        t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsdaftar")
       ) {
         el.value = "";
       }
@@ -337,16 +340,30 @@ watchEffect(async () => {
               bg-color="#F6F6F6"
               :value="item.value"
             />
+            <!-- {{ item.title }}s -->
             <VSelect
               v-if="!item.disabled"
               v-model="item.value"
               :items="
-                item.title === 'LPH' ? itemsLph : getSelectOptions(item.title)
+                item.title ===
+                'pengajuan-reguler.reguler-form--pengajuan-pengajuan-lph'
+                  ? itemsLph
+                  : getSelectOptions(item.title)
               "
               outlined
               class="-mt-10"
-              :item-value="item.title === 'LPH' ? 'lph_id' : 'code'"
-              :item-title="item.title === 'LPH' ? 'nama_lph' : 'name'"
+              :item-value="
+                item.title ===
+                'pengajuan-reguler.reguler-form--pengajuan-pengajuan-lph'
+                  ? 'lph_id'
+                  : 'code'
+              "
+              :item-title="
+                item.title ===
+                'pengajuan-reguler.reguler-form--pengajuan-pengajuan-lph'
+                  ? 'nama_lph'
+                  : 'name'
+              "
               @update:model-value="
                 () => lphValidation(item.title, item.value, index)
               "
@@ -358,6 +375,7 @@ watchEffect(async () => {
             cols="12"
           >
             <!-- <p class="label-pengajuan">{{ item.title }}</p> -->
+
             <div
               v-for="(element, idx) in item.data"
               :key="element.title"
@@ -393,19 +411,19 @@ watchEffect(async () => {
           "
           cols="12"
         >
-          <label>Kode Daftar/Fasilitasi</label>
+          <label> {{ t("pengajuan-reguler.reguler-kode-facilitas") }} </label>
           <div class="d-flex gap-10 mt-3">
             <VTextField
               v-model="searchRegisType"
-              placeholder="masukkan kode fasilitas"
-              style="max-inline-size: 10rem"
+              :placeholder="t('pengajuan-reguler.reguler-kode-facilitas-2')"
+              style="max-inline-size: 13rem;"
             />
             <VBtn
               variant="outlined"
-              style="block-size: 45px"
+              style="block-size: 45px;"
               @click="checkCodeFasilitas"
             >
-              Cari Kode
+              {{ t("pengajuan-reguler.reguler-kode-facilitas-1") }}
             </VBtn>
           </div>
           <VAlert

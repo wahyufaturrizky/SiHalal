@@ -861,7 +861,13 @@
     "reguler-form-produk-tambah": "Tambah",
     "reguler-form-produk-prodname": "Nama Produk",
     "reguler-form-produk-pabrikname": "Nama Pabrik",
-    "reguler-form-produk-aksi": "Aksi"
+    "reguler-form-produk-aksi": "Aksi",
+    "reguler-kode-facilitas": "Kode Daftar/Fasilitasi",
+    "reguler-kode-facilitas-1": "Cari Kode",
+    "reguler-kode-facilitas-2": "Masukkan Kode Fasilitas",
+    "reguler-remove-bahan-title": "Hapus Bahan",
+    "reguler-remove-bahan-1": "Ya,Hapus",
+    "reguler-remove-bahan-2": "Apakah anda yakin menghapus data ini?"
   },
   "reguler-invoice": {
     "invoice-list-back": "Kembali",
