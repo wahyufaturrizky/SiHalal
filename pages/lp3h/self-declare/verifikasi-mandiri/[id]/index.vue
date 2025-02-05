@@ -26,7 +26,7 @@
             append-icon="ri-pencil-fill"
             @click="
               router.push(
-                `/sh-domestic/submission/self-declare/${submissionId}/edit`
+                `/lp3h/self-declare/verifikasi-mandiri/${submissionId}/edit`
               )
             "
             >Ubah</VBtn

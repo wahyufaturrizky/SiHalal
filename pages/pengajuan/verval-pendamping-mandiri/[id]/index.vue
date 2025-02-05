@@ -26,7 +26,7 @@
             append-icon="ri-pencil-fill"
             @click="
               router.push(
-                `/sh-domestic/submission/self-declare/${submissionId}/edit`
+                `/pengajuan/verval-pendamping-mandiri/${submissionId}/edit`
               )
             "
             >Ubah</VBtn
