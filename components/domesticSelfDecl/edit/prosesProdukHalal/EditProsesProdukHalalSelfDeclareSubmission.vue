@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+defineProps({
+  hideChipStatus: {
+    type: Boolean,
+  },
+});
+
 const form = ref();
 const formStatus = ref(false);
 const typedProcess = ref("");
@@ -137,9 +143,12 @@ const statusItem: any = new Proxy(
 
       <h4 class="text-h4">Proses Produksi Halal</h4>
       <div class="d-flex align-center gap-4">
-        <VChip :color="verified ? 'success' : 'error'" class="ma-1">{{
-          verified ? "Sudah Verifikasi" : "Belum Verifikasi"
-        }}</VChip>
+        <VChip
+          v-if="!hideChipStatus"
+          :color="verified ? 'success' : 'error'"
+          class="ma-1"
+          >{{ verified ? "Sudah Verifikasi" : "Belum Verifikasi" }}</VChip
+        >
         <VBtn
           v-if="!props.isVerificator && !verified"
           @click="handleAddSave"
