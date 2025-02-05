@@ -106,7 +106,7 @@ onMounted(() => {
 })
 
 const unduhFile = async (link: string) => {
-  await downloadDocument(link)
+  await downloadDocument(link, 'SERT_LPH')
 }
 </script>
 

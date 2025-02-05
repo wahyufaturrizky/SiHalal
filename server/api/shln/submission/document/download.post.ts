@@ -10,9 +10,10 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-  const { filename } = await readBody(event);
+  const { filename, param } = await readBody(event);
+
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/documents/${filename}`,
+    `${runtimeConfig.coreBaseUrl}/api/documents/${filename}?${param}`,
     {
       method: "get",
       headers: { Authorization: authorizationHeader },
