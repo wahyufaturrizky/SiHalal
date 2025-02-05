@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-const { hideChipStatus } = defineProps({
-  hideChipStatus: {
-    type: Boolean,
-  },
-});
-
 const form = ref();
 const formStatus = ref(false);
 const typedProcess = ref("");
@@ -14,10 +8,13 @@ const processRules = ref([(v: string) => !!v || "Proses produksi harus diisi"]);
 const processArray = ref<Array<string>>([]);
 const prosesProduction = ref("");
 
-const props = defineProps({
+const { isVerificator, hideChipStatus } = defineProps({
   isVerificator: {
     type: Boolean,
     default: false,
+  },
+  hideChipStatus: {
+    type: Boolean,
   },
 });
 const verified = ref(false);
@@ -31,9 +28,7 @@ const { refresh } = await useAsyncData("get-narration", async () => {
   try {
     const endpointBusActor = `/self-declare/business-actor/narration`;
     const endpointVerificator = `/self-declare/verificator/narration`;
-    const finalUri = props.isVerificator
-      ? endpointVerificator
-      : endpointBusActor;
+    const finalUri = isVerificator ? endpointVerificator : endpointBusActor;
     const response: any = await $api(finalUri, {
       method: "get",
       query: {
@@ -41,7 +36,7 @@ const { refresh } = await useAsyncData("get-narration", async () => {
       },
     });
     if (response.code === 2000) {
-      if (props.isVerificator) {
+      if (isVerificator) {
         prosesProduction.value = response.data?.narasi_pph;
         if (response.data.narasi_pph != "") {
           Object.assign(
@@ -155,7 +150,7 @@ const statusItem: any = new Proxy(
           <!-- ... -->
         </template>
         <VBtn
-          v-if="!props.isVerificator && !verified"
+          v-if="!isVerificator && !verified"
           @click="handleAddSave"
           color="primary"
           variant="elevated"
@@ -170,7 +165,7 @@ const statusItem: any = new Proxy(
           <VCol cols="6" class="text-h6">Ketik Proses</VCol>
           <VCol cols="6" class="d-flex justify-space-between align-center ga-4">
             <VTextField
-              :disabled="props.isVerificator"
+              :disabled="isVerificator"
               v-model="typedProcess"
               :rules="processRules"
               placeholder="Isi Ketik Proses"
@@ -182,7 +177,7 @@ const statusItem: any = new Proxy(
             >
               <template #append>
                 <VBtn
-                  :disabled="props.isVerificator"
+                  :disabled="isVerificator"
                   dense
                   outlined
                   @click="handleAddProcess"
