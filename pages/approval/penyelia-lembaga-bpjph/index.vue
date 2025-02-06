@@ -12,9 +12,9 @@ interface DataUser {
 
 const tableHeaders: any[] = [
   { title: 'No', key: 'no', sortable: false },
-  { title: 'NIK', key: 'username', nowrap: true },
-  { title: 'Nama', key: 'name', nowrap: true },
-  { title: 'Angkatan', key: 'email', nowrap: true },
+  { title: 'NIK', key: 'nik', nowrap: true },
+  { title: 'Nama', key: 'nama', nowrap: true },
+  { title: 'Angkatan', key: 'angkatan', nowrap: true },
   { title: 'Status', key: 'status', nowrap: true },
   { title: 'Sertifikat', key: 'actions', sortable: false, align: 'center' },
 ]
@@ -24,19 +24,19 @@ const currentPage = ref(1)
 const itemPerPage = ref(10)
 const totalItems = ref(0)
 const selectedItem = ref([])
+const pendampingItems = ref([])
 const isLoading = ref(false)
-const tableType = ref('Semua')
-
-const searchQuery = ref('')
+const isLoadingPendamping = ref(false)
+const tableType = ref('')
 
 const handleLoadList = async () => {
   try {
-    const response: any = await $api('/admin/users/list', {
+    const response: any = await $api('/approval/penyelia-bpjph/list', {
       method: 'get',
       params: {
         page: currentPage.value,
         size: itemPerPage.value,
-        search: searchQuery.value,
+        type: tableType.value,
       },
     } as any)
 
@@ -64,16 +64,63 @@ const { refresh } = await useAsyncData(
   'user-list',
   async () => await handleLoadList(),
   {
-    watch: [currentPage, itemPerPage],
+    watch: [currentPage, itemPerPage, tableType],
   },
 )
 
+const getTypePendamping = async () => {
+  try {
+    isLoadingPendamping.value = true
+
+    const response: any = await $api('/approval/penyelia-bpjph/type', {
+      method: 'get',
+    } as any)
+
+    if (response) {
+      pendampingItems.value = response
+    }
+    isLoadingPendamping.value = false
+
+    return response
+  }
+  catch (error) {
+    isLoadingPendamping.value = false
+    console.error(error)
+  }
+}
+
 onMounted(() => {
-  handleLoadList()
+  // handleLoadList()
+  getTypePendamping()
 })
 
 const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} Penyelia Disetujui`, 'success')
+  try {
+    const response: any = await $api(
+      '/approval/penyelia-bpjph/approve',
+      {
+        method: 'post',
+        body: { id: selectedItem.value },
+      },
+    )
+
+    if (response.code === 2000) {
+      const totalError = response?.message?.errors
+      const totalSuccess = response?.message?.success
+      const message: any[] = []
+      if (totalError > 0)
+        message.push(`Gagal setujui sebanyak ${totalError}`)
+      if (totalSuccess > 0)
+        message.push(`Sukses setujui sebanyak ${totalSuccess}`)
+      useSnackbar().sendSnackbar(`Penyelia ${message.join()}`, totalSuccess > 0 ? 'success' : 'error')
+      refresh()
+
+      return true
+    }
+  }
+  catch (err) {
+    console.log(err)
+  }
 }
 
 const getChipColor = (status: string) => {
@@ -83,8 +130,8 @@ const getChipColor = (status: string) => {
   return 'primary'
 }
 
-const unduhFile = () => {
-  window.open('/files/Cara Bayar.pdf', '_blank')
+const unduhFile = async (link: string) => {
+  await downloadDocument(link, 'FILES')
 }
 </script>
 
@@ -120,10 +167,11 @@ const unduhFile = () => {
             >
               <VSelect
                 v-model="tableType"
-                :items="['1']"
-                item-title="name"
-                item-value="code"
+                :items="pendampingItems"
+                item-title="nama_lembaga"
+                item-value="id_lembaga_pelatihan"
                 class="mb-5"
+                placeholder="pilih"
               />
             </VCol>
           </VRow>
@@ -207,7 +255,7 @@ const unduhFile = () => {
                       <VIcon
                         icon="ri-arrow-right-line"
                         color="primary"
-                        @click="unduhFile"
+                        @click="() => unduhFile(item.file_sertifikat)"
                       />
                     </div>
                   </IconBtn>

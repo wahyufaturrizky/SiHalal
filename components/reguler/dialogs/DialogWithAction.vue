@@ -1,5 +1,6 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <script setup>
+
 const props = defineProps({
   title: {
     type: String,

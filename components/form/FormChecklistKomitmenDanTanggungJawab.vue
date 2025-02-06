@@ -1,121 +1,127 @@
 <script setup lang="ts">
-const emit = defineEmits(['confirm'])
+const emit = defineEmits(["confirm"]);
 
-const item = ref(0)
+const item = ref(0);
 
-const check = ref(false)
+const check = ref(false);
 
 const next = () => {
-  if (!check.value)
-    return
+  if (!check.value) return;
 
   if (check.value && item.value === 2) {
-    emit('confirm', true)
+    emit("confirm", true);
 
-    return
+    return;
   }
-  if (check.value)
-    item.value = item.value + 1
-    check.value = false
-}
+  if (check.value) item.value = item.value + 1;
+  check.value = false;
+};
 
 onMounted(() => {
-  item.value = 0
-})
+  item.value = 0;
+});
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 </script>
 
 <template>
   <VCard class="pa-4">
     <VCardTitle>
-      Komitmen dan Tanggung Jawab
+      {{ t("pengajuan-reguler.reguler-form--komitmen-title") }}
     </VCardTitle>
 
     <VCardItem>
       <VCard class="border rounded pa-4">
         <VCardItem v-if="item === 0">
           <VCardTitle class="d-flex justify-center mb-4">
-            <span class="text-h3">Kebijakan Halal</span>
+            <span class="text-h3">
+              {{
+                t("pengajuan-reguler.reguler-form--komitmen-1-subtitle")
+              }}</span
+            >
           </VCardTitle>
           <VCardText class="pa-8">
             <span class="text-h5">
-              Kami berkomitmen dan bertanggung jawab untuk menghasilkan produk halal secara konsisten dan bersinambungan dengan melakukan tindakan :
+              {{ t("pengajuan-reguler.reguler-form--komitmen-1-content") }}
             </span>
             <ol class="ma-4 pa-4">
               <li>
-                Mematuhi peraturan perundangan terkait jaminan produk halal.
+                {{ t("pengajuan-reguler.reguler-form--komitmen-1-content-1") }}
               </li>
               <li>
-                Menggunakan bahan halal dan melakukan Proses Produk Halal (PPH) sesuai ketentuan yang berlaku.
+                {{ t("pengajuan-reguler.reguler-form--komitmen-1-content-2") }}
               </li>
               <li>
-                Menyiapkan sumber daya manusia yang mendukung pelaksanaan PPH di perusahaan
+                {{ t("pengajuan-reguler.reguler-form--komitmen-1-content-3") }}
               </li>
               <li>
-                Mensosialisasikan dan mengkomunikasikan kebijakan halal pada seluruh pihak terkait untuk memastikan semnua personel menjaga integrasi halal di perusahaan
+                {{ t("pengajuan-reguler.reguler-form--komitmen-1-content-4") }}
               </li>
             </ol>
           </VCardText>
         </VCardItem>
         <VCardItem v-if="item === 1">
           <VCardTitle class="d-flex justify-center mb-4">
-            <span class="text-h3">Pengertian Halal Dan Haram</span>
+            <span class="text-h3">{{
+              t("pengajuan-reguler.reguler-form--komitmen-2-subtitle")
+            }}</span>
           </VCardTitle>
           <VCardText class="pa-8">
             <span class="text-h5">
-              Kami berkomitmen dan bertanggung jawab untuk menghasilkan produk halal secara konsisten dan bersinambungan dengan melakukan tindakan :
+              {{ t("pengajuan-reguler.reguler-form--komitmen-1-content") }}
             </span>
             <ol class="ma-4 pa-4">
               <li>
-                Mengkonsumsi makanan dan minuman yang halal adalah wajib hukumnya bagi orang islam.
+                {{ t("pengajuan-reguler.reguler-form--komitmen-2-content-1") }}
               </li>
               <li>
-                Pengertian halal haram: (i) Halal adalah boleh. (ii) Haram adalah sesuatu yang dilarang oleh ALLAH SWT dengan larangan yang tegas.
+                {{ t("pengajuan-reguler.reguler-form--komitmen-2-content-2") }}
               </li>
               <li>
-                Contoh bahan haram: (i) Babi, termasuk seluruh bagian tubuhnya dan produk turunannya (segar atau olahan), (ii) Khamr (minuman beralkohol), (iii) Hasil
-                Samping Khamr yang di peroleh hanya dengan pemisahan secara fisik, (iv) Darah, (v) Bangkai, (vi) Bagian dari tubuh manusia, binatang buas, dan anjing
+                {{ t("pengajuan-reguler.reguler-form--komitmen-2-content-3") }}
               </li>
             </ol>
           </VCardText>
         </VCardItem>
         <VCardItem v-if="item === 2">
           <VCardTitle class="d-flex justify-center mb-4">
-            <span class="text-h3">Praktik Penerapan SJPH</span>
+            <span class="text-h3">
+              {{
+                t("pengajuan-reguler.reguler-form--komitmen-3-subtitle")
+              }}</span
+            >
           </VCardTitle>
           <VCardText class="pa-8">
             <span class="text-h5">
-              Kami berkomitmen dan bertanggung jawab untuk menghasilkan produk halal secara konsisten dan bersinambungan dengan melakukan tindakan :
+              {{ t("pengajuan-reguler.reguler-form--komitmen-1-content") }}
             </span>
             <ol class="ma-4 pa-4">
               <li>
-                Menjaga semua fasilitas produksi dan peralatan dalam keadaan bersih sebelum dan sesudah digunakan
+                {{ t("pengajuan-reguler.reguler-form--komitmen-3-content-1") }}
               </li>
               <li>
-                Menjaga kebersihan diri sebelum dan selama bekerja sehingga tidak mengotori produk yang dihasilkan
+                {{ t("pengajuan-reguler.reguler-form--komitmen-3-content-2") }}
               </li>
               <li>
-                Tidak boleh membawa produk tidak halal di area produksi
+                {{ t("pengajuan-reguler.reguler-form--komitmen-3-content-3") }}
               </li>
               <li>
-                Tidak boleh menggunakan peralatan produksi untuk kepentingan lain
+                {{ t("pengajuan-reguler.reguler-form--komitmen-3-content-4") }}
               </li>
               <li>
-                Menyimpan bahan dan produk di tempat yang bersih dan menjaga supaya terhindar dari najis.
+                {{ t("pengajuan-reguler.reguler-form--komitmen-3-content-5") }}
               </li>
               <li>
-                Memastikan kendaraan yang digunakan untuk mengangkut produk halal dalam kondisi baik dan tidak digunakan untuk mengakngkut produk lain yang
-                diragukan kehalalan nya
+                {{ t("pengajuan-reguler.reguler-form--komitmen-3-content-6") }}
               </li>
             </ol>
           </VCardText>
         </VCardItem>
         <VCardActions>
-          <VCheckbox
-            id="checkHalal"
-            v-model="check"
-          />
+          <VCheckbox id="checkHalal" v-model="check" />
           <VLabel for="checkHalal">
-            Saya Telah Membaca seluruh persyaratan yang telah dicantumkan, dan berjanji akan memenuhi kebijakan tersebut.
+            {{ t("pengajuan-reguler.reguler-form--komitmen-1-agreed") }}
           </VLabel>
         </VCardActions>
         <VCardActions class="d-flex justify-center">
@@ -126,7 +132,7 @@ onMounted(() => {
             block
             @click="next"
           >
-            Saya Setuju
+            {{ t("pengajuan-reguler.reguler-form--komitmen-1-agreed-save") }}
           </VBtn>
         </VCardActions>
       </VCard>
@@ -134,6 +140,4 @@ onMounted(() => {
   </VCard>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

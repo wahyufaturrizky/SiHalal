@@ -1,4 +1,10 @@
 <script setup lang="ts">
+const { hideVerifikasiPendamping } = defineProps({
+  hideVerifikasiPendamping: {
+    type: Boolean,
+  },
+});
+
 const tableHeader = [
   { title: "No", value: "index" },
   { title: "Jenis Bahan", value: "jenis_bahan" },
@@ -8,7 +14,10 @@ const tableHeader = [
   { title: "Produsen", value: "produsen" },
   { title: "No. Sertifikat Halal", value: "no_sertifikat" },
   { title: "Tanggal Berlaku", value: "tgl_berlaku_sertifikat" },
-  { title: "Verifikasi Pendamping", value: "vefified" },
+  !hideVerifikasiPendamping && {
+    title: "Verifikasi Pendamping",
+    value: "vefified",
+  },
   { title: "Action", value: "action" },
 ];
 interface Bahan {

@@ -17,11 +17,8 @@ export default defineEventHandler(async (event: any) => {
 
   const body: DraftBody = await readBody(event)
 
-  console.log('111');
-  
-
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/kepala-badan/assesor`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/kepkaban/sertifikat-pendamping/approve`,
     {
       method: 'post',
       headers: { Authorization: authorizationHeader },

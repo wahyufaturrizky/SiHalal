@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import type { VForm } from "vuetify/components";
 
+const predictKBLIMessage = ref("");
+const predictMessage = ref("");
+const jenis_product = ref("");
+const loadingPredictKBLI = ref(true);
+const isSesuai = ref(false);
+const loadingPredict = ref(true);
+const loadingAll = ref(true);
+
 const props = defineProps<{
   dialogVisible: boolean;
   dialogTitle: string;
@@ -154,6 +162,66 @@ const uploadDocument = async (file: any) => {
   }
 };
 
+const predictKBLI = async (product: any) => {
+  try {
+    const response: any = await $api(
+      "/machine-learning/registration/mlclient/predict-kbli",
+      {
+        method: "post",
+        body: {
+          CREATE_MLCLIENT: {
+            Name: product,
+          },
+        },
+      }
+    );
+
+    if (response) {
+      predictKBLIMessage.value = response.CREATE_MLCLIENT.predictkbli;
+      loadingPredictKBLI.value = false;
+
+      return response;
+    }
+  } catch (error) {
+    loadingPredictKBLI.value = false;
+    useSnackbar().sendSnackbar("ada kesalahan!", "error");
+  }
+};
+
+const predict = async (product: any) => {
+  try {
+    const response: any = await $api(
+      "/machine-learning/registration/mlclient/predict",
+      {
+        method: "post",
+        body: {
+          CREATE_MLCLIENT: {
+            Name: product,
+          },
+        },
+      }
+    );
+
+    if (response) {
+      predictMessage.value = response.CREATE_MLCLIENT.predict;
+      loadingPredict.value = false;
+
+      return response;
+    }
+  } catch (error) {
+    loadingPredict.value = false;
+    useSnackbar().sendSnackbar("ada kesalahan!", "error");
+  }
+};
+
+const debouncedFetch: any = debounce(predictKBLI, 1000);
+const debouncedFetchPredict: any = debounce(predict, 1000);
+
+const handleInput = () => {
+  debouncedFetch(formData?.nama_produk);
+  debouncedFetchPredict(formData?.nama_produk);
+};
+
 const formUbahProduk = ref<VForm>();
 
 const handleSubmit = () => {
@@ -165,15 +233,55 @@ const handleSubmit = () => {
   });
 };
 
+const getDetail = async () => {
+  try {
+    const response: any = await $api(
+      `/self-declare/pengajuan/${submissionId}/detail`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code == 2000) {
+      jenis_product.value = response.data.jenis_product;
+    }
+  } catch (error: any) {
+    useSnackbar().sendSnackbar("ada kesalahan!", "error");
+  }
+};
+
+const handlePredict = (product: any) => {
+  if (product) {
+    if (jenis_product.value === predictMessage.value) {
+      isSesuai.value = true;
+      const res = `Jenis Produk Sudah Sesuai ${predictMessage.value}, KBLI: ${predictKBLIMessage.value}`;
+      return res;
+    } else {
+      isSesuai.value = false;
+      const res = `Jenis Produk untuk ${product} Tidak sesuai dengan yang dipilih pada Tab Pengajuan, Seharusnya: ${predictMessage.value}, KBLI: ${predictKBLIMessage.value}`;
+      return res;
+    }
+  }
+};
+
 onMounted(async () => {
-  await handleListClassification();
-  console.log("modal data on open = ", props.data);
+  const res = await Promise.all([getDetail(), handleListClassification()]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) {
+    loadingAll.value = false;
+  } else {
+    loadingAll.value = false;
+  }
 });
 </script>
 
 <template>
   <VDialog v-model="localDialogVisible" max-width="60svw">
-    <VCard>
+    <VCard v-if="!loadingAll">
       <VCardTitle>
         <VRow>
           <VCol cols="10" style="display: flex; align-items: center"
@@ -222,7 +330,14 @@ onMounted(async () => {
               placeholder="Isi Nama Produk"
               v-model="formData.nama_produk"
               :rules="[requiredValidator]"
+              @input="handleInput"
             ></VTextField>
+            <p
+              v-if="!loadingPredict && !loadingPredictKBLI"
+              :class="isSesuai ? 'text-blue' : 'text-red'"
+            >
+              {{ handlePredict(formData?.nama_produk) }}
+            </p>
           </VItemGroup>
           <br />
           <VItemGroup>
@@ -285,6 +400,8 @@ onMounted(async () => {
         <VBtn variant="flat" @click="handleSubmit">{{ textSubmitButton }}</VBtn>
       </VCardActions>
     </VCard>
+
+    <VSkeletonLoader type="card" v-else />
   </VDialog>
 </template>
 
@@ -293,5 +410,13 @@ onMounted(async () => {
   .v-field--appended {
     padding-inline-end: 0 !important;
   }
+}
+
+.text-red {
+  color: red;
+}
+
+.text-blue {
+  color: blue;
 }
 </style>

@@ -19,37 +19,37 @@ const listOss = ref<any[]>([]);
 const headers = [
   { title: "No", key: "no" },
   {
-    title: `${t("pengajuan-reguler.reguler-list-head-nodaftar")}`,
+    title: "pengajuan-reguler.reguler-list-head-nodaftar",
     key: "no_daftar",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-list-head-tgldaftar")}`,
+    title: "pengajuan-reguler.reguler-list-head-tgldaftar",
     key: "tgl_daftar",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-list-head-namapu")}`,
+    title: "pengajuan-reguler.reguler-list-head-namapu",
     key: "nama_pu",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-list-head-jnsdaftar")}`,
+    title: "pengajuan-reguler.reguler-list-head-jnsdaftar",
     key: "jenis_daftar",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-list-head-jnsproduk")}`,
+    title: "pengajuan-reguler.reguler-list-head-jnsproduk",
     key: "jenis_produk",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-list-head-status")}`,
+    title: "pengajuan-reguler.reguler-list-head-status",
     key: "newStatus",
     nowrap: true,
   },
   {
-    title: `${t("pengajuan-reguler.reguler-list-head-action")}`,
+    title: "pengajuan-reguler.reguler-list-head-action",
     value: "action",
     sortable: false,
     nowrap: true,
@@ -175,7 +175,7 @@ onMounted(async () => {
         <VTextField
           v-model="searchQuery"
           density="compact"
-          placeholder="Cari Data"
+          :placeholder="t('shln-invoice.invoice-list-cari')"
           append-inner-icon="ri-search-line"
           style="max-inline-size: 100%"
           @input="handleInput"
@@ -189,6 +189,33 @@ onMounted(async () => {
           class="elevation-1"
           @update:options="loadItem(page, size, searchQuery)"
         >
+          <template #header.no_daftar="{ column }">
+            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+          </template>
+
+          <template #header.tgl_daftar="{ column }">
+            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+          </template>
+
+          <template #header.nama_pu="{ column }">
+            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+          </template>
+
+          <template #header.jenis_daftar="{ column }">
+            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+          </template>
+
+          <template #header.jenis_produk="{ column }">
+            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+          </template>
+
+          <template #header.newStatus="{ column }">
+            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+          </template>
+
+          <template #header.action="{ column }">
+            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+          </template>
           <template #item.no="{ index }">
             <label>{{ index + 1 }}</label>
           </template>

@@ -3,6 +3,8 @@ import { ref } from 'vue'
 
 const route = useRoute()
 const id = (route?.params as any)?.id
+const lembagaId = (route?.query as any)?.lembaga
+const pendampingId = (route?.query as any)?.pendamping
 
 const dialogToggle = ref(false)
 const titleDialog = ref('')
@@ -28,10 +30,6 @@ const toggle = (type: string) => {
   titleDialog.value
     = type === 'add' ? 'Mengirim Pengajuan' : 'Pengembalian Dokumen'
   labelSaveBtn.value = type === 'add' ? 'Ya, Kirim' : 'Kembalikan'
-}
-
-const onApprove = () => {
-  useSnackbar().sendSnackbar('Pengajuan pindah domisili disetujui', 'success')
 }
 
 const onReturn = () => {
@@ -106,6 +104,35 @@ const handleGetDetail = async () => {
   }
   catch (error) {
     console.error(error)
+  }
+}
+
+const onApprove = async () => {
+  try {
+    const response: any = await $api(
+      '/approval/pindah-lembaga/approve',
+      {
+        method: 'put',
+        body: {
+          id_lembaga: lembagaId,
+          id_pendamping: pendampingId,
+        },
+        query: { id },
+      },
+    )
+
+    if (response.code !== 2000) {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+
+      return
+    }
+    useSnackbar().sendSnackbar('Pengajuan pindah domisili disetujui', 'success')
+    setTimeout(() => {
+      navigateTo({ path: '/approval/lembaga-p3h' })
+    }, 500)
+  }
+  catch (err) {
+    console.log(err)
   }
 }
 

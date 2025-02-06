@@ -25,7 +25,7 @@ const tableHeaders: any[] = [
 ]
 
 const tableItems = ref<Array[]>([])
-const currentPage = ref(0)
+const currentPage = ref(1)
 const itemPerPage = ref(10)
 const totalItems = ref(0)
 const selectedItem = ref([])
@@ -74,7 +74,32 @@ const { refresh } = await useAsyncData(
 )
 
 const onApprove = async () => {
-  useSnackbar().sendSnackbar(`${selectedItem.value.length} LPH LN Disetujui`, 'success');
+  try {
+    const response: any = await $api(
+      '/approval/lph-ln/approve',
+      {
+        method: 'post',
+        body: { id: selectedItem.value },
+      },
+    )
+
+    if (response.code === 2000) {
+      const totalError = response?.message?.errors
+      const totalSuccess = response?.message?.success
+      const message: any[] = []
+      if (totalError > 0)
+        message.push(`Gagal setujui sebanyak ${totalError}`)
+      if (totalSuccess > 0)
+        message.push(`Sukses setujui sebanyak ${totalSuccess}`)
+      useSnackbar().sendSnackbar(`LPH ${message.join()}`, totalSuccess > 0 ? 'success' : 'error')
+      refresh()
+
+      return true
+    }
+  }
+  catch (err) {
+    console.log(err)
+  }
 }
 
 onMounted(() => {
@@ -82,7 +107,7 @@ onMounted(() => {
 })
 
 const unduhFile = async (link: string) => {
-  await downloadDocument(link)
+  await downloadDocument(link, 'SERT_LPH')
 }
 </script>
 

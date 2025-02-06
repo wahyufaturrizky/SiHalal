@@ -63,6 +63,8 @@ const getDistrict = async (kode: string) => {
     },
   } as any);
   districtList.value = response;
+  profileData.kd_kab = null;
+  profileData.kd_kec = null;
 };
 const getSubDistrict = async (kode: string) => {
   const response = await $api("/master/subdistrict", {
@@ -72,6 +74,7 @@ const getSubDistrict = async (kode: string) => {
     },
   } as any);
   subDistrictList.value = response;
+  profileData.kd_kec = null;
 };
 
 const handleLoadProfile = async () => {
@@ -90,6 +93,24 @@ const handleLoadProfile = async () => {
         await getDistrict(profileData.kd_prov);
       }
       if (profileData.kd_kab) await getSubDistrict(profileData.kd_kab);
+
+      fileFromDb.value.chairmanTte = response.data.pimpinan_tte
+        ? profileData.pimpinan_tte
+        : "";
+      fileFromDb.value.secretaryTte = response.data.sekretaris_tte
+        ? profileData.sekretaris_tte
+        : "";
+      fileFromDb.value.fatwaLeadTte = response.data.bidang_fatwa_tte
+        ? profileData.bidang_fatwa_tte
+        : "";
+      fileFromDb.value.bankAcc = response.data.rekening.filefotorek
+        ? profileData.rekening.filefotorek
+        : "";
+      fileFromDb.value.npwpPhoto = response.data.rekening.filefotonpwp
+        ? profileData.rekening.filefotonpwp
+        : "";
+
+      console.log("file db = ", fileFromDb);
     }
   } catch (error) {
     console.error(error);
@@ -137,6 +158,14 @@ const sekretarisTteRef = ref();
 const kabidTteRef = ref();
 const fotoRekRef = ref();
 const fotoNpwpRef = ref();
+
+const fileFromDb = ref({
+  chairmanTte: "",
+  secretaryTte: "",
+  fatwaLeadTte: "",
+  bankAcc: "",
+  npwpPhoto: "",
+});
 
 const handleSelectChairmanTTE = async (event: any) => {
   const fileData = event.target.files[0];
@@ -196,6 +225,7 @@ const handleEmitValidationChairmanTTE = async (
     if (isValid) {
       const response = await uploadDocument(selectedTteFile.pimpinan, "no_rek");
       if (response.code === 2000) {
+        chairmanTteRef.value.setPrependFileName(null);
         profileData.pimpinan_tte = response.data.file_url;
       }
     }
@@ -217,6 +247,7 @@ const handleEmitValidationSecretaryTTE = async (
         "no_rek"
       );
       if (response.code === 2000) {
+        sekretarisTteRef.value.setPrependFileName(null);
         profileData.sekretaris_tte = response.data.file_url;
       }
     }
@@ -238,6 +269,7 @@ const handleEmitValidationFatwaLeadTTE = async (
         "no_rek"
       );
       if (response.code === 2000) {
+        kabidTteRef.value.setPrependFileName(null);
         profileData.bidang_fatwa_tte = response.data.file_url;
       }
     }
@@ -257,6 +289,7 @@ const handleEmitValidationBankAccPhoto = async (
     if (isValid) {
       const response = await uploadDocument(bankAccPhoto.value, "no_rek");
       if (response.code === 2000) {
+        fotoRekRef.value.setPrependFileName(null);
         profileData.rekening.filefotorek = response.data.file_url;
       }
     }
@@ -273,6 +306,7 @@ const handleEmitValidationNpwpPhoto = async (isValid: boolean, event: any) => {
     if (isValid) {
       const response = await uploadDocument(npwpPhoto.value, "no_npwp");
       if (response.code === 2000) {
+        fotoNpwpRef.value.setPrependFileName(null);
         profileData.rekening.filefotonpwp = response.data.file_url;
       }
     }
@@ -626,6 +660,7 @@ onMounted(async () => {
                 @validation-is-valid="handleEmitValidationChairmanTTE"
                 :file-data="selectedTteFile.pimpinan"
                 :file-name="profileData.pimpinan_tte"
+                :initial-file-name="fileFromDb.chairmanTte"
                 @on-select="handleSelectChairmanTTE"
                 @on-remove="handleRemoveChaimanTTE"
                 :validation-list="[
@@ -672,6 +707,7 @@ onMounted(async () => {
                 @validation-is-valid="handleEmitValidationSecretaryTTE"
                 :file-data="selectedTteFile.sekretaris"
                 :file-name="profileData.sekretaris_tte"
+                :initial-file-name="fileFromDb.secretaryTte"
                 @on-select="handleSelectSecretaryTTE"
                 @on-remove="handleRemoveSecretaryTTE"
                 :validation-list="[
@@ -718,6 +754,7 @@ onMounted(async () => {
                 @validation-is-valid="handleEmitValidationFatwaLeadTTE"
                 :file-data="selectedTteFile.ketuaBidang"
                 :file-name="profileData.bidang_fatwa_tte"
+                :initial-file-name="fileFromDb.fatwaLeadTte"
                 @on-select="handleSelectFatwaLeadTTE"
                 @on-remove="handleRemoveFatwaLeadTTE"
                 :validation-list="[
@@ -825,6 +862,7 @@ onMounted(async () => {
                 @validation-is-valid="handleEmitValidationBankAccPhoto"
                 :file-data="bankAccPhoto"
                 :file-name="profileData.rekening.filefotorek"
+                :initial-file-name="fileFromDb.bankAcc"
                 @on-select="handleSelectBankAccPhoto"
                 @on-remove="handleRemoveBankAccPhoto"
                 :validation-list="[
@@ -855,6 +893,7 @@ onMounted(async () => {
                 @validation-is-valid="handleEmitValidationNpwpPhoto"
                 :file-data="npwpPhoto"
                 :file-name="profileData.rekening.filefotonpwp"
+                :initial-file-name="fileFromDb.npwpPhoto"
                 @on-select="handleSelectNpwpPhoto"
                 @on-remove="handleRemoveNpwpPhoto"
                 :validation-list="[

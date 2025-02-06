@@ -13,16 +13,16 @@ export default defineEventHandler(async (event: any) => {
   try {
     const runtimeConfig = useRuntimeConfig();
 
-    const { page, size, keyword } = (await getQuery(event)) as {
+    const { page, size, lembaga_pelatihan } = (await getQuery(event)) as {
       page: string
       size: string
-      keyword: string
+      lembaga_pelatihan: string
     }
 
     const params = {
       page,
       size,
-      keyword,
+      lembaga_pelatihan,
     }
 
     const response = await $fetch(

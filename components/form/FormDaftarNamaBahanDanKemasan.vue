@@ -51,7 +51,7 @@ const save = (form) => {
 <template>
   <VCard class="pa-4 mb-8">
     <VCardTitle class="d-flex justify-space-between align-center">
-      <span class="text-h3">Daftar Nama Bahan Dan Kemasan</span>
+      <span class="text-h3">Daftar Nama Bahan Dan Kemasan </span>
       <FormTambahBahan :is-editable="props.isEditable" @confirm="save" />
     </VCardTitle>
     <VCardItem>

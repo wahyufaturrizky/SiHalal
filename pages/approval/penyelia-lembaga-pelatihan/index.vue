@@ -27,7 +27,7 @@ const selectedItem = ref([])
 const lembagaItems = ref([])
 const isLoading = ref(false)
 const isLoadingLembaga = ref(false)
-const tableType = ref('Semua')
+const tableType = ref('')
 
 const searchQuery = ref('')
 
@@ -38,7 +38,7 @@ const handleLoadList = async () => {
       params: {
         page: currentPage.value,
         size: itemPerPage.value,
-        keyword: tableType.value,
+        lembaga_pelatihan: tableType.value,
       },
     } as any)
 
@@ -118,7 +118,14 @@ const onApprove = async () => {
 
       return
     }
-    useSnackbar().sendSnackbar(`${selectedItem.value.length} Penyelia Disetujui`, 'success')
+    const totalError = response?.message?.errors
+    const totalSuccess = response?.message?.success
+    const message: any[] = []
+    if (totalError > 0)
+      message.push(`Gagal setujui sebanyak ${totalError}`)
+    if (totalSuccess > 0)
+      message.push(`Sukses setujui sebanyak ${totalSuccess}`)
+    useSnackbar().sendSnackbar(`Penyelia ${message.join()}`, totalSuccess > 0 ? 'success' : 'error')
     refresh()
   }
   catch (err) {
@@ -134,7 +141,7 @@ const getChipColor = (status: string) => {
 }
 
 const unduhFile = async (link: string) => {
-  await downloadDocument(link)
+  await downloadDocument(link, 'FILES')
 }
 </script>
 

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { factory } from "@/stores/interface/pelakuUsahaProfileIntf";
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const snackbar = useSnackbar();
 const panelOpen = ref(0);
@@ -10,9 +13,9 @@ const editPabrikRef = ref();
 
 const tablePabrikHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "name" },
-  { title: "Alamat", key: "address" },
-  { title: "Action", key: "action" },
+  { title: "detail-pu.pu-pj-nama", key: "name" },
+  { title: "detail-pu.pu-profil-address", key: "address" },
+  { title: "detail-pu.pu-legal-action", key: "action" },
 ];
 
 const props = defineProps({
@@ -129,9 +132,11 @@ const initialDataForEdit = (item: any) => ({
     <VCardTitle>
       <VRow>
         <VCol cols="6">
-          <div class="text-h4 font-weight-bold">Pabrik</div>
+          <div class="text-h4 font-weight-bold">
+            {{ t("detail-pu.pu-fac-title") }}
+          </div>
         </VCol>
-        <VCol cols="6" style="display: flex; justify-content: end">
+        <VCol cols="6" style="display: flex; justify-content: end;">
           <DataPabrikModal
             ref="addPabrikRef"
             mode="add"
@@ -148,6 +153,18 @@ const initialDataForEdit = (item: any) => ({
         item-value="no"
         class="elevation-1"
       >
+        <template #header.name="{ column }">
+          {{ t(column.title) }}
+        </template>
+
+        <template #header.address="{ column }">
+          {{ t(column.title) }}
+        </template>
+
+        <template #header.action="{ column }">
+          {{ t(column.title) }}
+        </template>
+
         <template #item.no="{ index }">
           {{ index + 1 }}
         </template>

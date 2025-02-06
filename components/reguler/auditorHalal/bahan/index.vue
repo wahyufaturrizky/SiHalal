@@ -3,7 +3,9 @@
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const props = defineProps({
   onComplete: {
     type: Function,
@@ -81,12 +83,29 @@ const pengisianValue = ref("Unggah Foto");
 const materialName = ref<any>({
   label: [
     { title: "No.", key: "no", nowrap: true },
-    { title: "Jenis Bahan", key: "jenis_bahan", nowrap: true },
-    { title: "Nama Bahan", key: "nama_bahan", nowrap: true },
-    { title: "Produsen", key: "produsen", nowrap: true },
-    { title: "Nomor Sertifikat Halal", key: "no_sertifikat", nowrap: true },
     {
-      title: "Action",
+      title: "pengajuan-reguler.reguler-form--bahan-jenisbahan",
+      key: "jenis_bahan",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler-form--bahan-namabahan",
+      key: "nama_bahan",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler-form--bahan-produsen",
+      key: "produsen",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler-form--bahan-nosert",
+      key: "no_sertifikat",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler-form--bahan-aksi",
+      key: "action",
       value: "actionPopOver3",
       sortable: false,
       nowrap: true,
@@ -103,7 +122,7 @@ const productName = ref({
     { title: "Foto Produk", key: "foto", nowrap: true },
     { title: "Jumlah Bahan", key: "qtyBahan", nowrap: true },
     {
-      title: "Action",
+      title: "pengajuan-reguler.reguler_form-bahan-pemeriksaan-aksi",
       value: "actionPopOver4",
       sortable: false,
       nowrap: true,
@@ -116,13 +135,34 @@ const productName = ref({
 const payNote = ref({
   label: [
     { title: "No.", key: "no", nowrap: true },
-    { title: "Nama", key: "nama", nowrap: true },
-    { title: "Tipe Penambahan", key: "addType", nowrap: true },
-    { title: "Jumlah", key: "jumlah", nowrap: true },
-    { title: "Tanggal Pembelian", key: "tgl_pembelian", nowrap: true },
-    { title: "File Dokumen", key: "FileDok", nowrap: true },
     {
-      title: "Action",
+      title: "pengajuan-reguler.reguler_form-bahan-buy-nama",
+      key: "nama",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler_form-bahan-buy-tipepenambahan",
+      key: "addType",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler_form-bahan-buy-jumlah",
+      key: "jumlah",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler_form-bahan-buy-tanggalpembelian",
+      key: "tgl_pembelian",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler_form-bahan-buy-filedok",
+      key: "FileDok",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler_form-bahan-buy-aksi",
+      key: "action",
       value: "actionEdit",
       sortable: false,
       nowrap: true,
@@ -135,14 +175,35 @@ const payNote = ref({
 const materialCheck = ref({
   label: [
     { title: "No.", key: "no", nowrap: true },
-    { title: "Nama", key: "nama", nowrap: true },
-    { title: "Tipe Penambahan", key: "addType", nowrap: true },
-    { title: "Lokasi", key: "lokasi", nowrap: true },
-    { title: "Tanggal Pembelian", key: "tgl_pembelian", nowrap: true },
-    { title: "File Dokumen", key: "FileDok", nowrap: true },
     {
-      title: "Action",
+      title: "pengajuan-reguler.reguler_form-bahan-produk-popupproduk-prodname",
+      key: "nama",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler_form-bahan-pemeriksaan-tipepenambahan",
+      key: "addType",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler_form-bahan-pemeriksaan-lokasi",
+      key: "lokasi",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler_form-bahan-pemeriksaan-tglpembelian",
+      key: "tgl_pembelian",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler_form-bahan-pemeriksaan-filedok",
+      key: "FileDok",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler_form-bahan-pemeriksaan-aksi",
       value: "actionEdit",
+      key: "action",
       sortable: false,
       nowrap: true,
       popOver: true,
@@ -154,7 +215,10 @@ const materialCheck = ref({
 const toggleAdd = (type: string) => {
   addDialog.value = true;
   titleDialog.value = `Tambah ${type}`;
-  labelSaveBtn.value = type === "Data Bahan" ? "Unggah" : "Tambah";
+  labelSaveBtn.value =
+    type === "Data Bahan"
+      ? t("pengajuan-reguler.reguler_form-bahan-produk-popupproduk-produp")
+      : t("pengajuan-reguler.reguler-form--bahan-add");
 };
 
 const toggleEdit = (item: any, type: string) => {
@@ -712,7 +776,7 @@ onMounted(async () => {
         </div>
         <div v-else-if="titleDialog === 'Tambah Nama Produk'">
           <div>
-            <label>Kualitas Produk</label>
+            <label>Klasifikasi Produk</label>
             <VSelect
               outlined
               placeholder="pilih kualitas produk"
@@ -1393,7 +1457,7 @@ onMounted(async () => {
       :on-delete="(item: any) => deleteIngredient(item.id)"
       :data="materialName"
       :refresh="refresh"
-      title="Daftar Nama Bahan dan Kemasan"
+      :title="t('pengajuan-reguler.reguler-form--bahan-title')"
       with-add-button-bahan
       :isviewonly="isviewonly"
     />
@@ -1450,32 +1514,37 @@ onMounted(async () => {
 .text-center {
   text-align: center;
 }
+
 .subText {
+  align-content: center;
+  color: #652672 !important;
   font-size: 12px !important;
   font-weight: 500 !important;
   line-height: 18px !important;
-  align-content: center;
-  padding-left: 10px;
-  color: #652672 !important;
+  padding-inline-start: 10px;
 }
+
 .bgContent {
-  background-color: #f0e9f1;
   border-radius: 10px;
-  padding-left: 10px;
+  background-color: #f0e9f1;
+  padding-inline-start: 10px;
 }
+
 .progress-text {
   font-size: 14px !important;
   font-weight: 700 !important;
   line-height: 20px !important;
 }
+
 .ml5 {
-  margin-left: 25px;
+  margin-inline-start: 25px;
 }
+
 .download-template {
-  background-color: #652672;
   border-radius: 10px;
-  font-size: 16px !important;
+  background-color: #652672;
   color: white;
-  width: fit-content;
+  font-size: 16px !important;
+  inline-size: fit-content;
 }
 </style>

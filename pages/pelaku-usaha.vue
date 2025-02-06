@@ -9,24 +9,24 @@ import { useDisplay } from "vuetify";
 const { t } = useI18n();
 const tablePabrikHeader = [
   { title: "No", key: "no" },
-  { title: `${t("detail-pu.pu-title")}`, key: "name" },
-  { title: `${t("detail-pu.pu-fac-address")}`, key: "address" },
-  { title: `${t("detail-pu.pu-fac-action")}`, key: "action" },
+  { title: "detail-pu.pu-title", key: "name" },
+  { title: "detail-pu.pu-fac-address", key: "address" },
+  { title: "detail-pu.pu-fac-action", key: "action" },
 ];
 
 const tableOutletHeader = [
   { title: "No", key: "no" },
-  { title: `${t("detail-pu.pu-out-nama")}`, key: "name" },
-  { title: `${t("detail-pu.pu-out-address")}`, key: "address" },
+  { title: "detail-pu.pu-out-nama", key: "name" },
+  { title: "detail-pu.pu-out-address", key: "address" },
 ];
 
 const penyeliaHeader = [
   { title: "No", key: "no" },
-  { title: `${t("detail-pu.pu-ph-nama")}`, key: "name" },
-  { title: `${t("detail-pu.pu-ph-ktp")}`, key: "ktp_no" },
-  { title: `${t("detail-pu.pu-ph-telp")}`, key: "no_kontak" },
-  { title: `${t("detail-pu.pu-ph-sertif")}`, key: "certification_no" },
-  { title: `${t("detail-pu.pu-ph-sk")}`, key: "sk_no" },
+  { title: "detail-pu.pu-ph-nama", key: "name" },
+  { title: "detail-pu.pu-ph-ktp", key: "ktp_no" },
+  { title: "detail-pu.pu-ph-telp", key: "no_kontak" },
+  { title: "detail-pu.pu-ph-sertif", key: "certification_no" },
+  { title: "detail-pu.pu-ph-sk", key: "sk_no" },
   // { title: "Action", key: "action" },
 ];
 // const { canAccess } = useMyAuthUserStore();
@@ -58,6 +58,7 @@ onMounted(() => {
           <VBtn
             density="compact"
             variant="outlined"
+            s
             prepend-icon=""
             @click="onEdit"
           >
@@ -104,8 +105,26 @@ onMounted(() => {
               <VExpansionPanelText>
                 <VDataTable
                   :headers="tablePabrikHeader"
-                  :items="store.factory ? store.factory : []"
+                  :items="store.factory || []"
                 >
+                  <template #header.name="{ column }">
+                    <div>
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
+                  <template #header.address="{ column }">
+                    <div>
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
+                  <template #header.action="{ column }">
+                    <div>
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
                   <template #item.no="{ index }">
                     {{ index + 1 }}
                   </template>
@@ -130,6 +149,18 @@ onMounted(() => {
                   :headers="tableOutletHeader"
                   :items="store.outlet ? store.outlet : []"
                 >
+                  <template #header.name="{ column }">
+                    <div>
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
+                  <template #header.address="{ column }">
+                    <div>
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
                   <template #item.no="{ index }">
                     {{ index + 1 }}
                   </template>
@@ -154,6 +185,36 @@ onMounted(() => {
                   :headers="penyeliaHeader"
                   :items="store.supervisorData"
                 >
+                  <template #header.name="{ column }">
+                    <div>
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
+                  <template #header.ktp_no="{ column }">
+                    <div>
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
+                  <template #header.no_kontak="{ column }">
+                    <div>
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
+                  <template #header.sk_no="{ column }">
+                    <div>
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
+                  <template #header.certification_no="{ column }">
+                    <div>
+                      {{ t(column.title) }}
+                    </div>
+                  </template>
+
                   <template #item.no="{ index }">
                     {{ index + 1 }}
                   </template>

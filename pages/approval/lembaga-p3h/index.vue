@@ -142,8 +142,8 @@ const handleOpenDeleteModal = (id?: string | null) => {
   isOpenDeleteModal.value = !isOpenDeleteModal.value
 }
 
-const navigateToDetail = (id: string) => {
-  navigateTo(`/approval/lembaga-p3h/${id}`)
+const navigateToDetail = (item: any) => {
+  navigateTo({ path: `/approval/lembaga-p3h/${item.id}`, query: { pendamping: item?.id_pendamping, lembaga: item.tujuan_id_lembaga } })
 }
 
 const handleConfirmDelete = async () => {
@@ -251,7 +251,7 @@ const handleConfirmDelete = async () => {
                 <Vbtn
                   variant="plain"
                   class="cursor-pointer"
-                  @click="() => navigateToDetail(item.id)"
+                  @click="() => navigateToDetail(item)"
                 >
                   <VRow>
                     <VCol sm="3">

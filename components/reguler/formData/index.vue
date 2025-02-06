@@ -68,23 +68,25 @@ const listAreaPemasaran = [
 
 const getSelectOptions = (field: string): string => {
   let data: string[] = [];
+  field = t(field);
   switch (field) {
-    case "Jenis Layanan":
+    case t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnslay"):
       data = props?.service_type;
       break;
-    case "Jenis Produk":
+
+    case t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsprod"):
       data = productList.value || [];
       break;
     case "Skala Usaha":
       data = ["Mikro", "Kecil", "Menengah", "Besar"];
       break;
-    case "Jenis Pendaftaran":
+    case t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsdaftar"):
       data = [
         { name: "Pendaftaran Mandiri/Reguler ", code: "" },
         { name: "Pendaftaran Melalui Fasilitasi", code: "CH002" },
       ];
       break;
-    case "Jenis Pengajuan":
+    case t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnspengajuan"):
       data = [{ name: "baru", code: "baru" }];
       break;
     case "Nama Fasilitas":
@@ -95,7 +97,7 @@ const getSelectOptions = (field: string): string => {
       break;
     case "Hasil Audit":
       data = ["Lulus", "Tidak Lulus"];
-    case "Area Pemasaran":
+    case t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-marketing"):
       data = listAreaPemasaran || [];
       break;
     default:
@@ -107,6 +109,7 @@ const getSelectOptions = (field: string): string => {
 
 const getLph = async (path: string, layanan: string, area: string) => {
   try {
+
     const params = {
       url: `${path}/${props?.id}/lph?jenis_layanan=${layanan}&area_pemasaran=${area}`,
       page: 1,
@@ -127,6 +130,7 @@ const getLph = async (path: string, layanan: string, area: string) => {
 };
 
 const onSubmit = async () => {
+ 
   if (props?.title === "Pengajuan Sertifikasi Halal") {
     const jenisLayanan = props?.service_type?.find(
       (item: any) =>
@@ -191,13 +195,21 @@ const getProductType = async (id: string) => {
 };
 
 const lphValidation = async (title: string, value: string, index: number) => {
-  if (title === "Jenis Layanan") {
+  if (title === "pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnslay") {
     props.data.map((el) => {
-      if (el.title === "Jenis Produk") {
+      if (
+        el.title ===
+        "pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsprod"
+      ) {
         el.value = "";
-      } else if (el.title === "LPH") {
+      } else if (
+        el.title === "pengajuan-reguler.reguler-form--pengajuan-pengajuan-lph"
+      ) {
         el.value = "";
-      } else if (el.title === "Area Pemasaran") {
+      } else if (
+        el.title ===
+        "pengajuan-reguler.reguler-form--pengajuan-pengajuan-marketing"
+      ) {
         el.value = "";
       }
     });
@@ -208,11 +220,12 @@ const lphValidation = async (title: string, value: string, index: number) => {
       props.data?.[3]?.value === item.code
   );
 
-  if (title === "Jenis Layanan") await getProductType(value);
-  else if (title === "Area Pemasaran")
+  if (title === "pengajuan-reguler.reguler-detail-pengajuan-jnslay")
+    await getProductType(value);
+  else if (title === "pengajuan-reguler.reguler-form--pengajuan-pengajuan-marketing")
     await getLph(LIST_BUSINESS_ACTOR, jenisLayanan?.code, value);
 
-  if (props.title === "Pengajuan Sertifikasi Halal") {
+  if (props.title === "halal_cert_submission.title") {
     const checkData = props.data.map((el: any) => {
       if (el.required && el.value === "") return false;
       return true;
@@ -228,14 +241,14 @@ const checkCodeFasilitas = async () => {
     });
 
     if (response) {
-      console.log(response.data);
+   
       messageFasilitator.value = response?.message;
       emit("complete", response?.data?.[0]?.id);
 
       return response;
     }
   } catch (error) {
-    console.log(error);
+
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
@@ -249,6 +262,7 @@ onMounted(async () => {
     );
     if (props.data?.[3]?.value)
       await getProductType(jenisLayanan?.code || props.data?.[3]?.value);
+ 
     if (jenisLayanan && props.data[6])
       await getLph(
         LIST_BUSINESS_ACTOR,
@@ -267,6 +281,7 @@ watchEffect(async () => {
   );
   if (props.data?.[3]?.value)
     await getProductType(jenisLayanan?.code || props.data?.[3]?.value);
+ 
   if (jenisLayanan && props.data[6])
     await getLph(
       LIST_BUSINESS_ACTOR,
@@ -292,10 +307,16 @@ watchEffect(async () => {
         >
           <div v-if="item.type === 'text'">
             <p class="label-pengajuan">
-              {{ item.title }}
+              {{ t(item.title) }}
               <span v-if="item.required" class="required">*</span>
             </p>
-            <div v-if="item.title.includes('Tanggal')">
+            <div
+              v-if="
+                item.title.includes('Tanggal') ||
+                item.title ===
+                  'pengajuan-reguler.reguler-form--pengajuan-pengajuan-tglmohon'
+              "
+            >
               <VueDatePicker
                 id="tanggal_daftar"
                 v-model="item.value"
@@ -310,7 +331,7 @@ watchEffect(async () => {
           </div>
           <div v-if="item.type === 'select'">
             <p class="label-pengajuan">
-              {{ item.title }}
+              {{ t(item.title) }}
               <span v-if="item.required" class="required">*</span>
             </p>
             <VSelect
@@ -323,16 +344,30 @@ watchEffect(async () => {
               bg-color="#F6F6F6"
               :value="item.value"
             />
+
             <VSelect
               v-if="!item.disabled"
               v-model="item.value"
               :items="
-                item.title === 'LPH' ? itemsLph : getSelectOptions(item.title)
+                item.title ===
+                'pengajuan-reguler.reguler-form--pengajuan-pengajuan-lph'
+                  ? itemsLph
+                  : getSelectOptions(item.title)
               "
               outlined
               class="-mt-10"
-              :item-value="item.title === 'LPH' ? 'lph_id' : 'code'"
-              :item-title="item.title === 'LPH' ? 'nama_lph' : 'name'"
+              :item-value="
+                item.title ===
+                'pengajuan-reguler.reguler-form--pengajuan-pengajuan-lph'
+                  ? 'lph_id'
+                  : 'code'
+              "
+              :item-title="
+                item.title ===
+                'pengajuan-reguler.reguler-form--pengajuan-pengajuan-lph'
+                  ? 'nama_lph'
+                  : 'name'
+              "
               @update:model-value="
                 () => lphValidation(item.title, item.value, index)
               "
@@ -344,6 +379,7 @@ watchEffect(async () => {
             cols="12"
           >
             <!-- <p class="label-pengajuan">{{ item.title }}</p> -->
+
             <div
               v-for="(element, idx) in item.data"
               :key="element.title"
@@ -365,7 +401,7 @@ watchEffect(async () => {
           <div v-if="item.type === 'textarea'">
             <div>
               <p class="label-pengajuan">
-                {{ item.title }}
+                {{ t(item.title) }}
                 <span v-if="item.required" class="required">*</span>
               </p>
               <VTextarea v-model="item.value" class="-mt-10" />
@@ -379,19 +415,19 @@ watchEffect(async () => {
           "
           cols="12"
         >
-          <label>Kode Daftar/Fasilitasi</label>
+          <label> {{ t("pengajuan-reguler.reguler-kode-facilitas") }} </label>
           <div class="d-flex gap-10 mt-3">
             <VTextField
               v-model="searchRegisType"
-              placeholder="masukkan kode fasilitas"
-              style="max-inline-size: 10rem"
+              :placeholder="t('pengajuan-reguler.reguler-kode-facilitas-2')"
+              style="max-inline-size: 13rem;"
             />
             <VBtn
               variant="outlined"
-              style="block-size: 45px"
+              style="block-size: 45px;"
               @click="checkCodeFasilitas"
             >
-              Cari Kode
+              {{ t("pengajuan-reguler.reguler-kode-facilitas-1") }}
             </VBtn>
           </div>
           <VAlert
