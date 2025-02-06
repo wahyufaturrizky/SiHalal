@@ -109,9 +109,7 @@ const getSelectOptions = (field: string): string => {
 
 const getLph = async (path: string, layanan: string, area: string) => {
   try {
-    console.log(path,'ini path')
-    console.log(layanan,'ini layanan')
-    console.log(area,'ini area')
+
     const params = {
       url: `${path}/${props?.id}/lph?jenis_layanan=${layanan}&area_pemasaran=${area}`,
       page: 1,
@@ -123,7 +121,6 @@ const getLph = async (path: string, layanan: string, area: string) => {
       method: "get",
       params,
     });
-    console.log(response,'isi response')
 
     if (response?.code === 2000) itemsLph.value = response.data;
     else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -133,7 +130,8 @@ const getLph = async (path: string, layanan: string, area: string) => {
 };
 
 const onSubmit = async () => {
-  if (props?.title === t("halal_cert_submission.title")) {
+ 
+  if (props?.title === "Pengajuan Sertifikasi Halal") {
     const jenisLayanan = props?.service_type?.find(
       (item: any) =>
         props.data?.[3]?.value === item.name ||
@@ -197,20 +195,20 @@ const getProductType = async (id: string) => {
 };
 
 const lphValidation = async (title: string, value: string, index: number) => {
-  console.log(value,'ini isi vlaue lph',title)
-  if (title === "pengajuan-reguler.reguler-detail-pengajuan-jnslay") {
+  if (title === "pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnslay") {
     props.data.map((el) => {
       if (
-        el.title ==="pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsprod"
+        el.title ===
+        "pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsprod"
       ) {
         el.value = "";
       } else if (
-        el.title === "pengajuan-reguler.reguler-detail-pengajuan-lph"
+        el.title === "pengajuan-reguler.reguler-form--pengajuan-pengajuan-lph"
       ) {
         el.value = "";
       } else if (
         el.title ===
-        "pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsdaftar"
+        "pengajuan-reguler.reguler-form--pengajuan-pengajuan-marketing"
       ) {
         el.value = "";
       }
@@ -224,7 +222,7 @@ const lphValidation = async (title: string, value: string, index: number) => {
 
   if (title === "pengajuan-reguler.reguler-detail-pengajuan-jnslay")
     await getProductType(value);
-  else if (title === "pengajuan-reguler.reguler-detail-pengajuan-area")
+  else if (title === "pengajuan-reguler.reguler-form--pengajuan-pengajuan-marketing")
     await getLph(LIST_BUSINESS_ACTOR, jenisLayanan?.code, value);
 
   if (props.title === "halal_cert_submission.title") {
@@ -243,14 +241,14 @@ const checkCodeFasilitas = async () => {
     });
 
     if (response) {
-      console.log(response.data);
+   
       messageFasilitator.value = response?.message;
       emit("complete", response?.data?.[0]?.id);
 
       return response;
     }
   } catch (error) {
-    console.log(error);
+
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
@@ -264,7 +262,7 @@ onMounted(async () => {
     );
     if (props.data?.[3]?.value)
       await getProductType(jenisLayanan?.code || props.data?.[3]?.value);
-    console.log( props.data[6],'ini test props', props.data?.[6]?.value)
+ 
     if (jenisLayanan && props.data[6])
       await getLph(
         LIST_BUSINESS_ACTOR,
@@ -283,6 +281,7 @@ watchEffect(async () => {
   );
   if (props.data?.[3]?.value)
     await getProductType(jenisLayanan?.code || props.data?.[3]?.value);
+ 
   if (jenisLayanan && props.data[6])
     await getLph(
       LIST_BUSINESS_ACTOR,
@@ -345,7 +344,7 @@ watchEffect(async () => {
               bg-color="#F6F6F6"
               :value="item.value"
             />
-            <!-- {{ item.title }}s -->
+
             <VSelect
               v-if="!item.disabled"
               v-model="item.value"
