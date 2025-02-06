@@ -2,7 +2,7 @@
   <VContainer>
     <div
       class="d-flex align-center cursor-pointer"
-      @click="router.push(`/sh-domestic/submission/self-declare`)"
+      @click="router.push(`/lp3h/self-declare/verifikasi-mandiri`)"
     >
       <VIcon icon="mdi-chevron-left" size="40px" color="primary" />
       <div class="text-primary">Kembali</div>
@@ -1204,7 +1204,7 @@ const handleDeleteSubmission = async () => {
     );
     if (result.code === 2000) {
       snackbar.sendSnackbar("Berhasil menghapus data", "success");
-      router.push("/sh-domestic/submission/self-declare");
+      router.push("/lp3h/self-declare/verifikasi-mandiri");
     }
   } catch (error) {
     snackbar.sendSnackbar("Gagal menghapus data", "error");
@@ -1283,26 +1283,28 @@ const getSubmissionDetail = async () => {
 
     if (response.code === 2000) {
       // data for left side
-      Object.assign(submissionDetail, response.data.certificate_halal);
-      Object.assign(picDetail, response.data.penanggung_jawab);
-      aspectLegalItems.value = response.data.aspek_legal;
-      factoryItems.value = response.data.pabrik;
-      outletItems.value = response.data.outlet;
-      supervisorItems.value = response.data.penyelia_halal;
-      productItems.value = response.data.produk;
+      Object.assign(submissionDetail, response?.data.certificate_halal);
+      Object.assign(picDetail, response?.data.penanggung_jawab);
+      aspectLegalItems.value = response?.data.aspek_legal;
+      factoryItems.value = response?.data.pabrik;
+      outletItems.value = response?.data.outlet;
+      supervisorItems.value = response?.data.penyelia_halal;
+      productItems.value = response?.data.produk;
 
       // data for right side
-      Object.assign(registrationDetail, response.data.certificate_halal);
-      Object.assign(fatwaSessionDetail, response.data.sidang_fatwa);
+      Object.assign(registrationDetail, response?.data.certificate_halal);
+      Object.assign(fatwaSessionDetail, response?.data.sidang_fatwa);
       Object.assign(
         halalCertificateDetail,
-        response.data.sertifikat_halal_info
+        response?.data.sertifikat_halal_info
       );
-      trackingDetail.value = response.data.tracking;
+      trackingDetail.value = response?.data.tracking;
       Object.assign(panelTracking.value, [0, 1]);
     }
   } catch (error) {
-    router.push("/sh-domestic/submission/self-declare");
+    console.log("@error", error);
+
+    router.push("/lp3h/self-declare/verifikasi-mandiri");
   }
 };
 
@@ -1386,7 +1388,7 @@ const handleSentSubmission = async () => {
     });
     if (response.code === 2000) {
       snackbar.sendSnackbar("Berhasil mengirim pengajuan", "success");
-      navigateTo("/sh-domestic/submission/self-declare");
+      navigateTo("/lp3h/self-declare/verifikasi-mandiri");
     } else {
       if (response.errors.list_error.length > 0) {
         for (const element of response.errors.list_error) {
