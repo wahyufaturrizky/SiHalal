@@ -234,7 +234,7 @@ const addVefified = (event: any) => {
 
 const handleDownload = async (filename: string) => {
   if (filename) {
-    return await downloadDocument(filename);
+    return await downloadDocument(filename, "PRODUCT");
   }
 };
 

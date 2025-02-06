@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 const headers = [
   { title: "No", key: "no" },
   { title: "Nama", key: "penyelia_nama", nowrap: true },
@@ -21,18 +20,18 @@ const headers = [
   { title: "Tanggal SK", key: "tgl_sk", nowrap: true },
   { title: "No. Kontak", key: "no_kontak", nowrap: true },
 ];
-const store =useMyVerifikatorRegulerStore();
-const { penyelia_halal } = storeToRefs(store)
+const store = useMyVerifikatorRegulerStore();
+const { penyelia_halal } = storeToRefs(store);
 const donwloadSkph = (item) => {
-  downloadDocument(item)
+  downloadDocument(item);
 };
 
 const donwloadSpph = (item) => {
-  downloadDocument(item)
+  downloadDocument(item);
 };
 
 const donwloadKtp = (item) => {
-  downloadDocument(item)
+  downloadDocument(item, "FILES");
 };
 </script>
 
@@ -44,17 +43,32 @@ const donwloadKtp = (item) => {
     <VCardItem>
       <VDataTable :headers="headers" :items="penyelia_halal">
         <template #item.file_skph="{ item }">
-          <v-btn :disabled="item.file_skph == ''" color="primary" variant="plain" @click="donwloadSkph(item.file_skph)">
+          <v-btn
+            :disabled="item.file_skph == ''"
+            color="primary"
+            variant="plain"
+            @click="donwloadSkph(item.file_skph)"
+          >
             <VIcon>mdi-download</VIcon>
           </v-btn>
         </template>
         <template #item.file_spph="{ item }">
-          <v-btn :disabled="item.file_spph == ''" color="primary" variant="plain" @click="donwloadSpph(item.file_spph)">
+          <v-btn
+            :disabled="item.file_spph == ''"
+            color="primary"
+            variant="plain"
+            @click="donwloadSpph(item.file_spph)"
+          >
             <VIcon>mdi-download</VIcon>
           </v-btn>
         </template>
         <template #item.file_ktp="{ item }">
-          <v-btn :disabled="item.file_ktp == ''" color="primary" variant="plain" @click="donwloadKtp(item.file_ktp)">
+          <v-btn
+            :disabled="item.file_ktp == ''"
+            color="primary"
+            variant="plain"
+            @click="donwloadKtp(item.file_ktp)"
+          >
             <VIcon>mdi-download</VIcon>
           </v-btn>
         </template>
