@@ -553,13 +553,13 @@ watch(
 
           <template v-if="!isviewonly" #item.action="{ item }">
             <DialogDeleteAuditPengajuan
-              title="Hapus Bahan"
-              button-text="Ya, Hapus"
+              :title="t('pengajuan-reguler.reguler-remove-bahan-title')"
+              :button-text="t('pengajuan-reguler.reguler-remove-bahan-1')"
               :content="props?.title"
               :on-delete="() => props?.onDelete(item)"
             >
               <template #contentDelete>
-                <p>Apakah anda yakin menghapus data ini?</p>
+                <p>{{ t("pengajuan-reguler.reguler-remove-bahan-2") }}</p>
               </template>
             </DialogDeleteAuditPengajuan>
           </template>
@@ -763,7 +763,7 @@ watch(
             <Vbtn
               v-if="item.foto"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
               @click="() => handleDownload(item.foto)"
             >
               <div>
@@ -779,7 +779,7 @@ watch(
             <Vbtn
               v-if="item.file_dok"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
               @click="() => handleDownload(item.file_dok)"
             >
               <div>
@@ -795,7 +795,7 @@ watch(
             <Vbtn
               v-if="item.file_skph"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
               @click="() => handleDownload(item.file_skph)"
             >
               <div>
@@ -811,7 +811,7 @@ watch(
             <Vbtn
               v-if="item.file_spph"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
               @click="() => handleDownload(item.file_spph)"
             >
               <div>
@@ -827,7 +827,7 @@ watch(
             <Vbtn
               v-if="item.file_ktp"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
               @click="() => handleDownload(item.file_ktp)"
             >
               <div>
@@ -843,7 +843,7 @@ watch(
             <Vbtn
               v-if="item.file_layout"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
               @click="() => handleDownload(item.file_layout)"
             >
               <div>
@@ -859,7 +859,7 @@ watch(
             <Vbtn
               v-if="item.FileDok"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
               @click="() => handleDownload(item.FileDok)"
             >
               <div>
@@ -875,7 +875,7 @@ watch(
             <Vbtn
               v-if="item.id_reg"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
               @click="() => handleDownloadV2(item)"
             >
               <div>
@@ -891,7 +891,7 @@ watch(
             <Vbtn
               v-if="item.file_dok"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
             >
               <div>
                 <VIcon
@@ -912,7 +912,7 @@ watch(
             <Vbtn
               v-if="item.ttd_pj"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
             >
               <div>
                 <VIcon
@@ -933,7 +933,7 @@ watch(
             <Vbtn
               v-if="item.ttd_ph"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px"
+              style="margin-inline-start: -10px;"
             >
               <div>
                 <VIcon
