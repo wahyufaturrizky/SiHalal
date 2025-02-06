@@ -82,12 +82,15 @@ const hanleSubmitRequest = async (answer: string) => {
 
 const handleCreate = async (answer: string) => {
   try {
-    const result: any = await $api("/self-declare/submission/create", {
-      method: "post",
-      body: {
-        kbli_id: answer,
-      },
-    });
+    const result: any = await $api(
+      "/pelaku-usaha/layanan-sertifikasi-halal-mandiri",
+      {
+        method: "post",
+        body: {
+          kbli_id: answer,
+        },
+      }
+    );
 
     if (result.code === 2000) {
       router.push(
