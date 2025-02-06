@@ -21,6 +21,9 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  isTemuanCanEdit: {
+    type: Boolean,
+  },
 });
 
 const emit = defineEmits(["confirm-add", "confirm-delete"]);
@@ -87,6 +90,7 @@ watch(
             :modal-type="modalTypeEnum.ADD"
             :id-reg="props.idReg"
             :list-bahan="content"
+            :is-temuan-can-edit="props.isTemuanCanEdit"
             @emit-add="handleAddBahan"
           ></ModalBahanPendampingVerval
         ></VCol>
@@ -128,6 +132,7 @@ watch(
                 :modal-type="modalTypeEnum.EDIT"
                 :id-bahan="item.id_bahan"
                 @emit-add="handleAddBahan"
+                :is-temuan-can-edit="props.isTemuanCanEdit"
               ></ModalBahanPendampingVerval>
               <VListItem @click="handleDeleteBahan(item.id_bahan)">
                 <template #prepend>

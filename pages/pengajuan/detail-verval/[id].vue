@@ -400,6 +400,7 @@ onMounted(async () => {
         :data="dataBahanList"
         :id-reg="route.params?.id"
         @confirm-add="handleBahanAdd"
+        :is-temuan-can-edit="true"
       ></BahanTablePendamping>
     </VCol>
   </VRow>

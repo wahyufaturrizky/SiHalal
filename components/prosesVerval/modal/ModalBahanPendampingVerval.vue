@@ -16,6 +16,9 @@ const props = defineProps({
   listBahan: {
     type: Object,
   },
+  isTemuanCanEdit: {
+    type: Boolean,
+  },
 });
 
 const isVisible = ref(false);
@@ -274,7 +277,7 @@ const onOpenModal = async () => {
                   <VLabel>Temuan</VLabel>
                   <VTextField
                     density="compact"
-                    readonly
+                    :readonly="!props.isTemuanCanEdit"
                     v-model="form.temuan"
                   ></VTextField>
                 </VItemGroup>
