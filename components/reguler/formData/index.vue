@@ -109,6 +109,9 @@ const getSelectOptions = (field: string): string => {
 
 const getLph = async (path: string, layanan: string, area: string) => {
   try {
+    console.log(path,'ini path')
+    console.log(layanan,'ini layanan')
+    console.log(area,'ini area')
     const params = {
       url: `${path}/${props?.id}/lph?jenis_layanan=${layanan}&area_pemasaran=${area}`,
       page: 1,
@@ -120,6 +123,7 @@ const getLph = async (path: string, layanan: string, area: string) => {
       method: "get",
       params,
     });
+    console.log(response,'isi response')
 
     if (response?.code === 2000) itemsLph.value = response.data;
     else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -193,20 +197,20 @@ const getProductType = async (id: string) => {
 };
 
 const lphValidation = async (title: string, value: string, index: number) => {
-  if (title === t("pengajuan-reguler.reguler-detail-pengajuan-jnslay")) {
+  console.log(value,'ini isi vlaue lph',title)
+  if (title === "pengajuan-reguler.reguler-detail-pengajuan-jnslay") {
     props.data.map((el) => {
       if (
-        el.title ===
-        t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsprod")
+        el.title ==="pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsprod"
       ) {
         el.value = "";
       } else if (
-        el.title === t("pengajuan-reguler.reguler-detail-pengajuan-lph")
+        el.title === "pengajuan-reguler.reguler-detail-pengajuan-lph"
       ) {
         el.value = "";
       } else if (
         el.title ===
-        t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsdaftar")
+        "pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsdaftar"
       ) {
         el.value = "";
       }
@@ -218,12 +222,12 @@ const lphValidation = async (title: string, value: string, index: number) => {
       props.data?.[3]?.value === item.code
   );
 
-  if (title === t("pengajuan-reguler.reguler-detail-pengajuan-jnslay"))
+  if (title === "pengajuan-reguler.reguler-detail-pengajuan-jnslay")
     await getProductType(value);
-  else if (title === t("pengajuan-reguler.reguler-detail-pengajuan-area"))
+  else if (title === "pengajuan-reguler.reguler-detail-pengajuan-area")
     await getLph(LIST_BUSINESS_ACTOR, jenisLayanan?.code, value);
 
-  if (props.title === t("halal_cert_submission.title")) {
+  if (props.title === "halal_cert_submission.title") {
     const checkData = props.data.map((el: any) => {
       if (el.required && el.value === "") return false;
       return true;
@@ -260,6 +264,7 @@ onMounted(async () => {
     );
     if (props.data?.[3]?.value)
       await getProductType(jenisLayanan?.code || props.data?.[3]?.value);
+    console.log( props.data[6],'ini test props', props.data?.[6]?.value)
     if (jenisLayanan && props.data[6])
       await getLph(
         LIST_BUSINESS_ACTOR,
