@@ -108,7 +108,7 @@ const handleAddIngredient = async (payload: any, idProduct: string) => {
 };
 
 const handleDownload = async (productId: string) => {
-  return await downloadDocument(productId);
+  return await downloadDocument(productId, "PRODUCT");
 };
 
 const modalUse = ref("DELETE");

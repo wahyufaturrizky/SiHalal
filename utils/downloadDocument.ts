@@ -1,4 +1,4 @@
-export const downloadDocument = async (filename: string, param: string) => {
+export const downloadDocument = async (filename: string, param?: string) => {
   try {
     const response = await $api("/shln/submission/document/download", {
       method: "post",

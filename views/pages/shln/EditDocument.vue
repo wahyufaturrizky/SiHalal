@@ -452,7 +452,7 @@ watch(loaFile, (newValue, oldValue) => {
           </VCol>
           <VCol cols="12" class="d-flex align-center gap-5 justify-center">
             <VBtn
-              @click="downloadDocument(loa.loa_document)"
+              @click="downloadDocument(loa.loa_document, 'SHLN_DOC')"
               v-if="loa.loa_document != ''"
               color="primary"
             >
@@ -510,7 +510,7 @@ watch(loaFile, (newValue, oldValue) => {
         <v-form ref="refFhcForm" @submit.prevent="openFhcDialog">
           <VCol cols="12" class="d-flex align-center gap-5 justify-center">
             <VBtn
-              @click="downloadDocument(fhc.file)"
+              @click="downloadDocument(fhc.file, 'SHLN_DOC')"
               v-if="fhc.file != ''"
               color="primary"
             >
@@ -603,7 +603,7 @@ watch(loaFile, (newValue, oldValue) => {
             <template #item.file="{ item, index }">
               <div class="d-flex align-center justify-center py-3 gap-2">
                 <VBtn
-                  @click="downloadDocument(item.file)"
+                  @click="downloadDocument(item.file, 'SHLN_DOC')"
                   v-if="item.file != ''"
                   color="primary"
                 >

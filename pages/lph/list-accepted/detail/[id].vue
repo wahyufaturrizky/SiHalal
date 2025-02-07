@@ -1,125 +1,114 @@
 <script setup lang="ts">
-import LPHDetailLayout from '@/layouts/LPHDetailLayout.vue'
+import LPHDetailLayout from "@/layouts/LPHDetailLayout.vue";
 
-const route = useRoute()
-const router = useRouter()
-const id = route?.params?.id
+const route = useRoute();
+const router = useRouter();
+const id = route?.params?.id;
 
-const openedLeftPanels = ref([0, 1, 2, 3, 4, 5])
-const openedRightPanels = ref([0, 1, 2])
-const loading = ref(false)
-const dataPengajuan = ref<any>({})
-const dataProduk = ref<any>([])
-const dataPemeriksaanProduk = ref<any>(null)
+const openedLeftPanels = ref([0, 1, 2, 3, 4, 5]);
+const openedRightPanels = ref([0, 1, 2]);
+const loading = ref(false);
+const dataPengajuan = ref<any>({});
+const dataProduk = ref<any>([]);
+const dataPemeriksaanProduk = ref<any>(null);
 
-const isSendModalOpen = ref(false)
+const isSendModalOpen = ref(false);
 
 const handleOpenSendModal = () => {
-  isSendModalOpen.value = !isSendModalOpen.value
-}
+  isSendModalOpen.value = !isSendModalOpen.value;
+};
 
 const downloadForms = reactive({
-  sttd: '',
-}) as Record<string, string>
+  sttd: "",
+}) as Record<string, string>;
 
 const handleUpdateStatus = async () => {
   // useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
   try {
-    const response: any = await $api('/reguler/lph/generate-invoice', {
-      method: 'put',
+    const response: any = await $api("/reguler/lph/generate-invoice", {
+      method: "put",
       body: {
         id_reg: id,
       },
-    })
+    });
 
     if (response?.code === 2000) {
-      useSnackbar().sendSnackbar('Berhasil kirim data', 'success')
+      useSnackbar().sendSnackbar("Berhasil kirim data", "success");
 
-      return response?.data
+      return response?.data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const getDetailData = async (type: string) => {
   try {
-    const response: any = await $api('/reguler/lph/detail-payment', {
-      method: 'get',
+    const response: any = await $api("/reguler/lph/detail-payment", {
+      method: "get",
       params: { url: `${LIST_DAFTAR_AJUAN_DITERIMA}/${id}/${type}` },
-    })
+    });
 
-    if (response?.code === 2000)
-      return response?.data
-    else
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    if (response?.code === 2000) return response?.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const getDownloadForm = async (docName: string, propName: string) => {
-  const result: any = await $api(
-    `/self-declare/submission/${id}/file`,
-    {
-      method: 'get',
-      query: {
-        document: docName,
-      },
+  const result: any = await $api(`/self-declare/submission/${id}/file`, {
+    method: "get",
+    query: {
+      document: docName,
     },
-  )
+  });
 
-  if (result?.code === 2000)
-    downloadForms[propName] = result?.data?.file || ''
-}
+  if (result?.code === 2000) downloadForms[propName] = result?.data?.file || "";
+};
 
 const onUpdateBiaya = async () => {
   try {
-    const response: any = await $api('/reguler/lph/update-cost/seed-detail', {
-      method: 'post',
+    const response: any = await $api("/reguler/lph/update-cost/seed-detail", {
+      method: "post",
       query: { id },
-    })
+    });
 
     if (response?.code === 2000) {
-      router.push(`/lph/list-accepted/detail/update-cost/${id}`)
+      router.push(`/lph/list-accepted/detail/update-cost/${id}`);
 
-      return response?.data
+      return response?.data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
-const handleDownloadForm = async (fileName: string) => {
-  return await downloadDocument(fileName)
-}
+const handleDownloadForm = async (fileName: string, param?: string) => {
+  return await downloadDocument(fileName, param);
+};
 
 onMounted(async () => {
-  loading.value = true
+  loading.value = true;
 
   const responseData = await Promise.allSettled([
-    getDetailData('pengajuan'),
-    getDetailData('produk'),
-    getDetailData('pemeriksaanproduk'),
-    getDownloadForm('sttd', 'sttd'),
+    getDetailData("pengajuan"),
+    getDetailData("produk"),
+    getDetailData("pemeriksaanproduk"),
+    getDownloadForm("sttd", "sttd"),
 
     // getDownloadForm('setifikasi-halal', 'setifikasi_halal'),
-  ])
+  ]);
 
-  dataPengajuan.value = responseData?.[0]?.value || {}
-  dataProduk.value = responseData?.[1]?.value || []
-  dataPemeriksaanProduk.value = responseData?.[2]?.value || {}
-  loading.value = false
-})
+  dataPengajuan.value = responseData?.[0]?.value || {};
+  dataProduk.value = responseData?.[1]?.value || [];
+  dataPemeriksaanProduk.value = responseData?.[2]?.value || {};
+  loading.value = false;
+});
 </script>
 
 <template>
@@ -148,10 +137,7 @@ onMounted(async () => {
               class="me-4"
               @click="onUpdateBiaya"
             />
-            <VBtn
-              text="Kirim"
-              @click="handleOpenSendModal"
-            />
+            <VBtn text="Kirim" @click="handleOpenSendModal" />
           </VCol>
         </VRow>
       </template>
@@ -162,10 +148,7 @@ onMounted(async () => {
           collapse-icon="fa-chevron-up"
           multiple
         >
-          <VExpansionPanel
-            :value="0"
-            class="pt-3"
-          >
+          <VExpansionPanel :value="0" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Data Pengajuan
             </VExpansionPanelTitle>
@@ -176,10 +159,7 @@ onMounted(async () => {
               />
             </VExpansionPanelText>
           </VExpansionPanel>
-          <VExpansionPanel
-            :value="1"
-            class="pt-3"
-          >
+          <VExpansionPanel :value="1" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Pengajuan Sertifikasi
             </VExpansionPanelTitle>
@@ -187,10 +167,7 @@ onMounted(async () => {
               <PanelPengajuanSertifikasi :data-pengajuan="dataPengajuan" />
             </VExpansionPanelText>
           </VExpansionPanel>
-          <VExpansionPanel
-            :value="2"
-            class="pt-3"
-          >
+          <VExpansionPanel :value="2" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Daftar Nama Produk
             </VExpansionPanelTitle>
@@ -198,10 +175,7 @@ onMounted(async () => {
               <PanelDaftarProduk :data="dataProduk" />
             </VExpansionPanelText>
           </VExpansionPanel>
-          <VExpansionPanel
-            :value="3"
-            class="pt-3"
-          >
+          <VExpansionPanel :value="3" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Jadwal Audit
             </VExpansionPanelTitle>
@@ -209,10 +183,7 @@ onMounted(async () => {
               <PanelJadwalAudit :data="dataPemeriksaanProduk?.jadwal_audit" />
             </VExpansionPanelText>
           </VExpansionPanel>
-          <VExpansionPanel
-            :value="4"
-            class="pt-3"
-          >
+          <VExpansionPanel :value="4" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Auditor
             </VExpansionPanelTitle>
@@ -220,15 +191,14 @@ onMounted(async () => {
               <PanelAuditorTable :data="dataPemeriksaanProduk?.auditor" />
             </VExpansionPanelText>
           </VExpansionPanel>
-          <VExpansionPanel
-            :value="5"
-            class="pt-3"
-          >
+          <VExpansionPanel :value="5" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Hasil Pemeriksaan
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelHasilPemeriksaan :data="dataPemeriksaanProduk?.hasil_pemeriksaan" />
+              <PanelHasilPemeriksaan
+                :data="dataPemeriksaanProduk?.hasil_pemeriksaan"
+              />
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -240,56 +210,49 @@ onMounted(async () => {
           collapse-icon="fa-chevron-up"
           multiple
         >
-          <VExpansionPanel
-            :value="0"
-            class="pt-3"
-          >
+          <VExpansionPanel :value="0" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               No. Pendaftaran
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelNoPendaftaran :data="dataPemeriksaanProduk?.no_pendaftaran" />
+              <PanelNoPendaftaran
+                :data="dataPemeriksaanProduk?.no_pendaftaran"
+              />
             </VExpansionPanelText>
           </VExpansionPanel>
-          <VExpansionPanel
-            :value="1"
-            class="pt-3"
-          >
+          <VExpansionPanel :value="1" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Biaya Pemeriksaan
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <VRow>
-                <VCol>{{ formatToIDR(dataPemeriksaanProduk?.total_biaya) }}</VCol>
+                <VCol>{{
+                  formatToIDR(dataPemeriksaanProduk?.total_biaya)
+                }}</VCol>
               </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
-          <VExpansionPanel
-            :value="2"
-            class="pt-3"
-          >
+          <VExpansionPanel :value="2" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Dokumen
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <VRow align="center">
-                <VCol
-                  cols="5"
-                  class="text-h6"
-                >
-                  File KH
-                </VCol>
+                <VCol cols="5" class="text-h6"> File KH </VCol>
                 <VCol class="d-flex align-center">
-                  <div class="me-1">
-                    :
-                  </div>
+                  <div class="me-1">:</div>
                   <VBtn
-                    :color="dataPemeriksaanProduk?.file_kh ? 'primary' : '#A09BA1'"
+                    :color="
+                      dataPemeriksaanProduk?.file_kh ? 'primary' : '#A09BA1'
+                    "
                     density="compact"
                     class="px-2"
                     @click="
                       dataPemeriksaanProduk?.file_kh
-                        ? handleDownloadForm(dataPemeriksaanProduk?.file_kh)
+                        ? handleDownloadForm(
+                            dataPemeriksaanProduk?.file_kh,
+                            'FILES'
+                          )
                         : null
                     "
                   >
@@ -300,23 +263,23 @@ onMounted(async () => {
                 </VCol>
               </VRow>
               <VRow align="center">
-                <VCol
-                  cols="5"
-                  class="text-h6"
-                >
-                  File Laporan LPH
-                </VCol>
+                <VCol cols="5" class="text-h6"> File Laporan LPH </VCol>
                 <VCol class="d-flex align-center">
-                  <div class="me-1">
-                    :
-                  </div>
+                  <div class="me-1">:</div>
                   <VBtn
-                    :color="dataPemeriksaanProduk?.file_laporan ? 'primary' : '#A09BA1'"
+                    :color="
+                      dataPemeriksaanProduk?.file_laporan
+                        ? 'primary'
+                        : '#A09BA1'
+                    "
                     density="compact"
                     class="px-2"
                     @click="
                       dataPemeriksaanProduk?.file_laporan
-                        ? handleDownloadForm(dataPemeriksaanProduk?.file_laporan)
+                        ? handleDownloadForm(
+                            dataPemeriksaanProduk?.file_laporan,
+                            'FILES'
+                          )
                         : null
                     "
                   >
@@ -334,19 +297,11 @@ onMounted(async () => {
         </div>
       </template>
     </LPHDetailLayout>
-    <VDialog
-      v-model="isSendModalOpen"
-      max-width="840px"
-      persistent
-    >
+    <VDialog v-model="isSendModalOpen" max-width="840px" persistent>
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
-          <div class="text-h3 font-weight-bold">
-            Kirim Pengajuan
-          </div>
-          <VIcon @click="handleOpenSendModal">
-            fa-times
-          </VIcon>
+          <div class="text-h3 font-weight-bold">Kirim Pengajuan</div>
+          <VIcon @click="handleOpenSendModal"> fa-times </VIcon>
         </VCardTitle>
         <VCardText>
           <VRow>

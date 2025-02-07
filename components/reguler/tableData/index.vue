@@ -139,12 +139,13 @@ const getListProducts = async () => {
   }
 };
 
-const handleDownload = async (item: any) => {
+const handleDownload = async (item: any, param: string = "") => {
   try {
     const response = await $api("/shln/submission/document/download", {
       method: "post",
       body: {
         filename: item,
+        param: param && `dirName=${param}`,
       },
     });
 
@@ -155,7 +156,7 @@ const handleDownload = async (item: any) => {
   }
 };
 
-const handleDownloadV2 = async (filename: string) => {
+const handleDownloadV2 = async (filename: string, param: string = "") => {
   try {
     const response = await $api("/shln/submission/document/download", {
       method: "post",
@@ -763,8 +764,8 @@ watch(
             <Vbtn
               v-if="item.foto"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px;"
-              @click="() => handleDownload(item.foto)"
+              style="margin-inline-start: -10px"
+              @click="() => handleDownload(item.foto, 'PRODUCT')"
             >
               <div>
                 <VIcon end icon="ri-file-3-line" color="#652672" />
@@ -779,7 +780,7 @@ watch(
             <Vbtn
               v-if="item.file_dok"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px;"
+              style="margin-inline-start: -10px"
               @click="() => handleDownload(item.file_dok)"
             >
               <div>
@@ -795,7 +796,7 @@ watch(
             <Vbtn
               v-if="item.file_skph"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px;"
+              style="margin-inline-start: -10px"
               @click="() => handleDownload(item.file_skph)"
             >
               <div>
@@ -811,7 +812,7 @@ watch(
             <Vbtn
               v-if="item.file_spph"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px;"
+              style="margin-inline-start: -10px"
               @click="() => handleDownload(item.file_spph)"
             >
               <div>
@@ -827,8 +828,8 @@ watch(
             <Vbtn
               v-if="item.file_ktp"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px;"
-              @click="() => handleDownload(item.file_ktp)"
+              style="margin-inline-start: -10px"
+              @click="() => handleDownload(item.file_ktp, 'FILES')"
             >
               <div>
                 <VIcon end icon="ri-file-3-line" color="#652672" />
@@ -843,7 +844,7 @@ watch(
             <Vbtn
               v-if="item.file_layout"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px;"
+              style="margin-inline-start: -10px"
               @click="() => handleDownload(item.file_layout)"
             >
               <div>
@@ -859,7 +860,7 @@ watch(
             <Vbtn
               v-if="item.FileDok"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px;"
+              style="margin-inline-start: -10px"
               @click="() => handleDownload(item.FileDok)"
             >
               <div>
@@ -875,7 +876,7 @@ watch(
             <Vbtn
               v-if="item.id_reg"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px;"
+              style="margin-inline-start: -10px"
               @click="() => handleDownloadV2(item)"
             >
               <div>
@@ -891,7 +892,7 @@ watch(
             <Vbtn
               v-if="item.file_dok"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px;"
+              style="margin-inline-start: -10px"
             >
               <div>
                 <VIcon
@@ -912,7 +913,7 @@ watch(
             <Vbtn
               v-if="item.ttd_pj"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px;"
+              style="margin-inline-start: -10px"
             >
               <div>
                 <VIcon
@@ -933,14 +934,14 @@ watch(
             <Vbtn
               v-if="item.ttd_ph"
               class="d-flex gap-3 cursor-pointer"
-              style="margin-inline-start: -10px;"
+              style="margin-inline-start: -10px"
             >
               <div>
                 <VIcon
                   end
                   icon="ri-file-3-line"
                   color="#652672"
-                  @click="() => handleDownloadV2(item.ttd_ph)"
+                  @click="() => handleDownloadV2(item.ttd_ph, 'FILES')"
                 />
               </div>
               <label class="cursor-pointer">file</label>
