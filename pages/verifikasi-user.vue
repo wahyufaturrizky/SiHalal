@@ -423,9 +423,9 @@ const handleLoadImageAuth = async () => {
     } as any);
 
     if (response.code === 2000) {
-      // if (response.data?.type) fileType.value = response.data?.type
-      const fileExt = response.data.file_name.split(".").pop();
-      fileType.value = !["webp"].includes(fileExt) ? "VID" : "IMG";
+      fileType.value = response.data.type.toUpperCase();
+      // const fileExt = response.data.file_name.split(".").pop();
+      // fileType.value = !["webp"].includes(fileExt) ? "VID" : "IMG";
       if (fileType.value === "VID") {
         const orientationStr = response.data.file_name.split("-").pop();
         videOrientation.value = orientationStr.split(".")[0];
