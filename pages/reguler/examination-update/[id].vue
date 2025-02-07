@@ -1,195 +1,197 @@
 <script setup lang="ts">
-import LPHDetailLayout from '@/layouts/LPHDetailLayout.vue'
+import LPHDetailLayout from "@/layouts/LPHDetailLayout.vue";
 
-const route = useRoute()
-const id = route?.params?.id
+const route = useRoute();
+const id = route?.params?.id;
 
-const openedLeftPanels = ref([0, 1, 2, 3, 4, 5])
-const openedRightPanels = ref([0, 1, 2])
-const loading = ref(false)
-const dataPengajuan = ref<any>({})
-const dataProduk = ref<any>([])
-const lovAuditor = ref<any>([])
-const dataPemeriksaanProduk = ref<any>(null)
-const selectedAudiotor = ref<any>(null)
+const openedLeftPanels = ref([0, 1, 2, 3, 4, 5]);
+const openedRightPanels = ref([0, 1, 2]);
+const loading = ref(false);
+const dataPengajuan = ref<any>({});
+const dataProduk = ref<any>([]);
+const lovAuditor = ref<any>([]);
+const dataPemeriksaanProduk = ref<any>(null);
+const selectedAudiotor = ref<any>(null);
 const loadingAuditor = ref(false);
 
 const downloadForms = reactive({
-  sttd: '',
-  sertifikasi_halal: '',
-}) as Record<string, string>
+  sttd: "",
+  sertifikasi_halal: "",
+}) as Record<string, string>;
 
 const assignAuditorHeader: any[] = [
-  { title: 'No', key: 'index' },
-  { title: 'Nama', key: 'nama' },
-  { title: 'Tanggal Lahir', key: 'tanggal_lahir' },
-  { title: 'No Reg', key: 'no_reg' },
-  { title: 'Action', key: 'actions', align: 'center', sortable: false },
-]
+  { title: "No", key: "index" },
+  { title: "Nama", key: "nama" },
+  { title: "Tanggal Lahir", key: "tanggal_lahir" },
+  { title: "No Reg", key: "no_reg" },
+  { title: "Action", key: "actions", align: "center", sortable: false },
+];
 
 const assignAuditorData = ref([
-  { name: 'Idris', birthDate: '02/10/2000', regisNumber: 'SK-896376-3028' },
-])
+  { name: "Idris", birthDate: "02/10/2000", regisNumber: "SK-896376-3028" },
+]);
 
 const newAuditorData = {
-  name: 'Aliando Syakir',
-  birthDate: '02/10/2000',
-  regisNumber: 'SK-896376-3028',
-}
+  name: "Aliando Syakir",
+  birthDate: "02/10/2000",
+  regisNumber: "SK-896376-3028",
+};
 
-const assignedAuditor = ref(null)
-const isAssignModalOpen = ref(false)
-const isUpdateModalOpen = ref(false)
+const assignedAuditor = ref(null);
+const isAssignModalOpen = ref(false);
+const isUpdateModalOpen = ref(false);
 
 const handleOpenAssignModal = () => {
-  isAssignModalOpen.value = !isAssignModalOpen.value
-}
+  isAssignModalOpen.value = !isAssignModalOpen.value;
+};
 
 const handleOpenUpdateModal = () => {
-  isUpdateModalOpen.value = !isUpdateModalOpen.value
-}
+  isUpdateModalOpen.value = !isUpdateModalOpen.value;
+};
 
 const handleAddAuditor = () => {
-  dataPemeriksaanProduk.value?.auditor.push(selectedAudiotor.value)
-  assignAuditorData.value.push(newAuditorData)
-}
+  dataPemeriksaanProduk.value?.auditor.push(selectedAudiotor.value);
+  assignAuditorData.value.push(newAuditorData);
+};
 
 const handleDeleteAuditor = (index: number) => {
-  dataPemeriksaanProduk.value.auditor.splice(index, 1)
-}
+  dataPemeriksaanProduk.value.auditor.splice(index, 1);
+};
 
 const handleSaveAuditor = async () => {
-  localStorage.setItem('lovAuditor', JSON.stringify(dataPemeriksaanProduk.value.auditor))
-}
+  localStorage.setItem(
+    "lovAuditor",
+    JSON.stringify(dataPemeriksaanProduk.value.auditor)
+  );
+};
 
 const handleUpdateStatus = async () => {
-  const auditorToAdd = localStorage.getItem('lovAuditor')
-  const dataArray = JSON.parse(auditorToAdd)
+  const auditorToAdd = localStorage.getItem("lovAuditor");
+  const dataArray = JSON.parse(auditorToAdd);
   if (dataArray === []) {
-    return useSnackbar().sendSnackbar('Harap isi auditor terlebih dahulu', 'error')
-  }
-  else {
-    const ids = dataArray.map((item: any) => item.id_auditor || null)
+    return useSnackbar().sendSnackbar(
+      "Harap isi auditor terlebih dahulu",
+      "error"
+    );
+  } else {
+    const ids = dataArray.map((item: any) => item.id_auditor || null);
     if (dataPemeriksaanProduk?.value?.auditor.length === 0) {
-      return useSnackbar().sendSnackbar('Harap isi auditor terlebih dahulu', 'error')
-    }
-    else {
+      return useSnackbar().sendSnackbar(
+        "Harap isi auditor terlebih dahulu",
+        "error"
+      );
+    } else {
       try {
-        const response: any = await $api('/reguler/auditor/assign', {
-          method: 'post',
+        const response: any = await $api("/reguler/auditor/assign", {
+          method: "post",
           query: { id },
           body: { id_auditor: ids },
-        })
-  
+        });
+
         if (response?.code === 2000) {
-          useSnackbar().sendSnackbar('Berhasil menambah auditor', 'success')
-          return response?.data
+          useSnackbar().sendSnackbar("Berhasil menambah auditor", "success");
+          return response?.data;
+        } else {
+          useSnackbar().sendSnackbar("Ada Kesalahan", "error");
         }
-        else {
-          useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-        }
-      }
-      catch (error) {
-        useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      } catch (error) {
+        useSnackbar().sendSnackbar("Ada Kesalahan", "error");
       }
     }
   }
-}
+};
 
 const getDetailData = async (type: string) => {
   try {
-    const response: any = await $api('/reguler/lph/detail-payment', {
-      method: 'get',
+    const response: any = await $api("/reguler/lph/detail-payment", {
+      method: "get",
       params: { url: `${LIST_INFORMASI_PEMBAYARAN}/${id}/${type}` },
-    })
+    });
 
-    if (response?.code === 2000)
-      return response?.data
-    else
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    if (response?.code === 2000) return response?.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
-const handleDownloadForm = async (fileName: string) => {
-  return await downloadDocument(fileName)
-}
+const handleDownloadForm = async (fileName: string, param: string) => {
+  return await downloadDocument(fileName, param);
+};
 
-const getListAuditor = async (type: string) => {
+const getListAuditor = async (type?: string) => {
   try {
-    const response: any = await $api('/reguler/list', {
-      method: 'get',
-      params: { url: `api/v1/halal-certificate-reguler/lph/pemeriksaan/${id}/auditor` },
-    })
-    if (response?.code === 2000) {
-      lovAuditor.value = response.data
-
-      return response?.data
-    }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
-  }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
-
-const getDownloadForm = async (docName: string, propName: string) => {
-  const result: any = await $api(
-    `/self-declare/submission/${id}/file`,
-    {
-      method: 'get',
-      query: {
-        document: docName,
+    const response: any = await $api("/reguler/list", {
+      method: "get",
+      params: {
+        url: `api/v1/halal-certificate-reguler/lph/pemeriksaan/${id}/auditor`,
       },
-    },
-  )
+    });
+    if (response?.code === 2000) {
+      lovAuditor.value = response.data;
 
-  if (result?.code === 2000)
-    downloadForms[propName] = result?.data?.file || ''
-}
+      return response?.data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+// const getDownloadForm = async (docName: string, propName: string) => {
+//   const result: any = await $api(`/self-declare/submission/${id}/file`, {
+//     method: "get",
+//     query: {
+//       document: docName,
+//     },
+//   });
+
+//   if (result?.code === 2000) downloadForms[propName] = result?.data?.file || "";
+// };
 
 const handleInputAuditor = async (val: any) => {
   try {
-    const response: any = await $api('/reguler/list', {
-      method: 'get',
-      params: { url: `api/v1/halal-certificate-reguler/lph/pemeriksaan/${id}/auditor`, keyword: val },
-    })
+    const response: any = await $api("/reguler/list", {
+      method: "get",
+      params: {
+        url: `api/v1/halal-certificate-reguler/lph/pemeriksaan/${id}/auditor`,
+        keyword: val,
+      },
+    });
     if (response?.code === 2000) {
-      lovAuditor.value = response.data
+      lovAuditor.value = response.data;
 
-      return response?.data
+      return response?.data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
-  }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
 onMounted(async () => {
-  loading.value = true
+  loading.value = true;
 
   const responseData = await Promise.allSettled([
-    getDetailData('pengajuan'),
-    getDetailData('produk'),
-    getDetailData('pemeriksaanproduk'),
+    getDetailData("pengajuan"),
+    getDetailData("produk"),
+    getDetailData("pemeriksaanproduk"),
     getListAuditor(),
-    getDownloadForm('file_laporan', 'file_laporan'),
-    getDownloadForm('file_kh', 'file_kh'),
-  ])
+    // getDownloadForm("file_laporan", "file_laporan"),
+    // getDownloadForm("file_kh", "file_kh"),
+  ]);
 
-  dataPengajuan.value = responseData?.[0]?.value || {}
-  dataProduk.value = responseData?.[1]?.value || []
-  dataPemeriksaanProduk.value = responseData?.[2]?.value || {}
-  localStorage.setItem('lovAuditor', JSON.stringify(responseData?.[2]?.value.auditor))
-  loading.value = false
-})
+  dataPengajuan.value = responseData?.[0]?.value || {};
+  dataProduk.value = responseData?.[1]?.value || [];
+  dataPemeriksaanProduk.value = responseData?.[2]?.value || {};
+  localStorage.setItem(
+    "lovAuditor",
+    JSON.stringify(responseData?.[2]?.value.auditor)
+  );
+  loading.value = false;
+});
 </script>
 
 <template>
@@ -301,7 +303,7 @@ onMounted(async () => {
                     class="px-2"
                     @click="
                       downloadForms.hasil_audit
-                        ? handleDownloadForm(downloadForms.hasil_audit)
+                        ? handleDownloadForm(downloadForms.hasil_audit, 'FILES')
                         : null
                     "
                   >
@@ -321,12 +323,12 @@ onMounted(async () => {
                     </template>
                   </VBtn> -->
                   <VBtn
-                    :color="downloadForms.file_laporan ? 'primary' : '#A09BA1'"
+                    :color="downloadForms.file_kh ? 'primary' : '#A09BA1'"
                     density="compact"
                     class="px-2"
                     @click="
-                      downloadForms.file_laporan
-                        ? handleDownloadForm(downloadForms.file_laporan)
+                      downloadForms.file_kh
+                        ? handleDownloadForm(downloadForms.file_kh, 'FILES')
                         : null
                     "
                   >
@@ -346,12 +348,15 @@ onMounted(async () => {
                     </template>
                   </VBtn> -->
                   <VBtn
-                    :color="downloadForms.file_kh ? 'primary' : '#A09BA1'"
+                    :color="downloadForms.file_laporan ? 'primary' : '#A09BA1'"
                     density="compact"
                     class="px-2"
                     @click="
-                      downloadForms.file_kh
-                        ? handleDownloadForm(downloadForms.file_kh)
+                      downloadForms.file_laporan
+                        ? handleDownloadForm(
+                            downloadForms.file_laporan,
+                            'FILES'
+                          )
                         : null
                     "
                   >
@@ -368,7 +373,9 @@ onMounted(async () => {
               No. Pendaftaran
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelNoPendaftaran :data="dataPemeriksaanProduk?.no_pendaftaran" />
+              <PanelNoPendaftaran
+                :data="dataPemeriksaanProduk?.no_pendaftaran"
+              />
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="2" class="pt-3">
@@ -377,7 +384,9 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <VRow>
-                <VCol>{{ formatToIDR(dataPemeriksaanProduk?.total_biaya) }}</VCol>
+                <VCol>{{
+                  formatToIDR(dataPemeriksaanProduk?.total_biaya)
+                }}</VCol>
               </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -411,10 +420,7 @@ onMounted(async () => {
                 class="mb-5"
               >
                 <template #item="{ props, item }">
-                  <VListItem
-                    v-bind="props"
-                    :title="(item.raw as any).nama"
-                  />
+                  <VListItem v-bind="props" :title="(item.raw as any).nama" />
                 </template>
               </VAutocomplete>
               <div class="d-flex justify-end">

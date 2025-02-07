@@ -114,6 +114,7 @@ const onApprove = async () => {
 
     if (response.code !== 2000) {
       useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      selectedItem.value = []
       refresh()
 
       return
@@ -126,6 +127,7 @@ const onApprove = async () => {
     if (totalSuccess > 0)
       message.push(`Sukses setujui sebanyak ${totalSuccess}`)
     useSnackbar().sendSnackbar(`Penyelia ${message.join()}`, totalSuccess > 0 ? 'success' : 'error')
+    selectedItem.value = []
     refresh()
   }
   catch (err) {

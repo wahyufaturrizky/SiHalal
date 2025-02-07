@@ -36,8 +36,8 @@ onMounted(async () => {
   await getProduct();
 });
 // TODO -> LOGIc DOWNLOAD
-const download =async (item) => {
-  await downloadDocument(item)
+const download = async (item) => {
+  await downloadDocument(item, "PRODUCT");
 };
 </script>
 
@@ -48,8 +48,8 @@ const download =async (item) => {
     </VCardTitle>
     <VCardItem>
       <VDataTable :headers="headers" :items="items">
-        <template #item.no="{index}"> 
-          {{index + 1}}
+        <template #item.no="{ index }">
+          {{ index + 1 }}
         </template>
         <template #item.foto="{ item }">
           <v-btn color="primary" variant="plain" @click="download(item.foto)">

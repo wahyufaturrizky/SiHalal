@@ -265,7 +265,7 @@ const getReqTrackingModal = (data) => {
   reqTracking.value = data;
   reqTrackingModal.value = true;
 };
-const downloadDOcument = async (filename: string) => {
+const downloadFile = async (filename: string) => {
   try {
     const response = await $api("/shln/submission/document/download", {
       method: "post",
@@ -484,7 +484,7 @@ const timelineEvents = ref([
             <template #item.file="{ item, index }">
               <div class="d-flex align-center justify-center py-3 gap-2">
                 <VBtn
-                  @click="downloadDOcument(item.file)"
+                  @click="downloadFile(item.file)"
                   v-if="item.file != ''"
                   color="primary"
                 >
@@ -532,7 +532,7 @@ const timelineEvents = ref([
             <VBtn
               @click="
                 registration?.download_file != ''
-                  ? downloadDocument(registration?.download_file)
+                  ? downloadDocument(registration?.download_file, 'SERT')
                   : () => {}
               "
               target="_blank"
