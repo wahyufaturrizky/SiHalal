@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 const props = defineProps({
   isEditable: {
     type: Boolean,
@@ -25,8 +27,8 @@ const items = [
   <VCard>
     <VCardTitle>
       <VRow>
-        <VCol cols="6"><h3>Pemetaan Produk dan Pabrik</h3></VCol>
-        <VCol cols="6" style="display: flex; justify-content: end"
+        <VCol cols="6"><h3>{{ t('pengajuan-reguler.reguler-form-produk-title') }}</h3></VCol>
+        <VCol cols="6" style="display: flex; justify-content: end;"
           ><ModalTambahProduk
             :is-editable="props.isEditable"
           ></ModalTambahProduk
