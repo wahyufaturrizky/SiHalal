@@ -312,6 +312,7 @@ const handleUploadFileBahan = async (event: any) => {
         uploadedFileBahan.value.file = response.data.file_url;
         visiblePreview.value = true
         titleDialog.value = 'Preview Bahan'
+        // visiblePreview.value = true
       } else {
         useSnackbar().sendSnackbar(
           response.errors?.list_error?.join(),
@@ -858,9 +859,15 @@ watch([titleDialog, tabAddBahan], () => {
       :toggle="() => (confirmSaveDialog = false)"
       :on-save="() => handleSubmit()"
     />
-    <!-- <DialogPreviewBahan
-
-    /> -->
+    <DialogPreviewBahan
+      :title="titleDialog"
+      :is-open="visiblePreview"
+      :toggle="() => visiblePreview = false"
+      :label-save-btn="labelSaveBtn"
+      :label-back-btn="t('pengajuan-reguler.reguler_form-bahan-produk-popupbahan-cancel')"
+      :on-save="addProduct"
+    >
+    </DialogPreviewBahan>
     <DialogWithAction
       :title="titleDialog"
       :is-open="addDialog"
@@ -974,9 +981,6 @@ watch([titleDialog, tabAddBahan], () => {
               </div>
             </VTabItem>
           </VTabsItems>
-        </div>
-        <div v-else-if="titleDialog === 'Preview Bahan'">
-
         </div>
         <div v-else-if="titleDialog === 'Tambah Nama Produk'">
           <div>
