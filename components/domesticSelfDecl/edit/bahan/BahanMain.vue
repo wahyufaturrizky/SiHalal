@@ -1,4 +1,10 @@
 <script setup lang="ts">
+const { hideVerifikasiPendamping } = defineProps({
+  hideVerifikasiPendamping: {
+    type: Boolean,
+  },
+});
+
 const tableHeader = [
   { title: "No", value: "index" },
   { title: "Jenis Bahan", value: "jenis_bahan" },
@@ -8,7 +14,10 @@ const tableHeader = [
   { title: "Produsen", value: "produsen" },
   { title: "No. Sertifikat Halal", value: "no_sertifikat" },
   { title: "Tanggal Berlaku", value: "tgl_berlaku_sertifikat" },
-  { title: "Verifikasi Pendamping", value: "vefified" },
+  !hideVerifikasiPendamping && {
+    title: "Verifikasi Pendamping",
+    value: "vefified",
+  },
   { title: "Action", value: "action" },
 ];
 interface Bahan {
@@ -88,10 +97,10 @@ interface editBahan {
   <VCard>
     <VCardTitle>
       <VRow>
-        <VCol cols="6" style="display: flex; align-items: center;"
-          ><h3>Daftar Nama Bahan dan Kemasan </h3></VCol
+        <VCol cols="6" style="display: flex; align-items: center"
+          ><h3>Daftar Nama Bahan dan Kemasan</h3></VCol
         >
-        <VCol cols="6" style="display: flex; justify-content: end;">
+        <VCol cols="6" style="display: flex; justify-content: end">
           <TambahBahanModal @loadList="loadBahan()"></TambahBahanModal>
         </VCol>
       </VRow>

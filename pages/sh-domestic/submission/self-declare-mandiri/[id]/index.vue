@@ -2,7 +2,7 @@
   <VContainer>
     <div
       class="d-flex align-center cursor-pointer"
-      @click="router.push(`/sh-domestic/submission/self-declare`)"
+      @click="router.push(`/sh-domestic/submission/self-declare-mandiri`)"
     >
       <VIcon icon="mdi-chevron-left" size="40px" color="primary" />
       <div class="text-primary">Kembali</div>
@@ -1204,7 +1204,7 @@ const handleDeleteSubmission = async () => {
     );
     if (result.code === 2000) {
       snackbar.sendSnackbar("Berhasil menghapus data", "success");
-      router.push("/sh-domestic/submission/self-declare");
+      router.push("/sh-domestic/submission/self-declare-mandiri");
     }
   } catch (error) {
     snackbar.sendSnackbar("Gagal menghapus data", "error");
@@ -1302,7 +1302,7 @@ const getSubmissionDetail = async () => {
       Object.assign(panelTracking.value, [0, 1]);
     }
   } catch (error) {
-    router.push("/sh-domestic/submission/self-declare");
+    router.push("/sh-domestic/submission/self-declare-mandiri");
   }
 };
 
@@ -1386,7 +1386,7 @@ const handleSentSubmission = async () => {
     });
     if (response.code === 2000) {
       snackbar.sendSnackbar("Berhasil mengirim pengajuan", "success");
-      navigateTo("/sh-domestic/submission/self-declare");
+      navigateTo("/sh-domestic/submission/self-declare-mandiri");
     } else {
       if (response.errors.list_error.length > 0) {
         for (const element of response.errors.list_error) {

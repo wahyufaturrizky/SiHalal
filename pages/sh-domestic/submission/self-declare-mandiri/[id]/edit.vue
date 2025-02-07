@@ -65,13 +65,15 @@ onMounted(async () => {
             <PabrikOutletMain />
           </VTabsWindowItem>
           <VTabsWindowItem value="4">
-            <BahanMain />
+            <BahanMain :hide-verifikasi-pendamping="true" />
           </VTabsWindowItem>
           <VTabsWindowItem value="5">
             <ProdukMain />
           </VTabsWindowItem>
           <VTabsWindowItem value="6">
-            <EditProsesProdukHalalSelfDeclareSubmission />
+            <EditProsesProdukHalalSelfDeclareSubmission
+              :hide-chip-status="true"
+            />
           </VTabsWindowItem>
           <VTabsWindowItem value="7">
             <EditPernyataanSelfDeclareSubmision />
