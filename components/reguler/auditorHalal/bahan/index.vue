@@ -28,7 +28,11 @@ const addDialog = ref(false);
 const confirmSaveDialog = ref(false);
 const titleDialog = ref("");
 const labelSaveBtn = ref("");
+const fileTemplate = ref("");
+const hideFooterBtn = ref(false);
+const visiblePreview = ref(false);
 const tabs = ref(-1);
+const tabAddBahan = ref(-1);
 const file = ref<File | null>(null);
 const dataProductClasification = ref([]);
 const listRincian = ref([]);
@@ -36,6 +40,10 @@ const loading = ref(false);
 const loadingRincian = ref(false);
 const reRender = ref(false);
 const tabBahan = ref(0);
+const catatan = ref<any>({
+  name: '',
+  process: '',
+})
 
 const itemDetail = ref<any>({});
 
@@ -217,7 +225,7 @@ const toggleAdd = (type: string) => {
   titleDialog.value = `Tambah ${type}`;
   labelSaveBtn.value =
     type === "Data Bahan"
-      ? t("pengajuan-reguler.reguler_form-bahan-produk-popupproduk-produp")
+      ? t("pengajuan-reguler.reguler_form-bahan-produk-popupproduk-produp2")
       : t("pengajuan-reguler.reguler-form--bahan-add");
 };
 
@@ -258,6 +266,23 @@ const uploadDocument = async (file: any) => {
   }
 };
 
+const uploadDocumentBahan = async (file: any) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return await $api("/reguler/pelaku-usaha/tab-bahan/products/upload", {
+      method: "post",
+      body: formData,
+    });
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      "ada kesalahan saat upload file, gagal menyimpan!",
+      "error"
+    );
+  }
+};
+
 const handleUploadFile = async (event: any) => {
   if (event?.target?.files.length) {
     const fileData = event.target.files[0];
@@ -266,8 +291,33 @@ const handleUploadFile = async (event: any) => {
     uploadedFile.value.file = fileData;
     try {
       const response = await uploadDocument(fileData);
-      if (response.code === 2000)
+      if (response.code === 2000) {
         formData.value.foto_produk = response.data.file_url;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+};
+
+const handleUploadFileBahan = async (event: any) => {
+  if (event?.target?.files.length) {
+    const fileData = event.target.files[0];
+
+    uploadedFile.value.name = fileData.name;
+    uploadedFile.value.file = fileData;
+    try {
+      const response = await uploadDocumentBahan(fileData);
+      if (response.code === 2000) {
+        uploadedFileBahan.value.file = response.data.file_url;
+        visiblePreview.value = true
+        titleDialog.value = 'Preview Bahan'
+      } else {
+        useSnackbar().sendSnackbar(
+          response.errors?.list_error?.join(),
+          "error"
+        );
+      }
     } catch (error) {
       console.log(error);
     }
@@ -442,7 +492,26 @@ const refresh = async () => {
 };
 
 const addProduct = async () => {
-  if (titleDialog.value === "Tambah Nama Produk") {
+  const payload = new FormData()
+
+  payload.append('file', formBahandanKemasan.value.file)
+
+  if (titleDialog.value === 'Tambah Data Bahan') {
+    const response: any = await $api(
+      "/reguler/pelaku-usaha/tab-bahan/products/upload",
+      {
+        method: "post",
+        params: { id_reg: id },
+        body: payload,
+      },
+    );
+
+    console.log(response, '<<<')
+
+    if (response.code === 2000) {
+    }
+  }
+  else if (titleDialog.value === "Tambah Nama Produk") {
     const response: any = await $api(
       "/reguler/pelaku-usaha/tab-bahan/products/create",
       {
@@ -683,6 +752,19 @@ const getDetailProduk = async (productId: string, type: string) => {
   }
 };
 
+const getTemplateFile = async (productId: string, type: string) => {
+  const response: any = await $api(
+    "/reguler/pelaku-usaha/tab-bahan/products/template",
+    {
+      method: "get",
+    }
+  );
+
+  if (response.code === 2000) {
+    fileTemplate.value = response.data.file
+  }
+};
+
 const deleteIngredient = async (productId: string) => {
   const response: any = await $api(
     "/reguler/pelaku-usaha/tab-bahan/ingredients/remove",
@@ -742,6 +824,10 @@ const handleInputBahan = async (selected, idProduk) => {
   }
 };
 
+const downloadTemplate = async () => {
+  await downloadDocument(fileTemplate.value, 'FILES')
+}
+
 onMounted(async () => {
   loading.value = true;
   tabs.value = 0;
@@ -750,9 +836,18 @@ onMounted(async () => {
     getListCatatan(),
     getListFormulir(),
     getListIngredients(),
+    getTemplateFile(),
   ]);
   loading.value = false;
 });
+
+watch([titleDialog, tabAddBahan], () => {
+  if (titleDialog.value === 'Tambah Data Bahan' && (tabAddBahan.value === '2' || tabAddBahan.value === 2)) {
+    hideFooterBtn.value = false
+  } else {
+    hideFooterBtn.value = true
+  }
+})
 </script>
 
 <template>
@@ -763,16 +858,125 @@ onMounted(async () => {
       :toggle="() => (confirmSaveDialog = false)"
       :on-save="() => handleSubmit()"
     />
+    <!-- <DialogPreviewBahan
+
+    /> -->
     <DialogWithAction
       :title="titleDialog"
       :is-open="addDialog"
       :toggle="toggle"
       :label-save-btn="labelSaveBtn"
+      :label-back-btn="t('pengajuan-reguler.reguler_form-bahan-produk-popupbahan-cancel')"
       :on-save="addProduct"
+      :hide-footer="hideFooterBtn"
     >
       <template #content>
         <div v-if="titleDialog === 'Detail Data Bahan'">
           <ContentDialogDataBahan dialog-type="detail" :data="itemDetail" />
+        </div>
+        <div v-else-if="titleDialog === 'Tambah Data Bahan'">
+          <div class="d-flex justify-center">
+            <VTabs
+              v-model="tabAddBahan"
+              align-tabs="center"
+              bg-color="#f0dcf5"
+              class="border pa-2"
+              style="border-radius: 40px"
+              height="auto"
+            >
+              <VTab
+                value="1"
+                base-color="#f0dcf5"
+                active-color="primary"
+                style="border-radius: 40px"
+                hide-slider
+                color="primary"
+                variant="flat"
+                height="40px"
+              >
+                <span>Unggah File </span>
+              </VTab>
+              <VTab
+                value="2"
+                active-color="primary"
+                base-color="#f0dcf5"
+                style="border-radius: 40px"
+                hide-slider
+                variant="flat"
+                height="40px"
+              >
+                <span> Tambah Manual </span>
+              </VTab>
+            </VTabs>
+          </div>
+          <VTabsItems v-model="tabAddBahan">
+            <VTabItem>
+              <div v-if="tabAddBahan === '1'" class="mt-5">
+                <VRow no-gutters class="mb-4">
+                  <VCol cols="6" class="d-flex align-center">
+                    <span> Unduh template acuan "unggah bahan" </span>
+                  </VCol>
+                  <VCol cols="6">
+                    <VBtn
+                      append-icon="mdi-download"
+                      @click="downloadTemplate"
+                    > Unduh 
+                  </VBtn>
+                  </VCol>
+                </VRow>
+                <VRow no-gutters>
+                  <VCol cols="6" class="d-flex align-center">
+                    <span> Unggah Bahan </span>
+                  </VCol>
+                  <VCol cols="6">
+                    <VTextField
+                      v-if="uploadedFileBahan.file"
+                      :model-value="uploadedFileBahan.name"
+                      density="compact"
+                      placeholder="No file choosen"
+                      rounded="xl"
+                      max-width="400"
+                    >
+                      <template #append-inner>
+                        <VIcon
+                          icon="fa-trash"
+                          color="error"
+                          class="cursor-pointer"
+                          @click="handleRemoveFile"
+                        />
+                      </template>
+                    </VTextField>
+                    <VFileInput
+                      v-else
+                      :model-value="uploadedFileBahan.file"
+                      class="custom-file-input mt-5"
+                      density="compact"
+                      rounded="xl"
+                      label="No file choosen"
+                      max-width="400"
+                      prepend-icon=""
+                      @change="handleUploadFileBahan"
+                    >
+                      <template #append-inner>
+                        <VBtn rounded="e-xl" text="Choose" />
+                      </template>
+                    </VFileInput>
+                  </VCol>
+                </VRow>
+              </div>
+              <div v-else class="mt-10">
+                <TambahBahanForm
+                  @loadList="() => {
+                    getListIngredients()
+                    addDialog = false
+                  }"
+                ></TambahBahanForm>
+              </div>
+            </VTabItem>
+          </VTabsItems>
+        </div>
+        <div v-else-if="titleDialog === 'Preview Bahan'">
+
         </div>
         <div v-else-if="titleDialog === 'Tambah Nama Produk'">
           <div>
@@ -1458,7 +1662,7 @@ onMounted(async () => {
       :data="materialName"
       :refresh="refresh"
       :title="t('pengajuan-reguler.reguler-form--bahan-title')"
-      with-add-button-bahan
+      with-add-button
       :isviewonly="isviewonly"
     />
     <br />
