@@ -7,7 +7,7 @@ const props = defineProps({
 })
 
 const unduhFile = async (link: string) => {
-  await downloadDocument(link, 'FILES')
+  await downloadDocument(link, 'PENDAMPING_FILE')
 }
 </script>
 
