@@ -1,6 +1,8 @@
 <!-- eslint-disable array-callback-return -->
 <script setup lang="ts">
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 
 const props = defineProps<{
   isviewonly: Boolean;
@@ -26,10 +28,10 @@ const formData = ref({
 const comitmentData = ref({
   label: [
     { title: "No.", key: "no", nowrap: true },
-    { title: "Nama Produk", key: "nama_produk", nowrap: true },
-    { title: "Nama Pabrik", key: "nama_pabrik", nowrap: true },
+    { title: "pengajuan-reguler.reguler-form-produk-prodname", key: "nama_produk", nowrap: true },
+    { title: "pengajuan-reguler.reguler-form-produk-pabrikname", key: "nama_pabrik", nowrap: true },
     {
-      title: "Action",
+      title: "pengajuan-reguler.reguler-form-produk-aksi",
       value: "action",
       sortable: false,
       nowrap: true,
@@ -41,9 +43,9 @@ const comitmentData = ref({
 
 const tableHeader = [
   { title: "No", value: "no" },
-  { title: "Nama Produk", value: "nama_produk" },
-  { title: "Nama Pabrik", value: "nama_pabrik" },
-  { title: "Action", value: "action" },
+  { title: "pengajuan-reguler.reguler-form-produk-prodname", value: "nama_produk" },
+  { title: "pengajuan-reguler.reguler-form-produk-pabrikname", value: "nama_pabrik" },
+  { title: "pengajuan-reguler.reguler-form-produk-aksi", value: "action" },
 ];
 
 const items = [
@@ -266,6 +268,18 @@ watch([start, end], () => {
                   hide-default-footer
                   class="border rounded"
                 >
+
+                <template #header.nama_produk="{column }">
+                    <label>{{ t(column.title) }}</label>
+                  </template>
+                  <template #header.nama_pabrik="{column }">
+                    <label>{{ t(column.title) }}</label>
+                  </template>
+
+                  <template #header.action="{column }">
+                    <label>{{ t(column.title) }}</label>
+                  </template>
+
                   <template #item.no="{ index }">
                     <label>{{ index + 1 }}</label>
                   </template>
@@ -285,7 +299,7 @@ watch([start, end], () => {
       :on-edit="toggleEdit"
       :on-delete="(item: any) => deleteData(item.id_map_pabrik)"
       :data="comitmentData"
-      title="Pemetaan Produk dan Pabrik"
+      :title="t('pengajuan-reguler.reguler-form-produk-title')"
       with-add-button
       :hide-default-footer="false"
       :isviewonly="props.isviewonly"
@@ -297,10 +311,12 @@ watch([start, end], () => {
 .text-center {
   text-align: center;
 }
+
 .bgContent {
-  background-color: #f0e9f1;
   border-radius: 10px;
+  background-color: #f0e9f1;
 }
+
 .progress-text {
   font-size: 14px !important;
   font-weight: 700 !important;

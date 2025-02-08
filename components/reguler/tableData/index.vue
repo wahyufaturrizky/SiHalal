@@ -317,6 +317,19 @@ watch(
               : props?.data.value
           "
         >
+
+        <template #header.nama_produk="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+ 
+          <template #header.nama_pabrik="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
           <template #header.jenis_bahan="{ column }">
             <div>
               {{ t(column.title) }}
@@ -419,12 +432,7 @@ watch(
             </div>
           </template>
 
-          <template #header.nama_pabrik="{ column }">
-            <div>
-              {{ t(column.title) }}
-            </div>
-          </template>
-
+          
           <template #header.alamat_pabrik="{ column }">
             <div>
               {{ t(column.title) }}
