@@ -4,6 +4,8 @@ import { formatCurrencyIntl } from "@/utils/conversionIntl";
 import { useI18n } from "vue-i18n";
 const panelOpen = ref(0);
 const { t } = useI18n();
+const store = pelakuUsahaProfile();
+
 const props = defineProps({
   profileData: {
     type: Object as profileMain | any,
@@ -18,51 +20,51 @@ const props = defineProps({
 //   console.log("ini data props", props.profileData);
 // });
 
-const profilData = [
+const profilData = ref([
   {
     id: 1,
     field: `${t("detail-pu.pu-profil-namapu")}`,
-    value: props.profileData?.company_name || "-",
+    value: store.profileData?.company_name || "-",
   },
   {
     id: 2,
     field: `${t("detail-pu.pu-profil-address")}`,
-    value: props.profileData?.address || "-",
+    value: store.profileData?.address || "-",
   },
   {
     id: 3,
     field: `${t("detail-pu.pu-profil-kota")}`,
-    value: props.profileData?.city_name || "-",
+    value: store.profileData?.city_name,
   },
   {
     id: 4,
     field: `${t("detail-pu.pu-profil-prov")}`,
-    value: props.profileData?.province_name || "-",
+    value: store.profileData?.province_name || "-",
   },
   {
     id: 5,
     field: `${t("detail-pu.pu-profil-kodepos")}`,
-    value: props.profileData?.kode_pos_pu || "-",
+    value: store.profileData?.kode_pos_pu || "-",
   },
   {
     id: 6,
     field: `${t("detail-pu.pu-profil-negara")}`,
     value:
-      props.profileData?.asal_usaha == "Dalam Negeri"
+      store.profileData?.asal_usaha == "Dalam Negeri"
         ? "Indonesia"
-        : props.profileData?.negara,
+        : store.profileData?.negara || "-",
   },
   {
     id: 7,
     field: `${t("detail-pu.pu-profil-telp")}`,
-    value: props.profileData?.phone || "-",
+    value: store.profileData?.phone,
   },
   {
     id: 8,
     field: `${t("detail-pu.pu-profil-email")}`,
-    value: props.profileData?.email || "-",
+    value: store.profileData?.email,
   },
-];
+]);
 
 async function getMasterData(mastertype: string) {
   const response = await $api(`master/common-code?type=${mastertype}`, {
@@ -76,7 +78,7 @@ const convertJnbus = async (code: string) => {
   // const jnbusCode = "JBU." + code.substring(1);
   const api = await getMasterData("bustype");
 
-  return api.filter((val) => val.code == code)[0]?.name;
+  return api.filter((val) => val.code == code)[0]?.name || "-";
 };
 
 const convertJnush = async (code: string) => {
@@ -104,15 +106,94 @@ const convertFumk = (code: string): string => {
   }
 };
 
-const jenisBadanUsaha = ref();
-const skalaUsaha = ref();
+const jenisBadanUsaha = ref("");
+const skalaUsaha = ref("");
 
 onMounted(async () => {
+  await store.fetchProfile();
   jenisBadanUsaha.value = await convertJnbus(
-    props.profileData?.jenis_badan_usaha
+    store.profileData?.jenis_badan_usaha
   );
-  skalaUsaha.value = await convertJnush(props.profileData?.skala_usaha);
+  skalaUsaha.value = await convertJnush(store.profileData?.skala_usaha);
 });
+
+watch(
+  () => store.profileData,
+  (newData) => {
+    if (newData) {
+      profilData.value = [
+        {
+          id: 1,
+          field: `${t("detail-pu.pu-profil-namapu")}`,
+          value: newData.company_name,
+        },
+        {
+          id: 2,
+          field: `${t("detail-pu.pu-profil-address")}`,
+          value: newData.address,
+        },
+        {
+          id: 3,
+          field: `${t("detail-pu.pu-profil-kota")}`,
+          value: newData.city_name,
+        },
+        {
+          id: 4,
+          field: `${t("detail-pu.pu-profil-prov")}`,
+          value: newData.province_name,
+        },
+        {
+          id: 5,
+          field: `${t("detail-pu.pu-profil-kodepos")}`,
+          value: newData.kode_pos_pu,
+        },
+        {
+          id: 6,
+          field: `${t("detail-pu.pu-profil-negara")}`,
+          value: newData.negara,
+        },
+        {
+          id: 7,
+          field: `${t("detail-pu.pu-profil-telp")}`,
+          value: newData.phone,
+        },
+        {
+          id: 8,
+          field: `${t("detail-pu.pu-profil-email")}`,
+          value: newData.email,
+        },
+      ];
+
+      // form.value.jenis_badan_usaha =
+      //   convertJnbus(newData?.jenis_badan_usaha) || "-";
+      // form.value.skala_usaha = newData?.skala_usaha || "-";
+      // form.value.modal_dasar = newData?.modal_dasar || "-";
+    }
+  },
+  { deep: true, immediate: true }
+);
+
+watch(
+  () => [
+    t("detail-pu.pu-profil-namapu"),
+    t("detail-pu.pu-profil-address"),
+    t("detail-pu.pu-profil-kota"),
+    t("detail-pu.pu-profil-prov"),
+    t("detail-pu.pu-profil-kodepos"),
+    t("detail-pu.pu-profil-negara"),
+    t("detail-pu.pu-profil-telp"),
+    t("detail-pu.pu-profil-email"),
+  ],
+  (newData) => {
+    if (newData) {
+      profilData.value = profilData.value.map((item, index) => ({
+        ...item,
+        field: newData[index],
+      }));
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -148,7 +229,7 @@ onMounted(async () => {
           <VCol cols="4"> {{ t("detail-pu.pu-profil-tingkatu") }} </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
-            {{ convertFumk(props.profileData?.tingkat_usaha) || "-" }}
+            {{ convertFumk(store.profileData?.tingkat_usaha) || "-" }}
           </VCol>
         </VRow>
         <VRow>
@@ -164,13 +245,13 @@ onMounted(async () => {
           <VCol cols="4"> {{ t("detail-pu.pu-profil-modal") }} </VCol>
           <VCol cols="1"> : </VCol>
           <VCol cols="7">
-            {{ formatCurrencyIntl(props.profileData?.modal_dasar) || "-" }}
+            {{ formatCurrencyIntl(store.profileData?.modal_dasar) || "-" }}
           </VCol>
         </VRow>
         <VRow>
           <VCol cols="4"> {{ t("detail-pu.pu-profil-asal") }} </VCol>
           <VCol cols="1"> : </VCol>
-          <VCol cols="7"> {{ props.profileData?.asal_usaha || "-" }} </VCol>
+          <VCol cols="7"> {{ store.profileData?.asal_usaha || "-" }} </VCol>
         </VRow>
         <br />
       </VExpansionPanelText>
