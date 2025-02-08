@@ -19,8 +19,12 @@ const formData = ref({
 
 const snackbar = useSnackbar();
 const penanggungJawabRef = ref<VForm>();
+const profileCardEditRef = ref();
 
 const submitPenanggungJawab = () => {
+  if (store.profileData?.asal_usaha?.toLowerCase() == "luar negeri") {
+    profileCardEditRef.value.submitProfile();
+  }
   penanggungJawabRef.value?.validate().then(({ valid: isValid }) => {
     if (isValid) {
       const submitApi = $api(
@@ -102,6 +106,7 @@ const skReadyHandler = (blob) => {
           /> -->
           <ProfileCardEdit
             :profile-data="store.profileData ? store.profileData : {}"
+            ref="profileCardEditRef"
           ></ProfileCardEdit>
         </VCol>
       </VRow>
@@ -181,7 +186,7 @@ const skReadyHandler = (blob) => {
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <PenyeliaHallalEdit :file-sk-blob="skBlobUri" />
+          <PenyeliaHallalEdit :file-sk-blob="skBlobUri || 'undefined'" />
         </VCol>
       </VRow>
       <VRow style="display: none">
