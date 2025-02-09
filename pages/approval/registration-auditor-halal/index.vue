@@ -120,8 +120,8 @@ const getChipColor = (status: string) => {
   return 'primary'
 }
 
-const unduhFile = async (path: string) => {
-  await downloadDocument(path, 'INVOICE')
+const unduhFile = async (path: string, type: string) => {
+  await downloadDocument(path, type)
 }
 </script>
 
@@ -237,7 +237,7 @@ const unduhFile = async (path: string) => {
                       <VIcon
                         icon="fa-file"
                         color="primary"
-                        @click="() => unduhFile(item.file_inv)"
+                        @click="() => unduhFile(item.file_inv, 'INVOICE')"
                       />
                     </div>
                   </IconBtn>
@@ -251,7 +251,7 @@ const unduhFile = async (path: string) => {
                       <VIcon
                         icon="fa-file"
                         color="primary"
-                        @click="() => unduhFile(item.file_draft)"
+                        @click="() => unduhFile(item.file_draft, 'DOC')"
                       />
                     </div>
                   </IconBtn>
