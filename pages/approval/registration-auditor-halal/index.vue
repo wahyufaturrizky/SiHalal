@@ -251,7 +251,7 @@ const unduhFile = async (path: string, type: string) => {
                       <VIcon
                         icon="fa-file"
                         color="primary"
-                        @click="() => unduhFile(item.file_draft, 'DOC')"
+                        @click="() => unduhFile(item.file_draft, 'SERT')"
                       />
                     </div>
                   </IconBtn>
