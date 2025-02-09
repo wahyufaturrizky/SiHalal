@@ -111,27 +111,32 @@ const handleGetFasilitator = async () => {
 
 const querySearch = ref("");
 
-const onSelectFasilitator = (selectedId: string) => {
+const onSelectFasilitator = (selectedId) => {
+  console.log(selectedId);
   if ((isFasilitator.value = selectedId === "Lainnya")) {
     onSearchFasilitator(querySearch.value);
     return;
   }
-  isKodeFound.value = false;
+  const fasil = listFasilitasi.value.find((fas) => fas.id == selectedId);
+  onSearchFasilitator(fasil.code);
+  // isKodeFound.value = false;
 };
 
 const responseMessage = ref("");
 const responseId = ref("");
 const facName = ref("");
 
-const onSearchFasilitator = async () => {
+const onSearchFasilitator = async (kode) => {
   try {
     facName.value = "";
-    const kode = querySearch.value;
+    console.log(kode);
+    // const kode = querySearch.value;
 
     const response: any = await $api("/self-declare/submission/kode", {
       method: "post",
       body: {
         kode,
+        id_reg: submissionId,
       },
     });
 
@@ -436,6 +441,9 @@ onMounted(async () => {
 
   // ]);
 });
+const getItemData = (item) => {
+  return { id: item.id, kode: item.code };
+};
 </script>
 
 <template>
@@ -521,7 +529,7 @@ onMounted(async () => {
               append-inner-icon="mdi-magnify"
               density="compact"
               :rules="[requiredValidator]"
-              @input="onSearchFasilitator"
+              @input="onSearchFasilitator(querySearch)"
             />
           </VCol>
         </VRow>
@@ -535,7 +543,7 @@ onMounted(async () => {
             />
           </VCol>
         </VRow>
-        <div v-if="isFasilitator">
+        <div>
           <VAlert
             v-if="isKodeNotFound"
             :type="responseType"
