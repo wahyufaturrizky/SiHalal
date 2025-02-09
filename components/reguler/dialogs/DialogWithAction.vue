@@ -34,7 +34,7 @@ const props = defineProps({
   hideFooter: {
     type: Boolean,
     required: false,
-    default: false,
+    default: true,
   },
 });
 
