@@ -4,6 +4,8 @@ import { formatCurrencyIntl } from "@/utils/conversionIntl";
 import { useI18n } from "vue-i18n";
 const panelOpen = ref(0);
 
+const store = pelakuUsahaProfile();
+
 const { t } = useI18n();
 const props = defineProps({
   profileData: {
@@ -54,74 +56,74 @@ const disableEdit = (asalUsaha: string): boolean => {
 };
 
 const form = ref({
-  name: props.profileData?.company_name || "-",
-  alamat: props.profileData?.address || "-",
-  kota_kab: props.profileData?.city_name || "-",
-  provinsi: props.profileData?.province_name || "-",
-  kodepos: props.profileData?.kode_pos_pu || "-",
-  negara:
-    props.profileData?.asal_usaha == "Dalam Negeri"
-      ? "Indonesia"
-      : props.profileData?.negara || "-",
-  phone: props.profileData?.phone || "-",
-  email: props.profileData?.email || "-",
-  jenis_badan_usaha: convertJnbus(props.profileData?.jenis_badan_usaha) || "-",
-  skala_usaha: props.profileData?.skala_usaha || "-",
-  modal_dasar: formatCurrencyIntl(props.profileData?.modal_dasar) || "-",
-  asal_usaha: convertFln(props.profileData?.asal_usaha),
-  tingkat_usaha: convertFumk(props.profileData?.tingkat_usaha),
+  jenis_badan_usaha: convertJnbus(store.profileData?.jenis_badan_usaha) || "-",
+  skala_usaha: store.profileData?.skala_usaha || "-",
+  modal_dasar: formatCurrencyIntl(store.profileData?.modal_dasar) || "-",
+  asal_usaha: convertFln(store.profileData?.asal_usaha),
+  tingkat_usaha: convertFumk(store.profileData?.tingkat_usaha),
 });
 
-const profilData = [
+const profilData = ref([
   {
     id: 1,
     field: `${t("detail-pu.pu-profil-namapu")}`,
-    value: form.value.name,
+    value: store.profileData?.company_name || "-",
     disable: disableEdit(props.profileData?.asal_usaha),
+    rules: [requiredValidator],
   },
   {
     id: 2,
     field: `${t("detail-pu.pu-profil-address")}`,
-    value: form.value.alamat,
+    value: store.profileData?.address || "-",
     disable: disableEdit(props.profileData?.asal_usaha),
+    rules: [requiredValidator],
   },
   {
     id: 3,
     field: `${t("detail-pu.pu-profil-kota")}`,
-    value: form.value.kota_kab,
+    value: store.profileData?.city_name,
     disable: disableEdit(props.profileData?.asal_usaha),
+    rules: [requiredValidator],
   },
   {
     id: 4,
     field: `${t("detail-pu.pu-profil-prov")}`,
-    value: form.value.provinsi,
+    value: store.profileData?.province_name || "-",
     disable: disableEdit(props.profileData?.asal_usaha),
+    rules: [requiredValidator],
   },
   {
     id: 5,
     field: `${t("detail-pu.pu-profil-kodepos")}`,
-    value: form.value.kodepos,
+    value: store.profileData?.kode_pos_pu || "-",
     disable: disableEdit(props.profileData?.asal_usaha),
+    rules: [requiredValidator],
   },
   {
     id: 6,
     field: `${t("detail-pu.pu-profil-negara")}`,
-    value: form.value.negara,
+    value:
+      store.profileData?.asal_usaha == "Dalam Negeri"
+        ? "Indonesia"
+        : store.profileData?.negara || "-",
     disable: disableEdit(props.profileData?.asal_usaha),
+    rules: [requiredValidator],
   },
   {
     id: 7,
     field: `${t("detail-pu.pu-profil-telp")}`,
-    value: form.value.phone,
+    value: store.profileData?.phone,
     disable: disableEdit(props.profileData?.asal_usaha),
+    rules: [requiredValidator, integerValidator],
   },
   {
     id: 8,
     field: `${t("detail-pu.pu-profil-email")}`,
-    value: form.value.email,
+    value: store.profileData?.email,
     disable: disableEdit(props.profileData?.asal_usaha),
+    rules: [requiredValidator, emailValidator],
   },
-];
+]);
 
 async function getMasterData(mastertype: string) {
   const response = await $api(`master/common-code?type=${mastertype}`, {
@@ -133,11 +135,139 @@ async function getMasterData(mastertype: string) {
 
 const jenisBadanUsahaOption = ref([]);
 const skalaUsahaOption = ref([]);
+const profileFormRef = ref<VForm>();
+
+async function submitProfile() {
+  profileFormRef.value?.validate().then(({ valid: isValid }) => {
+    if (isValid) {
+      const body = {
+        nama_pu: profilData.value[0].value,
+        alamat_pu: profilData.value[1].value,
+        kota_pu: profilData.value[2].value,
+        provinsi_pu: profilData.value[3].value,
+        kode_pos_pu: profilData.value[4].value,
+        negara_pu: profilData.value[5].value,
+        no_tlp: profilData.value[6].value,
+        email: profilData.value[7].value,
+      };
+
+      const submitApi = $api(
+        `/pelaku-usaha-profile/${store.profileData?.id}/update-profile`,
+        {
+          method: "POST",
+          body,
+        }
+      ).then((val: any) => {
+        if (val.code == 2000) {
+          store.fetchProfile();
+          snackbar.sendSnackbar("Berhasil Mengubah Data ", "success");
+        } else {
+          snackbar.sendSnackbar("Gagal Mengubah Data ", "error");
+        }
+      });
+    }
+  });
+}
+
+defineExpose({ submitProfile });
 
 onMounted(async () => {
+  await store.fetchProfile();
   jenisBadanUsahaOption.value = await getMasterData("bustype");
   skalaUsahaOption.value = await getMasterData("busscale");
 });
+
+watch(
+  () => store.profileData,
+  (newData) => {
+    if (newData) {
+      profilData.value = [
+        {
+          id: 1,
+          field: `${t("detail-pu.pu-profil-namapu")}`,
+          value: newData.company_name,
+          disable: disableEdit(newData?.asal_usaha),
+          rules: [requiredValidator],
+        },
+        {
+          id: 2,
+          field: `${t("detail-pu.pu-profil-address")}`,
+          value: newData.address,
+          disable: disableEdit(newData?.asal_usaha),
+          rules: [requiredValidator],
+        },
+        {
+          id: 3,
+          field: `${t("detail-pu.pu-profil-kota")}`,
+          value: newData.city_name,
+          disable: disableEdit(newData?.asal_usaha),
+          rules: [requiredValidator],
+        },
+        {
+          id: 4,
+          field: `${t("detail-pu.pu-profil-prov")}`,
+          value: newData.province_name,
+          disable: disableEdit(newData?.asal_usaha),
+          rules: [requiredValidator],
+        },
+        {
+          id: 5,
+          field: `${t("detail-pu.pu-profil-kodepos")}`,
+          value: newData.kode_pos_pu,
+          disable: disableEdit(newData?.asal_usaha),
+          rules: [requiredValidator],
+        },
+        {
+          id: 6,
+          field: `${t("detail-pu.pu-profil-negara")}`,
+          value: newData.negara,
+          disable: disableEdit(newData?.asal_usaha),
+          rules: [requiredValidator],
+        },
+        {
+          id: 7,
+          field: `${t("detail-pu.pu-profil-telp")}`,
+          value: newData.phone,
+          disable: disableEdit(newData?.asal_usaha),
+          rules: [requiredValidator, integerValidator],
+        },
+        {
+          id: 8,
+          field: `${t("detail-pu.pu-profil-email")}`,
+          value: newData.email,
+          disable: disableEdit(newData?.asal_usaha),
+          rules: [requiredValidator, emailValidator],
+        },
+      ];
+
+      form.value.jenis_badan_usaha =
+        convertJnbus(newData?.jenis_badan_usaha) || "-";
+      form.value.skala_usaha = newData?.skala_usaha || "-";
+      form.value.modal_dasar = newData?.modal_dasar || "-";
+    }
+  },
+  { deep: true, immediate: true }
+);
+
+watch(
+  () => [
+    t("detail-pu.pu-profil-namapu"),
+    t("detail-pu.pu-profil-address"),
+    t("detail-pu.pu-profil-kota"),
+    t("detail-pu.pu-profil-prov"),
+    t("detail-pu.pu-profil-kodepos"),
+    t("detail-pu.pu-profil-negara"),
+    t("detail-pu.pu-profil-telp"),
+    t("detail-pu.pu-profil-email"),
+  ],
+  (newData) => {
+    profilData.value = profilData.value.map((item, index) => ({
+      ...item,
+      field: newData[index],
+    }));
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -149,22 +279,27 @@ onMounted(async () => {
         </div>
       </VExpansionPanelTitle>
       <VExpansionPanelText style="display: flex; align-content: center">
-        <VRow v-for="data in profilData" :key="data.id">
-          <VCol cols="4">
-            <p>{{ data.field }}</p>
-          </VCol>
-          <VCol cols="1">
-            <p>:</p>
-          </VCol>
-          <VCol cols="7">
-            <!-- <p>{{ data.value }}</p> -->
-            <VTextField
-              density="compact"
-              :value="data.value"
-              :disabled="data.disable"
-            ></VTextField>
-          </VCol>
-        </VRow>
+        <VForm ref="profileFormRef">
+          <VRow v-for="data in profilData" :key="data.id">
+            <VCol cols="4">
+              <p>{{ data.field }}</p>
+            </VCol>
+            <VCol cols="1">
+              <p>:</p>
+            </VCol>
+            <VCol cols="7">
+              <!-- <p>{{ data.value }}</p> -->
+              <VTextField
+                density="compact"
+                v-model="data.value"
+                :disabled="data.disable"
+                :rules="
+                  !disableEdit(props.profileData?.asal_usaha) ? data.rules : []
+                "
+              ></VTextField>
+            </VCol>
+          </VRow>
+        </VForm>
         <VDivider />
         <br />
         <VRow>
