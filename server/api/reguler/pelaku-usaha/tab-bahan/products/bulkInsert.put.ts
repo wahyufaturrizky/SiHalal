@@ -1,4 +1,4 @@
-import type { NuxtError } from "nuxt/app";
+import { NuxtError } from "nuxt/app";
 
 export default defineEventHandler(async (event: any) => {
   const authHeader = getRequestHeader(event, "Authorization");
@@ -12,20 +12,21 @@ export default defineEventHandler(async (event: any) => {
 
   try {
     const runtimeConfig = useRuntimeConfig();
-    const { kode, id_reg } = await readBody(event);
+    const query: any = await getQuery(event);
+    const payload = await readBody(event);
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/verificator/self-declare/filter/search-fasilitasi?fac_code=${kode}&id_reg=${id_reg}`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/bahan/${query.id_reg}/upsert`,
       {
-        method: "get",
+        method: "put",
         headers: { Authorization: authHeader },
+        body: payload,
       } as any
     );
 
     return response || null;
   } catch (error) {
     setResponseStatus(event, 400);
-
     return (error as NuxtError).data;
   }
 });

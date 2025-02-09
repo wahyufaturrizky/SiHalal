@@ -14,7 +14,7 @@ const props = defineProps<{
   item: NavLink;
   roles: string[];
 }>();
-
+const { locale } = useI18n({ useScope: "global" });
 const configStore = useLayoutConfigStore();
 const hideTitleAndBadge = configStore.isVerticalNavMini();
 const isShown = props.roles.some((item) => props.item.roles?.includes(item));
@@ -44,12 +44,17 @@ const isShown = props.roles.some((item) => props.item.roles?.includes(item));
         <Component
           :is="layoutConfig.app.i18n.enable ? 'i18n-t' : 'span'"
           v-show="!hideTitleAndBadge"
-          key="title"
+          key="title_en"
           class="nav-item-title"
-          v-bind="getDynamicI18nProps(props.item.title, 'span')"
+          v-bind="
+            getDynamicI18nProps(
+              locale == 'en' ? props.item.title_en : props.item.title,
+              'span'
+            )
+          "
           v-tooltip:top="$t(props.item.title)"
         >
-          {{ props.item.title }}
+          <!-- {{ locale == "en" ? props.item.title_en : props.item.title_en }} -->
         </Component>
 
         <!-- 👉 Badge -->
