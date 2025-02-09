@@ -70,7 +70,7 @@ const dialogOpen = computed({
           variant="elevated"
           @click="props.onSave"
         >
-          {{ title === "Ubah Anggota Komitmen" ? "Ubah" : props.labelSaveBtn }}
+          {{ props.labelSaveBtn }}
         </VBtn>
       </VCardActions>
     </VCard>

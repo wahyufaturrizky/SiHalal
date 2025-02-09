@@ -95,6 +95,9 @@ const onApprove = async () => {
       refresh()
 
       return true
+    } else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      selectedItem.value = []
     }
   }
   catch (err) {

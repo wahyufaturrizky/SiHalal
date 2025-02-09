@@ -32,8 +32,8 @@ onMounted(async () => {
   await getDocument();
 });
 // TODO -> LOGIc DOWNLOAD
-const download = async (item) => {
-  await downloadDocument(item);
+const download = async (item, param?: string) => {
+  await downloadDocument(item, param);
 };
 </script>
 
@@ -50,7 +50,7 @@ const download = async (item) => {
           {{ index + 1 }}
         </template>
         <template
-          #item.signage_responsible="{item}"
+          #item.signage_responsible="{ item }"
           style="display: flex; align-items: center; align-content: center"
         >
           <v-btn
@@ -64,7 +64,7 @@ const download = async (item) => {
           </v-btn>
         </template>
         <template
-          #item.signage_penyelia="{item}"
+          #item.signage_penyelia="{ item }"
           style="display: flex; align-items: center; align-content: center"
         >
           <v-btn
@@ -72,7 +72,7 @@ const download = async (item) => {
             color="primary"
             variant="plain"
             prepend-icon="mdi-file-download"
-            @click="download(item.ttd_ph)"
+            @click="download(item.ttd_ph, 'FILES')"
           >
             File
           </v-btn>

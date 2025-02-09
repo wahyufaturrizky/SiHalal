@@ -223,8 +223,8 @@ const getDownloadForm = async (docName: string, propName: string) => {
   if (result?.code === 2000) downloadForms[propName] = result?.data?.file || "";
 };
 
-const handleDownloadForm = async (fileName: string) => {
-  return await downloadDocument(fileName);
+const handleDownloadForm = async (fileName: string, param?: string) => {
+  return await downloadDocument(fileName, param);
 };
 
 onMounted(async () => {
@@ -897,7 +897,10 @@ onMounted(async () => {
                       class="px-2"
                       @click="
                         downloadForms.sertifikasi_halal
-                          ? handleDownloadForm(downloadForms.sertifikasi_halal)
+                          ? handleDownloadForm(
+                              downloadForms.sertifikasi_halal,
+                              'SERT'
+                            )
                           : null
                       "
                     >

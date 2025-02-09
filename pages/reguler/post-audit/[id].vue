@@ -157,16 +157,16 @@ const getDraftSertif = async () => {
 
 const getDetailLph = async () => {
   try {
-    const response: any = await $api('/reguler/lph/post-audit/get-profile', {
-      method: 'get',
+    const response: any = await $api("/reguler/lph/post-audit/get-profile", {
+      method: "get",
     });
 
     if (response?.code === 2000) {
-      detailLph.value = response?.data
+      detailLph.value = response?.data;
       return response?.data;
     }
   } catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error');
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
@@ -234,65 +234,52 @@ onMounted(async () => {
           <VRow class="mt-5">
             <p>Yang bertanda tangan dibawah ini:</p>
           </VRow>
-          <VRow style="margin-top: -20px;">
-            <VCol sm="2">
-              Nama
-            </VCol>
+          <VRow style="margin-top: -20px">
+            <VCol sm="2"> Nama </VCol>
             <VCol>
               {{ detailLph?.nama_pimpinan }}
             </VCol>
           </VRow>
-          <VRow style="margin-top: -20px;">
-            <VCol sm="2">
-              Jabatan
-            </VCol>
-            <VCol>
-              Pemimpin
-            </VCol>
+          <VRow style="margin-top: -20px">
+            <VCol sm="2"> Jabatan </VCol>
+            <VCol> Pemimpin </VCol>
           </VRow>
-          <VRow style="margin-top: -20px;">
-            <VCol sm="2">
-              Nama LPH
-            </VCol>
+          <VRow style="margin-top: -20px">
+            <VCol sm="2"> Nama LPH </VCol>
             <VCol>
               {{ detailLph?.nama_lph }}
             </VCol>
           </VRow>
-          <VRow style="margin-top: -20px;">
-            <VCol sm="2">
-              Alamat LPH
-            </VCol>
+          <VRow style="margin-top: -20px">
+            <VCol sm="2"> Alamat LPH </VCol>
             <VCol>
               {{ detailLph?.alamat }}
             </VCol>
           </VRow>
-          <VRow style="margin-top: -20px;">
-            <VCol sm="2">
-              No. Telepon
-            </VCol>
+          <VRow style="margin-top: -20px">
+            <VCol sm="2"> No. Telepon </VCol>
             <VCol>
               {{ detailLph?.no_hp }}
             </VCol>
           </VRow>
-          <VRow style="margin-top: -20px;">
-            <VCol sm="2">
-              Email
-            </VCol>
+          <VRow style="margin-top: -20px">
+            <VCol sm="2"> Email </VCol>
             <VCol>
               {{ detailLph?.email }}
             </VCol>
           </VRow>
           <VRow>
             <p>
-              Menyatakan bahwa hasil audit yang dilaporkan telah sesuai dengan fakta pemeriksaan dan/atau pengujian pada pelaku usaha.
-              Apabila di kemudian hari data dan informasi dalam pernyataan ini terbukti tidak benar, maka kami bersedia menerima sanksi sesuai dengan ketentuan yang berlaku.
-              Demikian pernyataan ini dibuat untuk digunakan sebagaimana mestinya.
+              Menyatakan bahwa hasil audit yang dilaporkan telah sesuai dengan
+              fakta pemeriksaan dan/atau pengujian pada pelaku usaha. Apabila di
+              kemudian hari data dan informasi dalam pernyataan ini terbukti
+              tidak benar, maka kami bersedia menerima sanksi sesuai dengan
+              ketentuan yang berlaku. Demikian pernyataan ini dibuat untuk
+              digunakan sebagaimana mestinya.
             </p>
           </VRow>
           <VRow>
-            <p>
-              {{ detailLph?.kota }}, {{ formatMonthId(new Date()) }}
-            </p>
+            <p>{{ detailLph?.kota }}, {{ formatMonthId(new Date()) }}</p>
           </VRow>
           <VRow>
             <p class="mt-10">
@@ -468,7 +455,7 @@ onMounted(async () => {
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
-                    @click="downloadDocument(dataProduk?.file_laporan)"
+                    @click="downloadDocument(dataProduk?.file_laporan, 'FILES')"
                     rounded="xl"
                     density="compact"
                     class="px-2"
