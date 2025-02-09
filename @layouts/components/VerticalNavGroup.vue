@@ -149,6 +149,7 @@ watch(
 watch(configStore.isVerticalNavMini(isVerticalNavHovered), (val) => {
   isGroupOpen.value = val ? false : isGroupActive.value;
 });
+const { locale } = useI18n({ useScope: "global" });
 const isShown = props.roles.some((item) => props.item.roles?.includes(item));
 </script>
 
@@ -175,13 +176,18 @@ const isShown = props.roles.some((item) => props.item.roles?.includes(item));
         <!-- 👉 Title -->
         <Component
           :is="layoutConfig.app.i18n.enable ? 'i18n-t' : 'span'"
-          v-bind="getDynamicI18nProps(item.title, 'span')"
+          v-bind="
+            getDynamicI18nProps(
+              locale == 'en' ? props.item.title_en : props.item.title,
+              'span'
+            )
+          "
           v-show="!hideTitleAndBadge"
           key="title"
           class="nav-item-title"
           v-tooltip:top="$t(item.title)"
         >
-          {{ item.title }}
+          <!-- {{ item.title }} -->
         </Component>
 
         <!-- 👉 Badge -->

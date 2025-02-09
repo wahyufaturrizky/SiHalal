@@ -9,6 +9,7 @@ const props = defineProps<{
   roles: string[];
 }>();
 
+const { locale } = useI18n({ useScope: "global" });
 const configStore = useLayoutConfigStore();
 const shallRenderIcon = configStore.isVerticalNavMini();
 const isShown = props.roles.some((item) => props.item.roles?.includes(item));
@@ -30,7 +31,10 @@ const isShown = props.roles.some((item) => props.item.roles?.includes(item));
           :class="shallRenderIcon ? 'placeholder-icon' : 'title-text'"
           v-bind="{
             ...layoutConfig.icons.sectionTitlePlaceholder,
-            ...getDynamicI18nProps(item.heading, 'span'),
+            ...getDynamicI18nProps(
+              locale == 'en' ? item.heading_en : item.heading,
+              'span'
+            ),
           }"
         >
           {{ !shallRenderIcon ? item.heading : null }}
