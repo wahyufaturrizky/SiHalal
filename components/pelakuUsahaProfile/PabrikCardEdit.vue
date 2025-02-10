@@ -192,7 +192,7 @@ const initialDataForEdit = (item: any) => ({
               <VListItem @click="handleDelete(item)">
                 <VListItemTitle class="text-red">
                   <VIcon color="red" class="mr-2"> mdi-delete </VIcon>
-                  Hapus
+                    {{t('detail-pu.pu-legal-modal-hapus')}}
                 </VListItemTitle>
               </VListItem>
             </VList>

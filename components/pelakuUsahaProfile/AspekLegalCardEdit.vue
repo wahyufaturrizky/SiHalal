@@ -21,12 +21,12 @@ const storeDataMaster = dataMasterStore();
 
 const legalHeader = [
   { title: "No", key: "no" },
-  { title: "pu-detail.pu-legal-jenis", key: "type" },
-  { title: "pu-detail.pu-legal-nodoc", key: "doc_number" },
-  { title: "pu-detail.pu-legal-tgl", key: "date" },
-  { title: "pu-detail.pu-legal-tgl-exp", key: "expiration_date" },
-  { title: "pu-detail.pu-legal-issuer", key: "publishing_agency" },
-  { title: "pu-detail.pu-legal-action", key: "action" },
+  { title: "detail-pu.pu-legal-jenis", key: "type" },
+  { title: "detail-pu.pu-legal-nodoc", key: "doc_number" },
+  { title: "detail-pu.pu-legal-tgl", key: "date" },
+  { title: "detail-pu.pu-legal-tgl-exp", key: "expiration_date" },
+  { title: "detail-pu.pu-legal-issuer", key: "publishing_agency" },
+  { title: "detail-pu.pu-legal-action", key: "action" },
 ];
 
 function handleDelete(item) {
@@ -141,7 +141,7 @@ onMounted(() => {
     <VCardTitle>
       <VRow>
         <VCol cols="6">
-          <div class="text-h4 font-weight-bold">Aspek Legal</div>
+          <div class="text-h4 font-weight-bold">{{t('detail-pu.pu-legal-title')}}</div>
         </VCol>
         <VCol cols="6" style="display: flex; justify-content: end">
           <AspekLegalModal
@@ -191,11 +191,11 @@ onMounted(() => {
         <template #[`item.action`]="{ item }">
           <VMenu :close-on-content-click="false">
             <template #activator="{ props }">
-              <VBtn icon variant="text" v-bind="props">
+              <VBtn icon variant="text" v-bind="props"   v-if="item?.type !== 'NIB'">
                 <VIcon>mdi-dots-vertical</VIcon>
               </VBtn>
             </template>
-            <VList>
+            <VList >
               <VListItem>
                 <!-- <VListItemTitle>
                     <VIcon class="mr-2"> mdi-pencil </VIcon>
@@ -215,7 +215,7 @@ onMounted(() => {
               >
                 <VListItemTitle class="text-red">
                   <VIcon color="red" class="mr-2"> mdi-delete </VIcon>
-                  Hapus
+                  {{t('detail-pu.pu-legal-modal-hapus')}}
                 </VListItemTitle>
               </VListItem>
             </VList>

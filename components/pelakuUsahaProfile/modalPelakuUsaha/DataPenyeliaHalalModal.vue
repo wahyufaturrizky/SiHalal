@@ -149,7 +149,7 @@ const { t } = useI18n();
       style="display: inline-flex; cursor: pointer"
     >
       <VIcon class="mr-2"> mdi-pencil </VIcon>
-      <p>Edit</p>
+      <p> {{t('detail-pu.pu-edit-edit')}}</p>
     </VItemGroup>
     <!-- <VBtn
       v-else-if="props.mode === 'edit'"
