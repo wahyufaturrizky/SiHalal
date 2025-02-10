@@ -320,6 +320,11 @@ watch(
               {{ t(column.title) }}
             </div>
           </template>
+          <template #header.jumlah="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
 
           <template #header.nama="{ column }">
             <div>
