@@ -209,8 +209,8 @@ const payNote = ref({
       nowrap: true,
     },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-buy-aksi',
-      key: 'action',
+      title: t('pengajuan-reguler.reguler_form-bahan-buy-aksi'),
+      key: 'actionEdit',
       value: 'actionEdit',
       sortable: false,
       nowrap: true,
@@ -249,9 +249,9 @@ const materialCheck = ref({
       nowrap: true,
     },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-pemeriksaan-aksi',
+      title: t('pengajuan-reguler.reguler_form-bahan-pemeriksaan-aksi'),
       value: 'actionEdit',
-      key: 'action',
+      key: 'actionEdit',
       sortable: false,
       nowrap: true,
       popOver: true,
@@ -630,6 +630,8 @@ const bulkInsert = async () => {
       reRender.value = !reRender.value;
       visiblePreview.value = false
       getListIngredients()
+      getListCatatan()
+      getListFormulir()
     }
   } else {
     listPreview.value.map((el: any) => {
@@ -1158,10 +1160,12 @@ watch([titleDialog, tabAddBahan], () => {
               <div v-else class="mt-10">
                 <TambahBahanForm
                   @loadList="
-                    () => {
-                      getListIngredients();
+                    async () => {
                       addDialog = false;
                       reRender = !reRender;
+                      getListFormulir()
+                      getListFormulir()
+                      getListCatatan()
                     }
                   "
                 ></TambahBahanForm>
@@ -1993,7 +1997,6 @@ watch([titleDialog, tabAddBahan], () => {
       :on-edit="(item:any) => toggleEdit(item, 'Formulir Pemeriksaan Bahan')"
       :data="materialCheck"
       title="Formulir Pemeriksaan Bahan"
-      :isviewonly="isviewonly"
       with-add-button
     />
   </div>
