@@ -250,14 +250,14 @@ onMounted(() => {
   if (props?.title === "Daftar Nama Produk") getListProducts();
 });
 
-watch(
-  () => [props.reRender, props.refresh],
-  async () => {
-    loading.value = true;
-    await Promise.allSettled([getListIngredients(), getListProducts()]);
-    loading.value = false;
-  }
-);
+// watch(
+//   () => [props.reRender, props.refresh],
+//   async () => {
+//     loading.value = true;
+//     await Promise.allSettled([getListIngredients(), getListProducts()]);
+//     loading.value = false;
+//   }
+// );
 </script>
 
 <template>
