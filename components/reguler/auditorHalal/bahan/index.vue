@@ -653,6 +653,10 @@ const bulkInsert = async () => {
       useSnackbar().sendSnackbar('Sukses menambah data', 'success');
       reRender.value = !reRender.value;
       visiblePreview.value = false
+      uploadedFileProduct.value = {
+        name: '',
+        file: null,
+      }
     }
   }
 
@@ -956,6 +960,8 @@ const deleteProduct = async (productId: string) => {
   if (response.code === 2000) {
     reRender.value = !reRender.value;
     useSnackbar().sendSnackbar('Sukses menghapus data', 'success');
+  } else {
+    useSnackbar().sendSnackbar('Bahan tidak dapat dihapus', 'error');
   }
 };
 
