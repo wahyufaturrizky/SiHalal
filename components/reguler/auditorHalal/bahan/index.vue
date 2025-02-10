@@ -170,7 +170,7 @@ const productName = ref({
     { title: 'Foto Produk', key: 'foto', nowrap: true },
     { title: 'Jumlah Bahan', key: 'qtyBahan', nowrap: true },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-pemeriksaan-aksi',
+      title: 'pengajuan-reguler.reguler_form-bahan-pemeriksaan-aksi', key :'action',
       value: 'actionPopOver4',
       sortable: false,
       nowrap: true,
@@ -624,7 +624,7 @@ const bulkInsert = async () => {
         body: body,
       },
     );
-  
+
     if (response.code === 2000) {
       useSnackbar().sendSnackbar('Sukses menambah data', 'success');
       reRender.value = !reRender.value;
@@ -646,7 +646,7 @@ const bulkInsert = async () => {
         body: body,
       },
     );
-  
+
     if (response.code === 2000) {
       useSnackbar().sendSnackbar('Sukses menambah data', 'success');
       reRender.value = !reRender.value;
@@ -1022,22 +1022,30 @@ watch([titleDialog, tabAddBahan], () => {
     <DialogPreviewBahan
       :title="titleDialog"
       :is-open="visiblePreview"
-      :toggle="() => visiblePreview = false"
+      :toggle="() => (visiblePreview = false)"
       :label-save-btn="`Unggah (${
         titleDialog === 'Preview Bahan'
         ? `${listPreview.filter((a: any) => a.Passed).length} Bahan`
         : `${listPreview.length} Produk`
       })`"
-      :label-back-btn="t('pengajuan-reguler.reguler_form-bahan-produk-popupbahan-cancel')"
+      :label-back-btn="
+        t('pengajuan-reguler.reguler_form-bahan-produk-popupbahan-cancel')
+      "
       :on-save="bulkInsert"
       hide-footer
     >
       <template #content>
         <div v-if="titleDialog === 'Preview Produk'">
-          <PreviewBahanTable :previewHeader="previewProductHeader" :listPreview="listPreview" />
+          <PreviewBahanTable
+            :previewHeader="previewProductHeader"
+            :listPreview="listPreview"
+          />
         </div>
         <div v-else>
-          <PreviewBahanTable :previewHeader="previewHeader" :listPreview="listPreview" />
+          <PreviewBahanTable
+            :previewHeader="previewHeader"
+            :listPreview="listPreview"
+          />
         </div>
       </template>
     </DialogPreviewBahan>
@@ -1046,7 +1054,9 @@ watch([titleDialog, tabAddBahan], () => {
       :is-open="addDialog"
       :toggle="toggle"
       :label-save-btn="labelSaveBtn"
-      :label-back-btn="t('pengajuan-reguler.reguler_form-bahan-produk-popupbahan-cancel')"
+      :label-back-btn="
+        t('pengajuan-reguler.reguler_form-bahan-produk-popupbahan-cancel')
+      "
       :on-save="addProduct"
       :hide-footer="hideFooterBtn"
     >
@@ -1100,8 +1110,9 @@ watch([titleDialog, tabAddBahan], () => {
                     <VBtn
                       append-icon="mdi-download"
                       @click="() => downloadTemplate(fileTemplate)"
-                    > Unduh 
-                  </VBtn>
+                    >
+                      Unduh
+                    </VBtn>
                   </VCol>
                 </VRow>
                 <VRow no-gutters>
@@ -1146,11 +1157,13 @@ watch([titleDialog, tabAddBahan], () => {
               </div>
               <div v-else class="mt-10">
                 <TambahBahanForm
-                  @loadList="() => {
-                    getListIngredients()
-                    addDialog = false
-                    reRender = !reRender
-                  }"
+                  @loadList="
+                    () => {
+                      getListIngredients();
+                      addDialog = false;
+                      reRender = !reRender;
+                    }
+                  "
                 ></TambahBahanForm>
               </div>
             </VTabItem>
@@ -1202,8 +1215,9 @@ watch([titleDialog, tabAddBahan], () => {
                     <VBtn
                       append-icon="mdi-download"
                       @click="() => downloadTemplate(fileTemplateProduct)"
-                    > Unduh 
-                  </VBtn>
+                    >
+                      Unduh
+                    </VBtn>
                   </VCol>
                 </VRow>
                 <VRow no-gutters>
