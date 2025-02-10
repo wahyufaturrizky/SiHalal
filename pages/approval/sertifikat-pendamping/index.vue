@@ -140,7 +140,7 @@ const getChipColor = (status: string) => {
 }
 
 const unduhFile = async (file: string) => {
-  await downloadDocument(file, 'PENDAMPING_SERT_PELATIHAN')
+  await downloadDocument(file, 'PENDAMPING_SERT_UPLOAD')
 }
 </script>
 
