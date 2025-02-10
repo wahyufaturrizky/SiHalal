@@ -107,7 +107,7 @@ onMounted(() => {
 })
 
 const unduhFile = async (link: string) => {
-  await downloadDocument(link, 'FILES')
+  await downloadDocument(link, 'ASSESOR')
 }
 </script>
 
