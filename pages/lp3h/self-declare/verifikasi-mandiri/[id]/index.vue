@@ -107,11 +107,12 @@ const tandaiOK = async () => {
     loadingTandaiOK.value = true;
 
     const res: any = await $api(
-      `/self-declare/verificator/tandai-ok/${selfDeclareId}`,
+      `/self-declare/verificator/tandai-ok/${submissionId}`,
       {
         method: "put",
       }
     );
+    console.log("@res", res);
 
     if (res?.code === 2000) {
       useSnackbar().sendSnackbar("Success", "success");
@@ -125,6 +126,8 @@ const tandaiOK = async () => {
       loadingTandaiOK.value = false;
     }
   } catch (error) {
+    console.log("@error", error);
+
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loadingTandaiOK.value = false;
   }
@@ -290,7 +293,7 @@ const lihatLaporan = async () => {
     loadingLihatLaporan.value = true;
 
     const res: any = await $api(
-      `/self-declare/verificator/lihat-laporan/${selfDeclareId}`,
+      `/self-declare/verificator/lihat-laporan/${submissionId}`,
       {
         method: "put",
       }
