@@ -170,7 +170,7 @@ const productName = ref({
     { title: 'Foto Produk', key: 'foto', nowrap: true },
     { title: 'Jumlah Bahan', key: 'qtyBahan', nowrap: true },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-pemeriksaan-aksi',
+      title: 'pengajuan-reguler.reguler_form-bahan-pemeriksaan-aksi', key :'action',
       value: 'actionPopOver4',
       sortable: false,
       nowrap: true,
@@ -209,8 +209,8 @@ const payNote = ref({
       nowrap: true,
     },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-buy-aksi',
-      key: 'action',
+      title: t('pengajuan-reguler.reguler_form-bahan-buy-aksi'),
+      key: 'actionEdit',
       value: 'actionEdit',
       sortable: false,
       nowrap: true,
@@ -249,9 +249,9 @@ const materialCheck = ref({
       nowrap: true,
     },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-pemeriksaan-aksi',
+      title: t('pengajuan-reguler.reguler_form-bahan-pemeriksaan-aksi'),
       value: 'actionEdit',
-      key: 'action',
+      key: 'actionEdit',
       sortable: false,
       nowrap: true,
       popOver: true,
@@ -624,19 +624,23 @@ const bulkInsert = async () => {
         body: body,
       },
     );
-  
+
     if (response.code === 2000) {
       useSnackbar().sendSnackbar('Sukses menambah data', 'success');
       reRender.value = !reRender.value;
       visiblePreview.value = false
       getListIngredients()
+      getListCatatan()
+      getListFormulir()
     }
   } else {
     listPreview.value.map((el: any) => {
-      const payload = {
-        reg_prod_name: el.reg_prod_name,
+      if (el.Passed) {
+        const payload = {
+          reg_prod_name: el.HalalCertificateRegulerProduk?.reg_prod_name,
+        }
+        body.push(payload)
       }
-      body.push(payload)
     })
     const response: any = await $api(
       '/reguler/pelaku-usaha/tab-bahan/products/bulkInsert-product',
@@ -646,11 +650,15 @@ const bulkInsert = async () => {
         body: body,
       },
     );
-  
+
     if (response.code === 2000) {
       useSnackbar().sendSnackbar('Sukses menambah data', 'success');
       reRender.value = !reRender.value;
       visiblePreview.value = false
+      uploadedFileProduct.value = {
+        name: '',
+        file: null,
+      }
     }
   }
 
@@ -954,6 +962,8 @@ const deleteProduct = async (productId: string) => {
   if (response.code === 2000) {
     reRender.value = !reRender.value;
     useSnackbar().sendSnackbar('Sukses menghapus data', 'success');
+  } else {
+    useSnackbar().sendSnackbar('Bahan tidak dapat dihapus', 'error');
   }
 };
 
@@ -1022,22 +1032,30 @@ watch([titleDialog, tabAddBahan], () => {
     <DialogPreviewBahan
       :title="titleDialog"
       :is-open="visiblePreview"
-      :toggle="() => visiblePreview = false"
+      :toggle="() => (visiblePreview = false)"
       :label-save-btn="`Unggah (${
         titleDialog === 'Preview Bahan'
         ? `${listPreview.filter((a: any) => a.Passed).length} Bahan`
-        : `${listPreview.length} Produk`
+        : `${listPreview.filter((a: any) => a.Passed).length} Produk`
       })`"
-      :label-back-btn="t('pengajuan-reguler.reguler_form-bahan-produk-popupbahan-cancel')"
+      :label-back-btn="
+        t('pengajuan-reguler.reguler_form-bahan-produk-popupbahan-cancel')
+      "
       :on-save="bulkInsert"
       hide-footer
     >
       <template #content>
         <div v-if="titleDialog === 'Preview Produk'">
-          <PreviewBahanTable :previewHeader="previewProductHeader" :listPreview="listPreview" />
+          <PreviewBahanTable
+            :previewHeader="previewProductHeader"
+            :listPreview="listPreview"
+          />
         </div>
         <div v-else>
-          <PreviewBahanTable :previewHeader="previewHeader" :listPreview="listPreview" />
+          <PreviewBahanTable
+            :previewHeader="previewHeader"
+            :listPreview="listPreview"
+          />
         </div>
       </template>
     </DialogPreviewBahan>
@@ -1046,7 +1064,9 @@ watch([titleDialog, tabAddBahan], () => {
       :is-open="addDialog"
       :toggle="toggle"
       :label-save-btn="labelSaveBtn"
-      :label-back-btn="t('pengajuan-reguler.reguler_form-bahan-produk-popupbahan-cancel')"
+      :label-back-btn="
+        t('pengajuan-reguler.reguler_form-bahan-produk-popupbahan-cancel')
+      "
       :on-save="addProduct"
       :hide-footer="hideFooterBtn"
     >
@@ -1100,8 +1120,9 @@ watch([titleDialog, tabAddBahan], () => {
                     <VBtn
                       append-icon="mdi-download"
                       @click="() => downloadTemplate(fileTemplate)"
-                    > Unduh 
-                  </VBtn>
+                    >
+                      Unduh
+                    </VBtn>
                   </VCol>
                 </VRow>
                 <VRow no-gutters>
@@ -1146,11 +1167,15 @@ watch([titleDialog, tabAddBahan], () => {
               </div>
               <div v-else class="mt-10">
                 <TambahBahanForm
-                  @loadList="() => {
-                    getListIngredients()
-                    addDialog = false
-                    reRender = !reRender
-                  }"
+                  @loadList="
+                    async () => {
+                      addDialog = false;
+                      reRender = !reRender;
+                      getListFormulir()
+                      getListFormulir()
+                      getListCatatan()
+                    }
+                  "
                 ></TambahBahanForm>
               </div>
             </VTabItem>
@@ -1202,8 +1227,9 @@ watch([titleDialog, tabAddBahan], () => {
                     <VBtn
                       append-icon="mdi-download"
                       @click="() => downloadTemplate(fileTemplateProduct)"
-                    > Unduh 
-                  </VBtn>
+                    >
+                      Unduh
+                    </VBtn>
                   </VCol>
                 </VRow>
                 <VRow no-gutters>
@@ -1979,7 +2005,6 @@ watch([titleDialog, tabAddBahan], () => {
       :on-edit="(item:any) => toggleEdit(item, 'Formulir Pemeriksaan Bahan')"
       :data="materialCheck"
       title="Formulir Pemeriksaan Bahan"
-      :isviewonly="isviewonly"
       with-add-button
     />
   </div>

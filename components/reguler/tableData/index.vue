@@ -254,7 +254,7 @@ watch(
   () => [props.reRender, props.refresh],
   async () => {
     loading.value = true;
-    await Promise.allSettled([getListIngredients(), getListProducts()]);
+    getListProducts()
     loading.value = false;
   }
 );
@@ -329,6 +329,11 @@ watch(
           </template>
 
           <template #header.jenis_bahan="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+          <template #header.jumlah="{ column }">
             <div>
               {{ t(column.title) }}
             </div>

@@ -93,7 +93,7 @@ const onApprove = async () => {
       message.push(`Gagal setujui sebanyak ${totalError}`)
     if (totalSuccess > 0)
       message.push(`Sukses setujui sebanyak ${totalSuccess}`)
-    useSnackbar().sendSnackbar(`Pendamping ${message.join()}`, totalSuccess > 0 ? 'success' : 'error')
+    useSnackbar().sendSnackbar(`Asesor ${message.join()}`, totalSuccess > 0 ? 'success' : 'error')
     selectedItem.value = []
     refresh()
   }
@@ -107,7 +107,7 @@ onMounted(() => {
 })
 
 const unduhFile = async (link: string) => {
-  await downloadDocument(link, 'FILES')
+  await downloadDocument(link, 'ASSESOR')
 }
 </script>
 
@@ -204,7 +204,7 @@ const unduhFile = async (link: string) => {
                       <VIcon
                         icon="ri-arrow-right-line"
                         color="primary"
-                        @click="() => unduhFile(item?.file_sertifikat)"
+                        @click="() => unduhFile(item?.fotosertifikat)"
                       />
                     </div>
                   </IconBtn>
