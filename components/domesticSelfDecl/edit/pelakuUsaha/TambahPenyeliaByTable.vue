@@ -1,4 +1,10 @@
 <script setup lang="ts">
+const { canNotEdit } = defineProps({
+  canNotEdit: {
+    type: Boolean,
+  },
+});
+
 const tableHeader: any[] = [
   { title: "No", key: "no" },
   { title: "Nama", key: "nama", nowrap: true },
@@ -57,7 +63,12 @@ onMounted(() => {
 <template>
   <VDialog max-width="60svw">
     <template #activator="{ props: openModal }">
-      <VBtn v-bind="openModal" variant="outlined" append-icon="fa-plus">
+      <VBtn
+        v-if="!canNotEdit"
+        v-bind="openModal"
+        variant="outlined"
+        append-icon="fa-plus"
+      >
         Tambah
       </VBtn>
     </template>
