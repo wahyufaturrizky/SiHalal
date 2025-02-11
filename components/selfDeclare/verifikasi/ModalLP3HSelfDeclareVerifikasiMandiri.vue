@@ -37,8 +37,7 @@ const pengembalian = async () => {
       loadingPengembalian.value = false;
 
       setTimeout(() => {
-        // router.go(-1);
-        navigateTo("/self-declare/verification");
+        navigateTo("/lp3h/self-declare/verifikasi-mandiri");
       }, 200);
     } else {
       useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
@@ -69,8 +68,7 @@ const dibatalkan = async () => {
       loadingDibatalkan.value = false;
 
       setTimeout(() => {
-        // router.go(-1);
-        navigateTo("/self-declare/verification");
+        navigateTo("/lp3h/self-declare/verifikasi-mandiri");
       }, 200);
     } else {
       useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
