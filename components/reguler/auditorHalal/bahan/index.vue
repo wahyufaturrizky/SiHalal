@@ -635,10 +635,12 @@ const bulkInsert = async () => {
     }
   } else {
     listPreview.value.map((el: any) => {
-      const payload = {
-        reg_prod_name: el.reg_prod_name,
+      if (el.Passed) {
+        const payload = {
+          reg_prod_name: el.HalalCertificateRegulerProduk?.reg_prod_name,
+        }
+        body.push(payload)
       }
-      body.push(payload)
     })
     const response: any = await $api(
       '/reguler/pelaku-usaha/tab-bahan/products/bulkInsert-product',
@@ -1034,7 +1036,7 @@ watch([titleDialog, tabAddBahan], () => {
       :label-save-btn="`Unggah (${
         titleDialog === 'Preview Bahan'
         ? `${listPreview.filter((a: any) => a.Passed).length} Bahan`
-        : `${listPreview.length} Produk`
+        : `${listPreview.filter((a: any) => a.Passed).length} Produk`
       })`"
       :label-back-btn="
         t('pengajuan-reguler.reguler_form-bahan-produk-popupbahan-cancel')

@@ -33,6 +33,11 @@ const getChipColor = (status: boolean) => {
         {{ item.HalalCertificateRegulerBahan?.no_sertifikat_halal }}
       </div>
     </template>
+    <template #item.reg_prod_name="{ item }: any">
+      <div style="width:auto; display: flex;">
+        {{ item.HalalCertificateRegulerProduk?.reg_prod_name }}
+      </div>
+    </template>
     <template #item.kelompok="{ item }: any">
       <div style="display: flex; min-width: 10rem;">
         {{ item.HalalCertificateRegulerBahan?.kelompok }}
@@ -51,7 +56,7 @@ const getChipColor = (status: boolean) => {
       <VCheckbox v-model="item.Passed" readonly />
     </template>
     <template #item.actionProduct="{ item }: any">
-      <VCheckbox v-model="trueValue" readonly/>
+      <VCheckbox v-model="item.Passed" readonly/>
     </template>
   </VDataTable>
 </template>
