@@ -248,7 +248,7 @@ const unduhFile = async (file: string) => {
                       <VIcon
                         icon="ri-arrow-right-line"
                         color="primary"
-                        @click="() => unduhFile(item.file_sertifikat)"
+                        @click="() => unduhFile(item.fotosertifikat)"
                       />
                     </div>
                   </IconBtn>
