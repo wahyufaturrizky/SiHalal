@@ -513,7 +513,7 @@ const isCanEdit = () => {
         <h3 class="text-h3 font-weight-bold">Detail Pengajuan Self Declare</h3>
       </VCol>
       <VCol v-if="isCanEdit()">
-        <div class="d-flex justify-end align-center ga-2">
+        <div class="d-flex justify-end ga-2">
           <VBtn
             variant="outlined"
             color="error"
@@ -536,7 +536,7 @@ const isCanEdit = () => {
         </div>
       </VCol>
 
-      <VCol class="d-flex justify-end align-center">
+      <VCol class="d-flex justify-end">
         <!-- <VBtn
           :loading="loadingLihatLaporan"
           @click="lihatLaporan"
