@@ -118,7 +118,7 @@ const loadValidation = async () => {
 
 const handleLoadList = async () => {
   try {
-    const response: any = await $api("/self-declare/proses-verval/list", {
+    const response: any = await $api("/self-declare/mandiri/list", {
       method: "get",
       params: {
         page: currentPage.value,

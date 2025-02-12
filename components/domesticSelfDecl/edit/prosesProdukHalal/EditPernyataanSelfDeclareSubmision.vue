@@ -1,4 +1,14 @@
 <script setup lang="ts">
+const { isVerificator, hideChipStatus } = defineProps({
+  canNotEdit: {
+    type: Boolean,
+  },
+  isVerificator: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const aggreButtonDisable = ref(false);
 const showDownloadButton = ref(false);
 
@@ -34,13 +44,6 @@ const handleAgree = async () => {
 const handleDownload = async () => {
   return await downloadDocument(pledgeFile.value);
 };
-
-const props = defineProps({
-  isVerificator: {
-    type: Boolean,
-    default: false,
-  },
-});
 
 const route = useRoute<"">();
 const submissionId = route.params?.id;
@@ -226,6 +229,7 @@ onMounted(() => {
         >Download ikrar</VBtn
       >
       <VBtn
+        v-if="!canNotEdit"
         @click="handleAgree"
         :disabled="props.isVerificator"
         variant="flat"

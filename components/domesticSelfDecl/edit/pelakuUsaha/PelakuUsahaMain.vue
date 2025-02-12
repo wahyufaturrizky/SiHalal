@@ -1,4 +1,10 @@
 <script setup lang="ts">
+const { canNotEdit } = defineProps({
+  canNotEdit: {
+    type: Boolean,
+  },
+});
+
 const route = useRoute<"">();
 const submissionId = route.params?.id;
 
@@ -221,6 +227,7 @@ onMounted(() => {
           >
             <div>Penanggung Jawab</div>
             <VBtn
+              v-if="!canNotEdit"
               type="submit"
               color="primary"
               variant="flat"
@@ -273,7 +280,10 @@ onMounted(() => {
           <VRow align="center">
             <VCol class="font-weight-bold text-h4"> Aspek Legal </VCol>
             <VCol justify="end" class="d-flex justify-end">
-              <TambahAspekLegalByTable @submit="handleAddLegal" />
+              <TambahAspekLegalByTable
+                :can-not-edit="canNotEdit"
+                @submit="handleAddLegal"
+              />
             </VCol>
           </VRow>
         </VCardTitle>
@@ -293,7 +303,7 @@ onMounted(() => {
               {{ item.masa_berlaku ? item.masa_berlaku : "-" }}
             </template>
             <template #item.action="{ item }: any">
-              <div v-if="item.jenis_surat != 'NIB'">
+              <div v-if="item.jenis_surat != 'NIB' && !canNotEdit">
                 <VIcon
                   icon="mdi-delete"
                   color="error"
@@ -314,7 +324,10 @@ onMounted(() => {
           <VRow align="center">
             <VCol class="font-weight-bold text-h4"> Penyelia Halal </VCol>
             <VCol class="d-flex justify-end">
-              <TambahPenyeliaByTable @submit="handleAddSupervisor" />
+              <TambahPenyeliaByTable
+                :can-not-edit="canNotEdit"
+                @submit="handleAddSupervisor"
+              />
             </VCol>
           </VRow>
         </VCardTitle>
@@ -333,7 +346,7 @@ onMounted(() => {
             <template #item.no_sk="{ item }: any">
               {{ `${item.no_sk}/${item.tanggal_sk}` }}
             </template>
-            <template #item.action="{ item }: any">
+            <template v-if="!canNotEdit" #item.action="{ item }: any">
               <div>
                 <VIcon
                   icon="mdi-delete"

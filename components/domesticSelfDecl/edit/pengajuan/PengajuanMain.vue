@@ -3,6 +3,9 @@ defineProps({
   hideKodeFasilitasi: {
     type: Boolean,
   },
+  canNotEdit: {
+    type: Boolean,
+  },
 });
 
 const route = useRoute<"">();
@@ -455,6 +458,7 @@ const getItemData = (item) => {
       >
         <div>Data Pengajuan</div>
         <VBtn
+          v-if="!canNotEdit"
           type="submit"
           color="primary"
           variant="flat"
