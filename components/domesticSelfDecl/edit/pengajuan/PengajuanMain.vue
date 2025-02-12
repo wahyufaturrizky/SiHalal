@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps({
+const { hideOnSearchFasilitatorFunction } = defineProps({
   hideKodeFasilitasi: {
     type: Boolean,
   },
@@ -7,6 +7,9 @@ defineProps({
     type: Boolean,
   },
   hideAlertKodeUnik: {
+    type: Boolean,
+  },
+  hideOnSearchFasilitatorFunction: {
     type: Boolean,
   },
 });
@@ -133,31 +136,32 @@ const responseId = ref("");
 const facName = ref("");
 
 const onSearchFasilitator = async (kode) => {
-  try {
-    facName.value = "";
-    console.log(kode);
-    // const kode = querySearch.value;
+  if (!hideOnSearchFasilitatorFunction)
+    try {
+      facName.value = "";
+      console.log(kode);
+      // const kode = querySearch.value;
 
-    const response: any = await $api("/self-declare/submission/kode", {
-      method: "post",
-      body: {
-        kode,
-        id_reg: submissionId,
-      },
-    });
+      const response: any = await $api("/self-declare/submission/kode", {
+        method: "post",
+        body: {
+          kode,
+          id_reg: submissionId,
+        },
+      });
 
-    if (response.message === "Kode Fasilitasi dapat digunakan") {
-      isKodeFound.value = true;
-      isKodeNotFound.value = false;
-      responseMessage.value = "";
-      responseId.value = response.data[0].id;
-      facName.value = response.data[0].name;
-    } else {
-      responseMessage.value = response.message;
-      isKodeFound.value = false;
-      isKodeNotFound.value = true;
-    }
-  } catch (error) {}
+      if (response.message === "Kode Fasilitasi dapat digunakan") {
+        isKodeFound.value = true;
+        isKodeNotFound.value = false;
+        responseMessage.value = "";
+        responseId.value = response.data[0].id;
+        facName.value = response.data[0].name;
+      } else {
+        responseMessage.value = response.message;
+        isKodeFound.value = false;
+        isKodeNotFound.value = true;
+      }
+    } catch (error) {}
 };
 
 const responseType = computed(() => {
