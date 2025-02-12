@@ -6,6 +6,9 @@ defineProps({
   canNotEdit: {
     type: Boolean,
   },
+  hideAlertKodeUnik: {
+    type: Boolean,
+  },
 });
 
 const route = useRoute<"">();
@@ -533,8 +536,8 @@ const getItemData = (item) => {
               append-inner-icon="mdi-magnify"
               density="compact"
               :rules="[requiredValidator]"
-              @input="onSearchFasilitator(querySearch)"
             />
+            <!-- @input="onSearchFasilitator(querySearch)" -->
           </VCol>
         </VRow>
         <VRow>
@@ -568,7 +571,7 @@ const getItemData = (item) => {
           </VAlert>
 
           <VAlert
-            v-if="!isKodeFound"
+            v-if="!isKodeFound && !hideAlertKodeUnik"
             type="warning"
             variant="tonal"
             color="#652672"
