@@ -229,7 +229,6 @@ onMounted(() => {
         >Download ikrar</VBtn
       >
       <VBtn
-        v-if="!canNotEdit"
         @click="handleAgree"
         :disabled="props.isVerificator"
         variant="flat"
