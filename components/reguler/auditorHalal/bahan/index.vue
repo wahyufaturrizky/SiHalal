@@ -1234,7 +1234,7 @@ watch([titleDialog, tabAddBahan], () => {
                 </VRow>
                 <VRow no-gutters>
                   <VCol cols="6" class="d-flex align-center">
-                    <span> Unggah Bahan </span>
+                    <span> Unggah Produk </span>
                   </VCol>
                   <VCol cols="6">
                     <VTextField

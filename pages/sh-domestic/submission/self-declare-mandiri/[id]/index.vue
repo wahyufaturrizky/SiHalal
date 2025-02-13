@@ -1275,7 +1275,7 @@ onMounted(async () => {
 const getSubmissionDetail = async () => {
   try {
     const response: any = await $api(
-      `/self-declare/submission/${submissionId}/detail`,
+      `/self-declare/mandiri/${submissionId}/detail`,
       {
         method: "get",
       }

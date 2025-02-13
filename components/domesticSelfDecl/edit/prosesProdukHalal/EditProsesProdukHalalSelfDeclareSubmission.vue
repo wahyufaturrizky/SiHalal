@@ -16,6 +16,9 @@ const { isVerificator, hideChipStatus } = defineProps({
   hideChipStatus: {
     type: Boolean,
   },
+  canNotEdit: {
+    type: Boolean,
+  },
 });
 const verified = ref(false);
 
@@ -150,7 +153,7 @@ const statusItem: any = new Proxy(
           <!-- ... -->
         </template>
         <VBtn
-          v-if="!isVerificator && !verified"
+          v-if="!isVerificator && !verified && !canNotEdit"
           @click="handleAddSave"
           color="primary"
           variant="elevated"
@@ -163,7 +166,11 @@ const statusItem: any = new Proxy(
       <VForm ref="form" v-model="formStatus" @submit.prevent="handleAddProcess">
         <VRow class="d-flex justify-space-between align-center">
           <VCol cols="6" class="text-h6">Ketik Proses</VCol>
-          <VCol cols="6" class="d-flex justify-space-between align-center ga-4">
+          <VCol
+            v-if="!canNotEdit"
+            cols="6"
+            class="d-flex justify-space-between align-center ga-4"
+          >
             <VTextField
               :disabled="isVerificator"
               v-model="typedProcess"

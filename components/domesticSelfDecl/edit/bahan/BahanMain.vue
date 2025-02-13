@@ -3,6 +3,9 @@ const { hideVerifikasiPendamping } = defineProps({
   hideVerifikasiPendamping: {
     type: Boolean,
   },
+  canNotEdit: {
+    type: Boolean,
+  },
 });
 
 const tableHeader = [
@@ -101,7 +104,10 @@ interface editBahan {
           ><h3>Daftar Nama Bahan dan Kemasan</h3></VCol
         >
         <VCol cols="6" style="display: flex; justify-content: end">
-          <TambahBahanModal @loadList="loadBahan()"></TambahBahanModal>
+          <TambahBahanModal
+            :can-not-edit="canNotEdit"
+            @loadList="loadBahan()"
+          ></TambahBahanModal>
         </VCol>
       </VRow>
     </VCardTitle>
@@ -118,7 +124,7 @@ interface editBahan {
                 item.vefified ? "Sudah" : "Belum"
               }}</v-chip>
             </template>
-            <template #item.action="{ item }">
+            <template v-if="!canNotEdit" #item.action="{ item }">
               <div class="d-flex gap-1" v-if="!item.vefified">
                 <EditBahanModal
                   :data="{

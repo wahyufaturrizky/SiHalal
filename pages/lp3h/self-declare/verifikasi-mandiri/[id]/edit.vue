@@ -54,25 +54,25 @@ onMounted(async () => {
 
         <VTabsWindow v-model="tabs">
           <VTabsWindowItem value="1">
-            <PelakuUsahaMain />
+            <PelakuUsahaMain :can-not-edit="true" />
           </VTabsWindowItem>
           <VTabsWindowItem value="2">
-            <PengajuanMain />
+            <PengajuanMain :can-not-edit="true" />
           </VTabsWindowItem>
           <VTabsWindowItem value="3">
-            <PabrikOutletMain />
+            <PabrikOutletMain :can-not-edit="true" />
           </VTabsWindowItem>
           <VTabsWindowItem value="4">
-            <BahanMain />
+            <BahanMain :can-not-edit="true" />
           </VTabsWindowItem>
           <VTabsWindowItem value="5">
-            <ProdukMain />
+            <ProdukMain :can-not-edit="true" />
           </VTabsWindowItem>
           <VTabsWindowItem value="6">
-            <EditProsesProdukHalalSelfDeclareSubmission />
+            <EditProsesProdukHalalSelfDeclareSubmission :can-not-edit="true" />
           </VTabsWindowItem>
           <VTabsWindowItem value="7">
-            <EditPernyataanSelfDeclareSubmision />
+            <EditPernyataanSelfDeclareSubmision :can-not-edit="true" />
           </VTabsWindowItem>
         </VTabsWindow>
       </VCol>
