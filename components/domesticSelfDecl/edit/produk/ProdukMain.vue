@@ -1,4 +1,10 @@
 <script setup lang="ts">
+defineProps({
+  canNotEdit: {
+    type: Boolean,
+  },
+});
+
 const tableHeader: any[] = [
   { title: "No", key: "no", nowrap: true },
   { title: "Nama Produk", key: "nama", nowrap: true },
@@ -198,6 +204,7 @@ const handleDeleteProduct = async () => {
         <VCol cols="6"><h3>Daftar Produk</h3></VCol>
         <VCol cols="6" style="display: flex; justify-content: end">
           <VBtn
+            v-if="!canNotEdit"
             @click="handleOpenModal('CREATE')"
             variant="outlined"
             append-icon="fa-plus"
@@ -226,7 +233,7 @@ const handleDeleteProduct = async () => {
             item.verified ? "Sudah" : "Belum"
           }}</v-chip>
         </template>
-        <template #item.action="{ item }: any">
+        <template v-if="!canNotEdit" #item.action="{ item }: any">
           <VMenu v-if="!item.verified">
             <template #activator="{ props }">
               <!-- <VIcon

@@ -546,6 +546,16 @@ const isCanEdit = () => {
           Lihat Laporan
         </VBtn> -->
         <VBtn
+          variant="outlined"
+          append-icon="ri-pencil-fill"
+          @click="
+            router.push(
+              `/lp3h/self-declare/verifikasi-mandiri/${submissionId}/edit`
+            )
+          "
+          >Ubah</VBtn
+        >
+        <VBtn
           :loading="loadingTandaiOK"
           @click="tandaiOK"
           color="#49A84C"
