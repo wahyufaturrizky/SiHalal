@@ -906,5 +906,18 @@
     "invoice-list-amount": "Amount",
     "invoice-list-status": "Status",
     "invoice-list-invfile": "Invoice File"
+  },
+  "task-force": {
+    "tagihan-bpjph-title": "Daftar Tagihan ke BPJPH",
+    "tagihan-bpjph-subtitle": "Daftar Tagihan",
+    "tagihan-bpjph-table-key-tagihan": "No. Tagihan",
+    "tagihan-bpjph-table-key-tanggal": "Tanggal",
+    "tagihan-bpjph-table-key-total": "Total",
+    "tagihan-bpjph-table-key-status": "Status",
+    "tagihan-bpjph-table-key-invoice": "Invoice",
+    "tagihan-bpjph-table-key-action": "Action",
+    "tagihan-bpjph-dialog-delete-title": "Hapus",
+    "tagihan-bpjph-dialog-delete-btn-batal": "Batal",
+    "tagihan-bpjph-dialog-delete-btn-submit": "Simpan"
   }
 }
