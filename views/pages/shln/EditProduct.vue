@@ -32,7 +32,24 @@ const addBulking = () => {
 };
 const refVForm = ref<VForm>();
 const bulkingForm = ref<VForm>();
-
+const uploadDocument = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append("shln_id", shlnId);
+    formData.append("file", file);
+    const response = await $api("/shln/submission/product/add-bulking", {
+      method: "post",
+      body: formData,
+    });
+    return response;
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      "ada kesalahan saat upload file, gagal menyimpan!",
+      "error"
+    );
+    bulkingDialog.value = false;
+  }
+};
 const onSubmit = async () => {
   // sendSnackbar("error bang", "success");
   refVForm.value?.validate().then(({ valid: isValid }) => {
@@ -45,6 +62,9 @@ const onSubmitBulking = async () => {
     useSnackbar().sendSnackbar("mohon masukkan file", "error");
     return;
   }
+  uploadDocument(selectedFile.value);
+  await loadItem(page.value, itemPerPage.value);
+  await loadTracking();
   bulkingDialog.value = false;
 };
 const insertProduct = async () => {
@@ -306,11 +326,28 @@ const formatItemTitle = (item) => {
               <VCol cols="12" md="2">
                 <h3 class="text-h4">Product</h3>
               </VCol>
-              <VCol cols="12" md="2">
+              <VCol cols="auto" class="d-flex flex-row">
+                <v-btn
+                  color="primary"
+                  class="ma-1"
+                  @click="
+                    downloadDocument(
+                      'template_product_shln_template_template.xlsm'
+                    )
+                  "
+                >
+                  Template <v-icon end icon="fa-download" />
+                </v-btn>
                 <v-btn
                   color="primary"
                   variant="outlined"
-                  block
+                  class="ma-1"
+                  @click="addBulking"
+                  >Tambah Bulking <v-icon end icon="fa-plus" />
+                </v-btn>
+                <v-btn
+                  color="primary"
+                  variant="outlined"
                   class="ma-1"
                   @click="addProduct"
                   >Tambah <v-icon end icon="fa-plus" />
