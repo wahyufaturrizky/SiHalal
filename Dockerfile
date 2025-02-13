@@ -1,16 +1,7 @@
-FROM node:20.18.0-slim AS builder
-WORKDIR /app
-ARG BUILD_ENV
-COPY . .
-RUN npm install -g pnpm
-RUN pnpm install
-
-RUN pnpm run build --max-workers=2
-
-FROM node:20.18.0-slim
+FROM node:20-alpine
 
 WORKDIR /app
-COPY --from=builder /app/.output /app/.output
+COPY .output /app/.output
 
 COPY package*.json ./
 EXPOSE 3000
