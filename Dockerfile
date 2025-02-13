@@ -5,7 +5,7 @@ COPY . .
 RUN npm install -g pnpm
 RUN pnpm install
 
-RUN pnpm run build
+RUN pnpm run build --max-workers=2
 
 FROM node:20.18.0-slim
 
