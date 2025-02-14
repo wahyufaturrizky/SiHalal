@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { useDisplay } from "vuetify";
 
 const { t } = useI18n();
+const { mdAndUp } = useDisplay();
 const tableKBLIHeader = [
   { title: "No", key: "no_idx" },
   { title: `${t("detail-pu.pu-kbli-no")}`, key: "No" },
@@ -33,6 +35,11 @@ onMounted(async () => {
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
+      <!-- <VExpansionPanelTitle
+        ><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">
+          KBLI
+        </p></VExpansionPanelTitle
+      > -->
       <VExpansionPanelTitle>
         <div class="text-h4 font-weight-bold">KBLI</div>
       </VExpansionPanelTitle>

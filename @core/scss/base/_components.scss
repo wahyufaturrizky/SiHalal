@@ -3,6 +3,8 @@
 @use "@layouts/styles/mixins" as layoutMixins;
 @use "@configured-variables" as variables;
 @use "@styles/variables/_vuetify.scss" as vuetify;
+@import url('https://fonts.cdnfonts.com/css/plus-jakarta-sans');
+@import url('https://fonts.cdnfonts.com/css/inter');
 
 // 👉 Avatar group
 .v-avatar-group {
@@ -188,4 +190,32 @@
 // 👉 Switch
 .v-switch .v-selection-control:not(.v-selection-control--dirty) .v-switch__thumb {
   color: #fff !important;
+}
+
+.text-menu {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 2.375rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.mobile-text-menu {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 2.25rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.subtext-menu {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.75rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.mobile-subtext-menu {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.625rem;
+  font-family: 'Inter', sans-serif;
 }

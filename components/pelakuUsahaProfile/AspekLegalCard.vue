@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { legal } from "@/stores/interface/pelakuUsahaProfileIntf";
 import { useI18n } from "vue-i18n";
+import { useDisplay } from "vuetify";
 
 const { t } = useI18n();
+const { mdAndUp } = useDisplay();
 const panelOpen = ref(0);
 const props = defineProps({
   aspekLegalData: {
@@ -43,6 +45,11 @@ onMounted(() => {
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
+      <!-- <VExpansionPanelTitle
+        ><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">
+          Aspek Legal
+        </p></VExpansionPanelTitle
+      > -->
       <VExpansionPanelTitle>
         <div class="text-h4 font-weight-bold">
           {{ t("detail-pu.pu-legal-title") }}
