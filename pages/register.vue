@@ -606,7 +606,6 @@ const { t } = useI18n();
             v-if="currentDisplayFile"
             height="100%"
             autoplay
-            muted
             loop
             style="border-radius: 20px"
           >
@@ -619,7 +618,6 @@ const { t } = useI18n();
             v-if="currentDisplayFile"
             width="100%"
             autoplay
-            muted
             loop
             style="border-radius: 20px"
           >
