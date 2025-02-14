@@ -117,6 +117,7 @@ onMounted(() => {
             v-if="currentDisplayFile"
             height="100%"
             autoplay
+            controls
             loop
             style="border-radius: 20px"
           >
@@ -129,6 +130,7 @@ onMounted(() => {
             v-if="currentDisplayFile"
             width="100%"
             autoplay
+            controls
             loop
             style="border-radius: 20px"
           >
