@@ -115,7 +115,7 @@ export default defineNuxtConfig({
           phone_number: "string",
           name: "string",
           roles:
-            "{ code : string,name: string, permissions: { group: string, name: string, url: string,parent_id : string, id : string, child : {group : string, icon : string,id : string, name : string, parent_id : string, url : string}[] }[] }[]",
+            "{ code : string,name: string, permissions: { group: string, name: string,name_en: string, url: string,parent_id : string, id : string, child : {group : string, icon : string,id : string, name : string,name_en: string, parent_id : string, url : string}[] }[] }[]",
           username: "string",
         },
         dataResponsePointer: "/user",

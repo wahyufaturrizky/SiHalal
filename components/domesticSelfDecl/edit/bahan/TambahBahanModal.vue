@@ -1,5 +1,12 @@
 <script setup lang="ts">
 import { VForm } from "vuetify/components";
+
+defineProps({
+  canNotEdit: {
+    type: Boolean,
+  },
+});
+
 const route = useRoute();
 interface BahanDataCertified {
   id: string;
@@ -212,6 +219,7 @@ const insertBahan = async () => {
   <VDialog max-width="60svw" v-model="modalAddBahan">
     <template #activator="{ props: openModal }">
       <VBtn
+        v-if="!canNotEdit"
         variant="outlined"
         prepend-icon="fa-plus"
         style="margin: 1svw"

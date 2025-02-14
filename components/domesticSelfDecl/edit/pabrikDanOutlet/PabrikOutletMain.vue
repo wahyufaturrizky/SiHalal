@@ -1,4 +1,10 @@
 <script setup lang="ts">
+defineProps({
+  canNotEdit: {
+    type: Boolean,
+  },
+});
+
 // const tablePabrikHeader = [
 //   { title: "No", key: "no" },
 //   { title: "Jenis", key: "kind" },
@@ -201,6 +207,7 @@ onMounted(async () => {
               <VCol cols="6"><h4>Pabrik</h4></VCol>
               <VCol cols="6" style="display: flex; justify-content: end"
                 ><VBtn
+                  v-if="!canNotEdit"
                   density="compact"
                   variant="outlined"
                   @click="openModal('FAPAB')"
@@ -215,7 +222,7 @@ onMounted(async () => {
               <template #item.index="{ index }">
                 {{ index + 1 }}
               </template>
-              <template #item.action="{ item }">
+              <template v-if="!canNotEdit" #item.action="{ item }">
                 <div class="d-flex gap-1">
                   <IconBtn size="small" @click="deleteItem(item, 'FAPAB')">
                     <VIcon icon="fa-trash-o" color="error" />
@@ -235,6 +242,7 @@ onMounted(async () => {
               <VCol cols="6"><h4>Outlet</h4></VCol>
               <VCol cols="6" style="display: flex; justify-content: end"
                 ><VBtn
+                  v-if="!canNotEdit"
                   density="compact"
                   variant="outlined"
                   @click="openModal('FAOUT')"
@@ -249,7 +257,7 @@ onMounted(async () => {
               <template #item.index="{ index }">
                 {{ index + 1 }}
               </template>
-              <template #item.action="{ item }">
+              <template v-if="!canNotEdit" #item.action="{ item }">
                 <div class="d-flex gap-1">
                   <IconBtn size="small" @click="deleteItem(item, 'FAOUT')">
                     <VIcon icon="fa-trash-o" color="error" />

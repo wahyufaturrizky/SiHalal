@@ -888,6 +888,7 @@ const onSearchFasilitator = async () => {
       method: "post",
       body: {
         kode,
+        id_reg: selfDeclareId,
       },
     });
 

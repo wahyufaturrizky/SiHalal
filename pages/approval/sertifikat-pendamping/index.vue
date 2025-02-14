@@ -140,7 +140,7 @@ const getChipColor = (status: string) => {
 }
 
 const unduhFile = async (file: string) => {
-  await downloadDocument(file, 'PENDAMPING_SERT_PELATIHAN')
+  await downloadDocument(file, 'PENDAMPING_SERT_UPLOAD')
 }
 </script>
 
@@ -248,7 +248,7 @@ const unduhFile = async (file: string) => {
                       <VIcon
                         icon="ri-arrow-right-line"
                         color="primary"
-                        @click="() => unduhFile(item.file_sertifikat)"
+                        @click="() => unduhFile(item.fotosertifikat)"
                       />
                     </div>
                   </IconBtn>

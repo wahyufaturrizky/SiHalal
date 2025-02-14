@@ -59,7 +59,11 @@ onMounted(async () => {
             <PelakuUsahaMain />
           </VTabsWindowItem>
           <VTabsWindowItem value="2">
-            <PengajuanMain :hide-kode-fasilitasi="true" />
+            <PengajuanMain
+              :hide-kode-fasilitasi="true"
+              :hide-alert-kode-unik="true"
+              :hide-on-search-fasilitator-function="true"
+            />
           </VTabsWindowItem>
           <VTabsWindowItem value="3">
             <PabrikOutletMain />

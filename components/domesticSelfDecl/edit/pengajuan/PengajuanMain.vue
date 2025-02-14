@@ -1,6 +1,15 @@
 <script setup lang="ts">
-defineProps({
+const { hideOnSearchFasilitatorFunction } = defineProps({
   hideKodeFasilitasi: {
+    type: Boolean,
+  },
+  canNotEdit: {
+    type: Boolean,
+  },
+  hideAlertKodeUnik: {
+    type: Boolean,
+  },
+  hideOnSearchFasilitatorFunction: {
     type: Boolean,
   },
 });
@@ -111,42 +120,48 @@ const handleGetFasilitator = async () => {
 
 const querySearch = ref("");
 
-const onSelectFasilitator = (selectedId: string) => {
+const onSelectFasilitator = (selectedId) => {
+  console.log(selectedId);
   if ((isFasilitator.value = selectedId === "Lainnya")) {
     onSearchFasilitator(querySearch.value);
     return;
   }
-  isKodeFound.value = false;
+  const fasil = listFasilitasi.value.find((fas) => fas.id == selectedId);
+  onSearchFasilitator(fasil.code);
+  // isKodeFound.value = false;
 };
 
 const responseMessage = ref("");
 const responseId = ref("");
 const facName = ref("");
 
-const onSearchFasilitator = async () => {
-  try {
-    facName.value = "";
-    const kode = querySearch.value;
+const onSearchFasilitator = async (kode) => {
+  if (!hideOnSearchFasilitatorFunction)
+    try {
+      facName.value = "";
+      console.log(kode);
+      // const kode = querySearch.value;
 
-    const response: any = await $api("/self-declare/submission/kode", {
-      method: "post",
-      body: {
-        kode,
-      },
-    });
+      const response: any = await $api("/self-declare/submission/kode", {
+        method: "post",
+        body: {
+          kode,
+          id_reg: submissionId,
+        },
+      });
 
-    if (response.message === "Kode Fasilitasi dapat digunakan") {
-      isKodeFound.value = true;
-      isKodeNotFound.value = false;
-      responseMessage.value = "";
-      responseId.value = response.data[0].id;
-      facName.value = response.data[0].name;
-    } else {
-      responseMessage.value = response.message;
-      isKodeFound.value = false;
-      isKodeNotFound.value = true;
-    }
-  } catch (error) {}
+      if (response.message === "Kode Fasilitasi dapat digunakan") {
+        isKodeFound.value = true;
+        isKodeNotFound.value = false;
+        responseMessage.value = "";
+        responseId.value = response.data[0].id;
+        facName.value = response.data[0].name;
+      } else {
+        responseMessage.value = response.message;
+        isKodeFound.value = false;
+        isKodeNotFound.value = true;
+      }
+    } catch (error) {}
 };
 
 const responseType = computed(() => {
@@ -436,6 +451,9 @@ onMounted(async () => {
 
   // ]);
 });
+const getItemData = (item) => {
+  return { id: item.id, kode: item.code };
+};
 </script>
 
 <template>
@@ -447,6 +465,7 @@ onMounted(async () => {
       >
         <div>Data Pengajuan</div>
         <VBtn
+          v-if="!canNotEdit"
           type="submit"
           color="primary"
           variant="flat"
@@ -521,8 +540,8 @@ onMounted(async () => {
               append-inner-icon="mdi-magnify"
               density="compact"
               :rules="[requiredValidator]"
-              @input="onSearchFasilitator"
             />
+            <!-- @input="onSearchFasilitator(querySearch)" -->
           </VCol>
         </VRow>
         <VRow>
@@ -535,7 +554,7 @@ onMounted(async () => {
             />
           </VCol>
         </VRow>
-        <div v-if="isFasilitator">
+        <div>
           <VAlert
             v-if="isKodeNotFound"
             :type="responseType"
@@ -556,7 +575,7 @@ onMounted(async () => {
           </VAlert>
 
           <VAlert
-            v-if="!isKodeFound"
+            v-if="!isKodeFound && !hideAlertKodeUnik"
             type="warning"
             variant="tonal"
             color="#652672"

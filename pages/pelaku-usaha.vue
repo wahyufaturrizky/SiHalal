@@ -183,35 +183,39 @@ onMounted(() => {
               <VExpansionPanelText>
                 <VDataTable
                   :headers="penyeliaHeader"
-                  :items="store.supervisorData"
+                  :items="store.supervisorData || []"
                 >
                   <template #header.name="{ column }">
                     <div>
-                      {{ t(column.title) }}
+                      {{ t(column.title) ? t(column.title) : "Nama" }}
                     </div>
                   </template>
 
                   <template #header.ktp_no="{ column }">
                     <div>
-                      {{ t(column.title) }}
+                      {{ t(column.title) ? t(column.title) : "NO KTP" }}
                     </div>
                   </template>
 
                   <template #header.no_kontak="{ column }">
                     <div>
-                      {{ t(column.title) }}
+                      {{ t(column.title) ? t(column.title) : "NO KONTAK" }}
                     </div>
                   </template>
 
                   <template #header.sk_no="{ column }">
                     <div>
-                      {{ t(column.title) }}
+                      {{
+                        t(column.title)
+                          ? t(column.title)
+                          : "NO/TGL SERTIF PENYELIA HALAL"
+                      }}
                     </div>
                   </template>
 
                   <template #header.certification_no="{ column }">
                     <div>
-                      {{ t(column.title) }}
+                      {{ t(column.title) ? t(column.title) : "NO/TANGGAL SK" }}
                     </div>
                   </template>
 

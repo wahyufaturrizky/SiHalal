@@ -35,6 +35,7 @@ export const useMyAuthUserStore = defineStore("myAuthUserStore", () => {
             id: permission.id,
             group: permission.group,
             name: permission.name,
+            name_en: permission.name_en,
             child: [],
           };
         }
@@ -47,6 +48,7 @@ export const useMyAuthUserStore = defineStore("myAuthUserStore", () => {
       if (data.group === "heading") {
         menuList.push({
           heading: data.name,
+          heading_en: data.name_en,
           roles: roles,
         });
       }
@@ -54,6 +56,7 @@ export const useMyAuthUserStore = defineStore("myAuthUserStore", () => {
         data.child.forEach((j) => {
           menuList.push({
             title: j.name,
+            title_en: j.name_en,
             to: j.url == "/" ? "index" : toPath(j.url),
             icon: { icon: j.icon },
             roles: roles,

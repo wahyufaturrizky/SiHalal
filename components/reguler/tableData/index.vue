@@ -247,15 +247,14 @@ const detailClicked = (item: any) => {
 };
 
 onMounted(() => {
-  if (props?.title === "Daftar Nama Bahan dan Kemasan") getListIngredients();
-  else if (props?.title === "Daftar Nama Produk") getListProducts();
+  if (props?.title === "Daftar Nama Produk") getListProducts();
 });
 
 watch(
-  () => props.reRender,
+  () => [props.reRender, props.refresh],
   async () => {
     loading.value = true;
-    await Promise.allSettled([getListIngredients(), getListProducts()]);
+    getListProducts()
     loading.value = false;
   }
 );
@@ -311,14 +310,17 @@ watch(
           :hide-default-footer="props?.hideDefaultFooter"
           :headers="props.data.label"
           :items="
-            props?.title === 'Daftar Nama Bahan dan Kemasan'
-              ? ingredientItems
-              : props.title === 'Daftar Nama Produk'
+            props.title === 'Daftar Nama Produk'
               ? productItems
               : props?.data.value
           "
         >
           <template #header.jenis_bahan="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+          <template #header.jumlah="{ column }">
             <div>
               {{ t(column.title) }}
             </div>
