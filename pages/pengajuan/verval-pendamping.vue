@@ -51,7 +51,7 @@ const loadItem = async (page: number, size: number, search: string) => {
   try {
     const response: any = await $api("self-declare/proses-verval/list", {
       method: "GET",
-      params: { page, size, search, status: "OF10" },
+      params: { page, size, search, status: "OF10", channel_id: "CH003" },
     });
 
     if (response.code === 2000) {
