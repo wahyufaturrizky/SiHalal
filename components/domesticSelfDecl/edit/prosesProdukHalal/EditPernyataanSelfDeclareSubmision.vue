@@ -230,7 +230,7 @@ onMounted(() => {
       >
       <VBtn
         @click="handleAgree"
-        :disabled="props.isVerificator"
+        :disabled="isVerificator"
         variant="flat"
         min-width="120px"
         class="text-white"

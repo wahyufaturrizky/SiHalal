@@ -1,5 +1,10 @@
 <script setup lang="ts">
-const { hideOnSearchFasilitatorFunction } = defineProps({
+const {
+  hideOnSearchFasilitatorFunction,
+  canNotEdit,
+  hideAlertKodeUnik,
+  hideKodeFasilitasi,
+} = defineProps({
   hideKodeFasilitasi: {
     type: Boolean,
   },
@@ -575,7 +580,7 @@ const getItemData = (item) => {
           </VAlert>
 
           <VAlert
-            v-if="!isKodeFound && !hideAlertKodeUnik"
+            v-if="!isKodeFound && !hideAlertKodeUnik && !canNotEdit"
             type="warning"
             variant="tonal"
             color="#652672"
