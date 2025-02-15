@@ -119,7 +119,7 @@ const tandaiOK = async () => {
       loadingTandaiOK.value = false;
 
       setTimeout(() => {
-        router.go(-1);
+        router.push("/lp3h/self-declare/verifikasi-mandiri");
       }, 1000);
     } else {
       useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
@@ -304,7 +304,7 @@ const lihatLaporan = async () => {
       loadingLihatLaporan.value = false;
 
       setTimeout(() => {
-        router.go(-1);
+        router.push("/lp3h/self-declare/verifikasi-mandiri");
       }, 1000);
     } else {
       useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
