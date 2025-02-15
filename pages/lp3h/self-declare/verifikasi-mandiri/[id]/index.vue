@@ -107,7 +107,7 @@ const tandaiOK = async () => {
     loadingTandaiOK.value = true;
 
     const res: any = await $api(
-      `/self-declare/verificator/tandai-ok/${submissionId}`,
+      `/self-declare/verificator/tandai-ok-mandiri/${submissionId}`,
       {
         method: "put",
       }
@@ -530,7 +530,7 @@ const isCanEdit = () => {
                 `/lp3h/self-declare/verifikasi-mandiri/${submissionId}/edit`
               )
             "
-            >Ubah</VBtn
+            >Cek Data</VBtn
           >
           <VBtn @click="isSendModalOpen = true">Kirim</VBtn>
         </div>
@@ -553,7 +553,7 @@ const isCanEdit = () => {
               `/lp3h/self-declare/verifikasi-mandiri/${submissionId}/edit`
             )
           "
-          >Ubah</VBtn
+          >Cek Data</VBtn
         >
         <VBtn
           :loading="loadingTandaiOK"
@@ -561,7 +561,7 @@ const isCanEdit = () => {
           color="#49A84C"
           class="mx-2"
         >
-          Tandai OK
+          Setujui
         </VBtn>
         <ModalLP3HSelfDeclareVerifikasiMandiri
           :modal-type="'return'"

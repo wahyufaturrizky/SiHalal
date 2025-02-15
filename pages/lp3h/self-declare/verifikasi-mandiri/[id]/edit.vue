@@ -72,7 +72,7 @@ onMounted(async () => {
             <EditProsesProdukHalalSelfDeclareSubmission :can-not-edit="true" />
           </VTabsWindowItem>
           <VTabsWindowItem value="7">
-            <EditPernyataanSelfDeclareSubmision :can-not-edit="true" />
+            <EditPernyataanSelfDeclareSubmision />
           </VTabsWindowItem>
         </VTabsWindow>
       </VCol>
