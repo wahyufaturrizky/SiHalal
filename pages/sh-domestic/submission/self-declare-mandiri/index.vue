@@ -124,7 +124,7 @@ const handleLoadList = async () => {
         page: currentPage.value,
         size: itemPerPage.value,
         keyword: searchQuery.value,
-        status: "OF1,OF280,OF285",
+        status: "OF56",
         channel_id: "CH004",
       },
     });
