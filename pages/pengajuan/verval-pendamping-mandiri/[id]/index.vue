@@ -21,6 +21,7 @@ const statusItem = new Proxy(
     OF120: { color: "success", desc: "Certificate Issued" },
     OF900: { color: "error", desc: "Dibatalkan" },
     OF71: { color: "success", desc: "Selesai P3H" },
+    OF56: { color: "success", desc: "Pembayaran" },
   },
   {
     get(target: any, prop: string) {
@@ -365,9 +366,12 @@ const tandaiOK = async () => {
     loadingTandaiOK.value = true;
 
     const res: any = await $api(
-      `/self-declare/verificator/tandai-ok-mandiri/${submissionId}`,
+      `/self-declare/verificator/tandai-ok-vercal-pendamping-mandiri`,
       {
         method: "put",
+        body: {
+          submissionId: submissionId,
+        },
       }
     );
     console.log("@res", res);
