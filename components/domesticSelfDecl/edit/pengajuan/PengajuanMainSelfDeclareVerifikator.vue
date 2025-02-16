@@ -1,4 +1,10 @@
 <script setup lang="ts">
+const { hideKodeFasilitasi } = defineProps({
+  hideKodeFasilitasi: {
+    type: Boolean,
+  },
+});
+
 const route = useRoute<"">();
 const submissionId = route.params?.id;
 
@@ -126,7 +132,7 @@ const onSearchFasilitator = async () => {
       method: "post",
       body: {
         kode,
-        id_reg : submissionId
+        id_reg: submissionId,
       },
     });
 
@@ -489,7 +495,7 @@ onMounted(async () => {
           </VCol>
         </VRow>
         <br />
-        <VRow>
+        <VRow v-if="!hideKodeFasilitasi">
           <VCol cols="12">
             <VLabel>Kode Daftar / Fasilitasi</VLabel>
             <VRow>
