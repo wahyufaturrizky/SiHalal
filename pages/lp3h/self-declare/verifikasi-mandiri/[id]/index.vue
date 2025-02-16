@@ -122,12 +122,11 @@ const tandaiOK = async () => {
         router.push("/lp3h/self-declare/verifikasi-mandiri");
       }, 1000);
     } else {
-      useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
+      useSnackbar().sendSnackbar(res?.errors.list_error?.join(", "), "error");
       loadingTandaiOK.value = false;
     }
   } catch (error) {
-    console.log("@error", error);
-
+    console.log(error);
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loadingTandaiOK.value = false;
   }
