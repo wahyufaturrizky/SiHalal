@@ -13,10 +13,10 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const body: DraftBody = await readBody(event);
+  const body = await readBody(event);
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/halal-certificate-reguler/self-declare/${id}/ok-mandiri`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/pendamping/mandiri/submit`,
     {
       method: "put",
       headers: { Authorization: authorizationHeader },
