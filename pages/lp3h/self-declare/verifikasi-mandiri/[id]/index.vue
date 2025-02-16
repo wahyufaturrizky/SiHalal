@@ -122,12 +122,11 @@ const tandaiOK = async () => {
         router.push("/lp3h/self-declare/verifikasi-mandiri");
       }, 1000);
     } else {
-      useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
+      useSnackbar().sendSnackbar(res?.errors.list_error?.join(", "), "error");
       loadingTandaiOK.value = false;
     }
   } catch (error) {
-    console.log("@error", error);
-
+    console.log(error);
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loadingTandaiOK.value = false;
   }
@@ -524,7 +523,6 @@ const isCanEdit = () => {
           </VBtn>
           <VBtn
             variant="outlined"
-            append-icon="ri-pencil-fill"
             @click="
               router.push(
                 `/lp3h/self-declare/verifikasi-mandiri/${submissionId}/edit`
@@ -547,7 +545,6 @@ const isCanEdit = () => {
         </VBtn> -->
         <VBtn
           variant="outlined"
-          append-icon="ri-pencil-fill"
           @click="
             router.push(
               `/lp3h/self-declare/verifikasi-mandiri/${submissionId}/edit`
