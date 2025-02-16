@@ -136,6 +136,9 @@ const statusItem: any = new Proxy(
     OF100: { color: "success", desc: "Selesai Sidang Fatwa" },
     OF120: { color: "success", desc: "Certificate Issued" },
     OF900: { color: "error", desc: "Dibatalkan" },
+    OF56: { color: "success", desc: "Pembayaran" },
+    OF72: { color: "success", desc: "Verifikasi LP3H" },
+    OF71: { color: "success", desc: "Selesai P3H" },
   },
   {
     get(target: any, prop: any) {
@@ -436,6 +439,7 @@ const loadItemById = async () => {
         pendamping,
         jenis_daftar,
         fac_id,
+        id_channel,
       } = certificate_halal || {};
 
       dataTracking.value = tracking || [];
@@ -444,6 +448,7 @@ const loadItemById = async () => {
       dataFormPengajuan.value = {
         jenisPendaftaran: jenis_daftar,
         kodeDaftarFasilitasi: fac_id,
+        idChannel: id_channel,
         nomorSuratPermohonan: no_mohon,
         jenisLayanan: jenis_layanan,
         jenisProduk: jenis_produk,
@@ -750,16 +755,16 @@ const bahanTableHeader = [
 const outletTableHeader = [
   { title: "No", key: "no" },
   // { title: "Jenis Bahan", key: "jenis_outlet" },
-  { title: "Nama Bahan", key: "nama_outlet" },
-  { title: "Alamat", key: "alamat_outlet" },
+  { title: "Nama Bahan", key: "nama" },
+  { title: "Alamat", key: "alamat" },
   { title: "Status", key: "status_milik" },
   // { title: "Action", key: "action" },
 ];
 
 const pabrikTableHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "nama_pabrik" },
-  { title: "Alamat", key: "alamat_pabrik" },
+  { title: "Nama", key: "nama" },
+  { title: "Alamat", key: "alamat" },
   { title: "Status", key: "status_milik" },
   // { title: "Action", key: "action" },
 ];
@@ -816,9 +821,9 @@ const lihatLaporan = async () => {
     loadingLihatLaporan.value = true;
 
     const res: any = await $api(
-      `/self-declare/verificator/lihat-laporan/${selfDeclareId}`,
+      `/self-declare/verificator/lihat-laporan-download/${selfDeclareId}`,
       {
-        method: "put",
+        method: "get",
       }
     );
 
@@ -826,8 +831,8 @@ const lihatLaporan = async () => {
       useSnackbar().sendSnackbar("Success", "success");
       loadingLihatLaporan.value = false;
 
-      setTimeout(() => {
-        router.go(-1);
+      setTimeout(async () => {
+        await downloadDocument(res?.data?.file);
       }, 1000);
     } else {
       useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
@@ -1247,7 +1252,10 @@ const onSelectFasilitator = (selectedId: string) => {
     </VContainer>
 
     <!-- Tab Content Pengajuan -->
-    <PengajuanMainSelfDeclareVerifikator v-if="tab === 'pengajuan'" />
+    <PengajuanMainSelfDeclareVerifikator
+      :hide-kode-fasilitasi="dataFormPengajuan?.idChannel === 'CH004'"
+      v-if="tab === 'pengajuan'"
+    />
 
     <!-- Tab Content Pabrik dan Outlet -->
     <VContainer v-if="tab === 'pabrik'">

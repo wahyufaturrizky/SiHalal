@@ -20,7 +20,7 @@ const headers: any = [
   { title: "Tanggal Daftar", key: "tgl_daftar" },
   { title: "Nama PU", key: "nama_pu" },
   { title: "Alamat", key: "alamat_pu" },
-  { title: "Jenis Produk", key: "jenis_product" },
+  { title: "Jenis Produk", key: "product_name" },
   { title: "Merk Dagang", key: "merek_dagang" },
   { title: "Status", key: "status_reg" },
   { title: "Action", key: "action" },
