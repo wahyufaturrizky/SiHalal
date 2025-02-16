@@ -302,6 +302,20 @@ const loadItem = async (page: number, size: number) => {
     loading.value = false;
   }
 };
+
+const getTemplate = async () => {
+  try {
+    const response = await $api("/shln/submission/product/template", {
+      method: "post",
+      body: {
+        id: shlnId,
+      },
+    });
+    downloadFileExcel(response);
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 onMounted(async () => {
   await Promise.allSettled([loadTracking(), loadHsCode(), loadInitialHsCode()]);
 });
@@ -327,15 +341,7 @@ const formatItemTitle = (item) => {
                 <h3 class="text-h4">Product</h3>
               </VCol>
               <VCol cols="auto" class="d-flex flex-row">
-                <v-btn
-                  color="primary"
-                  class="ma-1"
-                  @click="
-                    downloadDocument(
-                      'template_product_shln_template_template.xlsm'
-                    )
-                  "
-                >
+                <v-btn color="primary" class="ma-1" @click="getTemplate()">
                   Template <v-icon end icon="fa-download" />
                 </v-btn>
                 <v-btn
