@@ -523,7 +523,6 @@ const isCanEdit = () => {
           </VBtn>
           <VBtn
             variant="outlined"
-            append-icon="ri-pencil-fill"
             @click="
               router.push(
                 `/lp3h/self-declare/verifikasi-mandiri/${submissionId}/edit`
@@ -546,7 +545,6 @@ const isCanEdit = () => {
         </VBtn> -->
         <VBtn
           variant="outlined"
-          append-icon="ri-pencil-fill"
           @click="
             router.push(
               `/lp3h/self-declare/verifikasi-mandiri/${submissionId}/edit`
