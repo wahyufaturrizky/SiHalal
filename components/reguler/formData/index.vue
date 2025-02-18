@@ -131,7 +131,7 @@ const getLph = async (path: string, layanan: string, area: string) => {
 
 const onSubmit = async () => {
  
-  if (props?.title === "Pengajuan Sertifikasi Halal") {
+  if (props?.title === t(`pengajuan-reguler.reguler-form--pengajuan-pengajuan-title`)) {
     const jenisLayanan = props?.service_type?.find(
       (item: any) =>
         props.data?.[3]?.value === item.name ||
