@@ -8,26 +8,26 @@ const panelDokumenPersyaratan = ref([0,1])
 const panelMelacak = ref([0,1])
 
 
-const dataProfilePendamping = [
-  { label: "Nama Lembaga", value: "Lembaga AB761" },
-  { label: "Jenis Lembaga", value: "Komisi Fatwa MUI Provinsi" },
-  { label: "Alamat", value: "Sumbawa Banget, RT002/RW002, Sumbang, Curio Sumbawa Banget, RT002/RW002, Sumbang, Curio" },
+const dataProfilePendamping = ref([
+  { label: "Nama Lembaga", value: "-" },
+  { label: "Jenis Lembaga", value: "-" },
+  { label: "Alamat", value: "-" },
   { label: "Kecamatan", value: "-" },
-  { label: "Kode Pos", value: "14045" },
-  { label: "Kota/Kab", value: "Kab. Enrekang" },
-  { label: "Provinsi", value: "Pusat" },
-  { label: "Email", value: "LembagaAB761@gmail.com" }
-]
+  { label: "Kode Pos", value: "-" },
+  { label: "Kota/Kab", value: "-" },
+  { label: "Provinsi", value: "-" },
+  { label: "Email", value: "-" }
+])
 
-const dataNamaPenanggungJawab = [
-  { label: "Nama Pimpinan", value: "Albert Flores" },
-  { label: "No. HP Pimpinan", value: "0821178958123" }
-]
+const dataNamaPenanggungJawab = ref([
+  { label: "Nama Pimpinan", value: "-" },
+  { label: "No. HP Pimpinan", value: "-" }
+])
 
-const dataKontakPenanggungJawab = [
-  { label: "Nama Kontak", value: "Robert Fox" },
-  { label: "No. HP Kontak", value: "0821178958123" }
-]
+const dataKontakPenanggungJawab = ref([
+  { label: "Nama Kontak", value: "-" },
+  { label: "No. HP Kontak", value: "-" }
+])
 
 const dataPendampingHeader = [
   { title: "No", key: "no"},
@@ -58,11 +58,11 @@ const previewKtp = (item) => {
   console.log("PREVIEW KTP : ", item)
 }
 
-const dataRegistrasi = [
-  { label: "No. Registrasi", value: "1234567890789" },
-  { label: "Tanggal Berlaku", value: "1/14/2027 10:00:00 AM" },
-  { label: "Status", value: "Disetujui" }
-]
+const dataRegistrasi = ref([
+  { label: "No. Registrasi", value: "-" },
+  { label: "Tanggal Berlaku", value: "-" },
+  { label: "Status", value: "-" }
+])
 
 
 const dokumenPersyaratan = [
@@ -87,6 +87,56 @@ const ajukanHandler = () => {
   dialog.value = false
   useSnackbar().sendSnackbar("Berhasil mengirim pengajuan ", "success")
 }
+
+const loadProfil = async () => {
+  try {
+    const response = await $api("/lp3h/profil", {
+      method: "get",
+    });
+
+    const data = response.data;
+    console.log("RESPONSE : ", response)
+
+    const lp = data.lembaga_pendamping
+    dataProfilePendamping.value = [
+      { label: "Nama Lembaga", value: lp.nama_lembaga },
+      { label: "Jenis Lembaga", value: lp.jenis_lembaga },
+      { label: "Alamat", value: lp.alamat },
+      { label: "Kecamatan", value: lp.kecamatan },
+      { label: "Kode Pos", value: lp.kode_pos },
+      { label: "Kota/Kab", value: lp.kabupaten },
+      { label: "Provinsi", value: lp.provinsi },
+      { label: "Email", value: lp.email }
+    ];
+
+    dataNamaPenanggungJawab.value = [
+      { label: "Nama Pimpinan", value: lp.nama_pimpinan },
+      { label: "No. HP Pimpinan", value: lp.no_hp }
+    ]
+
+    dataKontakPenanggungJawab.value = [
+      { label: "Nama Kontak", value: lp.nama_kontak },
+      { label: "No. HP Kontak", value: lp.no_hp_kontak_person }
+    ]
+
+    dataRegistrasi.value = [
+      { label: "No. Registrasi", value: lp.no_register },
+      { label: "Tanggal Berlaku", value: lp.tgl_berlaku },
+      { label: "Status", value: lp.status }
+    ]
+
+
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+
+onMounted(async () => {
+  await loadProfil()
+})
+
+
 
 </script>
 

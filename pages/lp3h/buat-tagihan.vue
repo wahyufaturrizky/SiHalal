@@ -2,24 +2,26 @@
 
 const searchQuery = ref(null)
 
-const status = [
-  { title: "Pengajuan", value: "OF10" },
-  { title: "Selesai P3H", value: "OF71" },
-  { title: "Verifikasi LP3H", value: "OF72" },
-  { title: "Pembayaran", value: "OF56" },
-  { title: "Dikirim ke Komite Fatwa", value: "OF74" },
-  { title: "Dikembalikan ke PU", value: "OF280" },
-  { title: "Dikembalikan oleh Fatwa", value: "OF285" },
-  { title: "Selesai Sidang Fatwa", value: "OF100" },
-  { title: "Penerbitan Sertifikat", value: "OF120" },
-  { title: "Sertifikat Halal Terbit", value: "OF300" },
-  { title: "Semua", value: null }
-]
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const page = ref(1);
+const loading = ref(true);
 
-const fasilitas = [
-  { title: "Todo", value: "todo" },
-  { title: "Semua", value: null }
-]
+// const status = [
+//   { title: "Pengajuan", value: "OF10" },
+//   { title: "Selesai P3H", value: "OF71" },
+//   { title: "Verifikasi LP3H", value: "OF72" },
+//   { title: "Pembayaran", value: "OF56" },
+//   { title: "Dikirim ke Komite Fatwa", value: "OF74" },
+//   { title: "Dikembalikan ke PU", value: "OF280" },
+//   { title: "Dikembalikan oleh Fatwa", value: "OF285" },
+//   { title: "Selesai Sidang Fatwa", value: "OF100" },
+//   { title: "Penerbitan Sertifikat", value: "OF120" },
+//   { title: "Sertifikat Halal Terbit", value: "OF300" },
+//   { title: "Semua", value: null }
+// ]
+
+const fasilitas = ref([])
 
 const years = [
   { title: "Semua", value: null }, // Menambahkan item "Semua"
@@ -56,13 +58,13 @@ const headers = [
   { title: 'Status', key: 'status' },
 ];
 
-const items = [
+const items = ref([
   { id: 1, no: 1, no_daftar: '317307981729837', tanggal: '16/01/2024', nama_pu: 'Anugrah Windy Mustikaartu', jenis_produk: 'Produk & Merk A', nama_fasilitasi: 'Sehati', nama_pendamping: 'Saul Schinner', catatan: 'Tidak Ada.', status: '...' },
   { id: 2, no: 2, no_daftar: '317307981729837', tanggal: '21/01/2024', nama_pu: 'Ronald Richards', jenis_produk: 'Produk & Merk B', nama_fasilitasi: 'Non Sehati', nama_pendamping: 'Jimmy Bode', catatan: 'Tidak Ada.', status: '...' },
   { id: 3, no: 3, no_daftar: '317307981729837', tanggal: '04/03/2024', nama_pu: 'Jacob Jones', jenis_produk: 'Produk & Merk C', nama_fasilitasi: 'Sehati', nama_pendamping: 'Janet Terry', catatan: 'Tidak Ada.', status: '...' },
   { id: 4, no: 4, no_daftar: '317307981729837', tanggal: '09/03/2024', nama_pu: 'Arlene McCoy', jenis_produk: 'Produk & Merk D', nama_fasilitasi: 'Non Sehati', nama_pendamping: 'Gina Lesch', catatan: 'Tidak Ada.', status: '...' },
   { id: 5, no: 5, no_daftar: '317307981729837', tanggal: '10/04/2024', nama_pu: 'Ralph Edwards', jenis_produk: 'Produk & Merk E', nama_fasilitasi: 'Sehati', nama_pendamping: 'Emma Hansen', catatan: 'Tidak Ada.', status: '...' },
-];
+]);
 
 const dialog = ref(false);
 const buatInvoiceHandler = () => {
@@ -71,6 +73,68 @@ const buatInvoiceHandler = () => {
   selected.value = []
   useSnackbar().sendSnackbar("Berhasil membuat invoice ", "success")
 }
+
+
+const loadFasilitasi = async () => {
+  try {
+    loading.value = true;
+    const response = await $api("/lp3h/list-fasilitasi", {
+      method: "get",
+    });
+
+    const data = response.data;
+    console.log("RESPONSE : ", response)
+
+    fasilitas.value = [
+      { title: "Semua", value: null },
+      ...data.map(i => ({
+        title: i.fac_name,
+        value: i.fac_id
+      }))
+    ];
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const loadListDokumen = async () => {
+  try {
+    loading.value = true;
+    const response = await $api("/lp3h/list-fasilitasi", {
+      method: "get",
+      params: {
+        page,
+        limit: itemPerPage
+      }
+    })
+
+    const data = response.data;
+    console.log("RESPONSE : ", response)
+
+
+    // items.value = data.map(
+    //     i => ({
+    //       id : i.id_reg,
+    //       no_daftar: i.no_daftar,
+    //       tanggal: i.tgl_daftar,
+    //       nama_pu: i.nama_pu,
+    //       jenis_produk: i.jenis_produk,
+    //       nama_fasilitasi: i.Facilitated.fac_name,
+    //       nama_pendamping: i.Pendamping.nama,
+    //       catatan: i.SidangFatwa.catatan
+    //
+    //     })
+    // )
+
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+onMounted(async () => {
+  await loadFasilitasi()
+})
+
 
 </script>
 
@@ -180,6 +244,9 @@ const buatInvoiceHandler = () => {
               item-value="id"
               show-select
             >
+              <template #item.no="{ index }">
+                {{ index + 1 }}
+              </template>
             </VDataTableServer>
           </VCardItem>
         </VCard>
