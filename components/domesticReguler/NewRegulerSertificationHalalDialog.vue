@@ -28,7 +28,7 @@ const openDialog = () => {
 };
 
 const selectedItem = ref(null);
-
+console.log(props,'isi props')
 const onRegister = () => {
   props.newRegister("JD.1", selectedItem.value);
   isVisible.value = false;
@@ -78,7 +78,7 @@ const { t } = useI18n();
               <VCardActions class="pa-2 justify-center">
                 <VBtn
                   variant="flat"
-                  style="min-inline-size: 100%"
+                  style="min-inline-size: 100%;"
                   @click="onRegister"
                 >
                   {{ t("pengajuan-reguler.popup-new-btn") }}
@@ -104,7 +104,7 @@ const { t } = useI18n();
               <VCardActions class="pa-2 justify-center">
                 <VBtn
                   variant="flat"
-                  style="min-inline-size: 100%"
+                  style="min-inline-size: 100%;"
                   @click="onAddRegister"
                 >
                   {{ t("pengajuan-reguler.popup-new-btn") }}

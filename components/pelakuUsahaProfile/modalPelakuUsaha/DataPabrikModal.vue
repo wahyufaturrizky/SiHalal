@@ -6,7 +6,7 @@
       variant="outlined"
       append-icon="ri-add-line"
     >
-      Tambah
+    {{t('detail-pu.pu-edit-add')}}
     </VBtn>
     <VBtn
       v-else-if="props.mode === 'edit'"
@@ -14,7 +14,7 @@
       variant="text"
       prepend-icon="ri-edit-line"
     >
-      Ubah
+      {{t('detail-pu.pu-edit-edit')}}
     </VBtn>
     <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
@@ -22,7 +22,7 @@
           class="text-h5 font-weight-bold d-flex justify-space-between align-center"
         >
           <span>{{
-            props.mode === "add" ? "Tambah Data Pabrik" : "Edit Data Pabrik"
+            props.mode === "add" ? t('detail-pu.pu-pabrik-modal-title-add') : t('detail-pu.pu-pabrik-modal-title-edit')
           }}</span>
           <VBtn
             icon
@@ -40,7 +40,7 @@
           <VForm ref="pabrikFormRef">
             <VRow class="mb-1">
               <VCol cols="12">
-                <VLabel>Lokasi Pabrik</VLabel>
+                <VLabel>  {{t('detail-pu.pu-pabrik-modal-1')}} </VLabel>
                 <VAutocomplete
                   :rules="[requiredValidator]"
                   v-model="form.lokasiPabrik"
@@ -56,11 +56,11 @@
 
             <VRow class="mb-1">
               <VCol cols="12">
-                <VLabel>Nama Pabrik</VLabel>
+                <VLabel>{{t('detail-pu.pu-pabrik-modal-2')}} </VLabel>
                 <VTextField
                   :rules="[requiredValidator]"
                   v-model="form.namaPabrik"
-                  placeholder="Isi Nama Pabrik"
+                 :placeholder="t('detail-pu.pu-pabrik-fill-modal-1')"
                   outlined
                   dense
                   required
@@ -69,18 +69,18 @@
                 <br />
                 <span v-if="errorProhibitedName" class="error-text">
                   <VIcon icon="mdi-alert-circle" color="error" size="small" />
-                  Maaf, Anda menggunakan kata dilarang!
+                 {{ t('detail-pu.pu-pabrik-validasi-warn')}}
                 </span>
               </VCol>
             </VRow>
 
             <VRow class="mb-1">
               <VCol cols="12">
-                <VLabel>Alamat Pabrik</VLabel>
+                <VLabel>{{t('detail-pu.pu-pabrik-modal-3')}}</VLabel>
                 <VTextField
                   :rules="[requiredValidator]"
                   v-model="form.alamatPabrik"
-                  placeholder="Isi Alamat Pabrik"
+                    :placeholder="t('detail-pu.pu-pabrik-fill-modal-2')"
                   outlined
                   dense
                   required
@@ -91,7 +91,7 @@
 
             <VRow class="mb-1" v-if="form.lokasiPabrik == 'Dalam Negeri'">
               <VCol cols="6">
-                <VLabel>Provinsi</VLabel>
+                <VLabel>{{t('detail-pu.pu-pabrik-modal-4')}}</VLabel>
                 <VAutocomplete
                   v-model="form.provinsi"
                   v-on:update:model-value="getDistrict"
@@ -107,7 +107,7 @@
                 />
               </VCol>
               <VCol cols="6">
-                <VLabel>Kab/Kota</VLabel>
+                <VLabel>{{t('detail-pu.pu-pabrik-modal-5')}}</VLabel>
                 <VAutocomplete
                   :rules="[requiredValidator]"
                   v-model="form.kabKota"
@@ -124,7 +124,7 @@
             </VRow>
             <VRow class="mb-1" v-if="form.lokasiPabrik == 'Luar Negeri'">
               <VCol cols="6">
-                <VLabel>Provinsi</VLabel>
+                <VLabel>{{t('detail-pu.pu-pabrik-modal-4')}}</VLabel>
                 <VTextField
                   :rules="[requiredValidator]"
                   v-model="form.provinsi"
@@ -136,7 +136,7 @@
                 />
               </VCol>
               <VCol cols="6">
-                <VLabel>Kab/Kota</VLabel>
+                <VLabel>{{t('detail-pu.pu-pabrik-modal-5')}}</VLabel>
                 <VTextField
                   v-model="form.kabKota"
                   placeholder="Isi Kab/Kota"
@@ -151,7 +151,7 @@
             <!-- Negara and Kode Pos -->
             <VRow class="mb-1">
               <VCol cols="6" class="pe-1">
-                <VLabel>Negara</VLabel>
+                <VLabel>{{t('detail-pu.pu-pabrik-modal-6')}}</VLabel>
                 <VTextField
                   :rules="[requiredValidator]"
                   v-model="form.negara"
@@ -162,7 +162,7 @@
                 />
               </VCol>
               <VCol cols="6" class="ps-1">
-                <VLabel>Kode Pos</VLabel>
+                <VLabel>{{t('detail-pu.pu-pabrik-modal-7')}}</VLabel>
                 <VTextField
                   :rules="[
                     requiredValidator,
@@ -170,7 +170,7 @@
                     integerValidator,
                   ]"
                   v-model="form.kodePos"
-                  placeholder="Isi Kode Pos"
+                  :placeholder="t('detail-pu.pu-pabrik-fill-modal-3')"
                   outlined
                   dense
                   required
@@ -182,7 +182,7 @@
             <!-- Status Pabrik -->
             <VRow class="mb-1">
               <VCol cols="12">
-                <VLabel>Status Pabrik</VLabel>
+                <VLabel>{{t('detail-pu.pu-pabrik-modal-8')}}</VLabel>
                 <VAutocomplete
                   :rules="[requiredValidator]"
                   v-model="form.statusPabrik"
@@ -201,9 +201,9 @@
         </VCardText>
 
         <div class="d-flex justify-end ga-2">
-          <VBtn @click="cancel" variant="outlined"> Batal </VBtn>
+          <VBtn @click="cancel" variant="outlined"> {{t('detail-pu.pu-pabrik-button-cancel')}} </VBtn>
           <VBtn @click="confirm" color="primary">
-            {{ props.mode === "add" ? "Tambah" : "Simpan" }}
+            {{ props.mode === "add" ? t('detail-pu.pu-pabrik-button-add')  : t('detail-pu.pu-pabrik-button-save')}}
           </VBtn>
         </div>
       </VCard>
@@ -212,6 +212,9 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 import type { MasterDistrict } from "@/server/interface/master.iface";
 import { computed, defineEmits, defineProps, ref, watch } from "vue";
 import { useDisplay } from "vuetify";
