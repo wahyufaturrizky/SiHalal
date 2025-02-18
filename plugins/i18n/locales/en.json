@@ -912,7 +912,10 @@
     "reguler-kode-facilitas-2": "Enter the Facility Code",
     "reguler-remove-bahan-title": "Remove Ingredients",
     "reguler-remove-bahan-1": "Yes, Delete",
-    "reguler-remove-bahan-2": "Are you sure you deleted this data?"
+    "reguler-remove-bahan-2": "Are you sure you deleted this data?",
+    "reguler-label-save-1": "Are you sure you want to save these data changes?",
+    "reguler-label-save-2": "Cancel",
+    "reguler-label-save-3": "Yes, Save"
   },
   "reguler-invoice": {
     "invoice-list-back": "Back",

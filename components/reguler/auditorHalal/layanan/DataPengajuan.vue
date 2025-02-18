@@ -512,7 +512,11 @@ const getDetailData = async () => {
 const editResponsibility = async (body: PayloadPenanggungJawab) => {
   try {
     let url = "";
-    if (submitContentType.value === "Pengajuan Sertifikasi Halal")
+  
+    if (
+      submitContentType.value ===
+      t(`pengajuan-reguler.reguler-form--pengajuan-pengajuan-title`)
+    )
       url = "/reguler/pelaku-usaha/certificate";
     else url = "/reguler/pelaku-usaha/penanggung-jawab";
 
@@ -642,26 +646,17 @@ const withFacilitator = async (idData: string) => {
 
 const handleSubmit = () => {
   let payload: any = {};
-  console.log(submitContentType.value, " ini value submit");
-  console.log(
-    payloadData,
-    "ini payload",
-    t(`pengajuan-reguler.reguler-form--pengajuan-pengajuan-title`)
-  );
+ 
   if (
     submitContentType.value ===
     t(`pengajuan-reguler.reguler-form--pengajuan-pengajuan-title`)
   ) {
-    console.log(
-      submitContentType.value ===
-        t(`pengajuan-reguler.reguler-form--pengajuan-pengajuan-title`),
-      "ini true"
-    );
+  
     if (payloadData.value === "error") {
       confirmSaveDialog.value = false;
       useSnackbar().sendSnackbar("Lengkapi semua data", "error");
     } else {
-      console.log(requestCertificateData.value?.[9],'ini data else')
+   
       if (
         requestCertificateData.value?.[9].value ===
           "Pendaftaran Melalui Fasilitasi" ||
@@ -678,14 +673,13 @@ const handleSubmit = () => {
           channel_id: "CH001",
           fac_id: "",
         };
-        console.log(payload, "ini payload");
+      
       }
       editResponsibility({
         ...payload,
       });
     }
   } else if (submitContentType.value === "Penanggung Jawab") {
-  
     payload = {
       nama_pj: responsibility?.value?.[0]?.value,
       no_kontak_pj: responsibility?.value?.[1]?.value,
@@ -722,7 +716,7 @@ onMounted(async () => {
 
 <template>
   <DialogSaveDataPengajuan
-    title="Simpan Perubahan"
+    :title=" t('pengajuan-reguler.reguler-form-head-simpan')"
     :is-open="confirmSaveDialog"
     :toggle="() => (confirmSaveDialog = false)"
     :on-save="() => handleSubmit()"

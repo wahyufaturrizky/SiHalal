@@ -918,7 +918,10 @@
     "reguler-kode-facilitas-2": "Masukkan Kode Fasilitas",
     "reguler-remove-bahan-title": "Hapus Bahan",
     "reguler-remove-bahan-1": "Ya,Hapus",
-    "reguler-remove-bahan-2": "Apakah anda yakin menghapus data ini?"
+    "reguler-remove-bahan-2": "Apakah anda yakin menghapus data ini?",
+    "reguler-label-save-1": "Apakah yakin ingi menyimpan perubahan data ini ?",
+    "reguler-label-save-2": "Batal",
+    "reguler-label-save-3": "Ya, Simpan"
   },
   "reguler-invoice": {
     "invoice-list-back": "Kembali",
