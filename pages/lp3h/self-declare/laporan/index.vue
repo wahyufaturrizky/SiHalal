@@ -1,6 +1,16 @@
 <script setup lang="ts">
 
 const searchQuery = ref(null)
+const itemPerPage = ref(10)
+const totalItems = ref(0)
+const page = ref(1)
+const loading = ref(true)
+const menu = ref(false);
+
+
+const selectedYear = ref(null)
+const selectedFasilitas = ref(null)
+const selectedStatus = ref('OF74') // GANTI JADI SEMUA
 
 const status = [
   { title: "Pengajuan", value: "OF10" },
@@ -16,10 +26,29 @@ const status = [
   { title: "Semua", value: null }
 ]
 
-const fasilitas = [
-  { title: "Todo", value: "todo" },
-  { title: "Semua", value: null }
-]
+const fasilitas = ref([
+])
+
+const loadFasilitasi = async () => {
+  try {
+    const response = await $api("/lp3h/laporan/list-fasilitasi", {
+      method: "get",
+    });
+
+    const data = response.data;
+    console.log("RESPONSE : ", response)
+
+    fasilitas.value = [
+      { title: "Semua", value: null },
+      ...data.map(i => ({
+        title: i.fac_name,
+        value: i.fac_id
+      }))
+    ];
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 
 const years = [
   { title: "Semua", value: null }, // Menambahkan item "Semua"
@@ -29,60 +58,96 @@ const years = [
   })
 ];
 
-const loadItem = () => {
-  console.log("LOAD ITEM : ")
+const daftarLaporanHeader = [
+  { title: "No", key: "no"},
+  { title: "ID Reg", key: "idReg", nowrap:true},
+  { title: "No.Daftar", key: "noDaftar",nowrap:true},
+  { title: "Tanggal Daftar", key: "tanggalDaftar",nowrap:true},
+  { title: "Kode Fasilitasi", key: "kodeFasilitasi",nowrap:true},
+  { title: "Nama PU", key: "namaPu",nowrap:true},
+  { title: "Alamat", key: "alamat",nowrap:true},
+  { title: "Merk Dagang", key: "merkDagang",nowrap:true},
+  { title: "No. HP Kontak", key: "noHp",nowrap:true},
+  { title: "Nama Pendamping", key: "namaPendamping",nowrap:true},
+  { title: "invoice", key: "invoice",nowrap:true},
+  { title: "Action", key: "action"},
+
+]
+
+const daftarLaporanItem = ref([])
+const loadItem = async (page: number, size: number, status_reg: string, fac_id: string, tahun: string) => {
+  try {
+    loading.value = true
+    const response = await $api('/lp3h/laporan/list-pengajuan', {
+      method: 'get',
+      params: {
+        page,
+        size,
+        status_reg,
+        tahun,
+        fac_id
+      },
+    })
+
+    const data = response.data
+
+    if (data != null) {
+      daftarLaporanItem.value = data.map(
+        i => ({
+          idReg: i.id_reg,
+          noDaftar: i.no_daftar,
+          tanggalDaftar: i.tgl_daftar,
+          kodeFasilitasi: "TODO",
+          namaPu: i.nama_pu,
+          alamat: i.alamat_pu,
+          merkDagang: i.merek_dagang,
+          noHp: i.no_telp,
+          namaPendamping: "TODO",
+          invoice: "TODO"
+        }),
+      )
+    }
+
+    totalItems.value = response.total_item
+    loading.value = false
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    loading.value = false
+  }
 }
 
-const debouncedFetch = debounce(loadItem, 500);
 const handleInput = () => {
-  debouncedFetch({
-    page: 0,
-    size: 10,
-    keyword: searchQuery.value,
-  });
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    selectedStatus.value,
+    selectedFasilitas.value,
+    selectedYear.value
+    // keyword: searchQuery.value,
+  );
 };
 
+const changeFilterBy = () => {
+  debouncedFetch(page.value, itemPerPage.value, selectedStatus.value , selectedFasilitas.value , selectedYear.value)
+};
 
 const exportExcel = () => {
   console.log("EXPORT EXCEL ")
 }
 
-
-const daftarLaporanHeader = [
-  { title: "No", key: "no"},
-  { title: "ID Reg", key: "idReg"},
-  { title: "No.Daftar", key: "noDaftar"},
-  { title: "Tanggal Daftar", key: "tanggalDaftar"},
-  { title: "Kode Fasilitasi", key: "kodeFasilitasi"},
-  { title: "Nama PU", key: "namaPu"},
-  { title: "Alamat", key: "alamat"},
-  { title: "Merk Dagang", key: "merkDagang"},
-  { title: "No. HP Kontak", key: "noHp"},
-  { title: "Nama Pendamping", key: "namaPendamping"},
-  { title: "invoice", key: "invoice"},
-  { title: "Action", key: "action"},
-
-]
-
-const daftarLaporanItem = [
-  {
-    idReg: "24110",
-    noDaftar: "",
-    tanggalDaftar: "",
-    kodeFasilitasi: "Sehati",
-    namaPu: "Kristen Zulauf",
-    alamat: "JALAN RIAU GG MUTIARA NO 3",
-    merkDagang: "Merk A",
-    noHp: "082310101010",
-    namaPendamping: "Woodrow Hagenes",
-    invoice: ""
-  }
-]
-
-
 const action = (item) => {
   console.log("action : ", item)
 }
+
+const debouncedFetch = debounce(loadItem, 500)
+onMounted(async () => {
+  loading.value = true
+  await loadFasilitasi()
+  await loadItem(page.value, itemPerPage.value, selectedStatus.value , selectedFasilitas.value , selectedYear.value)
+  loading.value = false
+})
+
 
 
 </script>
@@ -100,42 +165,56 @@ const action = (item) => {
       </VCol>
     </VRow>
 
-    <VRow >
-      <VCol cols="6" class="mb-8">
-        <VLabel for="status" class="mb-2">Status</VLabel>
-        <v-select
-          id="status"
-          label=""
-          :items="status"
-          variant="solo"
-          class="mb-8"
-        ></v-select>
-        <VLabel for="fasilitas" class="mb-2">Fasilitas</VLabel>
-        <v-select
-          id="fasilitas"
-          label=""
-          :items="fasilitas"
-          variant="solo"
-        ></v-select>
-      </VCol>
-      <VCol cols="6">
-        <VLabel for="tahun" class="mb-2">Tahun</VLabel>
-        <v-select
-          id="tahun"
-          label=""
-          :items="years"
-          variant="solo"
-        ></v-select>
-      </VCol>
-
+    <VRow>
       <VCol cols="12">
         <VCard class="pa-2">
           <VCardTitle class="text-h4 mx-0">
             Daftar Laporan
           </VCardTitle>
           <VCardItem>
-            <VRow class="pa-0">
-              <VCol cols="6">
+            <VRow class="d-flex align-center">
+              <VCol md="2" cols="12">
+                <v-menu v-model="menu" :close-on-content-click="false">
+                  <template v-slot:activator="{ props }">
+                    <v-btn   class="d-flex justify-space-between"
+                             v-bind="props" variant="outlined" append-icon="mdi-filter" min-width="130px">
+                      Filter
+                    </v-btn>
+                  </template>
+                  <VCard class="pa-4 text-xs" min-width="400px">
+                    <VLabel for="status">Status</VLabel>
+                    <v-select
+                      id="status"
+                      label=""
+                      :items="status"
+                      v-model="selectedStatus"
+                      @update:model-value="changeFilterBy"
+                      variant="solo"
+                      class="mb-2"
+                    ></v-select>
+                    <VLabel for="fasilitas" >Fasilitas</VLabel>
+                    <v-select
+                      id="fasilitas"
+                      label=""
+                      :items="fasilitas"
+                      v-model="selectedFasilitas"
+                      @update:model-value="changeFilterBy"
+                      variant="solo"
+                      class="mb-2 text-xs"
+                    ></v-select>
+                    <VLabel for="tahun">Tahun</VLabel>
+                    <v-select
+                      id="tahun"
+                      label=""
+                      :items="years"
+                      v-model="selectedYear"
+                      @update:model-value="changeFilterBy"
+                      variant="solo"
+                    ></v-select>
+                  </VCard>
+                </v-menu>
+              </VCol>
+              <VCol md="7" cols="12">
                 <VTextField
                   v-model="searchQuery"
                   density="compact"
@@ -155,6 +234,12 @@ const action = (item) => {
             <VDataTableServer
               :headers="daftarLaporanHeader"
               :items="daftarLaporanItem"
+              v-model:items-per-page="itemPerPage"
+              v-model:page="page"
+              :items-length="totalItems"
+              :loading="loading"
+              loading-text="Loading..."
+              @update:options="loadItem(page, itemPerPage, selectedStatus, selectedFasilitas, selectedYear)"
             >
               <template #item.no="{ index }">
                 {{ index + 1 }}

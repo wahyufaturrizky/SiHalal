@@ -146,10 +146,10 @@ const { t } = useI18n();
     <VItemGroup
       v-else-if="props.mode === 'edit'"
       @click="openDialog"
-      style="display: inline-flex; cursor: pointer"
+      style="display: inline-flex; cursor: pointer;"
     >
       <VIcon class="mr-2"> mdi-pencil </VIcon>
-      <p>Edit</p>
+      <p>{{ t("detail-pu.pu-edit-edit") }}</p>
     </VItemGroup>
     <!-- <VBtn
       v-else-if="props.mode === 'edit'"
@@ -166,13 +166,13 @@ const { t } = useI18n();
         >
           <span>{{
             props.mode === "add"
-              ? "Tambah Data Penyelia Halal"
-              : "Edit Data Penyelia Halal"
+              ? t("detail-pu.pu-penyelial-halal-tambah-title")
+              : t("detail-pu.pu-penyelial-halal-edit-title")
           }}</span>
           <VBtn
             icon
             color="transparent"
-            style="border: none"
+            style="border: none;"
             elevation="0"
             @click="closeDialog"
           >
@@ -219,7 +219,7 @@ const { t } = useI18n();
                     ),
                   ]"
                   v-model="form.namaPenyelia"
-                  label="Nama Penyelia"
+                  label="nama"
                   outlined
                   dense
                   required
