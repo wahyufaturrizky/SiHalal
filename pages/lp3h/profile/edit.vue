@@ -28,6 +28,9 @@ const dataRegistrasi = ref({})
 
 const dokumenPersyaratan = ref([])
 
+const dataRekeningBankDanNpwp = ref({})
+
+
 const deleteDokumenPersyaratan = item => {
   console.log('DELETE DOKUMEN PERSYARATAN : ', item)
 }
@@ -38,15 +41,48 @@ const downloadDokumenPersyaratan = item => {
 
 const dialog = ref(false)
 
-const simpanHandler = () => {
+const simpanHandler = async () => {
   console.log('SIMPAN : ')
+
+  const body = {
+    // START TODO NEED TO MAKESURE FIELD NAME
+    nama_lembaga: dataProfilePendamping.value.namaLembaga,
+    jenis_lembaga: dataProfilePendamping.value.jenisLembaga,
+    // END TODO
+
+    alamat: dataProfilePendamping.value.alamat,
+    nama_pimpinan: dataNamaPenanggungJawab.value.namaPimpinan,
+    email: dataProfilePendamping.value.email,
+    kabupaten: dataProfilePendamping.value.kabKota,
+    kode_pos: dataProfilePendamping.value.kodePos,
+    no_hp: dataNamaPenanggungJawab.value.noHp,
+    nama_kontak: dataKontakPenanggungJawab.value.namaKontak,
+    no_hp_kontak_person: dataKontakPenanggungJawab.value.noHp,
+    kecamatan: dataProfilePendamping.value.kecamatan,
+    provinsi: dataProfilePendamping.value.provinsi,
+    rekening: {
+      no_rekening: dataRekeningBankDanNpwp.value.noRekening,
+      nama: dataRekeningBankDanNpwp.value.atasNama,
+      bank: dataRekeningBankDanNpwp.value.namaBank,
+      npwp: dataRekeningBankDanNpwp.value.npwp,
+      foto_rekening: dataRekeningBankDanNpwp.value.fotoRekening,
+      foto_npwp: dataRekeningBankDanNpwp.value.fotoNpwp
+    }
+  }
+
+  console.log("BODY : ", body)
+
+  const response = await $api(
+    `/lp3h/update-profil/${dataProfilePendamping.value.id_lp}`,
+    {
+      method: "put",
+      body,
+    }
+  );
+
   dialog.value = false
   useSnackbar().sendSnackbar('Berhasil menyimpan data ', 'success')
 }
-
-const file = ref(null)
-
-const dataRekeningBankDanNpwp = ref({})
 
 const loadProvince = async () => {
   const response: MasterProvince[] = await $api('/master/province', {
@@ -103,6 +139,10 @@ const getSubDistrict = async () => {
   )
 }
 
+const emptyBlob = new Blob([""], { type: "application/octet-stream" });
+
+const npwpFile = ref('x')
+const rekFile = ref('x')
 
 const loadProfil = async () => {
   try {
@@ -125,6 +165,7 @@ const loadProfil = async () => {
       kecamatan: lp.kecamatan,
       kodePos: lp.kode_pos,
       email: lp.email,
+      id_lp: lp.id_lp
     }
 
     dataNamaPenanggungJawab.value = {
@@ -159,17 +200,19 @@ const loadProfil = async () => {
       noRekening: rek.no_rekening,
       atasNama: rek.nama,
       fotoRekening: rek.filefotorek,
-      npwp: rek.nama_npwp,
+      npwp: rek.npwp,
       fotoNpwp: rek.filefotonpwp,
     }
 
-    console.log("DATA REKENING BANK DAN NPWP : ", dataRekeningBankDanNpwp)
+    npwpFile.value = new File([emptyBlob], rek.filefotonpwp )
+    rekFile.value = new File([emptyBlob], rek.filefotorek)
   }
   catch (error) {
     console.log('ERROR : ', error)
     useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
   }
 }
+
 
 onMounted(async () => {
   await loadProfil()
@@ -539,8 +582,9 @@ onMounted(async () => {
                 Upload Foto Rekening
               </VLabel>
               <HalalFileInput
+                v-if="rekFile != 'x'"
                 id="fotoRekening"
-                v-model="dataRekeningBankDanNpwp.fotoRekening"
+                v-model="rekFile"
                 class="mb-4"
               />
 
@@ -557,8 +601,9 @@ onMounted(async () => {
                 Upload Foto NPWP
               </VLabel>
               <HalalFileInput
+                v-if="npwpFile != 'x'"
                 id="fotoNpwp"
-                v-model="dataRekeningBankDanNpwp.fotoNpwp"
+                v-model="npwpFile"
                 class="mb-4"
               />
             </VExpansionPanelText>

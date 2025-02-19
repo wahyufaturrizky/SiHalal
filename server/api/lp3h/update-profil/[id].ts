@@ -20,7 +20,7 @@ export default defineEventHandler(async (event: any) => {
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/lp3h/profile/${id}`,
     {
-      method: "post",
+      method: "put",
       headers: { Authorization: authHeader },
       body,
     }
