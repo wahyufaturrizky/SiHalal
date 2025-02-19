@@ -1,46 +1,62 @@
 <script setup lang="ts">
 const panelProfile = ref([0, 1]);
 const panelBank = ref([0, 1]);
-const panelPenanggungJawab = ref([0, 1]);
+const panelPendidikan = ref([0, 1]);
 
 const panelDataRegistrasi = ref([0, 1]);
 const panelDokumenPersyaratan = ref([0, 1]);
 const panelMelacak = ref([0, 1]);
 
-const dataProfilePendamping = [
-  { label: "NIK", value: "322323232332" },
-  { label: "Nama", value: "John Fren" },
-  {
-    label: "Alamat",
-    value:
-      "Sumbawa Banget, RT002/RW002, Sumbang, Curio Sumbawa Banget, RT002/RW002, Sumbang, Curio",
-  },
-  { label: "Provinsi", value: "Jawa Tengah" },
-  { label: "Kota/Kab", value: "Kota Semarang" },
-  { label: "Kecamatan", value: "Ngaliyan" },
-  { label: "Kode Pos", value: "14045" },
-  { label: "Email", value: "LPHLPPOM@gmail.com" },
-  { label: "Telp /HP", value: "0812345678978" },
-  { label: "Tempat Lahir", value: "Surabaya" },
-  { label: "Pekerjaaan", value: "Lainnya" },
-];
+// let dataProfilePendamping = [
+//   { label: "NIK", value: "322323232332" },
+//   { label: "Nama", value: "John Fren" },
+//   {
+//     label: "Alamat",
+//     value:
+//       "Sumbawa Banget, RT002/RW002, Sumbang, Curio Sumbawa Banget, RT002/RW002, Sumbang, Curio",
+//   },
+//   { label: "Provinsi", value: "Jawa Tengah" },
+//   { label: "Kota/Kab", value: "Kota Semarang" },
+//   { label: "Kecamatan", value: "Ngaliyan" },
+//   { label: "Kode Pos", value: "14045" },
+//   { label: "Email", value: "LPHLPPOM@gmail.com" },
+//   { label: "Telp /HP", value: "0812345678978" },
+//   { label: "Tempat Lahir", value: "Surabaya" },
+//   { label: "Pekerjaaan", value: "Lainnya" },
+// ];
 
-const dataBank = [
-  { label: "Nama Bank", value: "Bank Syariah Indonesia" },
-  { label: "No. Rekening", value: "0821178958123" },
-  { label: "Nama Rekening", value: "M Rizqi Maulana" },
-  { label: "File Rekeneing", value: "-" },
-];
+
+const dataProfilePendamping = ref([
+  { label: "NIK", value: "" },
+  { label: "Nama", value: "" },
+  { label: "Alamat", value: "" },
+  { label: "Provinsi", value: "" },
+  { label: "Kota/Kab", value: "" },
+  { label: "Kecamatan", value: "" },
+  { label: "Kode Pos", value: "" },
+  { label: "Email", value: "" },
+  { label: "Telp /HP", value: "" },
+  { label: "Tempat Lahir", value: "" },
+  { label: "Tanggal Lahir", value: "" },
+  { label: "Pekerjaaan", value: "" },
+]);
+
+const dataBank = ref([
+  { label: "Nama Bank", value: "" },
+  { label: "No. Rekening", value: "" },
+  { label: "Nama Rekening", value: "" },
+  { label: "File Rekening", value: "" },
+]);
 
 const dataBank2 = [
   { label: "NPWP", value: "123.456.789.761" },
   { label: "Nama pada NPWP", value: "M maulana" },
 ];
 
-const dataNamaPenanggungJawab = [
-  { label: "Nama Pimpinan", value: "Albert Flores" },
-  { label: "No. HP Pimpinan", value: "0821178958123" },
-];
+const dataPendidikan = ref([
+  { label: "Pendidikan Terakhir", value: "" },
+  { label: "Nama Universitas", value: "" },
+]);
 
 const dataKontakPenanggungJawab = [
   { label: "Nama Kontak", value: "Robert Fox" },
@@ -82,11 +98,75 @@ const downloadDokumenPersyaratan = (item) => {
 };
 
 const dialog = ref(false);
-const ajukanHandler = () => {
-  console.log("AJUKAN SEBAGAI LEMBAGA PENDAMPING : ");
-  dialog.value = false;
-  useSnackbar().sendSnackbar("Berhasil mengirim pengajuan ", "success");
+
+const formatDate = (isoString: string): string => {
+  const date = new Date(isoString);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${day}-${month}-${year}`;
 };
+
+const getProfile = async () => {
+  try {
+    const response = await $api("/reguler/lph/detail-pendamping", {
+      method: "get",
+    });
+   
+    if (response.code != 4000) {
+  console.log(response.data,'ini masuk kode')
+  dataProfilePendamping.value.forEach((el) => {
+        if (el.label === "NIK") el.value = response.data.pendamping.nik;
+        if (el.label === "Nama") el.value = response.data.pendamping.nama;
+        if (el.label === "Alamat") el.value = response.data.pendamping.alamat;
+        if (el.label === "Provinsi") el.value = response.data.pendamping.provinsi;
+        if (el.label === "Kota/Kab") el.value = response.data.pendamping.kabupaten;
+        if (el.label === "Kecamatan") el.value = response.data.pendamping.kecamatan;
+        if (el.label === "Kode Pos") el.value = response.data.pendamping.kode_pos;
+        if (el.label === "Email") el.value = response.data.pendamping.email;
+        if (el.label === "Telp /HP") el.value = response.data.pendamping.no_hp;
+
+        if (el.label === "Tempat Lahir") el.value = response.data.pendamping.tempat_lahir;
+        if (el.label === "Tanggal Lahir") el.value = formatDate(response.data.pendamping.tgl_lahir);
+        if (el.label === "Pekerjaaan") el.value = response.data.pendamping.pekerjaan;
+      });
+
+      dataBank.value.forEach((el) => {
+        if (el.label === "Nama Bank") el.value = response.data.pendamping.kode_bank;
+        if (el.label === "No. Rekening") el.value = response.data.pendamping.no_rekening;
+        if (el.label === "Nama Rekening") el.value = response.data.pendamping.nama;
+        if (el.label === "Provinsi") el.value = response.data.pendamping.provinsi;
+      });
+      dataPendidikan.value.forEach((el)=>{
+        if (el.label === "Pendidikan Terakhir") el.value = response.data.pendamping.pendidikan;
+        if (el.label === "Nama Universitas") el.value = response.data.pendamping.universitas;
+      })
+
+    
+
+      return;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const getDistrict = async (kode: string) => {
+
+  const response: MasterDistrict[] = await $api("/master/district", {
+    method: "post",
+    body: {
+      province: kode,
+    },
+  });
+  district.value = response;
+};
+
+onMounted(async () => {
+  await Promise.allSettled([getProfile()]);
+});
+
 </script>
 
 <template>
@@ -128,62 +208,81 @@ const ajukanHandler = () => {
 
     <VRow class="d-flex justify-space-between">
       <VCol cols="8">
-        <VExpansionPanels v-model="panelProfile" class="mb-4">
-          <VExpansionPanel>
-            <VExpansionPanelTitle class="text-h4 font-weight-bold">
-              Profil Lembaga Pendamping
-            </VExpansionPanelTitle>
-            <VExpansionPanelText>
-              <VRow v-for="(item, index) in dataProfilePendamping" :key="index">
-                <VCol cols="3" class="text-left font-weight-medium">
-                  {{ item.label }}
-                </VCol>
-                <VCol cols="1" class="text-left"> : </VCol>
-                <VCol cols="12" class="pl-1 font-weight-medium">
-                  <VTextField
-                    v-if="item.label !== 'Alamat'"
-                    v-model="item.value"
-                    variant="outlined"
-                    density="compact"
-                    hide-details
-                    readonly
-                  />
-                  <VTextarea
-                    v-else
-                    v-model="item.value"
-                    variant="outlined"
-                    density="compact"
-                    hide-details
-                    readonly
-                    rows="2"
-                    auto-grow
-                  />
-                </VCol>
-              </VRow>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-        </VExpansionPanels>
-        <VExpansionPanels v-model="panelPenanggungJawab" class="mb-4">
-          <VExpansionPanel>
-            <VExpansionPanelTitle class="text-h4 font-weight-bold">
-              Penanggung Jawab
-            </VExpansionPanelTitle>
-            <VExpansionPanelText>
-              <VRow
-                v-for="(item, index) in dataNamaPenanggungJawab"
-                :key="index"
-              >
-                <VCol cols="5" class="text-left font-weight-medium">
-                  {{ item.label }}
-                </VCol>
-                <VCol cols="1" class="text-right"> : </VCol>
-                <VCol cols="6" class="pl-0">
-                  {{ item.value }}
-                </VCol>
-              </VRow>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-        </VExpansionPanels>
+ <VExpansionPanels v-model="panelProfile" class="mb-4">
+  <VExpansionPanel>
+    <VExpansionPanelTitle class="text-h4 font-weight-bold">
+      Profil Tenaga Pendamping
+    </VExpansionPanelTitle>
+    <VExpansionPanelText>
+      <VRow v-for="(item, index) in dataProfilePendamping" :key="index">
+        <VCol cols="3" class="text-left font-weight-medium">
+          {{ item.label }}
+        </VCol>
+        <VCol cols="12" class="font-weight-medium">
+          <VTextField
+            v-if="item.label !== 'Alamat'"
+            v-model="item.value"
+            variant="outlined"
+            density="compact"
+            hide-details
+            readonly
+          />
+          <VTextarea
+            v-else
+            v-model="item.value"
+            variant="outlined"
+            density="compact"
+            hide-details
+            readonly
+            rows="2"
+            auto-grow
+          />
+        </VCol>
+      </VRow>
+    </VExpansionPanelText>
+  </VExpansionPanel>
+</VExpansionPanels>
+
+        <VExpansionPanels v-model="panelPendidikan" class="mb-4">
+  <VExpansionPanel>
+    <VExpansionPanelTitle class="text-h4 font-weight-bold">
+      Data Pendidikan
+    </VExpansionPanelTitle>
+    <VExpansionPanelText>
+      <VRow v-for="(item, index) in dataPendidikan" :key="index" class="my-2">
+        
+       
+        <VCol cols="12">
+          <span class="font-weight-medium">{{ item.label }}</span>
+        </VCol>
+
+        <VCol cols="12" v-if="item.label === 'Pendidikan Terakhir'">
+          <VSelect
+            v-model="item.value"
+            :items="['SD', 'SMP', 'SMA', 'D3', 'S1', 'S2', 'S3']"
+            variant="outlined"
+            density="compact"
+            hide-details
+            readonly
+          />
+        </VCol>
+
+        <!-- Input untuk Nama Universitas -->
+        <VCol cols="12" v-if="item.label === 'Nama Universitas'">
+          <VTextField
+            v-model="item.value"
+            variant="outlined"
+            density="compact"
+            hide-details
+            readonly
+          />
+        </VCol>
+
+      </VRow>
+    </VExpansionPanelText>
+  </VExpansionPanel>
+</VExpansionPanels>
+
         <VExpansionPanels v-model="panelMelacak" class="mb-4">
           <VExpansionPanel>
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
@@ -223,16 +322,19 @@ const ajukanHandler = () => {
                       {{ item.name }}
                     </div>
                   </VCol>
+                  <!-- <VBtn variant="flat" class="px-3 ms-2">
+                    <VIcon
+                      icon="fa-download"
+                      @click="handleDownload(item.file_name)"
+                    ></VIcon>
+                  </VBtn> -->
                   <VCol cols="12" md="4" class="squareBtnIcon">
-                    :<VBtn
-                      icon
-                      variant="outlined"
-                      color="purple"
-                      class="ml-2"
-                      @click="downloadDokumenPersyaratan(item)"
-                    >
-                      <VIcon color="primary">mdi-download</VIcon>
-                    </VBtn>
+                    :  <VBtn variant="flat" class="px-3 ms-2">
+                    <VIcon
+                      icon="fa-download"
+                      @click="handleDownload(item.file_name)"
+                    ></VIcon>
+                  </VBtn>
                   </VCol>
                 </VRow>
               </VListItem>
@@ -274,40 +376,59 @@ const ajukanHandler = () => {
         </VExpansionPanels>
 
         <VExpansionPanels v-model="panelBank" class="mb-4">
-          <VExpansionPanel>
-            <VExpansionPanelTitle class="text-h4 font-weight-bold">
-              Data Bank
-            </VExpansionPanelTitle>
-            <VExpansionPanelText>
-              <VRow v-for="(item, index) in dataBank" :key="index">
-                <VCol cols="3" class="text-left font-weight-medium">
-                  {{ item.label }}
-                </VCol>
-                <VCol cols="1" class="text-left"> : </VCol>
-                <VCol cols="12" class="pl-1 font-weight-medium">
-                  <VTextField
-                    v-if="item.label !== 'Alamat'"
-                    v-model="item.value"
-                    variant="outlined"
-                    density="compact"
-                    hide-details
-                    readonly
-                  />
-                  <VTextarea
-                    v-else
-                    v-model="item.value"
-                    variant="outlined"
-                    density="compact"
-                    hide-details
-                    readonly
-                    rows="2"
-                    auto-grow
-                  />
-                </VCol>
-              </VRow>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-        </VExpansionPanels>
+  <VExpansionPanel>
+    <VExpansionPanelTitle class="text-h4 font-weight-bold">
+      Data Bank
+    </VExpansionPanelTitle>
+    <VExpansionPanelText>
+      <VRow v-for="(item, index) in dataBank" :key="index" class="my-2">
+        
+ 
+        <VCol cols="12" v-if="item.label !== 'File Rekening'">
+          <span class="font-weight-medium">{{ item.label }}</span>
+        </VCol>
+        <VCol cols="4"  v-if="item.label === 'File Rekening'" >
+          <span  class="font-weight-medium">{{ item.label }} </span>
+        </VCol>
+        <VCol cols="1"  v-if="item.label === 'File Rekening'" >
+        :
+        </VCol>
+
+    
+        <VCol v-if="item.label === 'Nama Bank'" cols="12">
+          <VSelect
+            v-model="item.value"
+            :items="['Bank Syariah Indonesia', 'BCA', 'Mandiri', 'BNI', 'BRI']"
+            variant="outlined"
+            density="compact"
+            hide-details
+            readonly
+          />
+        </VCol>
+
+        <VCol v-if="item.label !== 'File Rekening' && item.label !== 'Nama Bank'" cols="12">
+          <VTextField
+            v-model="item.value"
+            variant="outlined"
+            density="compact"
+            hide-details
+            readonly
+          />
+        </VCol>
+
+       
+        <VCol v-if="item.label === 'File Rekening'" cols="7">
+          <VBtn variant="flat" class="px-3 ms-2" color="primary">
+            <VIcon icon="fa-download" @click="handleDownload(item.file_name)"></VIcon>
+          </VBtn>
+        </VCol>
+
+      </VRow>
+    </VExpansionPanelText>
+  </VExpansionPanel>
+</VExpansionPanels>
+
+
 
         <VExpansionPanels v-model="panelDokumenPersyaratan" class="mb-4">
           <VExpansionPanel>
@@ -328,15 +449,12 @@ const ajukanHandler = () => {
                       </div>
                     </VCol>
                     <VCol cols="12" md="4" class="squareBtnIcon">
-                      :<VBtn
-                        icon
-                        variant="outlined"
-                        color="purple"
-                        class="ml-2"
-                        @click="downloadDokumenPersyaratan(item)"
-                      >
-                        <VIcon color="primary">mdi-download</VIcon>
-                      </VBtn>
+                      : <VBtn variant="flat" class="px-3 ms-2">
+                    <VIcon
+                      icon="fa-download"
+                      @click="handleDownload(item.file_name)"
+                    ></VIcon>
+                  </VBtn>
                     </VCol>
                   </VRow>
                 </VListItem>
