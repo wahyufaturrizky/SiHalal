@@ -109,7 +109,6 @@ const getSelectOptions = (field: string): string => {
 
 const getLph = async (path: string, layanan: string, area: string) => {
   try {
-
     const params = {
       url: `${path}/${props?.id}/lph?jenis_layanan=${layanan}&area_pemasaran=${area}`,
       page: 1,
@@ -131,7 +130,7 @@ const getLph = async (path: string, layanan: string, area: string) => {
 
 const onSubmit = async () => {
  
-  if (props?.title === "Pengajuan Sertifikasi Halal") {
+  if (props?.title === t(`pengajuan-reguler.reguler-form--pengajuan-pengajuan-title`)) {
     const jenisLayanan = props?.service_type?.find(
       (item: any) =>
         props.data?.[3]?.value === item.name ||
@@ -222,7 +221,9 @@ const lphValidation = async (title: string, value: string, index: number) => {
 
   if (title === "pengajuan-reguler.reguler-detail-pengajuan-jnslay")
     await getProductType(value);
-  else if (title === "pengajuan-reguler.reguler-form--pengajuan-pengajuan-marketing")
+  else if (
+    title === "pengajuan-reguler.reguler-form--pengajuan-pengajuan-marketing"
+  )
     await getLph(LIST_BUSINESS_ACTOR, jenisLayanan?.code, value);
 
   if (props.title === "halal_cert_submission.title") {
@@ -232,23 +233,22 @@ const lphValidation = async (title: string, value: string, index: number) => {
     });
   }
 };
-
+const route = useRoute<"">();
+const submissionId = route.params?.id;
 const checkCodeFasilitas = async () => {
   try {
     const response: any = await $api("/reguler/pelaku-usaha/find-facility", {
       method: "get",
-      query: { facCode: searchRegisType.value },
+      query: { facCode: searchRegisType.value,idReg : submissionId },
     });
 
     if (response) {
-   
       messageFasilitator.value = response?.message;
       emit("complete", response?.data?.[0]?.id);
 
       return response;
     }
   } catch (error) {
-
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
@@ -262,7 +262,7 @@ onMounted(async () => {
     );
     if (props.data?.[3]?.value)
       await getProductType(jenisLayanan?.code || props.data?.[3]?.value);
- 
+
     if (jenisLayanan && props.data[6])
       await getLph(
         LIST_BUSINESS_ACTOR,
@@ -281,7 +281,7 @@ watchEffect(async () => {
   );
   if (props.data?.[3]?.value)
     await getProductType(jenisLayanan?.code || props.data?.[3]?.value);
- 
+
   if (jenisLayanan && props.data[6])
     await getLph(
       LIST_BUSINESS_ACTOR,
@@ -420,11 +420,11 @@ watchEffect(async () => {
             <VTextField
               v-model="searchRegisType"
               :placeholder="t('pengajuan-reguler.reguler-kode-facilitas-2')"
-              style="max-inline-size: 13rem;"
+              style="max-inline-size: 13rem"
             />
             <VBtn
               variant="outlined"
-              style="block-size: 45px;"
+              style="block-size: 45px"
               @click="checkCodeFasilitas"
             >
               {{ t("pengajuan-reguler.reguler-kode-facilitas-1") }}

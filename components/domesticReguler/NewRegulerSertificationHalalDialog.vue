@@ -28,15 +28,14 @@ const openDialog = () => {
 };
 
 const selectedItem = ref(null);
-
+console.log(props,'isi props')
 const onRegister = () => {
   props.newRegister("JD.1", selectedItem.value);
   isVisible.value = false;
 };
 
 const onAddRegister = () => {
-  props.newRegister("JD.3", selectedItem.value);
-  isVisible.value = false;
+  developmentDialog.value = true;
 };
 
 const { mdAndUp } = useDisplay();
@@ -46,6 +45,41 @@ const dialogMaxWidth = computed(() => {
 });
 
 const { t } = useI18n();
+
+const developmentDialog = ref(false);
+const noSertifikat = ref("");
+const router = useRouter();
+
+const registerNewDevelopment = async () => {
+  try {
+    const response: any = await $api(
+      "/reguler/pelaku-usaha/draft-development",
+      {
+        method: "post",
+        body: {
+          id: noSertifikat.value,
+        },
+      }
+    );
+
+    if (response?.code === 2000) {
+      router.push(`/sh-domestic/submission/reguler/${response?.data?.id_reg}`);
+    } else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.length != 0
+          ? response.errors.list_error[0]
+          : "Ada Kesalahan",
+        "error"
+      );
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } finally {
+    noSertifikat.value = "";
+    developmentDialog.value = false;
+    isVisible.value = false;
+  }
+};
 </script>
 
 <template>
@@ -78,7 +112,7 @@ const { t } = useI18n();
               <VCardActions class="pa-2 justify-center">
                 <VBtn
                   variant="flat"
-                  style="min-inline-size: 100%"
+                  style="min-inline-size: 100%;"
                   @click="onRegister"
                 >
                   {{ t("pengajuan-reguler.popup-new-btn") }}
@@ -104,7 +138,7 @@ const { t } = useI18n();
               <VCardActions class="pa-2 justify-center">
                 <VBtn
                   variant="flat"
-                  style="min-inline-size: 100%"
+                  style="min-inline-size: 100%;"
                   @click="onAddRegister"
                 >
                   {{ t("pengajuan-reguler.popup-new-btn") }}
@@ -130,4 +164,39 @@ const { t } = useI18n();
       </VCard>
     </VDialog>
   </div>
+
+  <VDialog v-model="developmentDialog" width="500">
+    <!-- Dialog Content -->
+    <VCard title="Perkembangan Sertifikat Halal">
+      <DialogCloseBtn
+        variant="text"
+        size="default"
+        @click="developmentDialog = false"
+      />
+
+      <VForm @submit.prevent="registerNewDevelopment()">
+        <VCardText>
+          <VLabel>Nomor</VLabel>
+          <v-text-field
+            name="name"
+            class="mt-2"
+            v-model="noSertifikat"
+            placeholder="Isi nomor sertifikat halal"
+            id="id"
+          ></v-text-field>
+        </VCardText>
+
+        <VCardText class="d-flex justify-end flex-wrap gap-4">
+          <VBtn
+            variant="outlined"
+            color="secondary"
+            @click="developmentDialog = false"
+          >
+            close
+          </VBtn>
+          <VBtn type="submit"> Submit </VBtn>
+        </VCardText>
+      </VForm>
+    </VCard>
+  </VDialog>
 </template>
