@@ -36,7 +36,7 @@ const profileData = reactive<any>({
   reg_tgl_berlaku: "",
   file_sertifikat: "",
 })
-const trackingDetail = ref([]);
+// const trackingDetail = ref([]);
 
 const loadProfile = async () => {
   isLoading.value = true
@@ -445,7 +445,7 @@ onMounted(() => {
           </VExpansionPanelText>
         </VExpansionPanel>
       </VExpansionPanels>
-      <br/>
+      <!-- <br/>
       <VCard>
         <VCardTitle class="mb-5">
           <div class="font-weight-bold text-h4">
@@ -455,7 +455,7 @@ onMounted(() => {
         <VCardText>
           <Tracking :data="trackingDetail" />
         </VCardText>
-      </VCard>
+      </VCard> -->
     </VCol>
   </VRow>
   <!-- <ConfirmModal
