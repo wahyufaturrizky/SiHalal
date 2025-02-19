@@ -198,11 +198,13 @@ export default defineNuxtConfig({
 
     build: {
       chunkSizeWarningLimit: 5000,
+      sourcemap: false,
     },
 
     optimizeDeps: {
       exclude: ["vuetify"],
-      entries: ["./**/*.vue"],
+      include: ["vue", "vue-router", "pinia"],
+      // entries: ["./**/*.vue"],
     },
 
     plugins: [
@@ -237,12 +239,12 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@nuxtjs/turnstile",
     "@nuxt/scripts",
-    (_options, nuxt) => {
-      nuxt.hooks.hook("vite:extendConfig", (config) => {
-        // @ts-expect-error
-        config.plugins.push(vuetify({ autoImport: true }));
-      });
-    },
+    // (_options, nuxt) => {
+    //   nuxt.hooks.hook("vite:extendConfig", (config) => {
+    //     // @ts-expect-error
+    //     config.plugins.push(vuetify({ autoImport: true }));
+    //   });
+    // },
     "@i2d/nuxt-pdf-frame",
   ],
 
