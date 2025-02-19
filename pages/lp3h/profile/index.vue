@@ -7,6 +7,11 @@ const panelDataRegistrasi = ref([0,1])
 const panelDokumenPersyaratan = ref([0,1])
 const panelMelacak = ref([0,1])
 
+const itemPerPage = ref(10)
+const totalItems = ref(0)
+const page = ref(1)
+const loading = ref(true)
+
 
 const dataProfilePendamping = ref([
   { label: "Nama Lembaga", value: "-" },
@@ -41,21 +46,68 @@ const dataPendampingHeader = [
   { title: "Action", key: "action"}
 ]
 
-const dataPendampingItem = [
-  { nik: "123412341234", pendidikan: "S1", noRegister: "123456789", tanggalBerlaku: "-", status: "Disetujui"}
-]
+const dataPendampingItem = ref([
+])
+
+const downloadFile = async (file) => {
+  console.log('file : ', file)
+
+  try {
+    const response = await $api('/shln/submission/document/download', {
+      method: 'post',
+      body: {
+        filename: file,
+      },
+    })
+
+    if (response.url)
+      window.open(response.url, '_blank', 'noopener,noreferrer')
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    console.log(error)
+  }
+}
+
+const loadItem = async (page: number, size: number) => {
+  try {
+    loading.value = true
+    const response = await $api('/lp3h/list-pendamping', {
+      method: 'get',
+      params: {
+        page,
+        size
+      },
+    })
+
+    const data = response.data
+
+    if (data != null) {
+      dataPendampingItem.value = data.map(
+        i => ({
+          nik: i.nik,
+          pendidikan: i.pendidikan,
+          noRegister: i.idx_daftar,
+          tanggalBerlaku: "TODO",
+          status: i.status,
+          ijazah: i.fotoijazah,
+          ktp: i.fotoktp
+        }),
+      )
+    }
+
+    totalItems.value = response.total_item
+    loading.value = false
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    loading.value = false
+  }
+}
 
 
 const deleteItem = (item) => {
   console.log("ITEM DELETE : ", item)
-}
-
-const previewIjazah = (item) => {
-  console.log("PREVIEW IJAZAH : ", item)
-}
-
-const previewKtp = (item) => {
-  console.log("PREVIEW KTP : ", item)
 }
 
 const dataRegistrasi = ref([
@@ -63,7 +115,6 @@ const dataRegistrasi = ref([
   { label: "Tanggal Berlaku", value: "-" },
   { label: "Status", value: "-" }
 ])
-
 
 const dokumenPersyaratan = [
   { name: "Akte/Dasar Hukum Pendirian" , id: "1"},
@@ -76,7 +127,11 @@ const deleteDokumenPersyaratan = (item) => {
   console.log("DELETE DOKUMEN PERSYARATAN : ", item)
 }
 
-const downloadDokumenPersyaratan = (item) => {
+const downloadDokumenPersyaratan = async (item) => {
+  fileName = ''
+
+  if(item.id === "1") fileName =
+  await downloadFile()
   console.log("Download Dokumen Peryaratan : ", item)
 }
 
@@ -131,9 +186,13 @@ const loadProfil = async () => {
   }
 };
 
+const getColor = (status) => {
+  return status.toUpperCase() === 'Disetujui'.toUpperCase() ? 'success' : 'error'
+}
 
 onMounted(async () => {
   await loadProfil()
+  // await loadItem()
 })
 
 
@@ -242,25 +301,30 @@ onMounted(async () => {
               <VDataTableServer
                 :headers="dataPendampingHeader"
                 :items="dataPendampingItem"
+                v-model:items-per-page="itemPerPage"
+                v-model:page="page"
+                :items-length="totalItems"
+                loading-text="Loading..."
+                @update:options="loadItem(page, itemPerPage)"
               >
                 <template #item.no="{ index }">
                   {{ index + 1 }}
                 </template>
 
                 <template #item.ijazah="{ item }">
-                  <VBtn icon variant="text" @click="previewIjazah(item)">
+                  <VBtn icon variant="text" @click="downloadFile(item.ijazah)">
                     <VIcon size="24" color="primary">mdi-eye</VIcon>
                   </VBtn>
                 </template>
 
                 <template #item.ktp="{ item }">
-                  <VBtn icon variant="text" @click="previewKtp(item)">
+                  <VBtn icon variant="text" @click="downloadFile(item.ktp)">
                     <VIcon size="24" color="primary">mdi-eye</VIcon>
                   </VBtn>
                 </template>
 
                 <template #item.status="{ item }">
-                  <VChip :color="item.status === 'Disetujui' ? 'success' : 'error'"
+                  <VChip :color="getColor(item.status)"
                          variant="outlined"
                          label
                   >
@@ -293,7 +357,7 @@ onMounted(async () => {
                   :
                 </VCol>
                 <VCol cols="6" class="pl-0 ">
-                  <VChip v-if="item.label === 'Status'" :color="item.value === 'Disetujui' ? 'success' : 'error'"
+                  <VChip v-if="item.label === 'Status'" :color="getColor(item.value)"
                          variant="outlined"
                          label
                   >
