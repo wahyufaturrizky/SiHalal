@@ -6,7 +6,7 @@
       variant="outlined"
       append-icon="ri-add-line"
     >
-      Tambah
+     {{t('detail-pu.pu-edit-add')}}
     </VBtn>
 
     <VBtn
@@ -15,7 +15,7 @@
       variant="text"
       prepend-icon="ri-edit-line"
     >
-      Edit
+    {{t('detail-pu.pu-edit-edit')}}
     </VBtn>
     <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
@@ -24,8 +24,8 @@
         >
           <span>{{
             props.mode === "add"
-              ? "Tambah Data Aspek Legal"
-              : "Edit Data Aspek Legal"
+              ? t('pengajuan-reguler.reguler-form--pengajuan-legal-popup-title')
+              : t('pengajuan-reguler.reguler-form--pengajuan-legal-popup-title-1')
           }}</span>
           <VBtn
             icon
@@ -42,7 +42,7 @@
           <VForm ref="legalForm">
             <VRow class="mb-1">
               <VCol cols="12">
-                <VLabel>Jenis Document</VLabel>
+                <VLabel>{{ t('detail-pu.pu-legal-modal-1')}}</VLabel>
                 <VAutocomplete
                   v-model="form.type"
                   :items="documentTypes"
@@ -61,10 +61,10 @@
 
             <VRow class="mb-1">
               <VCol cols="12">
-                <VLabel>Nomor Document</VLabel>
+                <VLabel>{{ t('detail-pu.pu-legal-modal-2')}}</VLabel>
                 <VTextField
                   v-model="form.doc_number"
-                  placeholder="Isi Nomor Document"
+                   :placeholder=" t('detail-pu.pu-legal-modal-placeholder-1')"
                   outlined
                   dense
                   required
@@ -75,7 +75,7 @@
             </VRow>
             <VRow class="mb-1">
               <VCol cols="12">
-                <VLabel>Tanggal Document</VLabel>
+                <VLabel>{{ t('detail-pu.pu-legal-modal-3')}}</VLabel>
                 <VTextField
                   v-model="form.date"
                   placeholder="Isi Tanggal Document"
@@ -91,7 +91,7 @@
 
             <VRow class="mb-1">
               <VCol cols="12">
-                <VLabel>Masa Berlaku</VLabel>
+                <VLabel>{{ t('detail-pu.pu-legal-modal-4')}}</VLabel>
                 <VTextField
                   v-model="form.expiration_date"
                   placeholder="Isi Masa Berlaku"
@@ -107,10 +107,10 @@
 
             <VRow class="mb-1">
               <VCol cols="12">
-                <VLabel>Instansi Penerbit</VLabel>
+                <VLabel>{{ t('detail-pu.pu-legal-modal-5')}}</VLabel>
                 <VTextField
                   v-model="form.publishing_agency"
-                  placeholder="Isi Instansi Penerbit"
+                  :placeholder=" t('detail-pu.pu-legal-modal-placeholder-2')"
                   outlined
                   dense
                   required
@@ -124,9 +124,9 @@
         </VCardText>
 
         <div class="d-flex justify-end ga-2">
-          <VBtn @click="cancel" variant="outlined"> Batal </VBtn>
+          <VBtn @click="cancel" variant="outlined"> {{ t('detail-pu.pu-legal-modal-batal')}} </VBtn>
           <VBtn @click="confirm" :color="props.confirmColor">
-            {{ props.mode === "add" ? "Tambah" : "Simpan" }}
+            {{ props.mode === "add" ?  t('detail-pu.pu-edit-add') : t('detail-pu.pu-edit-add') }}
           </VBtn>
         </div>
       </VCard>
@@ -135,6 +135,9 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 import { computed, defineEmits, defineProps, ref, watch } from "vue";
 import { useDisplay } from "vuetify";
 import type { VForm } from "vuetify/components";

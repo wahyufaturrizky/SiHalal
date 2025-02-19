@@ -545,8 +545,8 @@ const getItemData = (item) => {
               append-inner-icon="mdi-magnify"
               density="compact"
               :rules="[requiredValidator]"
+              @input="onSearchFasilitator(querySearch)"
             />
-            <!-- @input="onSearchFasilitator(querySearch)" -->
           </VCol>
         </VRow>
         <VRow>

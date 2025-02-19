@@ -173,7 +173,7 @@ const limitCharKtp = (v: string) => {
   <VBtn
     variant="outlined"
     prepend-icon="fa-plus"
-    style="margin: 1svw"
+    style="margin: 1svw;"
     @click="addDialog = true"
   >
     Tambah
@@ -184,7 +184,7 @@ const limitCharKtp = (v: string) => {
       <VCardTitle>
         <VRow>
           <VCol cols="10"><h3>Tambah Data Penyelia Halal</h3></VCol>
-          <VCol cols="2" style="display: flex; justify-content: end">
+          <VCol cols="2" style="display: flex; justify-content: end;">
             <VIcon size="small" icon="fa-times" @click="addDialog = false" />
           </VCol>
         </VRow>
@@ -363,7 +363,7 @@ const limitCharKtp = (v: string) => {
         </VRow>
       </VCardItem>
       <VCardActions
-        style="display: flex; justify-content: end; padding: 1.5svw"
+        style="display: flex; justify-content: end; padding: 1.5svw;"
       >
         <div>
           <VBtn

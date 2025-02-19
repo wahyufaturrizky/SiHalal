@@ -5,29 +5,35 @@ const panelPenanggungJawab = ref([0, 1])
 const panelDataPendamping = ref([0, 1])
 const panelDataRegistrasi = ref([0,1])
 const panelDokumenPersyaratan = ref([0,1])
-const panelMelacak = ref([0,1])
+const panelDataRekeningBankDanNpwp = ref([0,1])
 
 
-const dataProfilePendamping = [
-  { label: "Nama Lembaga", value: "Lembaga AB761" },
-  { label: "Jenis Lembaga", value: "Komisi Fatwa MUI Provinsi" },
-  { label: "Alamat", value: "Sumbawa Banget, RT002/RW002, Sumbang, Curio Sumbawa Banget, RT002/RW002, Sumbang, Curio" },
+const itemPerPage = ref(10)
+const totalItems = ref(0)
+const page = ref(1)
+const loading = ref(true)
+
+
+const dataProfilePendamping = ref([
+  { label: "Nama Lembaga", value: "-" },
+  { label: "Jenis Lembaga", value: "-" },
+  { label: "Alamat", value: "-" },
   { label: "Kecamatan", value: "-" },
-  { label: "Kode Pos", value: "14045" },
-  { label: "Kota/Kab", value: "Kab. Enrekang" },
-  { label: "Provinsi", value: "Pusat" },
-  { label: "Email", value: "LembagaAB761@gmail.com" }
-]
+  { label: "Kode Pos", value: "-" },
+  { label: "Kota/Kab", value: "-" },
+  { label: "Provinsi", value: "-" },
+  { label: "Email", value: "-" }
+])
 
-const dataNamaPenanggungJawab = [
-  { label: "Nama Pimpinan", value: "Albert Flores" },
-  { label: "No. HP Pimpinan", value: "0821178958123" }
-]
+const dataNamaPenanggungJawab = ref([
+  { label: "Nama Pimpinan", value: "-" },
+  { label: "No. HP Pimpinan", value: "-" }
+])
 
-const dataKontakPenanggungJawab = [
-  { label: "Nama Kontak", value: "Robert Fox" },
-  { label: "No. HP Kontak", value: "0821178958123" }
-]
+const dataKontakPenanggungJawab = ref([
+  { label: "Nama Kontak", value: "-" },
+  { label: "No. HP Kontak", value: "-" }
+])
 
 const dataPendampingHeader = [
   { title: "No", key: "no"},
@@ -38,55 +44,180 @@ const dataPendampingHeader = [
   { title: "No. Register", key: "noRegister", nowrap: true},
   { title: "Tanggal Berlaku", key: "tanggalBerlaku", nowrap: true},
   { title: "Status Registrasi", key: "status", nowrap: true},
-  { title: "Action", key: "action"}
+  // { title: "Action", key: "action"}
 ]
 
-const dataPendampingItem = [
-  { nik: "123412341234", pendidikan: "S1", noRegister: "123456789", tanggalBerlaku: "-", status: "Disetujui"}
-]
+const dataPendampingItem = ref([
+])
+
+const downloadFile = async (file) => {
+  console.log('file : ', file)
+
+  try {
+    const response = await $api('/shln/submission/document/download', {
+      method: 'post',
+      body: {
+        filename: file,
+      },
+    })
+
+    if (response.url)
+      window.open(response.url, '_blank', 'noopener,noreferrer')
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    console.log(error)
+  }
+}
+
+const loadItem = async (page: number, size: number) => {
+  try {
+    loading.value = true
+    const response = await $api('/lp3h/list-pendamping', {
+      method: 'get',
+      params: {
+        page,
+        size
+      },
+    })
+
+    const data = response.data
+
+    if (data != null) {
+      dataPendampingItem.value = data.map(
+        i => ({
+          nik: i.nik,
+          pendidikan: i.pendidikan,
+          noRegister: i.idx_daftar,
+          tanggalBerlaku: "TODO",
+          status: i.status,
+          ijazah: i.fotoijazah,
+          ktp: i.fotoktp
+        }),
+      )
+    }
+
+    totalItems.value = response.total_item
+    loading.value = false
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    loading.value = false
+  }
+}
 
 
 const deleteItem = (item) => {
   console.log("ITEM DELETE : ", item)
 }
 
-const previewIjazah = (item) => {
-  console.log("PREVIEW IJAZAH : ", item)
-}
+const dataRegistrasi = ref([
+  { label: "No. Registrasi", value: "-" },
+  { label: "Tanggal Berlaku", value: "-" },
+  { label: "Status", value: "-" }
+])
 
-const previewKtp = (item) => {
-  console.log("PREVIEW KTP : ", item)
-}
-
-const dataRegistrasi = [
-  { label: "No. Registrasi", value: "1234567890789" },
-  { label: "Tanggal Berlaku", value: "1/14/2027 10:00:00 AM" },
-  { label: "Status", value: "Disetujui" }
-]
+const dokumenPersyaratan = ref([
+])
 
 
-const dokumenPersyaratan = [
-  { name: "Akte/Dasar Hukum Pendirian" , id: "1"},
-  { name: "Struktur Organisasi", id: "2" },
-  { name: "Ijazah Sarjana/Diploma", id: "3" },
-  { name: "Pernyataan Komitmen Sebagai Lembaga Pendamping" , id: "4"}
-]
-
-const deleteDokumenPersyaratan = (item) => {
-  console.log("DELETE DOKUMEN PERSYARATAN : ", item)
-}
-
-const downloadDokumenPersyaratan = (item) => {
-  console.log("Download Dokumen Peryaratan : ", item)
-}
-
+const file = ref({})
 
 const dialog = ref(false);
-const ajukanHandler = () => {
-  console.log("AJUKAN SEBAGAI LEMBAGA PENDAMPING : ")
-  dialog.value = false
-  useSnackbar().sendSnackbar("Berhasil mengirim pengajuan ", "success")
+
+const loadProfil = async () => {
+  try {
+    const response = await $api("/lp3h/profil", {
+      method: "get",
+    });
+
+    const data = response.data;
+    console.log("RESPONSE : ", response)
+
+    const lp = data.lembaga_pendamping
+    dataProfilePendamping.value = [
+      { label: "Nama Lembaga", value: lp.nama_lembaga },
+      { label: "Jenis Lembaga", value: lp.jenis_lembaga },
+      { label: "Alamat", value: lp.alamat },
+      { label: "Kecamatan", value: lp.kecamatan },
+      { label: "Kode Pos", value: lp.kode_pos },
+      { label: "Kota/Kab", value: lp.kabupaten },
+      { label: "Provinsi", value: lp.provinsi },
+      { label: "Email", value: lp.email }
+    ];
+
+    dataNamaPenanggungJawab.value = [
+      { label: "Nama Pimpinan", value: lp.nama_pimpinan },
+      { label: "No. HP Pimpinan", value: lp.no_hp }
+    ]
+
+    dataKontakPenanggungJawab.value = [
+      { label: "Nama Kontak", value: lp.nama_kontak },
+      { label: "No. HP Kontak", value: lp.no_hp_kontak_person }
+    ]
+
+    dataRegistrasi.value = [
+      { label: "No. Registrasi", value: lp.no_register },
+      { label: "Tanggal Berlaku", value: lp.tgl_berlaku },
+      { label: "Status", value: lp.status }
+    ]
+
+    const lpd = data.lembaga_pendamping_doc
+
+    dokumenPersyaratan.value = lpd.map(
+      i =>({
+        name: i.jenis,
+        file: i.namafile
+      })
+    )
+
+    const rek = data.rekening
+    dataRekeningBankDanNpwp.value = {
+      namaBank : rek.bank,
+      noRekening : rek.no_rekening,
+      atasNama : rek.nama,
+      fotoRekening : rek.filefotorek,
+      npwp : rek.nama_npwp,
+      fotoNpwp : rek.filefotonpwp
+    }
+
+
+    // dokumenPersyaratan.value = [
+    //   { name: "Akte/Dasar Hukum Pendirian" , id: "1"
+    //     , file: lpd.filter(i => i.jenis === "Akte/Dasar Hukum Pendirian")[0].namafile
+    //   },
+    //   { name: "Struktur Organisasi", id: "2"
+    //     , file: lpd.filter(i => i.jenis === "Struktur Organisasi")[0].namafile
+    //   },
+    //   { name: "Ijazah Sarjana/Diploma", id: "3"
+    //     , file: lpd.filter(i => i.jenis === "Ijazah Sarjana/Diploma")[0].namafile
+    //   },
+    //   { name: "Pernyataan Komitmen Sebagai Lembaga Pendamping" , id: "4"
+    //     , file: lpd.filter(i => i.jenis === "Pernyataan Komitmen Sebagai Lembaga Pendamping")[0].namafile
+    //   }
+    // ]
+
+    console.log("DOKUMEN PERSYARATAN ")
+
+
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const dataRekeningBankDanNpwp = ref({})
+
+
+const getColor = (status) => {
+  return status.toUpperCase() === 'Disetujui'.toUpperCase() ? 'success' : 'error'
 }
+
+onMounted(async () => {
+  await loadProfil()
+  // await loadItem()
+})
+
+
 
 </script>
 
@@ -122,9 +253,9 @@ const ajukanHandler = () => {
           >
             Ubah
           </VBtn>
-          <VBtn append-icon="fa-paper-plane" @click="dialog = true">
-            Ajukan
-          </VBtn>
+<!--          <VBtn append-icon="fa-paper-plane" @click="dialog = true">-->
+<!--            Ajukan-->
+<!--          </VBtn>-->
         </VRow>
       </VCol>
     </VRow>
@@ -192,25 +323,30 @@ const ajukanHandler = () => {
               <VDataTableServer
                 :headers="dataPendampingHeader"
                 :items="dataPendampingItem"
+                v-model:items-per-page="itemPerPage"
+                v-model:page="page"
+                :items-length="totalItems"
+                loading-text="Loading..."
+                @update:options="loadItem(page, itemPerPage)"
               >
                 <template #item.no="{ index }">
                   {{ index + 1 }}
                 </template>
 
                 <template #item.ijazah="{ item }">
-                  <VBtn icon variant="text" @click="previewIjazah(item)">
+                  <VBtn icon variant="text" @click="downloadFile(item.ijazah)">
                     <VIcon size="24" color="primary">mdi-eye</VIcon>
                   </VBtn>
                 </template>
 
                 <template #item.ktp="{ item }">
-                  <VBtn icon variant="text" @click="previewKtp(item)">
+                  <VBtn icon variant="text" @click="downloadFile(item.ktp)">
                     <VIcon size="24" color="primary">mdi-eye</VIcon>
                   </VBtn>
                 </template>
 
                 <template #item.status="{ item }">
-                  <VChip :color="item.status === 'Disetujui' ? 'success' : 'error'"
+                  <VChip :color="getColor(item.status)"
                          variant="outlined"
                          label
                   >
@@ -218,11 +354,11 @@ const ajukanHandler = () => {
                   </VChip>
                 </template>
 
-                <template #item.action="{ item }">
-                  <VBtn icon variant="text" @click="deleteItem(item)">
-                    <VIcon size="24" color="error">mdi-delete</VIcon>
-                  </VBtn>
-                </template>
+<!--                <template #item.action="{ item }">-->
+<!--                  <VBtn icon variant="text" @click="deleteItem(item)">-->
+<!--                    <VIcon size="24" color="error">mdi-delete</VIcon>-->
+<!--                  </VBtn>-->
+<!--                </template>-->
               </VDataTableServer>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -243,7 +379,7 @@ const ajukanHandler = () => {
                   :
                 </VCol>
                 <VCol cols="6" class="pl-0 ">
-                  <VChip v-if="item.label === 'Status'" :color="item.value === 'Disetujui' ? 'success' : 'error'"
+                  <VChip v-if="item.label === 'Status'" :color="getColor(item.value)"
                          variant="outlined"
                          label
                   >
@@ -271,10 +407,10 @@ const ajukanHandler = () => {
                       <div class="text-body-1 font-weight-medium ">{{ index + 1 }}.{{ item.name }}</div>
                     </VCol>
                     <VCol cols="12" md="4" class="squareBtnIcon">
-                      <VBtn  icon variant="outlined" color="error" @click="deleteDokumenPersyaratan(item)">
-                        <VIcon >mdi-delete</VIcon>
-                      </VBtn>
-                      <VBtn icon variant="outlined" color="purple" class="ml-2" @click="downloadDokumenPersyaratan(item)">
+<!--                      <VBtn  icon variant="outlined" color="error" @click="deleteDokumenPersyaratan(item)">-->
+<!--                        <VIcon >mdi-delete</VIcon>-->
+<!--                      </VBtn>-->
+                      <VBtn icon variant="outlined" color="purple" class="ml-2" @click="downloadFile(item.namafile)">
                         <VIcon color="primary">mdi-download</VIcon>
                       </VBtn>
                     </VCol>
@@ -291,29 +427,125 @@ const ajukanHandler = () => {
                   </span>
                 </VCol>
               </VRow>
-              <VDivider class="my-4"/>
-              <VRow class="d-flex justify-end ma-3">
-                <VBtn>
-                  Simpan
-                </VBtn>
-              </VRow>
+<!--              <VDivider class="my-4"/>-->
+<!--              <VRow class="d-flex justify-end ma-3">-->
+<!--                <VBtn>-->
+<!--                  Simpan-->
+<!--                </VBtn>-->
+<!--              </VRow>-->
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
 
-        <VExpansionPanels v-model="panelMelacak" class="mb-4">
+<!--        <VExpansionPanels v-model="panelMelacak" class="mb-4">-->
+<!--          <VExpansionPanel>-->
+<!--            <VExpansionPanelTitle class="text-h4 font-weight-bold">-->
+<!--              Melacak-->
+<!--            </VExpansionPanelTitle>-->
+<!--            <VExpansionPanelText>-->
+<!--              <HalalTimeLine :event="[-->
+<!--                { created_at: '09/09/2024',-->
+<!--                  id: '1',-->
+<!--                  status: 'Pengajuan',-->
+<!--                  username: 'Samsul',-->
+<!--                  comment: ''},-->
+<!--              ]" />-->
+<!--            </VExpansionPanelText>-->
+<!--          </VExpansionPanel>-->
+<!--        </VExpansionPanels>-->
+
+        <VExpansionPanels v-model="panelDataRekeningBankDanNpwp" class="mb-8">
           <VExpansionPanel>
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
-              Melacak
+              Data Rekening Bank & NPWP
             </VExpansionPanelTitle>
             <VExpansionPanelText>
-              <HalalTimeLine :event="[
-                { created_at: '09/09/2024',
-                  id: '1',
-                  status: 'Pengajuan',
-                  username: 'Samsul',
-                  comment: ''},
-              ]" />
+              <VLabel for="namaBank">
+                Nama Bank
+              </VLabel>
+              <VTextField
+                class="mb-4"
+                id="namaBank"
+                v-model="dataRekeningBankDanNpwp.namaBank"
+                disabled
+              />
+
+              <VLabel for="noRekening">
+                No. Rekening
+              </VLabel>
+              <VTextField
+                class="mb-4"
+                id="noRekening"
+                v-model="dataRekeningBankDanNpwp.noRekening"
+                disabled
+              />
+
+              <VLabel for="atasNama">
+                Atas Nama
+              </VLabel>
+              <VTextField
+                class="mb-4"
+                id="atasNama"
+                v-model="dataRekeningBankDanNpwp.atasNama"
+                disabled
+              />
+
+              <VRow class="d-flex align-center mb-2">
+                <VCol cols="12" md="8">
+                  <div class="text-body-1 font-weight-medium ">Foto Rekening</div>
+                </VCol>
+                <VCol cols="12" md="4" class="squareBtnIcon">
+                  <VBtn icon variant="outlined" color="purple" class="ml-2" @click="downloadFile(dataRekeningBankDanNpwp.fotoRekening)">
+                    <VIcon color="primary">mdi-download</VIcon>
+                  </VBtn>
+                </VCol>
+              </VRow>
+
+<!--              <VLabel for="fotoRekening">-->
+<!--                Upload Foto Rekening-->
+<!--              </VLabel>-->
+<!--              <VBtn block variant="outlined" color="purple" class="ml-2" @click="downloadDokumenPersyaratan(item)">-->
+<!--                <VIcon color="primary">mdi-download</VIcon>-->
+<!--              </VBtn>-->
+<!--              <HalalFileInput-->
+<!--                class="mb-4"-->
+<!--                id="fotoRekening"-->
+<!--                v-model="dataRekeningBankDanNpwp.fotoRekening"-->
+<!--              />-->
+
+              <VLabel for="npwp">
+                NPWP
+              </VLabel>
+              <VTextField
+                class="mb-4"
+                id="npwp"
+                v-model="dataRekeningBankDanNpwp.npwp"
+                disabled
+              />
+
+              <VRow class="d-flex align-center">
+                <VCol cols="12" md="8">
+                  <div class="text-body-1 font-weight-medium ">Foto NPWP</div>
+                </VCol>
+                <VCol cols="12" md="4" class="squareBtnIcon">
+                  <VBtn icon variant="outlined" color="purple" class="ml-2" @click="downloadFile(dataRekeningBankDanNpwp.fotoNpwp)">
+                    <VIcon color="primary">mdi-download</VIcon>
+                  </VBtn>
+                </VCol>
+              </VRow>
+
+<!--              <VLabel for="fotoNpwp">-->
+<!--                Upload Foto NPWP-->
+<!--              </VLabel>-->
+<!--              <VBtn block  variant="outlined" color="purple" class="ml-2" @click="downloadDokumenPersyaratan(item)">-->
+<!--                <VIcon color="primary">mdi-download</VIcon>-->
+<!--              </VBtn>-->
+<!--              <HalalFileInput-->
+<!--                class="mb-4"-->
+<!--                id="fotoNpwp"-->
+<!--                v-model="dataRekeningBankDanNpwp.fotoNpwp"-->
+<!--              />-->
+
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
