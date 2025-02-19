@@ -24,7 +24,7 @@ export default defineEventHandler(async (event: any) => {
       {
         method: "get",
         headers: { Authorization: authHeader },
-        const params = {
+        params : {
           page,
           size
         }
