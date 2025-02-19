@@ -4,47 +4,43 @@ const { t } = useI18n();
 
 const tableHeaders: any[] = [
   { title: 'No', key: 'no', sortable: false },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.daftar'), key: 'registration_no', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.date'), key: 'date', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.pu-name'), key: 'name', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.city'), key: 'city', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.product-type'), key: 'product_type', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.market-brand'), key: 'market_brand', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.market-area'), key: 'market_area', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.business-scale'), key: 'business_scale', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.lph-name'), key: 'lph_name', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.determination-no'), key: 'determination_no', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.determination-date'), key: 'determination_date', nowrap: true },
+  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.daftar'), key: 'no_daftar', nowrap: true },
+  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.date'), key: 'tanggal_daftar', nowrap: true },
+  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.pu-name'), key: 'nama_pu', nowrap: true },
+  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.city'), key: 'kota_pu', nowrap: true },
+  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.product-type'), key: 'jenis_produk', nowrap: true },
+  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.market-brand'), key: 'merek_dagang', nowrap: true },
+  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.market-area'), key: 'area_pemasaran', nowrap: true },
+  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.business-scale'), key: 'skala_usaha', nowrap: true },
+  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.lph-name'), key: 'nama_lph', nowrap: true },
+  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.determination-no'), key: 'penetapan.no_penetapan', nowrap: true },
+  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.determination-date'), key: 'penetapan.tgl_penetapan', nowrap: true },
 ]
 
 const tableItems = ref<Array[]>([])
-const lembagaItems = ref<Array[]>([])
+const facilityItems = ref<Array[]>([])
 const currentPage = ref(1)
 const itemPerPage = ref(10)
 const totalItems = ref(0)
 const selectedItem = ref([])
 const isLoading = ref(false)
-const isLoadingLembaga = ref(false)
+const isLoadingFacility = ref(false)
 const tableType = ref('')
 const totalData = ref(30)
+const showFilterMenu = ref(false)
+
+// const filterData = ref({
+//   serviceType: `Pilih ${t('task-force.tagihan-bpjph-buat-tagihan-filter.service-type')}`,
+//   pelakuUsaha: `Pilih ${t('task-force.tagihan-bpjph-buat-tagihan-filter.pelaku-usaha')}`,
+//   facility: `Pilih ${t('task-force.tagihan-bpjph-buat-tagihan-filter.facility')}`,
+//   year: `Pilih ${t('task-force.tagihan-bpjph-buat-tagihan-filter.year')}`,
+// })
 
 const filterData = ref({
-  serviceType: {
-    name: `Pilih ${t('task-force.tagihan-bpjph-buat-tagihan-filter.service-type')}`,
-    code: '',
-  },
-  pelakuUsaha: {
-    name: `Pilih ${t('task-force.tagihan-bpjph-buat-tagihan-filter.pelaku-usaha')}`,
-    code: '',
-  },
-  facility: {
-    name: `Pilih ${t('task-force.tagihan-bpjph-buat-tagihan-filter.facility')}`,
-    code: '',
-  },
-  year: {
-    name: `Pilih ${t('task-force.tagihan-bpjph-buat-tagihan-filter.year')}`,
-    code: '',
-  },
+  serviceType: '',
+  pelakuUsaha: '',
+  facility: '',
+  year: '',
 })
 
 const bulkCheck = ref({
@@ -52,91 +48,20 @@ const bulkCheck = ref({
   end: '',
 })
 
-const handleLoadList = async () => {
+const handleLoadList = async (params: any) => {
   try {
-    const response: any = await $api('/approval/juleha/list', {
+    const response: any = await $api('/bill/bpjph/bill', {
       method: 'get',
       query: {
+        ...params,
         page: currentPage.value,
         size: itemPerPage.value,
-        keyword: tableType.value,
       },
     } as any)
 
     if (response.code === 2000) {
       if (response.data !== null) {
-        tableItems.value = [
-          {
-            id: 1,
-            registration_no: 'sh-1',
-            date: '2025-01-01',
-            name: 'a',
-            city: 'jakarta',
-            product_type: 'ok',
-            market_brand: 'area pemasaran',
-            market_area: 'Depok',
-            business_scale: 'Nasional',
-            lph_name: 'LPH 1',
-            determination_no: '111',
-            determination_date: '2025-02-02',
-          },
-          {
-            id: 2,
-            registration_no: 'sh-1',
-            date: '2025-01-01',
-            name: 'a',
-            city: 'jakarta',
-            product_type: 'ok',
-            market_brand: 'area pemasaran',
-            market_area: 'Depok',
-            business_scale: 'Nasional',
-            lph_name: 'LPH 1',
-            determination_no: '111',
-            determination_date: '2025-02-02',
-          },
-          {
-            id: 3,
-            registration_no: 'sh-1',
-            date: '2025-01-01',
-            name: 'a',
-            city: 'jakarta',
-            product_type: 'ok',
-            market_brand: 'area pemasaran',
-            market_area: 'Depok',
-            business_scale: 'Nasional',
-            lph_name: 'LPH 1',
-            determination_no: '111',
-            determination_date: '2025-02-02',
-          },
-          {
-            id: 4,
-            registration_no: 'sh-1',
-            date: '2025-01-01',
-            name: 'a',
-            city: 'jakarta',
-            product_type: 'ok',
-            market_brand: 'area pemasaran',
-            market_area: 'Depok',
-            business_scale: 'Nasional',
-            lph_name: 'LPH 1',
-            determination_no: '111',
-            determination_date: '2025-02-02',
-          },
-          {
-            id: 5,
-            registration_no: 'sh-1',
-            date: '2025-01-01',
-            name: 'a',
-            city: 'jakarta',
-            product_type: 'ok',
-            market_brand: 'area pemasaran',
-            market_area: 'Depok',
-            business_scale: 'Nasional',
-            lph_name: 'LPH 1',
-            determination_no: '111',
-            determination_date: '2025-02-02',
-          },
-        ]
+        tableItems.value = response.data
         currentPage.value = response.current_page
         totalItems.value = response.total_item
       }
@@ -159,20 +84,19 @@ const handleLoadList = async () => {
   }
 }
 
-const getMasterLembaga = async () => {
+const getFacility = async () => {
   try {
-    isLoadingLembaga.value = true
+    isLoadingFacility.value = true
 
-    const response: any = await $api('/approval/lembaga', {
+    const response: any = await $api('/bill/bpjph/facility', {
       method: 'get',
     } as any)
 
     if (response.code === 2000) {
       if (response.data !== null) {
-        response.data.unshift({ nama_lebaga: 'Semua', id_lembaga_pelatihan: '' })
-        lembagaItems.value = response.data
+        facilityItems.value = response.data
+        isLoadingFacility.value = false
       }
-      isLoadingLembaga.value = false
 
       return response
     }
@@ -185,7 +109,7 @@ const getMasterLembaga = async () => {
 
 const { refresh } = await useAsyncData(
   'user-list',
-  async () => await handleLoadList(),
+  async () => await handleLoadList(filterData.value),
   {
     watch: [currentPage, itemPerPage, tableType],
   },
@@ -207,10 +131,53 @@ const handleCheck = async () => {
   return selectedItem.value = arr
 }
 
+const applyFilters = async () => {
+  let params = {}
+
+  if (filterData.value.serviceType !== '') {
+    params = {
+      ...params,
+      channel_id: filterData.value.serviceType,
+    }
+  }
+  if (filterData.value.pelakuUsaha !== '') {
+    params = {
+      ...params,
+      f_ln: filterData.value.pelakuUsaha === 'Dalam Negri' ? 0 : 1,
+    }
+  }
+  if (filterData.value.facility !== '') {
+    params = {
+      ...params,
+      fac_id: filterData.value.facility,
+    }
+  }
+  if (filterData.value.year !== '') {
+    params = {
+      ...params,
+      tgl_daftar: filterData.value.year,
+    }
+  }
+
+  handleLoadList(params)
+  showFilterMenu.value = false
+}
+
+const resetFilters = () => {
+  filterData.value = {
+    serviceType: '',
+    pelakuUsaha: '',
+    facility: '',
+    year: '',
+  }
+  handleLoadList(filterData.value)
+  showFilterMenu.value = false
+}
+
 onMounted(async () => {
   await Promise.allSetled([
-    handleLoadList(),
-    getMasterLembaga(),
+    handleLoadList(filterData.value),
+    getFacility(),
   ])
 })
 
@@ -239,82 +206,6 @@ const onApprove = async () => {
     </VCol>
   </VRow>
   <VRow>
-    <div class="w-100 mt-5 px-5">
-      <div class="d-flex gap-5">
-        <div class="w-50">
-          <label>{{ t('task-force.tagihan-bpjph-buat-tagihan-filter.service-type') }}</label>
-          <VSelect
-            v-model="filterData.serviceType"
-            :value="filterData.serviceType"
-            :items="[
-              { name: 'Reguler', code: 'reg' },
-              { name: 'Fasilitasi', code: 'fas' },
-            ]"
-            class="-mt-10"
-            item-title="name"
-            item-value="code"
-            style="background-color: white;"
-          />
-        </div>
-        <div class="w-50">
-          <label>{{ t('task-force.tagihan-bpjph-buat-tagihan-filter.pelaku-usaha') }}</label>
-          <VSelect
-            v-model="filterData.pelakuUsaha"
-            :value="filterData.pelakuUsaha"
-            :items="[
-              { name: 'Dalam Negri', code: 'dn' },
-              { name: 'Luar Negri', code: 'ln' },
-            ]"
-            class="-mt-10"
-            item-title="name"
-            item-value="code"
-            style="background-color: white;"
-          />
-        </div>
-      </div>
-      <div class="d-flex gap-5 mt-5">
-        <div class="w-50">
-          <label>{{ t('task-force.tagihan-bpjph-buat-tagihan-filter.facility') }}</label>
-          <VSelect
-            v-model="filterData.facility"
-            :value="filterData.facility"
-            :items="[
-              { name: 'Reguler', code: 'reg' },
-              { name: 'Fasilitasi', code: 'fas' },
-            ]"
-            class="-mt-10"
-            item-title="name"
-            item-value="code"
-            style="background-color: white;"
-          />
-        </div>
-        <div class="w-50">
-          <label>{{ t('task-force.tagihan-bpjph-buat-tagihan-filter.year') }}</label>
-          <VSelect
-            v-model="filterData.year"
-            :value="filterData.year"
-            :items="[
-              { name: 'Dalam Negri', code: 'dn' },
-              { name: 'Luar Negri', code: 'ln' },
-            ]"
-            class="-mt-10"
-            item-title="name"
-            item-value="code"
-            style="background-color: white;"
-          />
-        </div>
-      </div>
-      <div class="mt-5" style="display: flex; justify-self: end;">
-        <VBtn
-          :disabled="!bulkCheck.start || !bulkCheck.end || (+bulkCheck.start > +bulkCheck.end)"
-          @click="handleCheck"
-        >
-          {{ t('task-force.tagihan-bpjph-buat-tagihan-filter.btn-filter') }}
-        </VBtn>
-      </div>
-    </div>
-  </VRow>
-  <VRow>
     <VCol>
       <VCard class="w-100 py-3">
         <VCardTitle>
@@ -331,10 +222,107 @@ const onApprove = async () => {
           </div>
         </VCardTitle>
         <VCardItem>
-          <div
-            class="d-flex w-100 mb-5"
-            style="justify-content: space-between;"
-          >
+          <div class="d-flex w-100 mb-5 gap-5">
+            <div>
+              <VMenu
+                v-model="showFilterMenu"
+                :close-on-content-click="false"
+                offset-y
+              >
+                <template #activator="{ props }">
+                  <VBtn
+                    color="primary"
+                    variant="outlined"
+                    v-bind="props"
+                    append-icon="ri-filter-fill"
+                  >
+                    Filter
+                  </VBtn>
+                </template>
+                <VCard class="pa-3" width="300">
+                  <div class="w-100 mt-5 mb-5">
+                    <div class="w-100">
+                      <div>
+                        <label>{{ t('task-force.tagihan-bpjph-buat-tagihan-filter.service-type') }}</label>
+                        <VSelect
+                          v-model="filterData.serviceType"
+                          :value="filterData.serviceType"
+                          :items="[
+                            { name: 'Reguler', code: 'CH001' },
+                            { name: 'Fasilitasi', code: 'CH002' },
+                          ]"
+                          class="-mt-10"
+                          item-title="name"
+                          item-value="code"
+                          style="background-color: white;"
+                        />
+                      </div>
+                      <div class="mt-5">
+                        <label>{{ t('task-force.tagihan-bpjph-buat-tagihan-filter.pelaku-usaha') }}</label>
+                        <VSelect
+                          v-model="filterData.pelakuUsaha"
+                          :value="filterData.pelakuUsaha"
+                          :items="[
+                            { name: 'Dalam Negri', code: 'Dalam Negri' },
+                            { name: 'Luar Negri', code: 'Luar Negri' },
+                          ]"
+                          class="-mt-10"
+                          item-title="name"
+                          item-value="code"
+                          style="background-color: white;"
+                        />
+                      </div>
+                    </div>
+                    <div class="w-100 mt-5">
+                      <div>
+                        <label>{{ t('task-force.tagihan-bpjph-buat-tagihan-filter.facility') }}</label>
+                        <VSelect
+                          v-model="filterData.facility"
+                          :items="facilityItems"
+                          class="-mt-10"
+                          item-title="fac_name"
+                          item-value="fac_id"
+                          style="background-color: white;"
+                          :loading="isLoadingFacility"
+                          :disabled="isLoadingFacility"
+                        />
+                      </div>
+                      <div class="mt-5">
+                        <label>{{ t('task-force.tagihan-bpjph-buat-tagihan-filter.year') }}</label>
+                        <VSelect
+                          v-model="filterData.year"
+                          :value="filterData.year"
+                          :items="[
+                            { name: 'Semua', code: '' },
+                            { name: new Date().getFullYear(), code: new Date().getFullYear() },
+                            { name: new Date().getFullYear() - 1, code: new Date().getFullYear() - 1 },
+                            { name: new Date().getFullYear() - 2, code: new Date().getFullYear() - 2 },
+                            { name: new Date().getFullYear() - 3, code: new Date().getFullYear() - 3 },
+                            { name: new Date().getFullYear() - 4, code: new Date().getFullYear() - 4 },
+                          ]"
+                          class="-mt-10"
+                          item-title="name"
+                          item-value="code"
+                          style="background-color: white;"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <VBtn
+                    style="float: inline-start"
+                    :text="t('task-force.tagihan-bpjph-buat-tagihan-filter.reset-btn-filter')"
+                    @click="resetFilters"
+                  />
+                  <VBtn
+                    style="float: inline-end"
+                    color="primary"
+                    @click="applyFilters"
+                  >
+                    {{ t('task-force.tagihan-bpjph-buat-tagihan-filter.btn-filter') }}
+                  </VBtn>
+                </VCard>
+              </VMenu>
+            </div>
             <div class="d-flex gap-5" style="max-height: 40px;">
               <VTextField
                 v-model="bulkCheck.start"
@@ -397,6 +385,11 @@ const onApprove = async () => {
               </template>
               <template #item.no="{ index }">
                 {{ index + 1 + (currentPage - 1) * itemPerPage }}
+              </template>
+              <template #item.penetapan.tgl_penetapan="{ item }">
+                <label v-if="item.penetapan.tgl_penetapan">
+                  {{ formatDateIntl(new Date(item.penetapan.tgl_penetapan)) }}
+                </label>
               </template>
             </VDataTableServer>
           </VCard>

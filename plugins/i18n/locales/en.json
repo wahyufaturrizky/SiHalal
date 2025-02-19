@@ -991,7 +991,90 @@
       "pelaku-usaha": "Pelaku usaha",
       "facility": "Fasilitas",
       "year": "Tahun",
-      "btn-filter": "Tampil"
+      "btn-filter": "Apply Filters",
+      "reset-btn-filter": "Reset"
+    },
+    "proses-sidang": {
+      "title": "Tabel Pengajuan Proses Sidang",
+      "subtitle": "Data Pengajuan",
+      "filter": {
+        "service-type":"Jenis Layanan",
+        "product-type":"Jenis Produk",
+        "province":"Provinsi",
+        "lph":"LPH"
+      },
+      "detail": {
+        "title": "Detail Data Pengajuan",
+        "section-profile": {
+          "title": "Profile",
+          "nomor": "Nomor ID",
+          "created": "Tanggal Buat",
+          "status": "Status",
+          "registration-type": "Jenis Pendaftaran",
+          "company-name": "Nama Perusahaan",
+          "address": "Alamat",
+          "city": "Kota/Kab",
+          "province": "Provinsi",
+          "postal-code": "Kode Pos",
+          "nationality": "Negara",
+          "phone": "Telepon",
+          "email": "Email",
+          "bu-type": "Jenis Badan Usaha",
+          "scale": "Skala Usaha"
+        },
+        "section-pengajuan-sertifikasi": {
+          "title": "Pengajuan Sertifikasi",
+          "nomor": "No dan Tanggal Pemohon",
+          "service-type": "Jenis Layanan",
+          "product-type": "Jenis Produk",
+          "market-brand": "Merek Dagang",
+          "market-area": "Area Pemasaran"
+        },
+        "section-produk": {
+          "title": "Daftar Nama Produk",
+          "product-service": "Layanan Produk",
+          "doc-no": "No. Dokumen",
+          "product-class": "Kelas Produk",
+          "product-detail": "Rincian Produk",
+          "publication": "Publikasi"
+        },
+        "section-biaya-pemeriksaan": {
+          "title": "Biaya Pemeriksaan",
+          "price-detail": "Keterangan Biaya",
+          "total": "Jumlah",
+          "price": "Harga",
+          "sub-total": "Sub Total"
+        },
+        "section-jadwal-audit": {
+          "title": "Jawal Audit",
+          "start-date": "Tanggal Mulai",
+          "end-date": "Tanggal Selesai"
+        },
+        "section-auditor": {
+          "title": "Auditor",
+          "name": "Nama",
+          "bod": "Tanggal Lahir",
+          "gender": "JK",
+          "regis-no": "No. Pendaftaran"
+        },
+        "section-hasil-pemeriksaan": {
+          "title": "Hasil Pemeriksaan",
+          "done-date": "Tanggal Selesai LPH",
+          "result": "Hasil",
+          "document": "Dokumen"
+        },
+        "section-hasil-audit": {
+          "title": "Hasil Audit",
+          "report": "Laporan"
+        },
+        "section-regis-no": "No. Pendaftaran",
+        "section-total-biaya": "Biaya Pemerikasaan",
+        "section-dokumen-unduh": {
+          "title": "Dokumen Unduhan",
+          "kh": "File KH",
+          "lph": "File Laporan LPH"
+        }
+      }
     }
   }
 }
