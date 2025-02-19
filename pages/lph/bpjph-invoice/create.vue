@@ -127,12 +127,12 @@ const loadItem = async () => {
     return response
   }
   catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    useSnackbar().sendSnackbar("Oops, terjadi kesalahan. Silakan coba kembali", 'error')
     isLoading.value = false
   }
 }
 
-const {refresh} = await useAsyncData(
+const { refresh } = await useAsyncData(
   "bpjph-bill-doc-list",
   async () => await loadItem(),
   {
@@ -191,8 +191,22 @@ const handleOpenModal = () => {
   isOpenModal.value = !isOpenModal.value;
 };
 const handleConfirmCreate = async () => {
-  useSnackbar().sendSnackbar("Berhasil membuat invoice", "success");
-  return
+  try {
+    const response: any = await $api('/reguler/lph/bpjph-bill/create', {
+      method: 'post',
+      body: {
+        id_reg: selectedDoc.value
+      }
+    } as any)
+
+    if (response?.code === 2000) {
+      useSnackbar().sendSnackbar("Berhasil membuat invoice", "success");
+      selectedDoc.value = []
+      refresh()
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Oops, terjadi kesalahan. Silakan coba kembali", "error");
+  }
 }
 
 onMounted(() => {
