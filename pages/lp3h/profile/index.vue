@@ -170,6 +170,8 @@ const loadProfil = async () => {
         file: i.namafile
       })
     )
+    console.log("DOKUMEN PERSYARATAN ", dokumenPersyaratan)
+
 
     const rek = data.rekening
     dataRekeningBankDanNpwp.value = {
@@ -180,25 +182,6 @@ const loadProfil = async () => {
       npwp : rek.nama_npwp,
       fotoNpwp : rek.filefotonpwp
     }
-
-
-    // dokumenPersyaratan.value = [
-    //   { name: "Akte/Dasar Hukum Pendirian" , id: "1"
-    //     , file: lpd.filter(i => i.jenis === "Akte/Dasar Hukum Pendirian")[0].namafile
-    //   },
-    //   { name: "Struktur Organisasi", id: "2"
-    //     , file: lpd.filter(i => i.jenis === "Struktur Organisasi")[0].namafile
-    //   },
-    //   { name: "Ijazah Sarjana/Diploma", id: "3"
-    //     , file: lpd.filter(i => i.jenis === "Ijazah Sarjana/Diploma")[0].namafile
-    //   },
-    //   { name: "Pernyataan Komitmen Sebagai Lembaga Pendamping" , id: "4"
-    //     , file: lpd.filter(i => i.jenis === "Pernyataan Komitmen Sebagai Lembaga Pendamping")[0].namafile
-    //   }
-    // ]
-
-    console.log("DOKUMEN PERSYARATAN ")
-
 
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -214,10 +197,7 @@ const getColor = (status) => {
 
 onMounted(async () => {
   await loadProfil()
-  // await loadItem()
 })
-
-
 
 </script>
 
