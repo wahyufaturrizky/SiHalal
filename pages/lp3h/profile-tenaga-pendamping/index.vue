@@ -25,7 +25,6 @@ const panelMelacak = ref([0, 1]);
 //   { label: "Pekerjaaan", value: "Lainnya" },
 // ];
 
-
 const dataProfilePendamping = ref([
   { label: "NIK", value: "" },
   { label: "Nama", value: "" },
@@ -48,20 +47,16 @@ const dataBank = ref([
   { label: "File Rekening", value: "" },
 ]);
 
-const dataBank2 = [
-  { label: "NPWP", value: "123.456.789.761" },
-  { label: "Nama pada NPWP", value: "M maulana" },
-];
+const dataBank2 = ref([
+  { label: "NPWP", value: "" },
+  { label: "Nama pada NPWP", value: "" },
+  { label: "File NPWP", value: "" },
+]);
 
 const dataPendidikan = ref([
   { label: "Pendidikan Terakhir", value: "" },
   { label: "Nama Universitas", value: "" },
 ]);
-
-const dataKontakPenanggungJawab = [
-  { label: "Nama Kontak", value: "Robert Fox" },
-  { label: "No. HP Kontak", value: "0821178958123" },
-];
 
 const deleteItem = (item) => {
   console.log("ITEM DELETE : ", item);
@@ -81,13 +76,13 @@ const dataRegistrasi = [
   { label: "Tanggal Berlaku", value: "-" },
 ];
 
-const documentLMS = [{ name: "Pendalaman LMS", id: "1" }];
+const documentLMS = ref([{ label: "Pendalaman LMS", value: "" }]);
 
-const dokumenPersyaratan = [
-  { name: "Ijazah", id: "1" },
-  { name: "KTP", id: "2" },
-  { name: "Sertifikat Pelatihan", id: "3" },
-];
+const dokumenPersyaratan = ref([
+  { label: "Ijazah", value: "" },
+  { label: "KTP", value: "" },
+  { label: "Sertifikat Pelatihan", value: "" },
+]);
 
 const deleteDokumenPersyaratan = (item) => {
   console.log("DELETE DOKUMEN PERSYARATAN : ", item);
@@ -108,42 +103,94 @@ const formatDate = (isoString: string): string => {
   return `${day}-${month}-${year}`;
 };
 
+const handleDownloadV2 = async (filename) => {
+  try {
+    console.log(filename, "ini value");
+    const response: any = await $api("/shln/submission/document/download", {
+      method: "post",
+      body: {
+        filename: filename,
+      },
+    });
+
+    if (response.url)
+      window.open(response.url, "_blank", "noopener,noreferrer");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const getProfile = async () => {
   try {
     const response = await $api("/reguler/lph/detail-pendamping", {
       method: "get",
     });
-   
+
     if (response.code != 4000) {
-  console.log(response.data,'ini masuk kode')
-  dataProfilePendamping.value.forEach((el) => {
+      console.log(response.data, "ini masuk kode");
+      dataProfilePendamping.value.forEach((el) => {
         if (el.label === "NIK") el.value = response.data.pendamping.nik;
         if (el.label === "Nama") el.value = response.data.pendamping.nama;
         if (el.label === "Alamat") el.value = response.data.pendamping.alamat;
-        if (el.label === "Provinsi") el.value = response.data.pendamping.provinsi;
-        if (el.label === "Kota/Kab") el.value = response.data.pendamping.kabupaten;
-        if (el.label === "Kecamatan") el.value = response.data.pendamping.kecamatan;
-        if (el.label === "Kode Pos") el.value = response.data.pendamping.kode_pos;
+        if (el.label === "Provinsi")
+          el.value = response.data.pendamping.provinsi;
+        if (el.label === "Kota/Kab")
+          el.value = response.data.pendamping.kabupaten;
+        if (el.label === "Kecamatan")
+          el.value = Math.floor(response.data.pendamping.kecamatan);
+        if (el.label === "Kode Pos")
+          el.value = response.data.pendamping.kode_pos;
         if (el.label === "Email") el.value = response.data.pendamping.email;
         if (el.label === "Telp /HP") el.value = response.data.pendamping.no_hp;
 
-        if (el.label === "Tempat Lahir") el.value = response.data.pendamping.tempat_lahir;
-        if (el.label === "Tanggal Lahir") el.value = formatDate(response.data.pendamping.tgl_lahir);
-        if (el.label === "Pekerjaaan") el.value = response.data.pendamping.pekerjaan;
+        if (el.label === "Tempat Lahir")
+          el.value = response.data.pendamping.tempat_lahir;
+        if (el.label === "Tanggal Lahir")
+          el.value = formatDate(response.data.pendamping.tgl_lahir);
+        if (el.label === "Pekerjaaan")
+          el.value = response.data.pendamping.pekerjaan;
       });
 
       dataBank.value.forEach((el) => {
-        if (el.label === "Nama Bank") el.value = response.data.pendamping.kode_bank;
-        if (el.label === "No. Rekening") el.value = response.data.pendamping.no_rekening;
-        if (el.label === "Nama Rekening") el.value = response.data.pendamping.nama;
-        if (el.label === "Provinsi") el.value = response.data.pendamping.provinsi;
+        if (el.label === "Nama Bank")
+          el.value = response.data.rekening.kode_bank;
+        if (el.label === "No. Rekening")
+          el.value = response.data.rekening.no_rekening;
+        if (el.label === "Nama Rekening")
+          el.value = response.data.rekening.nama;
+        if (el.label === "File Rekening")
+          el.value = response.data.rekening.filefotorek;
       });
-      dataPendidikan.value.forEach((el)=>{
-        if (el.label === "Pendidikan Terakhir") el.value = response.data.pendamping.pendidikan;
-        if (el.label === "Nama Universitas") el.value = response.data.pendamping.universitas;
-      })
+      
 
-    
+      dataBank2.value.forEach((el) => {
+        if (el.label === "NPWP")
+          el.value = response.data.rekening.npwp;
+        if (el.label === "Nama pada NPWP")
+          el.value = response.data.rekening.nama_npwp;
+        if (el.label === "File NPWP")
+          el.value = response.data.rekening.filefotonpwp;
+       
+      });
+      dataPendidikan.value.forEach((el) => {
+        if (el.label === "Pendidikan Terakhir")
+          el.value = response.data.pendamping.pendidikan;
+        if (el.label === "Nama Universitas")
+          el.value = response.data.pendamping.universitas;
+      });
+
+      // documentLMS.value.forEach((el) => {
+      // if (el.label === "Pendalaman LMS")
+      // el.value = response.data.pendamping.fotosertifikat;
+      // });
+
+      dokumenPersyaratan.value.forEach((el) => {
+        if (el.label === "Ijazah")
+          el.value = response.data.pendamping.fotoijazah;
+        if (el.label === "KTP") el.value = response.data.pendamping.fotoktp;
+        if (el.label === "Sertifikat Pelatihan")
+          el.value = response.data.pendamping.fotosertifikat;
+      });
 
       return;
     }
@@ -153,7 +200,6 @@ const getProfile = async () => {
 };
 
 const getDistrict = async (kode: string) => {
-
   const response: MasterDistrict[] = await $api("/master/district", {
     method: "post",
     body: {
@@ -166,7 +212,6 @@ const getDistrict = async (kode: string) => {
 onMounted(async () => {
   await Promise.allSettled([getProfile()]);
 });
-
 </script>
 
 <template>
@@ -208,80 +253,81 @@ onMounted(async () => {
 
     <VRow class="d-flex justify-space-between">
       <VCol cols="8">
- <VExpansionPanels v-model="panelProfile" class="mb-4">
-  <VExpansionPanel>
-    <VExpansionPanelTitle class="text-h4 font-weight-bold">
-      Profil Tenaga Pendamping
-    </VExpansionPanelTitle>
-    <VExpansionPanelText>
-      <VRow v-for="(item, index) in dataProfilePendamping" :key="index">
-        <VCol cols="3" class="text-left font-weight-medium">
-          {{ item.label }}
-        </VCol>
-        <VCol cols="12" class="font-weight-medium">
-          <VTextField
-            v-if="item.label !== 'Alamat'"
-            v-model="item.value"
-            variant="outlined"
-            density="compact"
-            hide-details
-            readonly
-          />
-          <VTextarea
-            v-else
-            v-model="item.value"
-            variant="outlined"
-            density="compact"
-            hide-details
-            readonly
-            rows="2"
-            auto-grow
-          />
-        </VCol>
-      </VRow>
-    </VExpansionPanelText>
-  </VExpansionPanel>
-</VExpansionPanels>
+        <VExpansionPanels v-model="panelProfile" class="mb-4">
+          <VExpansionPanel>
+            <VExpansionPanelTitle class="text-h4 font-weight-bold">
+              Profil Tenaga Pendamping
+            </VExpansionPanelTitle>
+            <VExpansionPanelText>
+              <VRow v-for="(item, index) in dataProfilePendamping" :key="index">
+                <VCol cols="3" class="text-left font-weight-medium">
+                  {{ item.label }}
+                </VCol>
+                <VCol cols="12" class="font-weight-medium">
+                  <VTextField
+                    v-if="item.label !== 'Alamat'"
+                    v-model="item.value"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    readonly
+                  />
+                  <VTextarea
+                    v-else
+                    v-model="item.value"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    readonly
+                    rows="2"
+                    auto-grow
+                  />
+                </VCol>
+              </VRow>
+            </VExpansionPanelText>
+          </VExpansionPanel>
+        </VExpansionPanels>
 
         <VExpansionPanels v-model="panelPendidikan" class="mb-4">
-  <VExpansionPanel>
-    <VExpansionPanelTitle class="text-h4 font-weight-bold">
-      Data Pendidikan
-    </VExpansionPanelTitle>
-    <VExpansionPanelText>
-      <VRow v-for="(item, index) in dataPendidikan" :key="index" class="my-2">
-        
-       
-        <VCol cols="12">
-          <span class="font-weight-medium">{{ item.label }}</span>
-        </VCol>
+          <VExpansionPanel>
+            <VExpansionPanelTitle class="text-h4 font-weight-bold">
+              Data Pendidikan
+            </VExpansionPanelTitle>
+            <VExpansionPanelText>
+              <VRow
+                v-for="(item, index) in dataPendidikan"
+                :key="index"
+                class="my-2"
+              >
+                <VCol cols="12">
+                  <span class="font-weight-medium">{{ item.label }}</span>
+                </VCol>
 
-        <VCol cols="12" v-if="item.label === 'Pendidikan Terakhir'">
-          <VSelect
-            v-model="item.value"
-            :items="['SD', 'SMP', 'SMA', 'D3', 'S1', 'S2', 'S3']"
-            variant="outlined"
-            density="compact"
-            hide-details
-            readonly
-          />
-        </VCol>
+                <VCol cols="12" v-if="item.label === 'Pendidikan Terakhir'">
+                  <VSelect
+                    v-model="item.value"
+                    :items="['SD', 'SMP', 'SMA', 'D3', 'S1', 'S2', 'S3']"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    readonly
+                  />
+                </VCol>
 
-        <!-- Input untuk Nama Universitas -->
-        <VCol cols="12" v-if="item.label === 'Nama Universitas'">
-          <VTextField
-            v-model="item.value"
-            variant="outlined"
-            density="compact"
-            hide-details
-            readonly
-          />
-        </VCol>
-
-      </VRow>
-    </VExpansionPanelText>
-  </VExpansionPanel>
-</VExpansionPanels>
+                <!-- Input untuk Nama Universitas -->
+                <VCol cols="12" v-if="item.label === 'Nama Universitas'">
+                  <VTextField
+                    v-model="item.value"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    readonly
+                  />
+                </VCol>
+              </VRow>
+            </VExpansionPanelText>
+          </VExpansionPanel>
+        </VExpansionPanels>
 
         <VExpansionPanels v-model="panelMelacak" class="mb-4">
           <VExpansionPanel>
@@ -319,7 +365,7 @@ onMounted(async () => {
                 <VRow class="d-flex align-center">
                   <VCol cols="12" md="8">
                     <div class="text-body-1 font-weight-medium">
-                      {{ item.name }}
+                      {{ item.label }}
                     </div>
                   </VCol>
                   <!-- <VBtn variant="flat" class="px-3 ms-2">
@@ -328,13 +374,14 @@ onMounted(async () => {
                       @click="handleDownload(item.file_name)"
                     ></VIcon>
                   </VBtn> -->
-                  <VCol cols="12" md="4" class="squareBtnIcon">
-                    :  <VBtn variant="flat" class="px-3 ms-2">
-                    <VIcon
-                      icon="fa-download"
-                      @click="handleDownload(item.file_name)"
-                    ></VIcon>
-                  </VBtn>
+                  <VCol cols="12" md="4" class="squareBtnIcon" disabled="true">
+                    :
+                    <VBtn variant="flat" class="px-3 ms-2">
+                      <VIcon
+                        icon="fa-download"
+                        @click="handleDownloadV2(item.value)"
+                      ></VIcon>
+                    </VBtn>
                   </VCol>
                 </VRow>
               </VListItem>
@@ -376,59 +423,105 @@ onMounted(async () => {
         </VExpansionPanels>
 
         <VExpansionPanels v-model="panelBank" class="mb-4">
-  <VExpansionPanel>
-    <VExpansionPanelTitle class="text-h4 font-weight-bold">
-      Data Bank
-    </VExpansionPanelTitle>
-    <VExpansionPanelText>
-      <VRow v-for="(item, index) in dataBank" :key="index" class="my-2">
-        
- 
-        <VCol cols="12" v-if="item.label !== 'File Rekening'">
-          <span class="font-weight-medium">{{ item.label }}</span>
-        </VCol>
-        <VCol cols="4"  v-if="item.label === 'File Rekening'" >
-          <span  class="font-weight-medium">{{ item.label }} </span>
-        </VCol>
-        <VCol cols="1"  v-if="item.label === 'File Rekening'" >
-        :
-        </VCol>
+          <VExpansionPanel>
+            <VExpansionPanelTitle class="text-h4 font-weight-bold">
+              Data Bank
+            </VExpansionPanelTitle>
+            <VExpansionPanelText>
+              <VRow v-for="(item, index) in dataBank" :key="index" class="my-2">
+                <VCol cols="12" v-if="item.label !== 'File Rekening'">
+                  <span class="font-weight-medium">{{ item.label }}</span>
+                </VCol>
+                <VCol cols="4" v-if="item.label === 'File Rekening'">
+                  <span class="font-weight-medium">{{ item.label }} </span>
+                </VCol>
+                <VCol cols="1" v-if="item.label === 'File Rekening'"> : </VCol>
 
-    
-        <VCol v-if="item.label === 'Nama Bank'" cols="12">
-          <VSelect
-            v-model="item.value"
-            :items="['Bank Syariah Indonesia', 'BCA', 'Mandiri', 'BNI', 'BRI']"
-            variant="outlined"
-            density="compact"
-            hide-details
-            readonly
-          />
-        </VCol>
+                <VCol v-if="item.label === 'Nama Bank'" cols="12">
+                  <VSelect
+                    v-model="item.value"
+                    :items="[
+                      'Bank Syariah Indonesia',
+                      'BCA',
+                      'Mandiri',
+                      'BNI',
+                      'BRI',
+                    ]"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    readonly
+                  />
+                </VCol>
 
-        <VCol v-if="item.label !== 'File Rekening' && item.label !== 'Nama Bank'" cols="12">
-          <VTextField
-            v-model="item.value"
-            variant="outlined"
-            density="compact"
-            hide-details
-            readonly
-          />
-        </VCol>
+                <VCol
+                  v-if="
+                    item.label !== 'File Rekening' && item.label !== 'Nama Bank'
+                  "
+                  cols="12"
+                >
+                  <VTextField
+                    v-model="item.value"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    readonly
+                  />
+                </VCol>
 
-       
-        <VCol v-if="item.label === 'File Rekening'" cols="7">
-          <VBtn variant="flat" class="px-3 ms-2" color="primary">
-            <VIcon icon="fa-download" @click="handleDownload(item.file_name)"></VIcon>
-          </VBtn>
-        </VCol>
+                <VCol v-if="item.label === 'File Rekening'" cols="7">
+                  <VBtn
+                    variant="flat"
+                    class="px-3 ms-2"
+                    color="primary"
+                    
+                  >
+                    <VIcon
+                      icon="fa-download"
+                      @click="handleDownloadV2(item.value)"
+                    ></VIcon>
+                  </VBtn>
+                </VCol>
+              </VRow>
+              <VDivider class="my-3" />
+              <VRow
+                v-for="(item, index) in dataBank2"
+                :key="index"
+                class="my-2"
+              >
+                <VCol cols="12" v-if="item.label !== 'File NPWP'">
+                  <span class="font-weight-medium">{{ item.label }}</span>
+                </VCol>
+                <VCol cols="4" v-if="item.label === 'File NPWP'">
+                  <span class="font-weight-medium">{{ item.label }} </span>
+                </VCol>
+                <VCol cols="1" v-if="item.label === 'File NPWP'"> : </VCol>
 
-      </VRow>
-    </VExpansionPanelText>
-  </VExpansionPanel>
-</VExpansionPanels>
+                <VCol cols="12" v-if="item.label !== 'File NPWP'">
+                  <VTextField
+                    v-model="item.value"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    readonly
+                  />
+                </VCol>
 
-
+                <VCol v-if="item.label === 'File NPWP'" cols="7">
+                  <VBtn variant="flat" class="px-3 ms-2" color="primary">
+                    <VIcon
+                      icon="fa-download"
+                      @click="handleDownloadV2(item.value)"
+                    ></VIcon>
+                  </VBtn>
+                </VCol>
+              </VRow>
+              <VDivider class="my-3" />
+              Rekening dalam proses verifiaksi oleh LP3H
+              <VBtn color="primary" class="mt-2" disabled=true> Update </VBtn>
+            </VExpansionPanelText>
+          </VExpansionPanel>
+        </VExpansionPanels>
 
         <VExpansionPanels v-model="panelDokumenPersyaratan" class="mb-4">
           <VExpansionPanel>
@@ -445,16 +538,17 @@ onMounted(async () => {
                   <VRow class="d-flex align-center">
                     <VCol cols="12" md="8">
                       <div class="text-body-1 font-weight-medium">
-                        {{ item.name }}
+                        {{ item.label }}
                       </div>
                     </VCol>
                     <VCol cols="12" md="4" class="squareBtnIcon">
-                      : <VBtn variant="flat" class="px-3 ms-2">
-                    <VIcon
-                      icon="fa-download"
-                      @click="handleDownload(item.file_name)"
-                    ></VIcon>
-                  </VBtn>
+                      :
+                      <VBtn variant="flat" class="px-3 ms-2">
+                        <VIcon
+                          icon="fa-download"
+                          @click="handleDownload(item.file_name)"
+                        ></VIcon>
+                      </VBtn>
                     </VCol>
                   </VRow>
                 </VListItem>
