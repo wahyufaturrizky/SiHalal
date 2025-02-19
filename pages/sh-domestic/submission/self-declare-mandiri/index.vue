@@ -153,12 +153,8 @@ const handleSearchSubmission = useDebounceFn((val: string) => {
   refresh();
 }, 350);
 
-onMounted(() => {
-  loadValidation();
-});
-
 onMounted(async () => {
-  const res = await Promise.all([loadValidation(), handleLoadList()]);
+  const res = await Promise.all([handleLoadList()]);
 
   const checkResIfUndefined = res.every((item) => {
     return item !== undefined;
