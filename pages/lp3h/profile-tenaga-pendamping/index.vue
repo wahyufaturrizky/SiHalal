@@ -179,10 +179,11 @@ const getProfile = async () => {
           el.value = response.data.pendamping.universitas;
       });
 
-      // documentLMS.value.forEach((el) => {
-      // if (el.label === "Pendalaman LMS")
-      // el.value = response.data.pendamping.fotosertifikat;
-      // });
+      documentLMS.value.forEach((el) => {
+      if (el.label === "Pendalaman LMS")
+      el.value = response.data.pendamping.fotosertifikat;
+      });
+      console.log(documentLMS,'ini')
 
       dokumenPersyaratan.value.forEach((el) => {
         if (el.label === "Ijazah")
@@ -379,7 +380,7 @@ onMounted(async () => {
                     <VBtn variant="flat" class="px-3 ms-2">
                       <VIcon
                         icon="fa-download"
-                        @click="handleDownloadV2(item.value)"
+                        @click="downloadDocument(item.value)"
                       ></VIcon>
                     </VBtn>
                   </VCol>
