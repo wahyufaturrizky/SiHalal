@@ -27,8 +27,10 @@ const profileData = reactive<any>({
   rekening: {
     bank: "",
     no_rekening: "",
+    foto_rekening: "",
     nama: "",
-    npwp: ""
+    npwp: "",
+    foto_npwp: "",
   },
   // Data Registrasi
   reg_status: "",
@@ -320,26 +322,39 @@ onMounted(() => {
               disabled
             />
           </div>
-          <div class="mb-3 w-50">
+          <div class="mb-3">
             <div class="font-weight-bold mb-1">Upload Foto Rekening</div>
-            <VTextField
-              class="custom-file-input"
-              bg-color="#F6F6F6"
-              density="compact"
-              rounded="xl"
-              disabled
-              readonly
-              placeholder="No file choosen"
-            >
-              <template #append-inner>
-                <VBtn rounded="s-0 e-xl" color="#A09BA1" text="Choose File" />
-              </template>
-            </VTextField>
+            <div class="d-flex align-center">
+              <div class="w-50">
+                <VTextField
+                  class="custom-file-input"
+                  bg-color="#F6F6F6"
+                  density="compact"
+                  rounded="xl"
+                  disabled
+                  readonly
+                  placeholder="No file choosen"
+                >
+                  <template #append-inner>
+                    <VBtn rounded="s-0 e-xl" color="#A09BA1" text="Choose File" />
+                  </template>
+                </VTextField>
+              </div>
+              <VBtn
+                @click="profileData.rekening.foto_rekening ? handleDownload(profileData.rekening.foto_rekening) : null"
+                color="primary"
+                class="px-4 ms-2"
+              >
+                <template #default>
+                  <VIcon icon="fa-download" />
+                </template>
+              </VBtn>
+            </div>
           </div>
           <div class="mb-3">
             <div class="font-weight-bold mb-1">NPWP</div>
             <VTextField
-              :model-value="profileData.npwp ? profileData.npwp : '-'"
+              :model-value="profileData.rekening.npwp ? profileData.rekening.npwp : '-'"
               bg-color="#F6F6F6"
               density="compact"
               rounded="xl"
@@ -347,21 +362,34 @@ onMounted(() => {
               disabled
             />
           </div>
-          <div class="w-50">
+          <div>
             <div class="font-weight-bold mb-1">Upload Foto NPWP</div>
-            <VTextField
-              class="custom-file-input"
-              bg-color="#F6F6F6"
-              density="compact"
-              rounded="xl"
-              disabled
-              readonly
-              placeholder="No file choosen"
-            >
-              <template #append-inner>
-                <VBtn rounded="s-0 e-xl" color="#A09BA1" text="Choose File" />
-              </template>
-            </VTextField>
+            <div class="d-flex align-center">
+              <div class="w-50">
+                <VTextField
+                  class="custom-file-input"
+                  bg-color="#F6F6F6"
+                  density="compact"
+                  rounded="xl"
+                  disabled
+                  readonly
+                  placeholder="No file choosen"
+                >
+                  <template #append-inner>
+                    <VBtn rounded="s-0 e-xl" color="#A09BA1" text="Choose File" />
+                  </template>
+                </VTextField>
+              </div>
+              <VBtn
+                @click="profileData.rekening.foto_npwp ? handleDownload(profileData.rekening.foto_npwp) : null"
+                color="primary"
+                class="px-4 ms-2"
+              >
+                <template #default>
+                  <VIcon icon="fa-download" />
+                </template>
+              </VBtn>
+            </div>
           </div>
         </VCardText>
       </VCard>
