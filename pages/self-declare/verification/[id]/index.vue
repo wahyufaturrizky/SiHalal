@@ -757,7 +757,7 @@ const outletTableHeader = [
   // { title: "Jenis Bahan", key: "jenis_outlet" },
   { title: "Nama Bahan", key: "nama" },
   { title: "Alamat", key: "alamat" },
-  { title: "Status", key: "status_milik" },
+  // { title: "Status", key: "status_milik" },
   // { title: "Action", key: "action" },
 ];
 
@@ -765,7 +765,7 @@ const pabrikTableHeader = [
   { title: "No", key: "no" },
   { title: "Nama", key: "nama" },
   { title: "Alamat", key: "alamat" },
-  { title: "Status", key: "status_milik" },
+  // { title: "Status", key: "status_milik" },
   // { title: "Action", key: "action" },
 ];
 
