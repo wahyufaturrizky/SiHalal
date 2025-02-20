@@ -112,7 +112,7 @@ const setChipColor = (status: string) => {
       return 'success-chip'
   }
 }
-const formatNumber = (value) => {
+const formatNumber = (value: number) => {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",

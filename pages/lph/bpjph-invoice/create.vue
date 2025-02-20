@@ -9,6 +9,8 @@ const totalItems = ref<number>(0);
 const currentPage = ref<number>(1)
 const itemPerPage = ref<number>(10)
 
+const totalData = computed(() => +totalItems.value)
+
 const invoiceHeader: any[] = [
   { title: 'No', value: 'index' },
   { title: 'No. Daftar', value: 'no_daftar', nowrap: true },
@@ -117,7 +119,7 @@ const loadItem = async () => {
     if (response?.code === 2000) {
       tableItems.value = response?.data
       currentPage.value = response?.current_page;
-      totalItems.value = response.total_item;
+      totalItems.value = +response?.total_item;
     } else {
       tableItems.value = [];
       currentPage.value = 1;
@@ -139,6 +141,14 @@ const { refresh } = await useAsyncData(
     watch: [currentPage, itemPerPage],
   }
 );
+
+const formatNumber = (value: number) => {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(value).replace(/^Rp\s?/gi, '');
+};
 
 const handleFilterRegType = useDebounceFn((val: string) => {
   selectedRegType.value = val;
@@ -187,7 +197,6 @@ const handleChooseNumbers = () => {
 
 const isOpenModal = ref(false);
 const handleOpenModal = () => {
-  selectedDoc.value = []
   isOpenModal.value = !isOpenModal.value;
 };
 const handleConfirmCreate = async () => {
@@ -203,6 +212,8 @@ const handleConfirmCreate = async () => {
       useSnackbar().sendSnackbar("Berhasil membuat invoice", "success");
       selectedDoc.value = []
       refresh()
+    } else {
+      useSnackbar().sendSnackbar("Oops, terjadi kesalahan. Silakan coba kembali", "error");
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Oops, terjadi kesalahan. Silakan coba kembali", "error");
@@ -231,9 +242,9 @@ onMounted(() => {
             <div class="text-h4 font-weight-bold">
               Daftar Dokumen
             </div>
-            <div>
-              Jumlah Data: {{ totalItems }}
-            </div>
+            <ClientOnly>
+              Jumlah Data: {{ totalData }}
+            </ClientOnly>
           </div>
         </VCardTitle>
         <VCardItem class="py-0">
@@ -333,13 +344,14 @@ onMounted(() => {
         </VCardItem>
         <VCardText>
           <VDataTableServer
-            class="bill-table border rounded mt-5"
+            class="border rounded mt-5"
             :headers="invoiceHeader"
             :items="tableItems"
-            :items-length="totalItems"
+            :items-length="totalData"
             v-model:items-per-page="itemPerPage"
             v-model:page="currentPage"
             :loading="isLoading"
+            loading-text="Loading..."
             v-model="selectedDoc"
             show-select
             item-value="id_reg"
@@ -347,10 +359,7 @@ onMounted(() => {
           >
             <template #no-data>
               <div class="w-full mt-2">
-                <div
-                  class="pt-2"
-                  style="justify-items: center"
-                >
+                <div class="pt-2" style="justify-items: center">
                   <img
                     src="~/assets/images/empty-data.png"
                     alt="empty_data"
@@ -366,6 +375,9 @@ onMounted(() => {
             </template>
             <template #item.jenis_produk="{ item }">
               <div>{{ `${item.jenis_produk} & ${item.merek_dagang}` }}</div>
+            </template>
+            <template #item.jumlah="{ item }">
+              {{ item.jumlah ? formatNumber(item.jumlah) : '0' }}
             </template>
             <template #item.bank="{ item }">
               {{ item?.bank ? item?.bank : "-" }}
