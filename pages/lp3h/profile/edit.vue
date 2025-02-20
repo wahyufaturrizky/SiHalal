@@ -17,6 +17,24 @@ const lembaga = [
   "Instansi Pemerintah"
 ]
 
+const uploadDocument = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", "docs");
+    const response = await $api("/shln/submission/document/upload", {
+      method: "post",
+      body: formData,
+    });
+    return response;
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      "ada kesalahan saat upload file, gagal menyimpan!",
+      "error"
+    );
+  }
+};
+
 
 const dataProfilePendamping = ref({})
 
@@ -35,14 +53,42 @@ const deleteDokumenPersyaratan = item => {
   console.log('DELETE DOKUMEN PERSYARATAN : ', item)
 }
 
-const downloadDokumenPersyaratan = item => {
-  console.log('Download Dokumen Peryaratan : ', item)
+
+const handleDownloadV2 = async (filename: string) => {
+  try {
+    const response = await $api("/shln/submission/document/download", {
+      method: "post",
+      body: {
+        filename: filename,
+      },
+    });
+
+    if (response.url)
+      window.open(response.url, "_blank", "noopener,noreferrer");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const downloadDokumenPersyaratan = async (item) => {
+  console.log("DOWNLOAD FILE : ", item)
+  console.log("FILE : ", item.file)
+
+  await handleDownloadV2(item.file)
 }
+
 
 const dialog = ref(false)
 
 const simpanHandler = async () => {
   console.log('SIMPAN : ')
+
+
+  // UPLOAD FILE
+
+  const npwpUpload = await uploadDocument(npwpFile.value)
+
+  console.log("UPLOAD NPWP : ", npwpUpload)
 
   const body = {
     // START TODO NEED TO MAKESURE FIELD NAME
