@@ -69,13 +69,13 @@ const daftarLaporanHeader = [
   { title: "Merk Dagang", key: "merkDagang",nowrap:true},
   { title: "No. HP Kontak", key: "noHp",nowrap:true},
   { title: "Nama Pendamping", key: "namaPendamping",nowrap:true},
-  { title: "invoice", key: "invoice",nowrap:true},
+  // { title: "invoice", key: "invoice",nowrap:true},
   { title: "Action", key: "action"},
 
 ]
 
 const daftarLaporanItem = ref([])
-const loadItem = async (page: number, size: number, status_reg: string, fac_id: string, tahun: string) => {
+const loadItem = async (page: number, size: number, status_reg: string, fac_id: string, tahun: string, search: string) => {
   try {
     loading.value = true
     const response = await $api('/lp3h/laporan/list-pengajuan', {
@@ -85,7 +85,8 @@ const loadItem = async (page: number, size: number, status_reg: string, fac_id: 
         size,
         status_reg,
         tahun,
-        fac_id
+        fac_id,
+        search
       },
     })
 
@@ -94,16 +95,15 @@ const loadItem = async (page: number, size: number, status_reg: string, fac_id: 
     if (data != null) {
       daftarLaporanItem.value = data.map(
         i => ({
-          idReg: i.id_reg,
+          idReg: i.id,
           noDaftar: i.no_daftar,
           tanggalDaftar: i.tgl_daftar,
           kodeFasilitasi: "TODO",
           namaPu: i.nama_pu,
           alamat: i.alamat_pu,
           merkDagang: i.merek_dagang,
-          noHp: i.no_telp,
-          namaPendamping: "TODO",
-          invoice: "TODO"
+          noHp: i.no_kontak_pj,
+          namaPendamping: i.pendamping,
         }),
       )
     }
@@ -123,22 +123,58 @@ const handleInput = () => {
     itemPerPage.value,
     selectedStatus.value,
     selectedFasilitas.value,
-    selectedYear.value
-    // keyword: searchQuery.value,
+    selectedYear.value,
+    searchQuery.value,
   );
 };
 
 const changeFilterBy = () => {
-  debouncedFetch(page.value, itemPerPage.value, selectedStatus.value , selectedFasilitas.value , selectedYear.value)
+  debouncedFetch(page.value, itemPerPage.value, selectedStatus.value , selectedFasilitas.value , selectedYear.value, searchQuery.value)
 };
-
-const exportExcel = () => {
-  console.log("EXPORT EXCEL ")
-}
 
 const action = (item) => {
   console.log("action : ", item)
 }
+
+const downloadFile = async () => {
+  console.log("START DOWNLOAD EXCEL ")
+  try {
+    const params = {
+      page: page.value,
+      size : itemPerPage.value,
+      status_reg: selectedStatus.value != null ? selectedStatus.value : "",
+      tgl_daftar : selectedYear.value != null ? selectedYear.value : "",
+      fac_id : selectedFasilitas.value != null ? selectedFasilitas.value : "",
+      search : searchQuery.value != null ? searchQuery.value : ""
+    }
+
+    console.log("DOWNLOAD EXCEL : {} ", params)
+
+    const response = await $api('/lp3h/laporan/download-excel', {
+      method: 'get',
+      params
+    })
+
+    console.log("RESPONSE : ", response)
+    if (!response || response.size === 0) throw new Error("Gagal mengunduh file");
+
+    const blob = response;
+
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "data.xlsx");
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error(error);
+    useSnackbar().sendSnackbar("Terjadi kesalahan saat mengunduh file.", "error");
+  }
+};
 
 const debouncedFetch = debounce(loadItem, 500)
 onMounted(async () => {
@@ -224,7 +260,7 @@ onMounted(async () => {
                 />
               </VCol>
               <VCol class="d-flex justify-end">
-                <VBtn color="primary" class="ml-2" @click="exportExcel" append-icon="mdi-file-excel">
+                <VBtn color="primary" class="ml-2" @click="downloadFile" append-icon="mdi-file-excel">
                   Export XLS
                 </VBtn>
               </VCol>

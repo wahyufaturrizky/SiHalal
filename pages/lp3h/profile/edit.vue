@@ -7,6 +7,8 @@ const panelDataRegistrasi = ref([0, 1])
 const panelDokumenPersyaratan = ref([0, 1])
 const panelDataRekeningBankDanNpwp = ref([0, 1])
 
+const uploadFileButton = ref(false)
+
 const province = ref()
 const kabKota = ref()
 const kecamatan = ref()
@@ -17,9 +19,14 @@ const lembaga = [
   "Instansi Pemerintah"
 ]
 
+const authUser = useMyAuthUserStore()
+
 const uploadDocument = async (file) => {
+
+  console.log("auth user : ", authUser.user)
   try {
     const formData = new FormData();
+    formData.append("id", authUser.user.id)
     formData.append("file", file);
     formData.append("type", "docs");
     const response = await $api("/shln/submission/document/upload", {
@@ -44,13 +51,22 @@ const dataKontakPenanggungJawab = ref({})
 
 const dataRegistrasi = ref({})
 
-const dokumenPersyaratan = ref([])
+const dokumenPersyaratan = ref({})
 
 const dataRekeningBankDanNpwp = ref({})
 
 
 const deleteDokumenPersyaratan = item => {
-  console.log('DELETE DOKUMEN PERSYARATAN : ', item)
+
+  console.log("ITEM DELETE : ", item.slice(3))
+  if(item.slice(3) === 'Akte/Dasar Hukum Pendirian') {
+    console.log("masuk sini ga ? ")
+    fileAkte.value = null
+  }
+  if(item.slice(3) === 'Struktur Organisasi') fileStrukturOrganisasi.value = null
+  if(item.slice(3) === 'Ijazah Sarjana/Diploma') fileIjazah.value = null
+  if(item.slice(3) === 'Pernyataan Komitmen Sebagai Lembaga Pendamping') filePernyataan.value = null
+  if(item.slice(3) === 'Keputusan Akreditasi') fileKeputusan.value = null
 }
 
 
@@ -79,7 +95,6 @@ const downloadDokumenPersyaratan = async (item) => {
 
 
 const dialog = ref(false)
-
 const simpanHandler = async () => {
   console.log('SIMPAN : ')
 
@@ -87,6 +102,8 @@ const simpanHandler = async () => {
   // UPLOAD FILE
 
   const npwpUpload = await uploadDocument(npwpFile.value)
+  const rekUpload = await uploadDocument(rekFile.value)
+
 
   console.log("UPLOAD NPWP : ", npwpUpload)
 
@@ -111,23 +128,29 @@ const simpanHandler = async () => {
       nama: dataRekeningBankDanNpwp.value.atasNama,
       bank: dataRekeningBankDanNpwp.value.namaBank,
       npwp: dataRekeningBankDanNpwp.value.npwp,
-      foto_rekening: dataRekeningBankDanNpwp.value.fotoRekening,
-      foto_npwp: dataRekeningBankDanNpwp.value.fotoNpwp
+      foto_rekening: rekUpload.code === 2000 ? rekUpload.data.file_url : dataRekeningBankDanNpwp.value.fotoRekening,
+      foto_npwp: npwpUpload.code === 2000 ? npwpUpload.data.file_url : dataRekeningBankDanNpwp.value.fotoNpwp
     }
   }
 
   console.log("BODY : ", body)
 
-  const response = await $api(
-    `/lp3h/update-profil/${dataProfilePendamping.value.id_lp}`,
-    {
-      method: "put",
-      body,
-    }
-  );
+  try {
+    await $api(
+      `/lp3h/update-profil/${dataProfilePendamping.value.id_lp}`,
+      {
+        method: "put",
+        body,
+      }
+    );
+    await loadProfil()
+    useSnackbar().sendSnackbar('Berhasil menyimpan data ', 'success')
+  }catch (error){
+    console.log(error)
+    useSnackbar().sendSnackbar('Ada Kesalaan ', 'error')
 
+  }
   dialog.value = false
-  useSnackbar().sendSnackbar('Berhasil menyimpan data ', 'success')
 }
 
 const loadProvince = async () => {
@@ -185,10 +208,76 @@ const getSubDistrict = async () => {
   )
 }
 
-const emptyBlob = new Blob([""], { type: "application/octet-stream" });
 
+
+const uploadDokumen = async () => {
+  uploadFileButton.value = true
+  const body = []
+
+  if(fileAkte.value != null){
+    const response = await uploadDocument(fileAkte.value)
+    body.push({
+      jenis: 'Akte/Dasar Hukum Pendirian',
+      namafile: response.data.file_url })
+  }
+
+  if(fileStrukturOrganisasi.value != null){
+    const response = await uploadDocument(fileStrukturOrganisasi.value)
+    body.push({
+      jenis: 'Struktur Organisasi',
+      namafile: response.data.file_url })
+  }
+
+  if(fileIjazah.value != null){
+    const response = await uploadDocument(fileIjazah.value)
+    body.push({
+      jenis: 'Ijazah Sarjana/Diploma',
+      namafile: response.data.file_url })
+  }
+
+  if(filePernyataan.value != null){
+    const response = await uploadDocument(filePernyataan.value)
+    body.push({
+      jenis: 'Pernyataan Komitmen Sebagai Lembaga Pendamping',
+      namafile: response.data.file_url })
+  }
+
+  if(fileKeputusan.value != null){
+    const response = await uploadDocument(fileKeputusan.value)
+    body.push({
+      jenis: 'Keputusan Akreditasi',
+      namafile: response.data.file_url })
+  }
+
+  console.log("SEND DOKUMEN PERSYARATAN : {} ", body)
+
+  try {
+    await $api(
+      `/lp3h/upload-doc/${dataProfilePendamping.value.id_lp}`,
+      {
+        method: "put",
+        body,
+      }
+    );
+    await loadProfil()
+    useSnackbar().sendSnackbar('Berhasil menyimpan data ', 'success')
+  }catch (error){
+    console.log(error)
+    useSnackbar().sendSnackbar('Ada Kesalaan ', 'error')
+
+  }
+
+  uploadFileButton.value = false
+}
+
+const emptyBlob = new Blob([""], { type: "application/octet-stream" });
 const npwpFile = ref('x')
 const rekFile = ref('x')
+const fileAkte = ref()
+const fileStrukturOrganisasi = ref()
+const fileIjazah = ref()
+const filePernyataan = ref()
+const fileKeputusan = ref()
 
 const loadProfil = async () => {
   try {
@@ -231,16 +320,37 @@ const loadProfil = async () => {
 
     const lpd = data.lembaga_pendamping_doc
 
-    dokumenPersyaratan.value = lpd.map(
-      i => ({
-        name: i.jenis,
-        file: i.namafile,
-      }),
-    )
+
+    const akteDasar = lpd.filter(i=> i.jenis == 'Akte/Dasar Hukum Pendirian')[0]
+    const strukturDasar = lpd.filter(i=> i.jenis == 'Struktur Organisasi')[0]
+    const ijazah = lpd.filter(i=> i.jenis == 'Ijazah Sarjana/Diploma')[0]
+    const pernyataan = lpd.filter(i=> i.jenis == 'Pernyataan Komitmen Sebagai Lembaga Pendamping')[0]
+    const keputusan = lpd.filter(i=> i.jenis == 'Keputusan Akreditasi')[0]
+
+
+    dokumenPersyaratan.value = {
+      akteDasar: '1. Akte/Dasar Hukum Pendirian',
+      fileNameAkteDasar: akteDasar != null ? akteDasar.namafile : null,
+      strukturOrganisasi: '2. Struktur Organisasi',
+      fileStrukturOrganisasi: strukturDasar != null ? strukturDasar.namefile : null,
+      ijazah: '3. Ijazah Sarjana/Diploma',
+      fileIjazah: ijazah != null ? ijazah.namafile : null,
+      pernyataan: '4. Pernyataan Komitmen Sebagai Lembaga Pendamping',
+      filePernyataan: pernyataan != null ? pernyataan.namafile : null,
+      keputusan: '5. Keputusan Akreditasi',
+      fileKeputusan : keputusan != null ? keputusan.namafile : null
+    }
+
+    // fileAkte.value = new File([emptyBlob],  akteDasar != null ? akteDasar.namafile : null)
+    // fileStrukturOrganisasi.value = new File([emptyBlob],  strukturDasar != null ? strukturDasar.namafile : null)
+    // fileIjazah.value = new File([emptyBlob],  ijazah != null ? ijazah.namafile : null)
+    // filePernyataan.value = new File([emptyBlob],  pernyataan != null ? pernyataan.namafile : null)
+    // fileKeputusan.value = new File([emptyBlob],  keputusan != null ? keputusan.namafile : null)
+
     console.log('DOKUMEN PERSYARATAN ', dokumenPersyaratan)
 
-    const rek = data.rekening
 
+    const rek = data.rekening
     dataRekeningBankDanNpwp.value = {
       namaBank: rek.bank,
       noRekening: rek.no_rekening,
@@ -250,7 +360,7 @@ const loadProfil = async () => {
       fotoNpwp: rek.filefotonpwp,
     }
 
-    npwpFile.value = new File([emptyBlob], rek.filefotonpwp )
+    npwpFile.value = new File([emptyBlob], rek.filefotonpwp)
     rekFile.value = new File([emptyBlob], rek.filefotorek)
   }
   catch (error) {
@@ -510,64 +620,124 @@ onMounted(async () => {
               Dokumen Persyaratan
             </VExpansionPanelTitle>
             <VExpansionPanelText>
-              <VList class="mb-8 ">
-                <VListItem
-                  v-for="(item, index) in dokumenPersyaratan"
-                  :key="index"
-                  class="pa-1"
-                >
-                  <VRow class="d-flex align-center">
-                    <VCol
-                      cols="12"
-                      md="6"
-                    >
-                      <div class="text-body-1 font-weight-medium ">
-                        {{ index + 1 }}.{{ item.name }}
-                      </div>
+
+              <!--              DOKUMENT PERSYARATAN -->
+              <VRow class="d-flex align-center" >
+                <VCol cols="12" md="6">
+                  <div class="text-body-1 font-weight-medium "> {{dokumenPersyaratan.akteDasar}}</div>
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VRow no-gutters class="pa-0 ma-0 d-flex align-center ">
+                    <VCol cols="6" class="squareBtnIcon">
+                      <VBtn icon variant="outlined" color="error" @click="deleteDokumenPersyaratan(dokumenPersyaratan.akteDasar)">
+                        <VIcon>mdi-delete</VIcon>
+                      </VBtn>
+                      <VBtn icon variant="outlined" color="purple" class="ml-2" @click="handleDownloadV2(dokumenPersyaratan.fileNameAkteDasar)">
+                        <VIcon color="primary">mdi-download</VIcon>
+                      </VBtn>
                     </VCol>
-                    <VCol
-                      cols="12"
-                      md="6"
-                    >
-                      <VRow
-                        no-gutters
-                        class="pa-0 ma-0 d-flex align-center "
-                      >
-                        <VCol
-                          cols="6"
-                          class="squareBtnIcon"
-                        >
-                          <VBtn
-                            icon
-                            variant="outlined"
-                            color="error"
-                            @click="deleteDokumenPersyaratan(item)"
-                          >
-                            <VIcon>mdi-delete</VIcon>
-                          </VBtn>
-                          <VBtn
-                            icon
-                            variant="outlined"
-                            color="purple"
-                            class="ml-2"
-                            @click="downloadDokumenPersyaratan(item)"
-                          >
-                            <VIcon color="primary">
-                              mdi-download
-                            </VIcon>
-                          </VBtn>
-                        </VCol>
-                        <VCol cols="6">
-                          <HalalFileInput2
-                            v-model="file"
-                            label="Pilih File"
-                          />
-                        </VCol>
-                      </VRow>
+                    <VCol cols="6">
+                      <HalalFileInput2
+                        v-model="fileAkte"
+                        label="Pilih File"/>
                     </VCol>
                   </VRow>
-                </VListItem>
-              </VList>
+                </VCol>
+              </VRow>
+
+              <VRow class="d-flex align-center" >
+                <VCol cols="12" md="6">
+                  <div class="text-body-1 font-weight-medium "> {{dokumenPersyaratan.strukturOrganisasi}}</div>
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VRow no-gutters class="pa-0 ma-0 d-flex align-center ">
+                    <VCol cols="6" class="squareBtnIcon">
+                      <VBtn icon variant="outlined" color="error" @click="deleteDokumenPersyaratan(dokumenPersyaratan.strukturOrganisasi)">
+                        <VIcon>mdi-delete</VIcon>
+                      </VBtn>
+                      <VBtn icon variant="outlined" color="purple" class="ml-2" @click="handleDownloadV2(dokumenPersyaratan.fileStrukturOrganisasi)">
+                        <VIcon color="primary">mdi-download</VIcon>
+                      </VBtn>
+                    </VCol>
+                    <VCol cols="6">
+                      <HalalFileInput2
+                        v-model="fileStrukturOrganisasi"
+                        label="Pilih File"/>
+                    </VCol>
+                  </VRow>
+                </VCol>
+              </VRow>
+
+              <VRow class="d-flex align-center">
+                <VCol cols="12" md="6">
+                  <div class="text-body-1 font-weight-medium "> {{dokumenPersyaratan.ijazah}}</div>
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VRow no-gutters class="pa-0 ma-0 d-flex align-center ">
+                    <VCol cols="6" class="squareBtnIcon">
+                      <VBtn icon variant="outlined" color="error" @click="deleteDokumenPersyaratan(dokumenPersyaratan.ijazah)">
+                        <VIcon>mdi-delete</VIcon>
+                      </VBtn>
+                      <VBtn icon variant="outlined" color="purple" class="ml-2" @click="handleDownloadV2(dokumenPersyaratan.fileIjazah)">
+                        <VIcon color="primary">mdi-download</VIcon>
+                      </VBtn>
+                    </VCol>
+                    <VCol cols="6">
+                      <HalalFileInput2
+                        v-model="fileIjazah"
+                        label="Pilih File"/>
+                    </VCol>
+                  </VRow>
+                </VCol>
+              </VRow>
+
+              <VRow class="d-flex align-center" >
+                <VCol cols="12" md="6">
+                  <div class="text-body-1 font-weight-medium "> {{dokumenPersyaratan.pernyataan}}</div>
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VRow no-gutters class="pa-0 ma-0 d-flex align-center ">
+                    <VCol cols="6" class="squareBtnIcon">
+                      <VBtn icon variant="outlined" color="error" @click="deleteDokumenPersyaratan(dokumenPersyaratan.pernyataan)">
+                        <VIcon>mdi-delete</VIcon>
+                      </VBtn>
+                      <VBtn icon variant="outlined" color="purple" class="ml-2" @click="handleDownloadV2(dokumenPersyaratan.filePernyataan)">
+                        <VIcon color="primary">mdi-download</VIcon>
+                      </VBtn>
+                    </VCol>
+                    <VCol cols="6">
+                      <HalalFileInput2
+                        v-model="filePernyataan"
+                        label="Pilih File"/>
+                    </VCol>
+                  </VRow>
+                </VCol>
+              </VRow>
+
+              <VRow class="d-flex align-center" >
+                <VCol cols="12" md="6">
+                  <div class="text-body-1 font-weight-medium ">{{dokumenPersyaratan.keputusan}}</div>
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VRow no-gutters class="pa-0 ma-0 d-flex align-center ">
+                    <VCol cols="6" class="squareBtnIcon">
+                      <VBtn icon variant="outlined" color="error" @click="deleteDokumenPersyaratan(dokumenPersyaratan.keputusan)">
+                        <VIcon>mdi-delete</VIcon>
+                      </VBtn>
+                      <VBtn icon variant="outlined" color="purple" class="ml-2" @click="handleDownloadV2(dokumenPersyaratan.fileKeputusan)">
+                        <VIcon color="primary">mdi-download</VIcon>
+                      </VBtn>
+                    </VCol>
+                    <VCol cols="6">
+                      <HalalFileInput2
+                        v-model="fileKeputusan"
+                        label="Pilih File"/>
+                    </VCol>
+                  </VRow>
+                </VCol>
+              </VRow>
+
+
               <VRow>
                 <VCol cols="2">
                   <span style="color: red">Info :</span>
@@ -580,7 +750,7 @@ onMounted(async () => {
               </VRow>
               <VDivider class="my-4" />
               <VRow class="d-flex justify-end ma-3">
-                <VBtn>
+                <VBtn @click="uploadDokumen" :disabled="uploadFileButton">
                   Simpan
                 </VBtn>
               </VRow>
