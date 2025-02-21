@@ -35,41 +35,26 @@ const headers = [
   },
   {
     title: `Alamat`,
-    key: "no_ref",
+    key: "alamat_pu",
     nowrap: true,
   },
   {
-    title: `${t("reguler-invoice.invoice-list-namapu")}`,
-    key: "nama",
+    title: `Nama Pendamping`,
+    key: "nama_pj",
     nowrap: true,
   },
   {
-    title: `${t("reguler-invoice.invoice-list-jnstrans")}`,
-    key: "jenis_transaksi",
+    title: `Merk Dagang`,
+    key: "merek_dagang",
     nowrap: true,
   },
   {
-    title: `${t("reguler-invoice.invoice-list-jatuhtempo")}`,
-    key: "duedate",
-    nowrap: true,
-  },
-  {
-    title: `${t("reguler-invoice.invoice-list-jmltagihan")}`,
-    key: "total_inv",
-    nowrap: true,
-  },
-  {
-    title: `${t("reguler-invoice.invoice-list-status")}`,
+    title: `Status Pembayaran oleh Oleh BPJH`,
     key: "status",
     nowrap: true,
   },
   {
-    title: `${t("reguler-invoice.invoice-list-catatan")}`,
-    key: "catatan",
-    nowrap: true,
-  },
-  {
-    title: `${t("reguler-invoice.invoice-list-action")}`,
+    title: `action`,
     value: "action",
     sortable: false,
     nowrap: true,
@@ -114,8 +99,8 @@ const loadItem = async (
         jatuh_tempo: datePayload,
       };
     }
-
-    const response: any = await $api("/reguler/pelaku-usaha/list-bill", {
+    
+    const response: any = await $api("/reguler/lph/list-pendamping-self-declare", {
       method: "get",
       params,
     });
@@ -220,8 +205,8 @@ watch([status, outDated, page], () => {
 <template>
   <div v-if="!loading">
     <!-- <KembaliButton class="pl-0" /> -->
-    <div class="d-flex align-center" style="justify-content: space-between">
-      <h1 style="font-size: 32px">Informasi Serifikat Self Declare</h1>
+    <div class="d-flex align-center" style="justify-content: space-between;">
+      <h1 style="font-size: 32px;">Informasi Serifikat Self Declare</h1>
       <!-- <VBtn
         v-if="!loading"
         append-icon="fa-download"
@@ -340,7 +325,7 @@ watch([status, outDated, page], () => {
                     @click="() => downloadInvoice(item)"
                     block
                     class="text-left"
-                    style="justify-content: flex-start; inline-size: 100%"
+                    style="justify-content: flex-start; inline-size: 100%;"
                   >
                     {{ t("reguler-invoice.invoice-list-action-downloadinv") }}
                   </VBtn>
