@@ -32,7 +32,7 @@ export default defineEventHandler(async (event: any) => {
       size
     }
 
-    console.log("PARAMS : ", params)
+    // console.log("PARAMS : ", params)
 
     const response = await $fetch(
       `${runtimeConfig.coreBaseUrl}/api/v1/pendamping/halal-certificate-reguler/pengajuan`,

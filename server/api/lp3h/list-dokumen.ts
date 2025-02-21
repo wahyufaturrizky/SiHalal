@@ -31,7 +31,7 @@ export default defineEventHandler(async (event: any) => {
       limit
     }
 
-    console.log("PARAMS : ", params)
+    // console.log("PARAMS : ", params)
 
     const response = await $fetch(
       `${runtimeConfig.coreBaseUrl}/api/v1/tagihan-bpjph/list-document-fasilitasi`,
