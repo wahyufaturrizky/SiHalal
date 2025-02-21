@@ -51,7 +51,7 @@ const dataPendampingItem = ref([
 ])
 
 const downloadFile = async (filename: string) => {
-  console.log("DONWLOAD FILE : ", filename)
+  //console.log("DONWLOAD FILE : ", filename)
   try {
     const response = await $api("/shln/submission/document/download", {
       method: "post",
@@ -63,7 +63,7 @@ const downloadFile = async (filename: string) => {
     if (response.url)
       window.open(response.url, "_blank", "noopener,noreferrer");
   } catch (error) {
-    console.log(error);
+    //console.log(error);
   }
 };
 
@@ -94,7 +94,7 @@ const loadItem = async (page: number, size: number) => {
       )
     }
 
-    console.log("DATA PENDAMPING : {} ", dataPendampingItem)
+    //console.log("DATA PENDAMPING : {} ", dataPendampingItem)
 
     totalItems.value = response.total_item
     loading.value = false
@@ -107,7 +107,7 @@ const loadItem = async (page: number, size: number) => {
 
 
 const deleteItem = (item) => {
-  console.log("ITEM DELETE : ", item)
+  //console.log("ITEM DELETE : ", item)
 }
 
 const dataRegistrasi = ref([
@@ -129,7 +129,7 @@ const loadProfil = async () => {
     });
 
     const data = response.data;
-    console.log("RESPONSE : ", response)
+    //console.log("RESPONSE : ", response)
 
     const lp = data.lembaga_pendamping
     dataProfilePendamping.value = [
@@ -167,7 +167,7 @@ const loadProfil = async () => {
         file: i.namafile
       })
     )
-    console.log("DOKUMEN PERSYARATAN ", dokumenPersyaratan)
+    //console.log("DOKUMEN PERSYARATAN ", dokumenPersyaratan)
 
 
     const rek = data.rekening

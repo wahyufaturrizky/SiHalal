@@ -39,7 +39,7 @@ const items = ref([]);
 
 const dialog = ref(false);
 const buatInvoiceHandler = () => {
-  console.log("BUAT INVOICE, SELECTED ITEM : ", selected)
+  //console.log("BUAT INVOICE, SELECTED ITEM : ", selected)
   dialog.value = false
   selected.value = []
   useSnackbar().sendSnackbar("Berhasil membuat invoice ", "success")
@@ -54,7 +54,7 @@ const loadFasilitasi = async () => {
     });
 
     const data = response.data;
-    console.log("RESPONSE : ", response)
+    //console.log("RESPONSE : ", response)
 
     fasilitas.value = [
       { title: "Semua", value: null },
@@ -84,7 +84,7 @@ const loadListDokumen = async (page: number, limit: number, fac_id: string, tahu
 
     totalItems.value = response.totalItems
     const data = response.data;
-    console.log("RESPONSE : ", response)
+    //console.log("RESPONSE : ", response)
 
     items.value = data.map(
         i => ({

@@ -36,7 +36,7 @@ const loadFasilitasi = async () => {
     });
 
     const data = response.data;
-    console.log("RESPONSE : ", response)
+    //console.log("RESPONSE : ", response)
 
     fasilitas.value = [
       { title: "Semua", value: null },
@@ -133,11 +133,11 @@ const changeFilterBy = () => {
 };
 
 const action = (item) => {
-  console.log("action : ", item)
+  //console.log("action : ", item)
 }
 
 const downloadFile = async () => {
-  console.log("START DOWNLOAD EXCEL ")
+  //console.log("START DOWNLOAD EXCEL ")
   try {
     const params = {
       page: page.value,
@@ -148,14 +148,14 @@ const downloadFile = async () => {
       search : searchQuery.value != null ? searchQuery.value : ""
     }
 
-    console.log("DOWNLOAD EXCEL : {} ", params)
+    //console.log("DOWNLOAD EXCEL : {} ", params)
 
     const response = await $api('/lp3h/laporan/download-excel', {
       method: 'get',
       params
     })
 
-    console.log("RESPONSE : ", response)
+    //console.log("RESPONSE : ", response)
     if (!response || response.size === 0) throw new Error("Gagal mengunduh file");
 
     const blob = response;

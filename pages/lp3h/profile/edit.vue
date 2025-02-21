@@ -23,7 +23,7 @@ const authUser = useMyAuthUserStore()
 
 const uploadDocument = async (file) => {
 
-  console.log("auth user : ", authUser.user)
+  //console.log("auth user : ", authUser.user)
   try {
     const formData = new FormData();
     formData.append("id", authUser.user.id)
@@ -58,9 +58,9 @@ const dataRekeningBankDanNpwp = ref({})
 
 const deleteDokumenPersyaratan = item => {
 
-  console.log("ITEM DELETE : ", item.slice(3))
+  //console.log("ITEM DELETE : ", item.slice(3))
   if(item.slice(3) === 'Akte/Dasar Hukum Pendirian') {
-    console.log("masuk sini ga ? ")
+    //console.log("masuk sini ga ? ")
     fileAkte.value = null
   }
   if(item.slice(3) === 'Struktur Organisasi') fileStrukturOrganisasi.value = null
@@ -82,13 +82,13 @@ const handleDownloadV2 = async (filename: string) => {
     if (response.url)
       window.open(response.url, "_blank", "noopener,noreferrer");
   } catch (error) {
-    console.log(error);
+    //console.log(error);
   }
 };
 
 const downloadDokumenPersyaratan = async (item) => {
-  console.log("DOWNLOAD FILE : ", item)
-  console.log("FILE : ", item.file)
+  //console.log("DOWNLOAD FILE : ", item)
+  //console.log("FILE : ", item.file)
 
   await handleDownloadV2(item.file)
 }
@@ -96,7 +96,7 @@ const downloadDokumenPersyaratan = async (item) => {
 
 const dialog = ref(false)
 const simpanHandler = async () => {
-  console.log('SIMPAN : ')
+  //console.log('SIMPAN : ')
 
 
   // UPLOAD FILE
@@ -105,7 +105,7 @@ const simpanHandler = async () => {
   const rekUpload = await uploadDocument(rekFile.value)
 
 
-  console.log("UPLOAD NPWP : ", npwpUpload)
+  //console.log("UPLOAD NPWP : ", npwpUpload)
 
   const body = {
     // START TODO NEED TO MAKESURE FIELD NAME
@@ -133,7 +133,7 @@ const simpanHandler = async () => {
     }
   }
 
-  console.log("BODY : ", body)
+  //console.log("BODY : ", body)
 
   try {
     await $api(
@@ -146,7 +146,7 @@ const simpanHandler = async () => {
     await loadProfil()
     useSnackbar().sendSnackbar('Berhasil menyimpan data ', 'success')
   }catch (error){
-    console.log(error)
+    //console.log(error)
     useSnackbar().sendSnackbar('Ada Kesalaan ', 'error')
 
   }
@@ -249,7 +249,7 @@ const uploadDokumen = async () => {
       namafile: response.data.file_url })
   }
 
-  console.log("SEND DOKUMEN PERSYARATAN : {} ", body)
+  //console.log("SEND DOKUMEN PERSYARATAN : {} ", body)
 
   try {
     await $api(
@@ -262,7 +262,7 @@ const uploadDokumen = async () => {
     await loadProfil()
     useSnackbar().sendSnackbar('Berhasil menyimpan data ', 'success')
   }catch (error){
-    console.log(error)
+    //console.log(error)
     useSnackbar().sendSnackbar('Ada Kesalaan ', 'error')
 
   }
@@ -287,7 +287,7 @@ const loadProfil = async () => {
 
     const data = response.data
 
-    console.log('RESPONSE : ', response)
+    //console.log('RESPONSE : ', response)
 
     const lp = data.lembaga_pendamping
 
@@ -347,7 +347,7 @@ const loadProfil = async () => {
     // filePernyataan.value = new File([emptyBlob],  pernyataan != null ? pernyataan.namafile : null)
     // fileKeputusan.value = new File([emptyBlob],  keputusan != null ? keputusan.namafile : null)
 
-    console.log('DOKUMEN PERSYARATAN ', dokumenPersyaratan)
+    //console.log('DOKUMEN PERSYARATAN ', dokumenPersyaratan)
 
 
     const rek = data.rekening
@@ -364,7 +364,7 @@ const loadProfil = async () => {
     rekFile.value = new File([emptyBlob], rek.filefotorek)
   }
   catch (error) {
-    console.log('ERROR : ', error)
+    //console.log('ERROR : ', error)
     useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
   }
 }
