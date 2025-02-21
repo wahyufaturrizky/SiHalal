@@ -10,7 +10,7 @@ const menu = ref(false);
 
 const selectedYear = ref(null)
 const selectedFasilitas = ref(null)
-const selectedStatus = ref('OF74') // GANTI JADI SEMUA
+const selectedStatus = ref(null) // GANTI JADI SEMUA
 
 const status = [
   { title: "Pengajuan", value: "OF10" },
