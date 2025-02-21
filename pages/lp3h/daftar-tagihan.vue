@@ -18,7 +18,7 @@ const daftarTagihanHeader = [
 const daftarTagihanItem = ref([])
 
 const downloadBuktiBayar = async item => {
-  console.log('downloadBuktiBayar : ', item)
+  //console.log('downloadBuktiBayar : ', item)
 
   try {
     const response = await $api('/shln/submission/document/download', {
@@ -37,7 +37,7 @@ const downloadBuktiBayar = async item => {
 }
 
 const previewInvoice = async item => {
-  console.log('previewInvoice : ', item)
+  //console.log('previewInvoice : ', item)
 
   try {
     const response = await $api('/shln/submission/document/download', {
@@ -51,7 +51,7 @@ const previewInvoice = async item => {
       window.open(response.url, '_blank', 'noopener,noreferrer')
   }
   catch (error) {
-    console.log(error)
+    //console.log(error)
   }
 }
 
