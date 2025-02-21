@@ -11,23 +11,25 @@ export default defineEventHandler(async (event: any) => {
   }
 
   const {
-    search, status_reg, tahun, fac_id,  page, size
+    status_reg,tgl_daftar,fac_id, search,page, size
   } = (await getQuery(event)) as {
     status_reg: string;
-    tahun: string;
+    tgl_daftar: string;
     fac_id: string;
-    page: string;
-    size: string;
+    search: string;
+    page: number;
+    size: number;
+
   };
 
   try {
     const runtimeConfig = useRuntimeConfig();
 
     const params = {
-      search,
       status_reg,
-      tgl_daftar : tahun,
+      tgl_daftar,
       fac_id,
+      search,
       page,
       size
     }
@@ -35,18 +37,24 @@ export default defineEventHandler(async (event: any) => {
     console.log("PARAMS : ", params)
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/pendamping/halal-certificate-reguler/pengajuan`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/pendamping/halal-certificate-reguler/filter/pengajuan/download-excel`,
       {
         method: "get",
         headers: { Authorization: authHeader },
-        params
+        params,
+        responseType: "blob"
       } as any
-    );
+    )
 
-    return response || null;
+    setResponseHeaders(event, {
+      "Content-Disposition": 'attachment; filename="data.xlsx"',
+      "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    return response;
   } catch (error) {
+    console.log(error.message);
     setResponseStatus(event, 400);
-
     return (error as NuxtError).data;
   }
 });
