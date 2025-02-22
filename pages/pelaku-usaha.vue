@@ -52,13 +52,12 @@ onMounted(() => {
       <VRow align="center">
         <VCol>
           <!-- <h2 :class="mdAndUp ? 'text-menu' : 'mobile-text-menu'">Detail Pelaku Usaha</h2> -->
-          <h1 style="font-size: 32px">{{ t("detail-pu.pu-title") }}</h1>
+          <h1 style="font-size: 32px;">{{ t("detail-pu.pu-title") }}</h1>
         </VCol>
-        <VCol style="display: flex; justify-content: end">
+        <VCol style="display: flex; justify-content: end;">
           <VBtn
             density="compact"
             variant="outlined"
-            s
             prepend-icon=""
             @click="onEdit"
           >

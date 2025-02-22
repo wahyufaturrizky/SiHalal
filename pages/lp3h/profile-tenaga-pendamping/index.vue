@@ -125,6 +125,13 @@ const getProfile = async () => {
     const response = await $api("/reguler/lph/detail-pendamping", {
       method: "get",
     });
+    if (
+      response.data.pendamping.provinsi &&
+      response.data.pendamping.provinsi != "00"
+    ) {
+      await getDistrict(response.data.pendamping.provinsi);
+    }
+    await getSubDistrict(response.data.pendamping.kabupaten);
 
     if (response.code != 4000) {
       console.log(response.data, "ini masuk kode");
@@ -137,7 +144,7 @@ const getProfile = async () => {
         if (el.label === "Kota/Kab")
           el.value = response.data.pendamping.kabupaten;
         if (el.label === "Kecamatan")
-          el.value = Math.floor(response.data.pendamping.kecamatan);
+          el.value = Math.floor(response.data.pendamping.kecamatan) + "";
         if (el.label === "Kode Pos")
           el.value = response.data.pendamping.kode_pos;
         if (el.label === "Email") el.value = response.data.pendamping.email;
@@ -161,16 +168,13 @@ const getProfile = async () => {
         if (el.label === "File Rekening")
           el.value = response.data.rekening.filefotorek;
       });
-      
 
       dataBank2.value.forEach((el) => {
-        if (el.label === "NPWP")
-          el.value = response.data.rekening.npwp;
+        if (el.label === "NPWP") el.value = response.data.rekening.npwp;
         if (el.label === "Nama pada NPWP")
           el.value = response.data.rekening.nama_npwp;
         if (el.label === "File NPWP")
           el.value = response.data.rekening.filefotonpwp;
-       
       });
       dataPendidikan.value.forEach((el) => {
         if (el.label === "Pendidikan Terakhir")
@@ -180,10 +184,8 @@ const getProfile = async () => {
       });
 
       documentLMS.value.forEach((el) => {
-      if (el.label === "Pendalaman LMS")
-      el.value = response.data.pendamping.fotosertifikat;
+        if (el.label === "Pendalaman LMS") el.value = response.data.great_edu;
       });
-      console.log(documentLMS,'ini')
 
       dokumenPersyaratan.value.forEach((el) => {
         if (el.label === "Ijazah")
@@ -199,7 +201,19 @@ const getProfile = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+const openLink = (url: string) => {
+  console.log(url, "ini tetst");
+  if (url) {
+    window.open(url, "_blank");
+  }
+};
 
+const getProvince = async () => {
+  const response = await $api("/master/province", {
+    method: "get",
+  } as any);
+  provinceList.value = response;
+};
 const getDistrict = async (kode: string) => {
   const response: MasterDistrict[] = await $api("/master/district", {
     method: "post",
@@ -207,49 +221,66 @@ const getDistrict = async (kode: string) => {
       province: kode,
     },
   });
-  district.value = response;
+  districtList.value = response;
 };
+const getSubDistrict = async (kode: string) => {
+  const response = await $api("/master/subdistrict", {
+    method: "post",
+    body: {
+      district: kode,
+    },
+  } as any);
+  subDistrictList.value = response;
+};
+const provinceList = ref();
+const districtList = ref();
+const subDistrictList = ref();
 
 onMounted(async () => {
-  await Promise.allSettled([getProfile()]);
+  await Promise.allSettled([getProfile(), getProvince()]);
 });
+
+const isEditing = ref(false);
+
+const toggleEdit = async () => {
+  if (!isEditing.value) {
+    await getProfile();
+  }
+  isEditing.value = !isEditing.value;
+};
+
+const cancelEdit = async () => {
+  await getProfile();
+  isEditing.value = false;
+};
 </script>
 
 <template>
   <VContainer>
-    <!-- <v-dialog v-model="dialog" max-width="700">
-      <v-card class="pa-4">
-        <v-card-title>Pengajuan </v-card-title>
-        <v-card-text>Ajukan sebagai lembaga Pendamping ?</v-card-text>
-        <VRow>
-          <VCol class="d-flex justify-end ga-4">
-            <v-btn variant="outlined" color="primary" @click="dialog = false">Batal</v-btn>
-            <v-btn variant="flat" color="primary" @click="ajukanHandler">Ya, Setuju</v-btn>
-          </VCol>
-        </VRow>
-      </v-card>
-    </v-dialog> -->
-    <!-- <VRow>
-      <KembaliButton />
-    </VRow> -->
     <VRow class="d-flex justify-space-between align-center">
       <VCol class="mb-8">
         <h3 class="text-h3">Tenaga Pendamping</h3>
       </VCol>
-      <!-- <VCol cols="8">
-        <VRow class="d-flex justify-end align-center ga-2">
-          <VBtn
-            variant="outlined"
-            append-icon="ri-edit-line"
-            @click="navigateTo(`/lp3h/profile/edit`)"
-          >
-            Ubah
-          </VBtn>
-          <VBtn append-icon="fa-paper-plane" @click="dialog = true">
-            Ajukan
-          </VBtn>
-        </VRow>
-      </VCol> -->
+      <VCol style="display: flex; justify-content: end; mr-2">
+        <VBtn
+          density="compact"
+          variant="outlined"
+          :color="isEditing ? 'green' : 'primary'"
+          @click="toggleEdit"
+        >
+          {{ isEditing ? "Simpan" : "Ubah" }}
+        </VBtn>
+        <VBtn
+          v-if="isEditing"
+          density="compact"
+          variant="outlined"
+          color="red"
+          class="ml-2"
+          @click="cancelEdit"
+        >
+          Batal
+        </VBtn>
+      </VCol>
     </VRow>
 
     <VRow class="d-flex justify-space-between">
@@ -266,22 +297,75 @@ onMounted(async () => {
                 </VCol>
                 <VCol cols="12" class="font-weight-medium">
                   <VTextField
-                    v-if="item.label !== 'Alamat'"
+                    v-if="
+                      item.label !== 'Alamat' &&
+                      item.label !== 'Provinsi' &&
+                      item.label !== 'Kota/Kab' &&
+                      item.label !== 'Kecamatan'
+                    "
                     v-model="item.value"
                     variant="outlined"
                     density="compact"
                     hide-details
-                    readonly
+                    :readonly="!isEditing"
                   />
                   <VTextarea
-                    v-else
+                    v-if="
+                      item.label === 'Alamat' &&
+                      item.label !== 'Provinsi' &&
+                      item.label !== 'Kota/Kab' &&
+                      item.label !== 'Kecamatan'
+                    "
                     v-model="item.value"
                     variant="outlined"
                     density="compact"
                     hide-details
-                    readonly
+                    :readonly="!isEditing"
                     rows="2"
                     auto-grow
+                  />
+
+                  <VSelect
+                    v-if="item.label === 'Provinsi'"
+                    placeholder="Pilih provinsi"
+                    v-model="item.value"
+                    :rules="[requiredValidator]"
+                    @update:model-value="getDistrict"
+                    :items="provinceList"
+                    item-title="name"
+                    item-value="code"
+                    density="compact"
+                    rounded="xl"
+                    menu-icon="fa-chevron-down"
+                    :readonly="!isEditing"
+                  />
+
+                  <VSelect
+                    v-if="item.label === 'Kota/Kab'"
+                    placeholder="Pilih kota/kabupaten"
+                    :rules="[requiredValidator]"
+                    v-model="item.value"
+                    @update:model-value="getSubDistrict"
+                    :items="districtList"
+                    item-title="name"
+                    item-value="code"
+                    density="compact"
+                    rounded="xl"
+                    menu-icon="fa-chevron-down"
+                    :readonly="!isEditing"
+                  />
+
+                  <VSelect
+                    v-if="item.label === 'Kecamatan'"
+                    placeholder="Pilih kecamatan"
+                    :rules="[requiredValidator]"
+                    v-model="item.value"
+                    :items="subDistrictList"
+                    item-title="name"
+                    item-value="code"
+                    density="compact"
+                    rounded="xl"
+                    menu-icon="fa-chevron-down"
                   />
                 </VCol>
               </VRow>
@@ -377,11 +461,12 @@ onMounted(async () => {
                   </VBtn> -->
                   <VCol cols="12" md="4" class="squareBtnIcon" disabled="true">
                     :
-                    <VBtn variant="flat" class="px-3 ms-2">
-                      <VIcon
-                        icon="fa-download"
-                        @click="downloadDocument(item.value)"
-                      ></VIcon>
+                    <VBtn
+                      variant="flat"
+                      class="px-3 ms-2"
+                      @click="openLink(item.value)"
+                    >
+                      <VIcon icon="fa-download"></VIcon>
                     </VBtn>
                   </VCol>
                 </VRow>
@@ -471,15 +556,10 @@ onMounted(async () => {
                 </VCol>
 
                 <VCol v-if="item.label === 'File Rekening'" cols="7">
-                  <VBtn
-                    variant="flat"
-                    class="px-3 ms-2"
-                    color="primary"
-                    
-                  >
+                  <VBtn variant="flat" class="px-3 ms-2" color="primary">
                     <VIcon
                       icon="fa-download"
-                      @click="handleDownloadV2(item.value)"
+                      @click="downloadDocument(item.value)"
                     ></VIcon>
                   </VBtn>
                 </VCol>
@@ -512,14 +592,13 @@ onMounted(async () => {
                   <VBtn variant="flat" class="px-3 ms-2" color="primary">
                     <VIcon
                       icon="fa-download"
-                      @click="handleDownloadV2(item.value)"
+                      @click="downloadDocument(item.value)"
                     ></VIcon>
                   </VBtn>
                 </VCol>
               </VRow>
               <VDivider class="my-3" />
               Rekening dalam proses verifiaksi oleh LP3H
-              <VBtn color="primary" class="mt-2" disabled=true> Update </VBtn>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -542,34 +621,63 @@ onMounted(async () => {
                         {{ item.label }}
                       </div>
                     </VCol>
-                    <VCol cols="12" md="4" class="squareBtnIcon">
+                    <VCol
+                      cols="12"
+                      md="4"
+                      class="squareBtnIcon"
+                      v-if="item.label === 'Ijazah'"
+                    >
                       :
                       <VBtn variant="flat" class="px-3 ms-2">
                         <VIcon
                           icon="fa-download"
-                          @click="handleDownload(item.file_name)"
+                          @click="
+                            downloadDocument(item.value, 'PENDAMPING_IJAZAH')
+                          "
+                        ></VIcon>
+                      </VBtn>
+                    </VCol>
+
+                    <VCol
+                      cols="12"
+                      md="4"
+                      class="squareBtnIcon"
+                      v-if="item.label === 'KTP'"
+                    >
+                      :
+                      <VBtn variant="flat" class="px-3 ms-2">
+                        <VIcon
+                          icon="fa-download"
+                          @click="
+                            downloadDocument(item.value, 'PENDAMPING_KTP')
+                          "
+                        ></VIcon>
+                      </VBtn>
+                    </VCol>
+
+                    <VCol
+                      cols="12"
+                      md="4"
+                      class="squareBtnIcon"
+                      v-if="item.label === 'Sertifikat Pelatihan'"
+                    >
+                      :
+                      <VBtn variant="flat" class="px-3 ms-2">
+                        <VIcon
+                          icon="fa-download"
+                          @click="
+                            downloadDocument(
+                              item.value,
+                              'PENDAMPING_SERTIFIKAT'
+                            )
+                          "
                         ></VIcon>
                       </VBtn>
                     </VCol>
                   </VRow>
                 </VListItem>
               </VList>
-              <VRow>
-                <!-- <VCol cols="2" >
-                  <span style="color: red;">Info :</span>
-                </VCol>
-                <VCol cols="8">
-                  <span>
-                    File yang akan di upload dengan extension XLSX, PDF, dan JPG dan kapasitas maksimal 50 Mb untuk sekali Upload.
-                  </span>
-                </VCol> -->
-              </VRow>
-              <!-- <VDivider class="my-4"/>
-              <VRow class="d-flex justify-end ma-3">
-                <VBtn>
-                  Simpan
-                </VBtn>
-              </VRow> -->
+              <VRow> </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
