@@ -70,26 +70,27 @@ const buatInvoiceHandler = async () => {
   //console.log("BUAT INVOICE, SELECTED ITEM : ", selected)
   dialog.value = false
 
-  console.log("selected value : ", selected.value)
-
   const listSelected = items.value.filter(i => selected.value.indexOf(i.no_urut) !== -1).map(j => j.id)
 
-  console.log("list selected ", listSelected)
+  const body = {
+    id_reg: listSelected
+  }
 
-  // const body = {
-  //   id_reg: []
-  // }
-  //
-  // try {
-  //   const response = await $api("/lp3h/create-invoice", {
-  //     method: "post",
-  //   });
-  //
-  //   const data = response.data;
-  // } catch (error) {
-  //   useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  // }
-  useSnackbar().sendSnackbar("Berhasil membuat invoice ", "success")
+  try {
+    const response = await $api("/lp3h/create-invoice", {
+      method: "post",
+      body
+    });
+    if(response.code !== 2000){
+      useSnackbar().sendSnackbar(response.message, "error");
+    }else{
+      useSnackbar().sendSnackbar("Berhasil membuat invoice ", "success")
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+
+  debouncedFetch(1, itemPerPage.value , selectedFasilitas.value , selectedYear.value, searchQuery.value)
 }
 
 
@@ -147,7 +148,7 @@ const loadListDokumen = async (page: number, limit: number, fac_id: string, tahu
         catatan: v.catatan,
       })
     })
-    console.log("items : ", items.value)
+    // console.log("items : ", items.value)
     loading.value = false
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
