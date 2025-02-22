@@ -192,7 +192,7 @@ const getProfile = async () => {
           el.value = response.data.pendamping.fotoijazah;
         if (el.label === "KTP") el.value = response.data.pendamping.fotoktp;
         if (el.label === "Sertifikat Pelatihan")
-          el.value = response.data.pendamping.fotosertifikat;
+          el.value = response.data.pendamping.file_sertifikat;
       });
 
       return;
@@ -336,7 +336,7 @@ const cancelEdit = async () => {
                     item-value="code"
                     density="compact"
                     rounded="xl"
-                    menu-icon="fa-chevron-down"
+                   
                     :readonly="!isEditing"
                   />
 
@@ -351,7 +351,7 @@ const cancelEdit = async () => {
                     item-value="code"
                     density="compact"
                     rounded="xl"
-                    menu-icon="fa-chevron-down"
+                   
                     :readonly="!isEditing"
                   />
 
@@ -365,7 +365,7 @@ const cancelEdit = async () => {
                     item-value="code"
                     density="compact"
                     rounded="xl"
-                    menu-icon="fa-chevron-down"
+                    :readonly="!isEditing"
                   />
                 </VCol>
               </VRow>
@@ -536,7 +536,7 @@ const cancelEdit = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    readonly
+                    :readonly="!isEditing"
                   />
                 </VCol>
 
@@ -551,7 +551,7 @@ const cancelEdit = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    readonly
+                    :readonly="!isEditing"
                   />
                 </VCol>
 
@@ -668,7 +668,7 @@ const cancelEdit = async () => {
                           @click="
                             downloadDocument(
                               item.value,
-                              'PENDAMPING_SERTIFIKAT'
+                              'PENDAMPING_SERT_PELATIHAN'
                             )
                           "
                         ></VIcon>
