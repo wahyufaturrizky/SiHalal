@@ -15,7 +15,7 @@ export default defineEventHandler(async (event: any) => {
   const body: any = await readBody(event);
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/komisi-fatwa/invoice/add`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/tagihan-bpjph/create-invoice`,
     {
       method: "post",
       headers: { Authorization: authHeader },
