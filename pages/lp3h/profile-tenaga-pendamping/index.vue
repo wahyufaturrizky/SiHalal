@@ -336,7 +336,6 @@ const cancelEdit = async () => {
                     item-value="code"
                     density="compact"
                     rounded="xl"
-                   
                     :readonly="!isEditing"
                   />
 
@@ -351,7 +350,6 @@ const cancelEdit = async () => {
                     item-value="code"
                     density="compact"
                     rounded="xl"
-                   
                     :readonly="!isEditing"
                   />
 
@@ -395,7 +393,7 @@ const cancelEdit = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    readonly
+                    :readonly="!isEditing"
                   />
                 </VCol>
 
@@ -406,7 +404,7 @@ const cancelEdit = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    readonly
+                    :readonly="!isEditing"
                   />
                 </VCol>
               </VRow>
