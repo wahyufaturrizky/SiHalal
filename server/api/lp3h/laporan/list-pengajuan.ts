@@ -11,7 +11,7 @@ export default defineEventHandler(async (event: any) => {
   }
 
   const {
-    status_reg, tahun, fac_id,  page, size
+    search, status_reg, tahun, fac_id,  page, size
   } = (await getQuery(event)) as {
     status_reg: string;
     tahun: string;
@@ -24,6 +24,7 @@ export default defineEventHandler(async (event: any) => {
     const runtimeConfig = useRuntimeConfig();
 
     const params = {
+      search,
       status_reg,
       tgl_daftar : tahun,
       fac_id,
@@ -31,10 +32,10 @@ export default defineEventHandler(async (event: any) => {
       size
     }
 
-    console.log("PARAMS : ", params)
+    // console.log("PARAMS : ", params)
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/pendamping/halal-certificate-reguler/filter/pengajuan`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/pendamping/halal-certificate-reguler/pengajuan`,
       {
         method: "get",
         headers: { Authorization: authHeader },

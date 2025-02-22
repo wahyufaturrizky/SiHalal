@@ -15,7 +15,7 @@ const tableHeaders: any[] = [
   { title: 'Tanggal', value: 'tanggal', nowrap: true },
   { title: 'Total', value: 'total', nowrap: true },
   { title: 'Status', value: 'status', nowrap: true },
-  { title: 'Bukti Bayar', value: 'bukti_url ', nowrap: true },
+  { title: 'Bukti Bayar', value: 'bukti_url', nowrap: true },
   { title: 'Invoice', value: 'invoice_url', nowrap: true },
   // { title: 'Action', value: 'actions', align: 'center' },
 ]
@@ -104,8 +104,24 @@ useAsyncData(
   }
 );
 
+const setChipColor = (status: string) => {
+  switch (status) {
+    case 'Pengajuan':
+      return 'primary-chip'
+    default:
+      return 'success-chip'
+  }
+}
+const formatNumber = (value: number) => {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(value).replace(/^Rp\s?/gi, '');
+};
+
 const handleDownload = async (filename: string) => {
-  return await downloadDocument(filename)
+  return await downloadDocument(filename, 'FILES')
 }
 
 // const selectedBill = ref("");
@@ -169,45 +185,42 @@ onMounted(() => {
             <template #item.index="{ index }">
               {{ index + 1 + (currentPage - 1) * itemPerPage }}
             </template>
-            <template #item.bukti_url ="{ item }">
-              <VBtn
-                v-if="item.bukti_url "
-                class="px-3 ms-2 d-flex align-center"
-                variant="flat"
-              >
-                <VIcon
-                  icon="fa-download"
-                  @click="handleDownload(item.bukti_url )"
-                />
-              </VBtn>
-              <div v-else>
-                -
-              </div>
-            </template>
-            <template #item.invoice_url="{ item }">
-              <VBtn
-                v-if="item.invoice_url"
-                class="px-3 ms-2 d-flex align-center"
-                variant="flat"
-              >
-                <VIcon
-                  icon="fa-eye"
-                  @click="handleDownload(item.invoice_url)"
-                />
-              </VBtn>
-              <div v-else>
-                -
-              </div>
+            <template #item.total="{ item }">
+              {{ item.total ? formatNumber(item.total) : 0 }}
             </template>
             <template #item.status="{ item }">
               <VChip
                 variant="outlined"
-                class="active-chip"
+                :class="setChipColor(item.status)"
               >
                 <span>
                   {{ item.status }}
                 </span>
               </VChip>
+            </template>
+            <template #item.bukti_url="{ item }">
+              <VBtn
+                class="px-3 ms-2 d-flex align-center"
+                :color="item.bukti_url ? 'primary' : '#A09BA1'"
+                variant="flat"
+              >
+                <VIcon
+                  icon="fa-download"
+                  @click="item.bukti_url ? handleDownload(item.bukti_url) : null"
+                />
+              </VBtn>
+            </template>
+            <template #item.invoice_url="{ item }">
+              <VBtn
+                class="px-3 ms-2 d-flex align-center"
+                :color="item.invoice_url ? 'primary' : '#A09BA1'"
+                variant="flat"
+              >
+                <VIcon
+                  icon="fa-eye"
+                  @click="item.invoice_url ?  handleDownload(item.invoice_url) : null"
+                />
+              </VBtn>
             </template>
             <!-- <template #item.actions="{ item }">
               <VIcon
@@ -245,7 +258,16 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-.active-chip {
+.primary-chip {
+  border: 1px solid #652672 !important;
+  border-radius: 8px;
+  background-color: #F0E9F1;
+
+  span {
+    color: #652672;
+  }
+}
+.success-chip {
   border: 1px solid #49a84c !important;
   border-radius: 8px;
   background-color: #edf6ed;
@@ -254,15 +276,6 @@ onMounted(() => {
     color: #49a84c;
   }
 }
-// .inactive-chip {
-//   border: 1px solid #e1442e !important;
-//   border-radius: 8px;
-//   background-color: #fcecea;
-
-//   span {
-//     color: #e1442e;
-//   }
-// }
 // :deep(.v-data-table.bill-table > .v-table__wrapper) {
 //   table {
 //     thead > tr > th:last-of-type {

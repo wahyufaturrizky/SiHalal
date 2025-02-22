@@ -25,10 +25,6 @@ const isFatwaCommission = computed(() => {
   return existData && existData.length > 0;
 });
 
-const toFatwaCommissionProfile = () => {
-  return navigateTo("/komisi-fatwa/profile");
-};
-
 const userProfileList = [
   { type: "divider" },
   // {
@@ -77,9 +73,7 @@ const userProfileList = [
       <VMenu activator="parent" width="270" location="bottom end" offset="15px">
         <VList>
           <PerfectScrollbar :options="{ wheelPropagation: false }">
-            <VListItem
-              @click="isFatwaCommission ? toFatwaCommissionProfile() : null"
-            >
+            <VListItem>
               <div class="d-flex gap-x-2 align-center">
                 <VAvatar variant="tonal" color="secondary">
                   <VIcon icon="fa-user" />

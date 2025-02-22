@@ -1,5 +1,7 @@
 <script setup lang="ts">
 
+import type { MasterDistrict, MasterSubDistrict } from "@/server/interface/master.iface"
+
 const panelProfile = ref([0, 1])
 const panelPenanggungJawab = ref([0, 1])
 const panelDataPendamping = ref([0, 1])
@@ -50,25 +52,23 @@ const dataPendampingHeader = [
 const dataPendampingItem = ref([
 ])
 
-const downloadFile = async (file) => {
-  console.log('file : ', file)
-
+const downloadFile = async (filename: string) => {
   try {
-    const response = await $api('/shln/submission/document/download', {
-      method: 'post',
+    const response = await $api("/shln/submission/document/download", {
+      method: "post",
       body: {
-        filename: file,
+        filename: filename,
       },
-    })
-
-    if (response.url)
-      window.open(response.url, '_blank', 'noopener,noreferrer')
+    });
+    if (response.url) {
+      window.open(response.url, "_blank", "noopener,noreferrer")
+      useSnackbar().sendSnackbar("Berhasil Mendownload File", "success")
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("File Tidak Ditemukan ", "error")
+    //console.log(error);
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    console.log(error)
-  }
-}
+};
 
 const loadItem = async (page: number, size: number) => {
   try {
@@ -89,13 +89,15 @@ const loadItem = async (page: number, size: number) => {
           nik: i.nik,
           pendidikan: i.pendidikan,
           noRegister: i.idx_daftar,
-          tanggalBerlaku: "TODO",
+          tanggalBerlaku: i.tgl_berlaku,
           status: i.status,
           ijazah: i.fotoijazah,
           ktp: i.fotoktp
         }),
       )
     }
+
+    //console.log("DATA PENDAMPING : {} ", dataPendampingItem)
 
     totalItems.value = response.total_item
     loading.value = false
@@ -107,9 +109,53 @@ const loadItem = async (page: number, size: number) => {
 }
 
 
-const deleteItem = (item) => {
-  console.log("ITEM DELETE : ", item)
+const loadProvince = async () => {
+  const response: MasterProvince[] = await $api('/master/province', {
+    method: 'get',
+  })
+
+  province.value = response.map(
+    i => ({
+      title: i.name,
+      value: i.code,
+    }),
+  )
 }
+
+
+const getDistrict = async () => {
+  const response: MasterDistrict[] = await $api('/master/district', {
+    method: 'post',
+    body: {
+      province: dataProfilePendamping.value.provinsi,
+    },
+  })
+
+  kabKota.value = response.map(
+    i => ({
+      title: i.name,
+      value: i.code,
+    }),
+  )
+}
+
+
+const getSubDistrict = async () => {
+  const response: MasterSubDistrict[] = await $api('/master/subdistrict', {
+    method: 'post',
+    body: {
+      district: dataProfilePendamping.value.kabKota,
+    },
+  })
+
+  kecamatan.value = response.map(
+    i => ({
+      title: i.name,
+      value: i.code,
+    }),
+  )
+}
+
 
 const dataRegistrasi = ref([
   { label: "No. Registrasi", value: "-" },
@@ -121,8 +167,6 @@ const dokumenPersyaratan = ref([
 ])
 
 
-const file = ref({})
-
 const dialog = ref(false);
 
 const loadProfil = async () => {
@@ -132,17 +176,17 @@ const loadProfil = async () => {
     });
 
     const data = response.data;
-    console.log("RESPONSE : ", response)
+    //console.log("RESPONSE : ", response)
 
     const lp = data.lembaga_pendamping
     dataProfilePendamping.value = [
       { label: "Nama Lembaga", value: lp.nama_lembaga },
       { label: "Jenis Lembaga", value: lp.jenis_lembaga },
       { label: "Alamat", value: lp.alamat },
-      { label: "Kecamatan", value: lp.kecamatan },
+      { label: "Kecamatan", value: lp.MKecamatan?.namakecamatan },
       { label: "Kode Pos", value: lp.kode_pos },
-      { label: "Kota/Kab", value: lp.kabupaten },
-      { label: "Provinsi", value: lp.provinsi },
+      { label: "Kota/Kab", value: lp.MKabupaten?.namakabupaten },
+      { label: "Provinsi", value: lp.MProvinsi?.namaprovinsi },
       { label: "Email", value: lp.email }
     ];
 
@@ -170,6 +214,8 @@ const loadProfil = async () => {
         file: i.namafile
       })
     )
+    console.log("DOKUMEN PERSYARATAN ", dokumenPersyaratan)
+
 
     const rek = data.rekening
     dataRekeningBankDanNpwp.value = {
@@ -180,25 +226,6 @@ const loadProfil = async () => {
       npwp : rek.nama_npwp,
       fotoNpwp : rek.filefotonpwp
     }
-
-
-    // dokumenPersyaratan.value = [
-    //   { name: "Akte/Dasar Hukum Pendirian" , id: "1"
-    //     , file: lpd.filter(i => i.jenis === "Akte/Dasar Hukum Pendirian")[0].namafile
-    //   },
-    //   { name: "Struktur Organisasi", id: "2"
-    //     , file: lpd.filter(i => i.jenis === "Struktur Organisasi")[0].namafile
-    //   },
-    //   { name: "Ijazah Sarjana/Diploma", id: "3"
-    //     , file: lpd.filter(i => i.jenis === "Ijazah Sarjana/Diploma")[0].namafile
-    //   },
-    //   { name: "Pernyataan Komitmen Sebagai Lembaga Pendamping" , id: "4"
-    //     , file: lpd.filter(i => i.jenis === "Pernyataan Komitmen Sebagai Lembaga Pendamping")[0].namafile
-    //   }
-    // ]
-
-    console.log("DOKUMEN PERSYARATAN ")
-
 
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -214,10 +241,7 @@ const getColor = (status) => {
 
 onMounted(async () => {
   await loadProfil()
-  // await loadItem()
 })
-
-
 
 </script>
 
@@ -334,13 +358,13 @@ onMounted(async () => {
                 </template>
 
                 <template #item.ijazah="{ item }">
-                  <VBtn icon variant="text" @click="downloadFile(item.ijazah)">
+                  <VBtn icon variant="text" @click="downloadFile(item.ijazah)" v-if="item.ijazah">
                     <VIcon size="24" color="primary">mdi-eye</VIcon>
                   </VBtn>
                 </template>
 
                 <template #item.ktp="{ item }">
-                  <VBtn icon variant="text" @click="downloadFile(item.ktp)">
+                  <VBtn icon variant="text" @click="downloadFile(item.ktp)" v-if="item.ktp">
                     <VIcon size="24" color="primary">mdi-eye</VIcon>
                   </VBtn>
                 </template>
@@ -399,7 +423,7 @@ onMounted(async () => {
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Dokumen Persyaratan
             </VExpansionPanelTitle>
-            <VExpansionPanelText>
+            <VExpansionPanelText v-if="dokumenPersyaratan.length > 0">
               <VList class="mb-4">
                 <VListItem v-for="(item, index) in dokumenPersyaratan" :key="index" class="pa-1">
                   <VRow class="d-flex align-center">
@@ -410,7 +434,7 @@ onMounted(async () => {
 <!--                      <VBtn  icon variant="outlined" color="error" @click="deleteDokumenPersyaratan(item)">-->
 <!--                        <VIcon >mdi-delete</VIcon>-->
 <!--                      </VBtn>-->
-                      <VBtn icon variant="outlined" color="purple" class="ml-2" @click="downloadFile(item.namafile)">
+                      <VBtn icon variant="outlined" color="purple" class="ml-2" @click="downloadFile(item.file)">
                         <VIcon color="primary">mdi-download</VIcon>
                       </VBtn>
                     </VCol>
