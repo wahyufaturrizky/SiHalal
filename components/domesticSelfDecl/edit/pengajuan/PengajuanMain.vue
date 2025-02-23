@@ -34,6 +34,9 @@ const submissionDetail = reactive({
   nomor_kontak_pj: null,
   nama_pu: null,
 });
+const isPengembangan = () => {
+  return submissionDetail.id_jenis_pengajuan == "JD.3";
+};
 
 const formData = reactive({
   id_reg: submissionId,
@@ -653,6 +656,7 @@ const getItemData = (item) => {
               <VSelect
                 v-model="formData.id_jenis_layanan"
                 placeholder="Pilih Jenis Layanan"
+                :disabled="isPengembangan()"
                 density="compact"
                 :items="listLayanan"
                 item-title="name"
@@ -666,6 +670,7 @@ const getItemData = (item) => {
               <VLabel>Jenis Produk</VLabel>
               <VSelect
                 v-model="formData.id_jenis_produk"
+                :disabled="isPengembangan()"
                 placeholder="Pilih Jenis Produk"
                 density="compact"
                 :items="listProduk"
