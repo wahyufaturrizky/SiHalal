@@ -68,11 +68,11 @@ const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
   const res = await Promise.all([
-    loadItem({
-      page: page.value,
-      size: itemPerPage.value,
-      keyword: searchQuery.value,
-    }),
+    // loadItem({
+    //   page: page.value,
+    //   size: itemPerPage.value,
+    //   keyword: searchQuery.value,
+    // }),
     getProvince(),
   ]);
 

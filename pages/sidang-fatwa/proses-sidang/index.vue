@@ -167,14 +167,14 @@ onMounted(async () => {
   loading.value = true;
   await getJenisProduk();
   await loadPendamping(pagePendamping.value, itemPerPagePendamping.value);
-  await loadItem(
-    1,
-    itemPerPage.value,
-    lembaga.value,
-    fasilitasi.value,
-    pendamping.value,
-    searchQuery.value
-  );
+  // await loadItem(
+  //   1,
+  //   itemPerPage.value,
+  //   lembaga.value,
+  //   fasilitasi.value,
+  //   pendamping.value,
+  //   searchQuery.value
+  // );
   await loadFilter();
   loading.value = false;
 });
