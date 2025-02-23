@@ -601,7 +601,7 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="pa-0">
 
-              <v-list v-if="!loading && dataProfilePendamping.status === 'REGISTRASI' " class="pa-0 ma-0" :key="componentKey">
+              <v-list v-if="!loading && (dataProfilePendamping.status === 'REGISTRASI' || dataProfilePendamping.status === 'DIKEMBALIKAN') " class="pa-0 ma-0" :key="componentKey">
                 <v-list-item v-for="(item, index) in dokumenPersyaratan" :key="index" class="ma-0 pa-0">
                   <VRow class="d-flex align-center pa-0 ma-0 ga-o" >
                     <VCol cols="12" md="5">
@@ -658,7 +658,7 @@ onMounted(async () => {
               </VRow>
               <VDivider class="my-4" />
               <VRow class="d-flex justify-end ma-3">
-                <VBtn @click="uploadDokumen" :disabled="uploadFileButton" v-if="dataProfilePendamping.status === 'REGISTRASI'">
+                <VBtn @click="uploadDokumen" :disabled="uploadFileButton" v-if="dataProfilePendamping.status === 'REGISTRASI' || dataProfilePendamping.status === 'DIKEMBALIKAN'">
                   Simpan
                 </VBtn>
               </VRow>
