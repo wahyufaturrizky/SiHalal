@@ -29,6 +29,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  data: {
+    type: Object,
+    required: true,
+  },
 })
 
 // Combine props into a single reactive object
@@ -39,6 +43,7 @@ const combinedProps = ref({
   produk: props.produk,
   cleaning: props.cleaning,
   kemasan: props.kemasan,
+  data: props.data,
 })
 
 const profil = ref([])
@@ -55,28 +60,18 @@ watch(
       profil.value = [
         {
           id: 1,
-          key: t('task-force.proses-sidang.detail.section-pengajuan-sertifikasi.nomor'),
-          value: getValueOrDash(newData?.sertifikat?.no_daftar),
+          key: t('task-force.proses-sidang.detail.section-penanggung-jawab.name'),
+          value: getValueOrDash(newData?.data?.nama_pj),
         },
         {
           id: 2,
-          key: t('task-force.proses-sidang.detail.section-pengajuan-sertifikasi.service-type'),
-          value: getValueOrDash(newData?.sertifikat?.nama_pu),
+          key: t('task-force.proses-sidang.detail.section-penanggung-jawab.phone'),
+          value: getValueOrDash(newData?.data?.no_kontak_pj),
         },
         {
           id: 3,
-          key: t('task-force.proses-sidang.detail.section-pengajuan-sertifikasi.product-type'),
-          value: getValueOrDash(newData?.sertifikat?.alamat_pu),
-        },
-        {
-          id: 4,
-          key: t('task-force.proses-sidang.detail.section-pengajuan-sertifikasi.market-brand'),
-          value: getValueOrDash(newData?.sertifikat?.kota_pu),
-        },
-        {
-          id: 5,
-          key: t('task-force.proses-sidang.detail.section-pengajuan-sertifikasi.market-area'),
-          value: getValueOrDash(newData?.sertifikat?.kota_pu),
+          key: t('task-force.proses-sidang.detail.section-penanggung-jawab.email'),
+          value: getValueOrDash(newData?.data?.email_pj),
         },
       ]
     }
@@ -91,7 +86,7 @@ const paneSwitcher = ref([0, 1])
   <VExpansionPanels v-model="paneSwitcher">
     <VExpansionPanel>
       <VExpansionPanelTitle><h2>
-        {{ t('task-force.proses-sidang.detail.section-pengajuan-sertifikasi.title') }}
+        {{ t('task-force.proses-sidang.detail.section-penanggung-jawab.title') }}
       </h2></VExpansionPanelTitle>
       <br>
       <VExpansionPanelText>

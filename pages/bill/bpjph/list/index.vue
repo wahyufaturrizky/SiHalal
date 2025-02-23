@@ -9,7 +9,7 @@ const tableHeaders: any[] = [
   { title: t('task-force.tagihan-bpjph-table-key-total'), key: 'total_harga', nowrap: true },
   { title: t('task-force.tagihan-bpjph-table-key-status'), key: 'status_payment', nowrap: true },
   { title: t('task-force.tagihan-bpjph-table-key-invoice'), key: 'invoice', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-table-key-action'), key: 'actions', nowrap: true },
+  { title: t('task-force.tagihan-bpjph-table-key-bukti-bayar'), key: 'file_bukti_transfer', nowrap: true },
 ]
 
 const tableItems = ref<Array[]>([])
@@ -76,8 +76,8 @@ const getChipColor = (status: string) => {
   return 'primary'
 }
 
-const unduhFile = async (link: string) => {
-  await downloadDocument(link, 'INVOICE')
+const unduhFile = async (link: string, type: string) => {
+  await downloadDocument(link, type)
 }
 </script>
 
@@ -144,7 +144,17 @@ const unduhFile = async (link: string) => {
                   <VIcon
                     icon="fa-eye"
                     color="white"
-                    @click="() => unduhFile(item.invoice)"
+                    @click="() => unduhFile(item.invoice, 'INVOICE')"
+                  />
+                </div>
+              </template>
+              <template #item.file_bukti_transfer="{ item }">
+                <div style="background-color: #652672; width: 30px; height: 30px; border-radius: 8px; place-content: center; display: flex; align-items: center;">
+                  <VIcon
+                    icon="fa-eye"
+                    color="white"
+                    :disabled="!item.file_bukti_transfer"
+                    @click="() => unduhFile(item.file_bukti_transfer, 'FILES')"
                   />
                 </div>
               </template>
@@ -178,14 +188,12 @@ const unduhFile = async (link: string) => {
   table {
     thead > tr > th:last-of-type {
       position: sticky;
-      border-inline-start: 1px solid rgba(#000, 0.12);
       inset-inline-end: 0;
     }
 
     tbody > tr > td:last-of-type {
       position: sticky;
       background: white;
-      border-inline-start: 1px solid rgba(#000, 0.12);
       inset-inline-end: 0;
       justify-items: center;
     }
