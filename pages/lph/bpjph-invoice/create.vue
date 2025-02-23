@@ -22,64 +22,6 @@ const invoiceHeader: any[] = [
   { title: 'Channel ID', value: 'channel_id', nowrap: true },
 ]
 
-// const dummyData = [
-//   {
-//     id_reg: '1',
-//     no_daftar: '317307981729837',
-//     tanggal_daftar: '16/01/2024',
-//     nama_pu: 'Anugrah Windy Mustikaratu',
-//     jenis_produk: 'Produk',
-//     merek_dagang: 'Merek A',
-//     jumlah: '10',
-//     bank_tujuan: 'BCA',
-//     channel_id: 'C-001',
-//   },
-//   {
-//     id_reg: '2',
-//     no_daftar: '317307981729837',
-//     tanggal_daftar: '21/01/2024',
-//     nama_pu: 'Ronald Richards',
-//     jenis_produk: 'Produk',
-//     merek_dagang: 'Merek B',
-//     jumlah: '12',
-//     bank_tujuan: 'Mandiri',
-//     channel_id: 'C-002',
-//   },
-//   {
-//     id_reg: '3',
-//     no_daftar: '317307981729837',
-//     tanggal_daftar: '04/03/2024',
-//     nama_pu: 'Jacob Jones',
-//     jenis_produk: 'Produk',
-//     merek_dagang: 'Merek C',
-//     jumlah: '20',
-//     bank_tujuan: 'BTN',
-//     channel_id: 'C-003',
-//   },
-//   {
-//     id_reg: '4',
-//     no_daftar: '317307981729837',
-//     tanggal_daftar: '09/03/2024',
-//     nama_pu: 'Arlene McCoy',
-//     jenis_produk: 'Produk',
-//     merek_dagang: 'Merek D',
-//     jumlah: '15',
-//     bank_tujuan: 'BNI',
-//     channel_id: 'C-004',
-//   },
-//   {
-//     id_reg: '5',
-//     no_daftar: '317307981729837',
-//     tanggal_daftar: '10/04/2024',
-//     nama_pu: 'Ralph Edwards',
-//     jenis_produk: 'Produk',
-//     merek_dagang: 'Merek E',
-//     jumlah: '8',
-//     bank_tujuan: 'BRI',
-//     channel_id: 'C-005',
-//   },
-// ]
-
 const regisTypeList = ref([
   {
     title: 'Reguler',
@@ -222,7 +164,6 @@ const handleConfirmCreate = async () => {
 
 onMounted(() => {
   loadYearList()
-  loadItem()
 })
 </script>
 
@@ -421,34 +362,4 @@ onMounted(() => {
     color: #49a84c;
   }
 }
-// .inactive-chip {
-//   border: 1px solid #e1442e !important;
-//   border-radius: 8px;
-//   background-color: #fcecea;
-
-//   span {
-//     color: #e1442e;
-//   }
-// }
-// :deep(.v-data-table.bill-table > .v-table__wrapper) {
-//   table {
-//     thead > tr > th:last-of-type {
-//       right: 0;
-//       position: sticky;
-//       border-left: 1px solid rgba(#000000, 0.12);
-//     }
-//     tbody > tr > td:last-of-type {
-//       right: 0;
-//       position: sticky;
-//       border-left: 1px solid rgba(#000000, 0.12);
-//       background: white;
-//     }
-//   }
-// }
-
-// :deep(.v-data-table.bill-table > .v-data-table-footer) {
-//   .v-data-table-footer__info {
-//     display: none;
-//   }
-// }
 </style>

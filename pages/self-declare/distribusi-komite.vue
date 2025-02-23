@@ -266,7 +266,6 @@ const handleFilterPendamping = (val: string) => {
 };
 
 onMounted(() => {
-  handleLoadList();
   loadItemProduct();
   loadItemFacility();
   loadItemLembaga();

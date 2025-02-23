@@ -1,4 +1,3 @@
-<!-- eslint-disable regex/invalid -->
 <script setup lang="ts">
 import { useDisplay } from 'vuetify';
 
@@ -17,57 +16,7 @@ const tableHeaders: any[] = [
   { title: 'Status', value: 'status', nowrap: true },
   { title: 'Bukti Bayar', value: 'bukti_url', nowrap: true },
   { title: 'Invoice', value: 'invoice_url', nowrap: true },
-  // { title: 'Action', value: 'actions', align: 'center' },
 ]
-
-// const dummyData = [
-//   {
-//     id: '1',
-//     no_tagihan: '317307981729837',
-//     tanggal: '16/01/2024',
-//     total: '100.000.000',
-//     status: 'Terbayar',
-//     bukti_url : 'A',
-//     invoice_url: 'A',
-//   },
-//   {
-//     id: '2',
-//     no_tagihan: '317307981729837',
-//     tanggal: '21/01/2024',
-//     total: '50.000.000',
-//     status: 'Terbayar',
-//     bukti_url : 'A',
-//     invoice_url: 'A',
-//   },
-//   {
-//     id: '3',
-//     no_tagihan: '317307981729837',
-//     tanggal: '04/03/2024',
-//     total: '75.000.000',
-//     status: 'Terbayar',
-//     bukti_url : 'A',
-//     invoice_url: 'A',
-//   },
-//   {
-//     id: '4',
-//     no_tagihan: '317307981729837',
-//     tanggal: '09/03/2024',
-//     total: '35.000.000',
-//     status: 'Terbayar',
-//     bukti_url : 'A',
-//     invoice_url: 'A',
-//   },
-//   {
-//     id: '5',
-//     no_tagihan: '317307981729837',
-//     tanggal: '10/04/2024',
-//     total: '20.000.000',
-//     status: 'Terbayar',
-//     bukti_url : 'A',
-//     invoice_url: 'A',
-//   },
-// ]
-
 const loadItem = async () => {
   isLoading.value = true
   try {
@@ -123,20 +72,6 @@ const formatNumber = (value: number) => {
 const handleDownload = async (filename: string, param: string) => {
   return await downloadDocument(filename, param)
 }
-
-// const selectedBill = ref("");
-// const isOpenDeleteModal = ref(false);
-// const handleOpenDeleteModal = (id?: string | null) => {
-//   if (id) selectedBill.value = id;
-//   isOpenDeleteModal.value = !isOpenDeleteModal.value;
-// };
-// const handleConfirmDelete = async () => {
-//   return
-// }
-
-onMounted(() => {
-  loadItem()
-})
 </script>
 
 <template>
@@ -222,39 +157,11 @@ onMounted(() => {
                 />
               </VBtn>
             </template>
-            <!-- <template #item.actions="{ item }">
-              <VIcon
-                icon="mdi-delete"
-                color="error"
-                size="x-large"
-                @click="handleOpenDeleteModal(item.id)"
-              />
-            </template> -->
           </VDataTableServer>
         </VCardText>
       </VCard>
     </VCol>
   </VRow>
-  <!-- <ConfirmModal
-    dialog-title="Delete Confirmation"
-    :dialog-visible="isOpenDeleteModal"
-    @update:dialog-visible="isOpenDeleteModal = $event"
-  >
-    <VCardText> Apakah Anda yakin akan menghapus data ini? </VCardText>
-    <VCardActions class="px-4">
-      <VBtn variant="outlined" class="px-4 me-3" @click="handleOpenDeleteModal"
-        >Batal</VBtn
-      >
-      <VBtn
-        variant="flat"
-        class="px-4"
-        color="error"
-        @click="[handleConfirmDelete(), handleOpenDeleteModal()]"
-      >
-        Ya, Hapus
-      </VBtn>
-    </VCardActions>
-  </ConfirmModal> -->
 </template>
 
 <style scoped lang="scss">
@@ -276,25 +183,4 @@ onMounted(() => {
     color: #49a84c;
   }
 }
-// :deep(.v-data-table.bill-table > .v-table__wrapper) {
-//   table {
-//     thead > tr > th:last-of-type {
-//       right: 0;
-//       position: sticky;
-//       border-left: 1px solid rgba(#000000, 0.12);
-//     }
-//     tbody > tr > td:last-of-type {
-//       right: 0;
-//       position: sticky;
-//       border-left: 1px solid rgba(#000000, 0.12);
-//       background: white;
-//     }
-//   }
-// }
-
-// :deep(.v-data-table.bill-table > .v-data-table-footer) {
-//   .v-data-table-footer__info {
-//     display: none;
-//   }
-// }
 </style>
