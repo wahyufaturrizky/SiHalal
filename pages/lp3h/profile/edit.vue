@@ -121,8 +121,8 @@ const simpanHandler = async () => {
         body,
       }
     );
-    await loadProfil()
     useSnackbar().sendSnackbar('Berhasil menyimpan data ', 'success')
+    navigateTo("/lp3h/profile");
   }catch (error){
     //console.log(error)
     useSnackbar().sendSnackbar('Ada Kesalaan ', 'error')
@@ -268,8 +268,8 @@ const uploadDokumen = async () => {
         body,
       }
     );
-    await loadProfil()
     useSnackbar().sendSnackbar('Berhasil menyimpan data ', 'success')
+    navigateTo("/lp3h/profile");
   }catch (error){
     //console.log(error)
     useSnackbar().sendSnackbar('Ada Kesalaan ', 'error')
@@ -302,7 +302,8 @@ const loadProfil = async () => {
       kecamatan: lp.kecamatan,
       kodePos: lp.kode_pos,
       email: lp.email,
-      id_lp: lp.id_lp
+      id_lp: lp.id_lp,
+      status: lp.status
     }
 
     dataNamaPenanggungJawab.value = {
@@ -417,7 +418,7 @@ onMounted(async () => {
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Profil Lembaga Pendamping
             </VExpansionPanelTitle>
-            <VExpansionPanelText>
+            <VExpansionPanelText v-if="dataProfilePendamping">
               <VLabel for="namaLembaga">
                 Nama Lembaga
               </VLabel>
@@ -507,7 +508,7 @@ onMounted(async () => {
               Penanggung Jawab
             </VExpansionPanelTitle>
             <VExpansionPanelText>
-              <VRow>
+              <VRow v-if="dataNamaPenanggungJawab" >
                 <VCol cols="6">
                   <VLabel for="namaPimpinan">
                     Nama Pimpinan
@@ -528,7 +529,7 @@ onMounted(async () => {
                 </VCol>
               </VRow>
               <VDivider class="my-4" />
-              <VRow>
+              <VRow v-if="dataKontakPenanggungJawab">
                 <VCol cols="6">
                   <VLabel for="namaKontak">
                     Nama Kontak
@@ -561,7 +562,7 @@ onMounted(async () => {
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Data Registrasi
             </VExpansionPanelTitle>
-            <VExpansionPanelText>
+            <VExpansionPanelText v-if="dataRegistrasi.length > 0">
               <VRow
                 v-for="(item, index) in dataRegistrasi"
                 :key="index"
@@ -599,8 +600,8 @@ onMounted(async () => {
               Dokumen Persyaratan
             </VExpansionPanelTitle>
             <VExpansionPanelText class="pa-0">
-              <!--              DOKUMENT PERSYARATAN -->
-              <v-list v-if="!loading" class="pa-0 ma-0" :key="componentKey">
+
+              <v-list v-if="!loading && dataProfilePendamping.status === 'REGISTRASI' " class="pa-0 ma-0" :key="componentKey">
                 <v-list-item v-for="(item, index) in dokumenPersyaratan" :key="index" class="ma-0 pa-0">
                   <VRow class="d-flex align-center pa-0 ma-0 ga-o" >
                     <VCol cols="12" md="5">
@@ -631,7 +632,20 @@ onMounted(async () => {
                   </VRow>
                 </v-list-item>
               </v-list>
-
+              <VList v-else>
+                <VListItem v-for="(item, index) in dokumenPersyaratan" :key="index" class="pa-1">
+                  <VRow class="d-flex align-center">
+                    <VCol cols="12" md="8">
+                      <div class="text-body-1 font-weight-medium ">{{ index + 1 }}.{{ item.jenis }}</div>
+                    </VCol>
+                    <VCol cols="12" md="4" class="squareBtnIcon">
+                      <VBtn icon variant="outlined" color="purple" class="ml-2" @click="downloadDocument(item.file, 'FILES')">
+                        <VIcon color="primary">mdi-download</VIcon>
+                      </VBtn>
+                    </VCol>
+                  </VRow>
+                </VListItem>
+              </VList>
               <VRow>
                 <VCol cols="2">
                   <span style="color: red;">Info :</span>
@@ -644,7 +658,7 @@ onMounted(async () => {
               </VRow>
               <VDivider class="my-4" />
               <VRow class="d-flex justify-end ma-3">
-                <VBtn @click="uploadDokumen" :disabled="uploadFileButton">
+                <VBtn @click="uploadDokumen" :disabled="uploadFileButton" v-if="dataProfilePendamping.status === 'REGISTRASI'">
                   Simpan
                 </VBtn>
               </VRow>
@@ -660,7 +674,7 @@ onMounted(async () => {
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Data Rekening Bank & NPWP
             </VExpansionPanelTitle>
-            <VExpansionPanelText>
+            <VExpansionPanelText v-if="dataRekeningBankDanNpwp">
               <VLabel for="namaBank">
                 Nama Bank
               </VLabel>

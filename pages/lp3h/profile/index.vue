@@ -278,7 +278,7 @@ onMounted(async () => {
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Profil Lembaga Pendamping
             </VExpansionPanelTitle>
-            <VExpansionPanelText>
+            <VExpansionPanelText v-if="!loading">
               <VRow v-for="(item, index) in dataProfilePendamping" :key="index">
                 <VCol cols="5" class="text-left font-weight-medium">
                   {{ item.label }}
@@ -381,7 +381,7 @@ onMounted(async () => {
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Data Registrasi
             </VExpansionPanelTitle>
-            <VExpansionPanelText>
+            <VExpansionPanelText v-if="!loading">
               <VRow v-for="(item, index) in dataRegistrasi" :key="index" class="d-flex justify-center align-center">
                 <VCol cols="5" class="text-left font-weight-medium">
                   {{ item.label }}
