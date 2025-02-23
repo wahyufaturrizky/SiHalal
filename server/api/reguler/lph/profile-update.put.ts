@@ -12,20 +12,16 @@ export default defineEventHandler(async (event: any) => {
     });
   }
 
-  const id = getRouterParam(event, "id");
-  // console.log("ID : ", id)
   const body: any = await readBody(event);
-  // console.log("UPDATE PROFILE BODY : ", body)
 
-  const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/lp3h/profile/${id}`,
+  const data = await $fetch(
+    `${runtimeConfig.coreBaseUrl}/api/v1/lph/profile`,
     {
       method: "put",
       headers: { Authorization: authHeader },
       body,
-    }
+    } as any
   ).catch((err: NuxtError) => {
-    console.error("error = ", err);
     setResponseStatus(event, 400);
 
     return err.data;

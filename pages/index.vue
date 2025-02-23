@@ -53,5 +53,5 @@ definePageMeta({
 </script>
 
 <template>
-  <InformationLoginPopUp :data="listAnnouncement" />
+  <InformationLoginPopUp v-if="listAnnouncement.length != 0" :data="listAnnouncement" />
 </template>

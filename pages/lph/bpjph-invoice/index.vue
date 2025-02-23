@@ -120,8 +120,8 @@ const formatNumber = (value: number) => {
   }).format(value).replace(/^Rp\s?/gi, '');
 };
 
-const handleDownload = async (filename: string) => {
-  return await downloadDocument(filename, 'FILES')
+const handleDownload = async (filename: string, param: string) => {
+  return await downloadDocument(filename, param)
 }
 
 // const selectedBill = ref("");
@@ -206,7 +206,7 @@ onMounted(() => {
               >
                 <VIcon
                   icon="fa-download"
-                  @click="item.bukti_url ? handleDownload(item.bukti_url) : null"
+                  @click="item.bukti_url ? handleDownload(item.bukti_url, 'FILES') : null"
                 />
               </VBtn>
             </template>
@@ -218,7 +218,7 @@ onMounted(() => {
               >
                 <VIcon
                   icon="fa-eye"
-                  @click="item.invoice_url ?  handleDownload(item.invoice_url) : null"
+                  @click="item.invoice_url ?  handleDownload(item.invoice_url, 'INVOICE') : null"
                 />
               </VBtn>
             </template>

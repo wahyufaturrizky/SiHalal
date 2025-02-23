@@ -13,15 +13,56 @@ const selectedFasilitas = ref(null)
 
 const fasilitas = ref([])
 
+const firstNoSelected = ref("")
+const secondNoSelected = ref("")
+
+const items = ref([]);
+
+const selectOptionDisable = ref(true)
+
+const selected = ref([]);
+
+const onSelectUpdate = () => {
+  if(firstNoSelected.value !== "" && secondNoSelected.value !== ""){
+    selectOptionDisable.value = false
+  }else {
+    selectOptionDisable.value = true
+    selected.value = []
+  }
+}
+
+const generateRange = (a, b) => [...Array(b - a + 1)].map((_, i) => a + i);
+
+const onNoSelected = () => {
+
+  firstNoSelected.value = firstNoSelected.value.replace(/\D/g, "")
+  secondNoSelected.value = secondNoSelected.value.replace(/\D/g, "")
+
+  if(firstNoSelected.value !== "" && secondNoSelected.value !== ""){
+    //
+    // if(secondNoSelected.value > items.value.length){
+    //   itemPerPage.value = secondNoSelected.value
+    // }
+    //
+    // if(firstNoSelected.value > secondNoSelected.value){
+    //   selected = []
+    //   return
+    // }
+    selected.value = generateRange(Number(firstNoSelected.value), Number(secondNoSelected.value))
+  }else{
+    selected.value = []
+  }
+}
+
 const years = [
-  { title: "Semua", value: null }, // Menambahkan item "Semua"
+  { title: "Semua", value: null },
   ...Array.from({ length: new Date().getFullYear() - 2021 + 1 }, (_, i) => {
     const year = 2021 + i;
     return { title: year.toString(), value: year.toString() };
   })
 ];
 
-const selected = ref([]);
+
 
 const headers = [
   { title: 'No', key: 'no' },
@@ -35,14 +76,32 @@ const headers = [
   { title: 'Status', key: 'status' },
 ];
 
-const items = ref([]);
-
 const dialog = ref(false);
-const buatInvoiceHandler = () => {
+const buatInvoiceHandler = async () => {
   //console.log("BUAT INVOICE, SELECTED ITEM : ", selected)
   dialog.value = false
-  selected.value = []
-  useSnackbar().sendSnackbar("Berhasil membuat invoice ", "success")
+
+  const listSelected = items.value.filter(i => selected.value.indexOf(i.no_urut) !== -1).map(j => j.id)
+
+  const body = {
+    id_reg: listSelected
+  }
+
+  try {
+    const response = await $api("/lp3h/create-invoice", {
+      method: "post",
+      body
+    });
+    if(response.code !== 2000){
+      useSnackbar().sendSnackbar(response.message, "error");
+    }else{
+      useSnackbar().sendSnackbar("Berhasil membuat invoice ", "success")
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+
+  debouncedFetch(1, itemPerPage.value , selectedFasilitas.value , selectedYear.value, searchQuery.value)
 }
 
 
@@ -54,7 +113,7 @@ const loadFasilitasi = async () => {
     });
 
     const data = response.data;
-    //console.log("RESPONSE : ", response)
+
 
     fasilitas.value = [
       { title: "Semua", value: null },
@@ -84,20 +143,24 @@ const loadListDokumen = async (page: number, limit: number, fac_id: string, tahu
 
     totalItems.value = response.totalItems
     const data = response.data;
-    //console.log("RESPONSE : ", response)
+    items.value = []
 
-    items.value = data.map(
-        i => ({
-          id : i.id_reg,
-          no_daftar: i.no_daftar,
-          tanggal: i.tgl_daftar,
-          nama_pu: i.nama_pu,
-          jenis_produk: i.jenis_produk,
-          nama_fasilitasi: i.Facilitated.fac_name,
-          nama_pendamping: i.Pendamping.nama,
-          catatan: i.SidangFatwa.catatan,
+    if(data !== null){
+      data.forEach((v, i) => {
+        items.value.push({
+          no_urut: i + 1,
+          id: v.id_reg,
+          no_daftar: v.no_daftar,
+          tanggal: v.tgl_daftar,
+          nama_pu: v.nama_pu,
+          jenis_produk: v.jenis_produk,
+          nama_fasilitasi: v.fac_name,
+          nama_pendamping: v.nama_pendamping,
+          catatan: v.catatan,
         })
-    )
+      })
+    }
+    // console.log("items : ", items.value)
     loading.value = false
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -108,6 +171,7 @@ const debouncedFetch = debounce(loadListDokumen, 500);
 const changeFilterBy = () => {
   debouncedFetch(page.value, itemPerPage.value , selectedFasilitas.value , selectedYear.value, searchQuery.value)
 };
+
 
 
 onMounted(async () => {
@@ -169,6 +233,7 @@ onMounted(async () => {
                           v-model="selectedFasilitas"
                           @update:model-value="changeFilterBy"
                           variant="solo"
+                          class="mb-2"
                         ></v-select>
                         <VLabel for="tahun" class="mb-2">Tahun Terbit SH</VLabel>
                         <v-select
@@ -193,16 +258,18 @@ onMounted(async () => {
                   </VCol>
                   <VCol cols="3">
                     <VTextField
+                      v-model="firstNoSelected"
                       density="compact"
                       placeholder="Pilih No."
-                      @input="changeFilterBy"
+                      @input="onSelectUpdate"
                     />
                   </VCol>
                   <VCol cols="3">
                     <VTextField
+                      v-model="secondNoSelected"
                       density="compact"
                       placeholder="Sampai"
-                      @input="changeFilterBy"
+                      @input="onSelectUpdate"
                     />
                   </VCol>
                 </VRow>
@@ -210,7 +277,7 @@ onMounted(async () => {
               <VCol cols="3">
                 <VRow >
                   <VCol cols="12" class="d-flex justify-space-between">
-                    <VBtn disabled>
+                    <VBtn :disabled="selectOptionDisable" @click="onNoSelected">
                       Pilih
                     </VBtn>
                     <VBtn append-icon="mdi-file-document" :disabled="selected.length === 0" @click="dialog = true">
@@ -226,7 +293,7 @@ onMounted(async () => {
               v-model="selected"
               :headers="headers"
               :items="items"
-              item-value="id"
+              item-value="no_urut"
               show-select
               v-model:items-per-page="itemPerPage"
               v-model:page="page"

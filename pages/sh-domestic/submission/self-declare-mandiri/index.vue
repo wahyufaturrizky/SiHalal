@@ -303,7 +303,7 @@ onMounted(async () => {
       @update:dialog-visible="infoDialogVisible = $event"
       :data="isUnfulfilled"
     />
-    <RequestDialogue
+    <RequestDialogueMandiri
       :dialog-visible="requestDialogVisible"
       :submit="hanleSubmitRequest"
       @update:dialog-visible="requestDialogVisible = $event"
