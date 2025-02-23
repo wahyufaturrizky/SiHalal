@@ -166,84 +166,34 @@ watch(
       </VRow>
       <VRow v-if="!loading">
         <VCol cols="12">
-          <AspectLegalFatwa
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
-            :data="newDataSertifikatHalal.dataAspectLegal"
-          />
+          <AspectLegalFatwa :data="newDataSertifikatHalal.dataAspectLegal" />
         </VCol>
       </VRow>
       <VRow v-if="!loading">
         <VCol cols="12">
-          <PabrikFatwa
-            v-if="dataPabrik.length > 0"
-            :data="dataPabrik"
-          />
+          <PabrikFatwa :data="dataPabrik" />
         </VCol>
       </VRow>
       <VRow v-if="!loading">
         <VCol cols="12">
-          <OutletFatwa
-            v-if="dataOutlet.length > 0"
-            :data="dataOutlet"
-          />
+          <OutletFatwa :data="dataOutlet" />
         </VCol>
       </VRow>
       <VRow v-if="!loading">
         <VCol cols="12">
-          <PenyeliaHalalFatwa
-            v-if="dataPenyelia.length > 0"
-            :data="dataPenyelia"
-          />
+          <PenyeliaHalalFatwa :data="dataPenyelia" />
         </VCol>
       </VRow>
       <VRow v-if="!loading">
         <VCol cols="12">
-          <NamaProdukFatwa
-            v-if="dataNamaProduk.length > 0"
-            :data="dataNamaProduk"
-          />
+          <NamaProdukFatwa :data="dataNamaProduk" />
         </VCol>
       </VRow>
-      <!-- <VRow v-if="!loading">
-        <VCol cols="12">
-          <JadwalAuditFatwa
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
-            :sertifikat="newDataSertifikatHalal.sertifikatHalal"
-            :bahan="newDataSertifikatHalal.formattedBahan"
-            :cleaning="newDataSertifikatHalal.formattedCleaning"
-            :kemasan="newDataSertifikatHalal.formattedKemasan"
-            :produk="newDataSertifikatHalal.combinedNamaProduk"
-            :penanggungjawab="newDataSertifikatHalal.penanggungJawab"
-          />
-        </VCol>
-      </VRow>
-      <VRow v-if="!loading">
-        <VCol cols="12">
-          <AuditorFatwa
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
-            :databahan="newDataSertifikatHalal.dataDukungBahan"
-          />
-        </VCol>
-      </VRow>
-      <VRow v-if="!loading">
-        <VCol cols="12">
-          <HasilPemeriksaanFatwa
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
-            :sertifikat="newDataSertifikatHalal.sertifikatHalal"
-            :bahan="newDataSertifikatHalal.formattedBahan"
-            :cleaning="newDataSertifikatHalal.formattedCleaning"
-            :kemasan="newDataSertifikatHalal.formattedKemasan"
-            :produk="newDataSertifikatHalal.combinedNamaProduk"
-            :penanggungjawab="newDataSertifikatHalal.penanggungJawab"
-          />
-        </VCol>
-      </VRow> -->
     </VCol>
     <VCol cols="4">
       <VRow v-if="!loading">
         <VCol cols="12">
           <DokumenUnduhanFatwa
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
             :sertifikat="newDataSertifikatHalal.sertifikatHalal"
             :fileUnduh="fileUnduh"
           />
@@ -252,45 +202,16 @@ watch(
       <VRow v-if="!loading">
         <VCol cols="12">
           <InformasiPenetapanFatwa
-            v-if="dataPenetapan"
             :data="dataPenetapan"
             :dataPengajuan="dataPengajuan"
           />
         </VCol>
       </VRow>
-      <!-- <VRow v-if="!loading">
-        <VCol cols="12">
-          <HasilAuditFatwa
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
-            :sertifikat="newDataSertifikatHalal.sertifikatHalal"
-          />
-        </VCol>
-      </VRow>
       <VRow v-if="!loading">
         <VCol cols="12">
-          <NoPendaftaranFatwa
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
-            :sertifikat="newDataSertifikatHalal.sertifikatHalal"
-          />
+          <MelacakPendamping :tracking="dataTracking" />
         </VCol>
       </VRow>
-      <VRow v-if="!loading">
-        <VCol cols="12">
-          <TotalBiayaFatwa
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
-            :sertifikat="newDataSertifikatHalal.sertifikatHalal"
-          />
-        </VCol>
-      </VRow> -->
-      <VRow v-if="!loading">
-        <VCol cols="12">
-          <MelacakPendamping
-            v-if="dataTracking.length > 0"
-            :tracking="dataTracking"
-          />
-        </VCol>
-      </VRow>
-      <!-- <RestPanelPendamping /> -->
     </VCol>
   </VRow>
 </template>
