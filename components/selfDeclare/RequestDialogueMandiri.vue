@@ -134,7 +134,7 @@ const dialogMaxWidth = computed(() => {
               elevation="4"
               width="90%"
             >
-              <h3 class="font-weight-bold text-center">Baru</h3>
+              <h3 class="font-weight-bold text-center">Baru (Pengembangan)</h3>
               <p class="text-center text-body-2 mt-2">
                 Proses sertifikasi halal untuk
                 <strong>menambahkan / mengembangkan </strong>
