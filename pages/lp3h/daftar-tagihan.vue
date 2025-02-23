@@ -69,7 +69,7 @@ const previewInvoice = async item => {
 
 const authUser = useMyAuthUserStore()
 
-const loadItem = async (page: number, size: number) => {
+const loadItem = async () => {
   try {
     loading.value = true
 
@@ -78,8 +78,8 @@ const loadItem = async (page: number, size: number) => {
     const response = await $api('/lp3h/list-tagihan', {
       method: 'get',
       params: {
-        page,
-        limit: itemPerPage,
+        page: page.value,
+        limit: itemPerPage.value,
         ref_unik: idUser,
       },
     })
