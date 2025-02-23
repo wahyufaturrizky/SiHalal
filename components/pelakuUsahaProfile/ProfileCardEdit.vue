@@ -149,6 +149,8 @@ async function submitProfile() {
         negara_pu: profilData.value[5].value,
         no_tlp: profilData.value[6].value,
         email: profilData.value[7].value,
+        jenis_badan_usaha_pu: form.jenis_badan_usaha.value,
+        modal_dasar_pu: form.modal_dasar.value,
       };
 
       const submitApi = $api(
@@ -308,8 +310,13 @@ watch(
           <VCol cols="7">
             <VSelect
               density="compact"
-              :disabled="disableEdit(props.profileData?.asal_usaha)"
-              :model-value="form.jenis_badan_usaha"
+              :disabled="
+                props.profileData?.asal_usaha?.toLowerCase() ==
+                'instansi pemerintah'
+                  ? false
+                  : disableEdit(props.profileData?.asal_usaha)
+              "
+              v-model="form.jenis_badan_usaha"
               :items="jenisBadanUsahaOption"
               item-title="name"
               item-value="code"
@@ -322,7 +329,7 @@ watch(
           <VCol cols="7">
             <VSelect
               density="compact"
-              :model-value="form.tingkat_usaha"
+              v-model="form.tingkat_usaha"
               :items="['UMK', 'Non UMK']"
               disabled
             ></VSelect>
@@ -337,7 +344,7 @@ watch(
             <VSelect
               density="compact"
               disabled
-              :model-value="form.skala_usaha"
+              v-model="form.skala_usaha"
               :items="skalaUsahaOption"
               item-title="name"
               item-value="code"
@@ -350,9 +357,15 @@ watch(
           <VCol cols="7">
             <VTextField
               density="compact"
-              :disabled="disableEdit(props.profileData?.asal_usaha)"
-              >{{ form.modal_dasar }}</VTextField
-            >
+              :disabled="
+                props.profileData?.asal_usaha?.toLowerCase() ==
+                'instansi pemerintah'
+                  ? false
+                  : disableEdit(props.profileData?.asal_usaha)
+              "
+              v-model="form.modal_dasar"
+              :rules="[integerValidator]"
+            ></VTextField>
           </VCol>
         </VRow>
         <VRow>
@@ -364,7 +377,7 @@ watch(
               v-if="props.profileData?.asal_usaha !== 'Luar Negeri'"
               density="compact"
               :disabled="disableEdit(props.profileData?.asal_usaha)"
-              :model-value="form.asal_usaha"
+              v-model="form.asal_usaha"
               :items="['Dalam Negeri', 'Luar Negeri']"
             ></VSelect>
             <VTextField v-else density="compact" disabled>{{
