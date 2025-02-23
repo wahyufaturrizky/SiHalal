@@ -25,6 +25,7 @@ const downloadBuktiBayar = async item => {
       method: 'post',
       body: {
         filename: item.buktiTransfer,
+        dirName: "FILES"
       },
     })
 
@@ -51,6 +52,7 @@ const previewInvoice = async item => {
       method: 'post',
       body: {
         filename: item.invoice,
+        dirName: "FILES"
       },
     })
 
@@ -100,6 +102,7 @@ const loadItem = async () => {
         }),
       )
     }
+    // console.log("daftar tagihan : ", daftarTagihanItem.value)
 
     totalItems.value = response.totalItems
     loading.value = false
@@ -154,7 +157,7 @@ onMounted(async () => {
                 <VBtn
                   icon
                   variant="text"
-                  @click="downloadBuktiBayar(item)"
+                  @click="downloadDocument(item.buktiTransfer, 'FILES')"
                 >
                   <VIcon
                     size="24"
@@ -169,7 +172,7 @@ onMounted(async () => {
                 <VBtn
                   icon
                   variant="text"
-                  @click="previewInvoice(item)"
+                  @click="downloadDocument(item.invoice, 'FILES')"
                 >
                   <VIcon
                     size="24"
@@ -202,7 +205,6 @@ onMounted(async () => {
                         total: item.total,
                         jumlahPu: item.jumlahPu,
                         status: item.status,
-                        tanggal: item.tanggal
                       }),
                     },
                   })"
