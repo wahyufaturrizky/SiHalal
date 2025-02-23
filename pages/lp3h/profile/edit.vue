@@ -740,7 +740,7 @@ onMounted(async () => {
 
               <VRow>
                 <VCol cols="2">
-                  <span style="color: red">Info :</span>
+                  <span style="color: red;">Info :</span>
                 </VCol>
                 <VCol cols="8">
                   <span>
