@@ -72,6 +72,43 @@ const getChipColor = (stats: string) => {
   if (stats === "Lunas") return "success";
   return "primary";
 };
+const downloadExcel = async (
+  statusData: string,
+  search: string,
+  file_url: boolean;
+) => {
+  try {
+    let datePayload: any = null;
+    let params = {
+      status: statusData,
+      search,
+      file_url
+    };
+
+    const response: any = await $api(
+      "/reguler/lph/excel-list-pendamping",
+      {
+        method: "get",
+        params,
+      }
+    );
+
+    if (response?.code === 2000) {
+      // response?.data?.map((item: any) => {
+      //   item.typeAndTotal = [item?.jenis_usaha, item?.jumlah_produk];
+      // });
+
+      // totalItems.value = response.totalPages;
+      // data.value = response.data;
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    loading.value = false;
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 
 const loadItem = async (
   pageNumber: number,
@@ -239,7 +276,7 @@ watch([status, outDated, page], () => {
               </VMenu>
             </VBtn>
             <VTextField
-              style="margin-left: 1svw"
+              style="margin-inline-start: 1svw"
               v-model="searchQuery"
               density="compact"
               placeholder="Cari No. Daftar/ Nama PU"
@@ -247,8 +284,11 @@ watch([status, outDated, page], () => {
               @input="handleInput"
             />
           </VCol>
-          <VCol cols="4" class="d-flex justify-end">
-            <VBtn variant="flat" @click="handleDownload">
+          <VCol cols="6" md="2" class="d-flex justify-end">
+            <VBtn
+              variant="outlined"
+              @click="downloadExcel(status, searchQuery, true)"
+            >
               Export XLS
               <VIcon right>mdi-file-excel</VIcon>
             </VBtn>
