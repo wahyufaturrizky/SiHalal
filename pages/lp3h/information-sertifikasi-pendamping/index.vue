@@ -66,7 +66,7 @@ const { mdAndUp } = useDisplay();
 const dialogMaxWidth = computed(() => {
   return mdAndUp.value ? 400 : "90%";
 });
-
+const itemPerPage = ref(10);
 // TODO -> BIKIN LOGIC BUAT SET CHIP COLOR
 const getChipColor = (stats: string) => {
   if (stats === "Lunas") return "success";
@@ -77,7 +77,6 @@ const loadItem = async (
   pageNumber: number,
   sizeData: number,
   statusData: string,
-  jatuh_tempo,
   search: string
 ) => {
   try {
@@ -88,28 +87,21 @@ const loadItem = async (
       status: statusData,
       search,
     };
-    if (outDated.value) {
-      datePayload = new Intl.DateTimeFormat("en-CA", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      }).format(outDated.value);
-      params = {
-        ...params,
-        jatuh_tempo: datePayload,
-      };
-    }
-    
-    const response: any = await $api("/reguler/lph/list-pendamping-self-declare", {
-      method: "get",
-      params,
-    });
+
+    const response: any = await $api(
+      "/reguler/lph/list-pendamping-self-declare",
+      {
+        method: "get",
+        params,
+      }
+    );
 
     if (response?.code === 2000) {
       response?.data?.map((item: any) => {
         item.typeAndTotal = [item?.jenis_usaha, item?.jumlah_produk];
       });
-      totalItems.value = response.total_page;
+
+      totalItems.value = response.totalPages;
       data.value = response.data;
       return response;
     } else {
@@ -123,43 +115,40 @@ const loadItem = async (
 
 const getListStatus = async () => {
   try {
-    const response: any = await $api("/reguler/pelaku-usaha/list-status", {
-      method: "get",
-    });
+    // const response: any = await $api("/reguler/pelaku-usaha/list-status", {
+    //   method: "get",
+    // });
 
-    if (response?.code === 2000) {
-      lovStatus.value = [{ code: "", name: "Semua" }, ...response.data];
-      loading.value = false;
-      return response;
-    } else {
-      loading.value = false;
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    }
+    // if (response?.code === 2000) {
+    lovStatus.value = [
+      { code: "", name: "Semua" },
+      { code: "OF1", name: "Draft" },
+      { code: "OF10 ", name: "Pengajuan" },
+      { code: "OF71", name: "Selesai P3H" },
+      { code: "OF74", name: "Dikirim ke Komite Fatwa" },
+      { code: "OF280", name: "Dikembalikan ke PU" },
+      { code: "OF100", name: "Selesai Sidang Fatwa" },
+      { code: "OF120", name: "Penerbitan Sertifikat" },
+      { code: "OF300", name: "Sertifikat Halal Terbit" },
+    ];
+    loading.value = false;
+    //   return response;
+    // } else {
+    // loading.value = false;
+    // useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    // }
   } catch (error) {
     loading.value = false;
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
-const navigateToDetail = (id: string) => {
-  navigateTo(`/lph/list-register/detail/${id}`);
-};
-
-const unduhFile = () => {
-  window.open("/files/Cara Bayar.pdf", "_blank");
-};
+// const navigateToDetail = (id: string) => {
+//   navigateTo(`/lph/list-register/detail/${id}`);
+// };
 
 const handleInput = (e: any) => {
-  debounce(
-    loadItem(
-      page.value,
-      size.value,
-      status.value,
-      outDated.value,
-      e.target.value
-    ),
-    500
-  );
+  debounce(loadItem(page.value, size.value, status.value, e.target.value), 500);
 };
 
 const downloadInvoice = async (item: any) => {
@@ -169,36 +158,14 @@ const downloadInvoice = async (item: any) => {
 onMounted(async () => {
   loading.value = true;
   await Promise.all([
-    loadItem(
-      page.value,
-      size.value,
-      status.value,
-      outDated.value,
-      searchQuery.value
-    ),
+    loadItem(page.value, size.value, status.value, searchQuery.value),
     getListStatus(),
   ]);
   loading.value = false;
 });
 
-// Semua
-// OF1 - Draft
-// OF10 - Pengajuan
-// OF71 - Selesai P3H
-// OF74 - Dikirim ke Komite Fatwa
-// OF280 - Dikembalikan ke PU
-// OF285 - Dikembalikan oleh Fatwa
-// OF100 - Selesai Sidang Fatwa
-// OF120 - Penerbitan Sertifikat
-// OF300 - Sertifikat Halal Terbit
 watch([status, outDated, page], () => {
-  loadItem(
-    page.value,
-    size.value,
-    status.value,
-    outDated.value,
-    searchQuery.value
-  );
+  loadItem(page.value, size.value, status.value, searchQuery.value);
 });
 </script>
 
@@ -223,7 +190,7 @@ watch([status, outDated, page], () => {
       </VCardTitle>
       <VCardItem>
         <VRow no-gutters class="d-flex align-center ga-2">
-          <VCol cols="12" md="2">
+          <VCol cols="4" md="2">
             <VBtn
               color="primary"
               append-icon="mdi-filter"
@@ -258,7 +225,7 @@ watch([status, outDated, page], () => {
               </VMenu>
             </VBtn>
           </VCol>
-          <VCol>
+          <VCol cols="6" md="4">
             <VTextField
               v-model="searchQuery"
               density="compact"
@@ -266,6 +233,12 @@ watch([status, outDated, page], () => {
               append-inner-icon="ri-search-line"
               @input="handleInput"
             />
+          </VCol>
+          <VCol cols="6" md="2" class="d-flex justify-end">
+            <VBtn variant="outlined" @click="handleDownload">
+              Export XLS
+              <VIcon right>mdi-file-excel</VIcon>
+            </VBtn>
           </VCol>
         </VRow>
       </VCardItem>
@@ -286,21 +259,9 @@ watch([status, outDated, page], () => {
               <div class="pt-2 font-weight-bold">Data Kosong</div>
             </div>
           </template>
-          <template #item.tgl_inv="{ item }">
-            <div v-if="item.tgl_inv">
-              {{ formatDateIntl(new Date((item as any).tgl_inv)) }}
-            </div>
-          </template>
-          <template #item.duedate="{ item }">
-            <div v-if="item.duedate">
-              {{ formatDateIntl(new Date((item as any).duedate)) }}
-            </div>
-          </template>
-          <template #item.total_inv="{ item }">
-            {{ formatToIDR(item.total_inv) }}
-          </template>
+
           <template #item.no="{ index }">
-            <label>{{ index + 1 }}</label>
+            <label>{{ index + 1 + (page - 1) * itemPerPage }}</label>
           </template>
           <template v-slot:[`item.status`]="{ item }">
             <div class="d-flex flex-wrap">
@@ -314,24 +275,19 @@ watch([status, outDated, page], () => {
               </VChip>
             </div>
           </template>
+
           <template #item.action="{ item }">
-            <VBtn color="primary" variant="plain">
-              <VIcon>mdi-dots-vertical</VIcon>
-              <VMenu activator="parent" :close-on-content-click="false">
-                <VCard>
-                  <VBtn
-                    variant="text"
-                    prepend-icon="mdi-download-box"
-                    @click="() => downloadInvoice(item)"
-                    block
-                    class="text-left"
-                    style="justify-content: flex-start; inline-size: 100%;"
-                  >
-                    {{ t("reguler-invoice.invoice-list-action-downloadinv") }}
-                  </VBtn>
-                </VCard>
-              </VMenu>
-            </VBtn>
+            <Vbtn
+              variant="plain"
+              class="cursor-pointer"
+              @click="() => navigateToDetail(item)"
+            >
+              <VRow>
+                <VCol sm="3">
+                  <VIcon end icon="ri-arrow-right-line" color="primary" />
+                </VCol>
+              </VRow>
+            </Vbtn>
           </template>
         </VDataTable>
         <VPagination
