@@ -75,38 +75,41 @@ const getChipColor = (stats: string) => {
 const downloadExcel = async (
   statusData: string,
   search: string,
-  file_url: boolean;
+  file_url: boolean
 ) => {
   try {
     let datePayload: any = null;
-    let params = {
-      status: statusData,
-      search,
-      file_url
-    };
+    const params = {};
 
-    const response: any = await $api(
-      "/reguler/lph/excel-list-pendamping",
-      {
-        method: "get",
-        params,
-      }
-    );
+    if (statusData) {
+      params.status = statusData;
+    }
+    if (search) {
+      params.search = search;
+    }
 
-    if (response?.code === 2000) {
+    // params.file_url = false;
+
+    const response: any = await $api("/reguler/lph/excel-list-pendamping", {
+      method: "get",
+      params,
+    });
+
+    if (response) {
+      downloadFileExcel(response);
       // response?.data?.map((item: any) => {
       //   item.typeAndTotal = [item?.jenis_usaha, item?.jumlah_produk];
       // });
 
       // totalItems.value = response.totalPages;
       // data.value = response.data;
-      return response;
+      // return response;
     } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      useSnackbar().sendSnackbar("Ada Kesalahan 1", "error");
     }
   } catch (error) {
     loading.value = false;
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 2", "error");
   }
 };
 
@@ -206,6 +209,10 @@ function formatDate(isoString: string): string {
   return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 }
 
+const downloadExcelHandler = () => {
+  downloadExcel(status.value, searchQuery.value, true);
+};
+
 onMounted(async () => {
   loading.value = true;
   await Promise.all([
@@ -284,11 +291,8 @@ watch([status, outDated, page], () => {
               @input="handleInput"
             />
           </VCol>
-          <VCol cols="6" md="2" class="d-flex justify-end">
-            <VBtn
-              variant="outlined"
-              @click="downloadExcel(status, searchQuery, true)"
-            >
+          <VCol cols="4" class="d-flex justify-end">
+            <VBtn variant="flat" @click="downloadExcelHandler()">
               Export XLS
               <VIcon right>mdi-file-excel</VIcon>
             </VBtn>

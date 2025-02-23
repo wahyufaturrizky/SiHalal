@@ -12,17 +12,18 @@ export default defineEventHandler(async (event: any) => {
     });
   }
 
-  const { pstatus, search,file_url } = (await getQuery(event)) as {
+  const { status, search } = (await getQuery(event)) as {
     status: string;
     search: string;
-    file_url: boolean;
   };
 
-  let params = {
-    status,
-    search: search,
-    file_url: file_url
-  };
+  const params = {};
+  if (status) {
+    params.status = status;
+  }
+  if (search) {
+    params.search = search;
+  }
 
   console.log(params, "<<<<");
 
@@ -38,6 +39,8 @@ export default defineEventHandler(async (event: any) => {
 
     return err.data;
   });
+
+  console.log("data = ", data);
 
   return data || null;
 });
