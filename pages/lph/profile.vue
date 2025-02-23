@@ -247,11 +247,44 @@ const isOpenModal = ref(false);
 const handleOpenModal = () => {
   isOpenModal.value = !isOpenModal.value;
 };
+
+const setUpdatePayload = () => {
+  return {
+    nama: updateData.nama,
+    jenis_lembaga: updateData.jenis_lembaga,
+    alamat: updateData.alamat,
+    provinsi_id: updateData.provinsi_id,
+    kota_id: updateData.kota_id,
+    kecamatan_id: updateData.kecamatan_id,
+    email: updateData.email,
+    bangunan: updateData.bangunan,
+    jumlah_auditor: +updateData.jumlah_auditor,
+    jumlah_cabang: +updateData.jumlah_cabang,
+    lab: updateData.lab,
+    pic_nama_pimpinan: updateData.pic_nama_pimpinan,
+    pic_nohp_pimpinan: updateData.pic_nohp_pimpinan,
+    pic_nama_kontak: updateData.pic_nama_kontak,
+    pic_nohp_kontak: updateData.pic_nohp_kontak,
+    rekening: {
+      bank: updateData.rekening.bank,
+      no_rekening: updateData.rekening.no_rekening,
+      nama: updateData.rekening.nama,
+      foto_rekening: uploadedBankAccFilename.value
+        ? uploadedBankAccFilename.value
+        : updateData.rekening.foto_rekening,
+      npwp: updateData.rekening.npwp,
+      foto_npwp: uploadedNpwpFilename.value
+        ? uploadedNpwpFilename.value
+        : updateData.rekening.foto_npwp,
+    },
+  };
+};
 const handleConfirmUpdate = async () => {
   try {
+    const payload = setUpdatePayload()
     const response: any = await $api("/reguler/lph/profile-update", {
       method: "put",
-      body: updateData,
+      body: payload,
     } as any);
 
     if (response.code === 2000) {
@@ -942,17 +975,6 @@ const handleCloseEdit = () => {
           </VExpansionPanelText>
         </VExpansionPanel>
       </VExpansionPanels>
-      <!-- <br/>
-      <VCard>
-        <VCardTitle class="mb-5">
-          <div class="font-weight-bold text-h4">
-            Melacak
-          </div>
-        </VCardTitle>
-        <VCardText>
-          <Tracking :data="trackingDetail" />
-        </VCardText>
-      </VCard> -->
     </VCol>
   </VRow>
   <ConfirmModal
