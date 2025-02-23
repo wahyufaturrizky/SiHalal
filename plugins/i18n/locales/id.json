@@ -968,6 +968,7 @@
     "tagihan-bpjph-table-key-total": "Total",
     "tagihan-bpjph-table-key-status": "Status",
     "tagihan-bpjph-table-key-invoice": "Invoice",
+    "tagihan-bpjph-table-key-bukti-bayar": "Bukti Bayar",
     "tagihan-bpjph-table-key-action": "Action",
     "tagihan-bpjph-dialog-delete-title": "Hapus",
     "tagihan-bpjph-dialog-delete-btn-batal": "Batal",
@@ -1010,14 +1011,24 @@
         "lph":"LPH"
       },
       "detail": {
-        "title": "Detail Data Pengajuan",
+        "title": "Detail Data Proses Sidang",
         "section-profile": {
-          "title": "Profile",
+          "title": "Data Pengajuan",
           "nomor": "Nomor ID",
-          "created": "Tanggal Buat",
-          "status": "Status",
-          "registration-type": "Jenis Pendaftaran",
+          "created": "Tanggal",
+          "no_mohon": "Nomor Permohonan",
+          "tgl_mohon": "Tanggal Permohonan",
+          "lph": "LPH",
+          "channel": "Channel",
+          "done-lph-date": "Tanggal Selesai LPH",
+          "result": "Hasil",
+          "service-type": "Jenis Layanan",
+          "product-type": "Jenis Produk",
+          "brand": "Merk Dagang",
+          "area": "Area Pemasaran",
           "company-name": "Nama Perusahaan",
+          "company-name-sh": "Nama Perusahaan tertera di SH",
+          "kbli-name": "Nama KBLI",
           "address": "Alamat",
           "city": "Kota/Kab",
           "province": "Provinsi",
@@ -1026,15 +1037,14 @@
           "phone": "Telepon",
           "email": "Email",
           "bu-type": "Jenis Badan Usaha",
-          "scale": "Skala Usaha"
+          "scale": "Skala Usaha",
+          "base-modal": "Modal Dasar / Usaha"
         },
-        "section-pengajuan-sertifikasi": {
-          "title": "Pengajuan Sertifikasi",
-          "nomor": "No dan Tanggal Pemohon",
-          "service-type": "Jenis Layanan",
-          "product-type": "Jenis Produk",
-          "market-brand": "Merek Dagang",
-          "market-area": "Area Pemasaran"
+        "section-penanggung-jawab": {
+          "title": "Penanggung Jawab",
+          "name": "Nama",
+          "phone": "Nomor Kontak",
+          "email": "Email"
         },
         "section-produk": {
           "title": "Daftar Nama Produk",
@@ -1077,8 +1087,46 @@
         "section-total-biaya": "Biaya Pemerikasaan",
         "section-dokumen-unduh": {
           "title": "Dokumen Unduhan",
-          "kh": "File KH",
-          "lph": "File Laporan LPH"
+          "kh": "STTD",
+          "lph": "Laporan LPH"
+        },
+        "section-aspek-legal": {
+          "title": "Aspek Legal",
+          "jenis": "Jenis",
+          "doc-no": "No. Dokumen",
+          "date": "Tanggal",
+          "expire": "Masa Berlaku",
+          "penerbit": "Instansi Penerbit"
+        },
+        "section-pabrik": {
+          "title": "Pabrik",
+          "name": "Nama",
+          "address": "Alamat"
+        },
+        "section-outlet": {
+          "title": "Outlet",
+          "name": "Nama",
+          "address": "Alamat"
+        },
+        "section-penyelia": {
+          "title": "Penyelia Halal",
+          "name": "Nama",
+          "ktp": "No. KTP",
+          "phone": "No. Kontak",
+          "sertifikat": "No/Tgl Sertif Penyelia Halal"
+        },
+        "section-nama-produk": {
+          "title": "Daftar Nama Produk",
+          "name": "Nama Produk",
+          "publication": "Publikasi"
+        },
+        "section-informasi-penetapan": {
+          "title": "Informasi Penetapan",
+          "no-sttd": "Nomor STTD",
+          "pu-name": "Nama PU",
+          "product-type": "Jenis Produk",
+          "ketetapan": "Ketetapan",
+          "btn": "Penetapan"
         }
       }
     }

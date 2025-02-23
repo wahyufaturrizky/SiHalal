@@ -23,35 +23,37 @@ const totalItems = ref(0);
 const loading = ref(false);
 const searchQuery = ref("");
 const page = ref(1);
-const filterLembaga = ref([]);
+const filterProduk = ref([]);
+const filterLph = ref([]);
+const filterProvinsi = ref([]);
 const filterPendamping = ref([]);
-const filterFasilitasi = ref([]);
+const filterLayanan = ref([]);
 const lembaga = ref("");
 const fasilitasi = ref("");
 const pendamping = ref("");
+const filterData = ref({
+  layanan: '',
+  produk: '',
+  provinsi: '',
+  lph: '',
+})
 
-const loadItem = async (
-  page: number,
-  size: number,
-  lembaga: string = "",
-  fasilitasi: string = "",
-  pendamping: string = "",
-  namaPengajuan: string = ""
-) => {
+const loadItem = async () => {
   try {
     loading.value = true;
 
     const response: any = await $api(
-      "/self-declare/komite-fatwa/proses-sidang",
+      "/sidang-fatwa/task-force/proses-sidang",
       {
         method: "get",
         params: {
-          page,
-          size,
-          lembaga,
-          fasilitasi,
-          pendamping,
-          namaPengajuan,
+          page: page.value,
+          size: itemPerPage.value,
+          keywords: searchQuery.value,
+          jenis_layanan: filterData.value.layanan,
+          jenis_produk: filterData.value.produk,
+          provinsi: filterData.value.provinsi,
+          lph: filterData.value.lph,
         },
       }
     );
@@ -72,21 +74,37 @@ const loadFilter = async () => {
     loading.value = true;
 
     const response1: any = await $api(
-      "/self-declare/komite-fatwa/proses-sidang/filter-fasilitasi",
+      "/sidang-fatwa/task-force/layanan",
       {
         method: "get",
       }
     );
 
     const response2: any = await $api(
-      "/self-declare/komite-fatwa/proses-sidang/filter-lembaga",
+      "/sidang-fatwa/task-force/produk",
       {
         method: "get",
       }
     );
 
-    filterFasilitasi.value = response1.data || [];
-    filterLembaga.value = response2.data || [];
+    const response3: any = await $api(
+      "/sidang-fatwa/task-force/provinsi",
+      {
+        method: "get",
+      }
+    );
+
+    const response4: any = await $api(
+      "/sidang-fatwa/task-force/lph",
+      {
+        method: "get",
+      }
+    );
+
+    filterLayanan.value = response1.data || [];
+    filterProduk.value = response2.data || [];
+    filterProvinsi.value = response3.data || [];
+    filterLph.value = response4.data || [];
     loading.value = false;
 
     return response1;
@@ -208,14 +226,7 @@ const verifikatorTableHeader = [
 const debouncedFetch = debounce(loadItem, 500);
 
 const handleInput = () => {
-  debouncedFetch(
-    page.value,
-    itemPerPage.value,
-    lembaga.value,
-    fasilitasi.value,
-    pendamping.value,
-    searchQuery.value
-  );
+  debouncedFetch();
 };
 
 const navigateAction = (id: string) => {
@@ -225,30 +236,19 @@ const navigateAction = (id: string) => {
 // Filter state
 const showFilterMenu = ref(false);
 const applyFilters = () => {
-  debouncedFetch(
-    page.value,
-    itemPerPage.value,
-    lembaga.value,
-    fasilitasi.value,
-    pendamping.value,
-    searchQuery.value
-  );
+  debouncedFetch();
   showFilterMenu.value = false;
 };
 
 const reset = () => {
-  lembaga.value = "";
-  fasilitasi.value = "";
-  pendamping.value = "";
-  searchQuery.value = "";
+  filterData.value = {
+    layanan: '',
+    produk: '',
+    provinsi: '',
+    lph: '',
+  }
 
-  debouncedFetch(
-    page.value,
-    itemPerPage.value,
-    fasilitasi.value,
-    pendamping.value,
-    searchQuery.value
-  );
+  debouncedFetch();
 
   showFilterMenu.value = false;
 };
@@ -286,36 +286,30 @@ const reset = () => {
               <div>
                 <label>{{ t('task-force.proses-sidang.filter.service-type') }}</label>
                 <VSelect
-                  :items="[
-                    { name: 'Reguler', code: 'CH001' },
-                    { name: 'Fasilitasi', code: 'CH002' },
-                  ]"
+                  v-model="filterData.layanan"
+                  :items="filterLayanan"
                   class="-mt-10"
-                  item-title="name"
-                  item-value="code"
+                  item-title="ref_desc"
+                  item-value="jenis_layanan"
                   style="background-color: white;"
                 />
               </div>
               <div class="mt-5">
                 <label>{{ t('task-force.proses-sidang.filter.product-type') }}</label>
                 <VSelect
-                  :items="[
-                    { name: 'Reguler', code: 'CH001' },
-                    { name: 'Fasilitasi', code: 'CH002' },
-                  ]"
+                  v-model="filterData.produk"
+                  :items="filterProduk"
                   class="-mt-10"
-                  item-title="name"
-                  item-value="code"
+                  item-title="ref_desc"
+                  item-value="jenis_produk"
                   style="background-color: white;"
                 />
               </div>
               <div class="mt-5">
                 <label>{{ t('task-force.proses-sidang.filter.province') }}</label>
                 <VSelect
-                  :items="[
-                    { name: 'Reguler', code: 'CH001' },
-                    { name: 'Fasilitasi', code: 'CH002' },
-                  ]"
+                  v-model="filterData.provinsi"
+                  :items="filterProvinsi"
                   class="-mt-10"
                   item-title="name"
                   item-value="code"
@@ -325,13 +319,11 @@ const reset = () => {
               <div class="mt-5">
                 <label>{{ t('task-force.proses-sidang.filter.lph') }}</label>
                 <VSelect
-                  :items="[
-                    { name: 'Reguler', code: 'CH001' },
-                    { name: 'Fasilitasi', code: 'CH002' },
-                  ]"
+                  v-model="filterData.lph"
+                  :items="filterLph"
                   class="-mt-10"
-                  item-title="name"
-                  item-value="code"
+                  item-title="nama_lph"
+                  item-value="lph_id"
                   style="background-color: white;"
                 />
               </div>
@@ -406,7 +398,7 @@ const reset = () => {
                   <VIcon
                     icon="ri-arrow-right-line"
                     color="primary"
-                    @click="navigateAction(item.id)"
+                    @click="navigateAction(item.id_reg)"
                   />
                 </IconBtn>
                 <!-- Right arrow icon for action -->

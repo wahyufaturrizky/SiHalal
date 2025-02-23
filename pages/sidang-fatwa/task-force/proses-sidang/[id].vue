@@ -6,7 +6,7 @@ const { t } = useI18n();
 
 const route = useRoute()
 const loading = ref(true)
-const submissionId = (route.params as any).id
+const idReg = (route.params as any).id
 
 const combinedNamaProduk = ref('')
 const formattedBahan = ref('')
@@ -16,6 +16,16 @@ const sertifikatHalal = ref<Record<string, any>>({})
 const penanggungJawab = ref<Record<string, any>>({})
 const dataDukungBahan = ref<Array<Record<string, any>>>([])
 const melacak = ref<Array<Record<string, any>>>([])
+const dataPengajuan = ref<any>(null)
+const dataPenanggungJawab = ref<any>(null)
+const dataAspectLegal = ref<any>([])
+const dataPabrik = ref<any>([])
+const dataOutlet = ref<any>([])
+const dataPenyelia = ref<any>([])
+const dataNamaProduk = ref<any>([])
+const dataPenetapan = ref<any>({})
+const dataTracking = ref<any>([])
+const fileUnduh = ref<any>({})
 
 const newDataSertifikatHalal = reactive({
   sertifikatHalal: {},
@@ -31,55 +41,27 @@ const newDataSertifikatHalal = reactive({
 const loadItemById = async () => {
   try {
     const response: any = await $api(
-      `/self-declare/komite-fatwa/proses-sidang/${submissionId}/detail`,
-      { method: 'get' },
+      `/sidang-fatwa/task-force/detail-sidang`,
+      {
+        method: 'get',
+        query: {
+          url: `api/v1/komisi-fatwa/proses-sidang-detail/${idReg}`,
+        },
+      },
     )
 
     if (response.code === 2000) {
-      console.log(response.data, 'ini response data')
+      const { aspek_legal, data_pengajuan, outlet, pabrik, penanggung_jawab, penyelia_halal, produk, tracking, penetapan } = response.data || {}
 
-      const { certificate_halal, penanggung_jawab, produk, bahan, data_dukung, tracking } = response.data || {}
-
-      sertifikatHalal.value = certificate_halal
-      penanggungJawab.value = penanggung_jawab
-      dataDukungBahan.value = Array.isArray(data_dukung) ? data_dukung : []
-      melacak.value = Array.isArray(tracking) ? tracking : []
-
-      console.log(tracking, 'ini data tracking')
-      console.log(melacak.value, 'ini data trackking value')
-      combinedNamaProduk.value = produk
-        .map((item: any, index: number) => `(${index + 1}) ${item.nama_produk?.trim() ?? '-'}`)
-        .join(', ')
-
-      formattedBahan.value = bahan
-        .filter((item: any) => {
-          // Extract the part after the `|` in `jenis_bahan`
-          const jenisBahan = item.jenis_bahan?.split('|')[1] || item.jenis_bahan
-
-          return jenisBahan === 'Bahan'
-        })
-        .map((item: any, index: number) => `(${index + 1}) ${item.nama_bahan?.trim() ?? '-'}`)
-        .join(', ')
-
-      formattedCleaning.value = bahan
-        .filter((item: any) => {
-          // Extract the part after the `|` in `jenis_bahan`
-          const jenisBahan = item.jenis_bahan?.split('|')[1] || item.jenis_bahan
-
-          return jenisBahan === 'Cleaning Agent'
-        })
-        .map((item: any, index: number) => `(${index + 1}) ${item.nama_bahan?.trim() ?? '-'}`)
-        .join(', ')
-
-      formattedKemasan.value = bahan
-        .filter((item: any) => {
-          // Extract the part after the `|` in `jenis_bahan`
-          const jenisBahan = item.jenis_bahan?.split('|')[1] || item.jenis_bahan
-
-          return jenisBahan === 'Kemasan'
-        })
-        .map((item: any, index: number) => `(${index + 1}) ${item.nama_bahan?.trim() ?? '-'}`)
-        .join(', ')
+      dataPengajuan.value = data_pengajuan
+      dataPenanggungJawab.value = penanggung_jawab
+      dataAspectLegal.value = aspek_legal
+      dataPabrik.value = pabrik
+      dataOutlet.value = outlet
+      dataPenyelia.value = penyelia_halal
+      dataNamaProduk.value = produk
+      dataPenetapan.value = penetapan
+      dataTracking.value = tracking
 
       return response
     }
@@ -92,9 +74,30 @@ const loadItemById = async () => {
   }
 }
 
+const getDownloadForm = async (docName: string) => {
+  // surat-penyelia, laporan-pendamping, rekomendasi, surat-permohonan,surat-pernyataan, sttd, setifikasi-halal
+  const result: any = await $api(
+    `/self-declare/submission/${route.params?.id}/file`,
+    {
+      method: "get",
+      query: {
+        document: docName,
+      },
+    }
+  );
+
+  if (result?.code === 2000) {
+    fileUnduh.value.sttd = result?.data?.file
+    return result?.data?.file
+  }
+};
+
 onMounted(async () => {
   loading.value = true
-  await loadItemById()
+  await Promise.allSettled([
+    loadItemById(),
+    getDownloadForm("sttd")
+  ])
   loading.value = false
 })
 
@@ -108,11 +111,11 @@ watch(
     formattedBahan: formattedBahan.value,
     formattedCleaning: formattedCleaning.value,
     formattedKemasan: formattedKemasan.value,
+    dataAspectLegal: dataAspectLegal.value,
   }),
   newData => {
     if (newData)
       Object.assign(newDataSertifikatHalal, newData)
-    console.log('Updated newDataSertifikatHalal:', newDataSertifikatHalal)
   },
   { immediate: true, deep: true },
 )
@@ -143,12 +146,13 @@ watch(
             :kemasan="newDataSertifikatHalal.formattedKemasan"
             :produk="newDataSertifikatHalal.combinedNamaProduk"
             :penanggungjawab="newDataSertifikatHalal.penanggungJawab"
+            :data="dataPengajuan"
           />
         </VCol>
       </VRow>
       <VRow v-if="!loading">
         <VCol cols="12">
-          <PengajuanSertifikasiFatwa
+          <PenanggungJawabFatwa
             v-if="Object.keys(newDataSertifikatHalal).length > 0"
             :sertifikat="newDataSertifikatHalal.sertifikatHalal"
             :bahan="newDataSertifikatHalal.formattedBahan"
@@ -156,102 +160,58 @@ watch(
             :kemasan="newDataSertifikatHalal.formattedKemasan"
             :produk="newDataSertifikatHalal.combinedNamaProduk"
             :penanggungjawab="newDataSertifikatHalal.penanggungJawab"
+            :data="dataPenanggungJawab"
           />
         </VCol>
       </VRow>
       <VRow v-if="!loading">
         <VCol cols="12">
-          <DaftarNamaProdukFatwa
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
-            :databahan="newDataSertifikatHalal.dataDukungBahan"
-          />
+          <AspectLegalFatwa :data="newDataSertifikatHalal.dataAspectLegal" />
         </VCol>
       </VRow>
       <VRow v-if="!loading">
         <VCol cols="12">
-          <BiayaPemeriksaanFatwa
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
-            :databahan="newDataSertifikatHalal.dataDukungBahan"
-          />
+          <PabrikFatwa :data="dataPabrik" />
         </VCol>
       </VRow>
       <VRow v-if="!loading">
         <VCol cols="12">
-          <JadwalAuditFatwa
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
-            :sertifikat="newDataSertifikatHalal.sertifikatHalal"
-            :bahan="newDataSertifikatHalal.formattedBahan"
-            :cleaning="newDataSertifikatHalal.formattedCleaning"
-            :kemasan="newDataSertifikatHalal.formattedKemasan"
-            :produk="newDataSertifikatHalal.combinedNamaProduk"
-            :penanggungjawab="newDataSertifikatHalal.penanggungJawab"
-          />
+          <OutletFatwa :data="dataOutlet" />
         </VCol>
       </VRow>
       <VRow v-if="!loading">
         <VCol cols="12">
-          <AuditorFatwa
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
-            :databahan="newDataSertifikatHalal.dataDukungBahan"
-          />
+          <PenyeliaHalalFatwa :data="dataPenyelia" />
         </VCol>
       </VRow>
       <VRow v-if="!loading">
         <VCol cols="12">
-          <HasilPemeriksaanFatwa
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
-            :sertifikat="newDataSertifikatHalal.sertifikatHalal"
-            :bahan="newDataSertifikatHalal.formattedBahan"
-            :cleaning="newDataSertifikatHalal.formattedCleaning"
-            :kemasan="newDataSertifikatHalal.formattedKemasan"
-            :produk="newDataSertifikatHalal.combinedNamaProduk"
-            :penanggungjawab="newDataSertifikatHalal.penanggungJawab"
-          />
+          <NamaProdukFatwa :data="dataNamaProduk" />
         </VCol>
       </VRow>
     </VCol>
     <VCol cols="4">
       <VRow v-if="!loading">
         <VCol cols="12">
-          <HasilAuditFatwa
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
-            :sertifikat="newDataSertifikatHalal.sertifikatHalal"
-          />
-        </VCol>
-      </VRow>
-      <VRow v-if="!loading">
-        <VCol cols="12">
-          <NoPendaftaranFatwa
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
-            :sertifikat="newDataSertifikatHalal.sertifikatHalal"
-          />
-        </VCol>
-      </VRow>
-      <VRow v-if="!loading">
-        <VCol cols="12">
-          <TotalBiayaFatwa
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
-            :sertifikat="newDataSertifikatHalal.sertifikatHalal"
-          />
-        </VCol>
-      </VRow>
-      <VRow v-if="!loading">
-        <VCol cols="12">
           <DokumenUnduhanFatwa
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
             :sertifikat="newDataSertifikatHalal.sertifikatHalal"
+            :fileUnduh="fileUnduh"
           />
         </VCol>
       </VRow>
       <VRow v-if="!loading">
         <VCol cols="12">
-          <MelacakPendamping
-            v-if="Object.keys(newDataSertifikatHalal).length > 0"
-            :tracking="newDataSertifikatHalal.melacak"
+          <InformasiPenetapanFatwa
+            :data="dataPenetapan"
+            :dataPengajuan="dataPengajuan"
           />
         </VCol>
       </VRow>
-      <!-- <RestPanelPendamping /> -->
+      <VRow v-if="!loading">
+        <VCol cols="12">
+          <MelacakPendamping :tracking="dataTracking" />
+        </VCol>
+      </VRow>
     </VCol>
   </VRow>
 </template>
