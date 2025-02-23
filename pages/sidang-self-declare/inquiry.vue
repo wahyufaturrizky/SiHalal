@@ -195,16 +195,16 @@ const handleInputPendamping = (val: any) => {
 
 onMounted(async () => {
   loading.value = true;
-  await loadItem(
-    1,
-    itemPerPage.value,
-    selectedFilterProduk.value,
-    selectedFilterFasilitasi.value,
-    selectedFilterLembaga.value,
-    selectedFilterPendamping.value,
-    selectedFilterBy.value,
-    searchQuery.value
-  );
+  // await loadItem(
+  //   1,
+  //   itemPerPage.value,
+  //   selectedFilterProduk.value,
+  //   selectedFilterFasilitasi.value,
+  //   selectedFilterLembaga.value,
+  //   selectedFilterPendamping.value,
+  //   selectedFilterBy.value,
+  //   searchQuery.value
+  // );
   await loadPendamping(pagePendamping.value, itemPerPagePendamping.value, "");
   await loadFilter();
   loading.value = false;
