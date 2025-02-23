@@ -17,7 +17,7 @@ const detailTagihanHeader = [
   { title: "ID Reg", key: "idReg", nowrap: true},
   { title: "No. Daftar", key: "noDaftar", nowrap: true},
   { title: "Tgl. Daftar", key: "tglDaftar", nowrap: true},
-  { title: "Nama PU", key: "namaPu"},
+  { title: "Nama PU", key: "namaPu", nowrap: true },
   { title: "Kab/Kota", key: "kabKota"},
   { title: "Provinsi", key: "provinsi"},
   { title: "Total", key: "total"},
@@ -68,7 +68,7 @@ const loadItem = async (page: number, size: number) => {
 const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
-  debouncedFetch(page.value, itemPerPage.value,);
+  // debouncedFetch(page.value, itemPerPage.value,);
 })
 
 

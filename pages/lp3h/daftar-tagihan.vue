@@ -28,11 +28,18 @@ const downloadBuktiBayar = async item => {
       },
     })
 
-    if (response.url)
+    if (response.url){
       window.open(response.url, '_blank', 'noopener,noreferrer')
+      useSnackbar().sendSnackbar("Berhasil mendownload file ", "success")
+    }
+
+    if(response.message){
+      useSnackbar().sendSnackbar(response.message, "error")
+    }
+
   }
   catch (error) {
-    console.log(error)
+    useSnackbar().sendSnackbar("Ada kesalahan saat mendownload file ", "error")
   }
 }
 
@@ -47,11 +54,16 @@ const previewInvoice = async item => {
       },
     })
 
-    if (response.url)
+    if (response.url){
       window.open(response.url, '_blank', 'noopener,noreferrer')
+      useSnackbar().sendSnackbar("Berhasil mendownload file ", "success")
+    }
+    if(response.message){
+      useSnackbar().sendSnackbar(response.message, "error")
+    }
   }
   catch (error) {
-    //console.log(error)
+    useSnackbar().sendSnackbar("Ada kesalahan saat mendownload file ", "error")
   }
 }
 
@@ -101,7 +113,7 @@ const loadItem = async (page: number, size: number) => {
 const debouncedFetch = debounce(loadItem, 500)
 
 onMounted(async () => {
-  debouncedFetch(page.value, itemPerPage.value)
+  // debouncedFetch(page.value, itemPerPage.value)
 })
 </script>
 
