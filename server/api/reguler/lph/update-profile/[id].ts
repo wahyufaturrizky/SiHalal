@@ -13,12 +13,12 @@ export default defineEventHandler(async (event: any) => {
   }
 
   const id = getRouterParam(event, "id");
-  // console.log("ID : ", id)
+  console.log("ID : ", id);
   const body: any = await readBody(event);
-  // console.log("UPDATE PROFILE BODY : ", body)
+  console.log("UPDATE PROFILE BODY : ", body);
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/lp3h/profile/${id}`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/pendamping/profile/${id}`,
     {
       method: "put",
       headers: { Authorization: authHeader },

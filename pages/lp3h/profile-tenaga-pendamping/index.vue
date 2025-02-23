@@ -37,7 +37,10 @@ const dataProfilePendamping = ref([
   { label: "Telp /HP", value: "" },
   { label: "Tempat Lahir", value: "" },
   { label: "Tanggal Lahir", value: "" },
-  { label: "Pekerjaaan", value: "" },
+  { label: "Pekerjaan", value: "" },
+  { label: "Pekerjaan_lain", value: "" },
+  { label: "IDLembaga", value: "" },
+  { label: "ID pendamping", value: "" },
 ]);
 
 const dataBank = ref([
@@ -70,11 +73,11 @@ const previewKtp = (item) => {
   console.log("PREVIEW KTP : ", item);
 };
 
-const dataRegistrasi = [
-  { label: "Status", value: "Disetujui" },
-  { label: "No. Registrasi", value: "1234567890789" },
-  { label: "Tanggal Berlaku", value: "-" },
-];
+const dataRegistrasi = ref([
+  { label: "Status", value: "" },
+  { label: "No. Registrasi", value: "" },
+  { label: "Tanggal Terbit", value: "" },
+]);
 
 const documentLMS = ref([{ label: "Pendalaman LMS", value: "" }]);
 
@@ -83,16 +86,6 @@ const dokumenPersyaratan = ref([
   { label: "KTP", value: "" },
   { label: "Sertifikat Pelatihan", value: "" },
 ]);
-
-const deleteDokumenPersyaratan = (item) => {
-  console.log("DELETE DOKUMEN PERSYARATAN : ", item);
-};
-
-const downloadDokumenPersyaratan = (item) => {
-  console.log("Download Dokumen Peryaratan : ", item);
-};
-
-const dialog = ref(false);
 
 const formatDate = (isoString: string): string => {
   const date = new Date(isoString);
@@ -154,13 +147,23 @@ const getProfile = async () => {
           el.value = response.data.pendamping.tempat_lahir;
         if (el.label === "Tanggal Lahir")
           el.value = formatDate(response.data.pendamping.tgl_lahir);
-        if (el.label === "Pekerjaaan")
+        if (el.label === "Pekerjaan")
           el.value = response.data.pendamping.pekerjaan;
+        if (el.label === "IDLembaga")
+          el.value = response.data.pendamping.id_lembaga;
+        if (el.label === "ID pendamping")
+          el.value = response.data.pendamping.id_pendamping;
+      });
+
+      dataPendidikan.value.forEach((el) => {
+        if (el.label === "Pendidikan Terakhir")
+          el.value = response.data.pendamping.pendidikan;
+        if (el.label === "Nama Universitas")
+          el.value = response.data.pendamping.universitas;
       });
 
       dataBank.value.forEach((el) => {
-        if (el.label === "Nama Bank")
-          el.value = response.data.rekening.kode_bank;
+        if (el.label === "Nama Bank") el.value = response.data.rekening.bank;
         if (el.label === "No. Rekening")
           el.value = response.data.rekening.no_rekening;
         if (el.label === "Nama Rekening")
@@ -176,11 +179,13 @@ const getProfile = async () => {
         if (el.label === "File NPWP")
           el.value = response.data.rekening.filefotonpwp;
       });
-      dataPendidikan.value.forEach((el) => {
-        if (el.label === "Pendidikan Terakhir")
-          el.value = response.data.pendamping.pendidikan;
-        if (el.label === "Nama Universitas")
-          el.value = response.data.pendamping.universitas;
+
+      dataRegistrasi.value.forEach((el) => {
+        if (el.label === "Status") el.value = response.data.pendamping.status;
+        if (el.label === "No. Registrasi")
+          el.value = Math.floor(response.data.pendamping.no_register) + "";
+        if (el.label === "Tanggal Terbit")
+          el.value = formatDate(response.data.pendamping.tgl_terbit);
       });
 
       documentLMS.value.forEach((el) => {
@@ -192,7 +197,7 @@ const getProfile = async () => {
           el.value = response.data.pendamping.fotoijazah;
         if (el.label === "KTP") el.value = response.data.pendamping.fotoktp;
         if (el.label === "Sertifikat Pelatihan")
-          el.value = response.data.pendamping.fotosertifikat;
+          el.value = response.data.pendamping.file_sertifikat;
       });
 
       return;
@@ -241,44 +246,212 @@ onMounted(async () => {
 });
 
 const isEditing = ref(false);
+const uploadFileButton = ref(false);
 
-const toggleEdit = async () => {
-  if (!isEditing.value) {
-    await getProfile();
+const uploadDocument = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append("id", authUser.user.id);
+    formData.append("file", file);
+    formData.append("type", "docs");
+    const response = await $api("/shln/submission/document/upload", {
+      method: "post",
+      body: formData,
+    });
+    return response;
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      "ada kesalahan saat upload file, gagal menyimpan!",
+      "error"
+    );
   }
-  isEditing.value = !isEditing.value;
 };
 
-const cancelEdit = async () => {
+// {
+//     "alamat": "Argapura RT 04 RW 01 ",
+//     "tempat_lahir": "Kota Cirebon ",
+//     "tgl_lahir": "1978-06-19T00:00:00Z",
+//     "no_hp": "0895364357845",
+//     "email": "sleha1768@gmail.com",
+//     "pendidikan": "SMA/MA",
+//     "universitas": "MA Salafiyah Cirebon",
+//     "nik": "3274035906780009",
+//     "pekerjaan": "Mahasiswa/i",
+//     "provinsi": "32",
+//     "kode_pos": "45145",
+//     "nama": "Soleha",
+//     "IDLembaga": "3ef9e029-5120-46e0-9693-0427a364b83e",
+//     "rekening": {
+//         "no_rekening": "1212121",
+//         "nama": "test",
+//         "bank": "BCA",
+//         "npwp": "1221"
+//     }
+// }
+const handleEdit = async () => {
   await getProfile();
+  isEditing.value = true;
+};
+const dialog = ref(false);
+const handleCancel = async () => {
+  dialog.value = false;
   isEditing.value = false;
+  await getProfile();
+};
+
+const options = [
+  "Penyuluh agama",
+  "Dosen",
+  "Guru/tenaga kependidikan pada madrasah",
+  "Mahasiswa/i",
+  "Ibu rumah tangga",
+  "Santri",
+  "Lainnya",
+];
+const formattedDate = ref("");
+const formatDateISO = (date) => {
+  if (!date) return "";
+  const [year, month, day] = date.split("-"); // Format dari VDatePicker adalah YYYY-MM-DD
+  formattedDate.value = `${year}-${month}-${day}T00:00:00Z`;
+};
+const handleSave = async () => {
+  dialog.value = false;
+  isEditing.value = false;
+
+  let body = {
+    rekening: {
+      no_rekening: "",
+      nama: "",
+      bank: "",
+      npwp: "",
+      nama_npwp: "",
+      file_foto_rek: "",
+      file_foto_npwp: "",
+    },
+  };
+  let id_pendamping = "";
+  dataProfilePendamping.value.forEach((el) => {
+    if (el.label === "NIK") body.nik = el.value;
+    if (el.label === "Nama") body.nama = el.value;
+    if (el.label === "Alamat") body.alamat = el.value;
+    if (el.label === "Provinsi") body.provinsi = el.value;
+    if (el.label === "Kota/Kab") body.kabupaten = el.value;
+    if (el.label === "Kecamatan") body.kecamatan = el.value;
+    if (el.label === "Kode Pos") body.kode_pos = el.value;
+    if (el.label === "Email") body.email = el.value;
+    if (el.label === "Telp /HP") body.no_hp = el.value;
+    if (el.label === "Tempat Lahir") body.tempat_lahir = el.value;
+
+    if (el.label === "Tanggal Lahir") body.tgl_lahir = formatDateISO(el.value);
+    if (el.label === "Pekerjaan") body.pekerjaan = el.value;
+    if (el.label === "Pekerjaan_lain") body.pekerjaan_lain = el.value;
+    if (el.label === "IDLembaga") body.IDLembaga = el.value;
+    if (el.label === "ID pendamping") id_pendamping = el.value;
+  });
+
+  dataPendidikan.value.forEach((el) => {
+    if (el.label === "Pendidikan Terakhir") body.pendidikan = el.value;
+    if (el.label === "Nama Universitas") body.universitas = el.value;
+  });
+
+  dataBank.value.forEach((el) => {
+    if (el.label === "Nama Bank") body.rekening.bank = el.value;
+    if (el.label === "No. Rekening") body.rekening.no_rekening = el.value;
+    if (el.label === "Nama Rekening") body.rekening.nama = el.value;
+    if (el.label === "File Rekening") body.rekening.file_foto_rek = el.value;
+  });
+
+  dataBank2.value.forEach((el) => {
+    if (el.label === "NPWP") body.rekening.npwp = el.value;
+    if (el.label === "Nama pada NPWP") body.rekening.nama_npwp = el.value;
+    if (el.label === "File NPWP") body.rekening.file_foto_npwp = el.value;
+  });
+
+  dokumenPersyaratan.value.forEach((el) => {
+    if (el.label === "Ijazah") body.foto_ijazah = el.value;
+    if (el.label === "KTP") body.foto_ktp = el.value;
+    if (el.label === "Sertifikat Pelatihan") body.file_sertifikat = el.value;
+  });
+
+await uploadDocument(body.foto_ijazah);
+await uploadDocument(body.foto_ktp);
+await uploadDocument(body.file_sertifikat);
+
+  try {
+    await $api(`/reguler/lph/update-profile/${id_pendamping}`, {
+      method: "put",
+      body,
+    });
+
+    useSnackbar().sendSnackbar("Berhasil menyimpan data ", "success");
+
+
+    await getProfile();
+  } catch (error) {
+    //console.log(error)
+    useSnackbar().sendSnackbar("Ada Kesalaan ", "error");
+  }
+
+  // dokumenPersyaratan.value.forEach(async (el) => {
+  //   if (el.label === "Ijazah") {
+  //     if (el.value != null) {
+  //       const response = await uploadDocument(el.value);
+  //     }
+  //   }
+  //   if (el.label === "KTP") {
+  //     if (el.value != null) {
+  //       const response = await uploadDocument(el.value);
+  //     }
+  //   }
+  //   if (el.label === "Sertifikat Pelatihan") {
+  //     if (el.value != null) {
+  //       const response = await uploadDocument(el.value);
+  //     }
+  //   }
+  // });
 };
 </script>
 
 <template>
   <VContainer>
+    <VDialog v-model="dialog" max-width="700">
+      <VCard class="pa-4">
+        <VCardTitle>Simpan Perubahan </VCardTitle>
+        <VCardText>Apakah yakin ingin menyimpan perubahan data ini ?</VCardText>
+        <VRow>
+          <VCol class="d-flex justify-end ga-4">
+            <VBtn variant="outlined" color="primary" @click="handleCancel">
+              Batal
+            </VBtn>
+            <VBtn variant="flat" color="primary" @click="handleSave">
+              Ya, Setuju
+            </VBtn>
+          </VCol>
+        </VRow>
+      </VCard>
+    </VDialog>
+    <VRow>
+      <KembaliButton />
+    </VRow>
     <VRow class="d-flex justify-space-between align-center">
       <VCol class="mb-8">
         <h3 class="text-h3">Tenaga Pendamping</h3>
       </VCol>
       <VCol style="display: flex; justify-content: end; mr-2">
         <VBtn
+          v-if="!isEditing"
           density="compact"
           variant="outlined"
-          :color="isEditing ? 'green' : 'primary'"
-          @click="toggleEdit"
+          @click="handleEdit"
         >
-          {{ isEditing ? "Simpan" : "Ubah" }}
+          ubah
         </VBtn>
         <VBtn
+          append-icon="mdi-content-save"
           v-if="isEditing"
-          density="compact"
-          variant="outlined"
-          color="red"
-          class="ml-2"
-          @click="cancelEdit"
+          @click="dialog = true"
         >
-          Batal
+          Simpan
         </VBtn>
       </VCol>
     </VRow>
@@ -292,16 +465,33 @@ const cancelEdit = async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VRow v-for="(item, index) in dataProfilePendamping" :key="index">
-                <VCol cols="3" class="text-left font-weight-medium">
+                <VCol
+                  cols="3"
+                  class="text-left font-weight-medium"
+                  v-if="
+                    item.label !== 'IDLembaga' &&
+                    item.label !== 'Pekerjaan_lain' &&
+                    item.label !== 'ID pendamping'
+                  "
+                >
                   {{ item.label }}
                 </VCol>
-                <VCol cols="12" class="font-weight-medium">
+                <VCol
+                  cols="12"
+                  class="font-weight-medium"
+                  v-if="item.label !== 'Pekerjaan'"
+                >
                   <VTextField
                     v-if="
                       item.label !== 'Alamat' &&
                       item.label !== 'Provinsi' &&
                       item.label !== 'Kota/Kab' &&
-                      item.label !== 'Kecamatan'
+                      item.label !== 'Kecamatan' &&
+                      item.label !== 'IDLembaga' &&
+                      item.label !== 'Pekerjaan' &&
+                      item.label !== 'ID pendamping' &&
+                      item.label !== 'Pekerjaan_lain' &&
+                      item.label !== 'Tanggal Lahir'
                     "
                     v-model="item.value"
                     variant="outlined"
@@ -310,12 +500,7 @@ const cancelEdit = async () => {
                     :readonly="!isEditing"
                   />
                   <VTextarea
-                    v-if="
-                      item.label === 'Alamat' &&
-                      item.label !== 'Provinsi' &&
-                      item.label !== 'Kota/Kab' &&
-                      item.label !== 'Kecamatan'
-                    "
+                    v-if="item.label === 'Alamat'"
                     v-model="item.value"
                     variant="outlined"
                     density="compact"
@@ -336,7 +521,6 @@ const cancelEdit = async () => {
                     item-value="code"
                     density="compact"
                     rounded="xl"
-                    menu-icon="fa-chevron-down"
                     :readonly="!isEditing"
                   />
 
@@ -351,7 +535,6 @@ const cancelEdit = async () => {
                     item-value="code"
                     density="compact"
                     rounded="xl"
-                    menu-icon="fa-chevron-down"
                     :readonly="!isEditing"
                   />
 
@@ -365,7 +548,85 @@ const cancelEdit = async () => {
                     item-value="code"
                     density="compact"
                     rounded="xl"
-                    menu-icon="fa-chevron-down"
+                    :readonly="!isEditing"
+                  />
+                  <Vuepicdatepicker v-if="item.label === 'Tanggal Lahir'">
+                    <template #trigger>
+                      <Vuepicdatepicker
+                        v-model:model-value="item.value"
+                        auto-apply
+                        model-type="dd-MM-yyyy"
+                        :enable-time-picker="false"
+                        :rules="[requiredValidator]"
+                        teleport
+                        clearable
+                      >
+                        <template #trigger>
+                          <VTextField
+                            v-if="item.label === 'Tanggal Lahir'"
+                            placeholder="Pilih Tanggal Lahir"
+                            :rules="[requiredValidator]"
+                            append-inner-icon="fa-calendar"
+                            :model-value="item.value"
+                            color="#757575"
+                            :readonly="!isEditing"
+                          />
+                        </template>
+                      </Vuepicdatepicker>
+                    </template>
+                  </Vuepicdatepicker>
+
+                  <!-- <VTextField
+                    v-if="item.label === 'Tanggal Lahir'"
+                    placeholder="Pilih Tanggal Lahir"
+                    :rules="[requiredValidator]"
+                    append-inner-icon="fa-calendar"
+                    :model-value="item.value"
+                    color="#757575"
+                    :readonly="!isEditing"
+                  /> -->
+                </VCol>
+
+                <VCol cols="12" class="font-weight-medium">
+                  <VSelect
+                    v-if="
+                      item.label === 'Pekerjaan' && item.value !== 'Lainnya'
+                    "
+                    v-model="item.value"
+                    :items="options"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    label="Pilih Pekerjaan"
+                    :readonly="!isEditing"
+                  />
+
+                  <VSelect
+                    v-if="
+                      item.label === 'Pekerjaan' && item.value === 'Lainnya'
+                    "
+                    v-model="item.value"
+                    :items="options"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    label="Pilih Pekerjaan"
+                    :readonly="!isEditing"
+                  />
+
+                  <VTextField
+                    v-if="
+                      item.label === 'Pekerjaan_lain' &&
+                      dataProfilePendamping.find(
+                        (el) => el.label === 'Pekerjaan'
+                      )?.value === 'Lainnya'
+                    "
+                    v-model="item.value"
+                    label="Sebutkan pekerjaan"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    :readonly="!isEditing"
                   />
                 </VCol>
               </VRow>
@@ -395,7 +656,7 @@ const cancelEdit = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    readonly
+                    :readonly="!isEditing"
                   />
                 </VCol>
 
@@ -406,7 +667,7 @@ const cancelEdit = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    readonly
+                    :readonly="!isEditing"
                   />
                 </VCol>
               </VRow>
@@ -414,7 +675,7 @@ const cancelEdit = async () => {
           </VExpansionPanel>
         </VExpansionPanels>
 
-        <VExpansionPanels v-model="panelMelacak" class="mb-4">
+        <VExpansionPanels v-model="panelMelacak" class="mb-4" v-if="false">
           <VExpansionPanel>
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Melacak
@@ -493,7 +754,7 @@ const cancelEdit = async () => {
                 <VCol cols="6" class="pl-0">
                   <VChip
                     v-if="item.label === 'Status'"
-                    :color="item.value === 'Disetujui' ? 'success' : 'error'"
+                    :color="item.value === 'DISETUJUI' ? 'success' : 'error'"
                     variant="outlined"
                     label
                   >
@@ -518,7 +779,7 @@ const cancelEdit = async () => {
                 <VCol cols="12" v-if="item.label !== 'File Rekening'">
                   <span class="font-weight-medium">{{ item.label }}</span>
                 </VCol>
-                <VCol cols="4" v-if="item.label === 'File Rekening'">
+                <VCol cols="2" v-if="item.label === 'File Rekening'">
                   <span class="font-weight-medium">{{ item.label }} </span>
                 </VCol>
                 <VCol cols="1" v-if="item.label === 'File Rekening'"> : </VCol>
@@ -536,7 +797,7 @@ const cancelEdit = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    readonly
+                    :readonly="!isEditing"
                   />
                 </VCol>
 
@@ -551,17 +812,35 @@ const cancelEdit = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    readonly
+                    :readonly="!isEditing"
                   />
                 </VCol>
 
-                <VCol v-if="item.label === 'File Rekening'" cols="7">
-                  <VBtn variant="flat" class="px-3 ms-2" color="primary">
+                <VCol
+                  v-if="item.label === 'File Rekening'"
+                  :cols="isEditing ? 2 : 6"
+                  :md="isEditing ? 2 : 6"
+                >
+                  <VBtn
+                    variant="flat"
+                    class="px-3 ms-2"
+                    color="primary"
+                    :disabled="!item.value"
+                  >
                     <VIcon
                       icon="fa-download"
-                      @click="downloadDocument(item.value)"
+                      @click="
+                        downloadDocument(item.value, 'PENDAMPING_REKENING')
+                      "
                     ></VIcon>
                   </VBtn>
+                </VCol>
+                <VCol
+                  cols="6"
+                  md="6"
+                  v-if="isEditing && item.label === 'File Rekening'"
+                >
+                  <HalalFileInput2 v-model="item.value" label="Pilih File" />
                 </VCol>
               </VRow>
               <VDivider class="my-3" />
@@ -573,7 +852,7 @@ const cancelEdit = async () => {
                 <VCol cols="12" v-if="item.label !== 'File NPWP'">
                   <span class="font-weight-medium">{{ item.label }}</span>
                 </VCol>
-                <VCol cols="4" v-if="item.label === 'File NPWP'">
+                <VCol cols="2" v-if="item.label === 'File NPWP'">
                   <span class="font-weight-medium">{{ item.label }} </span>
                 </VCol>
                 <VCol cols="1" v-if="item.label === 'File NPWP'"> : </VCol>
@@ -584,21 +863,41 @@ const cancelEdit = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    readonly
+                    :readonly="!isEditing"
                   />
                 </VCol>
 
-                <VCol v-if="item.label === 'File NPWP'" cols="7">
-                  <VBtn variant="flat" class="px-3 ms-2" color="primary">
+                <VCol
+                  v-if="item.label === 'File NPWP'"
+                  :cols="isEditing ? 2 : 6"
+                  :md="isEditing ? 2 : 6"
+                >
+                  <VBtn
+                    variant="flat"
+                    class="px-3 ms-2"
+                    color="primary"
+                    :disabled="!item.value"
+                  >
                     <VIcon
                       icon="fa-download"
-                      @click="downloadDocument(item.value)"
+                      @click="downloadDocument(item.value, 'PENDAMPING_NPWP')"
                     ></VIcon>
                   </VBtn>
                 </VCol>
+                <VCol
+                  cols="8"
+                  md="6"
+                  v-if="isEditing && item.label === 'File NPWP'"
+                >
+                  <HalalFileInput2 v-model="item.value" label="Pilih File" />
+                </VCol>
+
+                <VCol cols="6" md="6" v-if="isEditing && item.label === 'KTP'">
+                  <HalalFileInput2 v-model="item.value" label="Pilih File" />
+                </VCol>
               </VRow>
               <VDivider class="my-3" />
-              Rekening dalam proses verifiaksi oleh LP3H
+              Rekening dalam proses verifikasi oleh LP3H
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -615,37 +914,59 @@ const cancelEdit = async () => {
                   :key="index"
                   class="pa-1"
                 >
-                  <VRow class="d-flex align-center">
-                    <VCol cols="12" md="8">
+                  <VRow>
+                    <VCol
+                      :cols="isEditing ? 2 : 6"
+                      :md="isEditing ? 2 : 6"
+                      class="d-flex align-center"
+                    >
                       <div class="text-body-1 font-weight-medium">
                         {{ item.label }}
                       </div>
                     </VCol>
+
                     <VCol
-                      cols="12"
-                      md="4"
-                      class="squareBtnIcon"
                       v-if="item.label === 'Ijazah'"
+                      :cols="isEditing ? 4 : 6"
+                      :md="isEditing ? 2 : 6"
+                      class="d-flex align-center"
                     >
-                      :
-                      <VBtn variant="flat" class="px-3 ms-2">
-                        <VIcon
-                          icon="fa-download"
-                          @click="
-                            downloadDocument(item.value, 'PENDAMPING_IJAZAH')
-                          "
-                        ></VIcon>
+                      <span>:</span>
+                      <VBtn
+                        variant="flat"
+                        class="px-3 ms-2"
+                        :disabled="!item.value"
+                        @click="
+                          downloadDocument(item.value, 'PENDAMPING_IJAZAH')
+                        "
+                      >
+                        <VIcon icon="fa-download"></VIcon>
                       </VBtn>
                     </VCol>
 
                     <VCol
-                      cols="12"
-                      md="4"
-                      class="squareBtnIcon"
+                      cols="8"
+                      md="6"
+                      v-if="isEditing && item.label === 'Ijazah'"
+                    >
+                      <HalalFileInput2
+                        v-model="item.value"
+                        label="Pilih File"
+                      />
+                    </VCol>
+
+                    <VCol
+                      :cols="isEditing ? 2 : 6"
+                      :md="isEditing ? 2 : 6"
+                      class="d-flex align-center"
                       v-if="item.label === 'KTP'"
                     >
                       :
-                      <VBtn variant="flat" class="px-3 ms-2">
+                      <VBtn
+                        variant="flat"
+                        class="px-3 ms-2"
+                        :disabled="!item.value"
+                      >
                         <VIcon
                           icon="fa-download"
                           @click="
@@ -656,28 +977,53 @@ const cancelEdit = async () => {
                     </VCol>
 
                     <VCol
-                      cols="12"
-                      md="4"
-                      class="squareBtnIcon"
+                      cols="8"
+                      md="6"
+                      v-if="isEditing && item.label === 'KTP'"
+                    >
+                      <HalalFileInput2
+                        v-model="item.value"
+                        label="Pilih File"
+                      />
+                    </VCol>
+
+                    <VCol
+                      :cols="isEditing ? 2 : 6"
+                      :md="isEditing ? 2 : 6"
+                      class="d-flex align-center"
                       v-if="item.label === 'Sertifikat Pelatihan'"
                     >
                       :
-                      <VBtn variant="flat" class="px-3 ms-2">
+                      <VBtn
+                        variant="flat"
+                        class="px-3 ms-2"
+                        :disabled="!item.value"
+                      >
                         <VIcon
                           icon="fa-download"
                           @click="
                             downloadDocument(
                               item.value,
-                              'PENDAMPING_SERTIFIKAT'
+                              'PENDAMPING_SERT_PELATIHAN'
                             )
                           "
                         ></VIcon>
                       </VBtn>
                     </VCol>
+                    <VCol
+                      cols="8"
+                      md="6"
+                      v-if="isEditing && item.label === 'Sertifikat Pelatihan'"
+                    >
+                      <HalalFileInput2
+                        v-model="item.value"
+                        label="Pilih File"
+                      />
+                    </VCol>
                   </VRow>
                 </VListItem>
               </VList>
-              <VRow> </VRow>
+              <VDivider class="my-4" />
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
