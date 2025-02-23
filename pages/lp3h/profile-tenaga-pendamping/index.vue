@@ -199,7 +199,7 @@ const getProfile = async () => {
           el.value = response.data.pendamping.fotoijazah;
         if (el.label === "KTP") el.value = response.data.pendamping.fotoktp;
         if (el.label === "Sertifikat Pelatihan")
-          el.value = response.data.pendamping.file_sertifikat;
+          el.value = response.data.pendamping.fotosertifikat;
       });
 
       return;
@@ -372,7 +372,7 @@ const handleSave = async () => {
   dokumenPersyaratan.value.forEach((el) => {
     if (el.label === "Ijazah") body.foto_ijazah = el.value;
     if (el.label === "KTP") body.foto_ktp = el.value;
-    if (el.label === "Sertifikat Pelatihan") body.file_sertifikat = el.value;
+    if (el.label === "Sertifikat Pelatihan") body.fotosertifikat = el.value;
   });
 
   body.foto_ijazah = await uploadDocument(body.foto_ijazah);
@@ -934,8 +934,8 @@ const handleSave = async () => {
 
                     <VCol
                       v-if="item.label === 'Ijazah'"
-                      :cols="isEditing ? 4 : 6"
-                      :md="isEditing ? 2 : 6"
+                      :cols="isEditing ? 6 : 6"
+                      :md="isEditing ? 6 : 6"
                       class="d-flex align-center"
                     >
                       <span>:</span>
@@ -951,7 +951,7 @@ const handleSave = async () => {
                       </VBtn>
                     </VCol>
 
-                    <VCol
+                    <!-- <VCol
                       cols="8"
                       md="6"
                       v-if="isEditing && item.label === 'Ijazah'"
@@ -960,11 +960,11 @@ const handleSave = async () => {
                         v-model="item.value"
                         label="Pilih File"
                       />
-                    </VCol>
+                    </VCol> -->
 
                     <VCol
-                      :cols="isEditing ? 2 : 6"
-                      :md="isEditing ? 2 : 6"
+                      :cols="isEditing ? 6 : 6"
+                      :md="isEditing ? 6 : 6"
                       class="d-flex align-center"
                       v-if="item.label === 'KTP'"
                     >
@@ -983,7 +983,7 @@ const handleSave = async () => {
                       </VBtn>
                     </VCol>
 
-                    <VCol
+                    <!-- <VCol
                       cols="8"
                       md="6"
                       v-if="isEditing && item.label === 'KTP'"
@@ -992,11 +992,11 @@ const handleSave = async () => {
                         v-model="item.value"
                         label="Pilih File"
                       />
-                    </VCol>
+                    </VCol> -->
 
                     <VCol
-                      :cols="isEditing ? 2 : 6"
-                      :md="isEditing ? 2 : 6"
+                      :cols="isEditing ? 6 : 6"
+                      :md="isEditing ? 6 : 6"
                       class="d-flex align-center"
                       v-if="item.label === 'Sertifikat Pelatihan'"
                     >
@@ -1011,13 +1011,13 @@ const handleSave = async () => {
                           @click="
                             downloadDocument(
                               item.value,
-                              'PENDAMPING_SERT_PELATIHAN'
+                              'PENDAMPING_SERT_UPLOAD'
                             )
                           "
                         ></VIcon>
                       </VBtn>
                     </VCol>
-                    <VCol
+                    <!-- <VCol
                       cols="8"
                       md="6"
                       v-if="isEditing && item.label === 'Sertifikat Pelatihan'"
@@ -1026,7 +1026,7 @@ const handleSave = async () => {
                         v-model="item.value"
                         label="Pilih File"
                       />
-                    </VCol>
+                    </VCol> -->
                   </VRow>
                 </VListItem>
               </VList>
