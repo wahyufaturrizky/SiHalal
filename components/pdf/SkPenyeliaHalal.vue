@@ -152,7 +152,7 @@ const store = pelakuUsahaProfile();
 
 onMounted(async () => {
   baseCoordY = 140;
-  await store.fetchProfile();
+  // await store.fetchProfile();
   // const tmp: Array<IpenyeliaList> = [];
   listPenyelia.value = store.supervisorData
     ?.map((val) => {
