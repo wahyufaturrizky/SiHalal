@@ -155,6 +155,20 @@ const downloadInvoice = async (item: any) => {
   if (item.file_inv) await downloadDocument(item.file_inv);
 };
 
+function formatDate(isoString: string): string {
+  const date = new Date(isoString);
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-based
+  const year = date.getFullYear();
+
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+}
+
 onMounted(async () => {
   loading.value = true;
   await Promise.all([
@@ -172,8 +186,8 @@ watch([status, outDated, page], () => {
 <template>
   <div v-if="!loading">
     <!-- <KembaliButton class="pl-0" /> -->
-    <div class="d-flex align-center" style="justify-content: space-between;">
-      <h1 style="font-size: 32px;">Informasi Serifikat Self Declare</h1>
+    <div class="d-flex align-center" style="justify-content: space-between">
+      <h1 style="font-size: 32px">Informasi Sertifikat Self Declare</h1>
       <!-- <VBtn
         v-if="!loading"
         append-icon="fa-download"
@@ -189,8 +203,8 @@ watch([status, outDated, page], () => {
         <div class="text-h4 font-weight-bold">Daftar Sertifikat</div>
       </VCardTitle>
       <VCardItem>
-        <VRow no-gutters class="d-flex align-center ga-2">
-          <VCol cols="4" md="2">
+        <VRow class="d-flex align-center">
+          <VCol cols="8" class="d-inline-flex">
             <VBtn
               color="primary"
               append-icon="mdi-filter"
@@ -224,9 +238,8 @@ watch([status, outDated, page], () => {
                 </VCard>
               </VMenu>
             </VBtn>
-          </VCol>
-          <VCol cols="6" md="4">
             <VTextField
+              style="margin-left: 1svw"
               v-model="searchQuery"
               density="compact"
               placeholder="Cari No. Daftar/ Nama PU"
@@ -234,8 +247,8 @@ watch([status, outDated, page], () => {
               @input="handleInput"
             />
           </VCol>
-          <VCol cols="6" md="2" class="d-flex justify-end">
-            <VBtn variant="outlined" @click="handleDownload">
+          <VCol cols="4" class="d-flex justify-end">
+            <VBtn variant="flat" @click="handleDownload">
               Export XLS
               <VIcon right>mdi-file-excel</VIcon>
             </VBtn>
@@ -262,6 +275,9 @@ watch([status, outDated, page], () => {
 
           <template #item.no="{ index }">
             <label>{{ index + 1 + (page - 1) * itemPerPage }}</label>
+          </template>
+          <template #item.tgl_daftar="{ item }">
+            {{ formatDate(item.tgl_daftar) }}
           </template>
           <template v-slot:[`item.status`]="{ item }">
             <div class="d-flex flex-wrap">
