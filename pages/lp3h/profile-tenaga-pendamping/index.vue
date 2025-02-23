@@ -25,6 +25,8 @@ const panelMelacak = ref([0, 1]);
 //   { label: "Pekerjaaan", value: "Lainnya" },
 // ];
 
+const authUser = useMyAuthUserStore();
+
 const dataProfilePendamping = ref([
   { label: "NIK", value: "" },
   { label: "Nama", value: "" },
@@ -47,7 +49,7 @@ const dataBank = ref([
   { label: "Nama Bank", value: "" },
   { label: "No. Rekening", value: "" },
   { label: "Nama Rekening", value: "" },
-  { label: "File Rekening", value: "" },
+  { label: "File Rekening", value: null },
 ]);
 
 const dataBank2 = ref([
@@ -258,7 +260,7 @@ const uploadDocument = async (file) => {
       method: "post",
       body: formData,
     });
-    return response;
+    return response?.data?.file_url;
   } catch (error) {
     useSnackbar().sendSnackbar(
       "ada kesalahan saat upload file, gagal menyimpan!",
@@ -373,9 +375,15 @@ const handleSave = async () => {
     if (el.label === "Sertifikat Pelatihan") body.file_sertifikat = el.value;
   });
 
-await uploadDocument(body.foto_ijazah);
-await uploadDocument(body.foto_ktp);
-await uploadDocument(body.file_sertifikat);
+  body.foto_ijazah = await uploadDocument(body.foto_ijazah);
+  body.foto_ktp = await uploadDocument(body.foto_ktp);
+  body.file_sertifikat = await uploadDocument(body.file_sertifikat);
+  body.rekening.file_foto_npwp = await uploadDocument(
+    body.rekening.file_foto_npwp
+  );
+  body.rekening.file_foto_rek = await uploadDocument(
+    body.rekening.file_foto_rek
+  );
 
   try {
     await $api(`/reguler/lph/update-profile/${id_pendamping}`, {
@@ -384,7 +392,6 @@ await uploadDocument(body.file_sertifikat);
     });
 
     useSnackbar().sendSnackbar("Berhasil menyimpan data ", "success");
-
 
     await getProfile();
   } catch (error) {
