@@ -12,24 +12,23 @@ export default defineEventHandler(async (event: any) => {
     });
   }
 
-  const { page, size, status, search } = (await getQuery(event)) as {
-    page: string;
-    size: string;
+  const { status, search } = (await getQuery(event)) as {
     status: string;
     search: string;
   };
 
-  let params = {
-    page: +page,
-    size: +size,
-    status,
-    search: search,
-  };
+  const params = {};
+  if (status) {
+    params.status = status;
+  }
+  if (search) {
+    params.search = search;
+  }
 
   console.log(params, "<<<<");
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/pengajuan-pendamping/self-declare`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/pengajuan-pendamping/self-declare/download`,
     {
       method: "get",
       headers: { Authorization: authorizationHeader },
@@ -40,6 +39,8 @@ export default defineEventHandler(async (event: any) => {
 
     return err.data;
   });
+
+  console.log("data = ", data);
 
   return data || null;
 });
