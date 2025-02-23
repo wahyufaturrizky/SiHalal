@@ -18,8 +18,8 @@ const detailTagihanHeader = [
   { title: "No. Daftar", key: "noDaftar", nowrap: true},
   { title: "Tgl. Daftar", key: "tglDaftar", nowrap: true},
   { title: "Nama PU", key: "namaPu", nowrap: true },
-  { title: "Kab/Kota", key: "kabKota"},
-  { title: "Provinsi", key: "provinsi"},
+  { title: "Kab/Kota", key: "kabKota", nowrap: true},
+  { title: "Provinsi", key: "provinsi", nowrap: true },
   { title: "Total", key: "total"},
   { title: "Nama Pendamping", key: "namaPendamping", nowrap: true},
   { title: "No. Rekening", key: "noRekening", nowrap: true},
@@ -28,14 +28,14 @@ const detailTagihanHeader = [
 
 const detailTagihanItem = ref([])
 
-const loadItem = async (page: number, size: number) => {
+const loadItem = async () => {
   try {
     loading.value = true;
     const response = await $api("/lp3h/detail-tagihan", {
       method: "get",
       params: {
-        page,
-        limit: itemPerPage,
+        page: page.value,
+        limit: itemPerPage.value,
         id_reg: id
       },
     });
@@ -44,9 +44,9 @@ const loadItem = async (page: number, size: number) => {
 
     detailTagihanItem.value = data.map(
       i => ({
-        idReg: i.id,
-        noDaftar : query.value.no,
-        tglDaftar: query.value.tanggal,
+        idReg: i.id_reg,
+        noDaftar : i.no_daftar,
+        tglDaftar: i.tgl_daftar,
         namaPu: i.nama_pu,
         kabKota: i.kota_pu,
         provinsi: i.prov_pu,
@@ -66,7 +66,6 @@ const loadItem = async (page: number, size: number) => {
 };
 
 const debouncedFetch = debounce(loadItem, 500);
-
 onMounted(async () => {
   // debouncedFetch(page.value, itemPerPage.value,);
 })
