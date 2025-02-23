@@ -6,12 +6,17 @@ const props = defineProps({
   detaildata: {
     type: Object,
   },
+  fileUnduh: {
+    type: Object,
+  },
 });
 
 const panelOpen = ref(0);
-const { detaildata } = props || {};
-const { hasil_audit } = detaildata || {};
-const { dokumen } = hasil_audit || {};
+const { fileUnduh } = props || {};
+
+const download = async (item) => {
+  await downloadDocument(item);
+};
 </script>
 
 <template>
@@ -33,12 +38,12 @@ const { dokumen } = hasil_audit || {};
           <VCol cols="1"> : </VCol>
           <VCol cols="2" class="download-btn">
             <VBtn
-              :disabled="!dokumen"
+              :disabled="!fileUnduh.sttd"
               class="square-btn"
               color="primary"
               variant="flat"
               icon="mdi-download"
-              @click="downloadDocument(dokumen, 'FILES')"
+              @click="download(fileUnduh.sttd, 'FILES')"
             />
           </VCol>
           <VCol cols="7">
@@ -47,12 +52,12 @@ const { dokumen } = hasil_audit || {};
           <VCol cols="1"> : </VCol>
           <VCol cols="2" class="download-btn">
             <VBtn
-              :disabled="!dokumen"
+              :disabled="!fileUnduh.lph"
               class="square-btn"
               color="primary"
               variant="flat"
               icon="mdi-download"
-              @click="downloadDocument(dokumen, 'FILES')"
+              @click="download(fileUnduh.sttd, 'FILES')"
             />
           </VCol>
         </VRow>
