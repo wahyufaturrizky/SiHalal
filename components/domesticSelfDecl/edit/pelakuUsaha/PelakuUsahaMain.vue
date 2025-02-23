@@ -203,6 +203,9 @@ const confirmDeleteSupervisor = async () => {
 onMounted(() => {
   handleDetailPelakuUsaha();
 });
+const isPengembangan = () => {
+  return submissionDetail.jenis_pengajuan == "Pengembangan";
+};
 </script>
 
 <template>
@@ -227,7 +230,7 @@ onMounted(() => {
           >
             <div>Penanggung Jawab</div>
             <VBtn
-              v-if="!canNotEdit"
+              v-if="!canNotEdit && !isPengembangan()"
               type="submit"
               color="primary"
               variant="flat"
@@ -242,6 +245,7 @@ onMounted(() => {
                   <VTextField
                     :rules="[requiredValidator]"
                     density="compact"
+                    :disabled="isPengembangan()"
                     v-model="picDetail.nama_pj"
                   />
                 </VItemGroup>
@@ -252,6 +256,7 @@ onMounted(() => {
                   >
                   <VTextField
                     density="compact"
+                    :disabled="isPengembangan()"
                     @input="onlyAcceptNumber"
                     :rules="[requiredValidator, phoneNumberIdValidator]"
                     v-model="picDetail.nomor_kontak_pj"
@@ -261,6 +266,7 @@ onMounted(() => {
                 <VItemGroup>
                   <VLabel class="text-h6 font-weight-bold">Email</VLabel>
                   <VTextField
+                    :disabled="isPengembangan()"
                     :rules="[requiredValidator, emailValidator]"
                     density="compact"
                     v-model="picDetail.email_pj"
@@ -281,6 +287,7 @@ onMounted(() => {
             <VCol class="font-weight-bold text-h4"> Aspek Legal </VCol>
             <VCol justify="end" class="d-flex justify-end">
               <TambahAspekLegalByTable
+                v-if="!isPengembangan()"
                 :can-not-edit="canNotEdit"
                 @submit="handleAddLegal"
               />
@@ -302,7 +309,7 @@ onMounted(() => {
             <template #item.masa_berlaku="{ item }: any">
               {{ item.masa_berlaku ? item.masa_berlaku : "-" }}
             </template>
-            <template #item.action="{ item }: any">
+            <template v-if="!isPengembangan()" #item.action="{ item }: any">
               <div v-if="item.jenis_surat != 'NIB' && !canNotEdit">
                 <VIcon
                   icon="mdi-delete"
