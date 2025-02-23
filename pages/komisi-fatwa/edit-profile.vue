@@ -911,7 +911,7 @@ onMounted(async () => {
 </template>
 
 <style>
-.v-field--appended {
+/* .v-field--appended {
   padding-inline-end: 0;
-}
+} */
 </style>
