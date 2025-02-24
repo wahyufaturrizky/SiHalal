@@ -52,17 +52,6 @@ const loadItem = async ({
   }
 };
 
-  const checkResIfUndefined = res.every((item) => {
-    return item !== undefined;
-  });
-
-  if (checkResIfUndefined) {
-    loadingAll.value = false;
-  } else {
-    loadingAll.value = false;
-  }
-});
-
 const debouncedFetch = debounce(loadItem, 500);
 
 const handleSearch = () => {
