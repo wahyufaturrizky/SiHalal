@@ -319,7 +319,7 @@ onMounted(async () => {
                 <VBtn
                   icon
                   variant="text"
-                  @click="action(item)"
+                  @click="navigateTo(`/sh-domestic/submission/self-declare/${item.idReg}`)"
                 >
                   <VIcon
                     size="24"
