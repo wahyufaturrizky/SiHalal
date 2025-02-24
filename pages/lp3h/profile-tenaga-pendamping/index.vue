@@ -438,7 +438,14 @@ const handleSave = async () => {
       </VCard>
     </VDialog>
     <VRow>
-      <KembaliButton />
+      <VBtn
+        variant="text"
+        prepend-icon="mdi-chevron-left"
+        @click="handleCancel"
+        v-if="isEditing"
+      >
+        Kembali
+      </VBtn>
     </VRow>
     <VRow class="d-flex justify-space-between align-center">
       <VCol class="mb-8">
@@ -567,6 +574,7 @@ const handleSave = async () => {
                         :rules="[requiredValidator]"
                         teleport
                         clearable
+                        :readonly="!isEditing"
                       >
                         <template #trigger>
                           <VTextField
