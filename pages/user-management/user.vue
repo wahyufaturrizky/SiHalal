@@ -58,6 +58,7 @@ const { refresh } = await useAsyncData(
   "user-list",
   async () => await handleLoadList(),
   {
+    server: false,
     watch: [currentPage, itemPerPage],
   }
 );

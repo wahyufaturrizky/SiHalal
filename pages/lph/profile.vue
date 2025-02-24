@@ -278,7 +278,6 @@ const setUpdatePayload = () => {
 const updateForm = ref()
 const handleConfirmUpdate = async () => {
   const status = await updateForm.value.validate();
-  console.log(status, "< status here")
 
   if (status.valid) {
     try {
