@@ -7,7 +7,6 @@ const loading = ref(false);
 const page = ref(1);
 const searchQuery = ref("");
 const status = ref("OF1,OF10,OF5,OF2,OF290,OF15");
-const loadingAll = ref(true);
 
 const defaultStatus = { color: "error", desc: "Unknown Status" };
 
@@ -66,19 +65,6 @@ const loadItem = async (
 
 const debouncedFetch = debounce(loadItem, 500);
 
-onMounted(async () => {
-  const res = await Promise.all([
-    loadItem(1, itemPerPage.value, "", status.value),
-  ]);
-
-  const checkResIfUndefined = res.every((item) => {
-    return item !== undefined;
-  });
-
-  if (checkResIfUndefined) loadingAll.value = false;
-  else loadingAll.value = false;
-});
-
 const handleInput = () => {
   debouncedFetch(
     page.value,
@@ -114,7 +100,7 @@ const navigateAction = (id: string) => {
       <h1 style="font-size: 32px">Entri Fasilitasi</h1>
     </VCol>
   </VRow>
-  <VRow v-if="!loadingAll">
+  <VRow>
     <VCol>
       <VCard>
         <VCardTitle>

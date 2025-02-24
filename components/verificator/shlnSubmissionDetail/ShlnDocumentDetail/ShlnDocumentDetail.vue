@@ -93,10 +93,6 @@ const loadItemListDocumentById = async () => {
   }
 };
 
-onMounted(async () => {
-  await loadItemListDocumentById();
-});
-
 const { hcb, hcn } = props.data || {};
 const { hcb_name } = hcb || {};
 const {
