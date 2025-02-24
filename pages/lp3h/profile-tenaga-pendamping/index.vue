@@ -301,6 +301,19 @@ const handleCancel = async () => {
   await getProfile();
 };
 
+function convertToISOString(dateStr) {
+    // Pecah format "DD-MM-YYYY" menjadi bagian-bagian
+    const [day, month, year] = dateStr.split('-');
+
+    // Buat objek Date dalam UTC
+    const date = new Date(Date.UTC(year, month - 1, day));
+
+    // Konversi ke ISO string
+    return date.toISOString();
+}
+
+
+
 const options = [
   "Penyuluh agama",
   "Dosen",
@@ -310,12 +323,7 @@ const options = [
   "Santri",
   "Lainnya",
 ];
-const formattedDate = ref("");
-const formatDateISO = (date) => {
-  if (!date) return "";
-  const [year, month, day] = date.split("-"); // Format dari VDatePicker adalah YYYY-MM-DD
-  formattedDate.value = `${year}-${month}-${day}T00:00:00Z`;
-};
+
 const handleSave = async () => {
   dialog.value = false;
   isEditing.value = false;
@@ -344,7 +352,7 @@ const handleSave = async () => {
     if (el.label === "Telp /HP") body.no_hp = el.value;
     if (el.label === "Tempat Lahir") body.tempat_lahir = el.value;
 
-    if (el.label === "Tanggal Lahir") body.tgl_lahir = formatDateISO(el.value);
+    if (el.label === "Tanggal Lahir") body.tgl_lahir = convertToISOString(el.value);
     if (el.label === "Pekerjaan") body.pekerjaan = el.value;
     if (el.label === "Pekerjaan_lain") body.pekerjaan_lain = el.value;
     if (el.label === "IDLembaga") body.IDLembaga = el.value;
@@ -370,26 +378,50 @@ const handleSave = async () => {
   });
 
   dokumenPersyaratan.value.forEach((el) => {
+    console.log(el,' ini el')
     if (el.label === "Ijazah") body.foto_ijazah = el.value;
     if (el.label === "KTP") body.foto_ktp = el.value;
     if (el.label === "Sertifikat Pelatihan") body.fotosertifikat = el.value;
   });
+if(body.foto_ijazah!=null){
 
   body.foto_ijazah = await uploadDocument(body.foto_ijazah);
+}else{
+  body.foto_ijazah =''
+}
+
+if(body.foto_ktp!=null){
   body.foto_ktp = await uploadDocument(body.foto_ktp);
+}else{
+    body.foto_ktp  =''
+}
+
+if(body.file_sertifikat!=null){
   body.file_sertifikat = await uploadDocument(body.file_sertifikat);
+}else{
+  body.file_sertifikat =''
+}
+if(body.rekening.file_foto_npwp!=null){
   body.rekening.file_foto_npwp = await uploadDocument(
     body.rekening.file_foto_npwp
   );
+}else{
+  body.rekening.file_foto_npwp =''
+}
+if(body.rekening.file_foto_rek!=null){
   body.rekening.file_foto_rek = await uploadDocument(
     body.rekening.file_foto_rek
   );
+}else{
+  body.rekening.file_foto_rek =''
+}
+console.log(body,'ini body')
 
   try {
-    await $api(`/reguler/lph/update-profile/${id_pendamping}`, {
-      method: "put",
-      body,
-    });
+    // await $api(`/reguler/lph/update-profile/${id_pendamping}`, {
+    //   method: "put",
+    //   body,
+    // });
 
     useSnackbar().sendSnackbar("Berhasil menyimpan data ", "success");
 
@@ -931,8 +963,7 @@ const handleSave = async () => {
                 >
                   <VRow>
                     <VCol
-                      :cols="isEditing ? 2 : 6"
-                      :md="isEditing ? 2 : 6"
+                    cols="6" md="6"
                       class="d-flex align-center"
                     >
                       <div class="text-body-1 font-weight-medium">
@@ -942,8 +973,7 @@ const handleSave = async () => {
 
                     <VCol
                       v-if="item.label === 'Ijazah'"
-                      :cols="isEditing ? 6 : 6"
-                      :md="isEditing ? 6 : 6"
+                   cols="6" md="6"
                       class="d-flex align-center"
                     >
                       <span>:</span>
