@@ -217,7 +217,6 @@ const updateLockFacilitateLembaga = async () => {
 };
 
 onMounted(async () => {
-  await loadItemById(1, itemPerPage.value);
   await loadItemLembagaPendamping();
 });
 

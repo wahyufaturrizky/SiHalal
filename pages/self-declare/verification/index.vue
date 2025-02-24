@@ -88,10 +88,7 @@ const loadItemStatusApplication = async () => {
 const debouncedFetch = debounce(loadItem, 500);
 
 onMounted(async () => {
-  const res = await Promise.all([
-    loadItem(page.value, itemPerPage.value, searchQuery.value, status.value),
-    loadItemStatusApplication(),
-  ]);
+  const res = await Promise.all([loadItemStatusApplication()]);
 
   const checkResIfUndefined = res.every((item) => {
     return item !== undefined;

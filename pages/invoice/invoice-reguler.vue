@@ -141,16 +141,7 @@ const resetFilters = () => {
 };
 
 onMounted(async () => {
-  const res = await Promise.all([
-    loadItem({
-      page: page.value,
-      size: itemPerPage.value,
-      keyword: searchQuery.value,
-      status: selectedFilters.value.status,
-      date: selectedFilters.value.date,
-    }),
-    loadItemStatusApplication(),
-  ]);
+  const res = await Promise.all([loadItemStatusApplication()]);
 
   const checkResIfUndefined = res.every((item) => {
     return item !== undefined;

@@ -71,10 +71,6 @@ const loadItem = async (
 
 const debouncedFetch = debounce(loadItem, 500);
 
-onMounted(async () => {
-  await loadItem(1, itemPerPage.value, "", status.value);
-});
-
 const refresh = async () => {
   await loadItem(1, itemPerPage.value, "", status.value);
 };
