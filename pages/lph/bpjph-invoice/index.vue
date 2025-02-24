@@ -49,6 +49,7 @@ useAsyncData(
   "bpjph-bill-list",
   async () => await loadItem(),
   {
+    server: false,
     watch: [currentPage, itemPerPage],
   }
 );

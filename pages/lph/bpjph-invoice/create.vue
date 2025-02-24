@@ -80,6 +80,7 @@ const { refresh } = await useAsyncData(
   "bpjph-bill-doc-list",
   async () => await loadItem(),
   {
+    server: false,
     watch: [currentPage, itemPerPage],
   }
 );
