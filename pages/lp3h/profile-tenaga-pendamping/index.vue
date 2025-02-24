@@ -368,60 +368,54 @@ const handleSave = async () => {
     if (el.label === "Nama Bank") body.rekening.bank = el.value;
     if (el.label === "No. Rekening") body.rekening.no_rekening = el.value;
     if (el.label === "Nama Rekening") body.rekening.nama = el.value;
-    if (el.label === "File Rekening") body.rekening.file_foto_rek = el.value;
+    if (el.label === "File Rekening") body.rekening.file_foto_rek = el.value
   });
 
   dataBank2.value.forEach((el) => {
     if (el.label === "NPWP") body.rekening.npwp = el.value;
     if (el.label === "Nama pada NPWP") body.rekening.nama_npwp = el.value;
-    if (el.label === "File NPWP") body.rekening.file_foto_npwp = el.value;
+    if (el.label === "File NPWP") body.rekening.file_foto_npwp = el.value
+    ;
   });
 
   dokumenPersyaratan.value.forEach((el) => {
     console.log(el,' ini el')
-    if (el.label === "Ijazah") body.foto_ijazah = el.value;
-    if (el.label === "KTP") body.foto_ktp = el.value;
-    if (el.label === "Sertifikat Pelatihan") body.fotosertifikat = el.value;
+    if (el.label === "Ijazah") {body.foto_ijazah = el.value}else{
+      body.foto_ijazah =''
+    };
+    if (el.label === "KTP") {body.foto_ktp = el.value}else{
+       body.foto_ktp  =''
+    };
+    if (el.label === "Sertifikat Pelatihan") {body.fotosertifikat = el.value }
   });
-if(body.foto_ijazah!=null){
+
 
   body.foto_ijazah = await uploadDocument(body.foto_ijazah);
-}else{
-  body.foto_ijazah =''
-}
 
-if(body.foto_ktp!=null){
+
   body.foto_ktp = await uploadDocument(body.foto_ktp);
-}else{
-    body.foto_ktp  =''
-}
 
-if(body.file_sertifikat!=null){
-  body.file_sertifikat = await uploadDocument(body.file_sertifikat);
-}else{
-  body.file_sertifikat =''
-}
-if(body.rekening.file_foto_npwp!=null){
+
+
+
+
+  body.fotosertifikat = await uploadDocument(body.fotosertifikat);
   body.rekening.file_foto_npwp = await uploadDocument(
     body.rekening.file_foto_npwp
   );
-}else{
-  body.rekening.file_foto_npwp =''
-}
-if(body.rekening.file_foto_rek!=null){
+
+
   body.rekening.file_foto_rek = await uploadDocument(
     body.rekening.file_foto_rek
   );
-}else{
-  body.rekening.file_foto_rek =''
-}
+
 console.log(body,'ini body')
 
   try {
-    // await $api(`/reguler/lph/update-profile/${id_pendamping}`, {
-    //   method: "put",
-    //   body,
-    // });
+    await $api(`/reguler/lph/update-profile/${id_pendamping}`, {
+      method: "put",
+      body,
+    });
 
     useSnackbar().sendSnackbar("Berhasil menyimpan data ", "success");
 
