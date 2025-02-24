@@ -362,14 +362,7 @@ const handleCloseEdit = async (isUpdate: boolean) => {
               />
               <VTextField
                 v-else
-                :rules="[
-                  requiredValidator,
-                  regexValidator(
-                    updateData.nama,
-                    /^(?!.*\s\s)(?!.*'')(?!.*\-\-)[a-zA-Z\s'\-]+$/,
-                    'Format nama lembaga tidak sesuai'
-                  ),
-                ]"
+                :rules="[requiredValidator]"
                 v-model="updateData.nama"
                 :bg-color="!isEdit ? '#F6F6F6' : ''"
                 density="compact"
@@ -410,14 +403,7 @@ const handleCloseEdit = async (isUpdate: boolean) => {
               />
               <VTextField
                 v-else
-                :rules="[
-                  requiredValidator,
-                  regexValidator(
-                    profileData.alamat,
-                    /^(?!.*\s\s)(?!.*'')(?!.*\-\-)(?!.*\.\.)(?!.*,,)(?!.*[0-9]{6,})(?=.*[a-zA-Z]{5,})[a-zA-Z0-9\s'\.\,\-\/]+$/,
-                    'Format alamat lembaga tidak sesuai'
-                  ),
-                ]"
+                :rules="[requiredValidator]"
                 v-model="updateData.alamat"
                 :bg-color="!isEdit ? '#F6F6F6' : ''"
                 density="compact"
@@ -622,14 +608,7 @@ const handleCloseEdit = async (isUpdate: boolean) => {
                 />
                 <VTextField
                   v-else
-                  :rules="[
-                    requiredValidator,
-                    regexValidator(
-                      updateData.pic_nama_pimpinan,
-                      /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
-                      'Format nama pimpinan tidak sesuai'
-                    ),
-                  ]"
+                  :rules="[requiredValidator]"
                   v-model="updateData.pic_nama_pimpinan"
                   :bg-color="!isEdit ? '#F6F6F6' : ''"
                   density="compact"
@@ -648,7 +627,7 @@ const handleCloseEdit = async (isUpdate: boolean) => {
                 />
                 <VTextField
                   v-else
-                  :rules="[requiredValidator, phoneNumberIdValidator]"
+                  :rules="[requiredValidator]"
                   v-model="updateData.pic_nohp_pimpinan"
                   :bg-color="!isEdit ? '#F6F6F6' : ''"
                   density="compact"
@@ -670,14 +649,7 @@ const handleCloseEdit = async (isUpdate: boolean) => {
                 />
                 <VTextField
                   v-else
-                  :rules="[
-                    requiredValidator,
-                    regexValidator(
-                      updateData.pic_nama_kontak,
-                      /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
-                      'Format nama kontak tidak sesuai'
-                    ),
-                    ]"
+                  :rules="[requiredValidator]"
                   v-model="updateData.pic_nama_kontak"
                   :bg-color="!isEdit ? '#F6F6F6' : ''"
                   density="compact"
@@ -696,7 +668,7 @@ const handleCloseEdit = async (isUpdate: boolean) => {
                 />
                 <VTextField
                   v-else
-                  :rules="[requiredValidator, phoneNumberIdValidator]"
+                  :rules="[requiredValidator]"
                   v-model="updateData.pic_nohp_kontak"
                   :bg-color="!isEdit ? '#F6F6F6' : ''"
                   density="compact"
@@ -725,14 +697,7 @@ const handleCloseEdit = async (isUpdate: boolean) => {
               />
               <VTextField
                 v-else
-                :rules="[
-                  requiredValidator,
-                  regexValidator(
-                    updateData.rekening.bank,
-                    /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
-                    'Format nama bank tidak sesuai'
-                  ),
-                ]"
+                :rules="[requiredValidator]"
                 v-model="updateData.rekening.bank"
                 :bg-color="!isEdit ? '#F6F6F6' : ''"
                 density="compact"
@@ -770,14 +735,7 @@ const handleCloseEdit = async (isUpdate: boolean) => {
               />
               <VTextField
                 v-else
-                :rules="[
-                  requiredValidator,
-                  regexValidator(
-                    updateData.rekening.nama,
-                    /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
-                    'Format nama pemegang rekening tidak sesuai'
-                  ),
-                ]"
+                :rules="[requiredValidator]"
                 v-model="updateData.rekening.nama"
                 :bg-color="!isEdit ? '#F6F6F6' : ''"
                 density="compact"
@@ -841,14 +799,7 @@ const handleCloseEdit = async (isUpdate: boolean) => {
               />
               <VTextField
                 v-else
-                :rules="[
-                  requiredValidator,
-                  regexValidator(
-                    updateData.rekening.npwp,
-                    /^(?![-.])[0-9](?!.*[.\-]{2})[0-9.\-]*$/,
-                    'Format NPWP tidak sesuai'
-                  )
-                ]"
+                :rules="[requiredValidator]"
                 v-model="updateData.rekening.npwp"
                 :bg-color="!isEdit ? '#F6F6F6' : ''"
                 density="compact"
