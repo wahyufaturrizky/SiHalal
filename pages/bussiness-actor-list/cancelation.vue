@@ -52,16 +52,6 @@ const loadItem = async ({
   }
 };
 
-onMounted(async () => {
-  const res = await Promise.all([
-    loadItem({
-      page: 1,
-      size: size.value,
-      keyword: "",
-      query_by: "",
-    }),
-  ]);
-
   const checkResIfUndefined = res.every((item) => {
     return item !== undefined;
   });

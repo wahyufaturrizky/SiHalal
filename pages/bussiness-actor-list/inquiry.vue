@@ -112,20 +112,7 @@ const loadSOF = async () => {
 };
 
 onMounted(async () => {
-  const res = await Promise.all([
-    loadItem({
-      page: 1,
-      size: size.value,
-      no_daftar: no_daftar.value,
-      nama_pu: nama_pu.value,
-      merek_dagang: merek_dagang.value,
-      status: status.value,
-      jenis: jenis.value,
-      kode_fac: kode_fac.value,
-    }),
-    loadItemStatusApplication(),
-    loadSOF(),
-  ]);
+  const res = await Promise.all([loadItemStatusApplication(), loadSOF()]);
 
   const checkResIfUndefined = res.every((item) => {
     return item !== undefined;

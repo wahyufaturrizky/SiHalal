@@ -56,6 +56,7 @@ const { refresh } = await useAsyncData(
   "image-auth-list",
   async () => await handleLoadList(),
   {
+    server: false,
     watch: [currentPage, itemPerPage],
   }
 );

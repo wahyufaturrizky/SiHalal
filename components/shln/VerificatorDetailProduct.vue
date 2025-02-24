@@ -47,10 +47,6 @@ const loadItemListProductById = async (page: number, size: number) => {
   }
 };
 
-onMounted(async () => {
-  await loadItemListProductById(1, itemPerPage.value);
-});
-
 const headers = [
   { title: "No", key: "no" },
   { title: "Manufacture", key: "name" },
