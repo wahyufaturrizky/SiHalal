@@ -197,7 +197,6 @@ const handleInput = (e: any) => {
 function formatDate(isoString: string): string {
   if(isoString!=null){
 
-
   const date = new Date(isoString);
 
   const day = String(date.getDate()).padStart(2, "0");
