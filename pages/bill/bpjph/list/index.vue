@@ -22,6 +22,7 @@ const tableType = ref('')
 
 const handleLoadList = async () => {
   try {
+    isLoading.value = true
     const response: any = await $api('/bill/bpjph/list', {
       method: 'get',
       query: {
@@ -41,6 +42,7 @@ const handleLoadList = async () => {
         currentPage.value = 1
         totalItems.value = 0
       }
+      isLoading.value = false
 
       return response
     }
@@ -49,24 +51,22 @@ const handleLoadList = async () => {
       currentPage.value = 1
       totalItems.value = 0
     }
+    isLoading.value = false
   }
   catch (error) {
+    isLoading.value = false
     console.error(error)
   }
 }
 
-const { refresh } = await useAsyncData(
-  'user-list',
-  async () => await handleLoadList(),
-  {
-    watch: [currentPage, itemPerPage, tableType],
-  },
-)
+// const refresh = async () => {
+//   await handleLoadList();
+// };
 
 onMounted(async () => {
-  await Promise.allSetled([
-    handleLoadList(),
-  ])
+  // await Promise.allSetled([
+  //   handleLoadList(),
+  // ])
 })
 
 const getChipColor = (status: string) => {
@@ -100,14 +100,13 @@ const unduhFile = async (link: string, type: string) => {
             <VDataTableServer
               v-model:items-per-page="itemPerPage"
               v-model:page="currentPage"
-              v-model="selectedItem"
               :items-length="totalItems"
               class="custom-table"
               :headers="tableHeaders"
               :items="tableItems"
               :loading="isLoading"
               :hide-default-footer="tableItems.length === 0"
-              hover
+              @update:options="handleLoadList(currentPage, itemPerPage)"
             >
               <template #no-data>
                 <VCard

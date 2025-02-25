@@ -26,17 +26,15 @@ export default defineEventHandler(async (event: any) => {
     const params = {
       page: +page,
       size: +size,
-      keywords,
+      keyword: keywords,
       jenis_layanan,
       jenis_produk,
       provinsi,
       lph,
     }
 
-    console.log(params, '<<<')
-
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/komisi-fatwa/proses-sidang`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/sidang-fatwa/entri-ketetapan-halal/search`,
       {
         method: 'get',
         headers: { Authorization: authHeader },

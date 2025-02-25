@@ -8,7 +8,7 @@ const { t } = useI18n();
 const props = defineProps({
   title: {
     type: String,
-    default: 'Default Title',
+    default: 'Konfirmasi Buat Invoice',
   },
   buttonText: {
     type: String,
@@ -69,7 +69,7 @@ const dialog = ref(false)
         </div>
       </VCardTitle>
       <VCardText>
-        <slot name="contentDelete" />
+        <slot name="content" />
       </VCardText>
       <VCardActions>
         <div style="margin-right: 10px;">

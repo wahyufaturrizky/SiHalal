@@ -187,14 +187,14 @@ onMounted(async () => {
   loading.value = true;
   await getJenisProduk();
   await loadPendamping(pagePendamping.value, itemPerPagePendamping.value);
-  await loadItem(
-    1,
-    itemPerPage.value,
-    lembaga.value,
-    fasilitasi.value,
-    pendamping.value,
-    searchQuery.value
-  );
+  // await loadItem(
+  //   1,
+  //   itemPerPage.value,
+  //   lembaga.value,
+  //   fasilitasi.value,
+  //   pendamping.value,
+  //   searchQuery.value
+  // );
   await loadFilter();
   loading.value = false;
 });
@@ -206,7 +206,7 @@ const refresh = async () => {
     lembaga.value,
     fasilitasi.value,
     pendamping.value,
-    searchQuery.value
+    searchQuery.value,
   );
 };
 
@@ -215,10 +215,10 @@ const verifikatorTableHeader = [
   { title: "Nomor Daftar", key: "no_daftar", nowrap: true },
   { title: "Tanggal Daftar", key: "tgl_daftar", nowrap: true },
   { title: "Nama PU", key: "nama_pu" },
-  { title: "Alamat", key: "alamat_pu" },
+  { title: "Alamat", key: "alamat" },
   { title: "Skala Usaha", key: "skala_usaha" },
   { title: "Jenis Produk", key: "jenis_produk" },
-  { title: "Merek Dagang", key: "merek_dagang" },
+  { title: "Merek Dagang", key: "merk_dagang" },
   { title: "Lihat Laporan LPH", key: "laporan_lph" },
   { title: "Action", key: "action" },
 ];
@@ -360,12 +360,12 @@ const reset = () => {
           <VDataTableServer
             v-model:items-per-page="itemPerPage"
             v-model:page="page"
+            :items-length="totalItems"
+            class="custom-table"
             :headers="verifikatorTableHeader"
             :items="items"
             :loading="loading"
-            :items-length="totalItems"
             loading-text="Loading..."
-            class="custom-table"
             @update:options="loadItem(page, itemPerPage, searchQuery)"
           >
             <template #item.no="{ index }">

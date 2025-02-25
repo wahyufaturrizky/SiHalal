@@ -61,6 +61,7 @@ const handleLoadList = async (params: any) => {
 
     if (response.code === 2000) {
       if (response.data !== null) {
+        response.data.map((el: any) => el.id = el.id_reg)
         tableItems.value = response.data
         currentPage.value = response.current_page
         totalItems.value = response.total_item
@@ -193,7 +194,28 @@ const unduhFile = async (link: string) => {
 }
 
 const onApprove = async () => {
-  console.log(selectedItem.value)
+  try {
+    const response: any = await $api(
+      "/bill/bpjph/create-bill",
+      {
+        method: "post",
+        body: {
+          id_reg: selectedItem.value,
+        },
+      },
+    );
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar(response.message, "success");
+      selectedItem.value = []
+      return;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan submit penetapan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan submit penetapan", "error");
+  } finally {
+    // loadingPendamping.value = false;
+  }
 }
 </script>
 
@@ -348,7 +370,11 @@ const onApprove = async () => {
             <CreateInvoice
               :disabled="selectedItem.length === 0"
               :onApprove="onApprove"
-            />
+            >
+              <template #content>
+                <label>Yakin akan membuat tagihan untuk data-data yang dicontreng tersebut?</label>
+              </template>
+            </CreateInvoice>
           </div>
           <VCard variant="outlined">
             <VDataTableServer
