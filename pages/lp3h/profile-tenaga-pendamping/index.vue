@@ -63,17 +63,6 @@ const dataPendidikan = ref([
   { label: "Nama Universitas", value: "" },
 ]);
 
-const deleteItem = (item) => {
-  console.log("ITEM DELETE : ", item);
-};
-
-const previewIjazah = (item) => {
-  console.log("PREVIEW IJAZAH : ", item);
-};
-
-const previewKtp = (item) => {
-  console.log("PREVIEW KTP : ", item);
-};
 
 const dataRegistrasi = ref([
   { label: "Status", value: "" },
@@ -98,22 +87,7 @@ const formatDate = (isoString: string): string => {
   return `${day}-${month}-${year}`;
 };
 
-const handleDownloadV2 = async (filename) => {
-  try {
-    console.log(filename, "ini value");
-    const response: any = await $api("/shln/submission/document/download", {
-      method: "post",
-      body: {
-        filename: filename,
-      },
-    });
 
-    if (response.url)
-      window.open(response.url, "_blank", "noopener,noreferrer");
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 const getProfile = async () => {
   try {
@@ -129,7 +103,7 @@ const getProfile = async () => {
     await getSubDistrict(response.data.pendamping.kabupaten);
 
     if (response.code != 4000) {
-      console.log(response.data, "ini masuk kode");
+ 
       dataProfilePendamping.value.forEach((el) => {
         if (el.label === "NIK") el.value = response.data.pendamping.nik;
         if (el.label === "Nama") el.value = response.data.pendamping.nama;
@@ -209,7 +183,7 @@ const getProfile = async () => {
   }
 };
 const openLink = (url: string) => {
-  console.log(url, "ini tetst");
+  
   if (url) {
     window.open(url, "_blank");
   }
@@ -379,7 +353,7 @@ const handleSave = async () => {
   });
 
   dokumenPersyaratan.value.forEach((el) => {
-    console.log(el,' ini el')
+
     if (el.label === "Ijazah") {body.foto_ijazah = el.value}else{
       body.foto_ijazah =''
     };
@@ -409,7 +383,6 @@ const handleSave = async () => {
     body.rekening.file_foto_rek
   );
 
-console.log(body,'ini body')
 
   try {
     await $api(`/reguler/lph/update-profile/${id_pendamping}`, {
@@ -421,7 +394,7 @@ console.log(body,'ini body')
 
     await getProfile();
   } catch (error) {
-    //console.log(error)
+
     useSnackbar().sendSnackbar("Ada Kesalaan ", "error");
   }
 
