@@ -143,7 +143,7 @@ const loadItem = async (
 
       totalItems.value = response.totalPages;
       data.value = response.data ?? [];
-      console.log(data.value ,'ini valuenya')
+  
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
