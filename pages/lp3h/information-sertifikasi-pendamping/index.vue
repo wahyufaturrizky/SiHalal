@@ -192,11 +192,12 @@ const handleInput = (e: any) => {
   debounce(loadItem(page.value, size.value, status.value, e.target.value), 500);
 };
 
-const downloadInvoice = async (item: any) => {
-  if (item.file_inv) await downloadDocument(item.file_inv);
-};
+
 
 function formatDate(isoString: string): string {
+  if(isoString!=null){
+
+
   const date = new Date(isoString);
 
   const day = String(date.getDate()).padStart(2, "0");
@@ -208,6 +209,9 @@ function formatDate(isoString: string): string {
   const seconds = String(date.getSeconds()).padStart(2, "0");
 
   return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+} else{
+  return  ""
+}
 }
 
 const downloadExcelHandler = () => {
@@ -231,8 +235,8 @@ watch([status, outDated, page], () => {
 <template>
   <div v-if="!loading">
     <!-- <KembaliButton class="pl-0" /> -->
-    <div class="d-flex align-center" style="justify-content: space-between">
-      <h1 style="font-size: 32px">Informasi Sertifikat Self Declare</h1>
+    <div class="d-flex align-center" style="justify-content: space-between;">
+      <h1 style="font-size: 32px;">Informasi Sertifikat Self Declare</h1>
       <!-- <VBtn
         v-if="!loading"
         append-icon="fa-download"
@@ -284,7 +288,7 @@ watch([status, outDated, page], () => {
               </VMenu>
             </VBtn>
             <VTextField
-              style="margin-inline-start: 1svw"
+              style="margin-inline-start: 1svw;"
               v-model="searchQuery"
               density="compact"
               placeholder="Cari No. Daftar/ Nama PU"
