@@ -12,7 +12,7 @@ const props = defineProps({
   },
   buttonText: {
     type: String,
-    default: 'Hapus',
+    default: 'Simpan',
     required: false,
   },
   content: {
