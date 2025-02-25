@@ -207,6 +207,7 @@ const onApprove = async () => {
     if (response.code === 2000) {
       useSnackbar().sendSnackbar(response.message, "success");
       selectedItem.value = []
+      handleLoadList(filterData.value)
       return;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan submit penetapan", "error");
