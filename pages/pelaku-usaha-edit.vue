@@ -22,11 +22,12 @@ const penanggungJawabRef = ref<VForm>();
 const profileCardEditRef = ref();
 
 const submitPenanggungJawab = () => {
-  if (
-    store.profileData?.asal_usaha?.toLowerCase() == "luar negeri" ||
-    store.profileData?.asal_usaha?.toLowerCase() == "instansi pemerintah"
-  ) {
+  console.log("asal usaha = ", store.profileData?.asal_usaha?.toLowerCase());
+  if (store.profileData?.asal_usaha?.toLowerCase() == "luar negeri") {
     profileCardEditRef.value.submitProfile();
+  }
+  if (store.profileData?.asal_usaha?.toLowerCase() == "instansi pemerintah") {
+    profileCardEditRef.value.submitProfilePemerintah();
   }
   penanggungJawabRef.value?.validate().then(({ valid: isValid }) => {
     if (isValid) {
