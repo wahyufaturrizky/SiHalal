@@ -95,6 +95,7 @@ const buatInvoiceHandler = async () => {
     if(response.code !== 2000){
       useSnackbar().sendSnackbar(response.message, "error");
     }else{
+      selected.value = []
       useSnackbar().sendSnackbar("Berhasil membuat invoice ", "success")
     }
   } catch (error) {
