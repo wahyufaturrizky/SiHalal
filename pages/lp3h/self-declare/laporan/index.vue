@@ -1,29 +1,27 @@
 <script setup lang="ts">
-
 const searchQuery = ref(null)
 const itemPerPage = ref(10)
 const totalItems = ref(0)
 const page = ref(1)
 const loading = ref(true)
-const menu = ref(false);
-
+const menu = ref(false)
 
 const selectedYear = ref(null)
 const selectedFasilitas = ref(null)
 const selectedStatus = ref(null) // GANTI JADI SEMUA
 
 const status = [
-  { title: "Pengajuan", value: "OF10" },
-  { title: "Selesai P3H", value: "OF71" },
-  { title: "Verifikasi LP3H", value: "OF72" },
-  { title: "Pembayaran", value: "OF56" },
-  { title: "Dikirim ke Komite Fatwa", value: "OF74" },
-  { title: "Dikembalikan ke PU", value: "OF280" },
-  { title: "Dikembalikan oleh Fatwa", value: "OF285" },
-  { title: "Selesai Sidang Fatwa", value: "OF100" },
-  { title: "Penerbitan Sertifikat", value: "OF120" },
-  { title: "Sertifikat Halal Terbit", value: "OF300" },
-  { title: "Semua", value: null }
+  { title: 'Pengajuan', value: 'OF10' },
+  { title: 'Selesai P3H', value: 'OF71' },
+  { title: 'Verifikasi LP3H', value: 'OF72' },
+  { title: 'Pembayaran', value: 'OF56' },
+  { title: 'Dikirim ke Komite Fatwa', value: 'OF74' },
+  { title: 'Dikembalikan ke PU', value: 'OF280' },
+  { title: 'Dikembalikan oleh Fatwa', value: 'OF285' },
+  { title: 'Selesai Sidang Fatwa', value: 'OF100' },
+  { title: 'Penerbitan Sertifikat', value: 'OF120' },
+  { title: 'Sertifikat Halal Terbit', value: 'OF300' },
+  { title: 'Semua', value: null },
 ]
 
 const fasilitas = ref([
@@ -31,62 +29,68 @@ const fasilitas = ref([
 
 const loadFasilitasi = async () => {
   try {
-    const response = await $api("/lp3h/laporan/list-fasilitasi", {
-      method: "get",
-    });
+    const response = await $api('/lp3h/laporan/list-fasilitasi', {
+      method: 'get',
+    })
 
-    const data = response.data;
-    //console.log("RESPONSE : ", response)
+    const data = response.data
+
+    // console.log("RESPONSE : ", response)
 
     fasilitas.value = [
-      { title: "Semua", value: null },
+      { title: 'Semua', value: null },
       ...data.map(i => ({
         title: i.fac_name,
-        value: i.fac_id
-      }))
-    ];
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+        value: i.fac_id,
+      })),
+    ]
   }
-};
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
 
 const years = [
-  { title: "Semua", value: null }, // Menambahkan item "Semua"
+  { title: 'Semua', value: null }, // Menambahkan item "Semua"
   ...Array.from({ length: new Date().getFullYear() - 2021 + 1 }, (_, i) => {
-    const year = 2021 + i;
-    return { title: year.toString(), value: year.toString() };
-  })
-];
+    const year = 2021 + i
+
+    return { title: year.toString(), value: year.toString() }
+  }),
+]
 
 const daftarLaporanHeader = [
-  { title: "No", key: "no"},
-  { title: "ID Reg", key: "idReg", nowrap:true},
-  { title: "No.Daftar", key: "noDaftar",nowrap:true},
-  { title: "Tanggal Daftar", key: "tanggalDaftar",nowrap:true},
-  { title: "Kode Fasilitasi", key: "kodeFasilitasi",nowrap:true},
-  { title: "Nama PU", key: "namaPu",nowrap:true},
-  { title: "Alamat", key: "alamat",nowrap:true},
-  { title: "Merk Dagang", key: "merkDagang",nowrap:true},
-  { title: "No. HP Kontak", key: "noHp",nowrap:true},
-  { title: "Nama Pendamping", key: "namaPendamping",nowrap:true},
+  { title: 'No', key: 'no' },
+  { title: 'ID Reg', key: 'idReg', nowrap: true },
+  { title: 'No.Daftar', key: 'noDaftar', nowrap: true },
+  { title: 'Tanggal Daftar', key: 'tanggalDaftar', nowrap: true },
+  { title: 'Kode Fasilitasi', key: 'kodeFasilitasi', nowrap: true },
+  { title: 'Nama PU', key: 'namaPu', nowrap: true },
+  { title: 'Alamat', key: 'alamat', nowrap: true },
+  { title: 'Merk Dagang', key: 'merkDagang', nowrap: true },
+  { title: 'No. HP Kontak', key: 'noHp', nowrap: true },
+  { title: 'Nama Pendamping', key: 'namaPendamping', nowrap: true },
+
   // { title: "invoice", key: "invoice",nowrap:true},
-  { title: "Action", key: "action"},
+  { title: 'Action', key: 'action' },
 
 ]
 
 const daftarLaporanItem = ref([])
+
 const loadItem = async (page: number, size: number, status_reg: string, fac_id: string, tahun: string, search: string) => {
   try {
     loading.value = true
+
     const response = await $api('/lp3h/laporan/list-pengajuan', {
       method: 'get',
       params: {
         page,
         size,
         status_reg,
-        tahun,
+        tgl_daftar: tahun,
         fac_id,
-        search
+        search,
       },
     })
 
@@ -98,7 +102,7 @@ const loadItem = async (page: number, size: number, status_reg: string, fac_id: 
           idReg: i.id,
           noDaftar: i.no_daftar,
           tanggalDaftar: i.tgl_daftar,
-          kodeFasilitasi: "TODO",
+          kodeFasilitasi: i.kode_fac,
           namaPu: i.nama_pu,
           alamat: i.alamat_pu,
           merkDagang: i.merek_dagang,
@@ -125,67 +129,69 @@ const handleInput = () => {
     selectedFasilitas.value,
     selectedYear.value,
     searchQuery.value,
-  );
-};
+  )
+}
 
 const changeFilterBy = () => {
-  debouncedFetch(page.value, itemPerPage.value, selectedStatus.value , selectedFasilitas.value , selectedYear.value, searchQuery.value)
-};
+  debouncedFetch(page.value, itemPerPage.value, selectedStatus.value, selectedFasilitas.value, selectedYear.value, searchQuery.value)
+}
 
-const action = (item) => {
-  //console.log("action : ", item)
+const action = item => {
+  // console.log("action : ", item)
 }
 
 const downloadFile = async () => {
-  //console.log("START DOWNLOAD EXCEL ")
+  // console.log("START DOWNLOAD EXCEL ")
   try {
     const params = {
       page: page.value,
-      size : itemPerPage.value,
-      status_reg: selectedStatus.value != null ? selectedStatus.value : "",
-      tgl_daftar : selectedYear.value != null ? selectedYear.value : "",
-      fac_id : selectedFasilitas.value != null ? selectedFasilitas.value : "",
-      search : searchQuery.value != null ? searchQuery.value : ""
+      size: itemPerPage.value,
+      status_reg: selectedStatus.value != null ? selectedStatus.value : '',
+      tgl_daftar: selectedYear.value != null ? selectedYear.value : '',
+      fac_id: selectedFasilitas.value != null ? selectedFasilitas.value : '',
+      search: searchQuery.value != null ? searchQuery.value : '',
     }
 
-    //console.log("DOWNLOAD EXCEL : {} ", params)
+    // console.log("DOWNLOAD EXCEL : {} ", params)
 
     const response = await $api('/lp3h/laporan/download-excel', {
       method: 'get',
-      params
+      params,
     })
 
-    //console.log("RESPONSE : ", response)
-    if (!response || response.size === 0) throw new Error("Gagal mengunduh file");
+    // console.log("RESPONSE : ", response)
+    if (!response || response.size === 0)
+      throw new Error('Gagal mengunduh file')
 
-    const blob = response;
+    const blob = response
 
-    const url = window.URL.createObjectURL(blob);
+    const url = window.URL.createObjectURL(blob)
 
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "data.xlsx");
-    document.body.appendChild(link);
-    link.click();
+    const link = document.createElement('a')
 
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error(error);
-    useSnackbar().sendSnackbar("Terjadi kesalahan saat mengunduh file.", "error");
+    link.href = url
+    link.setAttribute('download', 'data.xlsx')
+    document.body.appendChild(link)
+    link.click()
+
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
   }
-};
+  catch (error) {
+    console.error(error)
+    useSnackbar().sendSnackbar('Terjadi kesalahan saat mengunduh file.', 'error')
+  }
+}
 
 const debouncedFetch = debounce(loadItem, 500)
+
 onMounted(async () => {
   loading.value = true
   await loadFasilitasi()
-  await loadItem(page.value, itemPerPage.value, selectedStatus.value , selectedFasilitas.value , selectedYear.value)
+
+  // await loadItem(page.value, itemPerPage.value, selectedStatus.value , selectedFasilitas.value , selectedYear.value)
   loading.value = false
 })
-
-
-
 </script>
 
 <template>
@@ -209,48 +215,71 @@ onMounted(async () => {
           </VCardTitle>
           <VCardItem>
             <VRow class="d-flex align-center">
-              <VCol md="2" cols="12">
-                <v-menu v-model="menu" :close-on-content-click="false">
-                  <template v-slot:activator="{ props }">
-                    <v-btn   class="d-flex justify-space-between"
-                             v-bind="props" variant="outlined" append-icon="mdi-filter" min-width="130px">
+              <VCol
+                md="2"
+                cols="12"
+              >
+                <VMenu
+                  v-model="menu"
+                  :close-on-content-click="false"
+                >
+                  <template #activator="{ props }">
+                    <VBtn
+                      class="d-flex justify-space-between"
+                      v-bind="props"
+                      variant="outlined"
+                      append-icon="mdi-filter"
+                      min-width="130px"
+                    >
                       Filter
-                    </v-btn>
+                    </VBtn>
                   </template>
-                  <VCard class="pa-4 text-xs" min-width="400px">
-                    <VLabel for="status">Status</VLabel>
-                    <v-select
+                  <VCard
+                    class="pa-4 text-xs"
+                    min-width="400px"
+                  >
+                    <VLabel for="status">
+                      Status
+                    </VLabel>
+                    <VSelect
                       id="status"
+                      v-model="selectedStatus"
                       label=""
                       :items="status"
-                      v-model="selectedStatus"
-                      @update:model-value="changeFilterBy"
                       variant="solo"
                       class="mb-2"
-                    ></v-select>
-                    <VLabel for="fasilitas" >Fasilitas</VLabel>
-                    <v-select
+                      @update:model-value="changeFilterBy"
+                    />
+                    <VLabel for="fasilitas">
+                      Fasilitas
+                    </VLabel>
+                    <VSelect
                       id="fasilitas"
+                      v-model="selectedFasilitas"
                       label=""
                       :items="fasilitas"
-                      v-model="selectedFasilitas"
-                      @update:model-value="changeFilterBy"
                       variant="solo"
                       class="mb-2 text-xs"
-                    ></v-select>
-                    <VLabel for="tahun">Tahun</VLabel>
-                    <v-select
+                      @update:model-value="changeFilterBy"
+                    />
+                    <VLabel for="tahun">
+                      Tahun
+                    </VLabel>
+                    <VSelect
                       id="tahun"
+                      v-model="selectedYear"
                       label=""
                       :items="years"
-                      v-model="selectedYear"
-                      @update:model-value="changeFilterBy"
                       variant="solo"
-                    ></v-select>
+                      @update:model-value="changeFilterBy"
+                    />
                   </VCard>
-                </v-menu>
+                </VMenu>
               </VCol>
-              <VCol md="7" cols="12">
+              <VCol
+                md="7"
+                cols="12"
+              >
                 <VTextField
                   v-model="searchQuery"
                   density="compact"
@@ -260,7 +289,12 @@ onMounted(async () => {
                 />
               </VCol>
               <VCol class="d-flex justify-end">
-                <VBtn color="primary" class="ml-2" @click="downloadFile" append-icon="mdi-file-excel">
+                <VBtn
+                  color="primary"
+                  class="ml-2"
+                  append-icon="mdi-file-excel"
+                  @click="downloadFile"
+                >
                   Export XLS
                 </VBtn>
               </VCol>
@@ -268,10 +302,10 @@ onMounted(async () => {
           </VCardItem>
           <VCardItem>
             <VDataTableServer
-              :headers="daftarLaporanHeader"
-              :items="daftarLaporanItem"
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
+              :headers="daftarLaporanHeader"
+              :items="daftarLaporanItem"
               :items-length="totalItems"
               :loading="loading"
               loading-text="Loading..."
@@ -282,8 +316,17 @@ onMounted(async () => {
               </template>
 
               <template #item.action="{ item }">
-                <VBtn icon variant="text" @click="action(item)">
-                  <VIcon size="24" color="primary">mdi-arrow-right</VIcon>
+                <VBtn
+                  icon
+                  variant="text"
+                  @click="navigateTo(`/sh-domestic/submission/self-declare/${item.idReg}`)"
+                >
+                  <VIcon
+                    size="24"
+                    color="primary"
+                  >
+                    mdi-arrow-right
+                  </VIcon>
                 </VBtn>
               </template>
             </VDataTableServer>

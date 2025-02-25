@@ -301,6 +301,19 @@ const handleCancel = async () => {
   await getProfile();
 };
 
+function convertToISOString(dateStr) {
+    // Pecah format "DD-MM-YYYY" menjadi bagian-bagian
+    const [day, month, year] = dateStr.split('-');
+
+    // Buat objek Date dalam UTC
+    const date = new Date(Date.UTC(year, month - 1, day));
+
+    // Konversi ke ISO string
+    return date.toISOString();
+}
+
+
+
 const options = [
   "Penyuluh agama",
   "Dosen",
@@ -310,12 +323,7 @@ const options = [
   "Santri",
   "Lainnya",
 ];
-const formattedDate = ref("");
-const formatDateISO = (date) => {
-  if (!date) return "";
-  const [year, month, day] = date.split("-"); // Format dari VDatePicker adalah YYYY-MM-DD
-  formattedDate.value = `${year}-${month}-${day}T00:00:00Z`;
-};
+
 const handleSave = async () => {
   dialog.value = false;
   isEditing.value = false;
@@ -344,7 +352,7 @@ const handleSave = async () => {
     if (el.label === "Telp /HP") body.no_hp = el.value;
     if (el.label === "Tempat Lahir") body.tempat_lahir = el.value;
 
-    if (el.label === "Tanggal Lahir") body.tgl_lahir = formatDateISO(el.value);
+    if (el.label === "Tanggal Lahir") body.tgl_lahir = convertToISOString(el.value);
     if (el.label === "Pekerjaan") body.pekerjaan = el.value;
     if (el.label === "Pekerjaan_lain") body.pekerjaan_lain = el.value;
     if (el.label === "IDLembaga") body.IDLembaga = el.value;
@@ -360,30 +368,48 @@ const handleSave = async () => {
     if (el.label === "Nama Bank") body.rekening.bank = el.value;
     if (el.label === "No. Rekening") body.rekening.no_rekening = el.value;
     if (el.label === "Nama Rekening") body.rekening.nama = el.value;
-    if (el.label === "File Rekening") body.rekening.file_foto_rek = el.value;
+    if (el.label === "File Rekening") body.rekening.file_foto_rek = el.value
   });
 
   dataBank2.value.forEach((el) => {
     if (el.label === "NPWP") body.rekening.npwp = el.value;
     if (el.label === "Nama pada NPWP") body.rekening.nama_npwp = el.value;
-    if (el.label === "File NPWP") body.rekening.file_foto_npwp = el.value;
+    if (el.label === "File NPWP") body.rekening.file_foto_npwp = el.value
+    ;
   });
 
   dokumenPersyaratan.value.forEach((el) => {
-    if (el.label === "Ijazah") body.foto_ijazah = el.value;
-    if (el.label === "KTP") body.foto_ktp = el.value;
-    if (el.label === "Sertifikat Pelatihan") body.fotosertifikat = el.value;
+    console.log(el,' ini el')
+    if (el.label === "Ijazah") {body.foto_ijazah = el.value}else{
+      body.foto_ijazah =''
+    };
+    if (el.label === "KTP") {body.foto_ktp = el.value}else{
+       body.foto_ktp  =''
+    };
+    if (el.label === "Sertifikat Pelatihan") {body.fotosertifikat = el.value }
   });
 
+
   body.foto_ijazah = await uploadDocument(body.foto_ijazah);
+
+
   body.foto_ktp = await uploadDocument(body.foto_ktp);
-  body.file_sertifikat = await uploadDocument(body.file_sertifikat);
+
+
+
+
+
+  body.fotosertifikat = await uploadDocument(body.fotosertifikat);
   body.rekening.file_foto_npwp = await uploadDocument(
     body.rekening.file_foto_npwp
   );
+
+
   body.rekening.file_foto_rek = await uploadDocument(
     body.rekening.file_foto_rek
   );
+
+console.log(body,'ini body')
 
   try {
     await $api(`/reguler/lph/update-profile/${id_pendamping}`, {
@@ -438,7 +464,14 @@ const handleSave = async () => {
       </VCard>
     </VDialog>
     <VRow>
-      <KembaliButton />
+      <VBtn
+        variant="text"
+        prepend-icon="mdi-chevron-left"
+        @click="handleCancel"
+        v-if="isEditing"
+      >
+        Kembali
+      </VBtn>
     </VRow>
     <VRow class="d-flex justify-space-between align-center">
       <VCol class="mb-8">
@@ -567,6 +600,7 @@ const handleSave = async () => {
                         :rules="[requiredValidator]"
                         teleport
                         clearable
+                        :readonly="!isEditing"
                       >
                         <template #trigger>
                           <VTextField
@@ -923,8 +957,7 @@ const handleSave = async () => {
                 >
                   <VRow>
                     <VCol
-                      :cols="isEditing ? 2 : 6"
-                      :md="isEditing ? 2 : 6"
+                    cols="6" md="6"
                       class="d-flex align-center"
                     >
                       <div class="text-body-1 font-weight-medium">
@@ -934,8 +967,7 @@ const handleSave = async () => {
 
                     <VCol
                       v-if="item.label === 'Ijazah'"
-                      :cols="isEditing ? 6 : 6"
-                      :md="isEditing ? 6 : 6"
+                   cols="6" md="6"
                       class="d-flex align-center"
                     >
                       <span>:</span>

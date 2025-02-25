@@ -137,12 +137,13 @@ const loadItem = async (
     );
 
     if (response?.code === 2000) {
-      response?.data?.map((item: any) => {
-        item.typeAndTotal = [item?.jenis_usaha, item?.jumlah_produk];
-      });
+      // response?.data?.map((item: any) => {
+      //   item.typeAndTotal = [item?.jenis_usaha, item?.jumlah_produk];
+      // });
 
       totalItems.value = response.totalPages;
-      data.value = response.data;
+      data.value = response.data ?? [];
+      console.log(data.value ,'ini valuenya')
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -155,7 +156,7 @@ const loadItem = async (
 
 const getListStatus = async () => {
   try {
-    // const response: any = await $api("/reguler/pelaku-usaha/list-status", {
+    // const response: any = await $api("", {
     //   method: "get",
     // });
 
