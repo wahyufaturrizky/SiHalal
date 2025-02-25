@@ -204,6 +204,7 @@ watch(
           <InformasiPenetapanFatwa
             :data="dataPenetapan"
             :dataPengajuan="dataPengajuan"
+            :idReg="idReg"
           />
         </VCol>
       </VRow>

@@ -9,10 +9,13 @@ const props = defineProps({
   dataPengajuan: {
     type: Object,
   },
+  idReg: {
+    type: String,
+  },
 });
 
 const panelOpen = ref(0);
-const { data, dataPengajuan } = props || {};
+const { data, dataPengajuan, idReg } = props || {};
 const visibleOtp = ref(false)
 const lov = ref([])
 const cooldown = ref(0)
@@ -20,9 +23,10 @@ const otpNumber = ref("")
 const visibleDialogVerification = ref(false)
 const visibleDialogSubmit = ref(false)
 
-const startCooldown = () => {
-  cooldown.value = 60;
+const countdown = ref(0);
+const countdownInterval = ref(null);
 
+const startCooldown = () => {
   const interval = setInterval(() => {
     if (cooldown.value > 0) cooldown.value--;
     else clearInterval(interval);
@@ -30,7 +34,6 @@ const startCooldown = () => {
 };
 
 const sessionData = await useMyAuthUserStore().getSession();
-
 
 const loadMasterLov = async () => {
   try {
@@ -53,8 +56,6 @@ const loadMasterLov = async () => {
 
 const onRequestOtp = async () => {
   try {
-    startCooldown();
-
     const response: any = await $api(
       "/sidang-fatwa/task-force/request-otp",
       {
@@ -76,6 +77,50 @@ const onRequestOtp = async () => {
   }
 }
 
+const startCountdown = (seconds: number) => {
+  countdown.value = seconds;
+  localStorage.setItem('otpExpirationTime', (Math.floor(Date.now() / 1000) + seconds).toString());
+
+  countdownInterval.value = setInterval(() => {
+    countdown.value--;
+    if (countdown.value <= 0) {
+      clearInterval(countdownInterval.value);
+      localStorage.removeItem('otpExpirationTime');
+    }
+  }, 1000);
+};
+
+const reRequestOtp = async () => {
+  startCountdown(60);
+  onRequestOtp()
+}
+
+const onSubmitPenetapan = async () => {
+  try {
+    const response: any = await $api(
+      "/sidang-fatwa/task-force/submit-penetapan",
+      {
+        method: "post",
+        body: {
+          id_reg: idReg,
+          id_penetapan: data?.id_penetapan,
+          penetapan: data?.penetapan,
+        },
+      },
+    );
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar(response.message, "success");
+      return;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan submit penetapan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan submit penetapan", "error");
+  } finally {
+    // loadingPendamping.value = false;
+  }
+}
+
 const onVerifyOtp = async () => {
   try {
     const response: any = await $api(
@@ -89,8 +134,11 @@ const onVerifyOtp = async () => {
       }
     );
     if (response.code === 2000) {
-      useSnackbar().sendSnackbar(response.message, "success");
-      visibleDialogSubmit.value = true
+      useSnackbar().sendSnackbar("Verifikasi OTP berhasil", "success");
+      visibleDialogVerification.value = false
+      setTimeout(async () => {
+        await onSubmitPenetapan()
+      }, 500);
       return;
     } else {
       useSnackbar().sendSnackbar("OTP tidak valid", "error");
@@ -103,6 +151,15 @@ const onVerifyOtp = async () => {
 }
 
 onMounted(async () => {
+  const storedTime = localStorage.getItem('otpExpirationTime');
+  if (storedTime) {
+    const now = Math.floor(Date.now() / 1000);
+    const remainingTime = parseInt(storedTime, 10) - now;
+
+    if (remainingTime > 0) {
+      startCountdown(remainingTime);
+    }
+  }
   await loadMasterLov()
 })
 
@@ -113,6 +170,12 @@ const onApprove = async () => {
     visibleOtp.value = false
   }
 }
+
+watch(countdown, (newValue) => {
+  if (newValue > 0) {
+    visibleOtp.value = true
+  }
+});
 </script>
 
 <template>
@@ -211,12 +274,13 @@ const onApprove = async () => {
                       v-model="otpNumber"
                     />
                     <p>Belum terima kode?
-                      <span v-if="cooldown > 0">({{ cooldown }}) detik</span>
-                      <span v-else><a href="#" @click.prevent="() => onRequestOtp()">Kirim Ulang</a></span>
+                      <span v-if="countdown > 0">({{ countdown }}) detik</span>
+                      <span v-else><a href="#" @click.prevent="() => reRequestOtp()">Kirim Ulang</a></span>
                     </p>
                     <VBtn
                       block
                       type="submit"
+                      :disabled="otpNumber.length < 6"
                       @click="onVerifyOtp">
                       Verifikasi Kode
                     </VBtn>
