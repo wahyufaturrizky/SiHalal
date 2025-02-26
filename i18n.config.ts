@@ -12,7 +12,7 @@ const messages = Object.fromEntries(
 export default defineI18nConfig(() => ({
   legacy: false,
   locale: cookieRef("language", themeConfig.app.i18n.defaultLocale).value,
-  fallbackLocale: "en",
+  fallbackLocale: "id",
   messages,
   // Suppress warnings
   missingWarn: false,
