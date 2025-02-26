@@ -35,8 +35,9 @@ const headers = [
     nowrap: true,
   },
   {
-    title: `${t("reguler-invoice.invoice-list-noref")}`,
-    key: "no_ref",
+    // title: `${t("reguler-invoice.invoice-list-noref")}`,
+    title: `No VA`,
+    key: "va",
     nowrap: true,
   },
   {
