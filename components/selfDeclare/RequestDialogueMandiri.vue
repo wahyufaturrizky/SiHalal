@@ -58,7 +58,9 @@ const registerNewDevelopment = async () => {
     );
 
     if (response?.code === 2000) {
-      router.push(`/sh-domestic/submission/self-declare-mandiri/${response?.data?.id_reg}`);
+      router.push(
+        `/sh-domestic/submission/self-declare-mandiri/${response?.data?.id_reg}`
+      );
     } else {
       useSnackbar().sendSnackbar(
         response.errors.list_error.length != 0
@@ -83,6 +85,9 @@ onMounted(async () => {
   kbliOptions.value = response.filter((item: any, index: number, self: any) => {
     return index === self.findIndex((el: any) => el.id === item.id);
   });
+  if (kbliOptions.value.length != 0) {
+    selectedKBLI.value = kbliOptions.value[0].id;
+  }
 });
 const { mdAndUp } = useDisplay();
 const dialogMaxWidth = computed(() => {
