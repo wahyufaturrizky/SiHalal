@@ -22,7 +22,7 @@ const tableHeader = [
   { title: "Nama PU", value: "nama_pu" },
   { title: "Alamat", value: "alamat" },
   { title: "Jenis Produk", value: "jenis_produk" },
-  { title: "Merek Dagang", value: "merek_dagang" },
+  // { title: "Merek Dagang", value: "merek_dagang" },
 ];
 
 const selectedFilterPermohonan = ref("");
