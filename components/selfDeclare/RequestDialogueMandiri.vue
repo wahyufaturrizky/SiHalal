@@ -86,7 +86,7 @@ onMounted(async () => {
     return index === self.findIndex((el: any) => el.id === item.id);
   });
   if (kbliOptions.value.length != 0) {
-    selectedKBLI.value = kbliOptions.value[0];
+    selectedKBLI.value = kbliOptions.value[0].id;
   }
 });
 const { mdAndUp } = useDisplay();
