@@ -46,6 +46,9 @@ onMounted(async () => {
   kbliOptions.value = response.filter((item: any, index: number, self: any) => {
     return index === self.findIndex((el: any) => el.id === item.id);
   });
+  if (kbliOptions.value.length != 0) {
+    selectedKBLI.value = kbliOptions.value[0];
+  }
 });
 </script>
 
