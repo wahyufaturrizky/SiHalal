@@ -10,9 +10,9 @@ const headers: any = [
   { title: "No. Daftar", key: "no_daftar", nowrap: true },
   { title: "Tanggal", key: "tgl_daftar", nowrap: true },
   { title: "Nama PU", key: "nama_pu", nowrap: true },
-  { title: "Jenis Produk", key: "jenis_produk", nowrap: true },
+  // { title: "Jenis Produk", key: "jenis_produk", nowrap: true },
   { title: "Status", key: "status", nowrap: true },
-  { title: "Merk Dagang", key: "merk_dagang", nowrap: true },
+  // { title: "Merk Dagang", key: "merk_dagang", nowrap: true },
   {
     title: "Action",
     value: "action",
@@ -260,12 +260,12 @@ onMounted(async () => {
                   : "-"
               }}
             </template>
-            <template #item.jenis_produk="{ item }: any">
+            <!-- <template #item.jenis_produk="{ item }: any">
               {{ item.jenis_produk ? item.jenis_produk : "-" }}
-            </template>
-            <template #item.merk_dagang="{ item }: any">
+            </template> -->
+            <!-- <template #item.merk_dagang="{ item }: any">
               {{ item.merk_dagang ? item.merk_dagang : "-" }}
-            </template>
+            </template> -->
             <template #item.action="{ item }: any">
               <VIcon
                 color="success"
