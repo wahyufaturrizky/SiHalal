@@ -21,7 +21,7 @@
           >
             <VIcon icon="mdi-delete" />
           </VBtn>
-          <!-- <VBtn
+          <VBtn
             variant="outlined"
             append-icon="ri-pencil-fill"
             @click="
@@ -30,7 +30,7 @@
               )
             "
             >Ubah</VBtn
-          > -->
+          >
           <VBtn @click="isSendModalOpen = true">Kirim</VBtn>
         </div>
       </VCol>
