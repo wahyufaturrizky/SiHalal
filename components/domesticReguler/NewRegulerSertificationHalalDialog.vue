@@ -35,10 +35,10 @@ const onRegister = () => {
 onMounted(() => {
   if (props.data != undefined) {
     if (props.data.length != 0) {
-      selectedItem.value = props.data[0];
+      selectedItem.value = props.data[0].id;
     }
   }
-})
+});
 
 const onAddRegister = () => {
   developmentDialog.value = true;
