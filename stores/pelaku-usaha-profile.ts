@@ -61,6 +61,8 @@ export const pelakuUsahaProfile = defineStore({
         this.supervisorData = response.data.business_actor.supervisor_halal;
         this.perizinan = response.data.business_actor.perizinan;
       }
+      this.isLoading = false;
+
     },
     setProfileData(input: profileMain) {
       this.profileData = { ...this.profileData, ...input };
