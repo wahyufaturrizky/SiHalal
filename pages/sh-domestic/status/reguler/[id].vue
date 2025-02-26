@@ -638,7 +638,7 @@ onMounted(async () => {
               </div>
             </VExpansionPanelText>
           </VExpansionPanel>
-          <VExpansionPanel :value="4" class="pt-3">
+          <!--<VExpansionPanel :value="4" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               {{ t("status-permohoanan.reguler-detail-sidang-title") }}
             </VExpansionPanelTitle>
@@ -689,6 +689,7 @@ onMounted(async () => {
               </div>
             </VExpansionPanelText>
           </VExpansionPanel>
+          -->
           <VExpansionPanel :value="5" class="pt-3">
             <div v-if="detailData?.tracking">
               <!-- <PanelTracking :data="detailData?.tracking" /> -->
