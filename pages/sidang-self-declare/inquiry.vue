@@ -20,7 +20,7 @@ const tableHeader = [
   { title: "Jenis Produk", key: "jenis_produk" },
   { title: "Nama PU", key: "nama_pu" },
   { title: "Alamat", key: "alamat" },
-  { title: "Merk Dagang", key: "merek_dagang" },
+  // { title: "Merk Dagang", key: "merek_dagang" },
   { title: "No. Daftar", key: "no_daftar" },
   { title: "Tanggal Daftar", key: "tgl_daftar" },
   { title: "Action", key: "action" },
