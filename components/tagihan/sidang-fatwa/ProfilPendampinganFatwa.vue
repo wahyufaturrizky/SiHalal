@@ -29,6 +29,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  data: {
+    type: Object,
+    required: true
+  }
 })
 
 // Combine props into a single reactive object
@@ -39,6 +43,7 @@ const combinedProps = ref({
   produk: props.produk,
   cleaning: props.cleaning,
   kemasan: props.kemasan,
+  data: props.data,
 })
 
 const profil = ref([])
@@ -56,84 +61,148 @@ watch(
         {
           id: 1,
           key: t('task-force.proses-sidang.detail.section-profile.nomor'),
-          value: getValueOrDash(newData?.sertifikat?.no_daftar),
+          value: getValueOrDash(newData?.data?.no_daftar),
         },
         {
           id: 2,
           key: t('task-force.proses-sidang.detail.section-profile.created'),
-          value: getValueOrDash(newData?.sertifikat?.nama_pu),
+          value: newData?.data?.tgl_daftar ? formatDateIntl(new Date(getValueOrDash(newData?.data?.tgl_daftar))) : getValueOrDash(newData?.data?.tgl_daftar),
         },
         {
           id: 3,
-          key: t('task-force.proses-sidang.detail.section-profile.status'),
-          value: getValueOrDash(newData?.sertifikat?.alamat_pu),
+          key: 'divider',
         },
         {
           id: 4,
-          key: t('task-force.proses-sidang.detail.section-profile.registration-type'),
-          value: getValueOrDash(newData?.sertifikat?.kota_pu),
+          key: t('task-force.proses-sidang.detail.section-profile.no_mohon'),
+          value: getValueOrDash(newData?.data?.no_mohon),
         },
         {
           id: 5,
-          key: 'divider',
-          value: getValueOrDash(newData?.penanggungjawab?.nama_pj),
+          key: t('task-force.proses-sidang.detail.section-profile.tgl_mohon'),
+          value: newData?.data?.tgl_mohon ? formatDateIntl(new Date(getValueOrDash(newData?.data?.tgl_mohon))) : getValueOrDash(newData?.data?.tgl_mohon),
         },
         {
           id: 6,
-          key: t('task-force.proses-sidang.detail.section-profile.company-name'),
-          value: getValueOrDash(newData?.sertifikat?.kota_pu),
+          key: t('task-force.proses-sidang.detail.section-profile.lph'),
+          value: getValueOrDash(newData?.data?.lph?.nama_lph),
         },
         {
           id: 7,
-          key: t('task-force.proses-sidang.detail.section-profile.address'),
-          value: getValueOrDash(newData?.sertifikat?.kota_pu),
+          key: t('task-force.proses-sidang.detail.section-profile.channel'),
+          value: getValueOrDash(newData?.data?.MChannel?.ref_desc),
         },
         {
           id: 8,
-          key: t('task-force.proses-sidang.detail.section-profile.city'),
-          value: getValueOrDash(newData?.sertifikat?.kota_pu),
+          key: t('task-force.proses-sidang.detail.section-profile.done-lph-date'),
+          value: newData?.data?.tgl_selesai_lph ? formatDateIntl(new Date(getValueOrDash(newData?.data?.tgl_selesai_lph))) : getValueOrDash(newData?.data?.tgl_selesai_lph),
         },
         {
           id: 9,
-          key: t('task-force.proses-sidang.detail.section-profile.province'),
-          value: getValueOrDash(newData?.sertifikat?.kota_pu),
+          key: t('task-force.proses-sidang.detail.section-profile.result'),
+          value: getValueOrDash(newData?.data?.hasil),
         },
         {
           id: 10,
-          key: t('task-force.proses-sidang.detail.section-profile.postal-code'),
-          value: getValueOrDash(newData?.sertifikat?.kota_pu),
+          key: t('task-force.proses-sidang.detail.section-profile.service-type'),
+          value: getValueOrDash(newData?.data?.jenis_layanan),
         },
         {
           id: 11,
-          key: t('task-force.proses-sidang.detail.section-profile.nationality'),
-          value: getValueOrDash(newData?.sertifikat?.kota_pu),
+          key: t('task-force.proses-sidang.detail.section-profile.product-type'),
+          value: getValueOrDash(newData?.data?.jenis_produk),
         },
         {
           id: 12,
-          key: t('task-force.proses-sidang.detail.section-profile.phone'),
-          value: getValueOrDash(newData?.sertifikat?.kota_pu),
+          key: t('task-force.proses-sidang.detail.section-profile.brand'),
+          value: getValueOrDash(newData?.data?.merek_dagang),
         },
         {
           id: 13,
-          key: t('task-force.proses-sidang.detail.section-profile.email'),
-          value: getValueOrDash(newData?.sertifikat?.kota_pu),
+          key: t('task-force.proses-sidang.detail.section-profile.area'),
+          value: getValueOrDash(newData?.data?.area_pemasaran),
         },
-        { id: 14, key: 'divider', value: true },
+        {
+          id: 14,
+          key: 'divider',
+        },
         {
           id: 15,
-          key: t('task-force.proses-sidang.detail.section-profile.bu-type'),
-          value: getValueOrDash(newData?.sertifikat?.kota_pu),
+          key: t('task-force.proses-sidang.detail.section-profile.company-name'),
+          value: getValueOrDash(newData?.data?.nama_pu),
         },
         {
           id: 16,
+          key: t('task-force.proses-sidang.detail.section-profile.company-name-sh'),
+          value: getValueOrDash(newData?.data?.nama_pu_sh),
+        },
+        {
+          id: 17,
+          key: t('task-force.proses-sidang.detail.section-profile.kbli-name'),
+          value: getValueOrDash(newData?.data?.area_pemasaran),
+        },
+        {
+          id: 18,
+          key: t('task-force.proses-sidang.detail.section-profile.address'),
+          value: getValueOrDash(newData?.data?.alamat_pu),
+        },
+        {
+          id: 19,
+          key: t('task-force.proses-sidang.detail.section-profile.city'),
+          value: getValueOrDash(newData?.data?.kota_pu),
+        },
+        {
+          id: 20,
+          key: t('task-force.proses-sidang.detail.section-profile.province'),
+          value: getValueOrDash(newData?.data?.prov_pu),
+        },
+        {
+          id: 21,
+          key: t('task-force.proses-sidang.detail.section-profile.postal-code'),
+          value: getValueOrDash(newData?.data?.kode_pos_pu),
+        },
+        {
+          id: 22,
+          key: t('task-force.proses-sidang.detail.section-profile.nationality'),
+          value: getValueOrDash(newData?.data?.negara_pu),
+        },
+        {
+          id: 23,
+          key: t('task-force.proses-sidang.detail.section-profile.phone'),
+          value: getValueOrDash(newData?.data?.no_telp),
+        },
+        {
+          id: 24,
+          key: t('task-force.proses-sidang.detail.section-profile.email'),
+          value: getValueOrDash(newData?.data?.email),
+        },
+        {
+          id: 25,
+          key: t('task-force.proses-sidang.detail.section-profile.bu-type'),
+          value: getValueOrDash(newData?.data?.jenis_usaha),
+        },
+        {
+          id: 26,
           key: t('task-force.proses-sidang.detail.section-profile.scale'),
-          value: getValueOrDash(newData?.sertifikat?.kota_pu),
+          value: getValueOrDash(newData?.data?.skala_usaha),
+        },
+        {
+          id: 27,
+          key: t('task-force.proses-sidang.detail.section-profile.base-modal'),
+          value: newData?.data?.modal_usaha,
         },
       ]
     }
   },
   { immediate: true, deep: true },
 )
+
+const getChipColor = (status: string) => {
+  if (status === 'LULUS')
+    return 'success'
+
+  return 'primary'
+}
 
 const paneSwitcher = ref([0, 1])
 </script>
@@ -167,20 +236,15 @@ const paneSwitcher = ref([0, 1])
             v-if="item.key !== 'divider'"
             cols="8"
           >
-            <div
-              v-if="index === profil.length - 1"
-              class="d-flex gap-3"
-            >
-              <VSelect
-                disabled
-                item-text="title"
-                item-value="value"
-              />
-              <VBtn
-                disabled
-                text="Update"
-                @click="handleButtonClick"
-              />
+            <div v-if="item.key === t('task-force.proses-sidang.detail.section-profile.result')">
+              <VChip
+                :key="item.id"
+                :color="getChipColor(item.value)"
+                label
+                class=""
+              >
+                {{ item.value }}
+              </VChip>
             </div>
             <div v-else>
               {{ item.value }}

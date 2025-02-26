@@ -119,8 +119,6 @@ const getDistrict = async (kode: string) => {
   } as any);
   districtList.value = response;
   if (isEdit.value) {
-    profileData.kota_id = null;
-    profileData.kecamatan_id = null;
     updateData.kota_id = null;
     updateData.kecamatan_id = null;
   }
@@ -133,10 +131,7 @@ const getSubDistrict = async (kode: string) => {
     },
   } as any);
   subDistrictList.value = response;
-  if (isEdit.value) {
-    profileData.kecamatan_id = null;
-    updateData.kecamatan_id = null;
-  }
+  if (isEdit.value) updateData.kecamatan_id = null;
 };
 
 const fotoRekRef = ref();
@@ -159,7 +154,7 @@ const handleSelectBankAccPhoto = async (event: any) => {
   }
 };
 const handleRemoveBankAccPhoto = () => {
-  updateData.rekening.foto_rekening = null;
+  uploadedBankAccFilename.value = null;
   bankAccPhoto.value = null;
 };
 
@@ -176,7 +171,7 @@ const handleSelectNpwpPhoto = async (event: any) => {
   }
 };
 const handleRemoveNpwpPhoto = () => {
-  updateData.rekening.foto_npwp = null;
+  uploadedNpwpFilename.value = null;
   npwpPhoto.value = null;
 };
 
@@ -247,22 +242,64 @@ const isOpenModal = ref(false);
 const handleOpenModal = () => {
   isOpenModal.value = !isOpenModal.value;
 };
-const handleConfirmUpdate = async () => {
-  try {
-    const response: any = await $api("/reguler/lph/profile-update", {
-      method: "put",
-      body: updateData,
-    } as any);
 
-    if (response.code === 2000) {
-      useSnackbar().sendSnackbar("Berhasil menyimpan data", "success");
-      refresh()
-    } else {
+const setUpdatePayload = () => {
+  return {
+    nama: updateData.nama,
+    jenis_lembaga: updateData.jenis_lembaga,
+    alamat: updateData.alamat,
+    provinsi_id: updateData.provinsi_id,
+    kota_id: updateData.kota_id,
+    kecamatan_id: updateData.kecamatan_id,
+    email: updateData.email,
+    bangunan: updateData.bangunan,
+    jumlah_auditor: +updateData.jumlah_auditor,
+    jumlah_cabang: +updateData.jumlah_cabang,
+    lab: updateData.lab,
+    pic_nama_pimpinan: updateData.pic_nama_pimpinan,
+    pic_nohp_pimpinan: updateData.pic_nohp_pimpinan,
+    pic_nama_kontak: updateData.pic_nama_kontak,
+    pic_nohp_kontak: updateData.pic_nohp_kontak,
+    rekening: {
+      bank: updateData.rekening.bank,
+      no_rekening: updateData.rekening.no_rekening,
+      nama: updateData.rekening.nama,
+      foto_rekening: uploadedBankAccFilename.value
+        ? uploadedBankAccFilename.value
+        : updateData.rekening.foto_rekening,
+      npwp: updateData.rekening.npwp,
+      foto_npwp: uploadedNpwpFilename.value
+        ? uploadedNpwpFilename.value
+        : updateData.rekening.foto_npwp,
+    },
+  };
+};
+
+const updateForm = ref()
+const handleConfirmUpdate = async () => {
+  const status = await updateForm.value.validate();
+
+  if (status.valid) {
+    try {
+      const payload = setUpdatePayload()
+      const response: any = await $api("/reguler/lph/profile-update", {
+        method: "put",
+        body: payload,
+      } as any);
+
+      if (response.code === 2000) {
+        useSnackbar().sendSnackbar("Berhasil menyimpan data", "success");
+        refresh()
+        handleCloseEdit(true)
+      } else {
+        useSnackbar().sendSnackbar("Gagal menyimpan data", "error");
+      }
+    } catch (error) {
       useSnackbar().sendSnackbar("Gagal menyimpan data", "error");
+      console.error(error);
     }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Gagal menyimpan data", "error");
-    console.error(error);
+  } else {
+    useSnackbar().sendSnackbar("Mohon cek kembali kelengkapan data Anda", "error");
   }
 }
 
@@ -276,13 +313,17 @@ const handleEdit = () => {
   Object.assign(updateData, profileData)
   isEdit.value = !isEdit.value
 }
-const handleCloseEdit = () => {
+const handleCloseEdit = async (isUpdate: boolean) => {
   Object.assign(updateData, profileData)
   uploadedBankAccFilename.value = null
   uploadedNpwpFilename.value = null
   bankAccPhoto.value = null
   npwpPhoto.value = null
   isEdit.value = !isEdit.value
+  if (!isUpdate) {
+    if (profileData.provinsi_id) await getDistrict(profileData.provinsi_id)
+    if (profileData.kota_id) await getSubDistrict(profileData.kota_id)
+  }
 }
 </script>
 
@@ -293,7 +334,7 @@ const handleCloseEdit = () => {
         Lembaga Pemeriksa Halal
       </h1>
       <div>
-        <VBtn v-if="isEdit" variant="outlined" text="Batal" @click="handleCloseEdit"/>
+        <VBtn v-if="isEdit" variant="outlined" text="Batal" @click="handleCloseEdit(false)"/>
         <VBtn v-if="isEdit" text="Simpan" class="ms-3" @click="handleOpenModal"/>
         <VBtn v-if="!isEdit" variant="outlined" text="Ubah" append-icon="mdi-pencil" @click="handleEdit"/>
       </div>
@@ -301,280 +342,19 @@ const handleCloseEdit = () => {
   </VRow>
   <VRow>
     <VCol cols="8">
-      <VCard class="mb-10 pt-3">
-        <VCardTitle class="mb-5">
-          <div class="font-weight-bold text-h4">
-            Profil Lembaga Pemeriksa Halal
-          </div>
-        </VCardTitle>
-        <VCardText>
-          <div class="mb-3">
-            <div class="font-weight-bold mb-1">Nama Lembaga</div>
-            <VTextField
-              v-if="!isEdit"
-              :model-value="profileData.nama ? profileData.nama : '-'"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              disabled
-            />
-            <VTextField
-              v-else
-              :rules="[
-                requiredValidator,
-                regexValidator(
-                  updateData.nama,
-                  /^(?!.*\s\s)(?!.*'')(?!.*\-\-)[a-zA-Z\s'\-]+$/,
-                  'Format nama lembaga tidak sesuai'
-                ),
-              ]"
-              v-model="updateData.nama"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-            />
-          </div>
-          <div class="mb-3">
-            <div class="font-weight-bold mb-1">Jenis Lembaga</div>
-            <VSelect
-              v-if="!isEdit"
-              :model-value="profileData.jenis_lembaga ? profileData.jenis_lembaga : '-'"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              disabled
-              menu-icon="fa-chevron-down"
-            />
-            <VSelect
-              v-else
-              :rules="[requiredValidator]"
-              v-model="updateData.jenis_lembaga"
-              :items="['LPH Masyarakat', 'LPH Pemerintah']"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              menu-icon="fa-chevron-down"
-            />
-          </div>
-          <div class="mb-3">
-            <div class="font-weight-bold mb-1">Alamat</div>
-            <VTextField
-              v-if="!isEdit"
-              :model-value="profileData.alamat ? profileData.alamat : '-'"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              disabled
-            />
-            <VTextField
-              v-else
-              :rules="[
-                requiredValidator,
-                regexValidator(
-                  profileData.alamat,
-                  /^(?!.*\s\s)(?!.*'')(?!.*\-\-)(?!.*\.\.)(?!.*,,)(?!.*[0-9]{6,})(?=.*[a-zA-Z]{5,})[a-zA-Z0-9\s'\.\,\-]+$/,
-                  'Format alamat lembaga tidak sesuai'
-                ),
-              ]"
-              v-model="updateData.alamat"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-            />
-          </div>
-          <div class="mb-3">
-            <div class="font-weight-bold mb-1">Provinsi</div>
-            <VSelect
-              v-if="!isEdit"
-              :model-value="profileData.provinsi ? profileData.provinsi : '-'"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              disabled
-              menu-icon="fa-chevron-down"
-            />
-            <VSelect
-              v-else
-              placeholder="Pilih provinsi"
-              :rules="[requiredValidator]"
-              v-model="updateData.provinsi_id"
-              @update:model-value="getDistrict"
-              :items="provinceList"
-              item-title="name"
-              item-value="code"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              menu-icon="fa-chevron-down"
-            />
-          </div>
-          <div class="mb-3">
-            <div class="font-weight-bold mb-1">Kab/Kota</div>
-            <VSelect
-              v-if="!isEdit"
-              :model-value="profileData.kota ? profileData.kota : '-'"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              disabled
-              menu-icon="fa-chevron-down"
-            />
-            <VSelect
-              v-else
-              placeholder="Pilih kabupaten/kota"
-              :rules="[requiredValidator]"
-              v-model="updateData.kota_id"
-              @update:model-value="getSubDistrict"
-              :items="districtList"
-              item-title="name"
-              item-value="code"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              menu-icon="fa-chevron-down"
-            />
-          </div>
-          <div class="mb-3">
-            <div class="font-weight-bold mb-1">Kecamatan</div>
-            <VSelect
-              v-if="!isEdit"
-              :model-value="profileData.kecamatan ? profileData.kecamatan : '-'"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              disabled
-              menu-icon="fa-chevron-down"
-            />
-            <VSelect
-              v-else
-              placeholder="Pilih kecamatan"
-              :rules="[requiredValidator]"
-              v-model="updateData.kecamatan_id"
-              :items="subDistrictList"
-              item-title="name"
-              item-value="code"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              menu-icon="fa-chevron-down"
-            />
-          </div>
-          <div class="mb-3">
-            <div class="font-weight-bold mb-1">Email</div>
-            <VTextField
-              v-if="!isEdit"
-              :model-value="profileData.email ? profileData.email : '-'"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              disabled
-            />
-            <VTextField
-              v-else
-              :rules="[requiredValidator, emailValidator]"
-              v-model="updateData.email"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-            />
-          </div>
-          <div class="mb-3">
-            <div class="font-weight-bold mb-1">Bangunan LPH</div>
-            <VSelect
-              v-if="!isEdit"
-              :model-value="profileData.bangunan ? profileData.bangunan : '-'"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              disabled
-              menu-icon="fa-chevron-down"
-            />
-            <VSelect
-              v-else
-              :rules="[requiredValidator]"
-              v-model="updateData.bangunan"
-              :items="['Sewa', 'Milik Sendiri']"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              menu-icon="fa-chevron-down"
-            />
-          </div>
-          <div class="mb-3">
-            <div class="font-weight-bold mb-1">Jumlah Auditor Halal</div>
-            <VTextField
-              v-if="!isEdit"
-              :model-value="profileData.jumlah_auditor ? profileData.jumlah_auditor : '-'"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              disabled
-            />
-            <VTextField
-              v-else
-              :rules="[requiredValidator, integerValidator]"
-              v-model="updateData.jumlah_auditor"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-            />
-          </div>
-          <div class="mb-3">
-            <div class="font-weight-bold mb-1">Jumlah Kantor Cabang</div>
-            <VTextField
-              v-if="!isEdit"
-              :model-value="profileData.jumlah_cabang ? profileData.jumlah_cabang : '-'"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              disabled
-            />
-            <VTextField
-              v-else
-              :rules="[requiredValidator, integerValidator]"
-              v-model="updateData.jumlah_cabang"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-            />
-          </div>
-          <div>
-            <div class="font-weight-bold mb-1">Memiliki Lab</div>
-            <VSelect
-              v-if="!isEdit"
-              :model-value="profileData.lab ? profileData.lab : 'Tidak'"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              disabled
-              menu-icon="fa-chevron-down"
-            />
-            <VSelect
-              v-else
-              :rules="[requiredValidator]"
-              v-model="updateData.lab"
-              :items="['Tidak', 'Ya', 'Kerjasama dengan lembaga yang memiliki lab terakreditasi ISO 17025']"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              menu-icon="fa-chevron-down"
-            />
-          </div>
-        </VCardText>
-      </VCard>
-      <VCard class="mb-10 pt-3">
-        <VCardTitle class="mb-5">
-          <div class="font-weight-bold text-h4">
-            Penanggung Jawab
-          </div>
-        </VCardTitle>
-        <VCardText>
-          <VRow>
-            <VCol cols="6">
-              <div class="font-weight-bold mb-1">Nama Pimpinan</div>
+      <VForm ref="updateForm">
+        <VCard class="mb-10 pt-3">
+          <VCardTitle class="mb-5">
+            <div class="font-weight-bold text-h4">
+              Profil Lembaga Pemeriksa Halal
+            </div>
+          </VCardTitle>
+          <VCardText>
+            <div class="mb-3">
+              <div class="font-weight-bold mb-1">Nama Lembaga</div>
               <VTextField
                 v-if="!isEdit"
-                :model-value="profileData.pic_nama_pimpinan ? profileData.pic_nama_pimpinan : '-'"
+                :model-value="profileData.nama ? profileData.nama : '-'"
                 :bg-color="!isEdit ? '#F6F6F6' : ''"
                 density="compact"
                 rounded="xl"
@@ -582,25 +362,40 @@ const handleCloseEdit = () => {
               />
               <VTextField
                 v-else
-                :rules="[
-                  requiredValidator,
-                  regexValidator(
-                    updateData.pic_nama_pimpinan,
-                    /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
-                    'Format nama pimpinan tidak sesuai'
-                  ),
-                ]"
-                v-model="updateData.pic_nama_pimpinan"
+                :rules="[requiredValidator]"
+                v-model="updateData.nama"
                 :bg-color="!isEdit ? '#F6F6F6' : ''"
                 density="compact"
                 rounded="xl"
               />
-            </VCol>
-            <VCol cols="6">
-              <div class="font-weight-bold mb-1">No. HP</div>
+            </div>
+            <div class="mb-3">
+              <div class="font-weight-bold mb-1">Jenis Lembaga</div>
+              <VSelect
+                v-if="!isEdit"
+                :model-value="profileData.jenis_lembaga ? profileData.jenis_lembaga : '-'"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+                disabled
+                menu-icon="fa-chevron-down"
+              />
+              <VSelect
+                v-else
+                :rules="[requiredValidator]"
+                v-model="updateData.jenis_lembaga"
+                :items="['LPH Masyarakat', 'LPH Pemerintah']"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+                menu-icon="fa-chevron-down"
+              />
+            </div>
+            <div class="mb-3">
+              <div class="font-weight-bold mb-1">Alamat</div>
               <VTextField
                 v-if="!isEdit"
-                :model-value="profileData.pic_nohp_pimpinan ? profileData.pic_nohp_pimpinan : '-'"
+                :model-value="profileData.alamat ? profileData.alamat : '-'"
                 :bg-color="!isEdit ? '#F6F6F6' : ''"
                 density="compact"
                 rounded="xl"
@@ -608,21 +403,95 @@ const handleCloseEdit = () => {
               />
               <VTextField
                 v-else
-                :rules="[requiredValidator, phoneNumberIdValidator]"
-                v-model="updateData.pic_nohp_pimpinan"
+                :rules="[requiredValidator]"
+                v-model="updateData.alamat"
                 :bg-color="!isEdit ? '#F6F6F6' : ''"
                 density="compact"
                 rounded="xl"
               />
-            </VCol>
-          </VRow>
-          <VDivider class="mt-4 mb-3"/>
-          <VRow>
-            <VCol cols="6">
-              <div class="font-weight-bold mb-1">Nama Kontak</div>
+            </div>
+            <div class="mb-3">
+              <div class="font-weight-bold mb-1">Provinsi</div>
+              <VSelect
+                v-if="!isEdit"
+                :model-value="profileData.provinsi ? profileData.provinsi : '-'"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+                disabled
+                menu-icon="fa-chevron-down"
+              />
+              <VSelect
+                v-else
+                placeholder="Pilih provinsi"
+                :rules="[requiredValidator]"
+                v-model="updateData.provinsi_id"
+                @update:model-value="getDistrict"
+                :items="provinceList"
+                item-title="name"
+                item-value="code"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+                menu-icon="fa-chevron-down"
+              />
+            </div>
+            <div class="mb-3">
+              <div class="font-weight-bold mb-1">Kab/Kota</div>
+              <VSelect
+                v-if="!isEdit"
+                :model-value="profileData.kota ? profileData.kota : '-'"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+                disabled
+                menu-icon="fa-chevron-down"
+              />
+              <VSelect
+                v-else
+                placeholder="Pilih kabupaten/kota"
+                :rules="[requiredValidator]"
+                v-model="updateData.kota_id"
+                @update:model-value="getSubDistrict"
+                :items="districtList"
+                item-title="name"
+                item-value="code"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+                menu-icon="fa-chevron-down"
+              />
+            </div>
+            <div class="mb-3">
+              <div class="font-weight-bold mb-1">Kecamatan</div>
+              <VSelect
+                v-if="!isEdit"
+                :model-value="profileData.kecamatan ? profileData.kecamatan : '-'"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+                disabled
+                menu-icon="fa-chevron-down"
+              />
+              <VSelect
+                v-else
+                placeholder="Pilih kecamatan"
+                :rules="[requiredValidator]"
+                v-model="updateData.kecamatan_id"
+                :items="subDistrictList"
+                item-title="name"
+                item-value="code"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+                menu-icon="fa-chevron-down"
+              />
+            </div>
+            <div class="mb-3">
+              <div class="font-weight-bold mb-1">Email</div>
               <VTextField
                 v-if="!isEdit"
-                :model-value="profileData.pic_nama_kontak ? profileData.pic_nama_kontak : '-'"
+                :model-value="profileData.email ? profileData.email : '-'"
                 :bg-color="!isEdit ? '#F6F6F6' : ''"
                 density="compact"
                 rounded="xl"
@@ -630,238 +499,361 @@ const handleCloseEdit = () => {
               />
               <VTextField
                 v-else
-                :rules="[
-                  requiredValidator,
-                  regexValidator(
-                    updateData.pic_nama_kontak,
-                    /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
-                    'Format nama kontak tidak sesuai'
-                  ),
-                  ]"
-                v-model="updateData.pic_nama_kontak"
+                :rules="[requiredValidator, emailValidator]"
+                v-model="updateData.email"
                 :bg-color="!isEdit ? '#F6F6F6' : ''"
                 density="compact"
                 rounded="xl"
               />
-            </VCol>
-            <VCol cols="6">
-              <div class="font-weight-bold mb-1">No. HP</div>
-              <VTextField
+            </div>
+            <div class="mb-3">
+              <div class="font-weight-bold mb-1">Bangunan LPH</div>
+              <VSelect
                 v-if="!isEdit"
-                :model-value="profileData.pic_nohp_kontak ? profileData.pic_nohp_kontak : '-'"
+                :model-value="profileData.bangunan ? profileData.bangunan : '-'"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+                disabled
+                menu-icon="fa-chevron-down"
+              />
+              <VSelect
+                v-else
+                :rules="[requiredValidator]"
+                v-model="updateData.bangunan"
+                :items="['Sewa', 'Milik Sendiri']"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+                menu-icon="fa-chevron-down"
+              />
+            </div>
+            <div class="mb-3">
+              <div class="font-weight-bold mb-1">Jumlah Auditor Halal</div>
+              <VTextField
+                :model-value="profileData.jumlah_auditor ? profileData.jumlah_auditor : '-'"
                 :bg-color="!isEdit ? '#F6F6F6' : ''"
                 density="compact"
                 rounded="xl"
                 disabled
               />
-              <VTextField
+              <!-- <VTextField
                 v-else
-                :rules="[requiredValidator, phoneNumberIdValidator]"
-                v-model="updateData.pic_nohp_kontak"
+                :rules="[requiredValidator, integerValidator]"
+                v-model="updateData.jumlah_auditor"
                 :bg-color="!isEdit ? '#F6F6F6' : ''"
                 density="compact"
                 rounded="xl"
+              /> -->
+            </div>
+            <div class="mb-3">
+              <div class="font-weight-bold mb-1">Jumlah Kantor Cabang</div>
+              <VTextField
+                :model-value="profileData.jumlah_cabang ? profileData.jumlah_cabang : '0'"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+                disabled
               />
-            </VCol>
-          </VRow>
-        </VCardText>
-      </VCard>
-      <VCard class="mb-10 pt-3">
-        <VCardTitle class="mb-5">
-          <div class="font-weight-bold text-h4">
-            Data Rekening Bank & NPWP
-          </div>
-        </VCardTitle>
-        <VCardText>
-          <div class="mb-3">
-            <div class="font-weight-bold mb-1">Nama Bank</div>
-            <VTextField
-              v-if="!isEdit"
-              :model-value="profileData.rekening.bank ? profileData.rekening.bank : '-'"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              disabled
-            />
-            <VTextField
-              v-else
-              :rules="[
-                requiredValidator,
-                regexValidator(
-                  updateData.rekening.bank,
-                  /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
-                  'Format nama bank tidak sesuai'
-                ),
-              ]"
-              v-model="updateData.rekening.bank"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-            />
-          </div>
-          <div class="mb-3">
-            <div class="font-weight-bold mb-1">No. Rekening</div>
-            <VTextField
-              v-if="!isEdit"
-              :model-value="profileData.rekening.no_rekening ? profileData.rekening.no_rekening : '-'"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              disabled
-            />
-            <VTextField
-              v-else
-              :rules="[requiredValidator, integerValidator]"
-              v-model="updateData.rekening.no_rekening"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-            />
-          </div>
-          <div class="mb-3">
-            <div class="font-weight-bold mb-1">Atas Nama</div>
-            <VTextField
-              v-if="!isEdit"
-              :model-value="profileData.rekening.nama ? profileData.rekening.nama  : '-'"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              disabled
-            />
-            <VTextField
-              v-else
-              :rules="[
-                requiredValidator,
-                regexValidator(
-                  updateData.rekening.nama,
-                  /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
-                  'Format nama pemegang rekening tidak sesuai'
-                ),
-              ]"
-              v-model="updateData.rekening.nama"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-            />
-          </div>
-          <div class="mb-3">
-            <div class="font-weight-bold mb-1">Upload Foto Rekening</div>
-            <div class="d-flex align-center">
-              <div class="w-100 w-lg-50">
+              <!-- <VTextField
+                v-else
+                :rules="[requiredValidator, integerValidator]"
+                v-model="updateData.jumlah_cabang"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+              /> -->
+            </div>
+            <div>
+              <div class="font-weight-bold mb-1">Memiliki Lab</div>
+              <VSelect
+                v-if="!isEdit"
+                :model-value="profileData.lab ? profileData.lab : 'Tidak'"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+                disabled
+                menu-icon="fa-chevron-down"
+              />
+              <VSelect
+                v-else
+                :rules="[requiredValidator]"
+                v-model="updateData.lab"
+                :items="['Tidak', 'Ya', 'Kerjasama dengan lembaga yang memiliki lab terakreditasi ISO 17025']"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+                menu-icon="fa-chevron-down"
+              />
+            </div>
+          </VCardText>
+        </VCard>
+        <VCard class="mb-10 pt-3">
+          <VCardTitle class="mb-5">
+            <div class="font-weight-bold text-h4">
+              Penanggung Jawab
+            </div>
+          </VCardTitle>
+          <VCardText>
+            <VRow>
+              <VCol cols="6">
+                <div class="font-weight-bold mb-1">Nama Pimpinan</div>
                 <VTextField
                   v-if="!isEdit"
-                  class="custom-file-input"
+                  :model-value="profileData.pic_nama_pimpinan ? profileData.pic_nama_pimpinan : '-'"
                   :bg-color="!isEdit ? '#F6F6F6' : ''"
                   density="compact"
                   rounded="xl"
                   disabled
-                  placeholder="No file choosen"
-                  :model-value="profileData.rekening.foto_rekening"
-                >
-                  <template #append-inner>
-                    <VBtn v-if="!profileData.rekening.foto_rekening" rounded="s-0 e-xl" color="#A09BA1" text="Choose File" />
-                  </template>
-                </VTextField>
-                <FileUploadField
-                  v-else
-                  ref="fotoRekRef"
-                  @validation-is-valid="handleEmitValidationBankAccPhoto"
-                  :file-data="bankAccPhoto"
-                  :file-name="uploadedBankAccFilename ? uploadedBankAccFilename : updateData.rekening.foto_rekening"
-                  :initial-file-name="updateData.rekening.foto_rekening"
-                  @on-select="handleSelectBankAccPhoto"
-                  @on-remove="handleRemoveBankAccPhoto"
-                  :validation-list="[
-                    fileExtensionValidator,
-                    fileSizeValidator,
-                    fileNameLengthValidator,
-                  ]"
                 />
-              </div>
-              <VBtn
-                @click="profileData.rekening.foto_rekening ? handleDownload(profileData.rekening.foto_rekening, 'FILES') : null"
-                :color="profileData.rekening.foto_rekening ? 'primary' : '#A09BA1'"
-                class="px-4 ms-2"
-              >
-                <template #default>
-                  <VIcon icon="fa-download" />
-                </template>
-              </VBtn>
-            </div>
-          </div>
-          <div class="mb-3">
-            <div class="font-weight-bold mb-1">NPWP</div>
-            <VTextField
-              v-if="!isEdit"
-              :model-value="profileData.rekening.npwp ? profileData.rekening.npwp : '-'"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-              disabled
-            />
-            <VTextField
-              v-else
-              :rules="[
-                requiredValidator,
-                regexValidator(
-                  updateData.rekening.npwp,
-                  /^(?![-.])[0-9](?!.*[.\-]{2})[0-9.\-]*$/,
-                  'Format NPWP tidak sesuai'
-                )
-              ]"
-              v-model="updateData.rekening.npwp"
-              :bg-color="!isEdit ? '#F6F6F6' : ''"
-              density="compact"
-              rounded="xl"
-            />
-          </div>
-          <div>
-            <div class="font-weight-bold mb-1">Upload Foto NPWP</div>
-            <div class="d-flex align-center">
-              <div class="w-100 w-lg-50">
+                <VTextField
+                  v-else
+                  :rules="[requiredValidator]"
+                  v-model="updateData.pic_nama_pimpinan"
+                  :bg-color="!isEdit ? '#F6F6F6' : ''"
+                  density="compact"
+                  rounded="xl"
+                />
+              </VCol>
+              <VCol cols="6">
+                <div class="font-weight-bold mb-1">No. HP</div>
                 <VTextField
                   v-if="!isEdit"
-                  class="custom-file-input"
+                  :model-value="profileData.pic_nohp_pimpinan ? profileData.pic_nohp_pimpinan : '-'"
                   :bg-color="!isEdit ? '#F6F6F6' : ''"
                   density="compact"
                   rounded="xl"
                   disabled
-                  placeholder="No file choosen"
-                  :model-value="profileData.rekening.foto_npwp"
-                >
-                  <template #append-inner>
-                    <VBtn v-if="!profileData.rekening.foto_npwp" rounded="s-0 e-xl" color="#A09BA1" text="Choose File" />
-                  </template>
-                </VTextField>
-                <FileUploadField
-                  v-else
-                  ref="fotoNpwpRef"
-                  @validation-is-valid="handleEmitValidationNpwpPhoto"
-                  :file-data="npwpPhoto"
-                  :file-name="uploadedNpwpFilename ? uploadedNpwpFilename : updateData.rekening.foto_npwp"
-                  :initial-file-name="updateData.rekening.foto_npwp"
-                  @on-select="handleSelectNpwpPhoto"
-                  @on-remove="handleRemoveNpwpPhoto"
-                  :validation-list="[
-                    fileExtensionValidator,
-                    fileSizeValidator,
-                    fileNameLengthValidator,
-                  ]"
                 />
-              </div>
-              <VBtn
-                @click="profileData.rekening.foto_npwp ? handleDownload(profileData.rekening.foto_npwp, 'FILES') : null"
-                :color="profileData.rekening.foto_npwp ? 'primary' : '#A09BA1'"
-                class="px-4 ms-2"
-              >
-                <template #default>
-                  <VIcon icon="fa-download" />
-                </template>
-              </VBtn>
+                <VTextField
+                  v-else
+                  :rules="[requiredValidator]"
+                  v-model="updateData.pic_nohp_pimpinan"
+                  :bg-color="!isEdit ? '#F6F6F6' : ''"
+                  density="compact"
+                  rounded="xl"
+                />
+              </VCol>
+            </VRow>
+            <VDivider class="mt-4 mb-3"/>
+            <VRow>
+              <VCol cols="6">
+                <div class="font-weight-bold mb-1">Nama Kontak</div>
+                <VTextField
+                  v-if="!isEdit"
+                  :model-value="profileData.pic_nama_kontak ? profileData.pic_nama_kontak : '-'"
+                  :bg-color="!isEdit ? '#F6F6F6' : ''"
+                  density="compact"
+                  rounded="xl"
+                  disabled
+                />
+                <VTextField
+                  v-else
+                  :rules="[requiredValidator]"
+                  v-model="updateData.pic_nama_kontak"
+                  :bg-color="!isEdit ? '#F6F6F6' : ''"
+                  density="compact"
+                  rounded="xl"
+                />
+              </VCol>
+              <VCol cols="6">
+                <div class="font-weight-bold mb-1">No. HP</div>
+                <VTextField
+                  v-if="!isEdit"
+                  :model-value="profileData.pic_nohp_kontak ? profileData.pic_nohp_kontak : '-'"
+                  :bg-color="!isEdit ? '#F6F6F6' : ''"
+                  density="compact"
+                  rounded="xl"
+                  disabled
+                />
+                <VTextField
+                  v-else
+                  :rules="[requiredValidator]"
+                  v-model="updateData.pic_nohp_kontak"
+                  :bg-color="!isEdit ? '#F6F6F6' : ''"
+                  density="compact"
+                  rounded="xl"
+                />
+              </VCol>
+            </VRow>
+          </VCardText>
+        </VCard>
+        <VCard class="mb-10 pt-3">
+          <VCardTitle class="mb-5">
+            <div class="font-weight-bold text-h4">
+              Data Rekening Bank & NPWP
             </div>
-          </div>
-        </VCardText>
-      </VCard>
+          </VCardTitle>
+          <VCardText>
+            <div class="mb-3">
+              <div class="font-weight-bold mb-1">Nama Bank</div>
+              <VTextField
+                v-if="!isEdit"
+                :model-value="profileData.rekening.bank ? profileData.rekening.bank : '-'"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+                disabled
+              />
+              <VTextField
+                v-else
+                :rules="[requiredValidator]"
+                v-model="updateData.rekening.bank"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+              />
+            </div>
+            <div class="mb-3">
+              <div class="font-weight-bold mb-1">No. Rekening</div>
+              <VTextField
+                v-if="!isEdit"
+                :model-value="profileData.rekening.no_rekening ? profileData.rekening.no_rekening : '-'"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+                disabled
+              />
+              <VTextField
+                v-else
+                :rules="[requiredValidator, integerValidator]"
+                v-model="updateData.rekening.no_rekening"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+              />
+            </div>
+            <div class="mb-3">
+              <div class="font-weight-bold mb-1">Atas Nama</div>
+              <VTextField
+                v-if="!isEdit"
+                :model-value="profileData.rekening.nama ? profileData.rekening.nama  : '-'"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+                disabled
+              />
+              <VTextField
+                v-else
+                :rules="[requiredValidator]"
+                v-model="updateData.rekening.nama"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+              />
+            </div>
+            <div class="mb-3">
+              <div class="font-weight-bold mb-1">Upload Foto Rekening</div>
+              <div class="d-flex align-start">
+                <div class="w-100 w-lg-50">
+                  <VTextField
+                    v-if="!isEdit"
+                    class="custom-file-input"
+                    :bg-color="!isEdit ? '#F6F6F6' : ''"
+                    density="compact"
+                    rounded="xl"
+                    disabled
+                    placeholder="No file choosen"
+                    :model-value="profileData.rekening.foto_rekening"
+                  >
+                    <template #append-inner>
+                      <VBtn v-if="!profileData.rekening.foto_rekening" rounded="s-0 e-xl" color="#A09BA1" text="Choose File" />
+                    </template>
+                  </VTextField>
+                  <FileUploadField
+                    v-else
+                    ref="fotoRekRef"
+                    @validation-is-valid="handleEmitValidationBankAccPhoto"
+                    :file-data="bankAccPhoto"
+                    :file-name="uploadedBankAccFilename ? uploadedBankAccFilename : updateData.rekening.foto_rekening"
+                    :initial-file-name="updateData.rekening.foto_rekening"
+                    @on-select="handleSelectBankAccPhoto"
+                    @on-remove="handleRemoveBankAccPhoto"
+                    :validation-list="uploadedBankAccFilename ? [
+                      fileExtensionValidator,
+                      fileSizeValidator,
+                      fileNameLengthValidator,
+                    ] : []"
+                  />
+                </div>
+                <VBtn
+                  @click="profileData.rekening.foto_rekening ? handleDownload(profileData.rekening.foto_rekening, 'FILES') : null"
+                  :color="profileData.rekening.foto_rekening ? 'primary' : '#A09BA1'"
+                  class="px-4 ms-2"
+                >
+                  <template #default>
+                    <VIcon icon="fa-download" />
+                  </template>
+                </VBtn>
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="font-weight-bold mb-1">NPWP</div>
+              <VTextField
+                v-if="!isEdit"
+                :model-value="profileData.rekening.npwp ? profileData.rekening.npwp : '-'"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+                disabled
+              />
+              <VTextField
+                v-else
+                :rules="[requiredValidator]"
+                v-model="updateData.rekening.npwp"
+                :bg-color="!isEdit ? '#F6F6F6' : ''"
+                density="compact"
+                rounded="xl"
+              />
+            </div>
+            <div>
+              <div class="font-weight-bold mb-1">Upload Foto NPWP</div>
+              <div class="d-flex align-start">
+                <div class="w-100 w-lg-50">
+                  <VTextField
+                    v-if="!isEdit"
+                    class="custom-file-input"
+                    :bg-color="!isEdit ? '#F6F6F6' : ''"
+                    density="compact"
+                    rounded="xl"
+                    disabled
+                    placeholder="No file choosen"
+                    :model-value="profileData.rekening.foto_npwp"
+                  >
+                    <template #append-inner>
+                      <VBtn v-if="!profileData.rekening.foto_npwp" rounded="s-0 e-xl" color="#A09BA1" text="Choose File" />
+                    </template>
+                  </VTextField>
+                  <FileUploadField
+                    v-else
+                    ref="fotoNpwpRef"
+                    @validation-is-valid="handleEmitValidationNpwpPhoto"
+                    :file-data="npwpPhoto"
+                    :file-name="uploadedNpwpFilename ? uploadedNpwpFilename : updateData.rekening.foto_npwp"
+                    :initial-file-name="updateData.rekening.foto_npwp"
+                    @on-select="handleSelectNpwpPhoto"
+                    @on-remove="handleRemoveNpwpPhoto"
+                    :validation-list="uploadedNpwpFilename ? [
+                      fileExtensionValidator,
+                      fileSizeValidator,
+                      fileNameLengthValidator,
+                    ] : []"
+                  />
+                </div>
+                <VBtn
+                  @click="profileData.rekening.foto_npwp ? handleDownload(profileData.rekening.foto_npwp, 'FILES') : null"
+                  :color="profileData.rekening.foto_npwp ? 'primary' : '#A09BA1'"
+                  class="px-4 ms-2"
+                >
+                  <template #default>
+                    <VIcon icon="fa-download" />
+                  </template>
+                </VBtn>
+              </div>
+            </div>
+          </VCardText>
+        </VCard>
+      </VForm>
     </VCol>
     <VCol cols="4">
       <VExpansionPanels
@@ -942,17 +934,6 @@ const handleCloseEdit = () => {
           </VExpansionPanelText>
         </VExpansionPanel>
       </VExpansionPanels>
-      <!-- <br/>
-      <VCard>
-        <VCardTitle class="mb-5">
-          <div class="font-weight-bold text-h4">
-            Melacak
-          </div>
-        </VCardTitle>
-        <VCardText>
-          <Tracking :data="trackingDetail" />
-        </VCardText>
-      </VCard> -->
     </VCol>
   </VRow>
   <ConfirmModal

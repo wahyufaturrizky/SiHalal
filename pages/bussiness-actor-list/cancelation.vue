@@ -52,27 +52,6 @@ const loadItem = async ({
   }
 };
 
-onMounted(async () => {
-  const res = await Promise.all([
-    loadItem({
-      page: 1,
-      size: size.value,
-      keyword: "",
-      query_by: "",
-    }),
-  ]);
-
-  const checkResIfUndefined = res.every((item) => {
-    return item !== undefined;
-  });
-
-  if (checkResIfUndefined) {
-    loadingAll.value = false;
-  } else {
-    loadingAll.value = false;
-  }
-});
-
 const debouncedFetch = debounce(loadItem, 500);
 
 const handleSearch = () => {

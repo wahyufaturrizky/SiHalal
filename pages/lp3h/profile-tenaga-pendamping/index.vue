@@ -25,6 +25,8 @@ const panelMelacak = ref([0, 1]);
 //   { label: "Pekerjaaan", value: "Lainnya" },
 // ];
 
+const authUser = useMyAuthUserStore();
+
 const dataProfilePendamping = ref([
   { label: "NIK", value: "" },
   { label: "Nama", value: "" },
@@ -47,7 +49,7 @@ const dataBank = ref([
   { label: "Nama Bank", value: "" },
   { label: "No. Rekening", value: "" },
   { label: "Nama Rekening", value: "" },
-  { label: "File Rekening", value: "" },
+  { label: "File Rekening", value: null },
 ]);
 
 const dataBank2 = ref([
@@ -61,17 +63,6 @@ const dataPendidikan = ref([
   { label: "Nama Universitas", value: "" },
 ]);
 
-const deleteItem = (item) => {
-  console.log("ITEM DELETE : ", item);
-};
-
-const previewIjazah = (item) => {
-  console.log("PREVIEW IJAZAH : ", item);
-};
-
-const previewKtp = (item) => {
-  console.log("PREVIEW KTP : ", item);
-};
 
 const dataRegistrasi = ref([
   { label: "Status", value: "" },
@@ -96,22 +87,7 @@ const formatDate = (isoString: string): string => {
   return `${day}-${month}-${year}`;
 };
 
-const handleDownloadV2 = async (filename) => {
-  try {
-    console.log(filename, "ini value");
-    const response: any = await $api("/shln/submission/document/download", {
-      method: "post",
-      body: {
-        filename: filename,
-      },
-    });
 
-    if (response.url)
-      window.open(response.url, "_blank", "noopener,noreferrer");
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 const getProfile = async () => {
   try {
@@ -127,7 +103,7 @@ const getProfile = async () => {
     await getSubDistrict(response.data.pendamping.kabupaten);
 
     if (response.code != 4000) {
-      console.log(response.data, "ini masuk kode");
+ 
       dataProfilePendamping.value.forEach((el) => {
         if (el.label === "NIK") el.value = response.data.pendamping.nik;
         if (el.label === "Nama") el.value = response.data.pendamping.nama;
@@ -197,7 +173,7 @@ const getProfile = async () => {
           el.value = response.data.pendamping.fotoijazah;
         if (el.label === "KTP") el.value = response.data.pendamping.fotoktp;
         if (el.label === "Sertifikat Pelatihan")
-          el.value = response.data.pendamping.file_sertifikat;
+          el.value = response.data.pendamping.fotosertifikat;
       });
 
       return;
@@ -207,7 +183,7 @@ const getProfile = async () => {
   }
 };
 const openLink = (url: string) => {
-  console.log(url, "ini tetst");
+  
   if (url) {
     window.open(url, "_blank");
   }
@@ -258,7 +234,7 @@ const uploadDocument = async (file) => {
       method: "post",
       body: formData,
     });
-    return response;
+    return response?.data?.file_url;
   } catch (error) {
     useSnackbar().sendSnackbar(
       "ada kesalahan saat upload file, gagal menyimpan!",
@@ -299,6 +275,19 @@ const handleCancel = async () => {
   await getProfile();
 };
 
+function convertToISOString(dateStr) {
+    // Pecah format "DD-MM-YYYY" menjadi bagian-bagian
+    const [day, month, year] = dateStr.split('-');
+
+    // Buat objek Date dalam UTC
+    const date = new Date(Date.UTC(year, month - 1, day));
+
+    // Konversi ke ISO string
+    return date.toISOString();
+}
+
+
+
 const options = [
   "Penyuluh agama",
   "Dosen",
@@ -308,12 +297,7 @@ const options = [
   "Santri",
   "Lainnya",
 ];
-const formattedDate = ref("");
-const formatDateISO = (date) => {
-  if (!date) return "";
-  const [year, month, day] = date.split("-"); // Format dari VDatePicker adalah YYYY-MM-DD
-  formattedDate.value = `${year}-${month}-${day}T00:00:00Z`;
-};
+
 const handleSave = async () => {
   dialog.value = false;
   isEditing.value = false;
@@ -342,7 +326,7 @@ const handleSave = async () => {
     if (el.label === "Telp /HP") body.no_hp = el.value;
     if (el.label === "Tempat Lahir") body.tempat_lahir = el.value;
 
-    if (el.label === "Tanggal Lahir") body.tgl_lahir = formatDateISO(el.value);
+    if (el.label === "Tanggal Lahir") body.tgl_lahir = convertToISOString(el.value);
     if (el.label === "Pekerjaan") body.pekerjaan = el.value;
     if (el.label === "Pekerjaan_lain") body.pekerjaan_lain = el.value;
     if (el.label === "IDLembaga") body.IDLembaga = el.value;
@@ -358,24 +342,47 @@ const handleSave = async () => {
     if (el.label === "Nama Bank") body.rekening.bank = el.value;
     if (el.label === "No. Rekening") body.rekening.no_rekening = el.value;
     if (el.label === "Nama Rekening") body.rekening.nama = el.value;
-    if (el.label === "File Rekening") body.rekening.file_foto_rek = el.value;
+    if (el.label === "File Rekening") body.rekening.file_foto_rek = el.value
   });
 
   dataBank2.value.forEach((el) => {
     if (el.label === "NPWP") body.rekening.npwp = el.value;
     if (el.label === "Nama pada NPWP") body.rekening.nama_npwp = el.value;
-    if (el.label === "File NPWP") body.rekening.file_foto_npwp = el.value;
+    if (el.label === "File NPWP") body.rekening.file_foto_npwp = el.value
+    ;
   });
 
   dokumenPersyaratan.value.forEach((el) => {
-    if (el.label === "Ijazah") body.foto_ijazah = el.value;
-    if (el.label === "KTP") body.foto_ktp = el.value;
-    if (el.label === "Sertifikat Pelatihan") body.file_sertifikat = el.value;
+
+    if (el.label === "Ijazah") {body.foto_ijazah = el.value}else{
+      body.foto_ijazah =''
+    };
+    if (el.label === "KTP") {body.foto_ktp = el.value}else{
+       body.foto_ktp  =''
+    };
+    if (el.label === "Sertifikat Pelatihan") {body.fotosertifikat = el.value }
   });
 
-await uploadDocument(body.foto_ijazah);
-await uploadDocument(body.foto_ktp);
-await uploadDocument(body.file_sertifikat);
+
+  body.foto_ijazah = await uploadDocument(body.foto_ijazah);
+
+
+  body.foto_ktp = await uploadDocument(body.foto_ktp);
+
+
+
+
+
+  body.fotosertifikat = await uploadDocument(body.fotosertifikat);
+  body.rekening.file_foto_npwp = await uploadDocument(
+    body.rekening.file_foto_npwp
+  );
+
+
+  body.rekening.file_foto_rek = await uploadDocument(
+    body.rekening.file_foto_rek
+  );
+
 
   try {
     await $api(`/reguler/lph/update-profile/${id_pendamping}`, {
@@ -385,10 +392,9 @@ await uploadDocument(body.file_sertifikat);
 
     useSnackbar().sendSnackbar("Berhasil menyimpan data ", "success");
 
-
     await getProfile();
   } catch (error) {
-    //console.log(error)
+
     useSnackbar().sendSnackbar("Ada Kesalaan ", "error");
   }
 
@@ -431,7 +437,14 @@ await uploadDocument(body.file_sertifikat);
       </VCard>
     </VDialog>
     <VRow>
-      <KembaliButton />
+      <VBtn
+        variant="text"
+        prepend-icon="mdi-chevron-left"
+        @click="handleCancel"
+        v-if="isEditing"
+      >
+        Kembali
+      </VBtn>
     </VRow>
     <VRow class="d-flex justify-space-between align-center">
       <VCol class="mb-8">
@@ -560,6 +573,7 @@ await uploadDocument(body.file_sertifikat);
                         :rules="[requiredValidator]"
                         teleport
                         clearable
+                        :readonly="!isEditing"
                       >
                         <template #trigger>
                           <VTextField
@@ -916,8 +930,7 @@ await uploadDocument(body.file_sertifikat);
                 >
                   <VRow>
                     <VCol
-                      :cols="isEditing ? 2 : 6"
-                      :md="isEditing ? 2 : 6"
+                    cols="6" md="6"
                       class="d-flex align-center"
                     >
                       <div class="text-body-1 font-weight-medium">
@@ -927,8 +940,7 @@ await uploadDocument(body.file_sertifikat);
 
                     <VCol
                       v-if="item.label === 'Ijazah'"
-                      :cols="isEditing ? 4 : 6"
-                      :md="isEditing ? 2 : 6"
+                   cols="6" md="6"
                       class="d-flex align-center"
                     >
                       <span>:</span>
@@ -944,7 +956,7 @@ await uploadDocument(body.file_sertifikat);
                       </VBtn>
                     </VCol>
 
-                    <VCol
+                    <!-- <VCol
                       cols="8"
                       md="6"
                       v-if="isEditing && item.label === 'Ijazah'"
@@ -953,11 +965,11 @@ await uploadDocument(body.file_sertifikat);
                         v-model="item.value"
                         label="Pilih File"
                       />
-                    </VCol>
+                    </VCol> -->
 
                     <VCol
-                      :cols="isEditing ? 2 : 6"
-                      :md="isEditing ? 2 : 6"
+                      :cols="isEditing ? 6 : 6"
+                      :md="isEditing ? 6 : 6"
                       class="d-flex align-center"
                       v-if="item.label === 'KTP'"
                     >
@@ -976,7 +988,7 @@ await uploadDocument(body.file_sertifikat);
                       </VBtn>
                     </VCol>
 
-                    <VCol
+                    <!-- <VCol
                       cols="8"
                       md="6"
                       v-if="isEditing && item.label === 'KTP'"
@@ -985,11 +997,11 @@ await uploadDocument(body.file_sertifikat);
                         v-model="item.value"
                         label="Pilih File"
                       />
-                    </VCol>
+                    </VCol> -->
 
                     <VCol
-                      :cols="isEditing ? 2 : 6"
-                      :md="isEditing ? 2 : 6"
+                      :cols="isEditing ? 6 : 6"
+                      :md="isEditing ? 6 : 6"
                       class="d-flex align-center"
                       v-if="item.label === 'Sertifikat Pelatihan'"
                     >
@@ -1004,13 +1016,13 @@ await uploadDocument(body.file_sertifikat);
                           @click="
                             downloadDocument(
                               item.value,
-                              'PENDAMPING_SERT_PELATIHAN'
+                              'PENDAMPING_SERT_UPLOAD'
                             )
                           "
                         ></VIcon>
                       </VBtn>
                     </VCol>
-                    <VCol
+                    <!-- <VCol
                       cols="8"
                       md="6"
                       v-if="isEditing && item.label === 'Sertifikat Pelatihan'"
@@ -1019,7 +1031,7 @@ await uploadDocument(body.file_sertifikat);
                         v-model="item.value"
                         label="Pilih File"
                       />
-                    </VCol>
+                    </VCol> -->
                   </VRow>
                 </VListItem>
               </VList>

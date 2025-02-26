@@ -18,6 +18,18 @@ const secondNoSelected = ref("")
 
 const items = ref([]);
 
+const selectOptionDisable = ref(true)
+
+const selected = ref([]);
+
+const onSelectUpdate = () => {
+  if(firstNoSelected.value !== "" && secondNoSelected.value !== ""){
+    selectOptionDisable.value = false
+  }else {
+    selectOptionDisable.value = true
+    selected.value = []
+  }
+}
 
 const generateRange = (a, b) => [...Array(b - a + 1)].map((_, i) => a + i);
 
@@ -50,7 +62,6 @@ const years = [
   })
 ];
 
-const selected = ref(['PT MANDIRI SEKALI']);
 
 
 const headers = [
@@ -84,6 +95,7 @@ const buatInvoiceHandler = async () => {
     if(response.code !== 2000){
       useSnackbar().sendSnackbar(response.message, "error");
     }else{
+      selected.value = []
       useSnackbar().sendSnackbar("Berhasil membuat invoice ", "success")
     }
   } catch (error) {
@@ -132,22 +144,23 @@ const loadListDokumen = async (page: number, limit: number, fac_id: string, tahu
 
     totalItems.value = response.totalItems
     const data = response.data;
-    //console.log("RESPONSE : ", response)
-
     items.value = []
-    data.forEach((v, i) => {
-      items.value.push({
-        no_urut: i + 1,
-        id: v.id_reg,
-        no_daftar: v.no_daftar,
-        tanggal: v.tgl_daftar,
-        nama_pu: v.nama_pu,
-        jenis_produk: v.jenis_produk,
-        nama_fasilitasi: v.fac_name,
-        nama_pendamping: v.nama_pendamping,
-        catatan: v.catatan,
+
+    if(data !== null){
+      data.forEach((v, i) => {
+        items.value.push({
+          no_urut: i + 1,
+          id: v.id_reg,
+          no_daftar: v.no_daftar,
+          tanggal: v.tgl_daftar,
+          nama_pu: v.nama_pu,
+          jenis_produk: v.jenis_produk,
+          nama_fasilitasi: v.fac_name,
+          nama_pendamping: v.nama_pendamping,
+          catatan: v.catatan,
+        })
       })
-    })
+    }
     // console.log("items : ", items.value)
     loading.value = false
   } catch (error) {
@@ -221,6 +234,7 @@ onMounted(async () => {
                           v-model="selectedFasilitas"
                           @update:model-value="changeFilterBy"
                           variant="solo"
+                          class="mb-2"
                         ></v-select>
                         <VLabel for="tahun" class="mb-2">Tahun Terbit SH</VLabel>
                         <v-select
@@ -248,7 +262,7 @@ onMounted(async () => {
                       v-model="firstNoSelected"
                       density="compact"
                       placeholder="Pilih No."
-                      @input="onNoSelected"
+                      @input="onSelectUpdate"
                     />
                   </VCol>
                   <VCol cols="3">
@@ -256,7 +270,7 @@ onMounted(async () => {
                       v-model="secondNoSelected"
                       density="compact"
                       placeholder="Sampai"
-                      @input="onNoSelected"
+                      @input="onSelectUpdate"
                     />
                   </VCol>
                 </VRow>
@@ -264,7 +278,7 @@ onMounted(async () => {
               <VCol cols="3">
                 <VRow >
                   <VCol cols="12" class="d-flex justify-space-between">
-                    <VBtn disabled>
+                    <VBtn :disabled="selectOptionDisable" @click="onNoSelected">
                       Pilih
                     </VBtn>
                     <VBtn append-icon="mdi-file-document" :disabled="selected.length === 0" @click="dialog = true">

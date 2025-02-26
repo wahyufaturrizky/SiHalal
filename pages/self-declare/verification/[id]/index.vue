@@ -698,17 +698,7 @@ onMounted(async () => {
     loadJenisLayanan(),
     loadJenisProduk(),
     loadListFasilitasi(),
-    loadItemBahanById({ page: pageBahan.value, size: itemPerPageBahan.value }),
-    loadItemPabrik(pagePabrik.value, itemPerPagePabrik.value),
-    loadItemOutlet(pageOutlet.value, itemPerPageOutlet.value),
-    loadItemProdukById({
-      page: pageTableProduk.value,
-      size: itemPerPageTableProduk.value,
-    }),
-    loadItemAspekLegalById({
-      page: pageAspekLegal.value,
-      size: itemPerPageAspekLegal.value,
-    }),
+
     onSearchFasilitator(),
   ]);
 

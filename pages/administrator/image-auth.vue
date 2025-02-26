@@ -56,12 +56,10 @@ const { refresh } = await useAsyncData(
   "image-auth-list",
   async () => await handleLoadList(),
   {
+    server: false,
     watch: [currentPage, itemPerPage],
   }
 );
-onMounted(() => {
-  handleLoadList();
-});
 
 const handleSearchUser = useDebounceFn((val: string) => {
   searchQuery.value = val;

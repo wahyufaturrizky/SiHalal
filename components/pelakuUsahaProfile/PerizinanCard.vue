@@ -30,18 +30,18 @@ const download = (item) => {
   // console.log("DOWNLOAD FILE ", item.file)
 };
 
-onMounted(async () => {
-  // try {
-  //   // console.log("Before loading:", store.legal);
-  //   // Simulate loading data
-  //   await store.fetchProfile(); // Ensure `loadData` populates `store.legal`
-  //   // console.log("After loading:", store.legal);
-  // } catch (error) {
-  //   console.error("Failed to load data:", error);
-  // } finally {
-  //   isLoading.value = false;
-  // }
-});
+// onMounted(async () => {
+//   try {
+//     // console.log("Before loading:", store.legal);
+//     // Simulate loading data
+//     await store.fetchProfile(); // Ensure `loadData` populates `store.legal`
+//     // console.log("After loading:", store.legal);
+//   } catch (error) {
+//     console.error("Failed to load data:", error);
+//   } finally {
+//     isLoading.value = false;
+//   }
+// });
 
 const handleOssUpdate = () => {
   store.fetchProfile();

@@ -2,6 +2,7 @@
 
 import type { MasterDistrict, MasterSubDistrict } from "@/server/interface/master.iface"
 
+
 const panelProfile = ref([0, 1])
 const panelPenanggungJawab = ref([0, 1])
 const panelDataPendamping = ref([0, 1])
@@ -52,23 +53,9 @@ const dataPendampingHeader = [
 const dataPendampingItem = ref([
 ])
 
-const downloadFile = async (filename: string) => {
-  try {
-    const response = await $api("/shln/submission/document/download", {
-      method: "post",
-      body: {
-        filename: filename,
-      },
-    });
-    if (response.url) {
-      window.open(response.url, "_blank", "noopener,noreferrer")
-      useSnackbar().sendSnackbar("Berhasil Mendownload File", "success")
-    }
-  } catch (error) {
-    useSnackbar().sendSnackbar("File Tidak Ditemukan ", "error")
-    //console.log(error);
-  }
-};
+// const downloadFile = async (filename: string, params: string) => {
+//   return await downloadDocument(filename, params);
+// };
 
 const loadItem = async (page: number, size: number) => {
   try {
@@ -291,7 +278,7 @@ onMounted(async () => {
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Profil Lembaga Pendamping
             </VExpansionPanelTitle>
-            <VExpansionPanelText>
+            <VExpansionPanelText v-if="!loading">
               <VRow v-for="(item, index) in dataProfilePendamping" :key="index">
                 <VCol cols="5" class="text-left font-weight-medium">
                   {{ item.label }}
@@ -358,13 +345,13 @@ onMounted(async () => {
                 </template>
 
                 <template #item.ijazah="{ item }">
-                  <VBtn icon variant="text" @click="downloadFile(item.ijazah)" v-if="item.ijazah">
+                  <VBtn icon variant="text" @click="downloadDocument(item.ijazah, 'PENDAMPING_IJAZAH')" v-if="item.ijazah">
                     <VIcon size="24" color="primary">mdi-eye</VIcon>
                   </VBtn>
                 </template>
 
                 <template #item.ktp="{ item }">
-                  <VBtn icon variant="text" @click="downloadFile(item.ktp)" v-if="item.ktp">
+                  <VBtn icon variant="text" @click="downloadDocument(item.ktp, 'PENDAMPING_KTP')" v-if="item.ktp">
                     <VIcon size="24" color="primary">mdi-eye</VIcon>
                   </VBtn>
                 </template>
@@ -394,7 +381,7 @@ onMounted(async () => {
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Data Registrasi
             </VExpansionPanelTitle>
-            <VExpansionPanelText>
+            <VExpansionPanelText v-if="!loading">
               <VRow v-for="(item, index) in dataRegistrasi" :key="index" class="d-flex justify-center align-center">
                 <VCol cols="5" class="text-left font-weight-medium">
                   {{ item.label }}
@@ -434,7 +421,7 @@ onMounted(async () => {
 <!--                      <VBtn  icon variant="outlined" color="error" @click="deleteDokumenPersyaratan(item)">-->
 <!--                        <VIcon >mdi-delete</VIcon>-->
 <!--                      </VBtn>-->
-                      <VBtn icon variant="outlined" color="purple" class="ml-2" @click="downloadFile(item.file)">
+                      <VBtn icon variant="outlined" color="purple" class="ml-2" @click="downloadDocument(item.file, 'FILES')">
                         <VIcon color="primary">mdi-download</VIcon>
                       </VBtn>
                     </VCol>
@@ -519,7 +506,7 @@ onMounted(async () => {
                   <div class="text-body-1 font-weight-medium ">Foto Rekening</div>
                 </VCol>
                 <VCol cols="12" md="4" class="squareBtnIcon">
-                  <VBtn icon variant="outlined" color="purple" class="ml-2" @click="downloadFile(dataRekeningBankDanNpwp.fotoRekening)">
+                  <VBtn icon variant="outlined" color="purple" class="ml-2" @click="downloadDocument(dataRekeningBankDanNpwp.fotoRekening)">
                     <VIcon color="primary">mdi-download</VIcon>
                   </VBtn>
                 </VCol>
@@ -552,7 +539,7 @@ onMounted(async () => {
                   <div class="text-body-1 font-weight-medium ">Foto NPWP</div>
                 </VCol>
                 <VCol cols="12" md="4" class="squareBtnIcon">
-                  <VBtn icon variant="outlined" color="purple" class="ml-2" @click="downloadFile(dataRekeningBankDanNpwp.fotoNpwp)">
+                  <VBtn icon variant="outlined" color="purple" class="ml-2" @click="downloadDocument(dataRekeningBankDanNpwp.fotoNpwp)">
                     <VIcon color="primary">mdi-download</VIcon>
                   </VBtn>
                 </VCol>

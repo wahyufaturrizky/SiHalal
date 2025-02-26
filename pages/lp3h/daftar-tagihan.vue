@@ -25,14 +25,22 @@ const downloadBuktiBayar = async item => {
       method: 'post',
       body: {
         filename: item.buktiTransfer,
+        dirName: "FILES"
       },
     })
 
-    if (response.url)
+    if (response.url){
       window.open(response.url, '_blank', 'noopener,noreferrer')
+      useSnackbar().sendSnackbar("Berhasil mendownload file ", "success")
+    }
+
+    if(response.message){
+      useSnackbar().sendSnackbar(response.message, "error")
+    }
+
   }
   catch (error) {
-    console.log(error)
+    useSnackbar().sendSnackbar("Ada kesalahan saat mendownload file ", "error")
   }
 }
 
@@ -44,20 +52,26 @@ const previewInvoice = async item => {
       method: 'post',
       body: {
         filename: item.invoice,
+        dirName: "FILES"
       },
     })
 
-    if (response.url)
+    if (response.url){
       window.open(response.url, '_blank', 'noopener,noreferrer')
+      useSnackbar().sendSnackbar("Berhasil mendownload file ", "success")
+    }
+    if(response.message){
+      useSnackbar().sendSnackbar(response.message, "error")
+    }
   }
   catch (error) {
-    //console.log(error)
+    useSnackbar().sendSnackbar("Ada kesalahan saat mendownload file ", "error")
   }
 }
 
 const authUser = useMyAuthUserStore()
 
-const loadItem = async (page: number, size: number) => {
+const loadItem = async () => {
   try {
     loading.value = true
 
@@ -66,8 +80,8 @@ const loadItem = async (page: number, size: number) => {
     const response = await $api('/lp3h/list-tagihan', {
       method: 'get',
       params: {
-        page,
-        limit: itemPerPage,
+        page: page.value,
+        limit: itemPerPage.value,
         ref_unik: idUser,
       },
     })
@@ -88,6 +102,7 @@ const loadItem = async (page: number, size: number) => {
         }),
       )
     }
+    // console.log("daftar tagihan : ", daftarTagihanItem.value)
 
     totalItems.value = response.totalItems
     loading.value = false
@@ -101,7 +116,7 @@ const loadItem = async (page: number, size: number) => {
 const debouncedFetch = debounce(loadItem, 500)
 
 onMounted(async () => {
-  debouncedFetch(page.value, itemPerPage.value)
+  // debouncedFetch(page.value, itemPerPage.value)
 })
 </script>
 
@@ -142,7 +157,7 @@ onMounted(async () => {
                 <VBtn
                   icon
                   variant="text"
-                  @click="downloadBuktiBayar(item)"
+                  @click="downloadDocument(item.buktiTransfer, 'FILES')"
                 >
                   <VIcon
                     size="24"
@@ -157,7 +172,7 @@ onMounted(async () => {
                 <VBtn
                   icon
                   variant="text"
-                  @click="previewInvoice(item)"
+                  @click="downloadDocument(item.invoice, 'FILES')"
                 >
                   <VIcon
                     size="24"
@@ -190,7 +205,6 @@ onMounted(async () => {
                         total: item.total,
                         jumlahPu: item.jumlahPu,
                         status: item.status,
-                        tanggal: item.tanggal
                       }),
                     },
                   })"
