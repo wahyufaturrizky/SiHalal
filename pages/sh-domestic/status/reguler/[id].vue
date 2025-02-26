@@ -198,8 +198,8 @@ const getDownloadForm = async (docName: string, propName: string) => {
   if (result?.code === 2000) downloadForms[propName] = result?.data?.file || "";
 };
 
-const handleDownloadForm = async (fileName: string) => {
-  return await downloadDocument(fileName);
+const handleDownloadForm = async (fileName: string, type: string) => {
+  return await downloadDocument(fileName, type);
 };
 
 onMounted(async () => {
@@ -352,8 +352,8 @@ onMounted(async () => {
                   class="px-2"
                   @click="
                     downloadForms.sttd
-                      ? handleDownloadForm(downloadForms.sttd)
-                      : null
+                      ? handleDownloadForm(downloadForms.sttd, '')
+                  : null
                   "
                 >
                   <template #default>
@@ -374,7 +374,7 @@ onMounted(async () => {
                   class="px-2"
                   @click="
                     downloadForms.setifikasi_halal
-                      ? handleDownloadForm(downloadForms.setifikasi_halal)
+                      ? handleDownloadForm(downloadForms.setifikasi_halal, 'SERT')
                       : null
                   "
                 >
