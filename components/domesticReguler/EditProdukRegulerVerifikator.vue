@@ -1,5 +1,7 @@
 <script setup lang="ts">
 
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 const tableHeader = [
   { title: "No", value: "no" },
   { title: "Nama Produk", value: "nama_produk" },
@@ -37,7 +39,7 @@ onMounted(async () => {
   <VCard>
     <VCardTitle>
       <VRow>
-        <VCol cols="6"><h3>Pemetaan Produk dan Pabrik</h3></VCol>
+        <VCol cols="6"><h3>{{ t('pengajuan-reguler.reguler-form-produk-title') }}</h3></VCol>
       </VRow>
     </VCardTitle>
     <VCardItem>

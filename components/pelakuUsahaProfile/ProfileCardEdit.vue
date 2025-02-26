@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 const panelOpen = ref(0);
 
 const store = pelakuUsahaProfile();
+const snackbar = useSnackbar();
 
 const { t } = useI18n();
 const props = defineProps({
@@ -136,6 +137,7 @@ async function getMasterData(mastertype: string) {
 const jenisBadanUsahaOption = ref([]);
 const skalaUsahaOption = ref([]);
 const profileFormRef = ref<VForm>();
+const profileSecondFormRef = ref<VForm>();
 
 async function submitProfile() {
   profileFormRef.value?.validate().then(({ valid: isValid }) => {
@@ -169,7 +171,34 @@ async function submitProfile() {
   });
 }
 
-defineExpose({ submitProfile });
+async function submitProfilePemerintah() {
+  profileSecondFormRef.value?.validate().then(({ valid: isValid }) => {
+    if (isValid) {
+      const body = {
+        email: profilData.value[7].value,
+        jenis_badan_usaha: form.value.jenis_badan_usaha,
+        modal_dasar: parseInt(form.value.modal_dasar),
+      };
+
+      const submitApi = $api(
+        `/pelaku-usaha-profile/${store.profileData?.id}/update-profile`,
+        {
+          method: "POST",
+          body,
+        }
+      ).then((val: any) => {
+        if (val.code == 2000) {
+          store.fetchProfile();
+          snackbar.sendSnackbar("Berhasil Mengubah Data ", "success");
+        } else {
+          snackbar.sendSnackbar("Gagal Mengubah Data ", "error");
+        }
+      });
+    }
+  });
+}
+
+defineExpose({ submitProfile, submitProfilePemerintah });
 
 onMounted(async () => {
   await store.fetchProfile();
@@ -302,76 +331,91 @@ watch(
         </VForm>
         <VDivider />
         <br />
-        <VRow>
-          <VCol cols="4"> {{ t("detail-pu.pu-profil-jbu") }} </VCol>
-          <VCol cols="1"> : </VCol>
-          <VCol cols="7">
-            <VSelect
-              density="compact"
-              :disabled="disableEdit(props.profileData?.asal_usaha)"
-              :model-value="form.jenis_badan_usaha"
-              :items="jenisBadanUsahaOption"
-              item-title="name"
-              item-value="code"
-            ></VSelect>
-          </VCol>
-        </VRow>
-        <VRow>
-          <VCol cols="4"> {{ t("detail-pu.pu-profil-tingkatu") }} </VCol>
-          <VCol cols="1"> : </VCol>
-          <VCol cols="7">
-            <VSelect
-              density="compact"
-              :model-value="form.tingkat_usaha"
-              :items="['UMK', 'Non UMK']"
-              disabled
-            ></VSelect>
-          </VCol>
-        </VRow>
-        <VRow>
-          <VCol cols="4" style="display: flex; align-items: center">
-            {{ t("detail-pu.pu-profil-skala") }}
-          </VCol>
-          <VCol cols="1" style="display: flex; align-items: center"> : </VCol>
-          <VCol cols="7">
-            <VSelect
-              density="compact"
-              disabled
-              :model-value="form.skala_usaha"
-              :items="skalaUsahaOption"
-              item-title="name"
-              item-value="code"
-            ></VSelect>
-          </VCol>
-        </VRow>
-        <VRow>
-          <VCol cols="4"> {{ t("detail-pu.pu-profil-modal") }} </VCol>
-          <VCol cols="1"> : </VCol>
-          <VCol cols="7">
-            <VTextField
-              density="compact"
-              :disabled="disableEdit(props.profileData?.asal_usaha)"
-              >{{ form.modal_dasar }}</VTextField
-            >
-          </VCol>
-        </VRow>
-        <VRow>
-          <VCol cols="4"> {{ t("detail-pu.pu-profil-asal") }} </VCol>
-          <VCol cols="1"> : </VCol>
-          <VCol cols="7">
-            <!-- {{ props.profileData?.asal_usaha || "-" }} -->
-            <VSelect
-              v-if="props.profileData?.asal_usaha !== 'Luar Negeri'"
-              density="compact"
-              :disabled="disableEdit(props.profileData?.asal_usaha)"
-              :model-value="form.asal_usaha"
-              :items="['Dalam Negeri', 'Luar Negeri']"
-            ></VSelect>
-            <VTextField v-else density="compact" disabled>{{
-              props.profileData?.asal_usaha
-            }}</VTextField>
-          </VCol>
-        </VRow>
+        <VForm ref="profileSecondFormRef">
+          <VRow>
+            <VCol cols="4"> {{ t("detail-pu.pu-profil-jbu") }} </VCol>
+            <VCol cols="1"> : </VCol>
+            <VCol cols="7">
+              <VSelect
+                density="compact"
+                :disabled="
+                  props.profileData?.asal_usaha?.toLowerCase() ==
+                  'instansi pemerintah'
+                    ? false
+                    : disableEdit(props.profileData?.asal_usaha)
+                "
+                v-model="form.jenis_badan_usaha"
+                :items="jenisBadanUsahaOption"
+                item-title="name"
+                item-value="code"
+                :rules="[requiredValidator]"
+              ></VSelect>
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol cols="4"> {{ t("detail-pu.pu-profil-tingkatu") }} </VCol>
+            <VCol cols="1"> : </VCol>
+            <VCol cols="7">
+              <VSelect
+                density="compact"
+                v-model="form.tingkat_usaha"
+                :items="['UMK', 'Non UMK']"
+                disabled
+              ></VSelect>
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol cols="4" style="display: flex; align-items: center">
+              {{ t("detail-pu.pu-profil-skala") }}
+            </VCol>
+            <VCol cols="1" style="display: flex; align-items: center"> : </VCol>
+            <VCol cols="7">
+              <VSelect
+                density="compact"
+                disabled
+                v-model="form.skala_usaha"
+                :items="skalaUsahaOption"
+                item-title="name"
+                item-value="code"
+              ></VSelect>
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol cols="4"> {{ t("detail-pu.pu-profil-modal") }} </VCol>
+            <VCol cols="1"> : </VCol>
+            <VCol cols="7">
+              <VTextField
+                density="compact"
+                :disabled="
+                  props.profileData?.asal_usaha?.toLowerCase() ==
+                  'instansi pemerintah'
+                    ? false
+                    : disableEdit(props.profileData?.asal_usaha)
+                "
+                v-model="form.modal_dasar"
+                :rules="[integerValidator, requiredValidator]"
+              ></VTextField>
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol cols="4"> {{ t("detail-pu.pu-profil-asal") }} </VCol>
+            <VCol cols="1"> : </VCol>
+            <VCol cols="7">
+              <!-- {{ props.profileData?.asal_usaha || "-" }} -->
+              <VSelect
+                v-if="props.profileData?.asal_usaha !== 'Luar Negeri'"
+                density="compact"
+                :disabled="disableEdit(props.profileData?.asal_usaha)"
+                v-model="form.asal_usaha"
+                :items="['Dalam Negeri', 'Luar Negeri']"
+              ></VSelect>
+              <VTextField v-else density="compact" disabled>{{
+                props.profileData?.asal_usaha
+              }}</VTextField>
+            </VCol>
+          </VRow>
+        </VForm>
+
         <br />
       </VExpansionPanelText>
     </VExpansionPanel>

@@ -58,13 +58,10 @@ const { refresh } = await useAsyncData(
   "user-list",
   async () => await handleLoadList(),
   {
+    server: false,
     watch: [currentPage, itemPerPage],
   }
 );
-onMounted(() => {
-  handleLoadList();
-});
-
 const handleSearchUser = useDebounceFn((val: string) => {
   searchQuery.value = val;
   currentPage.value = 1;

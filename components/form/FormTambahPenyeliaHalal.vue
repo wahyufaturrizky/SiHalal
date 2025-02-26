@@ -84,7 +84,7 @@ const dialogMaxWidth = computed(() => {
         <VCardTitle
           class="text-h5 font-weight-bold d-flex justify-space-between align-center"
         >
-          <span>Tambah Data Penyelia Halal</span>
+          <span>Tambah Data Penyelia Halal </span>
           <VBtn
             icon
             color="transparent"

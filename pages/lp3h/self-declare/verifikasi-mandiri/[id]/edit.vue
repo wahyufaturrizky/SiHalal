@@ -57,7 +57,7 @@ onMounted(async () => {
             <PelakuUsahaMain :can-not-edit="true" />
           </VTabsWindowItem>
           <VTabsWindowItem value="2">
-            <PengajuanMain :can-not-edit="true" />
+            <PengajuanMain :hide-kode-fasilitasi="true" :can-not-edit="true" />
           </VTabsWindowItem>
           <VTabsWindowItem value="3">
             <PabrikOutletMain :can-not-edit="true" />
@@ -72,7 +72,7 @@ onMounted(async () => {
             <EditProsesProdukHalalSelfDeclareSubmission :can-not-edit="true" />
           </VTabsWindowItem>
           <VTabsWindowItem value="7">
-            <EditPernyataanSelfDeclareSubmision :can-not-edit="true" />
+            <EditPernyataanSelfDeclareSubmision />
           </VTabsWindowItem>
         </VTabsWindow>
       </VCol>

@@ -205,6 +205,7 @@ const uploadFile = (event: Event, index: string | number) => {
 };
 
 const triggerSaveModal = (payload: any, type: string) => {
+  console.log(payload);
   submitContentType.value = type;
   payloadData.value = payload;
   confirmSaveDialog.value = true;
@@ -285,16 +286,20 @@ const getDetailData = async () => {
           title: "pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnslay",
           value: certificateHalal.jenis_layanan || "",
           type: "select",
-          disabled: false,
-          required: true,
+          disabled:
+            certificateHalal.jenis_pengajuan == "Pengembangan" ? true : false,
+          required:
+            certificateHalal.jenis_pengajuan == "Pengembangan" ? false : true,
           key: "jenis_layanan",
         },
         {
           title: "pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsprod",
           value: certificateHalal.jenis_produk || "",
           type: "select",
-          disabled: false,
-          required: true,
+          disabled:
+            certificateHalal.jenis_pengajuan == "Pengembangan" ? true : false,
+          required:
+            certificateHalal.jenis_pengajuan == "Pengembangan" ? false : true,
           key: "jenis_produk",
         },
         {
@@ -317,8 +322,10 @@ const getDetailData = async () => {
           title: "pengajuan-reguler.reguler-form--pengajuan-pengajuan-lph",
           value: certificateHalal.nama_lph || "",
           type: "select",
-          disabled: false,
-          required: true,
+          disabled:
+            certificateHalal.jenis_pengajuan == "Pengembangan" ? true : false,
+          required:
+            certificateHalal.jenis_pengajuan == "Pengembangan" ? false : true,
           key: "lembaga_pendamping",
         },
         {
@@ -512,7 +519,11 @@ const getDetailData = async () => {
 const editResponsibility = async (body: PayloadPenanggungJawab) => {
   try {
     let url = "";
-    if (submitContentType.value === "Pengajuan Sertifikasi Halal")
+  
+    if (
+      submitContentType.value ===
+      t(`pengajuan-reguler.reguler-form--pengajuan-pengajuan-title`)
+    )
       url = "/reguler/pelaku-usaha/certificate";
     else url = "/reguler/pelaku-usaha/penanggung-jawab";
 
@@ -642,11 +653,17 @@ const withFacilitator = async (idData: string) => {
 
 const handleSubmit = () => {
   let payload: any = {};
-  if (submitContentType.value === "Pengajuan Sertifikasi Halal") {
+ 
+  if (
+    submitContentType.value ===
+    t(`pengajuan-reguler.reguler-form--pengajuan-pengajuan-title`)
+  ) {
+  
     if (payloadData.value === "error") {
       confirmSaveDialog.value = false;
       useSnackbar().sendSnackbar("Lengkapi semua data", "error");
     } else {
+   
       if (
         requestCertificateData.value?.[9].value ===
           "Pendaftaran Melalui Fasilitasi" ||
@@ -663,6 +680,7 @@ const handleSubmit = () => {
           channel_id: "CH001",
           fac_id: "",
         };
+      
       }
       editResponsibility({
         ...payload,
@@ -705,7 +723,7 @@ onMounted(async () => {
 
 <template>
   <DialogSaveDataPengajuan
-    title="Simpan Perubahan"
+    :title=" t('pengajuan-reguler.reguler-form-head-simpan')"
     :is-open="confirmSaveDialog"
     :toggle="() => (confirmSaveDialog = false)"
     :on-save="() => handleSubmit()"
@@ -939,7 +957,7 @@ onMounted(async () => {
   <div v-if="!loadingAll">
     <FormData
       :id="props?.id"
-      :on-submit="(payload: any) => triggerSaveModal(payload, 'Pengajuan Sertifikasi Halal')"
+      :on-submit="(payload: any) => triggerSaveModal(payload, t(`pengajuan-reguler.reguler-form--pengajuan-pengajuan-title`))"
       :data="requestCertificateData"
       :product_type="itemsProduct"
       :service_type="props?.list_channel"

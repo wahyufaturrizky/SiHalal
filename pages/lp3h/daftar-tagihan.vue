@@ -1,65 +1,123 @@
 <script setup lang="ts">
-
-
+const itemPerPage = ref(10)
+const totalItems = ref(0)
+const page = ref(1)
+const loading = ref(true)
 
 const daftarTagihanHeader = [
-  { title: "No", key: "no"},
-  { title: "No. Tagihan", key: "noTagihan"},
-  { title: "Tanggal", key: "tanggal"},
-  { title: "Total", key: "total"},
-  { title: "Status", key: "status"},
-  { title: "Bukti Bayar", key: "buktiBayar"},
-  { title: "Invoice", key: "invoice"}
-
+  { title: 'No', key: 'no' },
+  { title: 'No. Tagihan', key: 'noTagihan' },
+  { title: 'Tanggal', key: 'tanggal' },
+  { title: 'Total', key: 'total' },
+  { title: 'Status', key: 'status' },
+  { title: 'Bukti Bayar', key: 'buktiBayar' },
+  { title: 'Invoice', key: 'invoice' },
+  { title: 'Action', key: 'action' },
 ]
 
-const daftarTagihanItem = [
-  {
-    noTagihan: "321032103210",
-    tanggal: "16/01/2024",
-    total: "100.000.000",
-    status: "Terbayar",
-  },
-  {
-    noTagihan: "321032103210",
-    tanggal: "16/01/2024",
-    total: "100.000.000",
-    status: "Terbayar",
-  },
-  {
-    noTagihan: "321032103210",
-    tanggal: "16/01/2024",
-    total: "100.000.000",
-    status: "Terbayar",
-  },
-  {
-    noTagihan: "321032103210",
-    tanggal: "16/01/2024",
-    total: "100.000.000",
-    status: "Terbayar",
-  },
-  {
-    noTagihan: "321032103210",
-    tanggal: "16/01/2024",
-    total: "100.000.000",
-    status: "Terbayar",
-  },
-  {
-    noTagihan: "321032103210",
-    tanggal: "16/01/2024",
-    total: "100.000.000",
-    status: "Terbayar",
-  },
-]
+const daftarTagihanItem = ref([])
 
-const downloadBuktiBayar = (item) => {
-  console.log("downloadBuktiBayar : ", item)
+const downloadBuktiBayar = async item => {
+  //console.log('downloadBuktiBayar : ', item)
+
+  try {
+    const response = await $api('/shln/submission/document/download', {
+      method: 'post',
+      body: {
+        filename: item.buktiTransfer,
+        dirName: "FILES"
+      },
+    })
+
+    if (response.url){
+      window.open(response.url, '_blank', 'noopener,noreferrer')
+      useSnackbar().sendSnackbar("Berhasil mendownload file ", "success")
+    }
+
+    if(response.message){
+      useSnackbar().sendSnackbar(response.message, "error")
+    }
+
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar("Ada kesalahan saat mendownload file ", "error")
+  }
 }
 
-const previewInvoice = (item) => {
-  console.log("previewInvoice : ", item)
+const previewInvoice = async item => {
+  //console.log('previewInvoice : ', item)
+
+  try {
+    const response = await $api('/shln/submission/document/download', {
+      method: 'post',
+      body: {
+        filename: item.invoice,
+        dirName: "FILES"
+      },
+    })
+
+    if (response.url){
+      window.open(response.url, '_blank', 'noopener,noreferrer')
+      useSnackbar().sendSnackbar("Berhasil mendownload file ", "success")
+    }
+    if(response.message){
+      useSnackbar().sendSnackbar(response.message, "error")
+    }
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar("Ada kesalahan saat mendownload file ", "error")
+  }
 }
 
+const authUser = useMyAuthUserStore()
+
+const loadItem = async () => {
+  try {
+    loading.value = true
+
+    const idUser = authUser.user.id
+
+    const response = await $api('/lp3h/list-tagihan', {
+      method: 'get',
+      params: {
+        page: page.value,
+        limit: itemPerPage.value,
+        ref_unik: idUser,
+      },
+    })
+
+    const data = response.data
+
+    if (data != null) {
+      daftarTagihanItem.value = data.map(
+        i => ({
+          id: i.id,
+          noTagihan: i.nomor,
+          tanggal: i.tanggal,
+          total: i.total,
+          status: i.status_payment,
+          buktiTransfer: i.file_bukti_transfer,
+          invoice: i.file_invoice,
+          jumlahPu: i.jumlah_pu,
+        }),
+      )
+    }
+    // console.log("daftar tagihan : ", daftarTagihanItem.value)
+
+    totalItems.value = response.totalItems
+    loading.value = false
+  }
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    loading.value = false
+  }
+}
+
+const debouncedFetch = debounce(loadItem, 500)
+
+onMounted(async () => {
+  // debouncedFetch(page.value, itemPerPage.value)
+})
 </script>
 
 <template>
@@ -82,41 +140,89 @@ const previewInvoice = (item) => {
           </VCardTitle>
           <VCardItem>
             <VDataTableServer
+              v-model:items-per-page="itemPerPage"
+              v-model:page="page"
+              :items-length="totalItems"
+              :loading="loading"
+              loading-text="Loading..."
               :headers="daftarTagihanHeader"
               :items="daftarTagihanItem"
+              @update:options="loadItem(page, itemPerPage)"
             >
               <template #item.no="{ index }">
                 {{ index + 1 }}
               </template>
 
-
               <template #item.buktiBayar="{ item }">
-                <VBtn icon variant="text" @click="downloadBuktiBayar(item)">
-                  <VIcon size="24" color="primary">mdi-download</VIcon>
+                <VBtn
+                  icon
+                  variant="text"
+                  @click="downloadDocument(item.buktiTransfer, 'FILES')"
+                >
+                  <VIcon
+                    size="24"
+                    color="primary"
+                  >
+                    mdi-download
+                  </VIcon>
                 </VBtn>
               </template>
 
               <template #item.invoice="{ item }">
-                <VBtn icon variant="text" @click="previewInvoice(item)">
-                  <VIcon size="24" color="primary">mdi-eye</VIcon>
+                <VBtn
+                  icon
+                  variant="text"
+                  @click="downloadDocument(item.invoice, 'FILES')"
+                >
+                  <VIcon
+                    size="24"
+                    color="primary"
+                  >
+                    mdi-eye
+                  </VIcon>
                 </VBtn>
               </template>
 
               <template #item.status="{ item }">
-                <VChip :color="item.status === 'Terbayar' ? 'success' : 'error'"
-                       variant="outlined"
-                       label
+                <VChip
+                  :color="item.status === 'Terbayar' ? 'success' : 'error'"
+                  variant="outlined"
+                  label
                 >
                   {{ item.status }}
                 </VChip>
               </template>
 
+              <template #item.action="{ item }">
+                <VBtn
+                  icon
+                  variant="text"
+                  @click="navigateTo({
+                    path: `/lp3h/detail-tagihan/${item.id}`,
+                    query: {
+                      data: JSON.stringify({
+                        no: item.noTagihan,
+                        total: item.total,
+                        jumlahPu: item.jumlahPu,
+                        status: item.status,
+                      }),
+                    },
+                  })"
+                >
+                  <VIcon
+                    size="24"
+                    color="primary"
+                  >
+                    mdi-arrow-right
+                  </VIcon>
+                </VBtn>
+              </template>
             </VDataTableServer>
           </VCardItem>
         </VCard>
       </VCol>
     </VRow>
-   </VContainer>
+  </VContainer>
 </template>
 
 <style scoped lang="scss">

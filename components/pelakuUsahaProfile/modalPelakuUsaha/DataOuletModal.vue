@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 import type { MasterDistrict } from "@/server/interface/master.iface";
 import { computed, defineEmits, defineProps, ref, watch } from "vue";
 import { useDisplay } from "vuetify";
@@ -137,7 +140,7 @@ defineExpose({ showErrorProhbName, hideErrorProhbName, closeDialog });
       append-icon="ri-add-line"
       @click="openDialog"
     >
-      Tambah
+      {{t('detail-pu.pu-outlet-modal-add')}}
     </VBtn>
 
     <VBtn
@@ -146,7 +149,7 @@ defineExpose({ showErrorProhbName, hideErrorProhbName, closeDialog });
       prepend-icon="ri-edit-line"
       @click="openDialog"
     >
-      Ubah
+    {{t('detail-pu.pu-outlet-modal-edit')}}
     </VBtn>
     <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
@@ -154,7 +157,7 @@ defineExpose({ showErrorProhbName, hideErrorProhbName, closeDialog });
           class="text-h5 font-weight-bold d-flex justify-space-between align-center"
         >
           <span>{{
-            props.mode === "add" ? "Tambah Data Outlet" : "Edit Data Outlet"
+            props.mode === "add" ? t('detail-pu.pu-outlet-modal-add-title') : t('detail-pu.pu-outlet-modal-edit-title') 
           }}</span>
           <VBtn
             icon

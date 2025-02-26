@@ -100,7 +100,7 @@ const listProduct = ref([]);
 const listFasilitas = ref([]);
 const listLembaga = ref([]);
 const listPendamping = ref([]);
-const listComitee = ref([]);
+const listComitee = ref<any[]>([]);
 
 const selectedProductType = ref();
 const selectedFasilitas = ref();
@@ -230,6 +230,7 @@ const { refresh } = await useAsyncData(
   "comitee-distribution-list",
   async () => handleLoadList(),
   {
+    server: false,
     watch: [currentPage, itemPerPage],
   }
 );
@@ -266,7 +267,6 @@ const handleFilterPendamping = (val: string) => {
 };
 
 onMounted(() => {
-  handleLoadList();
   loadItemProduct();
   loadItemFacility();
   loadItemLembaga();

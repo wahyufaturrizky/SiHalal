@@ -1,5 +1,10 @@
 <script setup lang="ts">
-const { hideOnSearchFasilitatorFunction } = defineProps({
+const {
+  hideOnSearchFasilitatorFunction,
+  canNotEdit,
+  hideAlertKodeUnik,
+  hideKodeFasilitasi,
+} = defineProps({
   hideKodeFasilitasi: {
     type: Boolean,
   },
@@ -29,6 +34,9 @@ const submissionDetail = reactive({
   nomor_kontak_pj: null,
   nama_pu: null,
 });
+const isPengembangan = () => {
+  return submissionDetail.id_jenis_pengajuan == "JD.3";
+};
 
 const formData = reactive({
   id_reg: submissionId,
@@ -540,8 +548,8 @@ const getItemData = (item) => {
               append-inner-icon="mdi-magnify"
               density="compact"
               :rules="[requiredValidator]"
+              @input="onSearchFasilitator(querySearch)"
             />
-            <!-- @input="onSearchFasilitator(querySearch)" -->
           </VCol>
         </VRow>
         <VRow>
@@ -575,7 +583,7 @@ const getItemData = (item) => {
           </VAlert>
 
           <VAlert
-            v-if="!isKodeFound && !hideAlertKodeUnik"
+            v-if="!isKodeFound && !hideAlertKodeUnik && !canNotEdit"
             type="warning"
             variant="tonal"
             color="#652672"
@@ -648,6 +656,7 @@ const getItemData = (item) => {
               <VSelect
                 v-model="formData.id_jenis_layanan"
                 placeholder="Pilih Jenis Layanan"
+                :disabled="isPengembangan()"
                 density="compact"
                 :items="listLayanan"
                 item-title="name"
@@ -661,6 +670,7 @@ const getItemData = (item) => {
               <VLabel>Jenis Produk</VLabel>
               <VSelect
                 v-model="formData.id_jenis_produk"
+                :disabled="isPengembangan()"
                 placeholder="Pilih Jenis Produk"
                 density="compact"
                 :items="listProduk"

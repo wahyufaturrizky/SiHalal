@@ -73,6 +73,7 @@ const loadItem = async (
   keyword: string = ""
 ) => {
   try {
+    loading.value = true;
     const response: any = await $api("/reguler/pelaku-usaha", {
       method: "get",
       params: {
@@ -93,6 +94,8 @@ const loadItem = async (
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -108,11 +111,9 @@ const getListOss = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
-
+const debouncedFetch = debounce(loadItem, 500);
 const handleInput = (e: any) => {
-  loading.value = true;
-  debounce(loadItem(page.value, size.value, e.target.value), 500);
-  loading.value = false;
+  debouncedFetch(page.value, size.value, searchQuery.value);
 };
 
 const newRegister = async (type: string, id: string) => {
@@ -140,20 +141,12 @@ const newRegister = async (type: string, id: string) => {
 const additionalRegister = () => {};
 
 onMounted(async () => {
-  loading.value = true;
-  await Promise.allSettled([
-    loadItem(page.value, size.value, searchQuery.value),
-    getListOss(),
-  ]);
-  loading.value = false;
+  await Promise.allSettled([getListOss()]);
 });
 </script>
 
 <template>
-  <div v-if="loading">
-    <VSkeletonLoader v-for="i in 1" :key="i" type="table" />
-  </div>
-  <div v-else-if="!loading">
+  <div>
     <!-- <KembaliButton class="no-padding" /> -->
     <h1 style="font-size: 32px">
       {{ t("pengajuan-reguler.reguler-list-title") }}
@@ -182,10 +175,14 @@ onMounted(async () => {
         />
       </VCardItem>
       <VCardItem>
-        <VDataTable
+        <VDataTableServer
+          v-model:items-per-page="size"
+          v-model:page="page"
+          :loading="loading"
+          loading-text="Loading..."
           :headers="headers"
           :items="data"
-          item-value="no"
+          :items-length="totalItems"
           class="elevation-1"
           @update:options="loadItem(page, size, searchQuery)"
         >
@@ -250,7 +247,7 @@ onMounted(async () => {
               ri-arrow-right-line
             </VIcon>
           </template>
-        </VDataTable>
+        </VDataTableServer>
       </VCardItem>
     </VCard>
   </div>

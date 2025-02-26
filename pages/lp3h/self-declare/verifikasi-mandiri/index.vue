@@ -118,16 +118,19 @@ const loadValidation = async () => {
 
 const handleLoadList = async () => {
   try {
-    const response: any = await $api("/self-declare/proses-verval/list", {
-      method: "get",
-      params: {
-        page: currentPage.value,
-        size: itemPerPage.value,
-        keyword: searchQuery.value,
-        status: "OF10",
-        channel_id: "CH004",
-      },
-    });
+    const response: any = await $api(
+      "/self-declare/proses-verval-lembaga/list",
+      {
+        method: "get",
+        params: {
+          page: currentPage.value,
+          size: itemPerPage.value,
+          keyword: searchQuery.value,
+          status: "OF10",
+          channel_id: "CH004",
+        },
+      }
+    );
 
     if (response.code === 2000) {
       submission.value = response.data;
@@ -158,7 +161,7 @@ onMounted(() => {
 });
 
 onMounted(async () => {
-  const res = await Promise.all([loadValidation(), handleLoadList()]);
+  const res = await Promise.all([loadValidation()]);
 
   const checkResIfUndefined = res.every((item) => {
     return item !== undefined;

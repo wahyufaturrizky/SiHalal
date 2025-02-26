@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { useDisplay } from "vuetify";
+
 const { t } = useI18n();
+const { mdAndUp } = useDisplay();
 const tablePerizinanHeader = [
   { title: "No", key: "no" },
   { title: `${t("detail-pu.pu-izin-penerbit")}`, key: "instansi" },
@@ -27,18 +30,18 @@ const download = (item) => {
   // console.log("DOWNLOAD FILE ", item.file)
 };
 
-onMounted(async () => {
-  try {
-    // console.log("Before loading:", store.legal);
-    // Simulate loading data
-    await store.fetchProfile(); // Ensure `loadData` populates `store.legal`
-    // console.log("After loading:", store.legal);
-  } catch (error) {
-    console.error("Failed to load data:", error);
-  } finally {
-    isLoading.value = false;
-  }
-});
+// onMounted(async () => {
+//   try {
+//     // console.log("Before loading:", store.legal);
+//     // Simulate loading data
+//     await store.fetchProfile(); // Ensure `loadData` populates `store.legal`
+//     // console.log("After loading:", store.legal);
+//   } catch (error) {
+//     console.error("Failed to load data:", error);
+//   } finally {
+//     isLoading.value = false;
+//   }
+// });
 
 const handleOssUpdate = () => {
   store.fetchProfile();
@@ -50,6 +53,11 @@ const closeModal = ref(false);
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
+      <!-- <VExpansionPanelTitle
+        ><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">
+          Perizinan
+        </p></VExpansionPanelTitle
+      > -->
       <VExpansionPanelTitle>
         <div class="text-h4 font-weight-bold">
           {{ t("detail-pu.pu-izin-title") }}

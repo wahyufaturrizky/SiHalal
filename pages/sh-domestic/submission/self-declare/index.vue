@@ -120,6 +120,7 @@ const handleLoadList = async () => {
         size: itemPerPage.value,
         keyword: searchQuery.value,
         status: "OF1,OF280,OF285",
+        channel_id: "CH003",
       },
     });
 
@@ -152,7 +153,7 @@ onMounted(() => {
 });
 
 onMounted(async () => {
-  const res = await Promise.all([loadValidation(), handleLoadList()]);
+  const res = await Promise.all([loadValidation()]);
 
   const checkResIfUndefined = res.every((item) => {
     return item !== undefined;

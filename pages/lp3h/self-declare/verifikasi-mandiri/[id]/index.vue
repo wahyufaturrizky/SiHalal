@@ -20,6 +20,8 @@ const statusItem = new Proxy(
     OF120: { color: "success", desc: "Certificate Issued" },
     OF900: { color: "error", desc: "Dibatalkan" },
     OF71: { color: "success", desc: "Selesai P3H" },
+    OF56: { color: "success", desc: "Pembayaran" },
+    OF72: { color: "success", desc: "Verifikasi LP3H" },
   },
   {
     get(target: any, prop: string) {
@@ -107,7 +109,7 @@ const tandaiOK = async () => {
     loadingTandaiOK.value = true;
 
     const res: any = await $api(
-      `/self-declare/verificator/tandai-ok/${submissionId}`,
+      `/self-declare/verificator/tandai-ok-mandiri/${submissionId}`,
       {
         method: "put",
       }
@@ -119,15 +121,14 @@ const tandaiOK = async () => {
       loadingTandaiOK.value = false;
 
       setTimeout(() => {
-        router.go(-1);
+        router.push("/lp3h/self-declare/verifikasi-mandiri");
       }, 1000);
     } else {
-      useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
+      useSnackbar().sendSnackbar(res?.errors.list_error?.join(", "), "error");
       loadingTandaiOK.value = false;
     }
   } catch (error) {
-    console.log("@error", error);
-
+    console.log(error);
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     loadingTandaiOK.value = false;
   }
@@ -304,7 +305,7 @@ const lihatLaporan = async () => {
       loadingLihatLaporan.value = false;
 
       setTimeout(() => {
-        router.go(-1);
+        router.push("/lp3h/self-declare/verifikasi-mandiri");
       }, 1000);
     } else {
       useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
@@ -524,13 +525,12 @@ const isCanEdit = () => {
           </VBtn>
           <VBtn
             variant="outlined"
-            append-icon="ri-pencil-fill"
             @click="
               router.push(
                 `/lp3h/self-declare/verifikasi-mandiri/${submissionId}/edit`
               )
             "
-            >Ubah</VBtn
+            >Cek Data</VBtn
           >
           <VBtn @click="isSendModalOpen = true">Kirim</VBtn>
         </div>
@@ -547,13 +547,12 @@ const isCanEdit = () => {
         </VBtn> -->
         <VBtn
           variant="outlined"
-          append-icon="ri-pencil-fill"
           @click="
             router.push(
               `/lp3h/self-declare/verifikasi-mandiri/${submissionId}/edit`
             )
           "
-          >Ubah</VBtn
+          >Cek Data</VBtn
         >
         <VBtn
           :loading="loadingTandaiOK"
@@ -561,7 +560,7 @@ const isCanEdit = () => {
           color="#49A84C"
           class="mx-2"
         >
-          Tandai OK
+          Setujui
         </VBtn>
         <ModalLP3HSelfDeclareVerifikasiMandiri
           :modal-type="'return'"

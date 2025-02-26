@@ -4,6 +4,7 @@ import PerizinanCard from "@/components/pelakuUsahaProfile/PerizinanCard.vue";
 import SubPelakuUsahaLayout from "@/layouts/subPelakuUsahaLayout.vue";
 import { pelakuUsahaProfile } from "@/stores/pelaku-usaha-profile";
 import { useI18n } from "vue-i18n";
+import { useDisplay } from "vuetify";
 
 const { t } = useI18n();
 const tablePabrikHeader = [
@@ -38,6 +39,7 @@ const onEdit = () => {
 };
 
 const store = pelakuUsahaProfile();
+const { mdAndUp } = useDisplay();
 
 onMounted(() => {
   store.fetchProfile();
@@ -49,13 +51,13 @@ onMounted(() => {
     <template #pageTitle>
       <VRow align="center">
         <VCol>
-          <h1 style="font-size: 32px">{{ t("detail-pu.pu-title") }}</h1>
+          <!-- <h2 :class="mdAndUp ? 'text-menu' : 'mobile-text-menu'">Detail Pelaku Usaha</h2> -->
+          <h1 style="font-size: 32px;">{{ t("detail-pu.pu-title") }}</h1>
         </VCol>
-        <VCol style="display: flex; justify-content: end">
+        <VCol style="display: flex; justify-content: end;">
           <VBtn
             density="compact"
             variant="outlined"
-            s
             prepend-icon=""
             @click="onEdit"
           >
@@ -92,6 +94,7 @@ onMounted(() => {
         <VCol cols="12">
           <VExpansionPanels v-model="panelOpenPabrik">
             <VExpansionPanel>
+              <!-- <VExpansionPanelTitle><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">Pabrik</p></VExpansionPanelTitle> -->
               <VExpansionPanelTitle>
                 <div class="text-h4 font-weight-bold">
                   {{ t("detail-pu.pu-fac-title") }}
@@ -134,6 +137,7 @@ onMounted(() => {
         <VCol cols="12">
           <VExpansionPanels v-model="panelOpenOutlet">
             <VExpansionPanel>
+              <!-- <VExpansionPanelTitle><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">Outlet</p></VExpansionPanelTitle> -->
               <VExpansionPanelTitle>
                 <div class="text-h4 font-weight-bold">
                   {{ t("detail-pu.pu-out-title") }}
@@ -170,6 +174,7 @@ onMounted(() => {
           <VExpansionPanels v-model="panelOpenPenyeliaHallal">
             <VExpansionPanel>
               <VExpansionPanelTitle>
+                <!-- <p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">Penyelia Halal</p> -->
                 <div class="text-h4 font-weight-bold">
                   {{ t("detail-pu.pu-ph-title") }}
                 </div>

@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { useDisplay } from "vuetify";
 
 const { t } = useI18n();
+const { mdAndUp } = useDisplay();
 const tableKBLIHeader = [
   { title: "No", key: "no_idx" },
   { title: `${t("detail-pu.pu-kbli-no")}`, key: "No" },
@@ -13,26 +15,31 @@ const tableKBLIHeader = [
 ];
 
 const panelOpen = ref(0);
-const store = reactive(pelakuUsahaProfile());
+const store = pelakuUsahaProfile();
 const isLoading = ref(true);
 
 onMounted(async () => {
-  try {
-    // console.log("Before loading KBLI:", store.kbli);
-    // Simulate API call or asynchronous data fetch
-    await store.fetchProfile(); // Assume this fetches `kbli` data
-    // console.log("After loading KBLI:", store.kbli);
-  } catch (error) {
-    console.error("Failed to load KBLI data:", error);
-  } finally {
-    isLoading.value = false;
-  }
+  // try {
+  //   // console.log("Before loading KBLI:", store.kbli);
+  //   // Simulate API call or asynchronous data fetch
+  //   await store.fetchProfile(); // Assume this fetches `kbli` data
+  //   // console.log("After loading KBLI:", store.kbli);
+  // } catch (error) {
+  //   console.error("Failed to load KBLI data:", error);
+  // } finally {
+  //   isLoading.value = false;
+  // }
 });
 </script>
 
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
+      <!-- <VExpansionPanelTitle
+        ><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">
+          KBLI
+        </p></VExpansionPanelTitle
+      > -->
       <VExpansionPanelTitle>
         <div class="text-h4 font-weight-bold">KBLI</div>
       </VExpansionPanelTitle>

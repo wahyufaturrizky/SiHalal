@@ -11,27 +11,27 @@ const tableHeader = [
   { title: "No", value: "no" },
   { title: "No. Daftar", value: "no_daftar" },
   {
-    title: `${t("status-permohoanan.permohonan-list-tanggal")}`,
+    title: "status-permohoanan.permohonan-list-tanggal",
     value: "tgl_daftar",
   },
   {
-    title: `${t("status-permohoanan.permohonan-list-namapu")}`,
+    title: "status-permohoanan.permohonan-list-namapu",
     value: "nama_pu",
   },
   {
-    title: `${t("status-permohoanan.permohonan-list-jnsdaftar")}`,
+    title: "status-permohoanan.permohonan-list-jnsdaftar",
     value: "jenis_daftar",
   },
   {
-    title: `${t("status-permohoanan.permohonan-list-jnsprod")}`,
+    title: "status-permohoanan.permohonan-list-jnsprod",
     value: "jenis_produk",
   },
   {
-    title: `${t("status-permohoanan.permohonan-list-status")}`,
+    title: "status-permohoanan.permohonan-list-status",
     value: "status",
   },
   {
-    title: `${t("status-permohoanan.permohonan-list-action")}`,
+    title: "status-permohoanan.permohonan-list-action",
     value: "action",
   },
 ];
@@ -90,7 +90,7 @@ onMounted(async () => {
   </VRow> -->
   <VRow>
     <VCol cols="12">
-      <h1 style="font-size: 32px">
+      <h1 style="font-size: 32px;">
         {{ t("status-permohoanan.permohonan-list-title") }}
       </h1>
     </VCol>
@@ -111,7 +111,7 @@ onMounted(async () => {
                 :placeholder="t(`status-permohoanan.permohonan-list-search`)"
                 density="compact"
                 append-inner-icon="ri-search-line"
-                style="max-inline-size: 100%"
+                style="max-inline-size: 100%;"
                 @input="handleInput"
               />
             </VCol>
@@ -137,17 +137,54 @@ onMounted(async () => {
                     </div>
                   </div>
                 </template>
+                <template #header.tgl_daftar="{ column }">
+                  <div>
+                  {{ t(column.title) }}
+                  </div>
+                </template>
+
+                <template #header.nama_pu="{ column }">
+                  <div>
+                  {{ t(column.title) }}
+                  </div>
+                </template>
+
+                <template #header.jenis_daftar="{ column }">
+                  <div>
+                  {{ t(column.title) }}
+                  </div>
+                </template>
+
+                <template #header.jenis_produk="{ column }">
+                  <div>
+                  {{ t(column.title) }}
+                  </div>
+                </template>
+
+                <template #header.status="{ column }">
+                  <div>
+                  {{ t(column.title) }}
+                  </div>
+                </template>
+
+                <template #header.action="{ column }">
+                  <div>
+                  {{ t(column.title) }}
+                  </div>
+                </template>
+
+
                 <template #item.no="{ index }">
                   {{ index + 1 }}
                 </template>
                 <template #item.status="{ item }">
-                  <div style="min-inline-size: 14rem !important">
+                  <div style="min-inline-size: 14rem !important;">
                     <VChip
                       color="success"
                       text-color="white"
                       small
                       variant="outlined"
-                      style="background-color: #edf6ed; margin-inline-end: 1svw"
+                      style="background-color: #edf6ed; margin-inline-end: 1svw;"
                     >
                       {{ item?.jenis_usaha }}
                     </VChip>
@@ -156,7 +193,7 @@ onMounted(async () => {
                       text-color="white"
                       small
                       variant="outlined"
-                      style="background-color: #edf6ed; margin-inline-end: 1svw"
+                      style="background-color: #edf6ed; margin-inline-end: 1svw;"
                     >
                       {{ item?.jumlah_produk }}
                     </VChip>
@@ -165,37 +202,37 @@ onMounted(async () => {
                       text-color="white"
                       small
                       variant="outlined"
-                      style="background-color: #f0e9f1; margin-inline-end: 1svw"
+                      style="background-color: #f0e9f1; margin-inline-end: 1svw;"
                     >
                       {{ item.status }}
                     </VChip>
                   </div>
                 </template>
                 <template #item.jenis_produk="{ item }">
-                  <div style="min-inline-size: 40rem !important">
+                  <div style="min-inline-size: 40rem !important;">
                     {{ item.jenis_produk }}
                   </div>
                 </template>
                 <template #item.no_daftar="{ item }">
-                  <div style="min-inline-size: 8rem !important">
+                  <div style="min-inline-size: 8rem !important;">
                     {{ item.no_daftar }}
                   </div>
                 </template>
                 <template #item.tgl_daftar="{ item }">
                   <div
                     v-if="item?.tgl_daftar"
-                    style="min-inline-size: 5rem !important"
+                    style="min-inline-size: 5rem !important;"
                   >
                     {{ formatDateIntl(new Date(item.tgl_daftar)) }}
                   </div>
                 </template>
                 <template #item.nama_pu="{ item }">
-                  <div style="min-inline-size: 8rem !important">
+                  <div style="min-inline-size: 8rem !important;">
                     {{ item.nama_pu }}
                   </div>
                 </template>
                 <template #item.jenis_daftar="{ item }">
-                  <div style="min-inline-size: 8rem !important">
+                  <div style="min-inline-size: 8rem !important;">
                     {{ item.jenis_daftar }}
                   </div>
                 </template>

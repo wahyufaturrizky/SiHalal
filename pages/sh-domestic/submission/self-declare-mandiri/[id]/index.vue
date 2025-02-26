@@ -992,6 +992,8 @@ const statusItem = new Proxy(
     OF120: { color: "success", desc: "Certificate Issued" },
     OF900: { color: "error", desc: "Dibatalkan" },
     OF71: { color: "success", desc: "Selesai P3H" },
+    OF56: { color: "success", desc: "Pembayaran" },
+    OF72: { color: "success", desc: "Verifikasi LP3H" },
   },
   {
     get(target: any, prop: string) {

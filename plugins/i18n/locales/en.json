@@ -389,7 +389,56 @@
     "pu-edit-cancel": "Cancel",
     "pu-edit-save": "Save Changes",
     "pu-edit-add": "Add",
-    "pu-edit-sk": "Halal Supervisor Approintment Decree"
+    "pu-edit-edit": "Edit",
+    "pu-edit-save": "Save",
+    "pu-edit-sk": "Halal Supervisor Approintment Decree",
+    "pu-legal-modal-1": "Document Type",
+    "pu-legal-modal-2": "Document Number",
+    "pu-legal-modal-3": "Document Date",
+    "pu-legal-modal-4": "Validity Period",
+    "pu-legal-modal-5": "Issuing Agency",
+    "pu-legal-modal-placeholder-1": "Fill in Document Number",
+    "pu-legal-modal-placeholder-2": "Fill in Issuing Agency",
+    "pu-legal-modal-batal": "Cancel",
+    "pu-legal-modal-hapus": "Delete",
+    "pu-pabrik-modal-title-add": "Add Factory Data",
+    "pu-pabrik-modal-title-edit": "Edit Factory Data",
+    "pu-pabrik-button-cancel": "Cancel",
+    "pu-pabrik-button-add": "Add",
+    "pu-pabrik-button-save": "Save",
+    "pu-pabrik-modal-1": "Factory Location",
+    "pu-pabrik-modal-2": "Factory Name",
+    "pu-pabrik-modal-3": "Factory Address",
+    "pu-pabrik-modal-4": "Province",
+    "pu-pabrik-modal-5": "Regency/City",
+    "pu-pabrik-modal-6": "Country",
+    "pu-pabrik-modal-7": "Postal Code",
+    "pu-pabrik-modal-8": "Factory Status",
+    "pu-pabrik-fill-modal-1": "Fill in Factory Name",
+    "pu-pabrik-fill-modal-2": "Fill in Factory Address",
+    "pu-pabrik-fill-modal-3": "Fill in Postal Code",
+    "pu-pabrik-validasi-warn": "Sorry, you used the word forbidden!",
+    "pu-outlet-modal-add": "Add",
+    "pu-outlet-modal-edit": "Edit",
+    "pu-outlet-modal-add-title": "Add Outlet Data",
+    "pu-outlet-modal-edit-title": "Edit Outlet Data",
+    "pu-outlet-modal-modal-1": "Outlet Name",
+    "pu-outlet-modal-modal-2": "Outlet Address",
+    "pu-outlet-modal-modal-3": "Province",
+    "pu-outlet-modal-modal-4": "City",
+    "pu-outlet-modal-modal-5": "Country",
+    "pu-outlet-modal-modal-6": "Zipcode",
+    "pu-penyelia-halal-tambah-title": "Add Data Penyelia Halal",
+    "pu-penyelia-halal-edit-title": "Edit Data Penyelia Halal",
+    "pu-penyelia-halal-label-1": "Supervisor Name",
+    "pu-penyelia-halal-label-2": "Supervisor Religion",
+    "pu-penyelia-halal-label-3": "Certificate Number",
+    "pu-penyelia-halal-label-4": "Certificate Date",
+    "pu-penyelia-halal-label-5": "Decree Number",
+    "pu-penyelia-halal-label-6": "Decree Date",
+    "pu-penyelia-halal-label-7": "Upload Halal Supervisor Competency Certificate",
+    "pu-penyelia-halal-label-8": "Upload Halal Supervisor Training Certificate",
+    "pu-penyelia-halal-label-9": "Upload KTP"
   },
   "status-permohoanan": {
     "permohonan-list-back": "Back",
@@ -622,6 +671,7 @@
     "reguler-form--pengajuan-legal-issuer": "Issuing Agency",
     "reguler-form--pengajuan-legal-action": "Action",
     "reguler-form--pengajuan-legal-popup-title": "Legal Aspect Data Add",
+    "reguler-form--pengajuan-legal-popup-title-1": "Legal Aspect Data Edit",
     "reguler-form--pengajuan-legal-popup-jenis": "Document Type",
     "reguler-form--pengajuan-legal-popup-jenis-1": "Select Document Type",
     "reguler-form--pengajuan-legal-popup-nodok": "Document No.",
@@ -868,7 +918,10 @@
     "reguler-kode-facilitas-2": "Enter the Facility Code",
     "reguler-remove-bahan-title": "Remove Ingredients",
     "reguler-remove-bahan-1": "Yes, Delete",
-    "reguler-remove-bahan-2": "Are you sure you deleted this data?"
+    "reguler-remove-bahan-2": "Are you sure you deleted this data?",
+    "reguler-label-save-1": "Are you sure you want to save these data changes?",
+    "reguler-label-save-2": "Cancel",
+    "reguler-label-save-3": "Yes, Save"
   },
   "reguler-invoice": {
     "invoice-list-back": "Back",
@@ -906,5 +959,176 @@
     "invoice-list-amount": "Amount",
     "invoice-list-status": "Status",
     "invoice-list-invfile": "Invoice File"
+  },
+  "task-force": {
+    "tagihan-bpjph-title": "Daftar Tagihan ke BPJPH",
+    "tagihan-bpjph-subtitle": "Daftar Tagihan",
+    "tagihan-bpjph-table-key-tagihan": "No. Tagihan",
+    "tagihan-bpjph-table-key-tanggal": "Tanggal",
+    "tagihan-bpjph-table-key-total": "Total",
+    "tagihan-bpjph-table-key-status": "Status",
+    "tagihan-bpjph-table-key-invoice": "Invoice",
+    "tagihan-bpjph-table-key-bukti-bayar": "Bukti Bayar",
+    "tagihan-bpjph-table-key-action": "Action",
+    "tagihan-bpjph-dialog-delete-title": "Hapus",
+    "tagihan-bpjph-dialog-delete-btn-batal": "Batal",
+    "tagihan-bpjph-dialog-delete-btn-submit": "Simpan",
+    "tagihan-bpjph-buat-tagihan-title": "Buat Tagihan ke BPJPH",
+    "tagihan-bpjph-buat-tagihan-table": {
+      "title": "Daftar Dokumen",
+      "total-data": "Jumlah Data",
+      "btn-pilih": "Pilih",
+      "btn-invoice": "Buat Invoice"
+    },
+    "tagihan-bpjph-buat-tagihan-table-key": {
+      "daftar": "No. Daftar",
+      "date": "Tanggal",
+      "pu-name": "Nama PU",
+      "city": "Kota",
+      "product-type": "Jenis Produk",
+      "market-brand": "Merek Dagang",
+      "market-area": "Area Pemasaran",
+      "business-scale": "Skala Usaha",
+      "lph-name": "Nama LPH",
+      "determination-no": "No. Penetapan",
+      "determination-date": "Tangal Penetapan"
+    },
+    "tagihan-bpjph-buat-tagihan-filter": {
+      "service-type": "Jenis Layanan",
+      "pelaku-usaha": "Pelaku usaha",
+      "facility": "Fasilitas",
+      "year": "Tahun",
+      "btn-filter": "Apply Filters",
+      "reset-btn-filter": "Reset"
+    },
+    "proses-sidang": {
+      "title": "Tabel Pengajuan Proses Sidang",
+      "subtitle": "Data Pengajuan",
+      "filter": {
+        "service-type": "Jenis Layanan",
+        "product-type": "Jenis Produk",
+        "province": "Provinsi",
+        "lph": "LPH"
+      },
+      "detail": {
+        "title": "Detail Data Proses Sidang",
+        "section-profile": {
+          "title": "Data Pengajuan",
+          "nomor": "Nomor ID",
+          "created": "Tanggal",
+          "no_mohon": "Nomor Permohonan",
+          "tgl_mohon": "Tanggal Permohonan",
+          "lph": "LPH",
+          "channel": "Channel",
+          "done-lph-date": "Tanggal Selesai LPH",
+          "result": "Hasil",
+          "service-type": "Jenis Layanan",
+          "product-type": "Jenis Produk",
+          "brand": "Merk Dagang",
+          "area": "Area Pemasaran",
+          "company-name": "Nama Perusahaan",
+          "company-name-sh": "Nama Perusahaan tertera di SH",
+          "kbli-name": "Nama KBLI",
+          "address": "Alamat",
+          "city": "Kota/Kab",
+          "province": "Provinsi",
+          "postal-code": "Kode Pos",
+          "nationality": "Negara",
+          "phone": "Telepon",
+          "email": "Email",
+          "bu-type": "Jenis Badan Usaha",
+          "scale": "Skala Usaha",
+          "base-modal": "Modal Dasar / Usaha"
+        },
+        "section-penanggung-jawab": {
+          "title": "Penanggung Jawab",
+          "name": "Nama",
+          "phone": "Nomor Kontak",
+          "email": "Email"
+        },
+        "section-produk": {
+          "title": "Daftar Nama Produk",
+          "product-service": "Layanan Produk",
+          "doc-no": "No. Dokumen",
+          "product-class": "Kelas Produk",
+          "product-detail": "Rincian Produk",
+          "publication": "Publikasi"
+        },
+        "section-biaya-pemeriksaan": {
+          "title": "Biaya Pemeriksaan",
+          "price-detail": "Keterangan Biaya",
+          "total": "Jumlah",
+          "price": "Harga",
+          "sub-total": "Sub Total"
+        },
+        "section-jadwal-audit": {
+          "title": "Jawal Audit",
+          "start-date": "Tanggal Mulai",
+          "end-date": "Tanggal Selesai"
+        },
+        "section-auditor": {
+          "title": "Auditor",
+          "name": "Nama",
+          "bod": "Tanggal Lahir",
+          "gender": "JK",
+          "regis-no": "No. Pendaftaran"
+        },
+        "section-hasil-pemeriksaan": {
+          "title": "Hasil Pemeriksaan",
+          "done-date": "Tanggal Selesai LPH",
+          "result": "Hasil",
+          "document": "Dokumen"
+        },
+        "section-hasil-audit": {
+          "title": "Hasil Audit",
+          "report": "Laporan"
+        },
+        "section-regis-no": "No. Pendaftaran",
+        "section-total-biaya": "Biaya Pemerikasaan",
+        "section-dokumen-unduh": {
+          "title": "Dokumen Unduhan",
+          "kh": "STTD",
+          "lph": "Laporan LPH"
+        },
+        "section-aspek-legal": {
+          "title": "Aspek Legal",
+          "jenis": "Jenis",
+          "doc-no": "No. Dokumen",
+          "date": "Tanggal",
+          "expire": "Masa Berlaku",
+          "penerbit": "Instansi Penerbit"
+        },
+        "section-pabrik": {
+          "title": "Pabrik",
+          "name": "Nama",
+          "address": "Alamat"
+        },
+        "section-outlet": {
+          "title": "Outlet",
+          "name": "Nama",
+          "address": "Alamat"
+        },
+        "section-penyelia": {
+          "title": "Penyelia Halal",
+          "name": "Nama",
+          "ktp": "No. KTP",
+          "phone": "No. Kontak",
+          "sertifikat": "No/Tgl Sertif Penyelia Halal"
+        },
+        "section-nama-produk": {
+          "title": "Daftar Nama Produk",
+          "name": "Nama Produk",
+          "publication": "Publikasi"
+        },
+        "section-informasi-penetapan": {
+          "title": "Informasi Penetapan",
+          "no-sttd": "Nomor STTD",
+          "pu-name": "Nama PU",
+          "product-type": "Jenis Produk",
+          "ketetapan": "Ketetapan",
+          "btn": "Penetapan"
+        }
+      }
+    }
   }
 }
