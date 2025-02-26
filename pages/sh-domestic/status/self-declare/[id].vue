@@ -530,7 +530,7 @@
                 <VBtn
                   @click="
                     downloadForms.surat_permohonan
-                      ? handleDownloadForm(downloadForms.surat_permohonan)
+                      ? handleDownloadForm(downloadForms.surat_permohonan, '')
                       : null
                   "
                   :color="
@@ -552,7 +552,7 @@
                 <VBtn
                   @click="
                     downloadForms.surat_pernyataan
-                      ? handleDownloadForm(downloadForms.surat_pernyataan)
+                      ? handleDownloadForm(downloadForms.surat_pernyataan, '')
                       : null
                   "
                   :color="
@@ -594,7 +594,7 @@
                 <VBtn
                   @click="
                     downloadForms.hasil_verval
-                      ? handleDownloadForm(downloadForms.hasil_verval)
+                      ? handleDownloadForm(downloadForms.hasil_verval, '')
                       : null
                   "
                   :color="downloadForms.hasil_verval ? 'primary' : '#A09BA1'"
@@ -614,7 +614,7 @@
                 <VBtn
                   @click="
                     downloadForms.rekomendasi
-                      ? handleDownloadForm(downloadForms.rekomendasi)
+                      ? handleDownloadForm(downloadForms.rekomendasi, '')
                       : null
                   "
                   :color="downloadForms.rekomendasi ? 'primary' : '#A09BA1'"
@@ -674,7 +674,7 @@
                 <VBtn
                   @click="
                     downloadForms.sttd
-                      ? handleDownloadForm(downloadForms.sttd)
+                      ? handleDownloadForm(downloadForms.sttd, '')
                       : null
                   "
                   :color="downloadForms.sttd ? 'primary' : '#A09BA1'"
@@ -694,7 +694,7 @@
                 <VBtn
                   @click="
                     downloadForms.sertifikasi_halal
-                      ? handleDownloadForm(downloadForms.sertifikasi_halal)
+                      ? handleDownloadForm(downloadForms.sertifikasi_halal, 'SERT')
                       : null
                   "
                   :color="
@@ -1358,8 +1358,8 @@ const getDownloadForm = async (docName: string, propName: string) => {
   }
 };
 
-const handleDownloadForm = async (fileName: string) => {
-  return await downloadDocument(fileName);
+const handleDownloadForm = async (fileName: string, type: string) => {
+  return await downloadDocument(fileName, type);
 };
 const handleDownload = async (productId: string) => {
   return await downloadDocument(productId);
