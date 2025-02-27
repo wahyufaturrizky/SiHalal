@@ -114,25 +114,13 @@ interface editBahan {
         <div class="d-flex flex-wrap mt-5">
           <VIcon icon="ri-error-warning-line" color="#652672" />
           <label class="subText"
-            >Jenis Bahan harus terdiri dari : Cleaning Agent, Kemasan dan Bahan, sebelum dapat mengisi  Produk.</label
+            >Jenis Bahan harus terdiri dari : Cleaning Agent, Kemasan dan Bahan,
+            sebelum dapat mengisi Produk.</label
           >
         </div>
       </div>
     </VCardTitle>
     <VCardItem>
-      <VRow>
-        <VCol cols="12">
-          <div class="bgContent">
-            <div class="d-flex flex-wrap">
-              <VIcon icon="ri-error-warning-line" color="#652672" />
-              <label class="subText"
-                >Jenis Bahan harus terdiri dari : Cleaning Agent, Kemasan dan
-                Bahan, sebelum dapat mengisi Produk.</label
-              >
-            </div>
-          </div>
-        </VCol>
-      </VRow>
       <VRow>
         <VCol cols="12">
           <VDataTable :headers="tableHeader" :items="bahan">
