@@ -178,7 +178,7 @@ onMounted(async () => {
 <template>
   <div>
     <di>
-      <h1 style="font-size: 32px">Pengajuan Self Declare</h1>
+      <h1 style="font-size: 32px">Pengajuan Self Declare Mandiri</h1>
       <br />
     </di>
 
@@ -186,7 +186,7 @@ onMounted(async () => {
       <VRow>
         <VCol class="d-flex justify-sm-space-between align-center">
           <div class="text-h4 font-weight-bold">
-            Data Pengajuan Self Declare
+            Data Pengajuan Self Declare Mandiri
           </div>
         </VCol>
         <!-- <VCol class="d-flex justify-end align-center">
