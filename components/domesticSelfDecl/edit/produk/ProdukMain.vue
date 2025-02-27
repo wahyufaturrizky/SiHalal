@@ -218,22 +218,13 @@ const handleDeleteProduct = async () => {
         <div class="d-flex flex-wrap mt-5">
           <VIcon icon="ri-error-warning-line" color="#652672" />
           <label class="subText"
-            >Mapping Produk dan Bahan yang digunakan harus lakukan sebelum mengisi bagian Proses Produk Halal</label
-          >
-        </div>
-      </div>
-    </VCardTitle>
-    <VCardItem>
-      <div class="bgContent">
-        <div class="d-flex flex-wrap">
-          <VIcon icon="ri-error-warning-line" color="#652672" />
-          <label class="subText"
             >Mapping Produk dan Bahan yang digunakan harus lakukan sebelum
             mengisi bagian Proses Produk Halal</label
           >
         </div>
       </div>
-    </VCardItem>
+    </VCardTitle>
+
     <VCardItem>
       <VDataTable :headers="tableHeader" :items="produk" class="custom-table">
         <template #item.no="{ index }">
