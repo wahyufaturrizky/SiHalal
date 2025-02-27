@@ -216,6 +216,17 @@ const handleDeleteProduct = async () => {
       </VRow>
     </VCardTitle>
     <VCardItem>
+      <div class="bgContent">
+        <div class="d-flex flex-wrap">
+          <VIcon icon="ri-error-warning-line" color="#652672" />
+          <label class="subText"
+            >Mapping Produk dan Bahan yang digunakan harus lakukan sebelum
+            mengisi bagian Proses Produk Halal</label
+          >
+        </div>
+      </div>
+    </VCardItem>
+    <VCardItem>
       <VDataTable :headers="tableHeader" :items="produk" class="custom-table">
         <template #item.no="{ index }">
           {{ index + 1 }}
@@ -322,5 +333,18 @@ const handleDeleteProduct = async () => {
       background: white;
     }
   }
+}
+.bgContent {
+  border-radius: 10px;
+  background-color: #f0e9f1;
+  padding-inline-start: 10px;
+}
+.subText {
+  align-content: center;
+  color: #652672 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 18px !important;
+  padding-inline-start: 10px;
 }
 </style>
