@@ -110,6 +110,14 @@ interface editBahan {
           ></TambahBahanModal>
         </VCol>
       </VRow>
+      <div class="bgContent">
+        <div class="d-flex flex-wrap mt-5">
+          <VIcon icon="ri-error-warning-line" color="#652672" />
+          <label class="subText"
+            >Jenis Bahan harus terdiri dari : Cleaning Agent, Kemasan dan Bahan, sebelum dapat mengisi  Produk.</label
+          >
+        </div>
+      </div>
     </VCardTitle>
     <VCardItem>
       <VRow>
