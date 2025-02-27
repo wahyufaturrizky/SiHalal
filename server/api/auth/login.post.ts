@@ -12,34 +12,35 @@ export default defineEventHandler(async (event) => {
       },
     });
   }
-  console.log(runtimeConfig)
-
-  const recaptcha = await $fetch<any>(
-    `https://www.google.com/recaptcha/api/siteverify`,
-    {
-      method: "POST",
-      params: {
-        secret: runtimeConfig.recaptcha.secretKey,
-        response: token,
-      },
+  if (runtimeConfig.captcha.active) {
+    const recaptcha = await $fetch<any>(
+      `https://www.google.com/recaptcha/api/siteverify`,
+      {
+        method: "POST",
+        params: {
+          secret: runtimeConfig.recaptcha.secretKey,
+          response: token,
+        },
+      }
+    ).catch((err: NuxtError) => {
+      console.log(err);
+      throw createError({
+        statusCode: 401,
+        statusMessage: "captcha-failed",
+        data: err.data,
+      });
+    });
+    if (!recaptcha.success) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: "captcha-failed",
+        data: {
+          success: false,
+        },
+      });
     }
-  ).catch((err: NuxtError) => {
-    console.log(err);
-    throw createError({
-      statusCode: 401,
-      statusMessage: "captcha-failed",
-      data: err.data,
-    });
-  });
-  if (!recaptcha.success) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: "captcha-failed",
-      data: {
-        success: false,
-      },
-    });
   }
+
   const { data } = await $fetch<any>(
     `${runtimeConfig.authBaseUrl}/api/authenticate`,
     {
@@ -47,7 +48,7 @@ export default defineEventHandler(async (event) => {
       body: JSON.stringify({ email, password }),
     }
   ).catch((err: NuxtError) => {
-    console.log("ini err", err)
+    console.log("ini err", err);
     throw createError({
       statusCode: 401,
       statusMessage: "username or password wrong",
