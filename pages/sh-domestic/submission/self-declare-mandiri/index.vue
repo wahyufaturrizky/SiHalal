@@ -12,7 +12,7 @@ const headers: any = [
   { title: "Nama PU", key: "nama_pu", nowrap: true },
   { title: "Jenis Produk", key: "jenis_produk", nowrap: true },
   { title: "Status", key: "status", nowrap: true },
-  { title: "Merk Dagang", key: "merk_dagang", nowrap: true },
+  // { title: "Merk Dagang", key: "merk_dagang", nowrap: true },
   {
     title: "Action",
     value: "action",
@@ -171,7 +171,7 @@ onMounted(async () => {
 <template>
   <div>
     <di>
-      <h1 style="font-size: 32px">Pengajuan Self Declare</h1>
+      <h1 style="font-size: 32px">Pengajuan Self Declare Mandiri</h1>
       <br />
     </di>
 
@@ -179,7 +179,7 @@ onMounted(async () => {
       <VRow>
         <VCol class="d-flex justify-sm-space-between align-center">
           <div class="text-h4 font-weight-bold">
-            Data Pengajuan Self Declare
+            Data Pengajuan Self Declare Mandiri
           </div>
         </VCol>
         <VCol class="d-flex justify-end align-center">
@@ -256,9 +256,9 @@ onMounted(async () => {
             <template #item.jenis_produk="{ item }: any">
               {{ item.jenis_produk ? item.jenis_produk : "-" }}
             </template>
-            <template #item.merk_dagang="{ item }: any">
+            <!-- <template #item.merk_dagang="{ item }: any">
               {{ item.merk_dagang ? item.merk_dagang : "-" }}
-            </template>
+            </template> -->
             <template #item.action="{ item }: any">
               <VIcon
                 color="success"

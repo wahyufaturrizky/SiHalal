@@ -21,7 +21,7 @@ const headers: any = [
   { title: "Nama PU", key: "nama_pu" },
   { title: "Alamat", key: "alamat_pu" },
   { title: "Jenis Produk", key: "product_name" },
-  { title: "Merk Dagang", key: "merek_dagang" },
+  // { title: "Merk Dagang", key: "merek_dagang" },
   { title: "Status", key: "status_reg" },
   { title: "Action", key: "action" },
 ];

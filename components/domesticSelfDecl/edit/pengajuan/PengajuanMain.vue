@@ -113,7 +113,7 @@ const handleGetFasilitator = async () => {
     );
 
     if (response.code === 2000) {
-      listFasilitasi.value = response.data;
+      listFasilitasi.value = response.data != null ? response.data : [];
       listFasilitasi.value.push({
         id: "Lainnya",
         name: "Lainnya",

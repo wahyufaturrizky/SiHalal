@@ -41,6 +41,14 @@ export default defineNuxtConfig({
     https://nuxt.com/docs/guide/going-further/runtime-config
   */
   runtimeConfig: {
+    session : {
+      cookie: {
+        httpOnly: true,  // Prevent access from JavaScript
+        secure: process.env.NODE_ENV === "production", // Only send over HTTPS
+        sameSite: "lax", // Helps prevent CSRF
+        maxAge: 60 * 60 * 24, // 1 day expiration
+      },
+    },
     // Private keys are only available on the server
     authSecret: process.env.NUXT_AUTH_SECRET || "",
     authBaseUrl: process.env.NUXT_AUTH_BASE_URL || "",
@@ -57,6 +65,9 @@ export default defineNuxtConfig({
       },
       recaptcha: {
         siteKey: process.env.NUXT_PUBLIC_RECAPTCHA_SITE_KEY || "",
+      },
+      captcha: {
+        active: process.env.NUXT_PUBLIC_CAPTCHA_ACTIVE || true,
       },
     },
     turnstile: {

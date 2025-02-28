@@ -110,11 +110,17 @@ interface editBahan {
           ></TambahBahanModal>
         </VCol>
       </VRow>
+      <div class="bgContent">
+        <div class="d-flex flex-wrap mt-5">
+          <VIcon icon="ri-error-warning-line" color="#652672" />
+          <label class="subText"
+            >Jenis Bahan harus terdiri dari : Cleaning Agent, Kemasan dan Bahan,
+            sebelum dapat mengisi Produk.</label
+          >
+        </div>
+      </div>
     </VCardTitle>
     <VCardItem>
-      <VRow>
-        <VCol cols="12"></VCol>
-      </VRow>
       <VRow>
         <VCol cols="12">
           <VDataTable :headers="tableHeader" :items="bahan">
@@ -177,3 +183,18 @@ interface editBahan {
     </VCard>
   </VDialog>
 </template>
+<style lang="scss" scoped>
+.subText {
+  align-content: center;
+  color: #652672 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 18px !important;
+  padding-inline-start: 10px;
+}
+.bgContent {
+  border-radius: 10px;
+  background-color: #f0e9f1;
+  padding-inline-start: 10px;
+}
+</style>

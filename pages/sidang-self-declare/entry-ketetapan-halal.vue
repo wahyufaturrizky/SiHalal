@@ -41,7 +41,7 @@ const headers = [
   { title: "Alamat", key: "alamat", nowrap: true },
   { title: "Kabupaten", key: "kota_pu", nowrap: true },
   { title: "Jenis Produk", key: "jenis_produk", nowrap: true },
-  { title: "Merk Dagang", key: "merek_dagang", nowrap: true },
+  // { title: "Merk Dagang", key: "merek_dagang", nowrap: true },
   { title: "Tanggal Sidang", key: "tgl_sidang", nowrap: true },
   { title: "Tanggal Daftar", key: "tgl_daftar", nowrap: true },
   { title: "Nomor KH", key: "no_kh", nowrap: true },
