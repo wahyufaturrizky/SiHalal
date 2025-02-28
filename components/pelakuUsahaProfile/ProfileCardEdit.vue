@@ -46,6 +46,18 @@ const convertFumk = (code: string): string => {
   }
 };
 
+const convertModalDasar = (value: string): string | undefined => {
+  if (value) {
+    if (
+      props.profileData?.asal_usaha?.toLowerCase() == "instansi pemerintah" ||
+      props.profileData?.asal_usaha?.toLowerCase() == "dalam negeri"
+    ) {
+      return formatCurrencyIntl(value);
+    }
+  }
+  return value;
+};
+
 const disableEdit = (asalUsaha: string): boolean => {
   if (asalUsaha == "Luar Negeri") {
     return false;
@@ -59,7 +71,7 @@ const disableEdit = (asalUsaha: string): boolean => {
 const form = ref({
   jenis_badan_usaha: convertJnbus(store.profileData?.jenis_badan_usaha) || "-",
   skala_usaha: store.profileData?.skala_usaha || "-",
-  modal_dasar: formatCurrencyIntl(store.profileData?.modal_dasar) || "-",
+  modal_dasar: convertModalDasar(store.profileData?.modal_dasar) || "-",
   asal_usaha: convertFln(store.profileData?.asal_usaha),
   tingkat_usaha: convertFumk(store.profileData?.tingkat_usaha),
 });
@@ -140,8 +152,11 @@ const profileFormRef = ref<VForm>();
 const profileSecondFormRef = ref<VForm>();
 
 async function submitProfile() {
-  profileFormRef.value?.validate().then(({ valid: isValid }) => {
-    if (isValid) {
+  Promise.all([
+    profileFormRef.value?.validate(),
+    profileSecondFormRef.value?.validate(),
+  ]).then(([profileValid, profileSecValid]) => {
+    if (profileValid && profileSecValid) {
       const body = {
         nama_pu: profilData.value[0].value,
         alamat_pu: profilData.value[1].value,
@@ -151,6 +166,8 @@ async function submitProfile() {
         negara_pu: profilData.value[5].value,
         no_tlp: profilData.value[6].value,
         email: profilData.value[7].value,
+        jenis_badan_usaha: form.value.jenis_badan_usaha,
+        modal_dasar: parseInt(form.value.modal_dasar),
       };
 
       const submitApi = $api(
@@ -272,7 +289,7 @@ watch(
       form.value.jenis_badan_usaha =
         convertJnbus(newData?.jenis_badan_usaha) || "-";
       form.value.skala_usaha = newData?.skala_usaha || "-";
-      form.value.modal_dasar = newData?.modal_dasar || "-";
+      form.value.modal_dasar = convertModalDasar(newData?.modal_dasar) || "-";
     }
   },
   { deep: true, immediate: true }
