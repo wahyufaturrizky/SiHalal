@@ -277,7 +277,11 @@ watch(
         {
           id: 6,
           field: `${t("detail-pu.pu-profil-negara")}`,
-          value: newData.negara,
+          value: !(
+            props.profileData?.asal_usaha?.toLowerCase() == "luar negeri"
+          )
+            ? "Indonesia"
+            : newData?.negara,
           disable: disableEdit(newData?.asal_usaha),
           rules: [requiredValidator],
         },
