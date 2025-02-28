@@ -138,6 +138,17 @@ const profilData = ref([
   },
 ]);
 
+const modalDasarRule = reactive([requiredValidator]);
+const refModalDasar = ref();
+const addModalDasarRule = (value: any) => {
+  console.log("modal dasar value = ", value);
+
+  modalDasarRule.push(integerValidator);
+  if (value?.data?.length === 1) {
+    refModalDasar.value?.validate();
+  }
+};
+
 async function getMasterData(mastertype: string) {
   const response = await $api(`master/common-code?type=${mastertype}`, {
     method: "get",
@@ -409,8 +420,11 @@ watch(
                     ? false
                     : disableEdit(props.profileData?.asal_usaha)
                 "
+                @input="addModalDasarRule"
                 v-model="form.modal_dasar"
-                :rules="[integerValidator, requiredValidator]"
+                :rules="modalDasarRule"
+                clearable
+                ref="refModalDasar"
               ></VTextField>
             </VCol>
           </VRow>
