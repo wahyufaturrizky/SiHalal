@@ -174,8 +174,6 @@ const headers = [
       </VDataTableServer>
     </VCard>
   </VCard>
-
-  <VSkeletonLoader type="card" v-else />
 </template>
 
 <style scoped>
