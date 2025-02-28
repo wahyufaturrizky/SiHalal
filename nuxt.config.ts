@@ -40,10 +40,13 @@ export default defineNuxtConfig({
     ❗ Please read the docs before updating runtimeConfig
     https://nuxt.com/docs/guide/going-further/runtime-config
   */
+  // serverHandlers: [
+  //   { route: "/api/**", handler: "~/server/middleware/cookieHandler.ts" },
+  // ],
   runtimeConfig: {
-    session : {
+    session: {
       cookie: {
-        httpOnly: true,  // Prevent access from JavaScript
+        httpOnly: true, // Prevent access from JavaScript
         secure: process.env.NODE_ENV === "production", // Only send over HTTPS
         sameSite: "lax", // Helps prevent CSRF
         maxAge: 60 * 60 * 24, // 1 day expiration
