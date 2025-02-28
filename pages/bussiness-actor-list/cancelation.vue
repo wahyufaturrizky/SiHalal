@@ -3,7 +3,6 @@ const items = ref();
 const size = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
-const loadingAll = ref(true);
 const page = ref(1);
 const keyword = ref();
 const query_by = ref();
@@ -114,7 +113,7 @@ const headers = [
   <h1 style="font-size: 32px">Pembatalan</h1>
   <br />
 
-  <VCard v-if="!loadingAll" class="pa-4">
+  <VCard class="pa-4">
     <div class="text-h4 font-weight-bold mb-4">
       Data Pengajuan Sertifikasi Halal
     </div>
