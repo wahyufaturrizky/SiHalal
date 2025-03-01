@@ -118,7 +118,7 @@ export default defineNuxtConfig({
         headerName: "Authorization",
         maxAgeInSeconds: 18000,
         sameSiteAttribute: "lax",
-        secureCookieAttribute: false,
+        secureCookieAttribute: true,
       },
       session: {
         dataType: {
