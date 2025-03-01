@@ -31,7 +31,9 @@ onMounted(async () => {
     </div>
     <VRow align="center">
       <VCol>
-        <div class="text-h3 font-weight-bold">Ubah Pengajuan Self Declare</div>
+        <div class="text-h3 font-weight-bold">
+          Ubah Pengajuan Self Declare Mandiri
+        </div>
       </VCol>
       <!-- <VCol class="d-flex justify-end">
         <VBtn color="primary" variant="flat" text="Simpan Perubahan" />

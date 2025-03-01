@@ -32,6 +32,13 @@ const onRegister = () => {
   props.newRegister("JD.1", selectedItem.value);
   isVisible.value = false;
 };
+onMounted(() => {
+  if (props.data != undefined) {
+    if (props.data.length != 0) {
+      selectedItem.value = props.data[0].id;
+    }
+  }
+});
 
 const onAddRegister = () => {
   developmentDialog.value = true;

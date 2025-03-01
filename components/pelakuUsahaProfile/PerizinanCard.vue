@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
 
@@ -16,8 +16,8 @@ const tablePerizinanHeader = [
 ];
 
 const panelOpen = ref([0]);
-const store = reactive(pelakuUsahaProfile());
-const isLoading = ref(true);
+const store = pelakuUsahaProfile();
+const isLoading = ref(false);
 
 // TODO -> LOGIC TO DONWLOAD FILE
 const download = (item) => {
@@ -65,7 +65,7 @@ const closeModal = ref(false);
       </VExpansionPanelTitle>
       <VExpansionPanelText>
         <VContainer style="max-block-size: 35svh; overflow-y: auto">
-          <div v-if="isLoading">Loading...</div>
+          <div v-if="store.isLoading">Loading...</div>
           <div
             v-else-if="store.perizinan?.length"
             v-for="(item, index) in store.perizinan"

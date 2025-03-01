@@ -482,7 +482,9 @@ const isCanEdit = () => {
     </div>
     <VRow align="center">
       <VCol :cols="isCanEdit() ? 8 : 12">
-        <h3 class="text-h3 font-weight-bold">Detail Pengajuan Self Declare</h3>
+        <h3 class="text-h3 font-weight-bold">
+          Detail Pengajuan Self Declare Mandiri
+        </h3>
       </VCol>
       <VCol cols="4" v-if="isCanEdit()">
         <div class="d-flex justify-end align-center ga-2">

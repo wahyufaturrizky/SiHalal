@@ -30,7 +30,7 @@ const permohonanHeaders: any = [
   { title: "Tanggal Daftar", key: "tgl_daftar", nowrap: true },
   { title: "Nama PU", key: "nama_pu", nowrap: true },
   { title: "Alamat", key: "alamat", nowrap: true },
-  { title: "Merk Dagang", key: "merek_dagang", nowrap: true },
+  // { title: "Merk Dagang", key: "merek_dagang", nowrap: true },
   { title: "Status", key: "status" },
   // { title: "Action", key: "action", align: "center" },
 ];
@@ -460,9 +460,9 @@ onMounted(() => {
           <template #item.alamat="{ item }">
             {{ item.alamat ? item.alamat : "-" }}
           </template>
-          <template #item.merek_dagang="{ item }">
+          <!-- <template #item.merek_dagang="{ item }">
             {{ item.merek_dagang ? item.merek_dagang : "-" }}
-          </template>
+          </template> -->
           <!-- <template #item.status="{ item }">
             {{ item.status ? item.status : "-" }}
           </template> -->
