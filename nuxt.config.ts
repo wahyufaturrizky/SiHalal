@@ -119,6 +119,7 @@ export default defineNuxtConfig({
         maxAgeInSeconds: 18000,
         sameSiteAttribute: "lax",
         secureCookieAttribute: true,
+        httpOnly: true,
       },
       session: {
         dataType: {
