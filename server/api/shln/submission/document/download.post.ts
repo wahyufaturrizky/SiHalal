@@ -19,9 +19,18 @@ export default defineEventHandler(async (event) => {
       headers: { Authorization: authorizationHeader },
     }
   ).catch((err: NuxtError) => {
-    setResponseStatus(event, 400);
+    // console.log("event = ", err.data);
+    if (err.data?.code == "404") {
+      throw createError({
+        statusCode: err.data?.code,
+        statusMessage: err.data?.errors?.list_error[0],
+        data: err.data,
+      });
+    } else {
+      setResponseStatus(event, 400);
+    }
 
-    return err.data;
+    // return err.data;
   });
 
   return data || null;

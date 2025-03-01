@@ -7,8 +7,14 @@ export const downloadDocument = async (filename: string, param?: string) => {
         param: param && `dirName=${param}`,
       },
     });
+
     window.open(response.url, "_blank", "noopener,noreferrer");
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    console.log("error = ", error.data);
+    if (error.statusCode === 404) {
+      useSnackbar().sendSnackbar(error.statusMessage, "error");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   }
 };
