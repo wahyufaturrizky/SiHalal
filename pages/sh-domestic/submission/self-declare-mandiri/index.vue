@@ -202,7 +202,7 @@ onMounted(async () => {
             color="primary"
             append-icon="fa-plus"
             @click="openModalsQuestionare"
-            :disabled="countResult >= 1"
+            :disabled="countResult > 1"
           >
             Buat Pengajuan
           </VBtn>
@@ -230,7 +230,7 @@ onMounted(async () => {
           </VAlert>
         </VCol>
       </VRow>
-      <div class="bgContent mb-5" v-if="countResult >= 1">
+      <div class="bgContent mb-5" v-if="countResult > 1">
         <div class="d-flex flex-wrap mt-5">
           <VIcon icon="ri-error-warning-line" color="#FF4D49" />
           <label class="subText">
