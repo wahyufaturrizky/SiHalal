@@ -34,8 +34,16 @@ export default defineEventHandler(async (event) => {
       body,
     }
   ).catch((err: NuxtError) => {
-    console.log(err);
-    setResponseStatus(event, 400);
+    console.log(err.data);
+    if (err.data?.code == "4001") {
+      throw createError({
+        statusCode: err.data?.code,
+        statusMessage: err.data?.errors?.list_error[0],
+        data: err.data,
+      });
+    } else {
+      setResponseStatus(event, 400);
+    }
     return err.data;
   });
 

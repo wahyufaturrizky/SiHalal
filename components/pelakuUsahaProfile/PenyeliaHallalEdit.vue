@@ -92,7 +92,7 @@ async function handleAddAspekLegalConfirm(item) {
     );
     // loadReqDialog.value = false;
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
+      useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan! 1", "error");
       return;
     }
     await store.fetchProfile();
@@ -100,7 +100,11 @@ async function handleAddAspekLegalConfirm(item) {
     useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
   } catch (error) {
     // loadReqDialog.value = false;
-    useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
+    if (error.data?.data?.code === 4001) {
+      useSnackbar().sendSnackbar(error.statusMessage, "error");
+    } else {
+      useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan! 2", "error");
+    }
   }
 }
 
