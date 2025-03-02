@@ -484,7 +484,7 @@ const timelineEvents = ref([
             <template #item.file="{ item, index }">
               <div class="d-flex align-center justify-center py-3 gap-2">
                 <VBtn
-                  @click="downloadFile(item.file)"
+                  @click="downloadDocument(item.file, 'SHLN_DOC')"
                   v-if="item.file != ''"
                   color="primary"
                 >

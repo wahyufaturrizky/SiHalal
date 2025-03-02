@@ -26,6 +26,7 @@ const submission = ref([]);
 const currentPage = ref(1);
 const itemPerPage = ref(10);
 const totalItems = ref(0);
+const countResult = ref(0)
 
 const questions = [
   "Saya tidak pernah mendapatkan fasilitas sertifikasi halal sebelumnya ",
@@ -138,6 +139,19 @@ const handleLoadList = async () => {
   } catch (error) {}
 };
 
+const checkCountFactory = async () => {
+  try {
+    const response: any = await $api("/self-declare/mandiri/check-count", {
+      method: "get",
+    });
+
+    if (response.code === 2000) {
+      countResult.value = response.data.count
+      return response;
+    }
+  } catch (error) {}
+};
+
 const { refresh } = await useAsyncData(
   "self-declare-list",
   async () => handleLoadList(),
@@ -154,7 +168,7 @@ const handleSearchSubmission = useDebounceFn((val: string) => {
 }, 350);
 
 onMounted(async () => {
-  const res = await Promise.all([handleLoadList()]);
+  const res = await Promise.all([handleLoadList(), checkCountFactory()]);
 
   const checkResIfUndefined = res.every((item) => {
     return item !== undefined;
@@ -188,6 +202,7 @@ onMounted(async () => {
             color="primary"
             append-icon="fa-plus"
             @click="openModalsQuestionare"
+            :disabled="countResult > 1"
           >
             Buat Pengajuan
           </VBtn>
@@ -215,6 +230,14 @@ onMounted(async () => {
           </VAlert>
         </VCol>
       </VRow>
+      <div class="bgContent mb-5" v-if="countResult > 1">
+        <div class="d-flex flex-wrap mt-5">
+          <VIcon icon="ri-error-warning-line" color="#FF4D49" />
+          <label class="subText">
+            Jumlah Pabrik melebihi batas ketetapan.
+          </label>
+        </div>
+      </div>
       <VRow>
         <VCol cols="7" class="d-flex justify-sm-space-between align-center">
           <VTextField
@@ -339,5 +362,18 @@ onMounted(async () => {
       background: white;
     }
   }
+}
+.subText {
+  align-content: center;
+  color: #FF4D49 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 18px !important;
+  padding-inline-start: 10px;
+}
+.bgContent {
+  border-radius: 10px;
+  background-color: #FFE2E2;
+  padding-inline-start: 10px;
 }
 </style>
