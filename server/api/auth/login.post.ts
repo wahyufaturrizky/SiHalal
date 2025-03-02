@@ -13,34 +13,34 @@ export default defineEventHandler(async (event) => {
     });
   }
   // console.log(runtimeConfig);
-  // if (runtimeConfig.public.captcha.active) {
-  //   const recaptcha = await $fetch<any>(
-  //     `https://www.google.com/recaptcha/api/siteverify`,
-  //     {
-  //       method: "POST",
-  //       params: {
-  //         secret: runtimeConfig.recaptcha.secretKey,
-  //         response: token,
-  //       },
-  //     }
-  //   ).catch((err: NuxtError) => {
-  //     console.log(err);
-  //     throw createError({
-  //       statusCode: 401,
-  //       statusMessage: "captcha-failed",
-  //       data: err.data,
-  //     });
-  //   });
-  //   if (!recaptcha.success) {
-  //     throw createError({
-  //       statusCode: 401,
-  //       statusMessage: "captcha-failed",
-  //       data: {
-  //         success: false,
-  //       },
-  //     });
-  //   }
-  // }
+  if (runtimeConfig.public.captcha.active) {
+    const recaptcha = await $fetch<any>(
+      `https://www.google.com/recaptcha/api/siteverify`,
+      {
+        method: "POST",
+        params: {
+          secret: runtimeConfig.recaptcha.secretKey,
+          response: token,
+        },
+      }
+    ).catch((err: NuxtError) => {
+      console.log(err);
+      throw createError({
+        statusCode: 401,
+        statusMessage: "captcha-failed",
+        data: err.data,
+      });
+    });
+    if (!recaptcha.success) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: "captcha-failed",
+        data: {
+          success: false,
+        },
+      });
+    }
+  }
 
   const { data } = await $fetch<any>(
     `${runtimeConfig.authBaseUrl}/api/authenticate`,
