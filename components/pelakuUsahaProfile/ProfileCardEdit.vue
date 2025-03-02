@@ -177,7 +177,7 @@ async function submitProfile() {
         negara_pu: profilData.value[5].value,
         no_tlp: profilData.value[6].value,
         email: profilData.value[7].value,
-        jenis_badan_usaha: form.value.jenis_badan_usaha,
+        jenis_usaha: form.value.jenis_badan_usaha,
         modal_dasar: parseInt(form.value.modal_dasar),
       };
 
@@ -204,7 +204,7 @@ async function submitProfilePemerintah() {
     if (isValid) {
       const body = {
         email: profilData.value[7].value,
-        jenis_badan_usaha: form.value.jenis_badan_usaha,
+        jenis_usaha: form.value.jenis_badan_usaha,
         modal_dasar: parseInt(form.value.modal_dasar),
       };
 
