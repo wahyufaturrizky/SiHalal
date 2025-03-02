@@ -100,8 +100,6 @@ async function handleAddAspekLegalConfirm(item) {
     useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
   } catch (error) {
     // loadReqDialog.value = false;
-    console.log("error.data = ", error.data);
-    console.log("error.data is 4001 = ", error.data?.code);
     if (error.data?.data?.code === 4001) {
       useSnackbar().sendSnackbar(error.statusMessage, "error");
     } else {
