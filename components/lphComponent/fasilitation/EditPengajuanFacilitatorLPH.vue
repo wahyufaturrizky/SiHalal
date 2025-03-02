@@ -231,11 +231,11 @@ const limitCharProgramNameFacilitate = (v: string) => {
 
 <template>
   <VRow>
-    <VCol cols="">
+    <VCol cols="8">
       <ExpandCard title="Data Fasilitasi" class="mb-6 pa-8">
         <VForm>
           <VRow>
-            <VCol cols="12">
+            <VCol cols="12 mt-5">
               <label class="text-h6" for="facilitatorName"
                 >Nama Facilitator
               </label>
@@ -259,6 +259,8 @@ const limitCharProgramNameFacilitate = (v: string) => {
                 :rules="[requiredValidator, limitCharProgramNameFacilitate]"
                 placeholder="Contoh: Dinas Koperasi Kab. Klaten Jawa Tengah"
                 outlined
+                disabled
+
               />
             </VCol>
           </VRow>
@@ -273,6 +275,8 @@ const limitCharProgramNameFacilitate = (v: string) => {
                 :rules="[requiredValidator]"
                 placeholder="isi penjelasan fasilitasi"
                 outlined
+                disabled
+
               />
             </VCol>
           </VRow>
@@ -289,6 +293,8 @@ const limitCharProgramNameFacilitate = (v: string) => {
                     (_, i) => new Date().getFullYear() + i
                   )
                 "
+                disabled
+
               />
             </VCol>
           </VRow>
@@ -304,6 +310,8 @@ const limitCharProgramNameFacilitate = (v: string) => {
                   placeholder="Pilih lingkup wilayah"
                   solo
                   clearable
+                  disabled
+
                 />
               </VItemGroup>
             </VCol>
@@ -321,6 +329,8 @@ const limitCharProgramNameFacilitate = (v: string) => {
                   :items="province"
                   item-value="code"
                   item-title="name"
+                  disabled
+
                 />  
               </VItemGroup>
             </VCol>
@@ -337,6 +347,8 @@ const limitCharProgramNameFacilitate = (v: string) => {
                   :rules="[requiredValidator]"
                   require
                   placeholder="Pilih Kabupaten/Kota"
+                  disabled
+
                 />
               </VItemGroup>
             </VCol>
@@ -355,6 +367,8 @@ const limitCharProgramNameFacilitate = (v: string) => {
                 type="date"
                 placeholder="Pilih tanggal mulai"
                 clearable
+                disabled
+
               />
             </VCol>
           </VRow>
@@ -368,6 +382,8 @@ const limitCharProgramNameFacilitate = (v: string) => {
                 type="date"
                 placeholder="Pilih tanggal selesai"
                 clearable
+                  disabled
+
               />
             </VCol>
           </VRow>
@@ -382,6 +398,8 @@ const limitCharProgramNameFacilitate = (v: string) => {
                 placeholder="Pilih jenis fasilitasi"
                 solo
                 clearable
+                  disabled
+
               />
             </VCol>
           </VRow>
@@ -400,6 +418,8 @@ const limitCharProgramNameFacilitate = (v: string) => {
                 clearable
                 item-title="name"
                 item-value="code"
+                  disabled
+
               />
             </VCol>
           </VRow>
@@ -414,6 +434,8 @@ const limitCharProgramNameFacilitate = (v: string) => {
                 placeholder="isi kuota"
                 outlined
                 type="number"
+                  disabled
+
               />
             </VCol>
           </VRow>
@@ -429,6 +451,8 @@ const limitCharProgramNameFacilitate = (v: string) => {
                 :rules="[requiredValidator]"
                 placeholder="isi nama penanggungjawab program"
                 outlined
+                  disabled
+
               />
             </VCol>
           </VRow>
@@ -445,6 +469,8 @@ const limitCharProgramNameFacilitate = (v: string) => {
                 placeholder="isi nomor kontak penanggungjawab program"
                 outlined
                 type="number"
+                  disabled
+
               />
             </VCol>
           </VRow>

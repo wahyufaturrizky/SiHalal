@@ -313,8 +313,8 @@ const { t } = useI18n();
                   block
                   type="submit"
                   :disabled="
-                    token == '' ||
-                    buttonClicked ||
+                    // token == '' ||
+                    // buttonClicked ||
                     credentials.email == '' ||
                     credentials.password == ''
                   "
