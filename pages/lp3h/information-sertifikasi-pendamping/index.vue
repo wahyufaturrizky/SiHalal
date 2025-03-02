@@ -143,7 +143,7 @@ const loadItem = async (
 
       totalItems.value = response.totalPages;
       data.value = response.data ?? [];
-  
+
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -192,28 +192,27 @@ const handleInput = (e: any) => {
   debounce(loadItem(page.value, size.value, status.value, e.target.value), 500);
 };
 
-
-
 function formatDate(isoString: string): string {
-  if(isoString!=null||isoString!=""){
-  const date = new Date(isoString);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-based
-  const year = date.getFullYear();
+  if (isoString != null || isoString != "") {
+    const date = new Date(isoString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-based
+    const year = date.getFullYear();
 
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const seconds = String(date.getSeconds()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
 
-  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-} else{
-  return  ""
-}
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+  } else {
+    return "";
+  }
 }
 
 const downloadExcelHandler = () => {
   downloadExcel(status.value, searchQuery.value, true);
 };
+const router = useRouter();
 
 onMounted(async () => {
   loading.value = true;
@@ -232,8 +231,8 @@ watch([status, outDated, page], () => {
 <template>
   <div v-if="!loading">
     <!-- <KembaliButton class="pl-0" /> -->
-    <div class="d-flex align-center" style="justify-content: space-between;">
-      <h1 style="font-size: 32px;">Informasi Sertifikat Self Declare</h1>
+    <div class="d-flex align-center" style="justify-content: space-between">
+      <h1 style="font-size: 32px">Informasi Sertifikat Self Declare</h1>
       <!-- <VBtn
         v-if="!loading"
         append-icon="fa-download"
@@ -285,7 +284,7 @@ watch([status, outDated, page], () => {
               </VMenu>
             </VBtn>
             <VTextField
-              style="margin-inline-start: 1svw;"
+              style="margin-inline-start: 1svw"
               v-model="searchQuery"
               density="compact"
               placeholder="Cari No. Daftar/ Nama PU"
@@ -338,7 +337,7 @@ watch([status, outDated, page], () => {
             </div>
           </template>
 
-          <template #item.action="{ item }">
+          <!-- <template #item.action="{ item }">
             <Vbtn
               variant="plain"
               class="cursor-pointer"
@@ -350,6 +349,20 @@ watch([status, outDated, page], () => {
                 </VCol>
               </VRow>
             </Vbtn>
+          </template> -->
+
+          <template #item.action="{ item }: any">
+            <VIcon
+              color="success"
+              style="cursor: pointer"
+              @click="
+                router.push(
+                  `/lp3h/information-sertifikasi-pendamping/${item.id_reg}`
+                )
+              "
+            >
+              ri-arrow-right-line
+            </VIcon>
           </template>
         </VDataTable>
         <VPagination
