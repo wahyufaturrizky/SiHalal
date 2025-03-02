@@ -14,7 +14,7 @@ export default defineEventHandler(async (event: any) => {
     const runtimeConfig = useRuntimeConfig();
 
     const response = await $fetch(
-      `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/fasilitas/count?fas_id=FAOUT`,
+      `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/fasilitas/count?fas_id=FAPAB`,
       {
         method: 'get',
         headers: { Authorization: authHeader },
