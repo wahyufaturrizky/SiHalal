@@ -188,6 +188,7 @@ onMounted(async () => {
             color="primary"
             append-icon="fa-plus"
             @click="openModalsQuestionare"
+            :disabled="submission.length >= 1"
           >
             Buat Pengajuan
           </VBtn>
@@ -215,6 +216,14 @@ onMounted(async () => {
           </VAlert>
         </VCol>
       </VRow>
+      <div class="bgContent mb-5" v-if="submission.length >= 1">
+        <div class="d-flex flex-wrap mt-5">
+          <VIcon icon="ri-error-warning-line" color="#FF4D49" />
+          <label class="subText">
+            Jumlah Pabrik melebihi batas ketetapan.
+          </label>
+        </div>
+      </div>
       <VRow>
         <VCol cols="7" class="d-flex justify-sm-space-between align-center">
           <VTextField
@@ -339,5 +348,18 @@ onMounted(async () => {
       background: white;
     }
   }
+}
+.subText {
+  align-content: center;
+  color: #FF4D49 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 18px !important;
+  padding-inline-start: 10px;
+}
+.bgContent {
+  border-radius: 10px;
+  background-color: #FFE2E2;
+  padding-inline-start: 10px;
 }
 </style>
