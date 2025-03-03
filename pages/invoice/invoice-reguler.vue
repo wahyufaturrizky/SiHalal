@@ -13,7 +13,7 @@ const showUnduhInvoice = ref(false);
 const loadingDownloadExcel = ref(false);
 
 const selectedFilters = ref({
-  status: "Semua",
+  status:"Semua",
   date: "",
 });
 
@@ -123,7 +123,7 @@ const applyFilters = () => {
 
 const resetFilters = () => {
   selectedFilters.value = {
-    status: "",
+    status: "Semua",
     date: "",
   };
 
