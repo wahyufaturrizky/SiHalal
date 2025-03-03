@@ -9,17 +9,36 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-  const { page, size, keyword } = (await getQuery(event)) as {
+  onst { page, size, search, status, start_date, end_date } = (await getQuery(
+    event
+  )) as {
     page: string;
     size: string;
-    keyword: string;
+    search: string;
+    status: string;
+    start_date: string;
+    end_date: string;
   };
-  let params = {
-    page: isNaN(parseInt(page, 10)) ? 1 : parseInt(page, 10),
-    size: isNaN(parseInt(size, 10)) ? 10 : parseInt(size, 10),
+
+  const params = {
+    page: isNaN(Number.parseInt(page, 10)) ? 1 : Number.parseInt(page, 10),
+    size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
   };
-  if (keyword != "") {
-    params["keywords"] = keyword;
+  
+  if (search !== "") {
+    params["search"] = search;
+  }
+
+  if (status !== "" && status !== "Semua") {
+    params["status"] = status;
+  }
+
+  if (start_date !== "") {
+    params["start_date"] = start_date;
+  }
+
+  if (end_date !== "") {
+    params["end_date"] = end_date;
   }
 
   const data = await $fetch<any>(
@@ -33,5 +52,6 @@ export default defineEventHandler(async (event) => {
     setResponseStatus(event, 400);
     return err.data;
   });
+  console.log(params,'ini')
   return data || null;
 });
