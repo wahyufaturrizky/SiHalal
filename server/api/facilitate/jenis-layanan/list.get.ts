@@ -1,7 +1,7 @@
 import { NuxtError } from "nuxt/app";
-const runtimeConfig = useRuntimeConfig();
 
 export default defineEventHandler(async (event) => {
+  const runtimeConfig = useRuntimeConfig();
   const authorizationHeader = getRequestHeader(event, "Authorization");
   if (typeof authorizationHeader === "undefined") {
     throw createError({
