@@ -11,7 +11,7 @@ const tableHeader = [
   { title: "Jatuh Tempo", key: "tanggal_jatuh_tempo" },
   { title: "Status", key: "status" },
   { title: "Tanggal Bayar", key: "tanggal_bayar" },
-  { title: "Download Invoice", key: "invoice_uri" },
+  { title: "Download Invoice", key: "invoice_url" },
   { title: "Download Bukti Bayar", key: "bukti_url" },
 ];
 
@@ -53,18 +53,28 @@ const loading = ref(true);
 const page = ref(1);
 const loadItem = async (page: number, size: number) => {
   try {
+    console.log("jatuh_tempo = ", filter.value.tgl_jatuh_tempo);
+
     loading.value = true;
+    const params = {
+      page,
+      size,
+    };
+
+    if (filter.value?.nama_pengajuan) {
+      params["nama_pengajuan"] = filter.value.nama_pengajuan;
+    }
+    if (filter.value?.status) {
+      params["status"] = filter.value?.status;
+    }
+    if (filter.value?.tgl_jatuh_tempo) {
+      params["start_tgl_jatuh_tempo"] = filter.value?.tgl_jatuh_tempo[0];
+      params["end_tgl_jatuh_tempo"] = filter.value?.tgl_jatuh_tempo[1];
+    }
 
     const response = await $api("/facilitate/finance/invoice", {
       method: "get",
-      params: {
-        page,
-        size,
-        nama_pengajuan: filter.value.nama_pengajuan,
-        tgl_jatuh_tempo: filter.value.tgl_jatuh_tempo,
-        tgl_tagihan: filter.value.tgl_tagihan,
-        status: filter.value.status,
-      },
+      params,
     });
 
     if (response.code != 2000) {
@@ -114,7 +124,7 @@ onMounted(async () => {
         </VCardTitle>
         <VCardItem>
           <VRow>
-            <VCol cols="3">
+            <!-- <VCol cols="3">
               <Vuepicdatepicker
                 auto-apply
                 model-type="dd-MM-yyyy"
@@ -123,7 +133,7 @@ onMounted(async () => {
                 range
                 clearable
                 v-model:model-value="filter.tgl_tagihan"
-                @change="loadItem(page, itemPerPage)"
+                @update:model-value="loadItem(page, itemPerPage)"
               >
                 <template #trigger>
                   <VTextField
@@ -135,17 +145,17 @@ onMounted(async () => {
                   ></VTextField>
                 </template>
               </Vuepicdatepicker>
-            </VCol>
+            </VCol> -->
             <VCol cols="3">
               <Vuepicdatepicker
                 :teleport="true"
                 :enable-time-picker="false"
                 auto-apply
-                model-type="dd-MM-yyyy"
+                model-type="yyyy-MM-dd"
                 range
-                clearable
+                :clearable="true"
                 v-model:model-value="filter.tgl_jatuh_tempo"
-                @change="loadItem(page, itemPerPage)"
+                @update:model-value="loadItem(page, itemPerPage)"
               >
                 <template #trigger>
                   <VTextField
@@ -169,11 +179,11 @@ onMounted(async () => {
                 v-on:update:model-value="loadItem(page, itemPerPage)"
               ></VSelect>
             </VCol>
-            <VCol cols="3" style="display: flex; justify-content: end"
+            <!-- <VCol cols="3" style="display: flex; justify-content: end"
               ><VBtn variant="flat" append-icon="fa-download"
                 >Download Rekap</VBtn
               ></VCol
-            >
+            > -->
           </VRow>
           <VRow>
             <VCol cols="12">
@@ -220,9 +230,11 @@ onMounted(async () => {
                       : ""
                   }}
                 </template>
-                <template #item.invoice_uri="{ item }">
+                <template #item.invoice_url="{ item }">
                   <VIcon
+                    color="primary"
                     icon="fa-download"
+                    :disabled="item.invoice_url == false"
                     @click="
                       item.invoice_url != ''
                         ? downloadDocument(item.invoice_url)
@@ -232,7 +244,9 @@ onMounted(async () => {
                 </template>
                 <template #item.bukti_url="{ item }">
                   <VIcon
+                    color="primary"
                     icon="fa-download"
+                    :disabled="item.bukti_url == false"
                     @click="
                       item.bukti_url != ''
                         ? downloadDocument(item.bukti_url)
