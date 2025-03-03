@@ -11,12 +11,12 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { page, size, keyword, status, start_date, end_date } = (await getQuery(
+  const { page, size, search, status, start_date, end_date } = (await getQuery(
     event
   )) as {
     page: string;
     size: string;
-    keyword: string;
+    search: string;
     status: string;
     start_date: string;
     end_date: string;
@@ -27,8 +27,9 @@ export default defineEventHandler(async (event) => {
     size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
   };
 
-  if (keyword !== "") {
-    params["keyword"] = keyword;
+  console.log(search,'ini keyword')
+  if (search !== "") {
+    params["search"] = search;
   }
 
   if (status !== "" && status !== "Semua") {
@@ -50,11 +51,13 @@ export default defineEventHandler(async (event) => {
       headers: { Authorization: authorizationHeader },
       params,
     }
+
   ).catch((err: NuxtError) => {
     setResponseStatus(event, 400);
 
     return err.data;
   });
-
+  console.log(params,'ini')
+  // console.log(data,'ini search data invoince mandiri')
   return data || null;
 });
