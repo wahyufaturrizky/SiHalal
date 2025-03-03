@@ -1,5 +1,6 @@
 import { NuxtError } from "nuxt/app";
 const runtimeConfig = useRuntimeConfig();
+
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
   if (typeof authorizationHeader === "undefined") {
@@ -14,9 +15,9 @@ export default defineEventHandler(async (event) => {
     {
       method: "get",
       headers: { Authorization: authorizationHeader },
-      params: {
-        // query_by: "self_declare",
-      },
+      // params: {
+      //   // query_by: "self_declare",
+      // },
     }
   ).catch((err: NuxtError) => {
     throw createError({
