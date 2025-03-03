@@ -256,7 +256,6 @@ const checkIsFieldEMpty = (data: any) => {
 </script>
 
 <template>
-  <VContainer>
     <!-- Checkbox Kunci Lembaga -->
     <VCard class="mb-6">
       <VCardText>
@@ -417,5 +416,4 @@ const checkIsFieldEMpty = (data: any) => {
         </VCardActions>
       </VCard>
     </VDialog>
-  </VContainer>
 </template>

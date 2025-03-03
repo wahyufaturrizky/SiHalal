@@ -7,7 +7,7 @@ const loading = ref(false);
 
 const page = ref(1);
 const searchQuery = ref("");
-const status = ref("OF1,OF10,OF12,OF5,OF2,OF290,OF15");
+const status = ref("OF12");
 const loadingAll = ref(true);
 
 const defaultStatus = { color: "error", desc: "Unknown Status" };
@@ -40,7 +40,7 @@ const loadItem = async (
   try {
     loading.value = true;
 
-    const response = await $api("/facilitate/entry", {
+    const response = await $api("/facilitate/entry-lph", {
       method: "get",
       params: {
         page,
@@ -68,6 +68,19 @@ const loadItem = async (
 
 const debouncedFetch = debounce(loadItem, 500);
 
+onMounted(async () => {
+  const res = await Promise.all([
+    loadItem(1, itemPerPage.value, "", status.value),
+  ]);
+
+  const checkResIfUndefined = res.every((item) => {
+    return item !== undefined;
+  });
+
+  if (checkResIfUndefined) loadingAll.value = false;
+  else loadingAll.value = false;
+});
+
 const handleInput = () => {
   debouncedFetch(
     page.value,
@@ -79,30 +92,31 @@ const handleInput = () => {
 
 const tableHeader = [
   { title: "No", key: "id" },
-  { title: "Nama Fasilitasi", key: "fac_name" },
+  // { title: "Kode Fasilitasi", key: "kode_fac" },
   { title: "Tahun", key: "tahun" },
+  { title: "Nama Fasilitasi", key: "fac_name" },
   // { title: "Sumber Pembiayaan", key: "sumber_biaya_name" },
   { title: "Jenis", key: "jenis" },
   { title: "Tanggal Aktif", key: "tgl_selesai" },
   { title: "Tanggal Selesai", key: "tgl_aktif" },
-  { title: "Kuota", key: "kuota" },
+  // { title: "Kuota", key: "kuota" },
   // { title: "Sisa", key: "sisa" },
   { title: "Status", key: "status_code" },
   { title: "Action", key: "action" },
 ];
 
 const navigateAction = (id: string) => {
-  navigateTo(`/facilitation/entry/${id}`);
+  navigateTo(`/lph/facilitation/entry/${id}`);
 };
 </script>
 
 <template>
   <VRow>
     <VCol>
-      <h1 style="font-size: 32px">Entri Fasilitasi</h1>
+      <h1 style="font-size: 32px;">Verifikasi Fasilitasi</h1>
     </VCol>
   </VRow>
-  <VRow>
+  <VRow v-if="!loadingAll">
     <VCol>
       <VCard>
         <VCardTitle>
@@ -118,7 +132,7 @@ const navigateAction = (id: string) => {
                 @input="handleInput"
               />
             </VCol>
-            <VCol cols="6" style="display: flex; justify-content: end">
+            <VCol cols="6" style="display: flex; justify-content: end;">
               <EntryFacilitateModal />
             </VCol>
           </VRow>

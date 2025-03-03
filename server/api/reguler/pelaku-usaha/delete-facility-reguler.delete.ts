@@ -1,7 +1,7 @@
 import type { NuxtError } from 'nuxt/app'
 
 interface DraftBody {
-  type: string
+  idReg: string
 }
 
 const runtimeConfig = useRuntimeConfig()
@@ -15,15 +15,17 @@ export default defineEventHandler(async (event: any) => {
     })
   }
   const body: DraftBody = await readBody(event)
+  const { idReg } = body
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/business-actor/submit`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/business-actor/delete-fasilitasi/${idReg}`,
     {
-      method: 'post',
+      method: 'delete',
       headers: { Authorization: authorizationHeader },
-      body,
     },
   ).catch((err: NuxtError) => {
+    setResponseStatus(event, 400)
+
     return err.data
   })
 

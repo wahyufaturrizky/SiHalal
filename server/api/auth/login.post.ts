@@ -13,7 +13,6 @@ export default defineEventHandler(async (event) => {
     });
   }
   // console.log(runtimeConfig);
-  console.log(runtimeConfig.public.captcha.active == true)
   if (runtimeConfig.public.captcha.active) {
     const recaptcha = await $fetch<any>(
       `https://www.google.com/recaptcha/api/siteverify`,
