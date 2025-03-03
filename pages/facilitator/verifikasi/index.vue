@@ -2,7 +2,7 @@
 const tableHeader = [
   { title: "No", value: "index" },
   { title: "Tanggal Daftar", value: "tgl_daftar" },
-  { title: "Kode Fasilitasi", value: "kode_fac" },
+  // { title: "Kode Fasilitasi", value: "kode_fac" },
   { title: "Tahun", value: "tahun" },
   { title: "Nama Fasilitasi", value: "fac_name" },
   { title: "Sumber Pembiayaan", value: "sumber_biaya" },

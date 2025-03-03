@@ -11,12 +11,12 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { page, size, keyword, status, start_date, end_date } = (await getQuery(
+  const { page, size, search, status, start_date, end_date } = (await getQuery(
     event
   )) as {
     page: string;
     size: string;
-    keyword: string;
+    search: string;
     status: string;
     start_date: string;
     end_date: string;
@@ -27,8 +27,8 @@ export default defineEventHandler(async (event) => {
     size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
   };
 
-  if (keyword !== "") {
-    params["keyword"] = keyword;
+  if (search !== "") {
+    params["search"] = search;
   }
 
   if (status !== "" && status !== "Semua") {

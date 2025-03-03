@@ -150,13 +150,7 @@ onMounted(async () => {
  <VRow v-if="!loading && !loadingLoadItemById">
   <VCol cols="10">
     <VTabs v-model="tabs" align-tabs="start">
-      <VTab value="1">Pengajuan</VTab>
-
-      <VTab :disabled="!form.type" value="2">Lembaga</VTab>
-
-      <!-- Only show this tab if form.type is 'Reguler' -->
-      <VTab v-if="form.type === 'Reguler'" value="3">Detail Biaya</VTab>
-
+      <VTab value="1">Lembaga</VTab>
     </VTabs>
   </VCol>
 </VRow>
@@ -164,21 +158,7 @@ onMounted(async () => {
     <VCol cols="12">
       <VTabsWindow v-model="tabs">
         <VTabsWindowItem value="1">
-          <EditPengajuanFacilitator
-            :dataform="form"
-            :datadetailregistration="dataDetailRegistration"
-            :datasof="dataSOF"
-            @refresh="loadItemById"
-          />
-        </VTabsWindowItem>
-        <VTabsWindowItem value="2">
           <EditLembagaFacilitator
-            :islockedlembaga="isLockedLembaga"
-            :type="form.type"
-          />
-        </VTabsWindowItem>
-        <VTabsWindowItem value="3">
-          <EditBiayaFacilitator
             :islockedlembaga="isLockedLembaga"
             :type="form.type"
           />

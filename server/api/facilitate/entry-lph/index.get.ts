@@ -11,53 +11,32 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { page, size, search, status, start_date, end_date } = (await getQuery(
-    event
-  )) as {
+  const { page, size, keyword, status } = (await getQuery(event)) as {
     page: string;
     size: string;
-    search: string;
+    keyword: string;
     status: string;
-    start_date: string;
-    end_date: string;
   };
 
   const params = {
     page: isNaN(Number.parseInt(page, 10)) ? 1 : Number.parseInt(page, 10),
     size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
+    status,
+    keyword,
   };
 
-  console.log(search,'ini keyword')
-  if (search !== "") {
-    params["search"] = search;
-  }
-
-  if (status !== "" && status !== "Semua") {
-    params["status"] = status;
-  }
-
-  if (start_date !== "") {
-    params["start_date"] = start_date;
-  }
-
-  if (end_date !== "") {
-    params["end_date"] = end_date;
-  }
-
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/finance/invoice`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/fasilitator/list-ajuan-lph`,
     {
       method: "get",
       headers: { Authorization: authorizationHeader },
       params,
     }
-
   ).catch((err: NuxtError) => {
     setResponseStatus(event, 400);
 
     return err.data;
   });
-  console.log(params,'ini')
-  // console.log(data,'ini search data invoince mandiri')
+
   return data || null;
 });

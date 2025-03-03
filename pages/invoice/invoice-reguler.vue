@@ -13,7 +13,7 @@ const showUnduhInvoice = ref(false);
 const loadingDownloadExcel = ref(false);
 
 const selectedFilters = ref({
-  status: "",
+  status: "Semua",
   date: "",
 });
 
@@ -34,13 +34,13 @@ const tableHeader = [
 const loadItem = async ({
   page,
   size,
-  keyword,
+  search,
   status,
   date,
 }: {
   page: number;
   size: number;
-  keyword: string;
+  search: string;
   status: string;
   date: string;
 }) => {
@@ -55,7 +55,7 @@ const loadItem = async ({
       params: {
         page,
         size,
-        keyword,
+        search,
         status,
         start_date: startDate,
         end_date: endDate,
@@ -103,7 +103,7 @@ const handleInput = () => {
   debouncedFetch({
     page: page.value,
     size: itemPerPage.value,
-    keyword: searchQuery.value,
+    search: searchQuery.value,
     status: selectedFilters.value.status,
     date: selectedFilters.value.date,
   });
@@ -113,7 +113,7 @@ const applyFilters = () => {
   loadItem({
     page: page.value,
     size: itemPerPage.value,
-    keyword: searchQuery.value,
+    search: searchQuery.value,
     status: selectedFilters.value.status,
     date: selectedFilters.value.date,
   });
@@ -132,7 +132,7 @@ const resetFilters = () => {
   loadItem({
     page: page.value,
     size: itemPerPage.value,
-    keyword: searchQuery.value,
+    search: searchQuery.value,
     status: selectedFilters.value.status,
     date: selectedFilters.value.date,
   });
@@ -183,7 +183,7 @@ const downloadExcel = async () => {
       {
         method: "get",
         params: {
-          keyword: searchQuery.value,
+          search: searchQuery.value,
           status: selectedFilters.value.status,
           start_date: startDate,
           end_date: endDate,
