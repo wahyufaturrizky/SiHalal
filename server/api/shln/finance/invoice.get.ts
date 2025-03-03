@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-  onst { page, size, search, status, start_date, end_date } = (await getQuery(
+  const { page, size, search, status, start_date, end_date } = (await getQuery(
     event
   )) as {
     page: string;
@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
     page: isNaN(Number.parseInt(page, 10)) ? 1 : Number.parseInt(page, 10),
     size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
   };
-  
+
   if (search !== "") {
     params["search"] = search;
   }
@@ -52,6 +52,6 @@ export default defineEventHandler(async (event) => {
     setResponseStatus(event, 400);
     return err.data;
   });
-  console.log(params,'ini')
+  console.log(params, "ini");
   return data || null;
 });
