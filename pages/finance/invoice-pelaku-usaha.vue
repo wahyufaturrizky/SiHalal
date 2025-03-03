@@ -158,7 +158,7 @@ const selectedFilters = ref({
 
 const resetFilters = () => {
   selectedFilters.value = {
-    status: "",
+    status: "Semua",
     date: "",
   };
 
@@ -203,6 +203,7 @@ const downloadDocument = async (filename: string) => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+const loadingDownloadExcel = ref(false);
 
 const applyFilters = () => {
   loadItem({
@@ -216,6 +217,41 @@ const applyFilters = () => {
   showFilterMenu.value = false;
 };
 
+const downloadExcel = async () => {
+  loadingDownloadExcel.value = true;
+
+  const startDate = selectedFilters.value.date.split(" ")[0];
+  const endDate = selectedFilters.value.date.split(" ")[2];
+
+  try {
+    const response: any = await $api(
+      "/reguler/finance/invoice/download-excel",
+      {
+        method: "get",
+        params: {
+          search: searchQuery.value,
+          status: selectedFilters.value.status,
+          start_date: startDate,
+          end_date: endDate,
+        },
+      }
+    );
+
+    if (response) {
+      downloadFileExcel(response);
+      loadingDownloadExcel.value = false;
+    } else {
+      loadingDownloadExcel.value = false;
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingDownloadExcel.value = false;
+  }
+};
 
 onMounted(async () => {
   const res = await Promise.all([loadItemStatusApplication()]);
@@ -245,8 +281,13 @@ onMounted(async () => {
             <VCol cols="6">
               <div class="text-h4 font-weight-bold">Invoice List</div>
             </VCol>
-            <VCol cols="6" style="display: flex; justify-content: end">
-              <VBtn variant="flat">Download Excel</VBtn>
+            <VCol cols="6" style="display: flex; justify-content: end" v-if="false">
+              <VBtn
+                :loading="loadingDownloadExcel"
+                @click="downloadExcel"
+                variant="flat"
+                >Download Excel</VBtn
+              >
             </VCol>
           </VRow>
         </VCardTitle>
@@ -362,7 +403,7 @@ onMounted(async () => {
                   {{ statusItem[item.status_code].desc }}
                 </VChip>
               </template>
-              <template #item.action>
+              <template #item.action v-if="false">
                 <VMenu :close-on-content-click="false">
                   <template #activator="{ props: openMenu }">
                     <VIcon icon="mdi-dots-vertical" v-bind="openMenu"></VIcon>
@@ -371,28 +412,34 @@ onMounted(async () => {
                     <VList>
                       <VListItem>
                         <p
-                           class="cursor-pointer"
-                                  @click="downloadDOcument(statusItem[item.status_code].file_inv)"
+                          class="cursor-pointer"
+                          @click="
+                            downloadDOcument(
+                              statusItem[item.status_code].file_inv
+                            )
+                          "
                         >
                           <VIcon
                             icon="fa-download"
                             size="xs"
                             color="primary"
-                     
                           ></VIcon>
                           Unduh Invoice
                         </p>
                       </VListItem>
                       <VListItem>
                         <p
-                         class="cursor-pointer"
-                                  @click="downloadDOcument(statusItem[item.status_code].file_inv)"
+                          class="cursor-pointer"
+                          @click="
+                            downloadDOcument(
+                              statusItem[item.status_code].file_inv
+                            )
+                          "
                         >
                           <VIcon
                             icon="fa-download"
                             size="xs"
                             color="primary"
-                      
                           ></VIcon>
                           Unduh Bukti
                         </p>
