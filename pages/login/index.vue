@@ -62,13 +62,20 @@ const credentials = ref({
 
 const rememberMe = useState("rememberMe", () => false);
 
+const evaluateEmail = (value: string) => {
+  if (value.includes("@")) {
+    return value.toLowerCase();
+  }
+  return value;
+};
+
 async function login() {
   buttonClicked.value = true;
   try {
     const response = await signIn({
       callbackUrl: "/",
       redirect: false,
-      email: credentials.value.email,
+      email: evaluateEmail(credentials.value.email),
       password: credentials.value.password,
       token: token.value,
     });
