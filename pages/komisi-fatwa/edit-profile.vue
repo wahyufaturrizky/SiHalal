@@ -634,7 +634,7 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.nama_pimpinan,
-                    /^[a-zA-Z\s',.]+$/,
+                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
                     'Format nama pimpinan tidak sesuai'
                   ),
                 ]"
@@ -681,7 +681,7 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.nama_sekretaris,
-                    /^[a-zA-Z\s',.]+$/,
+                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
                     'Format nama sekretaris tidak sesuai'
                   ),
                 ]"
@@ -728,7 +728,7 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.nama_bidang_fatwa,
-                    /^[a-zA-Z\s',.]+$/,
+                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
                     'Format nama ketua bidang fatwa tidak sesuai'
                   ),
                 ]"
@@ -775,7 +775,7 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.nama_kontak,
-                    /^[a-zA-Z\s',.]+$/,
+                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
                     'Format nama kontak tidak sesuai'
                   ),
                 ]"
