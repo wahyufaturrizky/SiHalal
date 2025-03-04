@@ -190,15 +190,16 @@ const skReadyHandler = (blob) => {
       </VRow>
       <VRow>
         <VCol :cols="12">
-          <PenyeliaHallalEdit :file-sk-blob="skBlobUri || 'undefined'" />
+          <PenyeliaHallalEdit
+            :file-sk-blob="skBlobUri || 'undefined'"
+            :data-profile="store.profileData"
+          />
         </VCol>
       </VRow>
       <VRow style="display: none">
         <VCol cols="12">
           <VCard>
             <VCardItem>
-              <!-- <component :is="SkPenyeliaHalal" :></component> -->
-              <!-- <VBtn @click="downloadSkHandler">tes</VBtn> -->
               <SkPenyeliaHalal
                 @sk-penyelia-download-handler="skReadyHandler"
               ></SkPenyeliaHalal>

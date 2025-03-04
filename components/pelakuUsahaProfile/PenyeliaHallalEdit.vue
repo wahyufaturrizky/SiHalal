@@ -187,6 +187,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  dataProfile: {
+    type: Object,
+    required: false,
+  }
 });
 
 const downloadSkHandler = () => {
@@ -228,6 +232,7 @@ const downloadSkHandler = () => {
             mode="add"
             @confirm-add="handleAddAspekLegalConfirm"
             @cancel="() => console.log('Add cancelled')"
+            :data="props.dataProfile"
           />
         </VCol>
       </VRow>
