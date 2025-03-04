@@ -813,7 +813,7 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.rekening.bank,
-                    /^[a-zA-Z\s',.()]+$/,
+                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)(?!.*\(\()(?!.*\)\))(?!(.*\(\)))[a-zA-Z\s',.()]+$/,
                     'Format nama bank tidak sesuai'
                   ),
                 ]"
@@ -844,7 +844,7 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.rekening.nama,
-                    /^[a-zA-Z\s',.]+$/,
+                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
                     'Format nama pemegang rekening tidak sesuai'
                   ),
                 ]"
