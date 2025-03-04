@@ -166,24 +166,33 @@ const { t } = useI18n();
     </VBtn> -->
     <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
-        <VCardTitle
-          class="text-h5 font-weight-bold d-flex justify-space-between align-center"
-        >
-          <span>{{
-            props.mode === "add"
-              ? t("detail-pu.pu-penyelia-halal-tambah-title")
-              : t("detail-pu.pu-penyelial-halal-edit-title")
-          }}</span>
-          <VBtn
-            icon
-            color="transparent"
-            style="border: none;"
-            elevation="0"
-            @click="closeDialog"
-          >
-            <VIcon color="black">ri-close-line</VIcon>
-          </VBtn>
+        <VCardTitle>
+          <div class="text-h5 font-weight-bold d-flex justify-space-between align-center">
+            <span>{{
+              props.mode === "add"
+                ? t("detail-pu.pu-penyelia-halal-tambah-title")
+                : t("detail-pu.pu-penyelial-halal-edit-title")
+            }}</span>
+            <VBtn
+              icon
+              color="transparent"
+              style="border: none;"
+              elevation="0"
+              @click="closeDialog"
+            >
+              <VIcon color="black">ri-close-line</VIcon>
+            </VBtn>
+          </div>
+          <div class="bgContent">
+            <div class="d-flex flex-wrap mt-5">
+              <VIcon icon="ri-error-warning-line" color="#652672" />
+              <label class="subText"
+                >Pelaku Usaha Mikro dan Kecil, tidak wajib melengkapi sertifikat dan unggah KTP</label
+              >
+            </div>
+          </div>
         </VCardTitle>
+
         <VCardText>
           <VForm ref="penyeliaFormRef">
             <VRow>
@@ -365,4 +374,18 @@ const { t } = useI18n();
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.bgContent {
+  border-radius: 10px;
+  background-color: #f0e9f1;
+  padding-inline-start: 10px;
+}
+.subText {
+  align-content: center;
+  color: #652672 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 18px !important;
+  padding-inline-start: 10px;
+}
+</style>
