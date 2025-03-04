@@ -157,6 +157,7 @@ onMounted(async () => {
           @update:options="
             getpuApi(page, itemPerPage, searchQuery, status, queryBy)
           "
+          :items-per-page-options="[10, 25, 50, 100]"
         >
           <template #item.no="{ index }">
             {{ index + 1 + (page - 1) * itemPerPage }}

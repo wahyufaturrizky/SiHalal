@@ -1267,13 +1267,14 @@ onMounted(async () => {
     getDownloadForm("sjph", "sjph"),
     getDownloadForm("laporan", "hasil_verval"),
     getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
+    getDownloadForm("sttd", "sttd"),
   ]);
   if (registrationDetail.status == "") {
     return;
   }
-  if (Number(registrationDetail.status.split("OF")[1]) >= 71) {
-    getDownloadForm("sttd", "sttd");
-  }
+  // if (Number(registrationDetail.status.split("OF")[1]) >= 71) {
+  //   getDownloadForm("sttd", "sttd");
+  // }
 });
 
 const getSubmissionDetail = async () => {
