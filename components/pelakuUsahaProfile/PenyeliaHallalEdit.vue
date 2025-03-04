@@ -328,7 +328,11 @@ const downloadSkHandler = () => {
             <td>{{ idx + 1 }}</td>
             <td>{{ item.name }}</td>
             <td>
+              <div v-if="!item.file_skph">
+                -
+              </div>
               <VBtn
+                v-else
                 @click="downloadDOcument(item.file_skph)"
                 variant="text"
                 color="purple"
@@ -339,7 +343,11 @@ const downloadSkHandler = () => {
               </VBtn>
             </td>
             <td>
+              <div v-if="!item.file_spph">
+                -
+              </div>
               <VBtn
+                v-else
                 @click="downloadDOcument(item.file_spph)"
                 variant="text"
                 color="purple"
@@ -350,7 +358,11 @@ const downloadSkHandler = () => {
               </VBtn>
             </td>
             <td>
+              <div v-if="!item.file_ktp">
+                -
+              </div>
               <VBtn
+                v-else
                 @click="downloadDOcument(item.file_ktp)"
                 variant="text"
                 color="purple"
