@@ -396,9 +396,9 @@ const updatePayloadMapper = () => {
     provinsi: profileData.provinsi,
     kota: profileData.kota || findDistrictNameByCode(profileData?.kd_kab),
     wilayah_id: profileData.wilayah_id,
-    kd_prov: profileData.kd_prov,
-    kd_kab: profileData.kd_kab,
-    kd_kec: profileData.kd_kec,
+    kd_prov: profileData.kd_prov !== null ? profileData.kd_prov  : "",
+    kd_kab: profileData.kd_kab !== null ? profileData.kd_kab : "",
+    kd_kec: profileData.kd_kec !== null ? profileData.kd_kec: "",
     email: profileData.email,
     nama_pimpinan: profileData.nama_pimpinan,
     no_hp_pimpinan: profileData.no_hp_pimpinan,
@@ -634,7 +634,7 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.nama_pimpinan,
-                    /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
+                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
                     'Format nama pimpinan tidak sesuai'
                   ),
                 ]"
@@ -664,7 +664,7 @@ onMounted(async () => {
                 @on-select="handleSelectChairmanTTE"
                 @on-remove="handleRemoveChaimanTTE"
                 :validation-list="[
-                  fileExtensionValidator,
+                  ...(selectedTteFile.pimpinan ? [fileExtensionValidator] : []),
                   fileSizeValidator,
                   fileNameLengthValidator,
                 ]"
@@ -681,7 +681,7 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.nama_sekretaris,
-                    /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
+                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
                     'Format nama sekretaris tidak sesuai'
                   ),
                 ]"
@@ -711,7 +711,7 @@ onMounted(async () => {
                 @on-select="handleSelectSecretaryTTE"
                 @on-remove="handleRemoveSecretaryTTE"
                 :validation-list="[
-                  fileExtensionValidator,
+                   ...(selectedTteFile.sekretaris ? [fileExtensionValidator] : []),
                   fileSizeValidator,
                   fileNameLengthValidator,
                 ]"
@@ -728,7 +728,7 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.nama_bidang_fatwa,
-                    /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
+                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
                     'Format nama ketua bidang fatwa tidak sesuai'
                   ),
                 ]"
@@ -758,7 +758,7 @@ onMounted(async () => {
                 @on-select="handleSelectFatwaLeadTTE"
                 @on-remove="handleRemoveFatwaLeadTTE"
                 :validation-list="[
-                  fileExtensionValidator,
+                   ...(selectedTteFile.ketuaBidang ? [fileExtensionValidator] : []),
                   fileSizeValidator,
                   fileNameLengthValidator,
                 ]"
@@ -775,7 +775,7 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.nama_kontak,
-                    /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
+                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
                     'Format nama kontak tidak sesuai'
                   ),
                 ]"
@@ -813,7 +813,7 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.rekening.bank,
-                    /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
+                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)(?!.*\(\()(?!.*\)\))(?!(.*\(\)))[a-zA-Z\s',.()]+$/,
                     'Format nama bank tidak sesuai'
                   ),
                 ]"
@@ -844,7 +844,7 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.rekening.nama,
-                    /^(?!.*\s\s)(?!.*'')[a-zA-Z\s']+$/,
+                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
                     'Format nama pemegang rekening tidak sesuai'
                   ),
                 ]"
@@ -866,7 +866,7 @@ onMounted(async () => {
                 @on-select="handleSelectBankAccPhoto"
                 @on-remove="handleRemoveBankAccPhoto"
                 :validation-list="[
-                  fileExtensionValidator,
+                   ...(bankAccPhoto ? [fileExtensionValidator] : []),
                   fileSizeValidator,
                   fileNameLengthValidator,
                 ]"
@@ -897,7 +897,7 @@ onMounted(async () => {
                 @on-select="handleSelectNpwpPhoto"
                 @on-remove="handleRemoveNpwpPhoto"
                 :validation-list="[
-                  fileExtensionValidator,
+                  ...(npwpPhoto ? [fileExtensionValidator] : []),
                   fileSizeValidator,
                   fileNameLengthValidator,
                 ]"
