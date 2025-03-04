@@ -7,9 +7,14 @@ import { VForm } from "vuetify/components";
 const props = defineProps({
   mode: { type: String, default: "add" },
   initialData: { type: Object, default: () => ({}) },
+  data: {
+    type: Object,
+    required: false,
+  },
 });
 
 const store = pelakuUsahaProfile();
+const isNoNeedValidation = props?.data?.skala_usaha === 'JU.4' || props?.data?.skala_usaha === 'JU.3';
 
 const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
 
@@ -166,7 +171,7 @@ const { t } = useI18n();
         >
           <span>{{
             props.mode === "add"
-              ? t("detail-pu.pu-penyelial-halal-tambah-title")
+              ? t("detail-pu.pu-penyelia-halal-tambah-title")
               : t("detail-pu.pu-penyelial-halal-edit-title")
           }}</span>
           <VBtn
@@ -240,7 +245,7 @@ const { t } = useI18n();
             <VRow>
               <VCol cols="6">
                 <VTextField
-                  :rules="[requiredValidator]"
+                  :rules="isNoNeedValidation ? [] : [requiredValidator]"
                   v-model="form.nomorSertifikat"
                   label="Nomor Sertifikat"
                   outlined
@@ -250,7 +255,7 @@ const { t } = useI18n();
               </VCol>
               <VCol cols="6">
                 <VTextField
-                  :rules="[requiredValidator]"
+                  :rules="isNoNeedValidation ? [] : [requiredValidator]"
                   v-model="form.tanggalSertifikat"
                   label="Tanggal Sertifikat"
                   outlined
@@ -288,7 +293,7 @@ const { t } = useI18n();
             >
               <template v-slot:activator="{ props: tooltipOpen }">
                 <VFileInput
-                  :rules="[
+                  :rules="isNoNeedValidation ? [] : [
                     requiredValidator,
                     fileSizeValidator,
                     fileNameLengthValidator,
@@ -309,7 +314,7 @@ const { t } = useI18n();
             >
               <template v-slot:activator="{ props: tooltipPelatihan }">
                 <VFileInput
-                  :rules="[
+                  :rules="isNoNeedValidation ? [] : [
                     requiredValidator,
                     fileSizeValidator,
                     fileNameLengthValidator,
@@ -330,7 +335,7 @@ const { t } = useI18n();
             >
               <template v-slot:activator="{ props: tooltipKtp }">
                 <VFileInput
-                  :rules="[
+                  :rules="isNoNeedValidation ? [] : [
                     requiredValidator,
                     fileSizeValidator,
                     fileNameLengthValidator,
