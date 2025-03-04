@@ -39,7 +39,7 @@ const domesticAuditHeader: any[] = [
   { title: "UHPD Awal", key: "uhpd_awal", nowrap: true },
   { title: "Diskon (%)", key: "uhpd_diskon", nowrap: true },
   { title: "UHPD Akhir", key: "uhpd_akhir", nowrap: true },
-  { title: "Operasional", key: "operasional", nowrap: true },
+  //{ title: "Operasional", key: "operasional", nowrap: true },
   { title: "Akomodasi Awal", key: "akomodasi_awal", nowrap: true },
   { title: "Diskon (%)", key: "akomodasi_diskon", nowrap: true },
   { title: "Akomodasi Akhir", key: "akomodasi_akhir", nowrap: true },
@@ -219,7 +219,7 @@ const openModalEditDalamNegri = (item: any) => {
     item.unit_cost_akhir = formatToIDR(item.unit_cost_akhir);
     item.uhpd_awal = formatToIDR(item.uhpd_awal);
     item.uhpd_akhir = formatToIDR(item.uhpd_akhir);
-    item.operasional = formatToIDR(item.operasional);
+    //item.operasional = formatToIDR(item.operasional);
     item.transport_awal = formatToIDR(item.transport_awal);
     item.transport_akhir = formatToIDR(item.transport_akhir);
     item.akomodasi_awal = formatToIDR(item.akomodasi_awal);
@@ -250,7 +250,7 @@ const getDetailBiaya = async () => {
         item.unit_cost_akhir = formatToIDR(item.unit_cost_akhir);
         item.uhpd_awal = formatToIDR(item.uhpd_awal);
         item.uhpd_akhir = formatToIDR(item.uhpd_akhir);
-        item.operasional = formatToIDR(item.operasional);
+        //item.operasional = formatToIDR(item.operasional);
         item.transport_awal = formatToIDR(item.transport_awal);
         item.transport_akhir = formatToIDR(item.transport_akhir);
         item.akomodasi_awal = formatToIDR(item.akomodasi_awal);
@@ -595,7 +595,7 @@ onMounted(async () => {
                   <td>{{ item.uhpd_awal }}</td>
                   <td>{{ item.uhpd_diskon }}</td>
                   <td>{{ item.uhpd_akhir }}</td>
-                  <td>{{ item.operasional }}</td>
+                  <!-- <td>{{ item.operasional }}</td> -->
                   <td>{{ item.akomodasi_awal }}</td>
                   <td>{{ item.akomodasi_diskon }}</td>
                   <td>{{ item.akomodasi_akhir }}</td>
@@ -1174,7 +1174,7 @@ onMounted(async () => {
               />
             </VCol>
           </VRow>
-          <VRow>
+          <!-- <VRow>
             <VCol>
               <div class="text-h6">Operasional</div>
               <VTextField
@@ -1184,7 +1184,7 @@ onMounted(async () => {
                 disabled
               />
             </VCol>
-          </VRow>
+          </VRow> -->
           <VRow>
             <VCol>
               <div class="text-h6">Transportasi Awal</div>
