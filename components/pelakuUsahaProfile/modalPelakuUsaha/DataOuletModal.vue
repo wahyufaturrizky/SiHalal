@@ -62,7 +62,17 @@ const { mdAndUp } = useDisplay();
 const dialogMaxWidth = computed(() => {
   return mdAndUp.value ? 700 : "90%";
 });
-
+const kodeposOptions = ref();
+const getKodePos = async () => {
+  form.value.kabKota = "";
+  const response: Array<{ code: string }> = await $api("/master/kode-pos", {
+    method: "get",
+  });
+  kodeposOptions.value = response.map((kode) => kode.code);
+};
+onMounted(async () => {
+  await getKodePos();
+});
 const form = ref({
   namaOutlet: "",
   alamatOutlet: "",
@@ -254,7 +264,7 @@ defineExpose({ showErrorProhbName, hideErrorProhbName, closeDialog });
               <VCol cols="5">
                 <VItemGroup>
                   <VLabel>Kode Pos</VLabel>
-                  <VTextField
+                  <!-- <VTextField
                     v-model="form.kodePos"
                     :rules="[
                       requiredValidator,
@@ -264,7 +274,13 @@ defineExpose({ showErrorProhbName, hideErrorProhbName, closeDialog });
                     outlined
                     dense
                     required
-                  />
+                  /> -->
+                  <VCombobox
+                  v-model="form.kodePos"
+                  :items="kodeposOptions"
+                  :placeholder="t('detail-pu.pu-pabrik-fill-modal-3')"
+                  required
+                />
                 </VItemGroup>
               </VCol>
             </VRow>
