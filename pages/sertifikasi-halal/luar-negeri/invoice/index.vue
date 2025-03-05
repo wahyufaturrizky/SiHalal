@@ -81,7 +81,7 @@ const statusInvoice = {
 <template>
   <VRow>
     <VCol cols="12">
-      <h1 style="font-size: 32px">
+      <h1 style="font-size: 32px;">
         {{ t("shln-invoice.invoice-list-title") }}
       </h1>
     </VCol>
@@ -108,7 +108,7 @@ const statusInvoice = {
                 @input="handleInput"
               ></VTextField
             ></VCol>
-            <VCol cols="4" style="display: flex; justify-content: end"
+            <VCol cols="4" style="display: flex; justify-content: end;"
               ><VBtn
                 append-icon="fa-download"
                 @click="
@@ -140,11 +140,10 @@ const statusInvoice = {
                 </template>
                 <template #item.invoice="{ item }">
                   <VBtn
-                    variant="text"
-                    @click="
-                      item.file! + '' ? downloadDocument(item.file) : () => {}
-                    "
-                  >
+                  variant="text"
+                  :disabled="!item.invoice_url"
+                  @click="item.invoice_url ? downloadDocument(item.invoice_url, 'INVOICE') : null"
+                    > 
                     <v-icon>fa-file</v-icon>
                   </VBtn>
                 </template>
@@ -170,7 +169,7 @@ const statusInvoice = {
                       background-color: #fef8e6;
                       color: #f6bc03;
                       outline: auto;
-                    "
+"
                     >{{ statusInvoice[item.status].desc }}</VChip
                   >
                 </template>

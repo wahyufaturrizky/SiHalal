@@ -179,9 +179,9 @@ const handleInput = (e: any) => {
   );
 };
 
-const downloadInvoice = async (item: any) => {
-  if (item.file_inv) await downloadDocument(item.file_inv);
-};
+// const downloadInvoice = async (item: any) => {
+//   if (item.file_inv) await downloadDocument(item.file_inv);
+// };
 
 onMounted(async () => {
   loading.value = true;
@@ -212,8 +212,8 @@ watch([status, outDated, page], () => {
 <template>
   <div v-if="!loading">
     <!-- <KembaliButton class="pl-0" /> -->
-    <div class="d-flex align-center" style="justify-content: space-between">
-      <h1 style="font-size: 32px">
+    <div class="d-flex align-center" style="justify-content: space-between;">
+      <h1 style="font-size: 32px;">
         {{ t("reguler-invoice.invoice-list-title") }}
       </h1>
       <VBtn
@@ -342,10 +342,10 @@ watch([status, outDated, page], () => {
                   <VBtn
                     variant="text"
                     prepend-icon="mdi-download-box"
-                    @click="() => downloadInvoice(item)"
+                    @click="downloadDocument(item.file_inv, 'INVOICE')"
                     block
                     class="text-left"
-                    style="justify-content: flex-start; inline-size: 100%"
+                    style="justify-content: flex-start; inline-size: 100%;"
                   >
                     {{ t("reguler-invoice.invoice-list-action-downloadinv") }}
                   </VBtn>
