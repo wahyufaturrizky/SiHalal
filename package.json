@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nuxt dev",
     "dev:local": "npx nuxi dev --dotenv .env.local",
+    "dev:prod": "npx nuxi dev --dotenv .env.production",
     "build": "node --max-old-space-size=8096 node_modules/nuxt/bin/nuxt.mjs build",
     "build:local": "npx nuxi build --dotenv .env.local",
     "preview": "node .output/server/index.mjs",
