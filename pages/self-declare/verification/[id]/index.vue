@@ -625,7 +625,7 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
       {
         method: "get",
         query: {
-          id_reg: self,
+          id_reg: selfDeclareId,
           lokasi,
         },
       }
@@ -637,7 +637,7 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
     }
   } catch (error) {
     useSnackbar().sendSnackbar(
-      error?.errors?.list_error[0] || "Ada kesalahan",
+      error.data?.errors?.list_error[0] || "Ada kesalahan",
       "error"
     );
   }
@@ -684,7 +684,12 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
     }
 
     return response;
-  } catch (error) {}
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      error.data?.errors?.list_error[0] || "Ada kesalahan",
+      "error"
+    );
+  }
 };
 
 const loadDataPendamping = async (lokasi: string | null) => {
