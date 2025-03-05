@@ -13,6 +13,8 @@ const lovAuditor = ref<any>([]);
 const dataPemeriksaanProduk = ref<any>(null);
 const selectedAudiotor = ref<any>(null);
 const loadingAuditor = ref(false);
+const page = ref(1);
+const size = ref(10);
 
 const downloadForms = reactive({
   sttd: "",
@@ -115,6 +117,26 @@ const getDetailData = async (type: string) => {
   }
 };
 
+const getDetailProductData = async (pg: number, sz) => {
+  try {
+    const response: any = await $api("/reguler/lph/detail-product", {
+      method: "get",
+      params: {
+        url: `${LIST_INFORMASI_PEMBAYARAN}/${id}/produk`,
+        page: pg,
+        size: sz,
+      },
+    });
+
+    if (response?.code === 2000) {
+      dataProduk.value = response
+      return response?.data;
+    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
 const handleDownloadForm = async (fileName: string, param: string) => {
   return await downloadDocument(fileName, param);
 };
@@ -176,15 +198,12 @@ onMounted(async () => {
 
   const responseData = await Promise.allSettled([
     getDetailData("pengajuan"),
-    getDetailData("produk"),
+    getDetailProductData(page.value, size.value),
     getDetailData("pemeriksaanproduk"),
-    getListAuditor(),
-    // getDownloadForm("file_laporan", "file_laporan"),
-    // getDownloadForm("file_kh", "file_kh"),
+    getListAuditor()
   ]);
 
   dataPengajuan.value = responseData?.[0]?.value || {};
-  dataProduk.value = responseData?.[1]?.value || [];
   dataPemeriksaanProduk.value = responseData?.[2]?.value || {};
   localStorage.setItem(
     "lovAuditor",
@@ -192,6 +211,26 @@ onMounted(async () => {
   );
   loading.value = false;
 });
+
+const handlePageChange = async (pg: any) => {
+  page.value = pg
+  await getDetailProductData(pg || 1, size.value)
+}
+
+const handleRowPageChange = async (sz: any) => {
+  size.value = sz
+  await getDetailProductData(page.value, sz || 10)
+}
+
+const productNameHeader: any[] = [
+  { title: 'No', key: 'index' },
+  { title: 'Layanan Produk', key: 'layanan_produk', nowrap: true },
+  { title: 'Jenis Produk', key: 'jenis_produk', nowrap: true },
+  { title: 'Kelas Produk', key: 'kelas_produk', nowrap: true },
+  { title: 'Rincian Produk', key: 'rincian_produk', nowrap: true },
+  { title: 'Nama Produk', key: 'nama_produk', nowrap: true },
+  { title: 'Publikasi', key: 'publikasi_produk' },
+]
 </script>
 
 <template>
@@ -244,7 +283,29 @@ onMounted(async () => {
               Daftar Nama Produk
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelDaftarProduk :data="dataProduk" />
+              <VDataTableServer
+                v-model:page="page"
+                v-model:items-per-page="size"
+                :items-per-page="size"
+                :items-length="dataProduk.totalItems"
+                :items="dataProduk.data"
+                :headers="productNameHeader"
+                hide-items-per-page
+                class="custom-table"
+                hover
+                @update:page="handlePageChange"
+                @update:items-per-page="handleRowPageChange"
+              >
+                <template #item.index="{ index }">
+                  {{ index + 1 }}
+                </template>
+                <template #item.publikasi_produk="{ item }">
+                  <VCheckbox
+                    :model-value="item.publikasi_produk"
+                    class="non-clickable"
+                  />
+                </template>
+              </VDataTableServer>
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="3" class="pt-3">

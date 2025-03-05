@@ -187,7 +187,7 @@ const { t } = useI18n();
             <div class="d-flex flex-wrap mt-5">
               <VIcon icon="ri-error-warning-line" color="#652672" />
               <label class="subText"
-                >Pelaku Usaha Mikro dan Kecil, tidak wajib melengkapi sertifikat dan unggah KTP</label
+                >Pelaku Usaha Besar, Menengah, dan Luar Negeri wajib melengkapi Nomor Sertifikat, Tanggal Sertifikat, Sertifikat Kompetensi dan Pelatihan Penyelia Halal.</label
               >
             </div>
           </div>
