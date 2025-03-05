@@ -1,7 +1,20 @@
 <script setup lang="ts">
-const props = defineProps<{
-  data?: object
-}>()
+const props = defineProps({
+  data: {
+    type: Object,
+    required: false,
+  },
+  handlePageChange: {
+    type: Function,
+    required: false,
+  },
+  page: {
+    type: Number,
+    required: false,
+  },
+})
+
+const currentPage = ref(props.page)
 
 const productNameHeader: any[] = [
   { title: 'No', key: 'index' },
@@ -13,40 +26,19 @@ const productNameHeader: any[] = [
   { title: 'Publikasi', key: 'publikasi_produk' },
 ]
 
-const productNameData = ref([
-  {
-    service: 'Makanan',
-    type: 'Penyedia minuman dan makanan dengan pengolahan',
-    class: 'Resto',
-    detail: 'Makanan Mie',
-    name: 'Ramen Double Spicy lvl 2',
-    isPublished: true,
-  },
-  {
-    service: 'Makanan',
-    type: 'Penyedia minuman dan makanan dengan pengolahan',
-    class: 'Resto',
-    detail: 'Makanan Mie',
-    name: 'Ramen Double Spicy lvl 2',
-    isPublished: false,
-  },
-  {
-    service: 'Makanan',
-    type: 'Penyedia minuman dan makanan dengan pengolahan',
-    class: 'Resto',
-    detail: 'Makanan Mie',
-    name: 'Ramen Double Spicy lvl 2',
-    isPublished: true,
-  },
-])
+const itemPerPage = ref(10)
 </script>
 
 <template>
   <VDataTable
+    v-model:page="currentPage"
+    :items-per-page="itemPerPage"
+    :items="props?.data.data"
     :headers="productNameHeader"
-    :items="props?.data"
-    :hide-default-footer="props?.data.length === 0"
-    class="border rounded"
+    :page="props.page"
+    class="custom-table"
+    hover
+    @update:page="handlePageChange"
   >
     <template #item.index="{ index }">
       {{ index + 1 }}
@@ -55,15 +47,6 @@ const productNameData = ref([
       <VCheckbox
         :model-value="item.publikasi_produk"
         class="non-clickable"
-      />
-    </template>
-    <template #bottom>
-      <VDataTableFooter
-        v-if="productNameData.length > 5"
-        class="custom-table"
-        first-icon="mdi-chevron-double-left"
-        last-icon="mdi-chevron-double-right"
-        show-current-page
       />
     </template>
   </VDataTable>
