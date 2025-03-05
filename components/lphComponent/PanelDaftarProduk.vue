@@ -45,7 +45,7 @@ const productNameData = ref([
   <VDataTable
     :headers="productNameHeader"
     :items="props?.data"
-    hide-default-footer
+    :hide-default-footer="props?.data.length === 0"
     class="border rounded"
   >
     <template #item.index="{ index }">
