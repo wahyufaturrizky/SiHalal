@@ -217,7 +217,7 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar(
-      error?.errors?.list_error[0] || "Ada kesalahan",
+      error.data?.errors?.list_error[0] || "Ada kesalahan",
       "error"
     );
     console.log(error);
@@ -244,7 +244,11 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
 
     return response;
   } catch (error) {
-    console.log(error);
+    useSnackbar().sendSnackbar(
+      error.data?.errors?.list_error[0] || "Ada kesalahan",
+      "error"
+    );
+    // console.log(error);
   }
 };
 
