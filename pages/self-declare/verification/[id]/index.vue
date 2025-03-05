@@ -635,7 +635,12 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
       lembagaPendamping.value = response.data;
       return response;
     }
-  } catch (error) {}
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      error?.errors?.list_error[0] || "Ada kesalahan",
+      "error"
+    );
+  }
 };
 
 const handleGetPendamping = async (idLembaga: string | null) => {
