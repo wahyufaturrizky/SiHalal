@@ -231,8 +231,8 @@ watch([status, outDated, page], () => {
 <template>
   <div v-if="!loading">
     <!-- <KembaliButton class="pl-0" /> -->
-    <div class="d-flex align-center" style="justify-content: space-between">
-      <h1 style="font-size: 32px">Informasi Sertifikat Self Declare</h1>
+    <div class="d-flex align-center" style="justify-content: space-between;">
+      <h1 style="font-size: 32px;">Informasi Sertifikat Self Declare</h1>
       <!-- <VBtn
         v-if="!loading"
         append-icon="fa-download"
@@ -284,7 +284,7 @@ watch([status, outDated, page], () => {
               </VMenu>
             </VBtn>
             <VTextField
-              style="margin-inline-start: 1svw"
+              style="margin-inline-start: 1svw;"
               v-model="searchQuery"
               density="compact"
               placeholder="Cari No. Daftar/ Nama PU"
@@ -322,7 +322,7 @@ watch([status, outDated, page], () => {
             <label>{{ index + 1 + (page - 1) * itemPerPage }}</label>
           </template>
           <template #item.tgl_daftar="{ item }">
-            {{ formatDate(item.tgl_daftar) }}
+            {{ item.tgl_daftar ? formatDate(item.tgl_daftar) : "" }}
           </template>
           <template v-slot:[`item.status`]="{ item }">
             <div class="d-flex flex-wrap">
@@ -354,7 +354,7 @@ watch([status, outDated, page], () => {
           <template #item.action="{ item }: any">
             <VIcon
               color="success"
-              style="cursor: pointer"
+              style="cursor: pointer;"
               @click="
                 router.push(
                   `/lp3h/information-sertifikasi-pendamping/${item.id_reg}`
