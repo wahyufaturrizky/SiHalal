@@ -45,11 +45,7 @@ const props = defineProps<{
           v-if="(item.status === 'OF280' || item.status === 'OF290' || item.status === 'OF900' || item.status === 'OF285') && item.keterangan"
           class="app-timeline-text mt-1"
         >
-          {{
-            (item.keterangan as any).length > 38
-              ? (item.keterangan as any).slice(0, 38) + "..."
-              : (item.keterangan as any)
-          }}
+          {{ item.keterangan }}
         </div>
       </VTimelineItem>
     </VTimeline>
