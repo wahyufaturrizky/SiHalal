@@ -9,12 +9,12 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-  const { page, size, search, status, start_date, end_date } = (await getQuery(
+  const { page, size, keyword, status, start_date, end_date } = (await getQuery(
     event
   )) as {
     page: string;
     size: string;
-    search: string;
+    keyword: string;
     status: string;
     start_date: string;
     end_date: string;
@@ -25,33 +25,34 @@ export default defineEventHandler(async (event) => {
     size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
   };
 
-  if (search !== "") {
-    params["search"] = search;
+  if (typeof keyword !== "undefined" && keyword !== "") {
+    params["keyword"] = keyword;
   }
 
   if (status !== "" && status !== "Semua") {
     params["status"] = status;
   }
 
-  if (start_date !== "") {
+  if (typeof start_date !== "undefined" && start_date !== "") {
     params["start_date"] = start_date;
   }
 
-  if (end_date !== "") {
+  if (typeof end_date !== "undefined" && end_date !== "") {
     params["end_date"] = end_date;
   }
-
+  console.log(params, "ini parmas baru");
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/finance/invoice`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/certificate-halal-foreign/invoices`,
     {
       method: "get",
       headers: { Authorization: authorizationHeader },
       params,
     }
+   
   ).catch((err: NuxtError) => {
     setResponseStatus(event, 400);
     return err.data;
   });
-  console.log(params, "ini");
+ 
   return data || null;
 });

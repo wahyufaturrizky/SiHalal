@@ -211,7 +211,7 @@ const downloadExcel = async () => {
 <template>
   <VRow>
     <VCol cols="12">
-      <h1 style="font-size: 32px">Bukti Bayar Reguler</h1>
+      <h1 style="font-size: 32px;">Bukti Bayar Reguler</h1>
     </VCol>
   </VRow>
   <VRow>
@@ -222,7 +222,7 @@ const downloadExcel = async () => {
             <VCol cols="6">
               <div class="text-h4 font-weight-bold">Invoice List</div>
             </VCol>
-            <VCol cols="6" style="display: flex; justify-content: end">
+            <VCol cols="6" style="display: flex; justify-content: end;">
               <VBtn
                 :loading="loadingDownloadExcel"
                 @click="downloadExcel"
@@ -245,7 +245,7 @@ const downloadExcel = async () => {
                     append-icon="fa-filter"
                     v-bind="openMenu"
                     variant="outlined"
-                    style="width: 100%"
+                    style="inline-size: 100%;"
                     >Filter</VBtn
                   >
                 </template>
@@ -335,7 +335,8 @@ const downloadExcel = async () => {
                 <p
                   v-if="(item as any).file_inv"
                   class="cursor-pointer"
-                  @click="downloadDOcument((item as any).file_inv)"
+                  @click="downloadDocument( (item as any).file_inv,'INVOICE')"
+              
                 >
                   <VIcon icon="fa-download" size="xs" color="primary"></VIcon>
                   Unduh Ivoice

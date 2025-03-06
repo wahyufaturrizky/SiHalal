@@ -2,31 +2,20 @@
 const data = {
   bill_date: ref([]),
 };
-
+const items = ref([]);
 const tableHeader = [
   { title: "No", value: "index" },
-  { title: "No Invoice", value: "no_inv" },
-  { title: "Tanggal Invoice", value: "tgl_inv" },
+  { title: "No Invoice", value: "no" },
+  { title: "Tanggal Invoice", value: "date" },
   { title: "Register Number", value: "no_daftar" },
   { title: "Payment Code", value: "va" },
-  { title: "Importer's Name", value: "nama" },
-  { title: "Due Date", value: "duedate" },
+  { title: "Importer's Name", value: "importer_name" },
+  { title: "Due Date", value: "due_date" },
   { title: "Payment Date", value: "tgl_bayar" },
-  { title: "Amount", value: "total_inv" },
+  { title: "Amount", value: "amount" },
   { title: "Status", value: "status" },
   { title: "Action", value: "action" },
 ];
-
-const items = ref<
-  {
-    id: string;
-    nama_importir: string;
-    nib: string;
-    no_daftar: string;
-    npwp: string;
-    tgl_daftar: string;
-  }[]
->([]);
 
 const itemPerPage = ref(10);
 const totalItems = ref(0);
@@ -64,7 +53,7 @@ const page = ref(1);
 const loadItem = async ({
   page,
   size,
-  search,
+  keyword,
   status,
   date,
 }: {
@@ -85,7 +74,7 @@ const loadItem = async ({
       params: {
         page,
         size,
-        search,
+        keyword,
         status,
         start_date: startDate,
         end_date: endDate,
@@ -106,8 +95,8 @@ const loadItem = async ({
     loading.value = false;
   }
 };
-
 const defaultStatus = { color: "error", desc: "Unknown Status" };
+
 const statusItem = new Proxy(
   {
     SB001: { color: "warning", desc: "Menunggu Pembayaran" },
@@ -145,9 +134,7 @@ const loadItemStatusApplication = async () => {
 };
 const itemsStatus = ref<any[]>([]);
 
-const selectedStatus = ref([]);
 const searchQuery = ref("");
-const selectedDate = ref([]);
 const showFilterMenu = ref(false);
 const loadingAll = ref(true);
 
@@ -167,7 +154,7 @@ const resetFilters = () => {
   loadItem({
     page: page.value,
     size: itemPerPage.value,
-    search: searchQuery.value,
+    keyword: searchQuery.value,
     status: selectedFilters.value.status,
     date: selectedFilters.value.date,
   });
@@ -181,35 +168,19 @@ const handleInput = () => {
   debouncedFetch({
     page: page.value,
     size: itemPerPage.value,
-    search: searchQuery.value,
+    keyword: searchQuery.value,
     status: selectedFilters.value.status,
     date: selectedFilters.value.date,
   });
 };
 
-const downloadDocument = async (filename: string) => {
-  try {
-    const response: any = await $api("/shln/submission/document/download", {
-      method: "post",
-      body: {
-        filename,
-      },
-    });
-
-    showUnduhInvoice.value = false;
-
-    window.open(response.url, "_blank", "noopener,noreferrer");
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
 const loadingDownloadExcel = ref(false);
 
 const applyFilters = () => {
   loadItem({
     page: page.value,
     size: itemPerPage.value,
-    search: searchQuery.value,
+    keyword: searchQuery.value,
     status: selectedFilters.value.status,
     date: selectedFilters.value.date,
   });
@@ -229,7 +200,7 @@ const downloadExcel = async () => {
       {
         method: "get",
         params: {
-          search: searchQuery.value,
+          keyword: searchQuery.value,
           status: selectedFilters.value.status,
           start_date: startDate,
           end_date: endDate,
@@ -281,7 +252,7 @@ onMounted(async () => {
             <VCol cols="6">
               <div class="text-h4 font-weight-bold">Invoice List</div>
             </VCol>
-            <VCol cols="6" style="display: flex; justify-content: end" v-if="false">
+            <VCol cols="6" style="display: flex; justify-content: end">
               <VBtn
                 :loading="loadingDownloadExcel"
                 @click="downloadExcel"
@@ -304,7 +275,7 @@ onMounted(async () => {
                     append-icon="fa-filter"
                     v-bind="openMenu"
                     variant="outlined"
-                    style="width: 100%"
+                    style="inline-size: 100%"
                     >Filter</VBtn
                   >
                 </template>
@@ -382,40 +353,47 @@ onMounted(async () => {
               <template #item.index="{ index }">
                 {{ index + 1 + (page - 1) * itemPerPage }}
               </template>
-              <template #item.total_inv="{ item }">
-                {{ formatToIDR(item.total_inv) }}
+              <template #item.date="{ item }">
+                {{ formatDate((item as any).date) }}
+              </template>
+              <template #item.amount="{ item }">
+                {{ formatToIDR(item.amount) }}
               </template>
               <template #item.tgl_inv="{ item }">
                 {{ formatToISOString(item.tgl_inv) }}
               </template>
-              <template #item.duedate="{ item }">
-                {{ formatToISOString(item.duedate) }}
+              <template #item.due_date="{ item }">
+                {{ formatToISOString(item.due_date) }}
               </template>
               <template #item.tgl_bayar="{ item }">
                 {{ formatToISOString(item.tgl_bayar) }}
               </template>
               <template #item.status="{ item }">
                 <VChip
-                  :color="statusItem[item.status_code].color"
+                  :color="statusItem[item.status].color"
                   text-color="white"
                   small
                 >
-                  {{ statusItem[item.status_code].desc }}
+                  {{ statusItem[item.status].desc }}
                 </VChip>
               </template>
-              <template #item.action v-if="false">
-                <VMenu :close-on-content-click="false">
+              <template #item.action="{ item }">
+                <VMenu
+                  :close-on-content-click="false"
+                  v-if="item?.invoice_url || item?.bukti_url"
+                >
                   <template #activator="{ props: openMenu }">
                     <VIcon icon="mdi-dots-vertical" v-bind="openMenu"></VIcon>
                   </template>
                   <template #default="{ isActive }">
                     <VList>
-                      <VListItem>
+                      <VListItem v-if="item?.invoice_url">
                         <p
                           class="cursor-pointer"
                           @click="
-                            downloadDOcument(
-                              statusItem[item.status_code].file_inv
+                            downloadDocument(
+                              (item as any).invoice_url,
+                              'INVOICE'
                             )
                           "
                         >
@@ -427,13 +405,11 @@ onMounted(async () => {
                           Unduh Invoice
                         </p>
                       </VListItem>
-                      <VListItem>
+                      <VListItem v-if="item?.bukti_url">
                         <p
                           class="cursor-pointer"
                           @click="
-                            downloadDOcument(
-                              statusItem[item.status_code].file_inv
-                            )
+                            downloadDocument((item as any).bukti_url, 'INVOICE')
                           "
                         >
                           <VIcon
