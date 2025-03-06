@@ -332,7 +332,7 @@ watch([status, outDated, page], () => {
             <label>{{ index + 1 + (page - 1) * itemPerPage }}</label>
           </template>
           <template #item.tgl_daftar="{ item }">
-            {{ formatDate(item.tgl_daftar) }}
+            {{ item.tgl_daftar ? formatDate(item.tgl_daftar) : "" }}
           </template>
           <template v-slot:[`item.status`]="{ item }">
             <div class="d-flex flex-wrap">
