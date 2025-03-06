@@ -68,10 +68,20 @@ const dialogMaxWidth = computed(() => {
 });
 const itemPerPage = ref(10);
 // TODO -> BIKIN LOGIC BUAT SET CHIP COLOR
-const getChipColor = (stats: string) => {
-  if (stats === "Lunas") return "success";
-  return "primary";
+const getChipColor = (stats: any) => {
+  if (stats === "1"||stats === 1) return "warning";
+  if (stats === "2" ||stats === 2) return "primary";
+  if (stats === "3" ||stats === 3) return "success";
+  if (stats === "4" ||stats === 4) return "success";
+  return "";
 };
+const getLPHstatus = (stats:any)=>{
+  if (stats === "1"||stats === 1) return "PENGAJUAN";
+  if (stats === "2" ||stats === 2) return "DISETUJUI";
+  if (stats === "3" ||stats === 3) return "TERBAYAR KE LP3H";
+  if (stats === "4" ||stats === 4) return "TERBAYAR KE PENDAMPING";
+  return "";
+}
 const downloadExcel = async (
   statusData: string,
   search: string,
@@ -231,8 +241,8 @@ watch([status, outDated, page], () => {
 <template>
   <div v-if="!loading">
     <!-- <KembaliButton class="pl-0" /> -->
-    <div class="d-flex align-center" style="justify-content: space-between">
-      <h1 style="font-size: 32px">Informasi Sertifikat Self Declare</h1>
+    <div class="d-flex align-center" style="justify-content: space-between;">
+      <h1 style="font-size: 32px;">Informasi Sertifikat Self Declare</h1>
       <!-- <VBtn
         v-if="!loading"
         append-icon="fa-download"
@@ -284,7 +294,7 @@ watch([status, outDated, page], () => {
               </VMenu>
             </VBtn>
             <VTextField
-              style="margin-inline-start: 1svw"
+              style="margin-inline-start: 1svw;"
               v-model="searchQuery"
               density="compact"
               placeholder="Cari No. Daftar/ Nama PU"
@@ -326,14 +336,15 @@ watch([status, outDated, page], () => {
           </template>
           <template v-slot:[`item.status`]="{ item }">
             <div class="d-flex flex-wrap">
-              <VChip
+              <VChip v-if="item.f_lph!==''"
                 :key="index"
-                :color="getChipColor(item.status)"
+                :color="getChipColor(item.f_lph)"
                 label
                 class="ma-1"
               >
-                {{ item.status }}
+                {{ getLPHstatus(item.f_lph) }}
               </VChip>
+                <p v-if="item.f_lph===''" > - </p>
             </div>
           </template>
 
@@ -354,7 +365,7 @@ watch([status, outDated, page], () => {
           <template #item.action="{ item }: any">
             <VIcon
               color="success"
-              style="cursor: pointer"
+              style="cursor: pointer;"
               @click="
                 router.push(
                   `/lp3h/information-sertifikasi-pendamping/${item.id_reg}`
