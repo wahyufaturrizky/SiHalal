@@ -68,10 +68,15 @@ const dialogMaxWidth = computed(() => {
 });
 const itemPerPage = ref(10);
 // TODO -> BIKIN LOGIC BUAT SET CHIP COLOR
-const getChipColor = (stats: string) => {
-  if (stats === "Lunas") return "success";
-  return "primary";
+const getChipColor = (stats: any) => {
+
+  if (stats === "Pengajuan" || stats === 1) return "";
+  if (stats === "Disetujui" || stats === 2) return "primary";
+  if (stats === "Terbayar ke LP3H" || stats === 3) return "success";
+  if (stats === "Terbayar ke Pendamping" || stats === 4) return "success";
+  return "";
 };
+
 const downloadExcel = async (
   statusData: string,
   search: string,
@@ -327,13 +332,15 @@ watch([status, outDated, page], () => {
           <template v-slot:[`item.status`]="{ item }">
             <div class="d-flex flex-wrap">
               <VChip
+                v-if="item.f_lph !== ''"
                 :key="index"
-                :color="getChipColor(item.status)"
+                :color="getChipColor(item.status_pembayaran)"
                 label
                 class="ma-1"
               >
-                {{ item.status }}
+                {{ item.status_pembayaran }}
               </VChip>
+              <!-- <p v-if="item.status_pembayaran === ''">-</p> -->
             </div>
           </template>
 
