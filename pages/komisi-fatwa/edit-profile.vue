@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { isEmpty } from "@core/utils/helpers"
+
 const router = useRouter();
 
 const profileData = reactive({
@@ -92,7 +94,9 @@ const handleLoadProfile = async () => {
       if (profileData.kd_prov && profileData.kd_prov != "00") {
         await getDistrict(profileData.kd_prov);
       }
+      profileData.kd_kab = response.data.kd_kab
       if (profileData.kd_kab) await getSubDistrict(profileData.kd_kab);
+      profileData.kd_kec = response.data.kd_kec
 
       fileFromDb.value.chairmanTte = response.data.pimpinan_tte
         ? profileData.pimpinan_tte
@@ -448,6 +452,14 @@ const handleConfirmUpdate = async () => {
   }
 };
 
+const customPhoneNumberIdValidator = (value: unknown): string | boolean => {
+  if (isEmpty(value)) return true;
+  return (
+    /^[0-9-]+$/.test(String(value)) ||
+    "Hanya boleh angka dan strip"
+  );
+};
+
 onMounted(async () => {
   handleLoadProfile();
   getProvince();
@@ -634,7 +646,8 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.nama_pimpinan,
-                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
+                    // /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
+                    /^(?!\s*$).+$/,
                     'Format nama pimpinan tidak sesuai'
                   ),
                 ]"
@@ -647,7 +660,7 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">No. HP</h4>
               <VTextField
                 placeholder="Isi no. HP"
-                :rules="[requiredValidator, phoneNumberIdValidator]"
+                :rules="[requiredValidator, customPhoneNumberIdValidator]"
                 v-model="profileData.no_hp_pimpinan"
                 density="compact"
                 rounded="xl"
@@ -681,7 +694,8 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.nama_sekretaris,
-                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
+                    // /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
+                    /^(?!\s*$).+$/,
                     'Format nama sekretaris tidak sesuai'
                   ),
                 ]"
@@ -694,7 +708,7 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">No. HP</h4>
               <VTextField
                 placeholder="Isi no. HP"
-                :rules="[requiredValidator, phoneNumberIdValidator]"
+                :rules="[requiredValidator, customPhoneNumberIdValidator]"
                 v-model="profileData.no_hp_sekretaris"
                 density="compact"
                 rounded="xl"
@@ -728,7 +742,8 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.nama_bidang_fatwa,
-                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
+                    // /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
+                    /^(?!\s*$).+$/,
                     'Format nama ketua bidang fatwa tidak sesuai'
                   ),
                 ]"
@@ -741,7 +756,7 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">No. HP</h4>
               <VTextField
                 placeholder="Isi no. HP"
-                :rules="[requiredValidator, phoneNumberIdValidator]"
+                :rules="[requiredValidator, customPhoneNumberIdValidator]"
                 v-model="profileData.no_hp_bidang_fatwa"
                 density="compact"
                 rounded="xl"
@@ -775,7 +790,8 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.nama_kontak,
-                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
+                    // /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
+                    /^(?!\s*$).+$/,
                     'Format nama kontak tidak sesuai'
                   ),
                 ]"
@@ -788,7 +804,7 @@ onMounted(async () => {
               <h4 class="mb-1 font-weight-bold">No. HP</h4>
               <VTextField
                 placeholder="Isi no. HP"
-                :rules="[requiredValidator, phoneNumberIdValidator]"
+                :rules="[requiredValidator, customPhoneNumberIdValidator]"
                 v-model="profileData.no_hp_kontak"
                 density="compact"
                 rounded="xl"
@@ -813,7 +829,8 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.rekening.bank,
-                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)(?!.*\(\()(?!.*\)\))(?!(.*\(\)))[a-zA-Z\s',.()]+$/,
+                    // /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)(?!.*\(\()(?!.*\)\))(?!(.*\(\)))[a-zA-Z\s',.()]+$/,
+                    /^(?!\s*$).+$/,
                     'Format nama bank tidak sesuai'
                   ),
                 ]"
@@ -844,7 +861,8 @@ onMounted(async () => {
                   requiredValidator,
                   regexValidator(
                     profileData.rekening.nama,
-                    /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
+                    // /^(?!.*\s\s)(?!.*'')(?!.*\.\.)(?!.*,\,)(?!.*\.,)[a-zA-Z\s',.]+$/,
+                    /^(?!\s*$).+$/,
                     'Format nama pemegang rekening tidak sesuai'
                   ),
                 ]"
