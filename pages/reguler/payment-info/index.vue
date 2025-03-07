@@ -107,7 +107,7 @@ onMounted(async () => {
   </div> -->
   <VRow no-gutters>
     <VCol>
-      <h1 style="font-size: 32px;">Informasi Pembayaran</h1>
+      <h1 style="font-size: 32px">Informasi Pembayaran</h1>
     </VCol>
   </VRow>
   <VRow>
@@ -125,17 +125,19 @@ onMounted(async () => {
               placeholder="Cari Nama Pengajuan"
               density="compact"
               append-inner-icon="ri-search-line"
-              style="max-inline-size: 100%;"
+              style="max-inline-size: 100%"
               @input="handleInput"
             />
           </div>
           <VDataTable
+            class="border rounded"
             :headers="invoiceHeader"
             :items="dataTable"
+            :hide-default-footer="dataTable.length === 0"
           >
             <template #no-data>
               <div class="w-full mt-2">
-                <div class="pt-2" style="justify-items: center;">
+                <div class="pt-2" style="justify-items: center">
                   <img src="~/assets/images/empty-data.png" alt="empty_data" />
                   <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
                 </div>
@@ -154,7 +156,6 @@ onMounted(async () => {
             </template>
             <template #bottom>
               <VDataTableFooter
-                v-if="invoiceData.length > 5"
                 first-icon="mdi-chevron-double-left"
                 last-icon="mdi-chevron-double-right"
                 show-current-page

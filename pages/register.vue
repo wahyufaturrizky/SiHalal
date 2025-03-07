@@ -344,11 +344,11 @@ onMounted(() => {
 
 const country = ref();
 onMounted(async () => {
-  const response: MasterCountry[] = await $api("/master/country", {
+  const response: MasterCountry[] = await $api("/master/list-phone", {
     method: "get",
   });
   country.value = response.map((item) => {
-    return { name: item.name, cc: item.kode_telepon };
+    return { name: item.namanegara, cc: item.kode_telepon };
   });
   selectedPhoneCode.value = "62";
 });

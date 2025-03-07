@@ -45,36 +45,45 @@ export const useMyTabEditRegulerStore = defineStore({
       const distinctProductBahan = new Set(
         this.produk.flatMap((item) => item.bahan_selected)
       );
-      const allBahanId = new Set(this.bahan.flatMap((item) => item.id));
-      if (distinctProductBahan.size != allBahanId.size) {
+      // const allBahanId = new Set(this.bahan.flatMap((item) => item.id));
+      // if (distinctProductBahan.size != allBahanId.size) {
+      //   this.produkAllBahan = false;
+      //   return false;
+      // }
+      // for (const value of allBahanId) {
+      //   if (!distinctProductBahan.has(value)) {
+      //     this.produkAllBahan = false;
+      //     return false;
+      //   }
+      // }
+      if (distinctProductBahan.size < 1) {
         this.produkAllBahan = false;
         return false;
+      } else {
+        this.produkAllBahan = true;
+        return true;
       }
-      for (const value of allBahanId) {
-        if (!distinctProductBahan.has(value)) {
-          this.produkAllBahan = false;
-          return false;
-        }
-      }
-      this.produkAllBahan = true;
-      return true;
     },
     isBahan() {
-      console.log(this.bahan);
       const jenisBahan = new Set(this.bahan.map((item) => item.jenis_bahan));
-      const verifyBahan = new Set(["Kemasan", "Cleaning Agent", "Bahan"]);
-      if (jenisBahan.size != verifyBahan.size) {
+      // const verifyBahan = new Set(["Kemasan", "Cleaning Agent", "Bahan"]);
+      // if (jenisBahan.size != verifyBahan.size) {
+      //   this.bahanCheck = false;
+      //   return false;
+      // }
+      // for (const value of verifyBahan) {
+      //   if (!jenisBahan.has(value)) {
+      //     this.bahanCheck = false;
+      //     return false;
+      //   }
+      // }
+      if (jenisBahan.size < 1) {
         this.bahanCheck = false;
         return false;
+      } else {
+        this.bahanCheck = true;
+        return true;
       }
-      for (const value of verifyBahan) {
-        if (!jenisBahan.has(value)) {
-          this.bahanCheck = false;
-          return false;
-        }
-      }
-      this.bahanCheck = true;
-      return true;
     },
   },
 });
