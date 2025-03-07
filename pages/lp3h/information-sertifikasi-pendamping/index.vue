@@ -69,19 +69,14 @@ const dialogMaxWidth = computed(() => {
 const itemPerPage = ref(10);
 // TODO -> BIKIN LOGIC BUAT SET CHIP COLOR
 const getChipColor = (stats: any) => {
-  if (stats === "1"||stats === 1) return "warning";
-  if (stats === "2" ||stats === 2) return "primary";
-  if (stats === "3" ||stats === 3) return "success";
-  if (stats === "4" ||stats === 4) return "success";
+
+  if (stats === "Pengajuan" || stats === 1) return "";
+  if (stats === "Disetujui" || stats === 2) return "primary";
+  if (stats === "Terbayar ke LP3H" || stats === 3) return "success";
+  if (stats === "Terbayar ke Pendamping" || stats === 4) return "success";
   return "";
 };
-const getLPHstatus = (stats:any)=>{
-  if (stats === "1"||stats === 1) return "PENGAJUAN";
-  if (stats === "2" ||stats === 2) return "DISETUJUI";
-  if (stats === "3" ||stats === 3) return "TERBAYAR KE LP3H";
-  if (stats === "4" ||stats === 4) return "TERBAYAR KE PENDAMPING";
-  return "";
-}
+
 const downloadExcel = async (
   statusData: string,
   search: string,
@@ -336,15 +331,16 @@ watch([status, outDated, page], () => {
           </template>
           <template v-slot:[`item.status`]="{ item }">
             <div class="d-flex flex-wrap">
-              <VChip v-if="item.f_lph!==''"
+              <VChip
+                v-if="item.f_lph !== ''"
                 :key="index"
-                :color="getChipColor(item.f_lph)"
+                :color="getChipColor(item.status_pembayaran)"
                 label
                 class="ma-1"
               >
-                {{ getLPHstatus(item.f_lph) }}
+                {{ item.status_pembayaran }}
               </VChip>
-                <p v-if="item.f_lph===''" > - </p>
+              <!-- <p v-if="item.status_pembayaran === ''">-</p> -->
             </div>
           </template>
 
