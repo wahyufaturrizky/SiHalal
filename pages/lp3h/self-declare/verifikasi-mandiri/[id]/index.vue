@@ -439,14 +439,14 @@ const getDownloadForm = async (docName: string, propName: string) => {
   }
 };
 
-const handleDownloadForm = async (fileName: string) => {
-  return await downloadDocument(fileName);
+const handleDownloadForm = async (fileName: string, directori: string) => {
+  return await downloadDocument(fileName, directori);
 };
-const handleDownload = async (productId: string) => {
-  return await downloadDocument(productId);
+const handleDownload = async (productId: string, directori: string) => {
+  return await downloadDocument(productId, directori);
 };
 
-const handleDownloadSk = async (id: string) => {
+const handleDownloadSk = async (id: string, directori: string) => {
   try {
     const response = await $api("download-sk-selfdeclare", {
       method: "post",
@@ -456,7 +456,7 @@ const handleDownloadSk = async (id: string) => {
     });
 
     if (response.data.file) {
-      await handleDownload(response.data?.file);
+      await handleDownload(response.data?.file, directori);
     } else {
       useSnackbar().sendSnackbar("Download gagal", "error");
     }
@@ -933,7 +933,7 @@ const isCanEdit = () => {
                   append-icon="fa-download"
                   variant="outlined"
                   class="float-end mt-6"
-                  @click="handleDownloadSk(submissionId)"
+                  @click="handleDownloadSk(submissionId, 'FILES')"
                 >
                   Download SK Penyelia
                 </VBtn>
@@ -1012,7 +1012,7 @@ const isCanEdit = () => {
                   <VIcon
                     color="primary"
                     style="cursor: pointer"
-                    @click="handleDownload(item.photo)"
+                    @click="handleDownload(item.photo, 'PRODUCT')"
                   >
                     ri-download-2-fill
                   </VIcon>
@@ -1071,7 +1071,10 @@ const isCanEdit = () => {
                 <VBtn
                   @click="
                     downloadForms.surat_permohonan
-                      ? handleDownloadForm(downloadForms.surat_permohonan)
+                      ? handleDownloadForm(
+                          downloadForms.surat_permohonan,
+                          'FILES'
+                        )
                       : null
                   "
                   :color="
@@ -1093,7 +1096,10 @@ const isCanEdit = () => {
                 <VBtn
                   @click="
                     downloadForms.surat_pernyataan
-                      ? handleDownloadForm(downloadForms.surat_pernyataan)
+                      ? handleDownloadForm(
+                          downloadForms.surat_pernyataan,
+                          'FILES'
+                        )
                       : null
                   "
                   :color="
@@ -1115,7 +1121,7 @@ const isCanEdit = () => {
                 <VBtn
                   @click="
                     downloadForms.ikrar
-                      ? handleDownload(downloadForms.ikrar)
+                      ? handleDownload(downloadForms.ikrar, 'DOC')
                       : null
                   "
                   :color="downloadForms.ikrar ? 'primary' : '#A09BA1'"
@@ -1135,7 +1141,7 @@ const isCanEdit = () => {
                 <VBtn
                   @click="
                     downloadForms.hasil_verval
-                      ? handleDownloadForm(downloadForms.hasil_verval)
+                      ? handleDownloadForm(downloadForms.hasil_verval, 'DOC')
                       : null
                   "
                   :color="downloadForms.hasil_verval ? 'primary' : '#A09BA1'"
@@ -1155,7 +1161,7 @@ const isCanEdit = () => {
                 <VBtn
                   @click="
                     downloadForms.rekomendasi
-                      ? handleDownloadForm(downloadForms.rekomendasi)
+                      ? handleDownloadForm(downloadForms.rekomendasi, 'DOC')
                       : null
                   "
                   :color="downloadForms.rekomendasi ? 'primary' : '#A09BA1'"
@@ -1215,7 +1221,7 @@ const isCanEdit = () => {
                 <VBtn
                   @click="
                     downloadForms.sttd
-                      ? handleDownloadForm(downloadForms.sttd)
+                      ? handleDownloadForm(downloadForms.sttd, 'FILES')
                       : null
                   "
                   :color="downloadForms.sttd ? 'primary' : '#A09BA1'"
@@ -1235,7 +1241,10 @@ const isCanEdit = () => {
                 <VBtn
                   @click="
                     downloadForms.sertifikasi_halal
-                      ? handleDownloadForm(downloadForms.sertifikasi_halal)
+                      ? handleDownloadForm(
+                          downloadForms.sertifikasi_halal,
+                          'SERT'
+                        )
                       : null
                   "
                   :color="
