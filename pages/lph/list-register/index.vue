@@ -6,7 +6,7 @@ const totalItems = ref<number>(0);
 const data = ref<any[]>([]);
 const loading = ref<boolean>(false);
 const page = ref<number>(1);
-const size = ref<number>(10);
+const size = ref<number>(50);
 const searchQuery = ref<string>("");
 const loadingAll = ref(true);
 
@@ -41,7 +41,7 @@ const loadItem = async (
       method: "get",
       params: {
         pageNumber,
-        sizeData,
+        size: sizeData,
         search,
         url: LPH_LIST_REGISTER_PATH,
       },

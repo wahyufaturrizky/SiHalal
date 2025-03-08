@@ -57,7 +57,7 @@ const loadItem = async (
       method: "get",
       params: {
         pageNumber,
-        sizeData,
+        size: sizeData,
         search,
         url: path,
       },
