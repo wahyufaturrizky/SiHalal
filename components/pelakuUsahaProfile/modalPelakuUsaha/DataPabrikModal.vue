@@ -113,6 +113,7 @@
                 <VAutocomplete
                   :rules="[requiredValidator]"
                   v-model="form.kabKota"
+                  v-on:update:model-value="getKodePos"
                   :items="kabKotaOptions"
                   item-title="name"
                   item-value="code"
@@ -165,7 +166,8 @@
               </VCol>
               <VCol cols="6" class="ps-1">
                 <VLabel>{{ t("detail-pu.pu-pabrik-modal-7") }}</VLabel>
-                <!-- <VTextField
+                <VTextField
+                  v-if="form.lokasiPabrik == 'Luar Negeri'"
                   :rules="[
                     requiredValidator,
                     lengthValidator(form.kodePos, 5),
@@ -177,9 +179,11 @@
                   dense
                   required
                   class="input-field"
-                /> -->
+                />
                 <VCombobox
+                  v-if="form.lokasiPabrik == 'Dalam Negeri'"
                   v-model="form.kodePos"
+                  :disabled="form.provinsi == '' || form.kabKota == ''"
                   :items="kodeposOptions"
                   :placeholder="t('detail-pu.pu-pabrik-fill-modal-3')"
                   required
@@ -339,9 +343,12 @@ const provinsiOptions = ref();
 const kabKotaOptions = ref();
 const kodeposOptions = ref();
 const getKodePos = async () => {
-  form.value.kabKota = "";
   const response: Array<{ code: string }> = await $api("/master/kode-pos", {
     method: "get",
+    query: {
+      kabupaten: form.value.kabKota,
+      provinsi: form.value.provinsi,
+    },
   });
   kodeposOptions.value = response.map((kode) => kode.code);
 };
@@ -375,9 +382,9 @@ const resetForm = () => {
     statusPabrik: "",
   };
 };
-onMounted(async () => {
-  await getKodePos();
-});
+// onMounted(async () => {
+//   await getKodePos();
+// });
 
 const selectedIdPabrik = ref();
 
@@ -405,6 +412,7 @@ watch(
 
           getDistrict(form.value.provinsi).then((val2: any) => {
             form.value.kabKota = val.data.city;
+            getKodePos();
           });
         } else {
           // snackbar.sendSnackbar("Gagal mendapatkan Data ", "error");

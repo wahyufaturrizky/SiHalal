@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
-
-const { t } = useI18n();
 import type { MasterDistrict } from "@/server/interface/master.iface";
 import { computed, defineEmits, defineProps, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
 import type { VForm } from "vuetify/components";
+
+const { t } = useI18n();
 
 const props = defineProps({
   mode: { type: String, default: "add" },
@@ -64,14 +64,17 @@ const dialogMaxWidth = computed(() => {
 });
 const kodeposOptions = ref();
 const getKodePos = async () => {
-  form.value.kabKota = "";
   const response: Array<{ code: string }> = await $api("/master/kode-pos", {
     method: "get",
+    query: {
+      kabupaten: form.value.kabKota,
+      provinsi: form.value.provinsi,
+    },
   });
   kodeposOptions.value = response.map((kode) => kode.code);
 };
 onMounted(async () => {
-  await getKodePos();
+  // await getKodePos();
 });
 const form = ref({
   namaOutlet: "",
@@ -131,6 +134,7 @@ watch(
 
       getDistrict(newData.province_code).then((val) => {
         form.value.kabKota = newData.city_code;
+        getKodePos();
       });
 
       selectedIdOutlet.value = newData.id;
@@ -150,7 +154,7 @@ defineExpose({ showErrorProhbName, hideErrorProhbName, closeDialog });
       append-icon="ri-add-line"
       @click="openDialog"
     >
-      {{t('detail-pu.pu-outlet-modal-add')}}
+      {{ t("detail-pu.pu-outlet-modal-add") }}
     </VBtn>
 
     <VBtn
@@ -159,7 +163,7 @@ defineExpose({ showErrorProhbName, hideErrorProhbName, closeDialog });
       prepend-icon="ri-edit-line"
       @click="openDialog"
     >
-    {{t('detail-pu.pu-outlet-modal-edit')}}
+      {{ t("detail-pu.pu-outlet-modal-edit") }}
     </VBtn>
     <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
@@ -167,7 +171,9 @@ defineExpose({ showErrorProhbName, hideErrorProhbName, closeDialog });
           class="text-h5 font-weight-bold d-flex justify-space-between align-center"
         >
           <span>{{
-            props.mode === "add" ? t('detail-pu.pu-outlet-modal-add-title') : t('detail-pu.pu-outlet-modal-edit-title') 
+            props.mode === "add"
+              ? t("detail-pu.pu-outlet-modal-add-title")
+              : t("detail-pu.pu-outlet-modal-edit-title")
           }}</span>
           <VBtn
             icon
@@ -235,6 +241,7 @@ defineExpose({ showErrorProhbName, hideErrorProhbName, closeDialog });
                   <VAutocomplete
                     v-model="form.kabKota"
                     :rules="[requiredValidator]"
+                    v-on:update:model-value="getKodePos"
                     :items="kabKotaOptions"
                     item-title="name"
                     item-value="code"
@@ -276,11 +283,12 @@ defineExpose({ showErrorProhbName, hideErrorProhbName, closeDialog });
                     required
                   /> -->
                   <VCombobox
-                  v-model="form.kodePos"
-                  :items="kodeposOptions"
-                  :placeholder="t('detail-pu.pu-pabrik-fill-modal-3')"
-                  required
-                />
+                    v-model="form.kodePos"
+                    :disabled="form.provinsi == '' || form.kabKota == ''"
+                    :items="kodeposOptions"
+                    :placeholder="t('detail-pu.pu-pabrik-fill-modal-3')"
+                    required
+                  />
                 </VItemGroup>
               </VCol>
             </VRow>
