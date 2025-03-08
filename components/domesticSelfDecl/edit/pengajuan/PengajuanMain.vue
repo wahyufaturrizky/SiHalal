@@ -22,6 +22,8 @@ const {
 const route = useRoute<"">();
 const submissionId = route.params?.id;
 
+const store = useMyTabEditRegulerStore();
+
 const submissionDetail = reactive({
   id_reg: null,
   jenis_pengajuan: null,
@@ -434,8 +436,8 @@ const handleUpdateSubmission = async () => {
     );
 
     if (response.code === 2000) {
-      if (response.data !== null)
-        useSnackbar().sendSnackbar("Berhasil mengubah data", "success");
+      if (response.data !== null) await store.getApiCertHalal(submissionId);
+      useSnackbar().sendSnackbar("Berhasil mengubah data", "success");
     }
 
     return response;
