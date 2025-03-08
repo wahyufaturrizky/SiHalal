@@ -12,7 +12,11 @@ export default defineEventHandler(async (event) => {
       },
     });
   }
-  // console.log(runtimeConfig);
+  console.log(
+    "env login : ",
+    runtimeConfig.public.recaptcha.siteKey,
+    runtimeConfig.recaptcha.secretKey
+  );
   if (runtimeConfig.public.captcha.active) {
     const recaptcha = await $fetch<any>(
       `https://www.google.com/recaptcha/api/siteverify`,
@@ -31,6 +35,8 @@ export default defineEventHandler(async (event) => {
         data: err.data,
       });
     });
+    console.log(recaptcha);
+
     if (!recaptcha.success) {
       throw createError({
         statusCode: 401,
