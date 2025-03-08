@@ -13,6 +13,11 @@ const props = defineProps({
     default: () => {},
     required: false,
   },
+  inputBahan: {
+    type: Function,
+    default: () => {},
+    required: false,
+  },
   onDetail: {
     type: Function,
     default: () => {},
@@ -85,11 +90,16 @@ const productItems = ref<any[]>([]);
 const dialogEdit = ref(false);
 const loading = ref(false);
 const itemDetail = ref<any>({});
+const bahanSelected = ref([]);
 
 const handleCheck = (item: any) => {
   if (item.checked) item.checked = false;
   else item.checked = true;
 };
+
+const handleInputBahan = (payload, idProduct) => {
+  props.inputBahan(payload, idProduct)
+}
 
 const getListIngredients = async () => {
   props.refresh();
@@ -127,6 +137,7 @@ const getListProducts = async () => {
     if (response.code === 2000) {
       if (response.data !== []) {
         response.data.map((item: any) => {
+          bahanSelected.value = item.bahan_selected
           item.qtyBahan =
             item.bahan_selected !== null ? item.bahan_selected.length : 0;
         });
@@ -247,7 +258,7 @@ const detailClicked = (item: any) => {
 };
 
 onMounted(() => {
-  if (props?.title === "Daftar Nama Produk") getListProducts();
+  if (props?.title === "Daftar Nama Produk" || props?.title === "Daftar Nama Bahan dan Kemasan") getListProducts();
 });
 
 watch(
@@ -258,6 +269,12 @@ watch(
     loading.value = false;
   }
 );
+
+watch(productItems, (newVal) => {
+  loading.value = true;
+  bahanSelected.value = newVal?.[0]?.bahan_selected
+  loading.value = false;
+},{ deep: true });
 </script>
 
 <template>
@@ -434,8 +451,6 @@ watch(
               {{ t(column.title) }}
             </div>
           </template>
-
-          
           <template #header.alamat_pabrik="{ column }">
             <div>
               {{ t(column.title) }}
@@ -563,16 +578,26 @@ watch(
           </template>
 
           <template v-if="!isviewonly" #item.action="{ item }">
-            <DialogDeleteAuditPengajuan
-              :title="t('pengajuan-reguler.reguler-remove-bahan-title')"
-              :button-text="t('pengajuan-reguler.reguler-remove-bahan-1')"
-              :content="props?.title"
-              :on-delete="() => props?.onDelete(item)"
-            >
-              <template #contentDelete>
-                <p>{{ t("pengajuan-reguler.reguler-remove-bahan-2") }}</p>
-              </template>
-            </DialogDeleteAuditPengajuan>
+            <div v-if="bahanSelected?.some((el: any) => el === item.id)">
+              <VBtn
+                v-bind="props"
+                variant="plain"
+                append-icon="fa-trash"
+                disabled
+              />
+            </div>
+            <div v-else>
+              <DialogDeleteAuditPengajuan
+                :title="t('pengajuan-reguler.reguler-remove-bahan-title')"
+                :button-text="t('pengajuan-reguler.reguler-remove-bahan-1')"
+                :content="props?.title"
+                :on-delete="() => props?.onDelete(item)"
+              >
+                <template #contentDelete>
+                  <p>{{ t("pengajuan-reguler.reguler-remove-bahan-2") }}</p>
+                </template>
+              </DialogDeleteAuditPengajuan>
+            </div>
           </template>
           <template v-if="!isviewonly" #item.actionEdit="{ item }">
             <Vbtn
@@ -975,6 +1000,31 @@ watch(
                   >
                     Edit
                   </VBtn>
+                  <VBtn
+                    variant="text"
+                    color="error"
+                    prepend-icon="ri-delete-bin-6-line"
+                    @click="() => props.onDelete(item)"
+                    block
+                  >
+                    Hapus
+                  </VBtn>
+                </VCard>
+              </VMenu>
+            </v-btn>
+          </template>
+          <template v-if="!isviewonly" #item.actionV3="{ item }">
+            <v-btn color="primary" variant="plain">
+              <VIcon>mdi-dots-vertical</VIcon>
+              <VMenu activator="parent" :close-on-content-click="true">
+                <VCard>
+                  <InputBahan
+                    :product-name="item.nama"
+                    :product-id="item.id"
+                    :bahan-selected="item.bahan_selected"
+                    :embedded-in-module="'pelakuSelfDec'"
+                    @submit="(a, b) => handleInputBahan(a, b)"
+                  />
                   <VBtn
                     variant="text"
                     color="error"
