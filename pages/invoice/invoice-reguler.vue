@@ -154,22 +154,7 @@ onMounted(async () => {
   }
 });
 
-const downloadDOcument = async (filename: string) => {
-  try {
-    const response: any = await $api("/shln/submission/document/download", {
-      method: "post",
-      body: {
-        filename,
-      },
-    });
 
-    showUnduhInvoice.value = false;
-
-    window.open(response.url, "_blank", "noopener,noreferrer");
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
 
 const downloadExcel = async () => {
   loadingDownloadExcel.value = true;

@@ -53,13 +53,13 @@ const page = ref(1);
 const loadItem = async ({
   page,
   size,
-  keyword,
+  search,
   status,
   date,
 }: {
   page: number;
   size: number;
-  keyword: string;
+  search: string;
   status: string;
   date: string;
 }) => {
@@ -74,7 +74,7 @@ const loadItem = async ({
       params: {
         page,
         size,
-        keyword,
+        search,
         status,
         start_date: startDate,
         end_date: endDate,
@@ -154,7 +154,7 @@ const resetFilters = () => {
   loadItem({
     page: page.value,
     size: itemPerPage.value,
-    keyword: searchQuery.value,
+    search: searchQuery.value,
     status: selectedFilters.value.status,
     date: selectedFilters.value.date,
   });
@@ -168,7 +168,7 @@ const handleInput = () => {
   debouncedFetch({
     page: page.value,
     size: itemPerPage.value,
-    keyword: searchQuery.value,
+    search: searchQuery.value,
     status: selectedFilters.value.status,
     date: selectedFilters.value.date,
   });
@@ -180,7 +180,7 @@ const applyFilters = () => {
   loadItem({
     page: page.value,
     size: itemPerPage.value,
-    keyword: searchQuery.value,
+    search: searchQuery.value,
     status: selectedFilters.value.status,
     date: selectedFilters.value.date,
   });
@@ -196,11 +196,11 @@ const downloadExcel = async () => {
 
   try {
     const response: any = await $api(
-      "/reguler/finance/invoice/download-excel",
+      "/shln/finance/invoice/download-excel",
       {
         method: "get",
         params: {
-          keyword: searchQuery.value,
+          search: searchQuery.value,
           status: selectedFilters.value.status,
           start_date: startDate,
           end_date: endDate,
@@ -241,7 +241,7 @@ onMounted(async () => {
 <template>
   <VRow>
     <VCol cols="12">
-      <h1 style="font-size: 32px">Bukti Bayar SHLN</h1>
+      <h1 style="font-size: 32px;">Bukti Bayar SHLN</h1>
     </VCol>
   </VRow>
   <VRow>
@@ -252,7 +252,7 @@ onMounted(async () => {
             <VCol cols="6">
               <div class="text-h4 font-weight-bold">Invoice List</div>
             </VCol>
-            <VCol cols="6" style="display: flex; justify-content: end">
+            <VCol cols="6" style="display: flex; justify-content: end;">
               <VBtn
                 :loading="loadingDownloadExcel"
                 @click="downloadExcel"
@@ -275,7 +275,7 @@ onMounted(async () => {
                     append-icon="fa-filter"
                     v-bind="openMenu"
                     variant="outlined"
-                    style="inline-size: 100%"
+                    style="inline-size: 100%;"
                     >Filter</VBtn
                   >
                 </template>
@@ -344,7 +344,7 @@ onMounted(async () => {
                 loadItem({
                   page: page,
                   size: itemPerPage,
-                  keyword: searchQuery,
+                  search: searchQuery,
                   status: selectedFilters.status,
                   date: selectedFilters.date,
                 })
@@ -377,52 +377,16 @@ onMounted(async () => {
                   {{ statusItem[item.status].desc }}
                 </VChip>
               </template>
+
               <template #item.action="{ item }">
-                <VMenu
-                  :close-on-content-click="false"
-                  v-if="item?.invoice_url || item?.bukti_url"
+                <p
+                  v-if="(item as any).invoice_url"
+                  class="cursor-pointer"
+                  @click="downloadDocument((item as any).invoice_url, 'INVOICE')"
                 >
-                  <template #activator="{ props: openMenu }">
-                    <VIcon icon="mdi-dots-vertical" v-bind="openMenu"></VIcon>
-                  </template>
-                  <template #default="{ isActive }">
-                    <VList>
-                      <VListItem v-if="item?.invoice_url">
-                        <p
-                          class="cursor-pointer"
-                          @click="
-                            downloadDocument(
-                              (item as any).invoice_url,
-                              'INVOICE'
-                            )
-                          "
-                        >
-                          <VIcon
-                            icon="fa-download"
-                            size="xs"
-                            color="primary"
-                          ></VIcon>
-                          Unduh Invoice
-                        </p>
-                      </VListItem>
-                      <VListItem v-if="item?.bukti_url">
-                        <p
-                          class="cursor-pointer"
-                          @click="
-                            downloadDocument((item as any).bukti_url, 'INVOICE')
-                          "
-                        >
-                          <VIcon
-                            icon="fa-download"
-                            size="xs"
-                            color="primary"
-                          ></VIcon>
-                          Unduh Bukti
-                        </p>
-                      </VListItem>
-                    </VList>
-                  </template>
-                </VMenu>
+                  <VIcon icon="fa-download" size="xs" color="primary"></VIcon>
+                  Unduh Ivoice
+                </p>
               </template>
             </VDataTableServer>
           </VRow>
