@@ -21,13 +21,13 @@ export default defineEventHandler(async (event: any) => {
   const params = {
     page: Number.isNaN(Number.parseInt(page, 10))
       ? 1
-      : Number.parseInt(page, 1),
+      : Number.parseInt(page, 10),
     size: Number.isNaN(Number.parseInt(size, 10))
       ? 10
       : Number.parseInt(size, 10),
     ...(keyword ? { search: keyword } : {}),
   };
-
+  console.log(params);
 
   const data = await $fetch<any>(`${runtimeConfig.coreBaseUrl}/${url}`, {
     method: "get",

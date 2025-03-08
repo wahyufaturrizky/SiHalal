@@ -54,7 +54,7 @@ const loadItem = async (
   try {
     let params = {
       pageNumber,
-      sizeData,
+      size: sizeData,
       search,
       url: path,
     };
@@ -101,7 +101,7 @@ const handleSearch = async (
   try {
     let params = {
       pageNumber,
-      sizeData,
+      size: sizeData,
       search,
       url: path,
     };
