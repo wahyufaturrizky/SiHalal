@@ -267,7 +267,7 @@ onMounted(async () => {
                 style="cursor: pointer"
                 @click="
                   router.push(
-                    `/pengajuan/verval-pendamping-mandiri/${item.id_reg}`
+                    `/pengajuan/detail-verval/${item.id_reg}`
                   )
                 "
               >
