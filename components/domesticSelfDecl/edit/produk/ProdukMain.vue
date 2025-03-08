@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps({
+const props = defineProps({
   canNotEdit: {
     type: Boolean,
   },
@@ -198,24 +198,33 @@ const handleDeleteProduct = async () => {
 };
 const setCertificateHalalData = () => {
   certHalalData.value = store.getCertificateHalal();
-  console.log("cert halal data = ", certHalalData);
 };
 
 const disableTambahProduk = () => {
-  if (!canNotEdit) {
-    return true;
-  }
-
   if (!certHalalData.value?.id_jenis_produk) {
-    return true;
+    return false;
+  } else {
+    if (!props.canNotEdit) {
+      return true;
+    }
   }
 
-  return false;
+  return true;
 };
 
 onMounted(() => {
   setCertificateHalalData();
 });
+
+watch(
+  () => store.certificateHalal,
+  (newData) => {
+    if (newData) {
+      setCertificateHalalData();
+    }
+  },
+  { immediate: true, deep: true }
+);
 </script>
 
 <template>
@@ -225,7 +234,7 @@ onMounted(() => {
         <VCol cols="6"><h3>Daftar Produk</h3></VCol>
         <VCol cols="6" style="display: flex; justify-content: end">
           <VBtn
-            v-if="disableTambahProduk"
+            v-if="disableTambahProduk()"
             @click="handleOpenModal('CREATE')"
             variant="outlined"
             append-icon="fa-plus"
@@ -243,6 +252,16 @@ onMounted(() => {
             mengisi bagian Proses Produk Halal</label
           >
         </div>
+      </div>
+      <br />
+      <div>
+        <v-alert
+          v-if="!disableTambahProduk()"
+          text="Harap isi jenis produk di tab 'Pengajuan'"
+          type="error"
+          variant="tonal"
+          class="mt-5"
+        ></v-alert>
       </div>
     </VCardTitle>
 
@@ -357,6 +376,11 @@ onMounted(() => {
 .bgContent {
   border-radius: 10px;
   background-color: #f0e9f1;
+  padding-inline-start: 10px;
+}
+.bgContent-error {
+  border-radius: 10px;
+  background-color: #da5739;
   padding-inline-start: 10px;
 }
 .subText {
