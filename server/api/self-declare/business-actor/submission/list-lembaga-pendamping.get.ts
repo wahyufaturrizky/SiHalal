@@ -14,14 +14,17 @@ export default defineEventHandler(async (event: any) => {
     const runtimeConfig = useRuntimeConfig();
     const query: any = await getQuery(event);
 
+    const params = {};
+    if (query.lokasi) {
+      params["lokasi"] = query.lokasi;
+    }
+
     const response = await $fetch(
       `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/halal-certificate-reguler/${query.id_reg}/pengajuan/lembaga`,
       {
         method: "get",
         headers: { Authorization: authHeader },
-        query: {
-          lokasi: query.lokasi,
-        },
+        query: params,
       } as any
     );
 

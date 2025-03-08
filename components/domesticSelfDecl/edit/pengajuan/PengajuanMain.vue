@@ -233,13 +233,14 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
     );
 
     if (response.code === 2000) {
+      console.log("response = ", response.data);
       if (response.data !== null) lembagaPendamping.value = response.data;
     }
 
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar(
-      error?.errors?.list_error[0] || "Ada kesalahan",
+      error.data?.errors?.list_error[0] || "Ada kesalahan 1",
       "error"
     );
     console.log(error);
@@ -267,7 +268,7 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar(
-      error?.errors?.list_error[0] || "Ada kesalahan",
+      error.data?.errors?.list_error[0] || "Ada kesalahan 2",
       "error"
     );
     console.log(error);
@@ -449,8 +450,15 @@ onMounted(async () => {
   await getDetail();
   await handleGetListPendaftaran();
   await handleGetJenisLayanan();
-  await handleGetJenisProduk();
-  handleGetLembagaPendampingInitial(formData.lokasi_pendamping);
+
+  if (formData.id_jenis_layanan) {
+    await handleGetJenisProduk();
+  }
+
+  if (formData.lokasi_pendamping) {
+    handleGetLembagaPendampingInitial(formData.lokasi_pendamping);
+  }
+
   // handleDetailPengajuan();
   // await loadDataPendamping(formData.lokasi_pendamping);
   await handleGetFasilitator();
@@ -725,7 +733,7 @@ const getItemData = (item) => {
               <VLabel>Lembaga Pendamping</VLabel>
               <VSelect
                 v-model="formData.id_lembaga_pendamping"
-                placeholder="Pilih Area Pemasarang"
+                placeholder="Pilih Area Pemasaran"
                 density="compact"
                 :items="lembagaPendamping"
                 item-title="name"
@@ -749,6 +757,31 @@ const getItemData = (item) => {
                 item-value="id"
               />
             </VItemGroup>
+            <br />
+            <VRow>
+              <VCol cols="6">
+                <VItemGroup>
+                  <VLabel>Kota/Kabupaten Pendamping</VLabel>
+                  <VTextField
+                    :model-value="formData.id_lembaga_pendamping?.kabupaten"
+                    placeholder="Kota Pendamping"
+                    disabled
+                    density="compact"
+                  />
+                </VItemGroup>
+              </VCol>
+              <VCol cols="6">
+                <VItemGroup>
+                  <VLabel>Provinsi Pendamping</VLabel>
+                  <VTextField
+                    :model-value="formData.id_lembaga_pendamping?.provinsi"
+                    placeholder="Provinsi Pendamping"
+                    disabled
+                    density="compact"
+                  />
+                </VItemGroup>
+              </VCol>
+            </VRow>
           </VCol>
         </VRow>
         <br />
