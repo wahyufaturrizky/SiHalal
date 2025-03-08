@@ -12,7 +12,7 @@ const tableHeader = [
   { title: "Status", key: "status" },
   { title: "Tanggal Bayar", key: "tanggal_bayar" },
   { title: "Download Invoice", key: "invoice_url" },
-  { title: "Download Bukti Bayar", key: "bukti_url" },
+  // { title: "Download Bukti Bayar", key: "bukti_url" },
 ];
 
 const defaultStatus = { color: "error", desc: "Unknown Status" };
@@ -105,17 +105,17 @@ onMounted(async () => {
 <template>
   <VRow>
     <VCol cols="12">
-      <h1 style="font-size: 32px">Bukti Bayar Fasilitator</h1>
+      <h1 style="font-size: 32px;">Bukti Bayar Fasilitator</h1>
     </VCol>
   </VRow>
   <VRow>
     <VCol>
-      <VCard style="padding: 1.5svw">
+      <VCard style="padding: 1.5svw;">
         <VCardTitle>
           <VRow>
             <VCol
               cols="6"
-              style="display: flex; align-items: center"
+              style="display: flex; align-items: center;"
               class="text-h4 font-weight-bold"
             >
               Daftar Lunas Invoice Fasilitator
@@ -236,24 +236,20 @@ onMounted(async () => {
                     icon="fa-download"
                     :disabled="item.invoice_url == false"
                     @click="
-                      item.invoice_url != ''
-                        ? downloadDocument(item.invoice_url)
-                        : () => {}
+                      downloadDocument((item as any).invoice_url, 'INVOICE')
                     "
                   ></VIcon>
                 </template>
-                <template #item.bukti_url="{ item }">
+                <!-- <template #item.bukti_url="{ item }">
                   <VIcon
                     color="primary"
                     icon="fa-download"
                     :disabled="item.bukti_url == false"
                     @click="
-                      item.bukti_url != ''
-                        ? downloadDocument(item.bukti_url)
-                        : () => {}
+                      downloadDocument((item as any).bukti_url, 'FILE')
                     "
                   ></VIcon>
-                </template>
+                </template> -->
               </VDataTableServer>
             </VCol>
           </VRow>
