@@ -610,31 +610,31 @@ onMounted(async () => {
                 >
                   <template #header.jenis_surat="{ column }">
                     <div class="mw-170">
-                      {{ t(column.jenis_surat) }}
+                      {{ t(column.title) }}
                     </div>
                   </template>
 
                   <template #header.no_surat="{ column }">
                     <div class="mw-170">
-                      {{ t(column.no_surat) }}
+                      {{ t(column.title) }}
                     </div>
                   </template>
 
                   <template #header.tanggal_surat="{ column }">
                     <div class="mw-170">
-                      {{ t(column.tanggal_surat) }}
+                      {{ t(column.title) }}
                     </div>
                   </template>
 
                   <template #header.masa_berlaku="{ column }">
                     <div class="mw-170">
-                      {{ t(column.masa_berlaku) }}
+                      {{ t(column.title) }}
                     </div>
                   </template>
 
                   <template #header.instansi_penerbit="{ column }">
                     <div class="mw-170">
-                      {{ t(column.instansi_penerbit) }}
+                      {{ t(column.title) }}
                     </div>
                   </template>
 
@@ -679,13 +679,13 @@ onMounted(async () => {
 
                   <template #header.alamat_pabrik="{ column }">
                     <div class="mw-170">
-                      {{ t(column.alamat_pabrik) }}
+                      {{ t(column.title) }}
                     </div>
                   </template>
 
                   <template #header.status_milik="{ column }">
                     <div class="mw-170">
-                      {{ t(column.status_milik) }}
+                      {{ t(column.title) }}
                     </div>
                   </template>
 
@@ -727,19 +727,19 @@ onMounted(async () => {
                   >
                     <template #header.nama_outlet="{ column }">
                       <div class="mw-170">
-                        {{ t(column.nama_outlet) }}
+                        {{ t(column.title) }}
                       </div>
                     </template>
 
                     <template #header.alamat_outlet="{ column }">
                       <div class="mw-170">
-                        {{ t(column.alamat_outlet) }}
+                        {{ t(column.title) }}
                       </div>
                     </template>
 
                     <template #header.status_milik="{ column }">
                       <div class="mw-170">
-                        {{ t(column.status_milik) }}
+                        {{ t(column.title) }}
                       </div>
                     </template>
 
@@ -769,28 +769,28 @@ onMounted(async () => {
                 >
                   <template #header.penyelia_nama="{ column }">
                     <div class="mw-170">
-                      {{ t(column.penyelia_nama) }}
+                      {{ t(column.title) }}
                     </div>
                   </template>
                   <template #header.no_ktp="{ column }">
                     <div class="mw-170">
-                      {{ t(column.no_ktp) }}
+                      {{ t(column.title) }}
                     </div>
                   </template>
 
                   <template #header.no_kontak="{ column }">
                     <div class="mw-170">
-                      {{ t(column.no_kontak) }}
+                      {{ t(column.title) }}
                     </div>
                   </template>
                   <template #header.tgl_penyelia_halal="{ column }">
                     <div class="mw-170">
-                      {{ t(column.tgl_penyelia_halal) }}
+                      {{ t(column.title) }}
                     </div>
                   </template>
                   <template #header.tanggal_sk="{ column }">
                     <div class="mw-170">
-                      {{ t(column.tanggal_sk) }}
+                      {{ t(column.title) }}
                     </div>
                   </template>
 
@@ -818,13 +818,13 @@ onMounted(async () => {
                 >
                   <template #header.nama_produk="{ column }">
                     <div class="mw-170">
-                      {{ t(column.nama_produk) }}
+                      {{ t(column.title) }}
                     </div>
                   </template>
 
                   <template #header.reg_publish="{ column }">
                     <div class="mw-170">
-                      {{ t(column.reg_publish) }}
+                      {{ t(column.title) }}
                     </div>
                   </template>
 
