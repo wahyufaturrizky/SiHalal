@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isEmpty } from "@core/utils/helpers"
+import { isEmpty } from "@core/utils/helpers";
 
 const router = useRouter();
 
@@ -94,9 +94,9 @@ const handleLoadProfile = async () => {
       if (profileData.kd_prov && profileData.kd_prov != "00") {
         await getDistrict(profileData.kd_prov);
       }
-      profileData.kd_kab = response.data.kd_kab
+      profileData.kd_kab = response.data.kd_kab;
       if (profileData.kd_kab) await getSubDistrict(profileData.kd_kab);
-      profileData.kd_kec = response.data.kd_kec
+      profileData.kd_kec = response.data.kd_kec;
 
       fileFromDb.value.chairmanTte = response.data.pimpinan_tte
         ? profileData.pimpinan_tte
@@ -400,9 +400,9 @@ const updatePayloadMapper = () => {
     provinsi: profileData.provinsi,
     kota: profileData.kota || findDistrictNameByCode(profileData?.kd_kab),
     wilayah_id: profileData.wilayah_id,
-    kd_prov: profileData.kd_prov !== null ? profileData.kd_prov  : "",
+    kd_prov: profileData.kd_prov !== null ? profileData.kd_prov : "",
     kd_kab: profileData.kd_kab !== null ? profileData.kd_kab : "",
-    kd_kec: profileData.kd_kec !== null ? profileData.kd_kec: "",
+    kd_kec: profileData.kd_kec !== null ? profileData.kd_kec : "",
     email: profileData.email,
     nama_pimpinan: profileData.nama_pimpinan,
     no_hp_pimpinan: profileData.no_hp_pimpinan,
@@ -417,6 +417,7 @@ const updatePayloadMapper = () => {
     nama: profileData.rekening.nama,
     npwp: profileData.rekening.npwp,
     nama_npwp: profileData.rekening.nama_npwp,
+    id: profileData.id,
   };
 
   updatePayload["sekretaris_tte"] = profileData.sekretaris_tte;
@@ -454,10 +455,7 @@ const handleConfirmUpdate = async () => {
 
 const customPhoneNumberIdValidator = (value: unknown): string | boolean => {
   if (isEmpty(value)) return true;
-  return (
-    /^[0-9-]+$/.test(String(value)) ||
-    "Hanya boleh angka dan strip"
-  );
+  return /^[0-9-]+$/.test(String(value)) || "Hanya boleh angka dan strip";
 };
 
 onMounted(async () => {
@@ -725,7 +723,9 @@ onMounted(async () => {
                 @on-select="handleSelectSecretaryTTE"
                 @on-remove="handleRemoveSecretaryTTE"
                 :validation-list="[
-                   ...(selectedTteFile.sekretaris ? [fileExtensionValidator] : []),
+                  ...(selectedTteFile.sekretaris
+                    ? [fileExtensionValidator]
+                    : []),
                   fileSizeValidator,
                   fileNameLengthValidator,
                 ]"
@@ -773,7 +773,9 @@ onMounted(async () => {
                 @on-select="handleSelectFatwaLeadTTE"
                 @on-remove="handleRemoveFatwaLeadTTE"
                 :validation-list="[
-                   ...(selectedTteFile.ketuaBidang ? [fileExtensionValidator] : []),
+                  ...(selectedTteFile.ketuaBidang
+                    ? [fileExtensionValidator]
+                    : []),
                   fileSizeValidator,
                   fileNameLengthValidator,
                 ]"
@@ -884,7 +886,7 @@ onMounted(async () => {
                 @on-select="handleSelectBankAccPhoto"
                 @on-remove="handleRemoveBankAccPhoto"
                 :validation-list="[
-                   ...(bankAccPhoto ? [fileExtensionValidator] : []),
+                  ...(bankAccPhoto ? [fileExtensionValidator] : []),
                   fileSizeValidator,
                   fileNameLengthValidator,
                 ]"

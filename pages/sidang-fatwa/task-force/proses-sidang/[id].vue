@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import { useI18n } from 'vue-i18n';
-const { t } = useI18n();
+
+const { t } = useI18n()
 
 const route = useRoute()
 const loading = ref(true)
@@ -41,7 +42,7 @@ const newDataSertifikatHalal = reactive({
 const loadItemById = async () => {
   try {
     const response: any = await $api(
-      `/sidang-fatwa/task-force/detail-sidang`,
+      '/sidang-fatwa/task-force/detail-sidang',
       {
         method: 'get',
         query: {
@@ -79,24 +80,25 @@ const getDownloadForm = async (docName: string) => {
   const result: any = await $api(
     `/self-declare/submission/${route.params?.id}/file`,
     {
-      method: "get",
+      method: 'get',
       query: {
         document: docName,
       },
-    }
-  );
+    },
+  )
 
   if (result?.code === 2000) {
     fileUnduh.value.sttd = result?.data?.file
+
     return result?.data?.file
   }
-};
+}
 
 onMounted(async () => {
   loading.value = true
   await Promise.allSettled([
     loadItemById(),
-    getDownloadForm("sttd")
+    getDownloadForm('sttd'),
   ])
   loading.value = false
 })
@@ -195,7 +197,7 @@ watch(
         <VCol cols="12">
           <DokumenUnduhanFatwa
             :sertifikat="newDataSertifikatHalal.sertifikatHalal"
-            :fileUnduh="fileUnduh"
+            :file-unduh="fileUnduh"
           />
         </VCol>
       </VRow>
@@ -203,8 +205,8 @@ watch(
         <VCol cols="12">
           <InformasiPenetapanFatwa
             :data="dataPenetapan"
-            :dataPengajuan="dataPengajuan"
-            :idReg="idReg"
+            :data-pengajuan="dataPengajuan"
+            :id-reg="idReg"
           />
         </VCol>
       </VRow>
