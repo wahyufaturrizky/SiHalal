@@ -1,254 +1,244 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 
-const { t } = useI18n()
-const router = useRouter()
-const route = useRoute()
-const id = route?.params?.id
-const panelSubmission = ref([0, 1])
-const panelPic = ref([0, 1])
-const panelAspectLegal = ref([0, 1])
-const panelFactory = ref([0, 1])
-const panelOutlet = ref([0, 1])
-const panelProduk = ref([0, 1])
-const panelSupervisor = ref([0, 1])
-const panelDownloadFormulir = ref([0, 1])
-const panelRegister = ref([0, 1])
-const panelHalal = ref([0, 1])
-const panelTracking = ref([0, 1])
-const data = ref<any>({})
-const dialogKirim = ref(false)
-const dialogData = ref<any>({})
-const loading = ref(false)
+const { t } = useI18n();
+const router = useRouter();
+const route = useRoute();
+const id = route?.params?.id;
+const panelSubmission = ref([0, 1]);
+const panelPic = ref([0, 1]);
+const panelAspectLegal = ref([0, 1]);
+const panelFactory = ref([0, 1]);
+const panelOutlet = ref([0, 1]);
+const panelProduk = ref([0, 1]);
+const panelSupervisor = ref([0, 1]);
+const panelDownloadFormulir = ref([0, 1]);
+const panelRegister = ref([0, 1]);
+const panelHalal = ref([0, 1]);
+const panelTracking = ref([0, 1]);
+const data = ref<any>({});
+const dialogKirim = ref(false);
+const dialogData = ref<any>({});
+const loading = ref(false);
 
 const aspectLegalHeader = [
-  { title: 'No.', key: 'id_reg_legal', nowrap: true },
+  { title: "No.", key: "id_reg_legal", nowrap: true },
   {
-    title: 'pengajuan-reguler.reguler-detail-legal-jenis',
-    key: 'jenis_surat',
+    title: "pengajuan-reguler.reguler-detail-legal-jenis",
+    key: "jenis_surat",
     nowrap: true,
   },
   {
-    title: 'pengajuan-reguler.reguler-detail-legal-nodok',
-    key: 'no_surat',
+    title: "pengajuan-reguler.reguler-detail-legal-nodok",
+    key: "no_surat",
     nowrap: true,
   },
   {
-    title: 'pengajuan-reguler.reguler-detail-legal-tanggal',
-    key: 'tanggal_surat',
+    title: "pengajuan-reguler.reguler-detail-legal-tanggal",
+    key: "tanggal_surat",
     nowrap: true,
   },
   {
-    title: 'pengajuan-reguler.reguler-detail-legal-expired',
-    key: 'masa_berlaku',
+    title: "pengajuan-reguler.reguler-detail-legal-expired",
+    key: "masa_berlaku",
     nowrap: true,
   },
   {
-    title: 'pengajuan-reguler.reguler-detail-legal-issuer',
-    key: 'instansi_penerbit',
+    title: "pengajuan-reguler.reguler-detail-legal-issuer",
+    key: "instansi_penerbit",
     nowrap: true,
   },
-]
+];
 
 const factoryHeader = [
-  { title: 'No.', key: 'no', nowrap: true },
+  { title: "No.", key: "no", nowrap: true },
   {
-    title: 'pengajuan-reguler.reguler-detail-fac-nama',
-    key: 'nama_pabrik',
+    title: "pengajuan-reguler.reguler-detail-fac-nama",
+    key: "nama_pabrik",
     nowrap: true,
   },
   {
-    title: 'pengajuan-reguler.reguler-detail-fac-alamat',
-    key: 'alamat_pabrik',
+    title: "pengajuan-reguler.reguler-detail-fac-alamat",
+    key: "alamat_pabrik",
     nowrap: true,
   },
   {
-    title: 'pengajuan-reguler.reguler-detail-fac-status',
-    key: 'status_milik',
+    title: "pengajuan-reguler.reguler-detail-fac-status",
+    key: "status_milik",
     nowrap: true,
   },
-]
+];
 
 const outletHeader = [
-  { title: 'No.', key: 'no', nowrap: true },
+  { title: "No.", key: "no", nowrap: true },
   {
-    title: 'pengajuan-reguler.reguler-detail-out-nama',
-    key: 'nama_outlet',
+    title: "pengajuan-reguler.reguler-detail-out-nama",
+    key: "nama_outlet",
     nowrap: true,
   },
   {
-    title: 'pengajuan-reguler.reguler-detail-out-alamat',
-    key: 'alamat_outlet',
+    title: "pengajuan-reguler.reguler-detail-out-alamat",
+    key: "alamat_outlet",
     nowrap: true,
   },
   {
-    title: 'pengajuan-reguler.reguler-detail-out-status',
-    key: 'status_milik',
+    title: "pengajuan-reguler.reguler-detail-out-status",
+    key: "status_milik",
     nowrap: true,
   },
-]
+];
 
 const produkHeader = [
-  { title: 'No.', key: 'no', nowrap: true },
+  { title: "No.", key: "no", nowrap: true },
   {
-    title: 'pengajuan-reguler.reguler-detail-produk-nama',
-    key: 'nama_produk',
+    title: "pengajuan-reguler.reguler-detail-produk-nama",
+    key: "nama_produk",
     nowrap: true,
   },
   {
-    title: 'pengajuan-reguler.reguler-detail-produk-publikasi',
-    key: 'reg_publish',
+    title: "pengajuan-reguler.reguler-detail-produk-publikasi",
+    key: "reg_publish",
     nowrap: true,
   },
-]
+];
 
 const penyeliaHalalHeaders = [
-  { title: 'No.', key: 'no', nowrap: true },
+  { title: "No.", key: "no", nowrap: true },
   {
-    title: 'pengajuan-reguler.reguler-detail-ph-nama',
-    key: 'penyelia_nama',
+    title: "pengajuan-reguler.reguler-detail-ph-nama",
+    key: "penyelia_nama",
     nowrap: true,
   },
   {
-    title: 'pengajuan-reguler.reguler-detail-ph-ktp',
-    key: 'no_ktp',
+    title: "pengajuan-reguler.reguler-detail-ph-ktp",
+    key: "no_ktp",
     nowrap: true,
   },
   {
-    title: 'pengajuan-reguler.reguler-detail-ph-telp',
-    key: 'no_kontak',
+    title: "pengajuan-reguler.reguler-detail-ph-telp",
+    key: "no_kontak",
     nowrap: true,
   },
   {
-    title: 'pengajuan-reguler.reguler-detail-ph-sertif',
-    key: 'tgl_penyelia_halal',
+    title: "pengajuan-reguler.reguler-detail-ph-sertif",
+    key: "tgl_penyelia_halal",
     nowrap: true,
   },
   {
-    title: 'pengajuan-reguler.reguler-detail-ph-sk',
-    key: 'tanggal_sk',
+    title: "pengajuan-reguler.reguler-detail-ph-sk",
+    key: "tanggal_sk",
     nowrap: true,
   },
-]
+];
 
 const downloadForms = reactive({
-  sttd: '',
-  sertifikasi_halal: '',
-}) as Record<string, string>
+  sttd: "",
+  sertifikasi_halal: "",
+}) as Record<string, string>;
 
 const getChipColor = (status: string) => {
-  if (status === 'Draf')
-    return 'primary'
-  else if (status === 'Micre')
-    return 'success'
+  if (status === "Draf") return "primary";
+  else if (status === "Micre") return "success";
 
-  return 'success'
-}
+  return "success";
+};
 
 const getDetailData = async () => {
   try {
-    const response: any = await $api('/reguler/pelaku-usaha/detail', {
-      method: 'get',
+    const response: any = await $api("/reguler/pelaku-usaha/detail", {
+      method: "get",
       params: { id },
-    })
+    });
 
-    if (response?.code === 2000)
-      data.value = response.data
-    else useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    if (response?.code === 2000) data.value = response.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const handleKirim = (type: string) => {
-  if (type === 'kirim') {
+  if (type === "kirim") {
     dialogData.value = {
-      title: 'Mengirim Pengajuan',
-      description: 'Apakah yakin ingin mengirimkan pengajuan data ini?',
-      label: 'Ya, Kirim',
-    }
-  }
-  else if (type === 'delete') {
+      title: "Mengirim Pengajuan",
+      description: "Apakah yakin ingin mengirimkan pengajuan data ini?",
+      label: "Ya, Kirim",
+    };
+  } else if (type === "delete") {
     dialogData.value = {
-      title: 'Menghapus Pengajuan',
-      description: 'Apakah yakin ingin menghapus pengajuan data ini?',
-      label: 'Ya, Hapus',
-    }
+      title: "Menghapus Pengajuan",
+      description: "Apakah yakin ingin menghapus pengajuan data ini?",
+      label: "Ya, Hapus",
+    };
   }
-  dialogKirim.value = true
-}
+  dialogKirim.value = true;
+};
 
 const dialogDecision = async (type: string) => {
   try {
-    let url = ''
-    let method = ''
-    if (type === 'Hapus') {
-      url = '/reguler/pelaku-usaha/delete-data'
-      method = 'delete'
-    }
-    else {
-      url = '/reguler/pelaku-usaha/submit'
-      method = 'post'
+    let url = "";
+    let method = "";
+    if (type === "Hapus") {
+      url = "/reguler/pelaku-usaha/delete-data";
+      method = "delete";
+    } else {
+      url = "/reguler/pelaku-usaha/submit";
+      method = "post";
     }
 
     const response: any = await $api(url, {
       method,
       body: { id_reg: id },
-    })
+    });
 
-    dialogKirim.value = false
+    dialogKirim.value = false;
 
     if (response?.code === 2000) {
       useSnackbar().sendSnackbar(
         `Berhasil ${
-          type === 'Hapus' ? 'menghapus' : 'mengirim'
+          type === "Hapus" ? "menghapus" : "mengirim"
         } pengajuan data`,
-        'success',
-      )
+        "success"
+      );
       setTimeout(() => {
-        router.push('/sh-domestic/submission/reguler')
-      }, 500)
-    }
-    else {
+        router.push("/sh-domestic/submission/reguler");
+      }, 500);
+    } else {
       if (response.errors?.list_error)
-        useSnackbar().sendSnackbar(response.errors.list_error[0], 'error')
-      else
-        useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+        useSnackbar().sendSnackbar(response.errors.list_error[0], "error");
+      else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
+  } catch (error) {
+    dialogKirim.value = false;
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    dialogKirim.value = false
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const getDownloadForm = async (docName: string, propName: string) => {
   const result: any = await $api(`/self-declare/submission/${id}/file`, {
-    method: 'get',
+    method: "get",
     query: {
       document: docName,
     },
-  })
+  });
 
-  if (result?.code === 2000)
-    downloadForms[propName] = result?.data?.file || ''
-}
+  if (result?.code === 2000) downloadForms[propName] = result?.data?.file || "";
+};
 
 const handleDownloadForm = async (fileName: string, param?: string) => {
-  return await downloadDocument(fileName, param)
-}
+  return await downloadDocument(fileName, param);
+};
 
 onMounted(async () => {
-  loading.value = true
+  loading.value = true;
   await Promise.allSettled([
     getDetailData(),
-    getDownloadForm('sttd', 'sttd'),
-    getDownloadForm('setifikasi-halal', 'setifikasi_halal'),
-  ])
-  loading.value = false
-})
+    getDownloadForm("sttd", "sttd"),
+    getDownloadForm("setifikasi-halal", "setifikasi_halal"),
+  ]);
+  loading.value = false;
+});
 </script>
 
 <template>
@@ -264,11 +254,7 @@ onMounted(async () => {
           </p>
         </VCardText>
         <VCardActions>
-          <VBtn
-            color="primary"
-            variant="outlined"
-            @click="dialogKirim = false"
-          >
+          <VBtn color="primary" variant="outlined" @click="dialogKirim = false">
             Batal
           </VBtn>
           <VBtn
@@ -278,7 +264,7 @@ onMounted(async () => {
             @click="
               () =>
                 dialogDecision(
-                  dialogData?.label.includes('Hapus') ? 'Hapus' : 'Kirim',
+                  dialogData?.label.includes('Hapus') ? 'Hapus' : 'Kirim'
                 )
             "
           >
@@ -305,9 +291,7 @@ onMounted(async () => {
               class="delete-container"
               @click="() => handleKirim('delete')"
             >
-              <VIcon color="red">
-                fa-trash
-              </VIcon>
+              <VIcon color="red"> fa-trash </VIcon>
             </VBtn>
             <VBtn
               variant="outlined"
@@ -351,7 +335,7 @@ onMounted(async () => {
                 >
                   {{
                     formatDateIntl(
-                      new Date(data?.certificate_halal?.tanggal_buat),
+                      new Date(data?.certificate_halal?.tanggal_buat)
                     ) || "-"
                   }}
                 </InfoRow>
@@ -378,7 +362,7 @@ onMounted(async () => {
                   >
                     {{
                       formatDateIntl(
-                        new Date(data?.certificate_halal?.tgl_mohon),
+                        new Date(data?.certificate_halal?.tgl_mohon)
                       ) || "-"
                     }}
                   </InfoRow>
@@ -576,7 +560,7 @@ onMounted(async () => {
             </VExpansionPanel>
           </VExpansionPanels>
 
-          <br>
+          <br />
           <VExpansionPanels v-model="panelPic">
             <VExpansionPanel class="pa-4">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
@@ -611,7 +595,7 @@ onMounted(async () => {
             </VExpansionPanel>
           </VExpansionPanels>
 
-          <br>
+          <br />
           <VExpansionPanels v-model="panelAspectLegal">
             <VExpansionPanel class="pa-4">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
@@ -626,31 +610,31 @@ onMounted(async () => {
                 >
                   <template #header.jenis_surat="{ column }">
                     <div class="mw-170">
-                      {{ t(column.title) }}
+                      {{ t(column.jenis_surat) }}
                     </div>
                   </template>
 
                   <template #header.no_surat="{ column }">
                     <div class="mw-170">
-                      {{ t(column.title) }}
+                      {{ t(column.no_surat) }}
                     </div>
                   </template>
 
                   <template #header.tanggal_surat="{ column }">
                     <div class="mw-170">
-                      {{ t(column.title) }}
+                      {{ t(column.tanggal_surat) }}
                     </div>
                   </template>
 
                   <template #header.masa_berlaku="{ column }">
                     <div class="mw-170">
-                      {{ t(column.title) }}
+                      {{ t(column.masa_berlaku) }}
                     </div>
                   </template>
 
                   <template #header.instansi_penerbit="{ column }">
                     <div class="mw-170">
-                      {{ t(column.title) }}
+                      {{ t(column.instansi_penerbit) }}
                     </div>
                   </template>
 
@@ -674,7 +658,7 @@ onMounted(async () => {
             </VExpansionPanel>
           </VExpansionPanels>
 
-          <br>
+          <br />
           <VExpansionPanels v-model="panelFactory">
             <VExpansionPanel class="pa-4">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
@@ -695,13 +679,13 @@ onMounted(async () => {
 
                   <template #header.alamat_pabrik="{ column }">
                     <div class="mw-170">
-                      {{ t(column.title) }}
+                      {{ t(column.alamat_pabrik) }}
                     </div>
                   </template>
 
                   <template #header.status_milik="{ column }">
                     <div class="mw-170">
-                      {{ t(column.title) }}
+                      {{ t(column.status_milik) }}
                     </div>
                   </template>
 
@@ -715,17 +699,14 @@ onMounted(async () => {
             </VExpansionPanel>
           </VExpansionPanels>
 
-          <br>
+          <br />
           <VExpansionPanels v-model="panelOutlet">
             <VExpansionPanel class="pa-4">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
                 {{ t("pengajuan-reguler.reguler-detail-out-title") }}
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <div
-                  class="border rounded w-100"
-                  style="justify-items: center;"
-                >
+                <div class="border rounded w-100" style="justify-items: center">
                   <!--                  <div -->
                   <!--                    v-if="data?.outlet?.length === 0" -->
                   <!--                    class="pt-2" -->
@@ -746,19 +727,19 @@ onMounted(async () => {
                   >
                     <template #header.nama_outlet="{ column }">
                       <div class="mw-170">
-                        {{ t(column.title) }}
+                        {{ t(column.nama_outlet) }}
                       </div>
                     </template>
 
                     <template #header.alamat_outlet="{ column }">
                       <div class="mw-170">
-                        {{ t(column.title) }}
+                        {{ t(column.alamat_outlet) }}
                       </div>
                     </template>
 
                     <template #header.status_milik="{ column }">
                       <div class="mw-170">
-                        {{ t(column.title) }}
+                        {{ t(column.status_milik) }}
                       </div>
                     </template>
 
@@ -773,7 +754,7 @@ onMounted(async () => {
             </VExpansionPanel>
           </VExpansionPanels>
 
-          <br>
+          <br />
           <VExpansionPanels v-model="panelSupervisor">
             <VExpansionPanel class="pa-4">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
@@ -788,28 +769,28 @@ onMounted(async () => {
                 >
                   <template #header.penyelia_nama="{ column }">
                     <div class="mw-170">
-                      {{ t(column.title) }}
+                      {{ t(column.penyelia_nama) }}
                     </div>
                   </template>
                   <template #header.no_ktp="{ column }">
                     <div class="mw-170">
-                      {{ t(column.title) }}
+                      {{ t(column.no_ktp) }}
                     </div>
                   </template>
 
                   <template #header.no_kontak="{ column }">
                     <div class="mw-170">
-                      {{ t(column.title) }}
+                      {{ t(column.no_kontak) }}
                     </div>
                   </template>
                   <template #header.tgl_penyelia_halal="{ column }">
                     <div class="mw-170">
-                      {{ t(column.title) }}
+                      {{ t(column.tgl_penyelia_halal) }}
                     </div>
                   </template>
                   <template #header.tanggal_sk="{ column }">
                     <div class="mw-170">
-                      {{ t(column.title) }}
+                      {{ t(column.tanggal_sk) }}
                     </div>
                   </template>
 
@@ -822,7 +803,7 @@ onMounted(async () => {
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
-          <br>
+          <br />
           <VExpansionPanels v-model="panelProduk">
             <VExpansionPanel class="pa-4">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
@@ -837,13 +818,13 @@ onMounted(async () => {
                 >
                   <template #header.nama_produk="{ column }">
                     <div class="mw-170">
-                      {{ t(column.title) }}
+                      {{ t(column.nama_produk) }}
                     </div>
                   </template>
 
                   <template #header.reg_publish="{ column }">
                     <div class="mw-170">
-                      {{ t(column.title) }}
+                      {{ t(column.reg_publish) }}
                     </div>
                   </template>
 
@@ -874,10 +855,7 @@ onMounted(async () => {
             </VExpansionPanel>
           </VExpansionPanels>
         </VCol>
-        <VCol
-          cols="4"
-          class="zero-padding"
-        >
+        <VCol cols="4" class="zero-padding">
           <VExpansionPanels v-model="panelDownloadFormulir">
             <VExpansionPanels
               v-model="panelDownloadFormulir"
@@ -900,7 +878,7 @@ onMounted(async () => {
                       class="px-2"
                       @click="
                         downloadForms.sttd
-                          ? handleDownloadForm(downloadForms.sttd)
+                          ? handleDownloadForm(downloadForms.sttd, 'FILES')
                           : null
                       "
                     >
@@ -923,9 +901,9 @@ onMounted(async () => {
                       @click="
                         downloadForms.sertifikasi_halal
                           ? handleDownloadForm(
-                            downloadForms.sertifikasi_halal,
-                            'SERT',
-                          )
+                              downloadForms.sertifikasi_halal,
+                              'SERT'
+                            )
                           : null
                       "
                     >
@@ -938,7 +916,7 @@ onMounted(async () => {
               </VExpansionPanel>
             </VExpansionPanels>
           </VExpansionPanels>
-          <br>
+          <br />
           <VExpansionPanels v-model="panelRegister">
             <VExpansionPanel class="pa-5">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
@@ -963,7 +941,7 @@ onMounted(async () => {
                   >
                     {{
                       formatDateIntl(
-                        new Date(data?.certificate_halal?.tgl_daftar),
+                        new Date(data?.certificate_halal?.tgl_daftar)
                       ) || "-"
                     }}
                   </InfoRow>
@@ -1028,7 +1006,7 @@ onMounted(async () => {
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
-          <br>
+          <br />
           <VExpansionPanels v-model="panelHalal">
             <VExpansionPanel class="pa-5">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
@@ -1054,8 +1032,8 @@ onMounted(async () => {
                     {{
                       formatDateIntl(
                         new Date(
-                          data?.sertifikat_halal_info?.tanggal_sertifikat,
-                        ),
+                          data?.sertifikat_halal_info?.tanggal_sertifikat
+                        )
                       ) || "-"
                     }}
                   </InfoRow>
@@ -1072,9 +1050,9 @@ onMounted(async () => {
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
-          <br>
+          <br />
 
-          <br>
+          <br />
           <VExpansionPanels v-model="panelTracking">
             <VExpansionPanel class="pa-5">
               <VExpansionPanelTitle class="text-h4 font-weight-bold">
