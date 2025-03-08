@@ -56,9 +56,9 @@ const loadItem = async (
     const response: any = await $api("/reguler/payment", {
       method: "get",
       params: {
-        pageNumber,
+        page: pageNumber,
         size: sizeData,
-        search,
+        keyword: search,
         url: path,
       },
     });
