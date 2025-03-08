@@ -7,9 +7,14 @@ import { VForm } from "vuetify/components";
 const props = defineProps({
   mode: { type: String, default: "add" },
   initialData: { type: Object, default: () => ({}) },
+  data: {
+    type: Object,
+    required: false,
+  },
 });
 
 const store = pelakuUsahaProfile();
+const isNoNeedValidation = props?.data?.skala_usaha === 'JU.4' || props?.data?.skala_usaha === 'JU.3';
 
 const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
 
@@ -161,24 +166,35 @@ const { t } = useI18n();
     </VBtn> -->
     <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
-        <VCardTitle
-          class="text-h5 font-weight-bold d-flex justify-space-between align-center"
-        >
-          <span>{{
-            props.mode === "add"
-              ? t("detail-pu.pu-penyelial-halal-tambah-title")
-              : t("detail-pu.pu-penyelial-halal-edit-title")
-          }}</span>
-          <VBtn
-            icon
-            color="transparent"
-            style="border: none;"
-            elevation="0"
-            @click="closeDialog"
-          >
-            <VIcon color="black">ri-close-line</VIcon>
-          </VBtn>
+        <VCardTitle>
+          <div class="text-h5 font-weight-bold d-flex justify-space-between align-center">
+            <span>{{
+              props.mode === "add"
+                ? t("detail-pu.pu-penyelia-halal-tambah-title")
+                : t("detail-pu.pu-penyelial-halal-edit-title")
+            }}</span>
+            <VBtn
+              icon
+              color="transparent"
+              style="border: none;"
+              elevation="0"
+              @click="closeDialog"
+            >
+              <VIcon color="black">ri-close-line</VIcon>
+            </VBtn>
+          </div>
+          <div class="bgContent">
+            <div class="d-flex mt-5">
+              <VIcon icon="ri-error-warning-line" color="#652672" class="mt-1" />
+              <div class="wrap-text">
+                <label class="subText"
+                  >Pelaku Usaha Besar, Menengah, dan Luar Negeri wajib melengkapi Nomor Sertifikat, Tanggal Sertifikat, Sertifikat Kompetensi dan Pelatihan Penyelia Halal.</label
+                >
+              </div>
+            </div>
+          </div>
         </VCardTitle>
+
         <VCardText>
           <VForm ref="penyeliaFormRef">
             <VRow>
@@ -240,7 +256,7 @@ const { t } = useI18n();
             <VRow>
               <VCol cols="6">
                 <VTextField
-                  :rules="[requiredValidator]"
+                  :rules="isNoNeedValidation ? [] : [requiredValidator]"
                   v-model="form.nomorSertifikat"
                   label="Nomor Sertifikat"
                   outlined
@@ -250,7 +266,7 @@ const { t } = useI18n();
               </VCol>
               <VCol cols="6">
                 <VTextField
-                  :rules="[requiredValidator]"
+                  :rules="isNoNeedValidation ? [] : [requiredValidator]"
                   v-model="form.tanggalSertifikat"
                   label="Tanggal Sertifikat"
                   outlined
@@ -288,7 +304,7 @@ const { t } = useI18n();
             >
               <template v-slot:activator="{ props: tooltipOpen }">
                 <VFileInput
-                  :rules="[
+                  :rules="isNoNeedValidation ? [] : [
                     requiredValidator,
                     fileSizeValidator,
                     fileNameLengthValidator,
@@ -309,7 +325,7 @@ const { t } = useI18n();
             >
               <template v-slot:activator="{ props: tooltipPelatihan }">
                 <VFileInput
-                  :rules="[
+                  :rules="isNoNeedValidation ? [] : [
                     requiredValidator,
                     fileSizeValidator,
                     fileNameLengthValidator,
@@ -330,7 +346,7 @@ const { t } = useI18n();
             >
               <template v-slot:activator="{ props: tooltipKtp }">
                 <VFileInput
-                  :rules="[
+                  :rules="isNoNeedValidation ? [] : [
                     requiredValidator,
                     fileSizeValidator,
                     fileNameLengthValidator,
@@ -360,4 +376,24 @@ const { t } = useI18n();
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.bgContent {
+  border-radius: 10px;
+  background-color: #f0e9f1;
+  padding-inline-start: 10px;
+}
+.subText {
+  align-content: center;
+  color: #652672 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 18px !important;
+  padding-inline-start: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  width: auto;
+}
+.wrap-text {
+  text-wrap: wrap;
+}
+</style>

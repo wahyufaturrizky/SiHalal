@@ -292,7 +292,7 @@ const loadItemAspekLegalById = async ({
     }
   } catch (error) {
     loadingAspekLegal.value = false;
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 7", "error");
   }
 };
 
@@ -330,7 +330,7 @@ const loadItemPenyeliaById = async ({
     }
   } catch (error) {
     loadingPenyelia.value = false;
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 8", "error");
   }
 };
 
@@ -516,12 +516,12 @@ const loadItemById = async () => {
 
       detailData.value = response.data;
     } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      useSnackbar().sendSnackbar("Ada Kesalahan 9", "error");
     }
   } catch (error) {
     console.log("@error", error);
 
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 10", "error");
   }
 };
 
@@ -536,7 +536,7 @@ const loadDocument = async () => {
       return response;
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 1", "error");
   }
 };
 
@@ -551,7 +551,7 @@ const loadAgama = async () => {
       return response;
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 2", "error");
   }
 };
 
@@ -566,7 +566,7 @@ const loadJenisPendaftaran = async () => {
       return response;
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 4", "error");
   }
 };
 
@@ -581,7 +581,7 @@ const loadJenisLayanan = async () => {
       return response;
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 5", "error");
   }
 };
 
@@ -596,7 +596,7 @@ const loadJenisProduk = async () => {
       return response;
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 6", "error");
   }
 };
 
@@ -614,7 +614,7 @@ const loadListFasilitasi = async () => {
       return response;
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 3", "error");
   }
 };
 
@@ -625,7 +625,7 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
       {
         method: "get",
         query: {
-          id_reg: self,
+          id_reg: selfDeclareId,
           lokasi,
         },
       }
@@ -635,7 +635,12 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
       lembagaPendamping.value = response.data;
       return response;
     }
-  } catch (error) {}
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      error.data?.errors?.list_error[0] || "Ada kesalahan",
+      "error"
+    );
+  }
 };
 
 const handleGetPendamping = async (idLembaga: string | null) => {
@@ -679,7 +684,12 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
     }
 
     return response;
-  } catch (error) {}
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      error.data?.errors?.list_error[0] || "Ada kesalahan",
+      "error"
+    );
+  }
 };
 
 const loadDataPendamping = async (lokasi: string | null) => {

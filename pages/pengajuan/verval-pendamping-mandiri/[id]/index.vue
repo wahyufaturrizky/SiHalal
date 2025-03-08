@@ -181,6 +181,7 @@ const downloadForms = reactive({
   laporan: "",
   sttd: "",
   sertifikasi_halal: "",
+  laporan_pendamping: "",
 }) as Record<string, string>;
 
 const isComplete = computed(() => {
@@ -294,6 +295,7 @@ onMounted(async () => {
     getDownloadForm("sjph", "sjph"),
     getDownloadForm("laporan", "hasil_verval"),
     getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
+    getDownloadForm("laporan-pendamping", "laporan_pendamping"),
   ]);
   if (registrationDetail.status == "") {
     return;
@@ -1212,6 +1214,28 @@ const isCanEdit = () => {
                   "
                   :color="
                     downloadForms.sertifikasi_halal ? 'primary' : '#A09BA1'
+                  "
+                  density="compact"
+                  class="px-2"
+                >
+                  <template #default>
+                    <VIcon icon="fa-download" />
+                  </template>
+                </VBtn>
+              </InfoRowV2>
+              <InfoRowV2
+                class="d-flex align-center"
+                name="Laporan Pendamping"
+                :style="{ fontWeight: '600' }"
+              >
+                <VBtn
+                  @click="
+                    downloadForms.laporan_pendamping
+                      ? handleDownloadForm(downloadForms.laporan_pendamping)
+                      : null
+                  "
+                  :color="
+                    downloadForms.laporan_pendamping ? 'primary' : '#A09BA1'
                   "
                   density="compact"
                   class="px-2"

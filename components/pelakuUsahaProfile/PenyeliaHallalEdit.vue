@@ -5,6 +5,19 @@ import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
+const props = defineProps({
+  fileSkBlob: {
+    type: String,
+    required: true,
+  },
+  dataProfile: {
+    type: Object,
+    required: false,
+  }
+});
+
+const isNoNeedValidation = props?.dataProfile?.skala_usaha === 'JU.4' || props?.dataProfile?.skala_usaha === 'JU.3';
+
 const tableHeaders = [
   { title: "No", key: "no", align: "start", sortable: false },
   { title: "Nama", key: "nama", align: "start", sortable: false },
@@ -55,49 +68,124 @@ const downloadDOcument = async (filename: string) => {
 async function handleAddAspekLegalConfirm(item) {
   // console.log("executed emit", item.namaPenyelia);
   try {
-    const skkFile = await uploadDocument(item.sertifikatKompetensi, "skk");
-    if (skkFile.code != 2000) {
-      return;
-    }
-    const skpFile = await uploadDocument(item.sertifikatPelatihan, "skp");
-    if (skpFile.code != 2000) {
-      return;
-    }
-    const ktpFile = await uploadDocument(item.ktpFile, "ktp");
-    if (ktpFile.code != 2000) {
-      return;
-    }
-
-    const response = await $api(
+    if (isNoNeedValidation) {
+      console.log('step 0', item);
+      let payload = {
+        id_number: item.noKtp,
+        phone_number: item.noKontak,
+        name: item.namaPenyelia,
+        religion: item.agamaPenyelia,
+        sk_number: item.nomorSk,
+        sk_date:
+          new Date(item.tanggalSk).toISOString().substring(0, 19) + "Z",
+      }
+      if (item.certificate_date) {
+        payload = {
+          ...payload,
+          certificate_date: new Date(item.tanggalSertifikat).toISOString().substring(0, 19) +
+          "Z"
+        }
+      }
+      if (item.certificate_number) {
+        payload = {
+          ...payload,
+          certificate_number: item.certificate_number
+        }
+      }
+      if (item.sertifikatKompetensi) {
+        const skkFile = await uploadDocument(item.sertifikatKompetensi, "skk");
+        if (skkFile.code != 2000) {
+          return;
+        } else {
+          payload = {
+            ...payload,
+            skph_file: skkFile.data.file_url,
+          }
+        }
+      }
+      if (item.skpFile) {
+        const skpFile = await uploadDocument(item.sertifikatPelatihan, "skp");
+        if (skpFile.code != 2000) {
+          return;
+        } else {
+          payload = {
+            ...payload,
+            spph_file: skpFile.data.file_url,
+          }
+        }
+      }
+      if (item.ktpFile) {
+        const ktpFile = await uploadDocument(item.ktpFile, "ktp");
+        if (ktpFile.code != 2000) {
+          return;
+        } else {
+          payload = {
+            ...payload,
+            ktp_file: ktpFile.data.file_url,
+          }
+        }
+      }
+      const response = await $api(
       `/pelaku-usaha-profile/${store.profileData?.id}/add-supervisor`,
       {
         method: "post",
-        body: {
-          id_number: item.noKtp,
-          phone_number: item.noKontak,
-          name: item.namaPenyelia,
-          religion: item.agamaPenyelia,
-          certificate_number: item.nomorSertifikat,
-          certificate_date:
-            new Date(item.tanggalSertifikat).toISOString().substring(0, 19) +
-            "Z",
-          sk_number: item.nomorSk,
-          sk_date:
-            new Date(item.tanggalSk).toISOString().substring(0, 19) + "Z",
-          skph_file: skkFile.data.file_url,
-          spph_file: skpFile.data.file_url,
-          ktp_file: ktpFile.data.file_url,
-        },
+        body: payload,
       }
-    );
-    // loadReqDialog.value = false;
-    if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan! 1", "error");
-      return;
+      );
+      
+      // loadReqDialog.value = false;
+      if (response.code != 2000) {
+        useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan! 1", "error");
+        return;
+      }
+      await store.fetchProfile();
+      // useMyUpdateSubmissionEditStore().setData("document");
+      useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
+    } else {
+      const skkFile = await uploadDocument(item.sertifikatKompetensi, "skk");
+      if (skkFile.code != 2000) {
+        return;
+      }
+      const skpFile = await uploadDocument(item.sertifikatPelatihan, "skp");
+      if (skpFile.code != 2000) {
+        return;
+      }
+      const ktpFile = await uploadDocument(item.ktpFile, "ktp");
+      if (ktpFile.code != 2000) {
+        return;
+      }
+  
+      const response = await $api(
+        `/pelaku-usaha-profile/${store.profileData?.id}/add-supervisor`,
+        {
+          method: "post",
+          body: {
+            id_number: item.noKtp,
+            phone_number: item.noKontak,
+            name: item.namaPenyelia,
+            religion: item.agamaPenyelia,
+            certificate_number: item.nomorSertifikat,
+            certificate_date:
+              new Date(item.tanggalSertifikat).toISOString().substring(0, 19) +
+              "Z",
+            sk_number: item.nomorSk,
+            sk_date:
+              new Date(item.tanggalSk).toISOString().substring(0, 19) + "Z",
+            skph_file: skkFile.data.file_url,
+            spph_file: skpFile.data.file_url,
+            ktp_file: ktpFile.data.file_url,
+          },
+        }
+      );
+      // loadReqDialog.value = false;
+      if (response.code != 2000) {
+        useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan! 1", "error");
+        return;
+      }
+      await store.fetchProfile();
+      // useMyUpdateSubmissionEditStore().setData("document");
+      useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
     }
-    await store.fetchProfile();
-    // useMyUpdateSubmissionEditStore().setData("document");
-    useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
   } catch (error) {
     // loadReqDialog.value = false;
     if (error.data?.data?.code === 4001) {
@@ -182,13 +270,6 @@ function handleDelete(item) {
     });
 }
 
-const props = defineProps({
-  fileSkBlob: {
-    type: String,
-    required: true,
-  },
-});
-
 const downloadSkHandler = () => {
   if (props.fileSkBlob != null) {
     window.open(props.fileSkBlob);
@@ -228,6 +309,7 @@ const downloadSkHandler = () => {
             mode="add"
             @confirm-add="handleAddAspekLegalConfirm"
             @cancel="() => console.log('Add cancelled')"
+            :data="props.dataProfile"
           />
         </VCol>
       </VRow>
@@ -246,7 +328,11 @@ const downloadSkHandler = () => {
             <td>{{ idx + 1 }}</td>
             <td>{{ item.name }}</td>
             <td>
+              <div v-if="!item.file_skph">
+                -
+              </div>
               <VBtn
+                v-else
                 @click="downloadDOcument(item.file_skph)"
                 variant="text"
                 color="purple"
@@ -257,7 +343,11 @@ const downloadSkHandler = () => {
               </VBtn>
             </td>
             <td>
+              <div v-if="!item.file_spph">
+                -
+              </div>
               <VBtn
+                v-else
                 @click="downloadDOcument(item.file_spph)"
                 variant="text"
                 color="purple"
@@ -268,7 +358,11 @@ const downloadSkHandler = () => {
               </VBtn>
             </td>
             <td>
+              <div v-if="!item.file_ktp">
+                -
+              </div>
               <VBtn
+                v-else
                 @click="downloadDOcument(item.file_ktp)"
                 variant="text"
                 color="purple"

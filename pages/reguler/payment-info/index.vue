@@ -130,9 +130,10 @@ onMounted(async () => {
             />
           </div>
           <VDataTable
-            class="invoice-table border rounded mt-5"
+            class="border rounded"
             :headers="invoiceHeader"
             :items="dataTable"
+            :hide-default-footer="dataTable.length === 0"
           >
             <template #no-data>
               <div class="w-full mt-2">
@@ -155,7 +156,6 @@ onMounted(async () => {
             </template>
             <template #bottom>
               <VDataTableFooter
-                v-if="invoiceData.length > 5"
                 first-icon="mdi-chevron-double-left"
                 last-icon="mdi-chevron-double-right"
                 show-current-page
@@ -168,26 +168,4 @@ onMounted(async () => {
   </VRow>
 </template>
 
-<style scoped lang="scss">
-:deep(.v-data-table.invoice-table > .v-table__wrapper) {
-  table {
-    thead > tr > th:last-of-type {
-      right: 0;
-      position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
-    }
-    tbody > tr > td:last-of-type {
-      right: 0;
-      position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
-      background: white;
-    }
-  }
-}
-
-:deep(.v-data-table.invoice-table > .v-data-table-footer) {
-  .v-data-table-footer__info {
-    display: none;
-  }
-}
-</style>
+<style scoped lang="scss"></style>

@@ -43,20 +43,30 @@ const getpuApi = async (
   query_by: string
 ) => {
   try {
+    console.log(
+      ` initial | total = ${totalItems.value} - page = ${page} - size = ${size}`
+    );
     loading.value = true;
+
+    const params = { page, size };
+    if (status) {
+      params["status"] = status;
+    }
+    if (keyword) {
+      params["keyword"] = keyword;
+      params["query_by"] = query_by;
+    }
 
     const response: any = await $api("/self-declare/pendamping/getpu", {
       method: "get",
-      params: {
-        page,
-        size,
-        keyword,
-        status,
-        query_by,
-      },
+      params,
     });
 
     if (response.code === 2000) {
+      console.log(
+        ` response | total = ${response.total_item} - page = ${page} - size = ${response.total_page}`
+      );
+
       items.value = response.data;
       totalItems.value = response.total_item;
       loading.value = false;
@@ -134,7 +144,7 @@ onMounted(async () => {
         />
       </v-card-item>
       <v-card-item>
-        <v-data-table
+        <v-data-table-server
           :headers="headers"
           :items="items"
           class="elevation-1"
@@ -147,6 +157,7 @@ onMounted(async () => {
           @update:options="
             getpuApi(page, itemPerPage, searchQuery, status, queryBy)
           "
+          :items-per-page-options="[10, 25, 50, 100]"
         >
           <template #item.no="{ index }">
             {{ index + 1 + (page - 1) * itemPerPage }}
@@ -178,7 +189,7 @@ onMounted(async () => {
               ri-arrow-right-line
             </v-icon>
           </template>
-        </v-data-table>
+        </v-data-table-server>
       </v-card-item>
     </v-card>
   </div>

@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import type { isAny } from '@sindresorhus/is';
-import { defineProps, ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
-const { t } = useI18n();
+import { defineProps, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   sertifikat: {
@@ -31,9 +29,11 @@ const props = defineProps({
   },
   data: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
 })
+
+const { t } = useI18n()
 
 // Combine props into a single reactive object
 const combinedProps = ref({
@@ -100,17 +100,17 @@ watch(
         {
           id: 9,
           key: t('task-force.proses-sidang.detail.section-profile.result'),
-          value: getValueOrDash(newData?.data?.hasil),
+          value: getValueOrDash(newData?.data?.hasil) == 'PR001' ? 'Lulus' : 'Tidak Lulus',
         },
         {
           id: 10,
           key: t('task-force.proses-sidang.detail.section-profile.service-type'),
-          value: getValueOrDash(newData?.data?.jenis_layanan),
+          value: getValueOrDash(newData?.data?.MJenisLayanan?.ref_desc),
         },
         {
           id: 11,
           key: t('task-force.proses-sidang.detail.section-profile.product-type'),
-          value: getValueOrDash(newData?.data?.jenis_produk),
+          value: getValueOrDash(newData?.data?.MJenisProduk?.ref_desc),
         },
         {
           id: 12,
@@ -179,12 +179,12 @@ watch(
         {
           id: 25,
           key: t('task-force.proses-sidang.detail.section-profile.bu-type'),
-          value: getValueOrDash(newData?.data?.jenis_usaha),
+          value: getValueOrDash(newData?.data?.MJenisUsaha.ref_desc),
         },
         {
           id: 26,
           key: t('task-force.proses-sidang.detail.section-profile.scale'),
-          value: getValueOrDash(newData?.data?.skala_usaha),
+          value: getValueOrDash(newData?.data?.MSkalaUsaha.ref_desc),
         },
         {
           id: 27,
@@ -210,9 +210,11 @@ const paneSwitcher = ref([0, 1])
 <template>
   <VExpansionPanels v-model="paneSwitcher">
     <VExpansionPanel>
-      <VExpansionPanelTitle><h2>
-        {{ t('task-force.proses-sidang.detail.section-profile.title') }}
-      </h2></VExpansionPanelTitle>
+      <VExpansionPanelTitle>
+        <h2>
+          {{ t('task-force.proses-sidang.detail.section-profile.title') }}
+        </h2>
+      </VExpansionPanelTitle>
       <br>
       <VExpansionPanelText>
         <VRow

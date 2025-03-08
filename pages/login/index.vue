@@ -59,16 +59,24 @@ const credentials = ref({
   email: "",
   password: "",
 });
-
+const loadingSubmit = ref(false);
 const rememberMe = useState("rememberMe", () => false);
+
+const evaluateEmail = (value: string) => {
+  if (value.includes("@")) {
+    return value.toLowerCase();
+  }
+  return value;
+};
 
 async function login() {
   buttonClicked.value = true;
+  loadingSubmit.value = true;
   try {
     const response = await signIn({
       callbackUrl: "/",
       redirect: false,
-      email: credentials.value.email,
+      email: evaluateEmail(credentials.value.email),
       password: credentials.value.password,
       token: token.value,
     });
@@ -100,10 +108,13 @@ async function login() {
     }
     if (error.data.data.success == false) {
       useSnackbar().sendSnackbar("Captcha Failed", "error");
-
+      loadingSubmit.value = false;
       return;
     }
     useSnackbar().sendSnackbar(t("login.msg-err-login"), "error");
+    loadingSubmit.value = false;
+  } finally {
+    token.value = "";
     buttonClicked.value = false;
   }
 
@@ -310,6 +321,7 @@ const { t } = useI18n();
                 </div>
 
                 <VBtn
+                  :loading="loadingSubmit"
                   block
                   type="submit"
                   :disabled="

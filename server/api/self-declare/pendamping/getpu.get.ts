@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
   const params: any = {
     page: isNaN(Number.parseInt(page, 10)) ? 1 : Number.parseInt(page, 10),
     size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
-    query_by,
+    // query_by,
   };
 
   if (keyword !== "") {
