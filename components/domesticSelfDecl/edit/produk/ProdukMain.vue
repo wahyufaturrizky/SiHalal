@@ -23,6 +23,7 @@ const tableHeader: any[] = [
 
 const selectedIngredient = ref([]);
 const store = useMyTabEditRegulerStore();
+const certHalalData = ref();
 const route = useRoute<"">();
 const { produk, produkAllBahan } = storeToRefs(store);
 const submissionId = route.params?.id as string;
@@ -195,6 +196,26 @@ const handleDeleteProduct = async () => {
     store.isAllBahanSelected();
   }
 };
+const setCertificateHalalData = () => {
+  certHalalData.value = store.getCertificateHalal();
+  console.log("cert halal data = ", certHalalData);
+};
+
+const disableTambahProduk = () => {
+  if (!canNotEdit) {
+    return true;
+  }
+
+  if (!certHalalData.value?.id_jenis_produk) {
+    return true;
+  }
+
+  return false;
+};
+
+onMounted(() => {
+  setCertificateHalalData();
+});
 </script>
 
 <template>
@@ -204,7 +225,7 @@ const handleDeleteProduct = async () => {
         <VCol cols="6"><h3>Daftar Produk</h3></VCol>
         <VCol cols="6" style="display: flex; justify-content: end">
           <VBtn
-            v-if="!canNotEdit"
+            v-if="disableTambahProduk"
             @click="handleOpenModal('CREATE')"
             variant="outlined"
             append-icon="fa-plus"

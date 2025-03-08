@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 export const useMyTabEditRegulerStore = defineStore({
   id: "myTabEditRegulerStore",
   state: () => ({
+    certificateHalal: {},
     produk: [],
     bahan: [],
     produkAllBahan: false,
@@ -84,6 +85,12 @@ export const useMyTabEditRegulerStore = defineStore({
         this.bahanCheck = true;
         return true;
       }
+    },
+    setCertificateHalal(cert: any) {
+      this.certificateHalal = cert;
+    },
+    getCertificateHalal() {
+      return this.certificateHalal;
     },
   },
 });
