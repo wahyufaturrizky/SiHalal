@@ -22,6 +22,7 @@ const tableHeader = [
   { title: "Nama PU", value: "nama_pu" },
   { title: "Alamat", value: "alamat" },
   { title: "Jenis Produk", value: "jenis_produk" },
+  { title: "Action", value: "action" },
   // { title: "Merek Dagang", value: "merek_dagang" },
 ];
 
@@ -365,6 +366,15 @@ onMounted(async () => {
 const provinceValue = (item: MasterDistrict) => {
   return `${item.code}||${item.name}`;
 };
+
+const routeStore = useCommonRoutingStore();
+const route = useRoute();
+
+const navigateAction = (id: string) => {
+  routeStore.setPreviousRoute(route.fullPath);
+  routeStore.setCurrentRoute(`/sidang-fatwa/proses-sidang/${id}`);
+  navigateTo(`/sidang-fatwa/proses-sidang/${id}`);
+};
 </script>
 
 <template>
@@ -588,6 +598,18 @@ const provinceValue = (item: MasterDistrict) => {
                 </template>
                 <template #item.tgl_daftar="{ item }">
                   {{ formatToISOString(item.tgl_daftar) }}
+                </template>
+                <template #item.action="{ item }">
+                  <div class="d-flex gap-1">
+                    <IconBtn size="small">
+                      <VIcon
+                        icon="ri-arrow-right-line"
+                        color="primary"
+                        @click="navigateAction((item as any).id_daftar)"
+                      />
+                    </IconBtn>
+                    <!-- Right arrow icon for action -->
+                  </div>
                 </template>
               </VDataTableServer>
             </VCol>

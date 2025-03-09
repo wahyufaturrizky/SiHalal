@@ -4,6 +4,7 @@ const page = ref<number>(1);
 const size = ref<number>(10);
 const searchQuery = ref<string>("");
 const dataTable = ref<any>(null);
+const totalItems = ref<number>(0);
 
 const tableHeader = [
   { title: "No", value: "no" },
@@ -28,7 +29,7 @@ const loadItem = async (
 ) => {
   try {
     const params = {
-      pageNumber,
+      page: pageNumber,
       size: sizeData,
       search,
       url: path,
@@ -40,6 +41,7 @@ const loadItem = async (
     });
 
     if (response?.code === 2000) {
+      totalItems.value = response.total_item;
       dataTable.value = response?.data;
       loading.value = false;
 
@@ -73,6 +75,14 @@ onMounted(() => {
     LIST_DAFTAR_AJUAN_DITERIMA
   );
   loading.value = false;
+});
+watch([page, size], () => {
+  loadItem(
+    page.value,
+    size.value,
+    searchQuery.value,
+    LIST_DAFTAR_AJUAN_DITERIMA
+  );
 });
 </script>
 
@@ -109,11 +119,14 @@ onMounted(() => {
             </VRow>
             <VRow>
               <VCol cols="12">
-                <VDataTable
+                <VDataTableServer
                   v-if="dataTable"
+                  v-model:items-per-page="size"
+                  v-model:page="page"
+                  :items-length="totalItems"
+                  :loading="loading"
                   :headers="tableHeader"
                   :items="dataTable"
-                  :hide-default-footer="dataTable.length === 0"
                   class="border rounded"
                 >
                   <template #no-data>
@@ -130,7 +143,7 @@ onMounted(() => {
                     </div>
                   </template>
                   <template #item.no="{ index }">
-                    {{ index + 1 }}
+                    {{ index + 1 + (page - 1) * size }}
                   </template>
                   <template #item.status="{ item }">
                     <VChip
@@ -168,7 +181,7 @@ onMounted(() => {
                       icon="mdi-arrow-right"
                     ></VIcon>
                   </template>
-                </VDataTable> </VCol
+                </VDataTableServer> </VCol
             ></VRow>
           </VCardItem>
         </VCard>
