@@ -22,6 +22,8 @@ const {
 const route = useRoute<"">();
 const submissionId = route.params?.id;
 
+const store = useMyTabEditRegulerStore();
+
 const submissionDetail = reactive({
   id_reg: null,
   jenis_pengajuan: null,
@@ -233,11 +235,16 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
     );
 
     if (response.code === 2000) {
+      console.log("response = ", response.data);
       if (response.data !== null) lembagaPendamping.value = response.data;
     }
 
     return response;
   } catch (error) {
+    useSnackbar().sendSnackbar(
+      error.data?.errors?.list_error[0] || "Ada kesalahan 1",
+      "error"
+    );
     console.log(error);
   }
 };
@@ -263,7 +270,7 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar(
-      error?.errors?.list_error[0] || "Ada kesalahan",
+      error.data?.errors?.list_error[0] || "Ada kesalahan 2",
       "error"
     );
     console.log(error);
@@ -285,7 +292,13 @@ const handleGetPendamping = async (idLembaga: string | null) => {
 
     if (response.code === 2000) {
       if (response.data !== null) listPendamping.value = response.data;
-      console.log("isi list", listPendamping.value);
+      listPendamping.value = listPendamping.value.map((pendamping) => {
+        return {
+          id: pendamping.id,
+          name: `${pendamping.name} - ${pendamping.kabupaten} - ${pendamping.provinsi}`,
+        };
+      });
+      // console.log("isi list", listPendamping.value);
     }
 
     return response;
@@ -423,8 +436,8 @@ const handleUpdateSubmission = async () => {
     );
 
     if (response.code === 2000) {
-      if (response.data !== null)
-        useSnackbar().sendSnackbar("Berhasil mengubah data", "success");
+      if (response.data !== null) await store.getApiCertHalal(submissionId);
+      useSnackbar().sendSnackbar("Berhasil mengubah data", "success");
     }
 
     return response;
@@ -445,8 +458,15 @@ onMounted(async () => {
   await getDetail();
   await handleGetListPendaftaran();
   await handleGetJenisLayanan();
-  await handleGetJenisProduk();
-  handleGetLembagaPendampingInitial(formData.lokasi_pendamping);
+
+  if (formData.id_jenis_layanan) {
+    await handleGetJenisProduk();
+  }
+
+  if (formData.lokasi_pendamping) {
+    handleGetLembagaPendampingInitial(formData.lokasi_pendamping);
+  }
+
   // handleDetailPengajuan();
   // await loadDataPendamping(formData.lokasi_pendamping);
   await handleGetFasilitator();
@@ -721,7 +741,7 @@ const getItemData = (item) => {
               <VLabel>Lembaga Pendamping</VLabel>
               <VSelect
                 v-model="formData.id_lembaga_pendamping"
-                placeholder="Pilih Area Pemasarang"
+                placeholder="Pilih Area Pemasaran"
                 density="compact"
                 :items="lembagaPendamping"
                 item-title="name"
@@ -734,7 +754,7 @@ const getItemData = (item) => {
             <br />
             <VItemGroup>
               <VLabel>Pendamping</VLabel>
-              <VSelect
+              <VCombobox
                 v-model="formData.id_pendamping"
                 placeholder="Pilih Pendamping"
                 density="compact"
@@ -745,6 +765,31 @@ const getItemData = (item) => {
                 item-value="id"
               />
             </VItemGroup>
+            <!-- <br />
+            <VRow>
+              <VCol cols="6">
+                <VItemGroup>
+                  <VLabel>Kota/Kabupaten Pendamping</VLabel>
+                  <VTextField
+                    :model-value="formData.id_lembaga_pendamping?.kabupaten"
+                    placeholder="Kota Pendamping"
+                    disabled
+                    density="compact"
+                  />
+                </VItemGroup>
+              </VCol>
+              <VCol cols="6">
+                <VItemGroup>
+                  <VLabel>Provinsi Pendamping</VLabel>
+                  <VTextField
+                    :model-value="formData.id_lembaga_pendamping?.provinsi"
+                    placeholder="Provinsi Pendamping"
+                    disabled
+                    density="compact"
+                  />
+                </VItemGroup>
+              </VCol>
+            </VRow> -->
           </VCol>
         </VRow>
         <br />

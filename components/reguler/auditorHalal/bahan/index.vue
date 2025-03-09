@@ -168,9 +168,10 @@ const productName = ref({
     { title: 'No.', key: 'no', nowrap: true },
     { title: 'Nama Produk', key: 'nama', nowrap: true },
     { title: 'Foto Produk', key: 'foto', nowrap: true },
+    { title: 'Jumlah Bahan', key: 'qtyBahan', nowrap: true },
     // { title: 'Jumlah Bahan', key: 'qtyBahan', nowrap: true },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-pemeriksaan-aksi', key :'action',
+      title: 'Action', key :'actionV3',
       value: 'actionPopOver4',
       sortable: false,
       nowrap: true,
@@ -367,7 +368,6 @@ const handleUploadFileBahan = async (event: any) => {
       loading.value = true
       const response = await uploadDocumentBahan(fileData);
       if (response.code === 2000) {
-        console.log(response?.data?.validated_bahan, '<<')
         addDialog.value = false
         uploadedFileBahan.value.file = response.data.file_url;
         listPreview.value = response?.data?.validated_bahan
@@ -398,7 +398,6 @@ const handleUploadFileProduct = async (event: any) => {
       loading.value = true
       const response = await uploadDocumentProduct(fileData);
       if (response.code === 2000) {
-        console.log(response?.data?.validated_bahan, '<<')
         addDialog.value = false
         uploadedFileProduct.value.file = response.data.file_url;
         listPreview.value = response?.data?.validated_produk
@@ -997,6 +996,34 @@ const handleInputBahan = async (selected, idProduk) => {
 const downloadTemplate = async (file: any) => {
   await downloadDocument(file, 'FILES')
 }
+
+const handleAddIngredient = async (payload: any, idProduct: string) => {
+  try {
+    const response: any = await $api(
+      `/self-declare/business-actor/product/add-ingredient`,
+      {
+        method: "post",
+        body: payload,
+        query: {
+          id_reg: id,
+          product_id: idProduct,
+        },
+      } as any
+    );
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+      await refresh();
+    }
+    getListIngredients()
+    return response;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+    console.log(error);
+  } finally {
+    store.isAllBahanSelected();
+  }
+};
 
 onMounted(async () => {
   loading.value = true;
@@ -1975,6 +2002,7 @@ watch([titleDialog, tabAddBahan], () => {
       title="Daftar Nama Produk"
       with-add-button
       :isviewonly="isviewonly"
+      :input-bahan="handleAddIngredient"
     >
       <template #headerDialog>
         <div class="bgContent">

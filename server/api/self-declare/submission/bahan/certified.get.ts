@@ -19,8 +19,8 @@ export default defineEventHandler(async (event) => {
     size: isNaN(parseInt(size, 10)) ? 10 : parseInt(size, 10),
   };
   if (name != "") {
+    params["name"] = name;
   }
-  params["name"] = name;
 
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/ingredients/certified`,
@@ -30,6 +30,7 @@ export default defineEventHandler(async (event) => {
       params,
     }
   ).catch((err: NuxtError) => {
+    console.error("error = ", err.data);
     setResponseStatus(event, 400);
     return err.data;
   });

@@ -57,7 +57,6 @@ export default defineEventHandler(async (event) => {
 
     return err.data;
   });
-  console.log(params,'ini')
-  // console.log(data,'ini search data invoince mandiri')
+
   return data || null;
 });

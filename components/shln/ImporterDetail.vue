@@ -57,14 +57,14 @@ watchEffect(() => {
             :key="index"
             class="px-0"
           >
-            <template #prepend>
-              <div class="text-grey-darken-1 min-w-[120px]">
+            <VRow>
+              <VCol sm="2" class="text-grey-darken-1">
                 {{ item.label }}
-              </div>
-            </template>
-            <template #default>
-              <div class="text-left">: {{ item.value }}</div>
-            </template>
+              </VCol>
+              <VCol sm="10" class="text-left">
+                : <label>{{ item.value }}</label>
+              </VCol>
+            </VRow>
           </VListItem>
         </VList>
       </VCardText>
