@@ -478,7 +478,7 @@
                 <template #item.photo="{ item }: any">
                   <VIcon
                     color="primary"
-                    style="cursor: pointer;"
+                    style="cursor: pointer"
                     @click="handleDownload(item.photo)"
                   >
                     ri-download-2-fill
@@ -716,6 +716,28 @@
                   </template>
                 </VBtn>
               </InfoRowV2>
+              <InfoRowV2
+                class="d-flex align-center"
+                name="Laporan Pendampingan"
+                :style="{ fontWeight: '600' }"
+              >
+                <VBtn
+                  @click="
+                    downloadForms.laporan_pendampingan
+                      ? handleDownloadForm(downloadForms.laporan_pendampingan)
+                      : null
+                  "
+                  :color="
+                    downloadForms.laporan_pendampingan ? 'primary' : '#A09BA1'
+                  "
+                  density="compact"
+                  class="px-2"
+                >
+                  <template #default>
+                    <VIcon icon="fa-download" />
+                  </template>
+                </VBtn>
+              </InfoRowV2>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -782,7 +804,7 @@
                 :style="{ fontWeight: '600' }"
               >
                 <v-chip
-                  style="background: #f0e9f1;"
+                  style="background: #f0e9f1"
                   :color="statusItem[registrationDetail.status].color"
                   variant="outlined"
                   rounded="lg"
@@ -1154,6 +1176,7 @@ const downloadForms = reactive({
   laporan: "",
   sttd: "",
   sertifikasi_halal: "",
+  laporan_pendamping: "",
 }) as Record<string, string>;
 
 const isComplete = computed(() => {
@@ -1267,6 +1290,7 @@ onMounted(async () => {
     getDownloadForm("sjph", "sjph"),
     getDownloadForm("laporan", "hasil_verval"),
     getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
+    getDownloadForm("laporan-pendamping", "laporan_pendamping"),
   ]);
   if (registrationDetail.status == "") {
     return;
