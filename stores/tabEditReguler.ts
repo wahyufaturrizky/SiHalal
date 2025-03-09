@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 export const useMyTabEditRegulerStore = defineStore({
   id: "myTabEditRegulerStore",
   state: () => ({
+    certificateHalal: {},
     produk: [],
     bahan: [],
     produkAllBahan: false,
@@ -83,6 +84,29 @@ export const useMyTabEditRegulerStore = defineStore({
       } else {
         this.bahanCheck = true;
         return true;
+      }
+    },
+    setCertificateHalal(cert: any) {
+      this.certificateHalal = cert;
+    },
+    getCertificateHalal() {
+      return this.certificateHalal;
+    },
+    async getApiCertHalal(submissionId: string) {
+      try {
+        const response: any = await $api(
+          `/self-declare/submission/${submissionId}/detail`,
+          {
+            method: "get",
+          }
+        );
+
+        if (response.code === 2000) {
+          this.certificateHalal = response.data.certificate_halal;
+        }
+        return response;
+      } catch (error) {
+        console.log(error);
       }
     },
   },

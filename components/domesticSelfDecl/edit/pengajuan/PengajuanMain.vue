@@ -22,6 +22,8 @@ const {
 const route = useRoute<"">();
 const submissionId = route.params?.id;
 
+const store = useMyTabEditRegulerStore();
+
 const submissionDetail = reactive({
   id_reg: null,
   jenis_pengajuan: null,
@@ -290,7 +292,13 @@ const handleGetPendamping = async (idLembaga: string | null) => {
 
     if (response.code === 2000) {
       if (response.data !== null) listPendamping.value = response.data;
-      console.log("isi list", listPendamping.value);
+      listPendamping.value = listPendamping.value.map((pendamping) => {
+        return {
+          id: pendamping.id,
+          name: `${pendamping.name} - ${pendamping.kabupaten} - ${pendamping.provinsi}`,
+        };
+      });
+      // console.log("isi list", listPendamping.value);
     }
 
     return response;
@@ -428,8 +436,8 @@ const handleUpdateSubmission = async () => {
     );
 
     if (response.code === 2000) {
-      if (response.data !== null)
-        useSnackbar().sendSnackbar("Berhasil mengubah data", "success");
+      if (response.data !== null) await store.getApiCertHalal(submissionId);
+      useSnackbar().sendSnackbar("Berhasil mengubah data", "success");
     }
 
     return response;
@@ -746,7 +754,7 @@ const getItemData = (item) => {
             <br />
             <VItemGroup>
               <VLabel>Pendamping</VLabel>
-              <VSelect
+              <VCombobox
                 v-model="formData.id_pendamping"
                 placeholder="Pilih Pendamping"
                 density="compact"
@@ -757,7 +765,7 @@ const getItemData = (item) => {
                 item-value="id"
               />
             </VItemGroup>
-            <br />
+            <!-- <br />
             <VRow>
               <VCol cols="6">
                 <VItemGroup>
@@ -781,7 +789,7 @@ const getItemData = (item) => {
                   />
                 </VItemGroup>
               </VCol>
-            </VRow>
+            </VRow> -->
           </VCol>
         </VRow>
         <br />

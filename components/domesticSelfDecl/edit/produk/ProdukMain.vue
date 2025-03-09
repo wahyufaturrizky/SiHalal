@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps({
+const props = defineProps({
   canNotEdit: {
     type: Boolean,
   },
@@ -23,6 +23,7 @@ const tableHeader: any[] = [
 
 const selectedIngredient = ref([]);
 const store = useMyTabEditRegulerStore();
+const certHalalData = ref();
 const route = useRoute<"">();
 const { produk, produkAllBahan } = storeToRefs(store);
 const submissionId = route.params?.id as string;
@@ -195,6 +196,35 @@ const handleDeleteProduct = async () => {
     store.isAllBahanSelected();
   }
 };
+const setCertificateHalalData = () => {
+  certHalalData.value = store.getCertificateHalal();
+};
+
+const disableTambahProduk = () => {
+  if (!certHalalData.value?.id_jenis_produk) {
+    return false;
+  } else {
+    if (!props.canNotEdit) {
+      return true;
+    }
+  }
+
+  return true;
+};
+
+onMounted(() => {
+  setCertificateHalalData();
+});
+
+watch(
+  () => store.certificateHalal,
+  (newData) => {
+    if (newData) {
+      setCertificateHalalData();
+    }
+  },
+  { immediate: true, deep: true }
+);
 </script>
 
 <template>
@@ -204,7 +234,7 @@ const handleDeleteProduct = async () => {
         <VCol cols="6"><h3>Daftar Produk</h3></VCol>
         <VCol cols="6" style="display: flex; justify-content: end">
           <VBtn
-            v-if="!canNotEdit"
+            v-if="disableTambahProduk()"
             @click="handleOpenModal('CREATE')"
             variant="outlined"
             append-icon="fa-plus"
@@ -222,6 +252,16 @@ const handleDeleteProduct = async () => {
             mengisi bagian Proses Produk Halal</label
           >
         </div>
+      </div>
+      <br />
+      <div>
+        <v-alert
+          v-if="!disableTambahProduk()"
+          text="Harap isi jenis produk di tab 'Pengajuan'"
+          type="error"
+          variant="tonal"
+          class="mt-5"
+        ></v-alert>
       </div>
     </VCardTitle>
 
@@ -336,6 +376,11 @@ const handleDeleteProduct = async () => {
 .bgContent {
   border-radius: 10px;
   background-color: #f0e9f1;
+  padding-inline-start: 10px;
+}
+.bgContent-error {
+  border-radius: 10px;
+  background-color: #da5739;
   padding-inline-start: 10px;
 }
 .subText {
