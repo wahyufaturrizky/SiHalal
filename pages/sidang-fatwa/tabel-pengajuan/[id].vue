@@ -1,30 +1,30 @@
 <script lang="ts" setup>
-import SubPelakuUsahaLayout from "@/layouts/subPelakuUsahaLayout.vue";
+import SubPelakuUsahaLayout from '@/layouts/subPelakuUsahaLayout.vue'
 
-const route = useRoute();
+const route = useRoute()
 
-const sidangFatwaId = (route.params as any).id;
+const sidangFatwaId = (route.params as any).id
 
-const loadingAll = ref(true);
-const detailData = ref();
-const profil = ref();
-const jenisUsaha = ref();
-const skalaUsaha = ref();
-const trackingData = ref();
+const loadingAll = ref(true)
+const detailData = ref()
+const profil = ref()
+const jenisUsaha = ref()
+const skalaUsaha = ref()
+const trackingData = ref()
 
 const loadItemById = async () => {
   try {
     const response: any = await $api(
       `/sidang-fatwa/proses-sidang-fatwa/${sidangFatwaId}`,
       {
-        method: "get",
-      }
-    );
+        method: 'get',
+      },
+    )
 
     if (response.code === 2000) {
-      detailData.value = response.data;
+      detailData.value = response.data
 
-      const { sertifikat_halal_reguler, tracking } = response.data || {};
+      const { sertifikat_halal_reguler, tracking } = response.data || {}
 
       const {
         status,
@@ -41,101 +41,109 @@ const loadItemById = async () => {
         id_reg,
         tgl_permohonan,
         skala_usaha,
-      } = sertifikat_halal_reguler || {};
+      } = sertifikat_halal_reguler || {}
 
-      jenisUsaha.value = jenis_usaha;
-      skalaUsaha.value = skala_usaha;
-      trackingData.value = tracking;
+      jenisUsaha.value = jenis_usaha
+      skalaUsaha.value = skala_usaha
+      trackingData.value = tracking
 
       profil.value = [
         {
-          label: "Nomor ID",
+          label: 'Nomor ID',
           value: id_reg,
         },
         {
-          label: "Tanggal Buat",
+          label: 'Tanggal Buat',
           value: formatDate(tgl_permohonan),
         },
         {
-          label: "Status",
+          label: 'Status',
           value: status,
         },
         {
-          label: "Jenis Pendaftaran",
+          label: 'Jenis Pendaftaran',
           value: jenis_daftar,
         },
         {
-          label: "Nama Perusahaan",
+          label: 'Nama Perusahaan',
           value: nama_pu,
         },
         {
-          label: "Alamat",
+          label: 'Alamat',
           value: alamat_pu,
         },
         {
-          label: "Kota/Kab",
+          label: 'Kota/Kab',
           value: kota_pu,
         },
         {
-          label: "Provinsi",
+          label: 'Provinsi',
           value: prov_pu,
         },
         {
-          label: "Kode Pos",
+          label: 'Kode Pos',
           value: kode_pos_pu,
         },
         {
-          label: "Negara",
+          label: 'Negara',
           value: negara_pu,
         },
         {
-          label: "Telepon",
+          label: 'Telepon',
           value: no_telp,
         },
         {
-          label: "Email",
+          label: 'Email',
           value: email,
         },
-      ];
+      ]
 
-      return response;
-    } else {
-      useSnackbar().sendSnackbar(
-        response.errors.list_error.join(", "),
-        "error"
-      );
+      return response
     }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(', '),
+        'error',
+      )
+    }
   }
-};
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
 
 onMounted(async () => {
-  const res = await Promise.all([loadItemById()]);
+  const res = await Promise.all([loadItemById()])
 
   const checkResIfUndefined = res.every((item: any) => {
-    return item !== undefined;
-  });
+    return item !== undefined
+  })
 
-  if (checkResIfUndefined) {
-    loadingAll.value = false;
-  } else {
-    loadingAll.value = false;
-  }
-});
+  if (checkResIfUndefined)
+    loadingAll.value = false
+  else
+    loadingAll.value = false
+})
 </script>
 
 <template>
   <SubPelakuUsahaLayout v-if="!loadingAll">
     <template #pageTitle>
-      <VRow justify="space-between" align="center">
+      <VRow
+        justify="space-between"
+        align="center"
+      >
         <VCol cols="12">
-          <h2 class="font-weight-bold">Detail Data Pengajuan</h2>
+          <h2 class="font-weight-bold">
+            Detail Data Pengajuan
+          </h2>
         </VCol>
-        <!-- <VCol cols="auto">
+        <!--
+          <VCol cols="auto">
           <UpdateSidangFatwaProses />
           <TambahDataSidangFatwaProses />
-        </VCol> -->
+          </VCol>
+        -->
       </VRow>
     </template>
 
@@ -200,14 +208,14 @@ onMounted(async () => {
           <DokumenUnduhan :detaildata="detailData" />
         </VCol>
         <VCol :cols="12">
-          <MelacakDetailFatwaProsesSidang :trackingdata="trackingData" />
+          <MelacakDetaikFatwaEntriKetetapanHalal :trackingdata="trackingData" />
         </VCol>
       </VRow>
     </template>
   </SubPelakuUsahaLayout>
   <VSkeletonLoader
-    type="table-heading, list-item-two-line, image, table-tfoot"
     v-else
+    type="table-heading, list-item-two-line, image, table-tfoot"
   />
 </template>
 
