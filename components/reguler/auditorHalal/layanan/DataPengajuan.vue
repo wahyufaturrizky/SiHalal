@@ -571,10 +571,30 @@ const handleAddOrEdit = async () => {
       url = '/reguler/pelaku-usaha/add-legal'
       method = 'post'
       break
+    case 'Tambah Aspek Legal':
+      body = {
+        ...body,
+        id_legal: [selectedLegalToAdd?.value?.id_legal],
+      }
+      url = '/reguler/pelaku-usaha/add-legal'
+      method = 'post'
+      break
     case t('pengajuan-reguler.reguler-form--pengajuan-fac-popup-title'):
       listFactory?.value?.value?.map((el: any) => {
         if (el.checked)
-idPabrik.push(el.id)
+          idPabrik.push(el.id)
+      })
+      body = {
+        ...body,
+        id_pabrik: idPabrik,
+      }
+      url = '/reguler/pelaku-usaha/add-factory'
+      method = 'post'
+      break
+    case 'Tambah Data Pabrik':
+      listFactory?.value?.value?.map((el: any) => {
+        if (el.checked)
+          idPabrik.push(el.id)
       })
       body = {
         ...body,
@@ -586,7 +606,19 @@ idPabrik.push(el.id)
     case t('pengajuan-reguler.reguler-form--pengajuan-out-title'):
       listOutlet?.value?.value?.map((el: any) => {
         if (el.checked)
-idPabrik.push(el.id)
+          idPabrik.push(el.id)
+      })
+      body = {
+        ...body,
+        id_pabrik: idPabrik,
+      }
+      url = '/reguler/pelaku-usaha/add-factory'
+      method = 'post'
+      break
+    case 'Tambah Outlet':
+      listOutlet?.value?.value?.map((el: any) => {
+        if (el.checked)
+          idPabrik.push(el.id)
       })
       body = {
         ...body,
@@ -596,6 +628,16 @@ idPabrik.push(el.id)
       method = 'post'
       break
     case t('pengajuan-reguler.reguler-detail-ph-title'):
+      url = '/self-declare/business-actor/supervisor/create'
+      body = {
+        ...body,
+        id_penyelia: listPenyelia.value.value
+          .filter(item => item.checked)
+          .map(i => i.id_penyelia),
+      }
+      method = 'post'
+      break
+    case 'Tambah Penyelia Halal':
       url = '/self-declare/business-actor/supervisor/create'
       body = {
         ...body,
