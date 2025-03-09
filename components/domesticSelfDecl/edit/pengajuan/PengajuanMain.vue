@@ -278,9 +278,9 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
 };
 
 const handleGetPendamping = async (idLembaga: string | null) => {
-  console.log(formData.lokasi_pendamping, "ini valuemys btro");
+ 
   if (!idLembaga) return;
-
+  formData.id_pendamping =null;
   try {
     const response: any = await $api(
       "/self-declare/business-actor/submission/list-pendamping",
