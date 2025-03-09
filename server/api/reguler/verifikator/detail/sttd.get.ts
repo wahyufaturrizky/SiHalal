@@ -14,16 +14,27 @@ export default defineEventHandler(async (event: any) => {
   const { id } = (await getQuery(event)) as {
     id: string
   }
+
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/${id}/download/sttd`,
     {
       method: 'get',
       headers: { Authorization: authorizationHeader },
-    },
+    }
   ).catch((err: NuxtError) => {
-    setResponseStatus(event, 400)
+    
+    if (
+      err.data?.code === 4001 &&
+      err.data?.errors?.list_error?.includes("STTD not found")
+    ) {
+      setResponseStatus(event, 200);
+      return err.data;
+    }else{
+      setResponseStatus(event, 400);
+      return err.data;
+    }
 
-    return err.data
+
   })
 
   return data || null
