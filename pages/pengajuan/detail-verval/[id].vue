@@ -18,6 +18,8 @@ const specificReqRef = ref();
 const ingredientTableRef = ref();
 const productRef = ref();
 const prodProcessRef = ref();
+const fileImage = ref<File | null>(null);
+const imageData = ref(null)
 
 const getDetail = async () => {
   try {
@@ -27,15 +29,16 @@ const getDetail = async () => {
         method: "get",
       }
     );
+    
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan", "error");
       return;
     }
-
     dataPelakuUsaha.value = response.data?.pelaku_usaha;
     dataPenanggungJawab.value = response.data?.penanggung_jawab;
     dataPendaftaran.value = response.data?.pendaftaran;
     dataTracking.value = response.data?.tracking;
+    imageData.value = response?.data?.lembaga_pendamping?.foto_pendampingan
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
@@ -308,6 +311,37 @@ const vervalSend = async () => {
   }
 };
 
+const triggerFileInput = () => {
+  fileImage.value.click();
+};
+
+const handleFileSelect = async (event) => {
+  try {
+    const formData = new FormData();
+    formData.append("id", route.params?.id);
+    formData.append("file", event.target.files?.[0]);
+    const response = await $api(
+      `/self-declare/proses-verval/${route.params?.id}/upload-image`,
+      {
+        method: "post",
+        body: formData,
+      }
+    );
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      return;
+    }
+    useSnackbar().sendSnackbar("Upload Image Success", "success");
+    getDetail()
+  } catch (error) {
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+  }
+};
+
+async function onClickDownload(filename: string) {
+  return await downloadDocument(filename);
+}
+
 onMounted(async () => {
   await getDetail();
   await getGeneralQuestion();
@@ -326,24 +360,43 @@ onMounted(async () => {
     ><VCol><h2>Detail Proses Verval</h2></VCol></VRow
   >
   <VRow>
-    <VCol cols="7">
-      <!-- <VBtn style="margin-right: 1svw" color="warning" variant="outlined"
-        >Formulir Rekomendasi</VBtn
-      > -->
+    <VCol cols="8">
       <VBtn
         append-icon="fa-download"
         variant="outlined"
         @click="downloadFileRekomendasi"
         >Download Rekomendasi</VBtn
       >
+      <VBtn
+        style="margin-left: 1svw"
+        variant="flat"
+        append-icon="fa-plus"
+        @click="triggerFileInput"
+        >Upload Foto Pendampingan</VBtn
+      >
+      <input
+        type="file"
+        ref="fileImage"
+        class="d-none"
+        @change="handleFileSelect"
+      />
+      <VBtn
+        v-if="imageData"
+        style="margin-left: 1svw"
+        variant="flat"
+        title="Download Foto Pendampingan"
+        @click="onClickDownload(imageData)"
+        ><VIcon icon="fa-download"></VIcon></VBtn
+      >
     </VCol>
-    <VCol cols="5" style="display: flex; justify-content: end">
+    <VCol cols="4" style="display: flex; justify-content: end">
       <ModalPengembalianDanKirim
         :modal-type="modalTypeEnum.KEMBALI"
         @verval-return="vervalReturn"
       ></ModalPengembalianDanKirim>
       <ModalPengembalianDanKirim
         :modal-type="modalTypeEnum.KIRIM"
+        :imageData="imageData"
         @verval-submit="validateVerval"
       ></ModalPengembalianDanKirim>
     </VCol>

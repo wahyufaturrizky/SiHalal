@@ -14,6 +14,7 @@ const size = ref<number>(10);
 const searchQuery = ref<string>("");
 const showFilterMenu = ref(false);
 const detailStatus = ref<any>(null);
+const totalItems = ref<number>(0);
 
 const invoiceHeader: any[] = [
   { title: "No", value: "index" },
@@ -53,7 +54,7 @@ const loadItem = async (
 ) => {
   try {
     let params = {
-      pageNumber,
+      page: pageNumber,
       size: sizeData,
       search,
       url: path,
@@ -82,6 +83,7 @@ const loadItem = async (
 
         return newData;
       }
+      totalItems.value = response.total_item;
 
       return response.data;
     } else {
@@ -100,7 +102,7 @@ const handleSearch = async (
 ) => {
   try {
     let params = {
-      pageNumber,
+      page: pageNumber,
       size: sizeData,
       search,
       url: path,
@@ -170,7 +172,7 @@ onMounted(async () => {
   loading.value = true;
 
   const responseData = await Promise.allSettled([
-    loadItem(page.value, 100, searchQuery.value, LIST_PEMERIKSAAN_PATH),
+    loadItem(page.value, size.value, searchQuery.value, LIST_PEMERIKSAAN_PATH),
     loadItem(page.value, size.value, searchQuery.value, LIST_CHANNEL_PATH),
     getMasterSkalaUsaha(),
     getMasterProvinsi(),
@@ -183,6 +185,11 @@ onMounted(async () => {
     provinceData.value = responseData?.[3]?.value || [];
   }
   loading.value = false;
+});
+
+watch([page, size], async () => {
+  const refreshData = await loadItem(page.value, size.value, searchQuery.value, LIST_PEMERIKSAAN_PATH)
+  dataTable.value = refreshData
 });
 
 watch(dataTable, () => {
@@ -286,8 +293,12 @@ watch(dataTable, () => {
               />
             </VCol>
           </VRow>
-          <VDataTable
-           class="border rounded"
+          <VDataTableServer
+            v-model:items-per-page="size"
+            v-model:page="page"
+            :items-length="totalItems"
+            :loading="loading"
+            class="border rounded"
             :headers="invoiceHeader"
             :items="dataTable"
             :hide-default-footer="dataTable.length === 0"
@@ -302,7 +313,7 @@ watch(dataTable, () => {
               </div>
             </template>
             <template #item.index="{ index }">
-              {{ index + 1 }}
+              {{ index + 1 + (page - 1) * size }}
             </template>
             <template #item.businessType="{ item }">
               <div class="d-flex">
@@ -332,14 +343,7 @@ watch(dataTable, () => {
                 "
               />
             </template>
-            <template #bottom>
-              <VDataTableFooter
-                first-icon="mdi-chevron-double-left"
-                last-icon="mdi-chevron-double-right"
-                show-current-page
-              />
-            </template>
-          </VDataTable>
+          </VDataTableServer>
         </VCardText>
       </VCard>
     </VCol>
