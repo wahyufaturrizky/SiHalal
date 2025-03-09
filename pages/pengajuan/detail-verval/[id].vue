@@ -317,7 +317,6 @@ const triggerFileInput = () => {
 
 const handleFileSelect = async (event) => {
   try {
-    selectedFile.value = event.target.files?.[0];
     const formData = new FormData();
     formData.append("id", route.params?.id);
     formData.append("file", event.target.files?.[0]);
@@ -333,7 +332,7 @@ const handleFileSelect = async (event) => {
       return;
     }
     useSnackbar().sendSnackbar("Upload Image Success", "success");
-    navigateTo("/pengajuan/verval-pendamping");
+    getDetail()
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }

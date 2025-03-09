@@ -278,7 +278,9 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
 };
 
 const handleGetPendamping = async (idLembaga: string | null) => {
+ 
   if (!idLembaga) return;
+  formData.id_pendamping =null;
   try {
     const response: any = await $api(
       "/self-declare/business-actor/submission/list-pendamping",
@@ -286,18 +288,22 @@ const handleGetPendamping = async (idLembaga: string | null) => {
         method: "get",
         query: {
           id_lembaga: idLembaga,
+          lokasi: formData.lokasi_pendamping,
+          id_reg:submissionId
         },
       }
     );
 
     if (response.code === 2000) {
-      if (response.data !== null) listPendamping.value = response.data;
-      listPendamping.value = listPendamping.value.map((pendamping) => {
-        return {
-          id: pendamping.id,
-          name: `${pendamping.name} - ${pendamping.kabupaten} - ${pendamping.provinsi}`,
-        };
-      });
+      if (response.data !== null) {
+        listPendamping.value = response.data;
+        listPendamping.value = listPendamping.value.map((pendamping) => {
+          return {
+            id: pendamping.id,
+            name: `${pendamping.name} - ${pendamping.kabupaten} - ${pendamping.provinsi}`,
+          };
+        });
+      }
       // console.log("isi list", listPendamping.value);
     }
 
@@ -336,7 +342,6 @@ const getDetail = async () => {
       querySearch.value = response.data.kode_fac;
       formData.no_mohon = response.data.no_surat_permohonan;
       formData.id_jenis_layanan = response.data.id_jenis_layanan;
-      formData.lokasi_pendamping = response.data.lokasi_pendamping;
       formData.lokasi_pendamping = response.data.lokasi_pendamping;
       formData.id_jenis_produk = response.data.id_product;
       formData.nama_pu = response.data.nama_usaha;
@@ -407,8 +412,8 @@ const onSubmitSubmission = () => {
 const handleUpdateSubmission = async () => {
   try {
     if (isKodeFound.value === true) {
-      console.log("id fasilitator submit", formData.id_fasilitator);
-      console.log("responseid submit", responseId.value);
+      // console.log("id fasilitator submit", formData.id_fasilitator);
+      // console.log("responseid submit", responseId.value);
     } else {
       responseId.value = formData.id_fasilitator;
     }
@@ -430,7 +435,7 @@ const handleUpdateSubmission = async () => {
           area_pemasaran: formData.area_pemasaran,
           lokasi_pendamping: formData.lokasi_pendamping,
           lembaga_pendamping: formData.id_lembaga_pendamping,
-          pendamping: formData.id_pendamping,
+          pendamping: formData.id_pendamping.id,
         },
       }
     );
@@ -793,10 +798,10 @@ const getItemData = (item) => {
           </VCol>
         </VRow>
         <br />
-        <div style="display: flex; justify-content: end">
-          <VItemGroup style="display: inline-flex">
+        <div style="display: flex; justify-content: end;">
+          <VItemGroup style="display: inline-flex;">
             <SuratPermohonanModal :data="submissionDetail" />
-            <div style="margin-inline-start: 1svw" />
+            <div style="margin-inline-start: 1svw;" />
             <SuratPernyataanModal :data="submissionDetail" />
           </VItemGroup>
         </div>

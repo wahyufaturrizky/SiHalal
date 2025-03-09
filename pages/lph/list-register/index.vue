@@ -6,7 +6,7 @@ const totalItems = ref<number>(0);
 const data = ref<any[]>([]);
 const loading = ref<boolean>(false);
 const page = ref<number>(1);
-const size = ref<number>(50);
+const size = ref<number>(10);
 const searchQuery = ref<string>("");
 const loadingAll = ref(true);
 
@@ -40,7 +40,7 @@ const loadItem = async (
     const response: any = await $api("/reguler/lph/list", {
       method: "get",
       params: {
-        pageNumber,
+        page: pageNumber,
         size: sizeData,
         search,
         url: LPH_LIST_REGISTER_PATH,
@@ -87,6 +87,10 @@ onMounted(async () => {
   if (checkResIfUndefined) loadingAll.value = false;
   else loadingAll.value = false;
 });
+
+watch([page, size], () => {
+  loadItem(page.value, size.value, searchQuery.value)
+});
 </script>
 
 <template>
@@ -122,7 +126,11 @@ onMounted(async () => {
             </VRow>
             <VRow>
               <VCol cols="12">
-                <VDataTable
+                <VDataTableServer
+                  v-model:items-per-page="size"
+                  v-model:page="page"
+                  :items-length="totalItems"
+                  :loading="loading"
                   :headers="tableHeader"
                   :items="data"
                   :hide-default-footer="data.length === 0"
@@ -142,7 +150,7 @@ onMounted(async () => {
                     </div>
                   </template>
                   <template #item.no="{ index }">
-                    {{ index + 1 }}
+                    {{ index + 1 + (page - 1) * size }}
                   </template>
                   <template #item.nomor_daftar="{ item }">
                     <div class="mw-9">
@@ -200,7 +208,7 @@ onMounted(async () => {
                       @click="navigateToDetail(item.id_reg)"
                     />
                   </template>
-                </VDataTable>
+                </VDataTableServer>
               </VCol>
             </VRow>
           </VCardItem>
