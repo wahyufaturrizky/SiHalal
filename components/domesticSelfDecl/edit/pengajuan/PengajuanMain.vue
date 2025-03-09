@@ -279,7 +279,7 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
 
 const handleGetPendamping = async (idLembaga: string | null) => {
   if (!idLembaga) return;
-  formData.id_pendamping=''
+  formData.id_pendamping = "";
   try {
     const response: any = await $api(
       "/self-declare/business-actor/submission/list-pendamping",
@@ -348,7 +348,6 @@ const handleGetPendampingstart = async (idLembaga: string | null) => {
   }
 };
 
-
 const getDetail = async () => {
   try {
     console.log("endpoint ini");
@@ -360,8 +359,8 @@ const getDetail = async () => {
       }
     );
 
-    console.log("response pengajuan detail", response);
-    console.log("response pengajuan list layanan", listLayanan.value);
+    // console.log("response pengajuan detail", response);
+    // console.log("response pengajuan list layanan", listLayanan.value);
 
     if (response.code == 2000) {
       submissionDetail.tanggal_buat = response.data.tgl_daftar.split("T")[0];
@@ -393,9 +392,16 @@ const getDetail = async () => {
       //   formData.id_lembaga_pendamping,
       //   "data"
       // );
-   
 
-      formData.id_pendamping = response.data.id_pendamping;
+      if (response.data.id_pendamping !== null && response.data.id_pendamping !== "") {
+  const foundPendamping = listPendamping.value.find(
+    (i) => i.id === response.data.id_pendamping
+  );
+
+  formData.id_pendamping = foundPendamping
+    ? { id: response.data.id_pendamping, name: foundPendamping.name }
+    : { id: response.data.id_pendamping, name: "Pendamping tidak ditemukan" };
+}
       
       // console.log("response pengajuan detail", formData, "data");
     }
@@ -440,13 +446,21 @@ const getDetail = async () => {
 //     console.log(error)
 //   }
 // })
+watch(() => listPendamping.value, (newList) => {
+  if (formData.id_pendamping?.id) {
+    const foundPendamping = newList.find((i) => i.id === formData.id_pendamping.id);
+    if (foundPendamping) {
+      formData.id_pendamping.name = foundPendamping.name;
+    }
+  }
+});
 
 const formLembagaPendamping = ref<{}>();
 const refVForm = ref<VForm>();
 
 const onSubmitSubmission = () => {
   refVForm.value?.validate().then(({ valid: isValid }) => {
-    console.log("ini submit");
+    // console.log("ini submit");
 
     if (isValid) {
       console.log(" check isvalid", isValid);
