@@ -694,7 +694,10 @@
                 <VBtn
                   @click="
                     downloadForms.sertifikasi_halal
-                      ? handleDownloadForm(downloadForms.sertifikasi_halal, 'SERT')
+                      ? handleDownloadForm(
+                          downloadForms.sertifikasi_halal,
+                          'SERT'
+                        )
                       : null
                   "
                   :color="
@@ -724,6 +727,28 @@
                       ? downloadCert(halalCertificateDetail.nomor_sertifikat)
                       : null
                   "
+                >
+                  <template #default>
+                    <VIcon icon="fa-download" />
+                  </template>
+                </VBtn>
+              </InfoRowV2>
+              <InfoRowV2
+                class="d-flex align-center"
+                name="Lembaga Pendamping"
+                :style="{ fontWeight: '600' }"
+              >
+                <VBtn
+                  @click="
+                    downloadForms.lembaga_pendamping
+                      ? handleDownloadForm(downloadForms.lembaga_pendamping, '')
+                      : null
+                  "
+                  :color="
+                    downloadForms.lembaga_pendamping ? 'primary' : '#A09BA1'
+                  "
+                  density="compact"
+                  class="px-2"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -1161,6 +1186,7 @@ const downloadForms = reactive({
   laporan: "",
   sttd: "",
   sertifikasi_halal: "",
+  lembaga_pendamping: "",
 }) as Record<string, string>;
 
 const isComplete = computed(() => {
@@ -1275,6 +1301,7 @@ onMounted(async () => {
     getDownloadForm("sjph", "sjph"),
     // getDownloadForm("laporan", "laporan"),
     getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
+    getDownloadForm("lembaga-pendamping", "lembaga_pendamping"),
   ]);
   if (registrationDetail.status == "") {
     return;
