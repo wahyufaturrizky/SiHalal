@@ -1354,11 +1354,11 @@ const getDownloadForm = async (docName: string, propName: string) => {
 const handleDownloadForm = async (fileName: string,directori:string) => {
   return await downloadDocument(fileName,directori);
 };
-const handleDownload = async (productId: string) => {
+const handleDownload = async (productId: string,directori:string) => {
   return await downloadDocument(productId,directori);
 };
 
-const handleDownloadSk = async (id: string,directori:string) => {
+const handleDownloadSk = async (id: string, directori:string) => {
   try {
     const response = await $api("download-sk-selfdeclare", {
       method: "post",
