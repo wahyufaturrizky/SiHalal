@@ -67,24 +67,20 @@ export const useMyTabEditRegulerStore = defineStore({
     },
     isBahan() {
       const jenisBahan = new Set(this.bahan.map((item) => item.jenis_bahan));
-      // const verifyBahan = new Set(["Kemasan", "Cleaning Agent", "Bahan"]);
-      // if (jenisBahan.size != verifyBahan.size) {
-      //   this.bahanCheck = false;
-      //   return false;
-      // }
-      // for (const value of verifyBahan) {
-      //   if (!jenisBahan.has(value)) {
-      //     this.bahanCheck = false;
-      //     return false;
-      //   }
-      // }
-      if (jenisBahan.size < 1) {
+      const verifyBahan = new Set(["Kemasan", "Cleaning Agent", "Bahan"]);
+      if (jenisBahan.size != verifyBahan.size) {
         this.bahanCheck = false;
         return false;
-      } else {
-        this.bahanCheck = true;
-        return true;
       }
+      for (const value of verifyBahan) {
+        if (!jenisBahan.has(value)) {
+          this.bahanCheck = false;
+          return false;
+        }
+      }
+      this.bahanCheck = true;
+
+      return true;
     },
     setCertificateHalal(cert: any) {
       this.certificateHalal = cert;
