@@ -29,7 +29,10 @@ export default defineEventHandler(async (event) => {
       headers: { Authorization: authorizationHeader },
       params,
     }
+  
+
   ).catch((err: NuxtError) => {
+
     setResponseStatus(event, 400);
     return err.data;
   });
