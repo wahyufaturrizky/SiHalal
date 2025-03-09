@@ -263,6 +263,15 @@ const changeFilterBy = (item) => {
     searchQuery.value
   );
 };
+
+const routeStore = useCommonRoutingStore();
+const route = useRoute();
+
+const navigateAction = (id: string) => {
+  routeStore.setPreviousRoute(route.fullPath);
+  routeStore.setCurrentRoute(`/sidang-fatwa/proses-sidang/${id}`);
+  navigateTo(`/sidang-fatwa/proses-sidang/${id}`);
+};
 </script>
 
 <template>
@@ -422,6 +431,18 @@ const changeFilterBy = (item) => {
                 </template>
                 <template #item.tgl_daftar="{ item }">
                   {{ formatToISOString(item.tgl_daftar) }}
+                </template>
+                <template #item.action="{ item }">
+                  <div class="d-flex gap-1">
+                    <IconBtn size="small">
+                      <VIcon
+                        icon="ri-arrow-right-line"
+                        color="primary"
+                        @click="navigateAction((item as any).id_daftar)"
+                      />
+                    </IconBtn>
+                    <!-- Right arrow icon for action -->
+                  </div>
                 </template>
               </VDataTableServer>
             </VCol>
