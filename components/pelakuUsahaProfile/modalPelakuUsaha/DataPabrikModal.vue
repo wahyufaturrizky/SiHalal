@@ -180,13 +180,15 @@
                   required
                   class="input-field"
                 />
-                <VCombobox
+                <VSelect
                   v-if="form.lokasiPabrik == 'Dalam Negeri'"
                   v-model="form.kodePos"
                   :disabled="form.provinsi == '' || form.kabKota == ''"
                   :items="kodeposOptions"
+                  item-value="code"
+                  item-title="code"
                   :placeholder="t('detail-pu.pu-pabrik-fill-modal-3')"
-                  required
+                  :rules="[requiredValidator]"
                 />
               </VCol>
             </VRow>
