@@ -278,9 +278,8 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
 };
 
 const handleGetPendamping = async (idLembaga: string | null) => {
- 
   if (!idLembaga) return;
-  formData.id_pendamping =null;
+  formData.id_pendamping = "";
   try {
     const response: any = await $api(
       "/self-declare/business-actor/submission/list-pendamping",
@@ -289,7 +288,7 @@ const handleGetPendamping = async (idLembaga: string | null) => {
         query: {
           id_lembaga: idLembaga,
           lokasi: formData.lokasi_pendamping,
-          id_reg:submissionId
+          id_reg: submissionId,
         },
       }
     );
@@ -304,6 +303,42 @@ const handleGetPendamping = async (idLembaga: string | null) => {
           };
         });
       }
+
+      // console.log("isi list", listPendamping.value);
+    }
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const handleGetPendampingstart = async (idLembaga: string | null) => {
+  if (!idLembaga) return;
+  try {
+    const response: any = await $api(
+      "/self-declare/business-actor/submission/list-pendamping",
+      {
+        method: "get",
+        query: {
+          id_lembaga: idLembaga,
+          lokasi: formData.lokasi_pendamping,
+          id_reg: submissionId,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      if (response.data !== null) {
+        listPendamping.value = response.data;
+        listPendamping.value = listPendamping.value.map((pendamping) => {
+          return {
+            id: pendamping.id,
+            name: `${pendamping.name} - ${pendamping.kabupaten} - ${pendamping.provinsi}`,
+          };
+        });
+      }
+
       // console.log("isi list", listPendamping.value);
     }
 
@@ -324,8 +359,8 @@ const getDetail = async () => {
       }
     );
 
-    console.log("response pengajuan detail", response);
-    console.log("response pengajuan list layanan", listLayanan.value);
+    // console.log("response pengajuan detail", response);
+    // console.log("response pengajuan list layanan", listLayanan.value);
 
     if (response.code == 2000) {
       submissionDetail.tanggal_buat = response.data.tgl_daftar.split("T")[0];
@@ -352,6 +387,23 @@ const getDetail = async () => {
       if (formData.id_fasilitator == "00000000-0000-0000-0000-000000000000") {
         formData.id_fasilitator = null;
       }
+      // console.log(
+      //   "id penadmping before",
+      //   formData.id_lembaga_pendamping,
+      //   "data"
+      // );
+
+      if (response.data.id_pendamping !== null && response.data.id_pendamping !== "") {
+  const foundPendamping = listPendamping.value.find(
+    (i) => i.id === response.data.id_pendamping
+  );
+
+  formData.id_pendamping = foundPendamping
+    ? { id: response.data.id_pendamping, name: foundPendamping.name }
+    : { id: response.data.id_pendamping, name: "Pendamping tidak ditemukan" };
+}
+      
+      // console.log("response pengajuan detail", formData, "data");
     }
   } catch (error: any) {
     // Tangani error
@@ -394,13 +446,21 @@ const getDetail = async () => {
 //     console.log(error)
 //   }
 // })
+watch(() => listPendamping.value, (newList) => {
+  if (formData.id_pendamping?.id) {
+    const foundPendamping = newList.find((i) => i.id === formData.id_pendamping.id);
+    if (foundPendamping) {
+      formData.id_pendamping.name = foundPendamping.name;
+    }
+  }
+});
 
 const formLembagaPendamping = ref<{}>();
 const refVForm = ref<VForm>();
 
 const onSubmitSubmission = () => {
   refVForm.value?.validate().then(({ valid: isValid }) => {
-    console.log("ini submit");
+    // console.log("ini submit");
 
     if (isValid) {
       console.log(" check isvalid", isValid);
@@ -475,7 +535,7 @@ onMounted(async () => {
   // handleDetailPengajuan();
   // await loadDataPendamping(formData.lokasi_pendamping);
   await handleGetFasilitator();
-  await handleGetPendamping(formData.id_lembaga_pendamping);
+  await handleGetPendampingstart(formData.id_lembaga_pendamping);
   console.log(submissionDetail);
   if (
     formData.id_fasilitator != null &&
