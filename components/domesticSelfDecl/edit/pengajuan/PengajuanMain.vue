@@ -278,9 +278,8 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
 };
 
 const handleGetPendamping = async (idLembaga: string | null) => {
- 
   if (!idLembaga) return;
-  formData.id_pendamping =null;
+  formData.id_pendamping=''
   try {
     const response: any = await $api(
       "/self-declare/business-actor/submission/list-pendamping",
@@ -289,7 +288,7 @@ const handleGetPendamping = async (idLembaga: string | null) => {
         query: {
           id_lembaga: idLembaga,
           lokasi: formData.lokasi_pendamping,
-          id_reg:submissionId
+          id_reg: submissionId,
         },
       }
     );
@@ -304,6 +303,7 @@ const handleGetPendamping = async (idLembaga: string | null) => {
           };
         });
       }
+
       // console.log("isi list", listPendamping.value);
     }
 
@@ -312,6 +312,42 @@ const handleGetPendamping = async (idLembaga: string | null) => {
     console.log(error);
   }
 };
+
+const handleGetPendampingstart = async (idLembaga: string | null) => {
+  if (!idLembaga) return;
+  try {
+    const response: any = await $api(
+      "/self-declare/business-actor/submission/list-pendamping",
+      {
+        method: "get",
+        query: {
+          id_lembaga: idLembaga,
+          lokasi: formData.lokasi_pendamping,
+          id_reg: submissionId,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      if (response.data !== null) {
+        listPendamping.value = response.data;
+        listPendamping.value = listPendamping.value.map((pendamping) => {
+          return {
+            id: pendamping.id,
+            name: `${pendamping.name} - ${pendamping.kabupaten} - ${pendamping.provinsi}`,
+          };
+        });
+      }
+
+      // console.log("isi list", listPendamping.value);
+    }
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 
 const getDetail = async () => {
   try {
@@ -352,6 +388,16 @@ const getDetail = async () => {
       if (formData.id_fasilitator == "00000000-0000-0000-0000-000000000000") {
         formData.id_fasilitator = null;
       }
+      // console.log(
+      //   "id penadmping before",
+      //   formData.id_lembaga_pendamping,
+      //   "data"
+      // );
+   
+
+      formData.id_pendamping = response.data.id_pendamping;
+      
+      // console.log("response pengajuan detail", formData, "data");
     }
   } catch (error: any) {
     // Tangani error
@@ -475,7 +521,7 @@ onMounted(async () => {
   // handleDetailPengajuan();
   // await loadDataPendamping(formData.lokasi_pendamping);
   await handleGetFasilitator();
-  await handleGetPendamping(formData.id_lembaga_pendamping);
+  await handleGetPendampingstart(formData.id_lembaga_pendamping);
   console.log(submissionDetail);
   if (
     formData.id_fasilitator != null &&
