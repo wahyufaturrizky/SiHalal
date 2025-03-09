@@ -43,7 +43,6 @@ const loadItem = async (
   search: string = "",
   path: string
 ) => {
-  loading.value = true;
   try {
     let params: any = {
       page: pageNumber,
@@ -77,7 +76,7 @@ const loadItem = async (
         return newData;
       }
 
-      return response.data;
+      return response;
     } else {
       loading.value = false;
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -166,13 +165,19 @@ onMounted(async () => {
   ]);
 
   if (responseData) {
-    dataTable.value = responseData?.[0]?.value || [];
-    totalItems.value = responseData?.[0]?.value.length || 0;
+    dataTable.value = responseData?.[0]?.value?.data || [];
+    totalItems.value = responseData?.[0]?.value?.total_item || 0;
     listChannel.value = responseData?.[1]?.value || [];
     skalaUsaha.value = responseData?.[2]?.value || [];
     provinceData.value = responseData?.[3]?.value || [];
     loadingAll.value = false;
   }
+});
+
+watch([page, size], async () => {
+  const newData = await loadItem(page.value, size.value, searchQuery.value, LIST_POST_AUDIT)
+  dataTable.value = newData?.data
+  totalItems.value = newData?.total_item
 });
 </script>
 
