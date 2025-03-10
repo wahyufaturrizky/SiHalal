@@ -83,6 +83,13 @@ const loadItemBahan = async (page: number, size: number, name: string = "") => {
     } else {
       loadingUncertified.value = true;
     }
+    // if (form.value.typeBahan == 0 && searchQueryUncertified.value == name) {
+    //   return;
+    // } else {
+    //   if (searchQueryCertified.value == name) {
+    //     return;
+    //   }
+    // }
 
     const response = await $api(
       `/self-declare/submission/bahan/${
@@ -125,7 +132,6 @@ const handleInputUncertified = () => {
   );
 };
 const handleInputCertified = () => {
-  console.log(searchQueryCertified.value);
   pageCertified.value = 1;
   debouncedFetchCertified(
     pageCertified.value,
@@ -409,8 +415,8 @@ const insertBahan = async () => {
     <VCard>
       <VCardTitle>Cari Bahan</VCardTitle>
       <VCardText>
-        <VRow>
-          <VCol cols="12" md="4">
+        <VRow style="align-items: center">
+          <VCol cols="10" md="4">
             <VTextField
               v-model="searchQueryUncertified"
               label="Search"
@@ -420,8 +426,27 @@ const insertBahan = async () => {
               hide-details
               dense
               outlined
-              @input="handleInputUncertified"
+              @keyup.enter="
+                loadItemBahan(
+                  pageUncertified,
+                  itemPerPageUncertified,
+                  searchQueryUncertified
+                )
+              "
             />
+          </VCol>
+          <VCol cols="2" md="4">
+            <VBtn
+              @click="
+                loadItemBahan(
+                  pageUncertified,
+                  itemPerPageUncertified,
+                  searchQueryUncertified
+                )
+              "
+            >
+              Cari Bahan
+            </VBtn>
           </VCol>
         </VRow>
       </VCardText>
@@ -468,8 +493,8 @@ const insertBahan = async () => {
     <VCard>
       <VCardTitle>Cari Bahan</VCardTitle>
       <VCardText>
-        <VRow>
-          <VCol cols="12" md="4">
+        <VRow style="align-items: center">
+          <VCol cols="10" md="4">
             <VTextField
               v-model="searchQueryCertified"
               label="Search"
@@ -479,8 +504,27 @@ const insertBahan = async () => {
               hide-details
               dense
               outlined
-              @input="handleInputCertified"
+              @keyup.enter="
+                loadItemBahan(
+                  pageCertified,
+                  itemPerPageCertified,
+                  searchQueryCertified
+                )
+              "
             />
+          </VCol>
+          <VCol cols="2" md="4">
+            <VBtn
+              @click="
+                loadItemBahan(
+                  pageCertified,
+                  itemPerPageCertified,
+                  searchQueryCertified
+                )
+              "
+            >
+              Cari Bahan
+            </VBtn>
           </VCol>
         </VRow>
       </VCardText>
