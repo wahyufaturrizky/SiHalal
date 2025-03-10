@@ -19,7 +19,7 @@ const ingredientTableRef = ref();
 const productRef = ref();
 const prodProcessRef = ref();
 const fileImage = ref<File | null>(null);
-const imageData = ref(null)
+const imageData = ref(null);
 
 const getDetail = async () => {
   try {
@@ -29,7 +29,7 @@ const getDetail = async () => {
         method: "get",
       }
     );
-    
+
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan", "error");
       return;
@@ -38,7 +38,7 @@ const getDetail = async () => {
     dataPenanggungJawab.value = response.data?.penanggung_jawab;
     dataPendaftaran.value = response.data?.pendaftaran;
     dataTracking.value = response.data?.tracking;
-    imageData.value = response?.data?.lembaga_pendamping?.foto_pendampingan
+    imageData.value = response?.data?.lembaga_pendamping?.foto_pendampingan;
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
@@ -332,14 +332,14 @@ const handleFileSelect = async (event) => {
       return;
     }
     useSnackbar().sendSnackbar("Upload Image Success", "success");
-    getDetail()
+    getDetail();
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
 };
 
 async function onClickDownload(filename: string) {
-  return await downloadDocument(filename);
+  return await downloadDocument(filename, "FILES");
 }
 
 onMounted(async () => {
@@ -368,7 +368,7 @@ onMounted(async () => {
         >Download Rekomendasi</VBtn
       >
       <VBtn
-        style="margin-left: 1svw"
+        style="margin-inline-start: 1svw"
         variant="flat"
         append-icon="fa-plus"
         @click="triggerFileInput"
@@ -382,12 +382,12 @@ onMounted(async () => {
       />
       <VBtn
         v-if="imageData"
-        style="margin-left: 1svw"
+        style="margin-inline-start: 1svw"
         variant="flat"
         title="Download Foto Pendampingan"
         @click="onClickDownload(imageData)"
-        ><VIcon icon="fa-download"></VIcon></VBtn
-      >
+        ><VIcon icon="fa-download"></VIcon
+      ></VBtn>
     </VCol>
     <VCol cols="4" style="display: flex; justify-content: end">
       <ModalPengembalianDanKirim

@@ -41,7 +41,7 @@ onMounted(async () => {
 });
 // TODO -> LOGIc DOWNLOAD
 const download = async (item) => {
-  await downloadDocument(item);
+  await downloadDocument(item,'FILES');
 };
 </script>
 

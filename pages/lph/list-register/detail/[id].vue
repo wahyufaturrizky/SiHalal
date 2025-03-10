@@ -580,7 +580,9 @@ onMounted(async () => {
                   append-icon="fa-download"
                   variant="plain"
                   style="align-content: start"
-                  @click="downloadDocument(detailSubmission.dokumen.sjph)"
+                  @click="
+                    downloadDocument(detailSubmission.dokumen.sjph, 'FILES')
+                  "
                 />
               </InfoRow>
             </VExpansionPanelText>
@@ -657,9 +659,9 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .mw-170 {
-  max-width: 170px;
   overflow: hidden;
-  white-space: nowrap;
+  max-inline-size: 170px;
   text-wrap: wrap;
+  white-space: nowrap;
 }
 </style>

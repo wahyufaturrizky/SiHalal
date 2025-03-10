@@ -51,21 +51,21 @@ const download = async (item, param?: string) => {
         </template>
         <template
           #item.signage_responsible="{ item }"
-          style="display: flex; align-items: center; align-content: center"
+          style="display: flex; align-content: center; align-items: center;"
         >
           <v-btn
             :disabled="item.ttd_pj == ''"
             color="primary"
             variant="plain"
             prepend-icon="mdi-file-download"
-            @click="download(item.ttd_pj)"
+            @click="download(item.ttd_pj,'FILES')"
           >
             File
           </v-btn>
         </template>
         <template
           #item.signage_penyelia="{ item }"
-          style="display: flex; align-items: center; align-content: center"
+          style="display: flex; align-content: center; align-items: center;"
         >
           <v-btn
             :disabled="item.ttd_ph == ''"

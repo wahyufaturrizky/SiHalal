@@ -470,7 +470,7 @@ onMounted(async () => {
                       class="rounded"
                       variant="flat"
                       density="compact"
-                      @click="downloadDocument(sttdData)"
+                      @click="downloadDocument(sttdData, 'FILES')"
                       :disabled="sttdData == ''"
                     />
                   </VCol>

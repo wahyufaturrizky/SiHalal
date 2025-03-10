@@ -475,7 +475,7 @@
                   <VIcon
                     color="primary"
                     style="cursor: pointer;"
-                    @click="handleDownload(item.photo)"
+                    @click="handleDownload(item.photo,'PRODUCT')"
                   >
                     ri-download-2-fill
                   </VIcon>
