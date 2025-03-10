@@ -320,6 +320,10 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
 
     return response;
   } catch (error) {
+    useSnackbar().sendSnackbar(
+      error?.errors?.list_error[0] || "Ada kesalahan",
+      "error"
+    );
     console.log(error);
   }
 };

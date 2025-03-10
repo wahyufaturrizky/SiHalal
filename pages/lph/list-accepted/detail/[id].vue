@@ -127,7 +127,7 @@ onMounted(async () => {
               variant="outlined"
               @click="
                 downloadForms.sttd
-                  ? handleDownloadForm(downloadForms.sttd)
+                  ? handleDownloadForm(downloadForms.sttd,'FILES')
                   : null
               "
             />
@@ -336,24 +336,25 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 :deep(
-    .v-expansion-panel--active:not(:first-child),
-    .v-expansion-panel--active + .v-expansion-panel
-  ) {
-  margin-top: 40px !important;
+.v-expansion-panel--active:not(:first-child),
+.v-expansion-panel--active + .v-expansion-panel
+) {
+  margin-block-start: 40px !important;
 }
 
 :deep(.v-data-table.auditor-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }

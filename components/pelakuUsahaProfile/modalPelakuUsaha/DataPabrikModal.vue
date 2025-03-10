@@ -6,7 +6,7 @@
       variant="outlined"
       append-icon="ri-add-line"
     >
-    {{t('detail-pu.pu-edit-add')}}
+      {{ t("detail-pu.pu-edit-add") }}
     </VBtn>
     <VBtn
       v-else-if="props.mode === 'edit'"
@@ -14,7 +14,7 @@
       variant="text"
       prepend-icon="ri-edit-line"
     >
-      {{t('detail-pu.pu-edit-edit')}}
+      {{ t("detail-pu.pu-edit-edit") }}
     </VBtn>
     <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
@@ -22,7 +22,9 @@
           class="text-h5 font-weight-bold d-flex justify-space-between align-center"
         >
           <span>{{
-            props.mode === "add" ? t('detail-pu.pu-pabrik-modal-title-add') : t('detail-pu.pu-pabrik-modal-title-edit')
+            props.mode === "add"
+              ? t("detail-pu.pu-pabrik-modal-title-add")
+              : t("detail-pu.pu-pabrik-modal-title-edit")
           }}</span>
           <VBtn
             icon
@@ -40,7 +42,7 @@
           <VForm ref="pabrikFormRef">
             <VRow class="mb-1">
               <VCol cols="12">
-                <VLabel>  {{t('detail-pu.pu-pabrik-modal-1')}} </VLabel>
+                <VLabel> {{ t("detail-pu.pu-pabrik-modal-1") }} </VLabel>
                 <VAutocomplete
                   :rules="[requiredValidator]"
                   v-model="form.lokasiPabrik"
@@ -56,11 +58,11 @@
 
             <VRow class="mb-1">
               <VCol cols="12">
-                <VLabel>{{t('detail-pu.pu-pabrik-modal-2')}} </VLabel>
+                <VLabel>{{ t("detail-pu.pu-pabrik-modal-2") }} </VLabel>
                 <VTextField
                   :rules="[requiredValidator]"
                   v-model="form.namaPabrik"
-                 :placeholder="t('detail-pu.pu-pabrik-fill-modal-1')"
+                  :placeholder="t('detail-pu.pu-pabrik-fill-modal-1')"
                   outlined
                   dense
                   required
@@ -69,18 +71,18 @@
                 <br />
                 <span v-if="errorProhibitedName" class="error-text">
                   <VIcon icon="mdi-alert-circle" color="error" size="small" />
-                 {{ t('detail-pu.pu-pabrik-validasi-warn')}}
+                  {{ t("detail-pu.pu-pabrik-validasi-warn") }}
                 </span>
               </VCol>
             </VRow>
 
             <VRow class="mb-1">
               <VCol cols="12">
-                <VLabel>{{t('detail-pu.pu-pabrik-modal-3')}}</VLabel>
+                <VLabel>{{ t("detail-pu.pu-pabrik-modal-3") }}</VLabel>
                 <VTextField
                   :rules="[requiredValidator]"
                   v-model="form.alamatPabrik"
-                    :placeholder="t('detail-pu.pu-pabrik-fill-modal-2')"
+                  :placeholder="t('detail-pu.pu-pabrik-fill-modal-2')"
                   outlined
                   dense
                   required
@@ -91,7 +93,7 @@
 
             <VRow class="mb-1" v-if="form.lokasiPabrik == 'Dalam Negeri'">
               <VCol cols="6">
-                <VLabel>{{t('detail-pu.pu-pabrik-modal-4')}}</VLabel>
+                <VLabel>{{ t("detail-pu.pu-pabrik-modal-4") }}</VLabel>
                 <VAutocomplete
                   v-model="form.provinsi"
                   v-on:update:model-value="getDistrict"
@@ -107,10 +109,11 @@
                 />
               </VCol>
               <VCol cols="6">
-                <VLabel>{{t('detail-pu.pu-pabrik-modal-5')}}</VLabel>
+                <VLabel>{{ t("detail-pu.pu-pabrik-modal-5") }}</VLabel>
                 <VAutocomplete
                   :rules="[requiredValidator]"
                   v-model="form.kabKota"
+                  v-on:update:model-value="getKodePos"
                   :items="kabKotaOptions"
                   item-title="name"
                   item-value="code"
@@ -124,7 +127,7 @@
             </VRow>
             <VRow class="mb-1" v-if="form.lokasiPabrik == 'Luar Negeri'">
               <VCol cols="6">
-                <VLabel>{{t('detail-pu.pu-pabrik-modal-4')}}</VLabel>
+                <VLabel>{{ t("detail-pu.pu-pabrik-modal-4") }}</VLabel>
                 <VTextField
                   :rules="[requiredValidator]"
                   v-model="form.provinsi"
@@ -136,7 +139,7 @@
                 />
               </VCol>
               <VCol cols="6">
-                <VLabel>{{t('detail-pu.pu-pabrik-modal-5')}}</VLabel>
+                <VLabel>{{ t("detail-pu.pu-pabrik-modal-5") }}</VLabel>
                 <VTextField
                   v-model="form.kabKota"
                   placeholder="Isi Kab/Kota"
@@ -151,7 +154,7 @@
             <!-- Negara and Kode Pos -->
             <VRow class="mb-1">
               <VCol cols="6" class="pe-1">
-                <VLabel>{{t('detail-pu.pu-pabrik-modal-6')}}</VLabel>
+                <VLabel>{{ t("detail-pu.pu-pabrik-modal-6") }}</VLabel>
                 <VTextField
                   :rules="[requiredValidator]"
                   v-model="form.negara"
@@ -162,8 +165,9 @@
                 />
               </VCol>
               <VCol cols="6" class="ps-1">
-                <VLabel>{{t('detail-pu.pu-pabrik-modal-7')}}</VLabel>
+                <VLabel>{{ t("detail-pu.pu-pabrik-modal-7") }}</VLabel>
                 <VTextField
+                  v-if="form.lokasiPabrik == 'Luar Negeri'"
                   :rules="[
                     requiredValidator,
                     lengthValidator(form.kodePos, 5),
@@ -176,13 +180,23 @@
                   required
                   class="input-field"
                 />
+                <VSelect
+                  v-if="form.lokasiPabrik == 'Dalam Negeri'"
+                  v-model="form.kodePos"
+                  :disabled="form.provinsi == '' || form.kabKota == ''"
+                  :items="kodeposOptions"
+                  item-value="code"
+                  item-title="code"
+                  :placeholder="t('detail-pu.pu-pabrik-fill-modal-3')"
+                  :rules="[requiredValidator]"
+                />
               </VCol>
             </VRow>
 
             <!-- Status Pabrik -->
             <VRow class="mb-1">
               <VCol cols="12">
-                <VLabel>{{t('detail-pu.pu-pabrik-modal-8')}}</VLabel>
+                <VLabel>{{ t("detail-pu.pu-pabrik-modal-8") }}</VLabel>
                 <VAutocomplete
                   :rules="[requiredValidator]"
                   v-model="form.statusPabrik"
@@ -201,9 +215,15 @@
         </VCardText>
 
         <div class="d-flex justify-end ga-2">
-          <VBtn @click="cancel" variant="outlined"> {{t('detail-pu.pu-pabrik-button-cancel')}} </VBtn>
+          <VBtn @click="cancel" variant="outlined">
+            {{ t("detail-pu.pu-pabrik-button-cancel") }}
+          </VBtn>
           <VBtn @click="confirm" color="primary">
-            {{ props.mode === "add" ? t('detail-pu.pu-pabrik-button-add')  : t('detail-pu.pu-pabrik-button-save')}}
+            {{
+              props.mode === "add"
+                ? t("detail-pu.pu-pabrik-button-add")
+                : t("detail-pu.pu-pabrik-button-save")
+            }}
           </VBtn>
         </div>
       </VCard>
@@ -212,13 +232,13 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
-
-const { t } = useI18n();
 import type { MasterDistrict } from "@/server/interface/master.iface";
 import { computed, defineEmits, defineProps, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
 import type { VForm } from "vuetify/components";
+
+const { t } = useI18n();
 
 const props = defineProps({
   mode: { type: String, default: "add" },
@@ -323,7 +343,17 @@ async function getMasterStatusPabrik() {
 }
 const provinsiOptions = ref();
 const kabKotaOptions = ref();
-
+const kodeposOptions = ref();
+const getKodePos = async () => {
+  const response: Array<{ code: string }> = await $api("/master/kode-pos", {
+    method: "get",
+    query: {
+      kabupaten: form.value.kabKota,
+      provinsi: form.value.provinsi,
+    },
+  });
+  kodeposOptions.value = response.map((kode) => kode.code);
+};
 const getDistrict = async (kode: string) => {
   form.value.kabKota = "";
   const response: MasterDistrict[] = await $api("/master/district", {
@@ -354,6 +384,9 @@ const resetForm = () => {
     statusPabrik: "",
   };
 };
+// onMounted(async () => {
+//   await getKodePos();
+// });
 
 const selectedIdPabrik = ref();
 
@@ -381,6 +414,7 @@ watch(
 
           getDistrict(form.value.provinsi).then((val2: any) => {
             form.value.kabKota = val.data.city;
+            getKodePos();
           });
         } else {
           // snackbar.sendSnackbar("Gagal mendapatkan Data ", "error");

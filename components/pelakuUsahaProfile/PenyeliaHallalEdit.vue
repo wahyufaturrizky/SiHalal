@@ -13,10 +13,12 @@ const props = defineProps({
   dataProfile: {
     type: Object,
     required: false,
-  }
+  },
 });
 
-const isNoNeedValidation = props?.dataProfile?.skala_usaha === 'JU.4' || props?.dataProfile?.skala_usaha === 'JU.3';
+const isNoNeedValidation =
+  props?.dataProfile?.skala_usaha === "JU.4" ||
+  props?.dataProfile?.skala_usaha === "JU.3";
 
 const tableHeaders = [
   { title: "No", key: "no", align: "start", sortable: false },
@@ -51,46 +53,46 @@ const uploadDocument = async (file, type: string) => {
   }
 };
 
-const downloadDOcument = async (filename: string) => {
-  try {
-    const response = await $api("/shln/submission/document/download", {
-      method: "post",
-      body: {
-        filename,
-      },
-    });
-    window.open(response.url, "_blank", "noopener,noreferrer");
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
+// const downloadDOcument = async (filename: string) => {
+//   try {
+//     const response = await $api("/shln/submission/document/download", {
+//       method: "post",
+//       body: {
+//         filename,
+//       },
+//     });
+//     window.open(response.url, "_blank", "noopener,noreferrer");
+//   } catch (error) {
+//     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+//   }
+// };
 
 async function handleAddAspekLegalConfirm(item) {
   // console.log("executed emit", item.namaPenyelia);
   try {
     if (isNoNeedValidation) {
-      console.log('step 0', item);
+      console.log("step 0", item);
       let payload = {
         id_number: item.noKtp,
         phone_number: item.noKontak,
         name: item.namaPenyelia,
         religion: item.agamaPenyelia,
         sk_number: item.nomorSk,
-        sk_date:
-          new Date(item.tanggalSk).toISOString().substring(0, 19) + "Z",
-      }
+        sk_date: new Date(item.tanggalSk).toISOString().substring(0, 19) + "Z",
+      };
       if (item.certificate_date) {
         payload = {
           ...payload,
-          certificate_date: new Date(item.tanggalSertifikat).toISOString().substring(0, 19) +
-          "Z"
-        }
+          certificate_date:
+            new Date(item.tanggalSertifikat).toISOString().substring(0, 19) +
+            "Z",
+        };
       }
       if (item.certificate_number) {
         payload = {
           ...payload,
-          certificate_number: item.certificate_number
-        }
+          certificate_number: item.certificate_number,
+        };
       }
       if (item.sertifikatKompetensi) {
         const skkFile = await uploadDocument(item.sertifikatKompetensi, "skk");
@@ -100,7 +102,7 @@ async function handleAddAspekLegalConfirm(item) {
           payload = {
             ...payload,
             skph_file: skkFile.data.file_url,
-          }
+          };
         }
       }
       if (item.skpFile) {
@@ -111,7 +113,7 @@ async function handleAddAspekLegalConfirm(item) {
           payload = {
             ...payload,
             spph_file: skpFile.data.file_url,
-          }
+          };
         }
       }
       if (item.ktpFile) {
@@ -122,20 +124,23 @@ async function handleAddAspekLegalConfirm(item) {
           payload = {
             ...payload,
             ktp_file: ktpFile.data.file_url,
-          }
+          };
         }
       }
       const response = await $api(
-      `/pelaku-usaha-profile/${store.profileData?.id}/add-supervisor`,
-      {
-        method: "post",
-        body: payload,
-      }
+        `/pelaku-usaha-profile/${store.profileData?.id}/add-supervisor`,
+        {
+          method: "post",
+          body: payload,
+        }
       );
-      
+
       // loadReqDialog.value = false;
       if (response.code != 2000) {
-        useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan! 1", "error");
+        useSnackbar().sendSnackbar(
+          "Silahkan hubungi BPJPH untuk menambahkan Penyelia",
+          "error"
+        );
         return;
       }
       await store.fetchProfile();
@@ -154,7 +159,7 @@ async function handleAddAspekLegalConfirm(item) {
       if (ktpFile.code != 2000) {
         return;
       }
-  
+
       const response = await $api(
         `/pelaku-usaha-profile/${store.profileData?.id}/add-supervisor`,
         {
@@ -179,7 +184,10 @@ async function handleAddAspekLegalConfirm(item) {
       );
       // loadReqDialog.value = false;
       if (response.code != 2000) {
-        useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan! 1", "error");
+        useSnackbar().sendSnackbar(
+          "Silahkan hubungi BPJPH untuk menambahkan Penyelia",
+          "error"
+        );
         return;
       }
       await store.fetchProfile();
@@ -189,9 +197,15 @@ async function handleAddAspekLegalConfirm(item) {
   } catch (error) {
     // loadReqDialog.value = false;
     if (error.data?.data?.code === 4001) {
-      useSnackbar().sendSnackbar(error.statusMessage, "error");
+      useSnackbar().sendSnackbar(
+        "Silahkan hubungi BPJPH untuk menambahkan Penyelia",
+        "error"
+      );
     } else {
-      useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan! 2", "error");
+      useSnackbar().sendSnackbar(
+        "Silahkan hubungi BPJPH untuk menambahkan Penyelia",
+        "error"
+      );
     }
   }
 }
@@ -328,12 +342,10 @@ const downloadSkHandler = () => {
             <td>{{ idx + 1 }}</td>
             <td>{{ item.name }}</td>
             <td>
-              <div v-if="!item.file_skph">
-                -
-              </div>
+              <div v-if="!item.file_skph">-</div>
               <VBtn
                 v-else
-                @click="downloadDOcument(item.file_skph)"
+                @click="downloadDocument(item.file_skph, 'FILES')"
                 variant="text"
                 color="purple"
                 class="px-0"
@@ -343,12 +355,10 @@ const downloadSkHandler = () => {
               </VBtn>
             </td>
             <td>
-              <div v-if="!item.file_spph">
-                -
-              </div>
+              <div v-if="!item.file_spph">-</div>
               <VBtn
                 v-else
-                @click="downloadDOcument(item.file_spph)"
+                @click="downloadDocument(item.file_spph, 'FILES')"
                 variant="text"
                 color="purple"
                 class="px-0"
@@ -358,12 +368,10 @@ const downloadSkHandler = () => {
               </VBtn>
             </td>
             <td>
-              <div v-if="!item.file_ktp">
-                -
-              </div>
+              <div v-if="!item.file_ktp">-</div>
               <VBtn
                 v-else
-                @click="downloadDOcument(item.file_ktp)"
+                @click="downloadDocument(item.file_ktp, 'FILES')"
                 variant="text"
                 color="purple"
                 class="px-0"

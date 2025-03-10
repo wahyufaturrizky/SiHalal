@@ -228,41 +228,41 @@ onMounted(async () => {
           <VIcon @click="handleOpenSendModal"> fa-times </VIcon>
         </VCardTitle>
         <VCardText>
-          <p class="text-h4 font-weight-bold" style="justify-self: center">
+          <p class="text-h4 font-weight-bold" style="justify-self: center;">
             Pernyataan Lembaga Pemeriksa Halal
           </p>
           <VRow class="mt-5">
             <p>Yang bertanda tangan dibawah ini:</p>
           </VRow>
-          <VRow style="margin-top: -20px">
+          <VRow style="margin-block-start: -20px;">
             <VCol sm="2"> Nama </VCol>
             <VCol>
               {{ detailLph?.nama_pimpinan }}
             </VCol>
           </VRow>
-          <VRow style="margin-top: -20px">
+          <VRow style="margin-block-start: -20px;">
             <VCol sm="2"> Jabatan </VCol>
             <VCol> Pemimpin </VCol>
           </VRow>
-          <VRow style="margin-top: -20px">
+          <VRow style="margin-block-start: -20px;">
             <VCol sm="2"> Nama LPH </VCol>
             <VCol>
               {{ detailLph?.nama_lph }}
             </VCol>
           </VRow>
-          <VRow style="margin-top: -20px">
+          <VRow style="margin-block-start: -20px;">
             <VCol sm="2"> Alamat LPH </VCol>
             <VCol>
               {{ detailLph?.alamat }}
             </VCol>
           </VRow>
-          <VRow style="margin-top: -20px">
+          <VRow style="margin-block-start: -20px;">
             <VCol sm="2"> No. Telepon </VCol>
             <VCol>
               {{ detailLph?.no_hp }}
             </VCol>
           </VRow>
-          <VRow style="margin-top: -20px">
+          <VRow style="margin-block-start: -20px;">
             <VCol sm="2"> Email </VCol>
             <VCol>
               {{ detailLph?.email }}
@@ -311,12 +311,12 @@ onMounted(async () => {
           <VCardTitle class="font-weight-bold d-flex justify-space-between"
             ><h3>Pengembalian Dokumen</h3>
             <VBtn icon variant="plain" @click="closeReturn">
-              <VIcon style="color: black">mdi-close</VIcon>
+              <VIcon style="color: black;">mdi-close</VIcon>
             </VBtn>
           </VCardTitle>
           <VCardText>
             <div class="mb-3 font-weight-medium text-caption text-grey">
-              <span style="color: black"
+              <span style="color: black;"
                 ><b>Masukan Keterangan Pengembalian</b></span
               >(Max. 1000 Karakter)
             </div>
@@ -348,12 +348,12 @@ onMounted(async () => {
               <VBtn
                 variant="outlined"
                 color="#E1442E"
-                style="border-color: #e1442e"
+                style="border-color: #e1442e;"
                 @click="() => openReturn()"
               >
                 Pengembalian
               </VBtn>
-              <VBtn @click="downloadDocument(draftCertif)" variant="outlined">
+              <VBtn @click="downloadDocument(draftCertif,'FILES')" variant="outlined">
                 Lihat Draft Sertif
               </VBtn>
               <VBtn
@@ -598,24 +598,25 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 :deep(
-    .v-expansion-panel--active:not(:first-child),
-    .v-expansion-panel--active + .v-expansion-panel
-  ) {
-  margin-top: 40px !important;
+.v-expansion-panel--active:not(:first-child),
+.v-expansion-panel--active + .v-expansion-panel
+) {
+  margin-block-start: 40px !important;
 }
 
 :deep(.v-data-table.auditor-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }

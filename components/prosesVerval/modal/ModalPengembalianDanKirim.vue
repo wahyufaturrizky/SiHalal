@@ -6,6 +6,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  imageData: {
+    type: String,
+    required: false,
+  },
 });
 
 const notesPengembalian = ref();
@@ -41,6 +45,7 @@ const vervalSend = async () => {
         v-bind="openModal"
         variant="flat"
         append-icon="fa-paper-plane"
+        :disabled="!props?.imageData"
         >Kirim</VBtn
       >
     </template>

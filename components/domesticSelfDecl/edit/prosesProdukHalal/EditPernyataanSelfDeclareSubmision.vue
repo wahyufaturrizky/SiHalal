@@ -42,7 +42,7 @@ const handleAgree = async () => {
 };
 
 const handleDownload = async () => {
-  return await downloadDocument(pledgeFile.value);
+  return await downloadDocument(pledgeFile.value,'DOC');
 };
 
 const route = useRoute<"">();
@@ -244,18 +244,17 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .dots {
-  display: inline-block;
   position: relative;
+  display: inline-block;
   font-weight: bold;
 }
 
 .dots::after {
-  content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  top: -5px;
-  border-bottom: 1px dotted black;
-  width: 100%;
+  border-block-end: 1px dotted black;
+  content: "";
+  inline-size: 100%;
+  inset-block-start: -5px;
+  inset-inline: 0;
 }
 </style>

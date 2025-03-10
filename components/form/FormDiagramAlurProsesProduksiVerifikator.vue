@@ -42,7 +42,7 @@ const getAlur = async () => {
 };
 // TODO -> LOGIC TO DONWLOAD FILE
 const downloadCatatanBahan = async (item) => {
-  await downloadDocument(item);
+  await downloadDocument(item,'FILES');
 };
 onMounted(async () => {
   await getAlur();

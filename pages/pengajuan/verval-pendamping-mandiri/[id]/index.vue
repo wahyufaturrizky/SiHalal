@@ -181,6 +181,7 @@ const downloadForms = reactive({
   laporan: "",
   sttd: "",
   sertifikasi_halal: "",
+  laporan_pendamping: "",
 }) as Record<string, string>;
 
 const isComplete = computed(() => {
@@ -294,6 +295,7 @@ onMounted(async () => {
     getDownloadForm("sjph", "sjph"),
     getDownloadForm("laporan", "hasil_verval"),
     getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
+    getDownloadForm("laporan-pendamping", "laporan_pendamping"),
   ]);
   if (registrationDetail.status == "") {
     return;
@@ -410,11 +412,11 @@ const getDownloadForm = async (docName: string, propName: string) => {
   }
 };
 
-const handleDownloadForm = async (fileName: string) => {
-  return await downloadDocument(fileName);
+const handleDownloadForm = async (fileName: string, directori: string) => {
+  return await downloadDocument(fileName, directori);
 };
-const handleDownload = async (productId: string) => {
-  return await downloadDocument(productId);
+const handleDownload = async (productId: string, directori: string) => {
+  return await downloadDocument(productId, directori);
 };
 
 const handleDownloadSk = async (id: string) => {
@@ -427,7 +429,7 @@ const handleDownloadSk = async (id: string) => {
     });
 
     if (response.data.file) {
-      await handleDownload(response.data?.file);
+      await handleDownload(response.data?.file, "FILES");
     } else {
       useSnackbar().sendSnackbar("Download gagal", "error");
     }
@@ -984,7 +986,7 @@ const isCanEdit = () => {
                   <VIcon
                     color="primary"
                     style="cursor: pointer"
-                    @click="handleDownload(item.photo)"
+                    @click="handleDownload(item.photo, 'PRODUCT')"
                   >
                     ri-download-2-fill
                   </VIcon>
@@ -1043,7 +1045,10 @@ const isCanEdit = () => {
                 <VBtn
                   @click="
                     downloadForms.surat_permohonan
-                      ? handleDownloadForm(downloadForms.surat_permohonan)
+                      ? handleDownloadForm(
+                          downloadForms.surat_permohonan,
+                          'FILES'
+                        )
                       : null
                   "
                   :color="
@@ -1065,7 +1070,10 @@ const isCanEdit = () => {
                 <VBtn
                   @click="
                     downloadForms.surat_pernyataan
-                      ? handleDownloadForm(downloadForms.surat_pernyataan)
+                      ? handleDownloadForm(
+                          downloadForms.surat_pernyataan,
+                          'FILES'
+                        )
                       : null
                   "
                   :color="
@@ -1087,7 +1095,7 @@ const isCanEdit = () => {
                 <VBtn
                   @click="
                     downloadForms.ikrar
-                      ? handleDownload(downloadForms.ikrar)
+                      ? handleDownload(downloadForms.ikrar, 'DOC')
                       : null
                   "
                   :color="downloadForms.ikrar ? 'primary' : '#A09BA1'"
@@ -1107,7 +1115,7 @@ const isCanEdit = () => {
                 <VBtn
                   @click="
                     downloadForms.hasil_verval
-                      ? handleDownloadForm(downloadForms.hasil_verval)
+                      ? handleDownloadForm(downloadForms.hasil_verval, 'DOC')
                       : null
                   "
                   :color="downloadForms.hasil_verval ? 'primary' : '#A09BA1'"
@@ -1127,7 +1135,7 @@ const isCanEdit = () => {
                 <VBtn
                   @click="
                     downloadForms.rekomendasi
-                      ? handleDownloadForm(downloadForms.rekomendasi)
+                      ? handleDownloadForm(downloadForms.rekomendasi, 'DOC')
                       : null
                   "
                   :color="downloadForms.rekomendasi ? 'primary' : '#A09BA1'"
@@ -1187,7 +1195,7 @@ const isCanEdit = () => {
                 <VBtn
                   @click="
                     downloadForms.sttd
-                      ? handleDownloadForm(downloadForms.sttd)
+                      ? handleDownloadForm(downloadForms.sttd, 'FILES')
                       : null
                   "
                   :color="downloadForms.sttd ? 'primary' : '#A09BA1'"
@@ -1207,11 +1215,39 @@ const isCanEdit = () => {
                 <VBtn
                   @click="
                     downloadForms.sertifikasi_halal
-                      ? handleDownloadForm(downloadForms.sertifikasi_halal)
+                      ? handleDownloadForm(
+                          downloadForms.sertifikasi_halal,
+                          'SERT'
+                        )
                       : null
                   "
                   :color="
                     downloadForms.sertifikasi_halal ? 'primary' : '#A09BA1'
+                  "
+                  density="compact"
+                  class="px-2"
+                >
+                  <template #default>
+                    <VIcon icon="fa-download" />
+                  </template>
+                </VBtn>
+              </InfoRowV2>
+              <InfoRowV2
+                class="d-flex align-center"
+                name="Laporan Pendamping"
+                :style="{ fontWeight: '600' }"
+              >
+                <VBtn
+                  @click="
+                    downloadForms.laporan_pendamping
+                      ? handleDownloadForm(
+                          downloadForms.laporan_pendamping,
+                          'FILES'
+                        )
+                      : null
+                  "
+                  :color="
+                    downloadForms.laporan_pendamping ? 'primary' : '#A09BA1'
                   "
                   density="compact"
                   class="px-2"

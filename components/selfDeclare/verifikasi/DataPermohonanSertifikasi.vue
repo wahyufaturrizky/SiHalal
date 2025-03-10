@@ -121,6 +121,7 @@ const loadItem = async ({
         pendamping,
         kabupaten,
         status: "OF71",
+        channel_id: "CH003,CH004",
       },
     });
 

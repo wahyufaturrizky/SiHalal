@@ -298,7 +298,7 @@ onMounted(async () => {
       <VCard variant="flat" class="pa-4">
         <VCardTitle>
           <VRow>
-            <VCol cols="10"><h3>Data Permohonan Sertifikasi</h3></VCol>
+            <VCol cols="10"><h3>Data Permohonan Sertifikasi Reguler</h3></VCol>
             <VCol cols="2" style="display: flex; justify-content: end">
               <VIcon
                 size="small"

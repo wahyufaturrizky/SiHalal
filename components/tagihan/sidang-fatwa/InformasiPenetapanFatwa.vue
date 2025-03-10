@@ -190,36 +190,7 @@ watch(countdown, (newValue) => {
 
       <!-- Konten Panel -->
       <VExpansionPanelText>
-        <div>
-          <label>
-            {{ t('task-force.proses-sidang.detail.section-informasi-penetapan.no-sttd') }}
-          </label>
-          <VTextField
-            v-model="data.no_sttd"
-            placeholder="1, New Street"
-            readonly
-          />
-        </div>
-        <div class="mt-5">
-          <label>
-            {{ t('task-force.proses-sidang.detail.section-informasi-penetapan.pu-name') }}
-          </label>
-          <VTextField
-            v-model="data.nama_pu"
-            placeholder="1, New Street"
-            readonly
-          />
-        </div>
-        <div class="mt-5">
-          <label>
-            {{ t('task-force.proses-sidang.detail.section-informasi-penetapan.product-type') }}
-          </label>
-          <VTextarea
-            v-model="data.jenis_produk"
-            placeholder="1, New Street"
-            readonly
-          />
-        </div>
+       
         <div class="mt-5">
           <label>
             {{ t('task-force.proses-sidang.detail.section-informasi-penetapan.ketetapan') }}
@@ -227,7 +198,7 @@ watch(countdown, (newValue) => {
           <VSelect
             v-model="data.penetapan"
             :items="lov"
-            placeholder="Pilih Jenis Bahan"
+            placeholder="Pilih Penetapan"
             density="compact"
             item-title="name"
             item-value="code"

@@ -470,8 +470,8 @@
                 <template #item.photo="{ item }: any">
                   <VIcon
                     color="primary"
-                    style="cursor: pointer"
-                    @click="handleDownload(item.photo)"
+                    style="cursor: pointer;"
+                    @click="handleDownload(item.photo,'PRODUCT')"
                   >
                     ri-download-2-fill
                   </VIcon>
@@ -530,7 +530,10 @@
                 <VBtn
                   @click="
                     downloadForms.surat_permohonan
-                      ? handleDownloadForm(downloadForms.surat_permohonan, '')
+                      ? handleDownloadForm(
+                          downloadForms.surat_permohonan,
+                          'FILES'
+                        )
                       : null
                   "
                   :color="
@@ -552,7 +555,10 @@
                 <VBtn
                   @click="
                     downloadForms.surat_pernyataan
-                      ? handleDownloadForm(downloadForms.surat_pernyataan, '')
+                      ? handleDownloadForm(
+                          downloadForms.surat_pernyataan,
+                          'FILES'
+                        )
                       : null
                   "
                   :color="
@@ -574,7 +580,7 @@
                 <VBtn
                   @click="
                     downloadForms.ikrar
-                      ? handleDownload(downloadForms.ikrar)
+                      ? handleDownload(downloadForms.ikrar,'DOC')
                       : null
                   "
                   :color="downloadForms.ikrar ? 'primary' : '#A09BA1'"
@@ -594,7 +600,7 @@
                 <VBtn
                   @click="
                     downloadForms.hasil_verval
-                      ? handleDownloadForm(downloadForms.hasil_verval, '')
+                      ? handleDownloadForm(downloadForms.hasil_verval, 'DOC')
                       : null
                   "
                   :color="downloadForms.hasil_verval ? 'primary' : '#A09BA1'"
@@ -614,7 +620,7 @@
                 <VBtn
                   @click="
                     downloadForms.rekomendasi
-                      ? handleDownloadForm(downloadForms.rekomendasi, '')
+                      ? handleDownloadForm(downloadForms.rekomendasi, 'DOC')
                       : null
                   "
                   :color="downloadForms.rekomendasi ? 'primary' : '#A09BA1'"
@@ -674,7 +680,7 @@
                 <VBtn
                   @click="
                     downloadForms.sttd
-                      ? handleDownloadForm(downloadForms.sttd, '')
+                      ? handleDownloadForm(downloadForms.sttd, 'FILES')
                       : null
                   "
                   :color="downloadForms.sttd ? 'primary' : '#A09BA1'"
@@ -694,7 +700,10 @@
                 <VBtn
                   @click="
                     downloadForms.sertifikasi_halal
-                      ? handleDownloadForm(downloadForms.sertifikasi_halal, 'SERT')
+                      ? handleDownloadForm(
+                          downloadForms.sertifikasi_halal,
+                          'SERT'
+                        )
                       : null
                   "
                   :color="
@@ -724,6 +733,28 @@
                       ? downloadCert(halalCertificateDetail.nomor_sertifikat)
                       : null
                   "
+                >
+                  <template #default>
+                    <VIcon icon="fa-download" />
+                  </template>
+                </VBtn>
+              </InfoRowV2>
+              <InfoRowV2
+                class="d-flex align-center"
+                name="Lembaga Pendamping"
+                :style="{ fontWeight: '600' }"
+              >
+                <VBtn
+                  @click="
+                    downloadForms.lembaga_pendamping
+                      ? handleDownloadForm(downloadForms.lembaga_pendamping, 'FILES')
+                      : null
+                  "
+                  :color="
+                    downloadForms.lembaga_pendamping ? 'primary' : '#A09BA1'
+                  "
+                  density="compact"
+                  class="px-2"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -796,7 +827,7 @@
                 :style="{ fontWeight: '600' }"
               >
                 <v-chip
-                  style="background: #f0e9f1"
+                  style="background: #f0e9f1;"
                   :color="statusItem[registrationDetail.status].color"
                   variant="outlined"
                   rounded="lg"
@@ -1161,6 +1192,7 @@ const downloadForms = reactive({
   laporan: "",
   sttd: "",
   sertifikasi_halal: "",
+  lembaga_pendamping: "",
 }) as Record<string, string>;
 
 const isComplete = computed(() => {
@@ -1275,6 +1307,7 @@ onMounted(async () => {
     getDownloadForm("sjph", "sjph"),
     // getDownloadForm("laporan", "laporan"),
     getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
+    getDownloadForm("lembaga-pendamping", "lembaga_pendamping"),
   ]);
   if (registrationDetail.status == "") {
     return;
@@ -1361,8 +1394,8 @@ const getDownloadForm = async (docName: string, propName: string) => {
 const handleDownloadForm = async (fileName: string, type: string) => {
   return await downloadDocument(fileName, type);
 };
-const handleDownload = async (productId: string) => {
-  return await downloadDocument(productId);
+const handleDownload = async (productId: string, type: string) => {
+  return await downloadDocument(productId, type);
 };
 
 const handleDownloadSk = async (id: string) => {
@@ -1375,7 +1408,7 @@ const handleDownloadSk = async (id: string) => {
     });
 
     if (response.data.file) {
-      await handleDownload(response.data?.file);
+      await handleDownload(response.data?.file, "FILES");
     } else {
       useSnackbar().sendSnackbar("Download gagal", "error");
     }

@@ -184,11 +184,13 @@ const { t } = useI18n();
             </VBtn>
           </div>
           <div class="bgContent">
-            <div class="d-flex flex-wrap mt-5">
-              <VIcon icon="ri-error-warning-line" color="#652672" />
-              <label class="subText"
-                >Pelaku Usaha Mikro dan Kecil, tidak wajib melengkapi sertifikat dan unggah KTP</label
-              >
+            <div class="d-flex mt-5">
+              <VIcon icon="ri-error-warning-line" color="#652672" class="mt-1" />
+              <div class="wrap-text">
+                <label class="subText"
+                  >Pelaku Usaha Besar, Menengah, dan Luar Negeri wajib melengkapi Nomor Sertifikat, Tanggal Sertifikat, Sertifikat Kompetensi dan Pelatihan Penyelia Halal.</label
+                >
+              </div>
             </div>
           </div>
         </VCardTitle>
@@ -387,5 +389,11 @@ const { t } = useI18n();
   font-weight: 500 !important;
   line-height: 18px !important;
   padding-inline-start: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  width: auto;
+}
+.wrap-text {
+  text-wrap: wrap;
 }
 </style>

@@ -126,10 +126,9 @@ const getLph = async (path: string, layanan: string, area: string) => {
 
     if (response?.code === 2000)
       itemsLph.value = response.data
-    else useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
   }
   catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    // useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
   }
 }
 

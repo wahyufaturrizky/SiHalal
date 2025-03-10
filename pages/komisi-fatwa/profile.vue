@@ -48,7 +48,7 @@ const lembagaList = [
 ];
 
 const download = async (item: any) => {
-  await downloadDocument(item);
+  await downloadDocument(item, "FILES");
 };
 
 const getSubDistrict = async (kode: string) => {

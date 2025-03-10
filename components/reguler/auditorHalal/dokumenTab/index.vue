@@ -6,12 +6,13 @@ const route = useRoute();
 const id = route?.params?.id;
 const loadingAll = ref(true);
 
-const handleDownloadV2 = async (filename) => {
+const handleDownloadV2 = async (filename: string, param?: string) => {
   try {
     const response: any = await $api("/shln/submission/document/download", {
       method: "post",
       body: {
         filename: filename,
+        param: param && `dirName=${param}`,
       },
     });
 
@@ -66,7 +67,9 @@ onMounted(async () => {
             <VBtn
               append-icon="fa-download"
               variant="flat"
-              @click="() => handleDownloadV2(data?.dokumen?.permohonan)"
+              @click="
+                () => handleDownloadV2(data?.dokumen?.permohonan, 'FILES')
+              "
             >
               Unduh
             </VBtn>
@@ -79,7 +82,7 @@ onMounted(async () => {
             <VBtn
               append-icon="fa-download"
               variant="flat"
-              @click="() => handleDownloadV2(data?.dokumen?.sjph)"
+              @click="() => handleDownloadV2(data?.dokumen?.sjph, 'FILES')"
             >
               Unduh
             </VBtn>
@@ -97,10 +100,12 @@ onMounted(async () => {
 .text-center {
   text-align: center;
 }
+
 .bgContent {
-  background-color: #f0e9f1;
   border-radius: 10px;
+  background-color: #f0e9f1;
 }
+
 .progress-text {
   font-size: 14px !important;
   font-weight: 700 !important;

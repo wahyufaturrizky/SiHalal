@@ -116,6 +116,37 @@ function handleButtonClick() {
   else if (selectedStatus.value === "OF290") dialogOpen.value = true;
   else alert("Please select a valid option!");
 }
+
+const downloadForms = reactive({
+  laporan_pendamping: "",
+}) as Record<string, string>;
+
+async function onClickDownload(filename: string) {
+  return await downloadDocument(filename);
+}
+
+const getDownloadForm = async (docName: string, propName: string) => {
+  const result: any = await $api(
+    `/self-declare/submission/${submissionId}/file`,
+    {
+      method: "get",
+      query: {
+        document: docName,
+      },
+    }
+  );
+  if (result.code === 2000) {
+    downloadForms[propName] = result.data.file;
+  }
+};
+
+const handleDownloadForm = async (fileName: string) => {
+  return await downloadDocument(fileName);
+};
+
+onMounted(async () => {
+  await getDownloadForm("laporan-pendamping", "laporan_pendamping");
+});
 </script>
 
 <template>
@@ -132,6 +163,30 @@ function handleButtonClick() {
           </VCol>
           <VCol cols="8">
             <p>{{ item.value }}</p>
+          </VCol>
+        </VRow>
+        <VRow style="display: flex; align-items: stretch">
+          <VCol cols="3">
+            <p>Laporan Pendamping</p>
+          </VCol>
+          <VCol cols="1">
+            <p>:</p>
+          </VCol>
+          <VCol cols="8">
+            <VBtn
+              @click="
+                downloadForms.laporan_pendamping
+                  ? handleDownloadForm(downloadForms.laporan_pendamping)
+                  : null
+              "
+              :color="downloadForms.laporan_pendamping ? 'primary' : '#A09BA1'"
+              density="compact"
+              class="px-2"
+            >
+              <template #default>
+                <VIcon icon="fa-download" />
+              </template>
+            </VBtn>
           </VCol>
         </VRow>
         <VRow style="display: flex; align-items: center">

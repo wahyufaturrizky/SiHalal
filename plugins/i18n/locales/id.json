@@ -386,7 +386,7 @@
     "pu-kbli-address": "Alamat",
     "pu-kbli-modal": "Modal Usaha",
     "pu-edit-title": "Ubah Pelaku Usaha",
-    "pu-edit-cancel": "Batal",
+    "pu-edit-cancel": "Kembali",
     "pu-edit-save": "Simpan Perubahan",
     "pu-edit-add": "Tambah",
     "pu-edit-edit": "Ubah",
@@ -1005,10 +1005,10 @@
       "title": "Tabel Pengajuan Proses Sidang",
       "subtitle": "Data Pengajuan",
       "filter": {
-        "service-type":"Jenis Layanan",
-        "product-type":"Jenis Produk",
-        "province":"Provinsi",
-        "lph":"LPH"
+        "service-type": "Jenis Layanan",
+        "product-type": "Jenis Produk",
+        "province": "Provinsi",
+        "lph": "LPH"
       },
       "detail": {
         "title": "Detail Data Proses Sidang",

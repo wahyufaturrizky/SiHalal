@@ -5,6 +5,7 @@ const { canNotEdit } = defineProps({
   },
 });
 
+const storeProduk = useMyTabEditRegulerStore();
 const route = useRoute<"">();
 const submissionId = route.params?.id;
 
@@ -69,6 +70,8 @@ const handleDetailPelakuUsaha = async () => {
       Object.assign(picDetail, response.data.penanggung_jawab);
       legalData.value = response.data.aspek_legal;
       halalSupervisorData.value = response.data.penyelia_halal;
+
+      storeProduk.setCertificateHalal(response.data.certificate_halal);
     }
     return response;
   } catch (error) {

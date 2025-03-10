@@ -14,6 +14,7 @@ const size = ref<number>(10);
 const searchQuery = ref<string>("");
 const showFilterMenu = ref(false);
 const detailStatus = ref<any>(null);
+const totalItems = ref<number>(0);
 
 const invoiceHeader: any[] = [
   { title: "No", value: "index" },
@@ -53,8 +54,8 @@ const loadItem = async (
 ) => {
   try {
     let params = {
-      pageNumber,
-      sizeData,
+      page: pageNumber,
+      size: sizeData,
       search,
       url: path,
     };
@@ -82,6 +83,7 @@ const loadItem = async (
 
         return newData;
       }
+      totalItems.value = response.total_item;
 
       return response.data;
     } else {
@@ -100,8 +102,8 @@ const handleSearch = async (
 ) => {
   try {
     let params = {
-      pageNumber,
-      sizeData,
+      page: pageNumber,
+      size: sizeData,
       search,
       url: path,
     };
@@ -170,7 +172,7 @@ onMounted(async () => {
   loading.value = true;
 
   const responseData = await Promise.allSettled([
-    loadItem(page.value, 100, searchQuery.value, LIST_PEMERIKSAAN_PATH),
+    loadItem(page.value, size.value, searchQuery.value, LIST_PEMERIKSAAN_PATH),
     loadItem(page.value, size.value, searchQuery.value, LIST_CHANNEL_PATH),
     getMasterSkalaUsaha(),
     getMasterProvinsi(),
@@ -183,6 +185,11 @@ onMounted(async () => {
     provinceData.value = responseData?.[3]?.value || [];
   }
   loading.value = false;
+});
+
+watch([page, size], async () => {
+  const refreshData = await loadItem(page.value, size.value, searchQuery.value, LIST_PEMERIKSAAN_PATH)
+  dataTable.value = refreshData
 });
 
 watch(dataTable, () => {
@@ -212,7 +219,7 @@ watch(dataTable, () => {
   </div> -->
   <VRow no-gutters>
     <VCol>
-      <h1 style="font-size: 32px">Update Pemeriksaan</h1>
+      <h1 style="font-size: 32px;">Update Pemeriksaan</h1>
     </VCol>
   </VRow>
   <VRow>
@@ -281,27 +288,32 @@ watch(dataTable, () => {
                 placeholder="Cari Nama Pengajuan"
                 density="compact"
                 append-inner-icon="ri-search-line"
-                style="max-inline-size: 100%"
+                style="max-inline-size: 100%;"
                 @input="handleInput"
               />
             </VCol>
           </VRow>
-          <VDataTable
-            class="examination-table"
+          <VDataTableServer
+            v-model:items-per-page="size"
+            v-model:page="page"
+            :items-length="totalItems"
+            :loading="loading"
+            class="border rounded"
             :headers="invoiceHeader"
             :items="dataTable"
+            :hide-default-footer="dataTable.length === 0"
             hover
           >
             <template #no-data>
               <div class="w-full mt-2">
-                <div class="pt-2" style="justify-items: center">
+                <div class="pt-2" style="justify-items: center;">
                   <img src="~/assets/images/empty-data.png" alt="empty_data" />
                   <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
                 </div>
               </div>
             </template>
             <template #item.index="{ index }">
-              {{ index + 1 }}
+              {{ index + 1 + (page - 1) * size }}
             </template>
             <template #item.businessType="{ item }">
               <div class="d-flex">
@@ -331,15 +343,7 @@ watch(dataTable, () => {
                 "
               />
             </template>
-            <template #bottom>
-              <VDataTableFooter
-                v-if="dataTable.length > 10"
-                first-icon="mdi-chevron-double-left"
-                last-icon="mdi-chevron-double-right"
-                show-current-page
-              />
-            </template>
-          </VDataTable>
+          </VDataTableServer>
         </VCardText>
       </VCard>
     </VCol>
@@ -365,41 +369,19 @@ watch(dataTable, () => {
 </template>
 
 <style scoped lang="scss">
-:deep(.v-data-table.examination-table > .v-table__wrapper) {
-  table {
-    thead > tr > th:last-of-type {
-      right: 0;
-      position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
-    }
-    tbody > tr > td:last-of-type {
-      right: 0;
-      position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
-      background: white;
-    }
-  }
-}
-
-:deep(.v-data-table.examination-table > .v-data-table-footer) {
-  .v-data-table-footer__info {
-    display: none;
-  }
-}
-
 .green-box {
-  color: #49a84c;
-  background-color: #edf6ed;
   border: 1px solid #49a84c;
   border-radius: 8px;
+  background-color: #edf6ed;
+  color: #49a84c;
   font-size: 12px;
 }
 
 .status-box {
-  color: #652672;
-  background-color: #f0e9f1;
   border: 1px solid #652672;
   border-radius: 8px;
+  background-color: #f0e9f1;
+  color: #652672;
   font-size: 12px;
 }
 </style>

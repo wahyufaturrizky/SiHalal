@@ -51,7 +51,7 @@ const loadItem = async () => {
         kabKota: i.kota_pu,
         provinsi: i.prov_pu,
         total: i.total,
-        namaPendamping: i.nama,
+        namaPendamping: i.pendamping_nama,
         noRekening: i.no_rekening,
         kodeBank: i.bank
       })
