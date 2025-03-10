@@ -69,7 +69,7 @@ const handleSearchUser = useDebounceFn((val: string) => {
 }, 350);
 
 const handleDownload = async (filename: string) => {
-  return await downloadDocument(filename);
+  return await downloadDocument(filename,'FILES');
 };
 
 const isOpenAddModal = ref(false);
@@ -144,7 +144,7 @@ const handleConfirmDelete = async () => {
 <template>
   <VRow>
     <VCol>
-      <h1 style="font-size: 32px">Image Authorization</h1>
+      <h1 style="font-size: 32px;">Image Authorization</h1>
     </VCol>
   </VRow>
   <VRow>
@@ -183,7 +183,7 @@ const handleConfirmDelete = async () => {
             >
               <template #no-data>
                 <VCard variant="outlined" class="w-full mt-7 mb-5">
-                  <div class="pt-2" style="justify-items: center">
+                  <div class="pt-2" style="justify-items: center;">
                     <img
                       src="~/assets/images/empty-data.png"
                       alt="empty_data"
@@ -289,6 +289,7 @@ const handleConfirmDelete = async () => {
     color: #49a84c;
   }
 }
+
 .inactive-chip {
   border: 1px solid #e1442e !important;
   border-radius: 8px;
@@ -298,18 +299,20 @@ const handleConfirmDelete = async () => {
     color: #e1442e;
   }
 }
+
 :deep(.v-data-table.custom-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }

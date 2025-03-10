@@ -23,11 +23,11 @@ const headers = [
 const store = useMyVerifikatorRegulerStore();
 const { penyelia_halal } = storeToRefs(store);
 const donwloadSkph = (item) => {
-  downloadDocument(item);
+  downloadDocument(item,'FILES');
 };
 
 const donwloadSpph = (item) => {
-  downloadDocument(item);
+  downloadDocument(item,'FILES');
 };
 
 const donwloadKtp = (item) => {

@@ -55,7 +55,7 @@ const getDownloadForm = async (docName: string) => {
 
 const handleDownload = async () => {
   if (suratPermohonan.value) {
-    return await downloadDocument(suratPermohonan.value);
+    return await downloadDocument(suratPermohonan.value, "FILES");
   }
 };
 
@@ -84,7 +84,7 @@ onMounted(() => {
           </VRow>
         </VCardTitle>
         <VCardItem>
-          <div style="max-height: 50svh; overflow: auto">
+          <div style="overflow: auto; max-block-size: 50svh">
             <VRow no-gutters>
               <VCol cols="12"><b>Yth. Kepala BPJH</b></VCol>
             </VRow>
@@ -105,7 +105,7 @@ onMounted(() => {
                   pernyataan pelaku usaha. Selain itu kami menyatakan bahwa:
                 </p>
                 <ul
-                  style="padding-inline-start: 3svw; list-style-type: decimal"
+                  style="list-style-type: decimal; padding-inline-start: 3svw"
                 >
                   <li>
                     Kami belum pernah mendapatkan fasilitasi pembiayaan

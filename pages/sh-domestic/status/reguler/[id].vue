@@ -352,8 +352,8 @@ onMounted(async () => {
                   class="px-2"
                   @click="
                     downloadForms.sttd
-                      ? handleDownloadForm(downloadForms.sttd, '')
-                  : null
+                      ? handleDownloadForm(downloadForms.sttd, 'FILES')
+                      : null
                   "
                 >
                   <template #default>
@@ -374,7 +374,10 @@ onMounted(async () => {
                   class="px-2"
                   @click="
                     downloadForms.setifikasi_halal
-                      ? handleDownloadForm(downloadForms.setifikasi_halal, 'SERT')
+                      ? handleDownloadForm(
+                          downloadForms.setifikasi_halal,
+                          'SERT'
+                        )
                       : null
                   "
                 >

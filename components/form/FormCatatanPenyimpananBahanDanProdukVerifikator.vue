@@ -73,11 +73,11 @@ const getProduk = async () => {
   }
 };
 // TODO -> LOGIC TO DONWLOAD FILE
-const downloadCatatanBahan = async (item) => await downloadDocument(item);
+const downloadCatatanBahan = async (item) => await downloadDocument(item,'FILES');
 
 // PRODUK
 // TODO -> LOGIC TO DONWLOAD FILE
-const downloadCatatanProduk = async (item) => await downloadDocument(item);
+const downloadCatatanProduk = async (item) => await downloadDocument(item,'FILES');
 
 onMounted(async () => {
   await getBahan();
