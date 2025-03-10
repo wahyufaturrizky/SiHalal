@@ -138,7 +138,7 @@ async function handleAddAspekLegalConfirm(item) {
       // loadReqDialog.value = false;
       if (response.code != 2000) {
         useSnackbar().sendSnackbar(
-          "ada kesalahan, gagal menyimpan! 1",
+          "Silahkan hubungi BPJPH untuk menambahkan Penyelia",
           "error"
         );
         return;
@@ -185,7 +185,7 @@ async function handleAddAspekLegalConfirm(item) {
       // loadReqDialog.value = false;
       if (response.code != 2000) {
         useSnackbar().sendSnackbar(
-          "ada kesalahan, gagal menyimpan! 1",
+          "Silahkan hubungi BPJPH untuk menambahkan Penyelia",
           "error"
         );
         return;
@@ -197,9 +197,15 @@ async function handleAddAspekLegalConfirm(item) {
   } catch (error) {
     // loadReqDialog.value = false;
     if (error.data?.data?.code === 4001) {
-      useSnackbar().sendSnackbar(error.statusMessage, "error");
+      useSnackbar().sendSnackbar(
+        "Silahkan hubungi BPJPH untuk menambahkan Penyelia",
+        "error"
+      );
     } else {
-      useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan! 2", "error");
+      useSnackbar().sendSnackbar(
+        "Silahkan hubungi BPJPH untuk menambahkan Penyelia",
+        "error"
+      );
     }
   }
 }
