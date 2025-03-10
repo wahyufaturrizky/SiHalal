@@ -219,8 +219,8 @@ const insertBahan = async () => {
 };
 
 const onCancel = () => {
-    emits("loadList", true);
-}
+  emits("loadList", true);
+};
 </script>
 
 <template>
@@ -234,7 +234,7 @@ const onCancel = () => {
               ? onSubmitBahanUncertified()
               : onSubmitBahanCertified()
           "
-          style="border: 0px;"
+          style="border: 0px"
         >
           <div>
             <VRow>
@@ -367,22 +367,22 @@ const onCancel = () => {
                   ></VTextField>
                 </VItemGroup>
               </VCol>
-            </VRow> </div
-          ><div
+            </VRow>
+          </div>
+          <div
             style="display: flex; justify-content: end; padding-top: 1.5svw"
             class="gap-2"
           >
-            <VBtn
-              variant="outlined"
-              color="primary"
-              @click="onCancel"
-              >{{ t('pengajuan-reguler.reguler_form-bahan-produk-popupbahan-cancel') }}</VBtn
-            >
+            <VBtn variant="outlined" color="primary" @click="onCancel">{{
+              t("pengajuan-reguler.reguler_form-bahan-produk-popupbahan-cancel")
+            }}</VBtn>
             <VBtn
               type="submit"
               :disabled="submitAddBahanButton"
               variant="elevated"
-              >{{ t('pengajuan-reguler.reguler_form-bahan-produk-popupbahan-add') }}</VBtn
+              >{{
+                t("pengajuan-reguler.reguler_form-bahan-produk-popupbahan-add")
+              }}</VBtn
             >
           </div>
         </VForm>
@@ -398,8 +398,8 @@ const onCancel = () => {
     <VCard>
       <VCardTitle>Cari Bahan</VCardTitle>
       <VCardText>
-        <VRow>
-          <VCol cols="12" md="4">
+        <VRow style="align-items: center">
+          <VCol cols="10" md="4">
             <VTextField
               v-model="searchQueryUncertified"
               label="Search"
@@ -409,8 +409,27 @@ const onCancel = () => {
               hide-details
               dense
               outlined
-              @input="handleInputUncertified"
+              @keyup.enter="
+                loadItemBahan(
+                  pageUncertified,
+                  itemPerPageUncertified,
+                  searchQueryUncertified
+                )
+              "
             />
+          </VCol>
+          <VCol cols="2" md="4">
+            <VBtn
+              @click="
+                loadItemBahan(
+                  pageUncertified,
+                  itemPerPageUncertified,
+                  searchQueryUncertified
+                )
+              "
+            >
+              Cari Bahan
+            </VBtn>
           </VCol>
         </VRow>
       </VCardText>
@@ -457,8 +476,8 @@ const onCancel = () => {
     <VCard>
       <VCardTitle>Cari Bahan</VCardTitle>
       <VCardText>
-        <VRow>
-          <VCol cols="12" md="4">
+        <VRow style="align-items: center">
+          <VCol cols="10" md="4">
             <VTextField
               v-model="searchQueryCertified"
               label="Search"
@@ -468,8 +487,27 @@ const onCancel = () => {
               hide-details
               dense
               outlined
-              @input="handleInputCertified"
+              @keyup.enter="
+                loadItemBahan(
+                  pageCertified,
+                  itemPerPageCertified,
+                  searchQueryCertified
+                )
+              "
             />
+          </VCol>
+          <VCol cols="2" md="4">
+            <VBtn
+              @click="
+                loadItemBahan(
+                  pageCertified,
+                  itemPerPageCertified,
+                  searchQueryCertified
+                )
+              "
+            >
+              Cari Bahan
+            </VBtn>
           </VCol>
         </VRow>
       </VCardText>
