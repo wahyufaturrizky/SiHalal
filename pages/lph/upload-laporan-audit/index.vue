@@ -15,6 +15,7 @@ const size = ref<number>(10);
 const searchQuery = ref<string>("");
 const showFilterMenu = ref(false);
 const detailStatus = ref<any>(null);
+const totalItems = ref<number>(0);
 
 const invoiceHeader: any[] = [
   { title: "No", value: "index" },
@@ -54,8 +55,8 @@ const loadItem = async (
 ) => {
   try {
     let params = {
-      pageNumber,
-      sizeData,
+      page: pageNumber,
+      size: sizeData,
       search,
       url: path,
     };
@@ -83,6 +84,7 @@ const loadItem = async (
 
         return newData;
       }
+      totalItems.value = response.total_item;
 
       return response.data;
     } else {
@@ -187,6 +189,11 @@ onMounted(async () => {
   loading.value = false;
 });
 
+watch([page, size], async () => {
+  const refreshData = await loadItem(page.value, size.value, searchQuery.value, UPLOAD_LAPORAN_AUDIT)
+  dataTable.value = refreshData
+});
+
 watch(dataTable, () => {
   dataTable?.value.length > 0 &&
     dataTable.value.map((item: any) => {
@@ -288,22 +295,27 @@ watch(dataTable, () => {
               />
             </VCol>
           </VRow>
-          <VDataTable
-            class="examination-table"
+          <VDataTableServer
+            v-model:items-per-page="size"
+            v-model:page="page"
+            :items-length="totalItems"
+            :loading="loading"
+            class="border rounded"
             :headers="invoiceHeader"
             :items="dataTable"
+            :hide-default-footer="dataTable.length === 0"
             hover
           >
             <template #no-data>
               <div class="w-full mt-2">
-                <div class="pt-2" style="justify-items: center">
+                <div class="pt-2" style="justify-items: center;">
                   <img src="~/assets/images/empty-data.png" alt="empty_data" />
                   <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
                 </div>
               </div>
             </template>
             <template #item.index="{ index }">
-              {{ index + 1 }}
+              {{ index + 1 + (page - 1) * size }}
             </template>
             <template #item.businessType="{ item }">
               <div class="d-flex">
@@ -333,15 +345,7 @@ watch(dataTable, () => {
                 "
               />
             </template>
-            <template #bottom>
-              <VDataTableFooter
-                v-if="dataTable.length > 10"
-                first-icon="mdi-chevron-double-left"
-                last-icon="mdi-chevron-double-right"
-                show-current-page
-              />
-            </template>
-          </VDataTable>
+          </VDataTableServer>
         </VCardText>
       </VCard>
     </VCol>
