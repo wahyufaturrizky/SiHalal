@@ -97,8 +97,8 @@ const handleGetListPendaftaran = async () => {
       method: "get",
     });
   } catch (error) {
-    // console.log('listPendaftaran',listPendaftaran)
-    console.log(error);
+    //// console.log('listPendaftaran',listPendaftaran)
+   // console.log(error);
   }
 };
 
@@ -129,14 +129,14 @@ const handleGetFasilitator = async () => {
 
     return response;
   } catch (error) {
-    console.log(error);
+   // console.log(error);
   }
 };
 
 const querySearch = ref("");
 
 const onSelectFasilitator = (selectedId) => {
-  console.log(selectedId);
+ // console.log(selectedId);
   if ((isFasilitator.value = selectedId === "Lainnya")) {
     onSearchFasilitator(querySearch.value);
     return;
@@ -154,7 +154,7 @@ const onSearchFasilitator = async (kode) => {
   if (!hideOnSearchFasilitatorFunction)
     try {
       facName.value = "";
-      console.log(kode);
+     // console.log(kode);
       // const kode = querySearch.value;
 
       const response: any = await $api("/self-declare/submission/kode", {
@@ -207,33 +207,49 @@ const handleGetJenisLayanan = async () => {
       method: "get",
     })
   } catch (error) {
-    console.log(error);
+   // console.log(error);
   }
 };
 
 const handleGetJenisProduk = async () => {
   try {
-    listProduk.value = await $api("/master/product-filter", {
+    listProduk.value = idReg !== null ?
+      await $api("/master/product-filter-by-regid", {
+        method: "get",
+        params: {
+          id: formData.id_jenis_layanan,
+          idReg: submissionId
+        },
+      }):
+      await $api("/master/product-filter", {
       method: "get",
       params: {
         id: formData.id_jenis_layanan,
       },
     });
   } catch (error) {
-    console.log(error);
+   // console.log(error);
   }
 };
 const handleGetJenisProdukFilter = async (item) => {
   try {
     formData.id_jenis_produk = null;
-    listProduk.value = await $api("/master/product-filter", {
+    listProduk.value =  idReg !== null ?
+      await $api("/master/product-filter-by-regid", {
+        method: "get",
+        params: {
+          id: item,
+          idReg: submissionId
+        },
+      }):
+      await $api("/master/product-filter", {
       method: "get",
       params: {
         id: item,
       },
     });
   } catch (error) {
-    console.log(error);
+   // console.log(error);
   }
 };
 const handleGetLembagaPendampingInitial = async (lokasi: string) => {
@@ -250,7 +266,7 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
     );
 
     if (response.code === 2000) {
-      console.log("response = ", response.data);
+     // console.log("response = ", response.data);
       if (response.data !== null) lembagaPendamping.value = response.data;
     }
 
@@ -260,7 +276,7 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
       error.data?.errors?.list_error[0] || "Ada kesalahan 1",
       "error"
     );
-    console.log(error);
+   // console.log(error);
   }
 };
 const handleGetLembagaPendamping = async (lokasi: string) => {
@@ -288,7 +304,7 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
       error.data?.errors?.list_error[0] || "Ada kesalahan 2",
       "error"
     );
-    console.log(error);
+   // console.log(error);
   }
 };
 
@@ -319,12 +335,12 @@ const handleGetPendamping = async (idLembaga: string | null) => {
         });
       }
 
-      // console.log("isi list", listPendamping.value);
+      //// console.log("isi list", listPendamping.value);
     }
 
     return response;
   } catch (error) {
-    console.log(error);
+   // console.log(error);
   }
 };
 
@@ -354,18 +370,18 @@ const handleGetPendampingstart = async (idLembaga: string | null) => {
         });
       }
 
-      // console.log("isi list", listPendamping.value);
+      //// console.log("isi list", listPendamping.value);
     }
 
     return response;
   } catch (error) {
-    console.log(error);
+   // console.log(error);
   }
 };
 
 const getDetail = async () => {
   try {
-    console.log("endpoint ini");
+   // console.log("endpoint ini");
 
     const response: any = await $api(
       `/self-declare/pengajuan/${submissionId}/detail`,
@@ -374,8 +390,8 @@ const getDetail = async () => {
       }
     );
 
-    // console.log("response pengajuan detail", response);
-    // console.log("response pengajuan list layanan", listLayanan.value);
+    //// console.log("response pengajuan detail", response);
+    //// console.log("response pengajuan list layanan", listLayanan.value);
 
     if (response.code == 2000) {
       submissionDetail.tanggal_buat = response.data.tgl_daftar.split("T")[0];
@@ -402,7 +418,7 @@ const getDetail = async () => {
       if (formData.id_fasilitator == "00000000-0000-0000-0000-000000000000") {
         formData.id_fasilitator = null;
       }
-      // console.log(
+      //// console.log(
       //   "id penadmping before",
       //   formData.id_lembaga_pendamping,
       //   "data"
@@ -418,7 +434,7 @@ const getDetail = async () => {
     : { id: response.data.id_pendamping, name: "Pendamping tidak ditemukan" };
 }
 
-      // console.log("response pengajuan detail", formData, "data");
+      //// console.log("response pengajuan detail", formData, "data");
     }
   } catch (error: any) {
     // Tangani error
@@ -436,7 +452,7 @@ const getDetail = async () => {
 //       },
 //     )
 
-//     console.log(response, 'ini data response detail')
+//    // console.log(response, 'ini data response detail')
 
 // if (response.code === 2000) {
 //   Object.assign(submissionDetail, response.data.certificate_halal)
@@ -458,7 +474,7 @@ const getDetail = async () => {
 // return response
 //   }
 //   catch (error) {
-//     console.log(error)
+//    // console.log(error)
 //   }
 // })
 watch(() => listPendamping.value, (newList) => {
@@ -475,10 +491,10 @@ const refVForm = ref<VForm>();
 
 const onSubmitSubmission = () => {
   refVForm.value?.validate().then(({ valid: isValid }) => {
-    // console.log("ini submit");
+    //// console.log("ini submit");
 
     if (isValid) {
-      console.log(" check isvalid", isValid);
+     // console.log(" check isvalid", isValid);
       handleUpdateSubmission();
     }
   });
@@ -487,8 +503,8 @@ const onSubmitSubmission = () => {
 const handleUpdateSubmission = async () => {
   try {
     if (isKodeFound.value === true) {
-      // console.log("id fasilitator submit", formData.id_fasilitator);
-      // console.log("responseid submit", responseId.value);
+      //// console.log("id fasilitator submit", formData.id_fasilitator);
+      //// console.log("responseid submit", responseId.value);
     } else {
       responseId.value = formData.id_fasilitator;
     }
@@ -522,7 +538,7 @@ const handleUpdateSubmission = async () => {
 
     return response;
   } catch (error) {
-    console.log(error, "error");
+   // console.log(error, "error");
     useSnackbar().sendSnackbar("Gagal mengubah data", "error");
   }
 };
@@ -551,7 +567,7 @@ onMounted(async () => {
   // await loadDataPendamping(formData.lokasi_pendamping);
   await handleGetFasilitator();
   await handleGetPendampingstart(formData.id_lembaga_pendamping);
-  console.log(submissionDetail);
+ // console.log(submissionDetail);
   if (
     formData.id_fasilitator != null &&
     !listFasilitasi.value.some((item) => item.id == formData.id_fasilitator)
