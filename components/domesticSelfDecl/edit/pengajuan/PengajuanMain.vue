@@ -4,6 +4,7 @@ const {
   canNotEdit,
   hideAlertKodeUnik,
   hideKodeFasilitasi,
+  idReg
 } = defineProps({
   hideKodeFasilitasi: {
     type: Boolean,
@@ -16,6 +17,10 @@ const {
   },
   hideOnSearchFasilitatorFunction: {
     type: Boolean,
+  },
+  idReg: {
+    type: String,
+    default: null,
   },
 });
 
@@ -188,9 +193,19 @@ const responseColor = computed(() => {
 
 const handleGetJenisLayanan = async () => {
   try {
-    listLayanan.value = await $api("/master/jenis-layanan", {
+    /*
+    * untuk kebutuhan page sh-domestic/submission/self-declare/{idReg}/edit
+    * & sh-domestic/submission/self-declare-mandiri/{idReg}/edit
+    * Menggunakan endpoint baru, dan penambahan parameter id_reg
+    * */
+
+    listLayanan.value = idReg !== null
+      ? await $api(`/master/jenis-layanan-by-idreg/${idReg}`, {
+        method: "get"
+      }) :
+      await $api("/master/jenis-layanan", {
       method: "get",
-    });
+    })
   } catch (error) {
     console.log(error);
   }
@@ -402,7 +417,7 @@ const getDetail = async () => {
     ? { id: response.data.id_pendamping, name: foundPendamping.name }
     : { id: response.data.id_pendamping, name: "Pendamping tidak ditemukan" };
 }
-      
+
       // console.log("response pengajuan detail", formData, "data");
     }
   } catch (error: any) {

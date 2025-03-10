@@ -51,14 +51,14 @@ const download = async (item) => {
         </template>
         <template
           #item.file_docs="{item}"
-          style="display: flex; align-items: center; align-content: center"
+          style="display: flex; align-content: center; align-items: center;"
         >
         <v-btn
             :disabled="item.file_dok == ''"
             color="primary"
             variant="plain"
             prepend-icon="mdi-file-download"
-            @click="download(item.file_dok)"
+            @click="download(item.file_dok,'FILES')"
           >
             File
           </v-btn>

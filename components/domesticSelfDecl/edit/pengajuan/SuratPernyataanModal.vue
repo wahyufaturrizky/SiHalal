@@ -53,7 +53,7 @@ const getDownloadForm = async (docName: string) => {
 };
 
 const handleDownload = async () => {
-  return await downloadDocument(suratPernyataan.value);
+  return await downloadDocument(suratPernyataan.value,'FILES');
 };
 
 onMounted(() => {
@@ -68,10 +68,10 @@ onMounted(() => {
     </template>
     <template #default="{ isActive }">
       <VCard>
-        <VCardTitle style="padding: 1.5svw">
+        <VCardTitle style="padding: 1.5svw;">
           <VRow>
             <VCol cols="10"><h3>Pernyataan Pelaku Usaha</h3></VCol>
-            <VCol cols="2" style="display: flex; justify-content: end"
+            <VCol cols="2" style="display: flex; justify-content: end;"
               ><VIcon
                 size="small"
                 icon="fa-times"
@@ -81,7 +81,7 @@ onMounted(() => {
           </VRow>
         </VCardTitle>
         <VCardItem>
-          <div style="max-height: 50svh; overflow: auto">
+          <div style=" overflow: auto;max-block-size: 50svh;">
             <VRow no-gutters v-for="item in dataPermohonan" :key="item.id">
               <VCol cols="3">{{ item.key }}</VCol>
               <VCol cols="1">:</VCol>
@@ -92,7 +92,7 @@ onMounted(() => {
               <VCol cols="12">
                 <p>Dengan ini menyatakan:</p>
                 <ul
-                  style="padding-inline-start: 3svw; list-style-type: decimal"
+                  style=" list-style-type: decimal;padding-inline-start: 3svw;"
                 >
                   <li>Usaha kami telah berproduksi minimal 1 tahun;</li>
                   <li>
@@ -119,7 +119,7 @@ onMounted(() => {
           </div>
         </VCardItem>
         <VCardActions
-          style="display: flex; justify-content: end; padding: 1.5svw"
+          style="display: flex; justify-content: end; padding: 1.5svw;"
         >
           <div>
             <VBtn variant="flat" @click="handleDownload"

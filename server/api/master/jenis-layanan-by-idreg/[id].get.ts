@@ -9,21 +9,18 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-  const { id_reg } = await readBody(event);
-
-  const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/verificator/detail-pengajuan/${id_reg}`,
+  const id = getRouterParam(event, 'id')
+  const { data } = await $fetch<any>(
+    `${runtimeConfig.coreBaseUrl}/api/v1/jenis-layanan/${id}/combobox`,
     {
       method: "get",
-      headers: { Authorization: authorizationHeader },
+      headers: { Authorization: authorizationHeader }
     }
-
- 
-
   ).catch((err: NuxtError) => {
-
-
-    return err.data;
+    throw createError({
+      statusCode: err.statusCode,
+      statusMessage: JSON.stringify(err.data),
+    });
   });
   return data || null;
 });
