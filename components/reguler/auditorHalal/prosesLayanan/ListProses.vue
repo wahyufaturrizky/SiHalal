@@ -900,7 +900,7 @@ watch(selectedFactory, () => {
           />
           <br />
           <div class="d-flex justify-space-between mt-5">
-            <label> Unggah Bahan </label>
+            <label> Unggah Layout </label>
             <VCol cols="6">
               <VTextField
                 v-if="uploadedFile.file"
