@@ -77,8 +77,8 @@ const loadItem = async (
     const response: any = await $api("/reguler/pelaku-usaha", {
       method: "get",
       params: {
-        pageNumber,
-        sizeData,
+        page : pageNumber,
+        size : sizeData,
         keyword,
       },
     });

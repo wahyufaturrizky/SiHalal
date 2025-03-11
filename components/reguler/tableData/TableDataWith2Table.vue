@@ -34,7 +34,24 @@ const props = defineProps({
   isviewonly: {
     type: Boolean,
   },
+  hideDefaultFooter: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },
+  tableType: {
+    type: String,
+    required: false,
+    default: "base",
+  },
+  loadServerItem: {
+    type: Function,
+    required: false,
+    default: () => {},
+  },
 });
+const itemsPerPage = ref([10, 10]);
+const page = ref([1, 1]);
 
 const handleDownload = async (item: any) => {
   try {
@@ -77,202 +94,424 @@ const handleDownload = async (item: any) => {
       </div>
     </VCardTitle>
     <VCardText>
-      <div v-for="(item, index) in props.data" :key="index">
-        <VRow class="mt-2">
-          <slot :name="`subTitle${index + 1}`" />
-          <VDataTable
-            class="border rounded"
-            :items-per-page="-1"
-            hide-default-footer=""
-            :headers="item.label"
-            :items="item.value"
-          >
-            <template #item.no="{ index }">
-              <div>
-                {{ index + 1 }}
-              </div>
-            </template>
-            <template #item.productType="{ item }">
-              <div>
-                {{ item.productType }}
-              </div>
-            </template>
-            <template #item.tanggal_masuk="{ item }">
-              <div v-if="item.tanggal_masuk">
-                {{ formatDateIntl(new Date(item.tanggal_masuk)) }}
-              </div>
-              <div v-else>-</div>
-            </template>
-            <template #item.tanggal_keluar="{ item }">
-              <div v-if="item.tanggal_keluar">
-                {{ formatDateIntl(new Date(item.tanggal_keluar)) }}
-              </div>
-              <div v-else>-</div>
-            </template>
-            <template #item.file_dok="{ item }">
-              <Vbtn
-                v-if="item.file_dok"
-                class="d-flex gap-3 cursor-pointer"
-                style="margin-left: -10px"
-                @click="() => handleDownload(item.file_dok)"
-              >
+      <div v-if="props.tableType == 'server'">
+        <div v-for="(item, indexColum) in props.data" :key="indexColum">
+          <VRow class="mt-2">
+            <slot :name="`subTitle${indexColum + 1}`" />
+            <VDataTableServer
+              class="border rounded"
+              v-model:items-per-page="itemsPerPage[indexColum]"
+              v-model:page="page[indexColum]"
+              :hide-default-footer="hideDefaultFooter"
+              :items-length="item.totalItem"
+              :headers="item.label"
+              :items="item.value"
+              @update:options="
+                loadServerItem(
+                  page[indexColum],
+                  itemsPerPage[indexColum],
+                  indexColum
+                )
+              "
+            >
+              <template #item.no="{ index }">
                 <div>
-                  <VIcon end icon="ri-file-3-line" color="#652672" />
+                  {{
+                    index +
+                    1 +
+                    (page[indexColum] - 1) * itemsPerPage[indexColum]
+                  }}
                 </div>
-                <label class="cursor-pointer">file</label>
-              </Vbtn>
-              <div v-else>
-                <label>-</label>
-              </div>
-            </template>
-            <template #item.productName="{ item }">
-              <div>
-                {{ item.productName }}
-              </div>
-            </template>
-            <template #item.materialTypeLong="{ item }">
-              <div class="mw30">
-                {{ item.materialTypeLong }}
-              </div>
-            </template>
-            <template #item.publication="{ item }">
-              <VCheckbox true-value="true" />
-            </template>
-            <template v-if="!isviewonly" #item.action="{ item }">
-              <DialogDeleteAuditPengajuan
-                title="Hapus Bahan"
-                button-text="Hapus"
-              />
-            </template>
-            <template v-if="!isviewonly" #item.actionEdit="{ item }">
-              <Vbtn
-                variant="plain"
-                class="cursor-pointer"
-                @click="() => props.onEdit(item, index)"
-              >
-                <VIcon end icon="ri-pencil-line" color="#652672" />
-              </Vbtn>
-            </template>
-            <template #item.actionPopOver2="{ item }">
-              <VMenu>
-                <template #activator="{ props }">
-                  <VBtn
-                    v-bind="props"
-                    append-icon="ri-more-2-line"
-                    variant="plain"
-                  />
-                </template>
-                <VList>
-                  <VListItem class="p0">
-                    <VListItemTitle>
-                      <Vbtn
-                        variant="plain"
-                        class="cursor-pointer"
-                        @click="props.onEdit"
-                      >
-                        <VRow>
-                          <VCol sm="4">
-                            <VIcon end icon="ri-pencil-line" />
-                          </VCol>
-                          <VCol>
-                            <label class="cursor-pointer">Ubah </label>
-                          </VCol>
-                        </VRow>
-                      </Vbtn>
-                    </VListItemTitle>
-                  </VListItem>
-                  <VListItem class="p0">
-                    <VListItemTitle>
-                      <Vbtn variant="plain" class="cursor-pointer">
-                        <VRow>
-                          <VCol sm="4">
-                            <VIcon
-                              end
-                              icon="fa-trash"
-                              color="#E1442E"
-                              size="15px"
-                            />
-                          </VCol>
-                          <VCol>
-                            <label class="cursor-pointer textRed">Hapus </label>
-                          </VCol>
-                        </VRow>
-                      </Vbtn>
-                    </VListItemTitle>
-                  </VListItem>
-                </VList>
-              </VMenu>
-            </template>
-            <template #item.actionPopOver3="{ item }">
-              <VMenu>
-                <template #activator="{ props }">
-                  <VBtn
-                    v-bind="props"
-                    append-icon="ri-more-2-line"
-                    variant="plain"
-                  />
-                </template>
-                <VList>
-                  <VListItem class="p0">
-                    <VListItemTitle>
-                      <Vbtn
-                        variant="plain"
-                        class="cursor-pointer"
-                        @click="props.onEdit"
-                      >
-                        <VRow>
-                          <VCol sm="4">
-                            <VIcon end icon="ri-arrow-right-line" />
-                          </VCol>
-                          <VCol>
-                            <label class="cursor-pointer">Detail </label>
-                          </VCol>
-                        </VRow>
-                      </Vbtn>
-                    </VListItemTitle>
-                  </VListItem>
-                  <VListItem class="p0">
-                    <VListItemTitle>
-                      <Vbtn
-                        variant="plain"
-                        class="cursor-pointer"
-                        @click="props.onEdit"
-                      >
-                        <VRow>
-                          <VCol sm="4">
-                            <VIcon end icon="ri-pencil-line" />
-                          </VCol>
-                          <VCol>
-                            <label class="cursor-pointer">Ubah </label>
-                          </VCol>
-                        </VRow>
-                      </Vbtn>
-                    </VListItemTitle>
-                  </VListItem>
-                  <VListItem class="p0">
-                    <VListItemTitle>
-                      <Vbtn variant="plain" class="cursor-pointer">
-                        <VRow>
-                          <VCol sm="4">
-                            <VIcon
-                              end
-                              icon="fa-trash"
-                              color="#E1442E"
-                              size="15px"
-                            />
-                          </VCol>
-                          <VCol>
-                            <label class="cursor-pointer textRed">Hapus </label>
-                          </VCol>
-                        </VRow>
-                      </Vbtn>
-                    </VListItemTitle>
-                  </VListItem>
-                </VList>
-              </VMenu>
-            </template>
-          </VDataTable>
-        </VRow>
+              </template>
+              <template #item.productType="{ item }">
+                <div>
+                  {{ item.productType }}
+                </div>
+              </template>
+              <template #item.tanggal_masuk="{ item }">
+                <div v-if="item.tanggal_masuk">
+                  {{ formatDateIntl(new Date(item.tanggal_masuk)) }}
+                </div>
+                <div v-else>-</div>
+              </template>
+              <template #item.tanggal_keluar="{ item }">
+                <div v-if="item.tanggal_keluar">
+                  {{ formatDateIntl(new Date(item.tanggal_keluar)) }}
+                </div>
+                <div v-else>-</div>
+              </template>
+              <template #item.file_dok="{ item }">
+                <Vbtn
+                  v-if="item.file_dok"
+                  class="d-flex gap-3 cursor-pointer"
+                  style="margin-left: -10px"
+                  @click="() => handleDownload(item.file_dok)"
+                >
+                  <div>
+                    <VIcon end icon="ri-file-3-line" color="#652672" />
+                  </div>
+                  <label class="cursor-pointer">file</label>
+                </Vbtn>
+                <div v-else>
+                  <label>-</label>
+                </div>
+              </template>
+              <template #item.productName="{ item }">
+                <div>
+                  {{ item.productName }}
+                </div>
+              </template>
+              <template #item.materialTypeLong="{ item }">
+                <div class="mw30">
+                  {{ item.materialTypeLong }}
+                </div>
+              </template>
+              <template #item.publication="{ item }">
+                <VCheckbox true-value="true" />
+              </template>
+              <template v-if="!isviewonly" #item.action="{ item }">
+                <DialogDeleteAuditPengajuan
+                  title="Hapus Bahan"
+                  button-text="Hapus"
+                />
+              </template>
+              <template v-if="!isviewonly" #item.actionEdit="{ item }">
+                <Vbtn
+                  variant="plain"
+                  class="cursor-pointer"
+                  @click="() => props.onEdit(item, index)"
+                >
+                  <VIcon end icon="ri-pencil-line" color="#652672" />
+                </Vbtn>
+              </template>
+              <template #item.actionPopOver2="{ item }">
+                <VMenu>
+                  <template #activator="{ props }">
+                    <VBtn
+                      v-bind="props"
+                      append-icon="ri-more-2-line"
+                      variant="plain"
+                    />
+                  </template>
+                  <VList>
+                    <VListItem class="p0">
+                      <VListItemTitle>
+                        <Vbtn
+                          variant="plain"
+                          class="cursor-pointer"
+                          @click="props.onEdit"
+                        >
+                          <VRow>
+                            <VCol sm="4">
+                              <VIcon end icon="ri-pencil-line" />
+                            </VCol>
+                            <VCol>
+                              <label class="cursor-pointer">Ubah </label>
+                            </VCol>
+                          </VRow>
+                        </Vbtn>
+                      </VListItemTitle>
+                    </VListItem>
+                    <VListItem class="p0">
+                      <VListItemTitle>
+                        <Vbtn variant="plain" class="cursor-pointer">
+                          <VRow>
+                            <VCol sm="4">
+                              <VIcon
+                                end
+                                icon="fa-trash"
+                                color="#E1442E"
+                                size="15px"
+                              />
+                            </VCol>
+                            <VCol>
+                              <label class="cursor-pointer textRed"
+                                >Hapus
+                              </label>
+                            </VCol>
+                          </VRow>
+                        </Vbtn>
+                      </VListItemTitle>
+                    </VListItem>
+                  </VList>
+                </VMenu>
+              </template>
+              <template #item.actionPopOver3="{ item }">
+                <VMenu>
+                  <template #activator="{ props }">
+                    <VBtn
+                      v-bind="props"
+                      append-icon="ri-more-2-line"
+                      variant="plain"
+                    />
+                  </template>
+                  <VList>
+                    <VListItem class="p0">
+                      <VListItemTitle>
+                        <Vbtn
+                          variant="plain"
+                          class="cursor-pointer"
+                          @click="props.onEdit"
+                        >
+                          <VRow>
+                            <VCol sm="4">
+                              <VIcon end icon="ri-arrow-right-line" />
+                            </VCol>
+                            <VCol>
+                              <label class="cursor-pointer">Detail </label>
+                            </VCol>
+                          </VRow>
+                        </Vbtn>
+                      </VListItemTitle>
+                    </VListItem>
+                    <VListItem class="p0">
+                      <VListItemTitle>
+                        <Vbtn
+                          variant="plain"
+                          class="cursor-pointer"
+                          @click="props.onEdit"
+                        >
+                          <VRow>
+                            <VCol sm="4">
+                              <VIcon end icon="ri-pencil-line" />
+                            </VCol>
+                            <VCol>
+                              <label class="cursor-pointer">Ubah </label>
+                            </VCol>
+                          </VRow>
+                        </Vbtn>
+                      </VListItemTitle>
+                    </VListItem>
+                    <VListItem class="p0">
+                      <VListItemTitle>
+                        <Vbtn variant="plain" class="cursor-pointer">
+                          <VRow>
+                            <VCol sm="4">
+                              <VIcon
+                                end
+                                icon="fa-trash"
+                                color="#E1442E"
+                                size="15px"
+                              />
+                            </VCol>
+                            <VCol>
+                              <label class="cursor-pointer textRed"
+                                >Hapus
+                              </label>
+                            </VCol>
+                          </VRow>
+                        </Vbtn>
+                      </VListItemTitle>
+                    </VListItem>
+                  </VList>
+                </VMenu>
+              </template>
+            </VDataTableServer>
+          </VRow>
+        </div>
+      </div>
+      <div v-else>
+        <div v-for="(item, index) in props.data" :key="index">
+          <VRow class="mt-2">
+            <slot :name="`subTitle${index + 1}`" />
+            <VDataTable
+              class="border rounded"
+              :items-per-page="-1"
+              hide-default-footer=""
+              :headers="item.label"
+              :items="item.value"
+            >
+              <template #item.no="{ index }">
+                <div>
+                  {{ index + 1 }}
+                </div>
+              </template>
+              <template #item.productType="{ item }">
+                <div>
+                  {{ item.productType }}
+                </div>
+              </template>
+              <template #item.tanggal_masuk="{ item }">
+                <div v-if="item.tanggal_masuk">
+                  {{ formatDateIntl(new Date(item.tanggal_masuk)) }}
+                </div>
+                <div v-else>-</div>
+              </template>
+              <template #item.tanggal_keluar="{ item }">
+                <div v-if="item.tanggal_keluar">
+                  {{ formatDateIntl(new Date(item.tanggal_keluar)) }}
+                </div>
+                <div v-else>-</div>
+              </template>
+              <template #item.file_dok="{ item }">
+                <Vbtn
+                  v-if="item.file_dok"
+                  class="d-flex gap-3 cursor-pointer"
+                  style="margin-left: -10px"
+                  @click="() => handleDownload(item.file_dok)"
+                >
+                  <div>
+                    <VIcon end icon="ri-file-3-line" color="#652672" />
+                  </div>
+                  <label class="cursor-pointer">file</label>
+                </Vbtn>
+                <div v-else>
+                  <label>-</label>
+                </div>
+              </template>
+              <template #item.productName="{ item }">
+                <div>
+                  {{ item.productName }}
+                </div>
+              </template>
+              <template #item.materialTypeLong="{ item }">
+                <div class="mw30">
+                  {{ item.materialTypeLong }}
+                </div>
+              </template>
+              <template #item.publication="{ item }">
+                <VCheckbox true-value="true" />
+              </template>
+              <template v-if="!isviewonly" #item.action="{ item }">
+                <DialogDeleteAuditPengajuan
+                  title="Hapus Bahan"
+                  button-text="Hapus"
+                />
+              </template>
+              <template v-if="!isviewonly" #item.actionEdit="{ item }">
+                <Vbtn
+                  variant="plain"
+                  class="cursor-pointer"
+                  @click="() => props.onEdit(item, index)"
+                >
+                  <VIcon end icon="ri-pencil-line" color="#652672" />
+                </Vbtn>
+              </template>
+              <template #item.actionPopOver2="{ item }">
+                <VMenu>
+                  <template #activator="{ props }">
+                    <VBtn
+                      v-bind="props"
+                      append-icon="ri-more-2-line"
+                      variant="plain"
+                    />
+                  </template>
+                  <VList>
+                    <VListItem class="p0">
+                      <VListItemTitle>
+                        <Vbtn
+                          variant="plain"
+                          class="cursor-pointer"
+                          @click="props.onEdit"
+                        >
+                          <VRow>
+                            <VCol sm="4">
+                              <VIcon end icon="ri-pencil-line" />
+                            </VCol>
+                            <VCol>
+                              <label class="cursor-pointer">Ubah </label>
+                            </VCol>
+                          </VRow>
+                        </Vbtn>
+                      </VListItemTitle>
+                    </VListItem>
+                    <VListItem class="p0">
+                      <VListItemTitle>
+                        <Vbtn variant="plain" class="cursor-pointer">
+                          <VRow>
+                            <VCol sm="4">
+                              <VIcon
+                                end
+                                icon="fa-trash"
+                                color="#E1442E"
+                                size="15px"
+                              />
+                            </VCol>
+                            <VCol>
+                              <label class="cursor-pointer textRed"
+                                >Hapus
+                              </label>
+                            </VCol>
+                          </VRow>
+                        </Vbtn>
+                      </VListItemTitle>
+                    </VListItem>
+                  </VList>
+                </VMenu>
+              </template>
+              <template #item.actionPopOver3="{ item }">
+                <VMenu>
+                  <template #activator="{ props }">
+                    <VBtn
+                      v-bind="props"
+                      append-icon="ri-more-2-line"
+                      variant="plain"
+                    />
+                  </template>
+                  <VList>
+                    <VListItem class="p0">
+                      <VListItemTitle>
+                        <Vbtn
+                          variant="plain"
+                          class="cursor-pointer"
+                          @click="props.onEdit"
+                        >
+                          <VRow>
+                            <VCol sm="4">
+                              <VIcon end icon="ri-arrow-right-line" />
+                            </VCol>
+                            <VCol>
+                              <label class="cursor-pointer">Detail </label>
+                            </VCol>
+                          </VRow>
+                        </Vbtn>
+                      </VListItemTitle>
+                    </VListItem>
+                    <VListItem class="p0">
+                      <VListItemTitle>
+                        <Vbtn
+                          variant="plain"
+                          class="cursor-pointer"
+                          @click="props.onEdit"
+                        >
+                          <VRow>
+                            <VCol sm="4">
+                              <VIcon end icon="ri-pencil-line" />
+                            </VCol>
+                            <VCol>
+                              <label class="cursor-pointer">Ubah </label>
+                            </VCol>
+                          </VRow>
+                        </Vbtn>
+                      </VListItemTitle>
+                    </VListItem>
+                    <VListItem class="p0">
+                      <VListItemTitle>
+                        <Vbtn variant="plain" class="cursor-pointer">
+                          <VRow>
+                            <VCol sm="4">
+                              <VIcon
+                                end
+                                icon="fa-trash"
+                                color="#E1442E"
+                                size="15px"
+                              />
+                            </VCol>
+                            <VCol>
+                              <label class="cursor-pointer textRed"
+                                >Hapus
+                              </label>
+                            </VCol>
+                          </VRow>
+                        </Vbtn>
+                      </VListItemTitle>
+                    </VListItem>
+                  </VList>
+                </VMenu>
+              </template>
+            </VDataTable>
+          </VRow>
+        </div>
       </div>
     </VCardText>
   </VCard>
