@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
 
@@ -45,8 +45,9 @@ onMounted(async () => {
       </VExpansionPanelTitle>
       <VExpansionPanelText>
         <!-- Check if KBLI data exists -->
-        <p v-if="!store.kbli || store.kbli.length === 0">No data</p>
-        <VRow v-else>
+        <p v-if="!store.kbli">No data</p>
+        <p v-if="store.isLoading">Loading...</p>
+        <VRow v-else-if="store.kbli && !store.isLoading">
           <VCol style="max-block-size: 30svh; overflow-y: auto">
             <VRow v-for="(item, key) in store.kbli" :key="key">
               <VCol cols="12">
@@ -86,7 +87,7 @@ onMounted(async () => {
             </VRow>
           </VCol>
         </VRow>
-
+        <p v-else>No data available</p>
         <VRow>
           <VCol cols="12">
             <VDialog max-width="800">

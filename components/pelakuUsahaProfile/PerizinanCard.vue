@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
 
@@ -17,7 +17,6 @@ const tablePerizinanHeader = [
 
 const panelOpen = ref([0]);
 const store = pelakuUsahaProfile();
-const isLoading = ref(false);
 
 // TODO -> LOGIC TO DONWLOAD FILE
 const download = (item) => {
@@ -44,7 +43,14 @@ const download = (item) => {
 // });
 
 const handleOssUpdate = () => {
-  store.fetchProfile();
+  const legal = JSON.parse(JSON.stringify(store.legal));
+
+  if (legal) {
+    const nib = legal.filter((val: any) => val.type?.toLowerCase() === "nib")[0]
+      .doc_number;
+    // console.log("nib = ", nib);
+    store.fetchProfile(nib);
+  }
 };
 
 const closeModal = ref(false);
@@ -65,9 +71,10 @@ const closeModal = ref(false);
       </VExpansionPanelTitle>
       <VExpansionPanelText>
         <VContainer style="max-block-size: 35svh; overflow-y: auto">
-          <div v-if="store.isLoading">Loading...</div>
+          <p v-if="store.perizinan?.length === 0">No data</p>
+          <p v-if="store.isLoading">Loading...</p>
           <div
-            v-else-if="store.perizinan?.length"
+            v-else-if="store.perizinan && !store.isLoading"
             v-for="(item, index) in store.perizinan"
             :key="index"
           >
