@@ -289,6 +289,10 @@ watch(
     loading.value = false;
   }
 );
+const itemPerPageTable = ref(
+  props?.itemsPerPage != undefined ? props.itemsPerPage : 10
+);
+const pageTable = ref(1);
 
 watch(
   productItems,
@@ -351,7 +355,10 @@ const itemsPerPageServer = ref(10);
         <VDataTable
           v-if="props.tableType == 'base'"
           class="border rounded"
-          :items-per-page="props?.itemsPerPage"
+          :items-per-page="itemPerPageTable"
+          :page="pageTable"
+          @update:page="(page) => (pageTable = page)"
+          @update:items-per-page="(items) => (itemPerPageTable = items)"
           :hide-default-footer="props?.hideDefaultFooter"
           :headers="props.data.label"
           :items="
@@ -360,6 +367,11 @@ const itemsPerPageServer = ref(10);
               : props?.data.value
           "
         >
+          <template #item.no="{ index }">
+            <div>
+              {{ index + 1 + (pageTable - 1) * itemPerPageTable }}
+            </div>
+          </template>
           <template #header.nama_produk="{ column }">
             <div>
               {{ t(column.title) }}
@@ -541,12 +553,6 @@ const itemsPerPageServer = ref(10);
           <template #header.tgl_penyelia_halal="{ column }">
             <div>
               {{ t(column.title) }}
-            </div>
-          </template>
-
-          <template #item.no="{ index }">
-            <div>
-              {{ index + 1 }}
             </div>
           </template>
           <template #item.addType="{ item }">
