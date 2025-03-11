@@ -16,6 +16,7 @@ const props = defineProps({
 
 const agreed = ref(false)
 const loading = ref(false)
+const timHalal = ref([])
 
 const penanggungJawabProfile = ref({
   namaPerusahaan: null,
@@ -48,6 +49,26 @@ const getDetailData = async () => {
   }
 }
 
+const getTimHalal = async () => {
+  try {
+    const response = await $api("/reguler/pelaku-usaha/detail-tab", {
+      method: "get",
+      params: { id: props?.id, type: "tim-manajemen-halal" },
+    });
+
+   if (response.code === 2000) {
+    const defaultValue = {
+      nama: 'Ketua Tim Manajemen Halal kosong',
+    }
+    const ketua = response?.data?.find((a) => a.posisi === 'Ketua')
+    const anggota = response?.data?.find((a) => a.posisi !== 'Ketua')
+    timHalal.value = ketua || anggota || defaultValue
+   }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
 const handleSubmit = () => {
   props.onComplete()
   localStorage.setItem('pernyataanBebasBabiAgreement', true)
@@ -58,6 +79,7 @@ onMounted(async () => {
   if (localStorage.getItem('pernyataanBebasBabiAgreement'))
     props.onComplete()
   getDetailData()
+  getTimHalal()
 })
 </script>
 
@@ -72,7 +94,6 @@ onMounted(async () => {
           <h2 class="text-h4 fs18 font-weight-bold mb-4">
             Pernyataan Bebas Babi
           </h2>
-  
           <VCardText class="bgContent">
             <div class="text-center mb-4">
               <span
@@ -91,7 +112,7 @@ onMounted(async () => {
               </VCol>
               <VCol>
                 <p class="fs18">
-                  : <span>{{ penanggungJawabProfile.namaPenanggungJawab }}</span>
+                  : <span>{{ timHalal?.nama }}</span>
                 </p>
               </VCol>
             </VRow>
