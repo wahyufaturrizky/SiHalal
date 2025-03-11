@@ -110,7 +110,10 @@ const handleDetailProduct = async (id: string) => {
     console.log(error);
   }
 };
-
+const submissionId = route.params?.id as string;
+onMounted(() => {
+  handleDetailProduct(submissionId);
+});
 interface editBahan {
   typeBahan: 0 | 1;
   jenis_bahan: string[] | null;
@@ -125,10 +128,10 @@ interface editBahan {
   <VCard>
     <VCardTitle>
       <VRow>
-        <VCol cols="6" style="display: flex; align-items: center;"
+        <VCol cols="6" style="display: flex; align-items: center"
           ><h3>Daftar Nama Bahan dan Kemasan</h3></VCol
         >
-        <VCol cols="6" style="display: flex; justify-content: end;">
+        <VCol cols="6" style="display: flex; justify-content: end">
           <TambahBahanModal
             :can-not-edit="canNotEdit"
             @loadList="loadBahan()"
