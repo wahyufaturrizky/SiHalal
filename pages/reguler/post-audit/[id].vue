@@ -19,6 +19,7 @@ const showReturn = ref(false);
 const returnNote = ref("");
 const draftCertif = ref("");
 const detailLph = ref("");
+const sjphFile = ref<any>(null);
 
 const assignAuditorHeader: any[] = [
   { title: "No", key: "index" },
@@ -84,6 +85,27 @@ const returnDocument = async () => {
     useSnackbar().sendSnackbar("Berhasil mengembalikan data", "success");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada kesalahan", "error");
+  }
+};
+
+const getSjphDocument = async () => {
+  // useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
+  try {
+    const response: any = await $api("/reguler/lph/generate-sjph", {
+      method: "post",
+      body: {
+        id_reg: id,
+      },
+    });
+
+    if (response?.code === 2000) {
+      sjphFile.value = response.data
+      return response?.data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
   }
 };
 
@@ -208,6 +230,7 @@ onMounted(async () => {
     getDownloadForm("surat-permohonan"),
     getDraftSertif(),
     getDetailLph(),
+    getSjphDocument()
   ]);
 
   if (dataPengajuan) {
@@ -460,6 +483,26 @@ onMounted(async () => {
                     density="compact"
                     class="px-2"
                     :disabled="!dataProduk?.file_laporan"
+                  >
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn>
+                </VCol>
+              </VRow>
+              <VRow align="center">
+                <VCol cols="5" class="text-h6">Dokumen SJPH </VCol>
+                <VCol class="d-flex align-center">
+                  <div class="me-1">:</div>
+                  <VBtn
+                    :color="
+                      sjphFile?.file
+                        ? 'primary'
+                        : '#A09BA1'
+                    "
+                    density="compact"
+                    class="px-2"
+                    @click="downloadDocument(sjphFile?.file, 'FILES')"
                   >
                     <template #default>
                       <VIcon icon="fa-download" />

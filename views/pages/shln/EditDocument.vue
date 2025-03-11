@@ -472,8 +472,8 @@ watch(loaFile, (newValue, oldValue) => {
                   return (
                     !value ||
                     !value.length ||
-                    value[0].size < 2000000 ||
-                    'file maksimum 2MB'
+                    value[0].size < 20000000 ||
+                    'file maksimum 20MB'
                   );
                 },
               ]"
@@ -530,8 +530,8 @@ watch(loaFile, (newValue, oldValue) => {
                   return (
                     !value ||
                     !value.length ||
-                    value[0].size < 2000000 ||
-                    'file maksimum 2MB'
+                    value[0].size < 20000000 ||
+                    'file maksimum 20MB'
                   );
                 },
               ]"
@@ -620,8 +620,8 @@ watch(loaFile, (newValue, oldValue) => {
                       return (
                         !value ||
                         !value.length ||
-                        value[0].size < 2000000 ||
-                        'file maksimum 2MB'
+                        value[0].size < 20000000 ||
+                        'file maksimum 20MB'
                       );
                     },
                   ]"

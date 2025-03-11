@@ -293,9 +293,9 @@ const limitCharKtp = (v: string) => {
                       requiredValidator,
                       fileExtensionValidator,
                       (value: any) => {
-                        if (value && value.length && value[0].size > 2000000) {
+                        if (value && value.length && value[0].size > 20000000) {
                           isFormError = true
-                          return 'file maksimum 2MB'
+                          return 'file maksimum 20MB'
                         } else {
                           isFormError = false
                         }
@@ -320,9 +320,9 @@ const limitCharKtp = (v: string) => {
                       requiredValidator,
                       fileExtensionValidator,
                       (value: any) => {
-                        if (value && value.length && value[0].size > 2000000) {
+                        if (value && value.length && value[0].size > 20000000) {
                           isFormError = true
-                          return 'file maksimum 2MB'
+                          return 'file maksimum 20MB'
                         } else {
                           isFormError = false
                         }
@@ -347,9 +347,9 @@ const limitCharKtp = (v: string) => {
                       requiredValidator,
                       fileExtensionValidator,
                       (value: any) => {
-                        if (value && value.length && value[0].size > 2000000) {
+                        if (value && value.length && value[0].size > 20000000) {
                           isFormError = true
-                          return 'file maksimum 2MB'
+                          return 'file maksimum 20MB'
                         } else {
                           isFormError = false
                         }
