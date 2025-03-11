@@ -383,7 +383,7 @@ onMounted(async () => {
                   max-width="400"
                   prepend-icon=""
                   @change="handleUploadFile"
-                  :rules="[requiredValidator]"
+                  :rules="[requiredValidator, fileExtensionTypeValidator]"
                 >
                   <template #append-inner>
                     <VBtn rounded="s-0 e-xl" text="Choose" />
