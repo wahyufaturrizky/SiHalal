@@ -47,16 +47,13 @@ onMounted(async () => {
           <VTab value="2">Pengajuan</VTab>
           <VTab value="3">Pabrik & Outlet</VTab>
           <VTab value="4">Bahan</VTab>
-          <!-- <VTab value="5" :disabled="!bahanCheck">Produk</VTab>
+          <VTab value="5" :disabled="!bahanCheck">Produk</VTab>
           <VTab :disabled="!produkAllBahan || !bahanCheck" value="6"
             >Proses Produk Halal</VTab
           >
           <VTab :disabled="!produkAllBahan || !bahanCheck" value="7"
             >Pernyataan</VTab
-          > -->
-          <VTab value="5">Produk</VTab>
-          <VTab value="6">Proses Produk Halal</VTab>
-          <VTab value="7">Pernyataan</VTab>
+          >
         </VTabs>
 
         <VTabsWindow v-model="tabs">
