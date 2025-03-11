@@ -158,9 +158,7 @@ const handleDetailProduct = async (id: string) => {
     } as any);
 
     if (response.code === 2000) {
-
       console.log(response.data, "ini data");
-    
 
       const tracking = response.data.tracking ?? [];
       const lastIndex = tracking.length - 1;
@@ -169,7 +167,6 @@ const handleDetailProduct = async (id: string) => {
 
       statusSelf.value = tracking[lastIndex]?.status || "";
       console.log(statusSelf.value, "ini status self");
-     
     }
     return response;
   } catch (error) {
@@ -234,17 +231,17 @@ watch(
 </script>
 
 <template>
-  <VCard style="padding: 1svw;">
+  <VCard style="padding: 1svw">
     <VCardTitle>
       <VRow>
         <VCol cols="6"><h3>Daftar Produk</h3></VCol>
-        <VCol cols="6" style="display: flex; justify-content: end;">
+        <VCol cols="6" style="display: flex; justify-content: end">
           <VBtn
             v-if="disableTambahProduk()"
             @click="handleOpenModal('CREATE')"
             variant="outlined"
             append-icon="fa-plus"
-            style="margin-inline-end: 1svw;"
+            style="margin-inline-end: 1svw"
             >Tambah</VBtn
           >
           <!-- <VBtn variant="flat">Simpan Perubahan</VBtn> -->
@@ -290,7 +287,14 @@ watch(
           }}</v-chip>
         </template>
         <template v-if="!canNotEdit" #item.action="{ item }: any">
-          <VMenu v-if="!item.verified || statusSelf ==='OF1'|| statusSelf ==='OF280'|| statusSelf ==='OF285' ">
+          <VMenu
+            v-if="
+              !item.verified ||
+              statusSelf === 'OF1' ||
+              statusSelf === 'OF280' ||
+              statusSelf === 'OF285'
+            "
+          >
             <template #activator="{ props }">
               <!-- <VIcon
                 @click="handleDetailProduct(item.id)"
