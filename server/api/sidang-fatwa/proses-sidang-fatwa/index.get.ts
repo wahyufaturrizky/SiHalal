@@ -11,7 +11,7 @@ export default defineEventHandler(async event => {
     })
   }
 
-  const { page, size, keyword, provinsi_code, status } = (await getQuery(event)) as {
+  const { page, size, keyword, provinsi_code } = (await getQuery(event)) as {
     page: string
     size: string
     keyword: string
@@ -30,8 +30,6 @@ export default defineEventHandler(async event => {
   if (provinsi_code !== '')
     params['provinsi_code'] = provinsi_code
 
-  if (status !== '')
-    params['status'] = status
 
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/sidang-fatwa/proses/search`,
