@@ -86,6 +86,31 @@ const loadBahan = async () => {
   store.isAllBahanSelected();
 };
 
+const statusSelf = ref<string>("");
+const handleDetailProduct = async (id: string) => {
+  // selectedProduct.value = id;
+  try {
+    const response: any = await $api(`/self-declare/submission/${id}/detail`, {
+      method: "get",
+    } as any);
+
+    if (response.code === 2000) {
+      console.log(response.data, "ini data");
+
+      const tracking = response.data.tracking ?? [];
+      const lastIndex = tracking.length - 1;
+
+      console.log("result", tracking[lastIndex]?.status);
+
+      statusSelf.value = tracking[lastIndex]?.status || "";
+      console.log(statusSelf.value, "ini status self");
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 interface editBahan {
   typeBahan: 0 | 1;
   jenis_bahan: string[] | null;
@@ -100,10 +125,10 @@ interface editBahan {
   <VCard>
     <VCardTitle>
       <VRow>
-        <VCol cols="6" style="display: flex; align-items: center"
+        <VCol cols="6" style="display: flex; align-items: center;"
           ><h3>Daftar Nama Bahan dan Kemasan</h3></VCol
         >
-        <VCol cols="6" style="display: flex; justify-content: end">
+        <VCol cols="6" style="display: flex; justify-content: end;">
           <TambahBahanModal
             :can-not-edit="canNotEdit"
             @loadList="loadBahan()"
@@ -131,7 +156,15 @@ interface editBahan {
               }}</v-chip>
             </template>
             <template v-if="!canNotEdit" #item.action="{ item }">
-              <div class="d-flex gap-1" v-if="!item.vefified">
+              <div
+                class="d-flex gap-1"
+                v-if="
+                  !item.verified ||
+                  statusSelf === 'OF1' ||
+                  statusSelf === 'OF280' ||
+                  statusSelf === 'OF285'
+                "
+              >
                 <EditBahanModal
                   :data="{
                     id: item.id,
@@ -192,6 +225,7 @@ interface editBahan {
   line-height: 18px !important;
   padding-inline-start: 10px;
 }
+
 .bgContent {
   border-radius: 10px;
   background-color: #f0e9f1;
