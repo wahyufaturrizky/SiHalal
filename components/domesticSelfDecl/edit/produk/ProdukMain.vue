@@ -149,22 +149,27 @@ const detailProduct = ref({
   merek: null,
   nama: null,
 });
+const statusSelf = ref<string>("");
 const handleDetailProduct = async (id: string) => {
-  selectedProduct.value = id;
+  // selectedProduct.value = id;
   try {
-    const response: any = await $api(
-      `/self-declare/business-actor/product/detail`,
-      {
-        method: "get",
-        query: {
-          id_reg: submissionId,
-          product_id: id,
-        },
-      } as any
-    );
+    const response: any = await $api(`/self-declare/submission/${id}/detail`, {
+      method: "get",
+    } as any);
 
     if (response.code === 2000) {
-      detailProduct.value = response.data;
+
+      console.log(response.data, "ini data");
+    
+
+      const tracking = response.data.tracking ?? [];
+      const lastIndex = tracking.length - 1;
+
+      console.log("result", tracking[lastIndex]?.status);
+
+      statusSelf.value = tracking[lastIndex]?.status || "";
+      console.log(statusSelf.value, "ini status self");
+     
     }
     return response;
   } catch (error) {
@@ -214,6 +219,7 @@ const disableTambahProduk = () => {
 
 onMounted(() => {
   setCertificateHalalData();
+  handleDetailProduct(submissionId);
 });
 
 watch(
@@ -228,17 +234,17 @@ watch(
 </script>
 
 <template>
-  <VCard style="padding: 1svw">
+  <VCard style="padding: 1svw;">
     <VCardTitle>
       <VRow>
         <VCol cols="6"><h3>Daftar Produk</h3></VCol>
-        <VCol cols="6" style="display: flex; justify-content: end">
+        <VCol cols="6" style="display: flex; justify-content: end;">
           <VBtn
             v-if="disableTambahProduk()"
             @click="handleOpenModal('CREATE')"
             variant="outlined"
             append-icon="fa-plus"
-            style="margin-right: 1svw"
+            style="margin-inline-end: 1svw;"
             >Tambah</VBtn
           >
           <!-- <VBtn variant="flat">Simpan Perubahan</VBtn> -->
@@ -284,7 +290,7 @@ watch(
           }}</v-chip>
         </template>
         <template v-if="!canNotEdit" #item.action="{ item }: any">
-          <VMenu v-if="!item.verified">
+          <VMenu v-if="!item.verified || statusSelf ==='OF1'|| statusSelf ==='OF280'|| statusSelf ==='OF285' ">
             <template #activator="{ props }">
               <!-- <VIcon
                 @click="handleDetailProduct(item.id)"
@@ -361,28 +367,32 @@ watch(
 :deep(.v-data-table.custom-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }
+
 .bgContent {
   border-radius: 10px;
   background-color: #f0e9f1;
   padding-inline-start: 10px;
 }
+
 .bgContent-error {
   border-radius: 10px;
   background-color: #da5739;
   padding-inline-start: 10px;
 }
+
 .subText {
   align-content: center;
   color: #652672 !important;
