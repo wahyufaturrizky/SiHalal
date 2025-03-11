@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Bahan, Evaluasi, Produk } from "#components";
+import { Bahan, Evaluasi } from "#components";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -279,7 +279,8 @@ onMounted(async () => {
             </div>
           </div>
           <div v-if="activeTab === 4">
-            <Produk :isviewonly="isViewOnly" />
+            <!-- <Produk :isviewonly="isViewOnly" /> -->
+            <ProdukRegulerEdit :isviewonly="isViewOnly" />
           </div>
           <div v-if="activeTab === 5">
             <Evaluasi :isviewonly="isViewOnly" />
