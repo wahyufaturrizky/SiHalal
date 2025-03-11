@@ -10,6 +10,7 @@ export const LIST_DAFTAR_AJUAN_DITERIMA = 'api/v1/halal-certificate-reguler/lph/
 export const SUBMIT_AJUAN_LPH = 'api/v1/halal-certificate-reguler/lph/submit'
 export const LIST_POST_AUDIT = 'api/v1/halal-certificate-reguler/lph/post-audit/list'
 export const POST_AUDIT_DETAIL = 'api/v1/halal-certificate-reguler/lph/post-audit'
+export const UPLOAD_LAPORAN_AUDIT = 'api/v1/halal-certificate-reguler/lph/upload-laporan-audit'
 
 // REGULER - PELAKU USAHA
 export const LIST_MENU_STATUS = 'api/v1/halal-certificate-reguler/business-actor/submission'
