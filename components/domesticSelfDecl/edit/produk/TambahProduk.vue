@@ -80,6 +80,7 @@ const uploadedFile = ref({
 
 const route = useRoute<"">();
 const submissionId = route.params?.id;
+const isFormError = ref(false);
 
 const listClassification = ref([]);
 const listClassificationDetail = ref([]);
@@ -127,8 +128,14 @@ const handleRemoveFile = () => {
   formData.foto_produk = null;
 };
 
+const fileUploadRef = ref();
+
 const handleUploadFile = async (event: any) => {
-  if (event?.target?.files.length) {
+  const result = await fileUploadRef.value.validate();
+
+  const resultLength = JSON.parse(JSON.stringify(result));
+  console.log("validation file = ", result);
+  if (event?.target?.files.length && result.length < 1) {
     const fileData = event.target.files[0];
     uploadedFile.value.name = fileData.name;
     uploadedFile.value.file = fileData;
@@ -264,6 +271,22 @@ const handlePredict = (product: any) => {
   }
 };
 
+const fileExtensionValidator = (value: any) => {
+  let file = value;
+  if (Array.isArray(value)) {
+    file = value[0];
+  }
+  console.log("file attribute = ", value[0].type);
+  const allowedFileExtensionList = ["image/jpg", "image/jpeg", "image/png"];
+  const result = useArrayIncludes(allowedFileExtensionList, file.type).value;
+  if (result) {
+    isFormError.value = false;
+    return true;
+  }
+  isFormError.value = true;
+  return "File extension not allowed";
+};
+
 onMounted(async () => {
   const res = await Promise.all([getDetail(), handleListClassification()]);
 
@@ -383,7 +406,8 @@ onMounted(async () => {
                   max-width="400"
                   prepend-icon=""
                   @change="handleUploadFile"
-                  :rules="[requiredValidator, fileExtensionTypeValidator]"
+                  ref="fileUploadRef"
+                  :rules="[requiredValidator, fileExtensionValidator]"
                 >
                   <template #append-inner>
                     <VBtn rounded="s-0 e-xl" text="Choose" />
