@@ -79,22 +79,27 @@ const getListPenyelia = async () => {
 
 const getChannel = async (path: string) => {
   try {
-    const params = {
-      url: path,
-    };
+    // const params = {
+    //   url: path,
+    // };
+    //
+    // const response: any = await $api("/reguler/lph/list", {
+    //   method: "get",
+    //   params,
+    // });
 
-    const response: any = await $api("/reguler/lph/list", {
-      method: "get",
-      params,
-    });
+    const response = await $api(`/master/jenis-layanan-by-idreg/${id}`, {
+      method: "get"
+    })
+    itemsChannel.value = response
 
-    if (response?.code === 2000) {
-      itemsChannel.value = response?.data;
-
-      return response;
-    } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    }
+    //
+    // if (response?.code === 2000) {
+    //
+    //   return response;
+    // } else {
+    //   useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    // }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }

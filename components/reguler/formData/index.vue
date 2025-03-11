@@ -181,11 +181,28 @@ const onSubmit = async () => {
   }
 }
 
+const route = useRoute<''>()
+const submissionId = route.params?.id
+
 const getProductType = async (id: string) => {
   try {
-    const response: any = await $api('/master/product-filter', {
-      method: 'get',
-      params: { id },
+    // const response: any =
+    //   await $api('/master/product-filter', {
+    //   method: 'get',
+    //   params: { id },
+    // })
+
+    const jenisLayanan = props?.service_type?.find(
+      (item: any) =>
+        props.data?.[3]?.value === item.name
+        || props.data?.[3]?.value === item.code,
+    )
+    const response = await $api("/master/product-filter-by-regid", {
+      method: "get",
+      params: {
+        id: jenisLayanan?.code || props.data?.[3]?.value,
+        idReg: submissionId
+      },
     })
 
     if (response.length) {
@@ -245,8 +262,7 @@ const lphValidation = async (title: string, value: string, index: number) => {
   }
 }
 
-const route = useRoute<''>()
-const submissionId = route.params?.id
+
 
 const checkCodeFasilitas = async () => {
   try {

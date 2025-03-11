@@ -120,6 +120,7 @@ const layoutData = ref({
     },
   ],
   value: [],
+  totalItem: 0,
 });
 
 const materialAndProduct = ref([
@@ -141,6 +142,7 @@ const materialAndProduct = ref([
       },
     ],
     value: [],
+    totalItem: 0,
   },
   {
     label: [
@@ -160,6 +162,7 @@ const materialAndProduct = ref([
       },
     ],
     value: [],
+    totalItem: 0,
   },
 ]);
 
@@ -179,6 +182,7 @@ const processProduction = ref({
     },
   ],
   value: [],
+  totalItem: 0,
 });
 
 const catatanHasilProduksi = ref({
@@ -199,6 +203,7 @@ const catatanHasilProduksi = ref({
     },
   ],
   value: [],
+  totalItem: 0,
 });
 
 const catatanDistribusi = ref({
@@ -219,6 +224,7 @@ const catatanDistribusi = ref({
     },
   ],
   value: [],
+  totalItem: 0,
 });
 
 const toggleAdd = (type: string) => {
@@ -341,17 +347,19 @@ const handleUploadFile = async (event: any) => {
     }
   }
 };
+const pageLayout = ref(1);
+const sizeLayout = ref(10);
+const pageCatatanBahan = ref(1);
+const sizeCatatanBahan = ref(10);
+const pageCatatanProduk = ref(1);
+const sizeCatatanProduk = ref(10);
 
-const getListLayout = async () => {
+const getListLayout = async (page = 1, size = 10) => {
   const response: any = await $api(
     "/reguler/pelaku-usaha/tab-proses/list-layout",
     {
       method: "get",
-      query: {
-        id,
-        page: page.value,
-        size: size.value,
-      },
+      query: { id, page, size },
     }
   );
 
@@ -359,21 +367,24 @@ const getListLayout = async () => {
     layoutData.value = {
       ...layoutData.value,
       value: response.data,
+      totalItem: response.total_data,
     };
   }
 
   return response || [];
 };
 
-const getListDigaramAlur = async () => {
+const pageDiagramAlur = ref(1);
+const itemsPerPageDiagramAlur = ref(10);
+const getListDigaramAlur = async (page = 10, size = 10) => {
   const response: any = await $api(
     "/reguler/pelaku-usaha/tab-proses/diagram-alur/list",
     {
       method: "get",
       query: {
         id,
-        page: page.value,
-        size: size.value,
+        page,
+        size,
       },
     }
   );
@@ -382,22 +393,19 @@ const getListDigaramAlur = async () => {
     processProduction.value = {
       ...processProduction.value,
       value: response.data,
+      totalItem: response.total_data,
     };
   }
 
   return response || [];
 };
 
-const getListHasilProduksi = async () => {
+const getListHasilProduksi = async (page = 1, size = 10) => {
   const response: any = await $api(
     "/reguler/pelaku-usaha/tab-proses/hasil-produksi/list",
     {
       method: "get",
-      query: {
-        id,
-        page: page.value,
-        size: size.value,
-      },
+      query: { id, page, size },
     }
   );
 
@@ -405,22 +413,19 @@ const getListHasilProduksi = async () => {
     catatanHasilProduksi.value = {
       ...catatanHasilProduksi.value,
       value: response.data,
+      totalItem: response.total_data,
     };
   }
 
   return response || [];
 };
 
-const getListCatatanDistribusi = async () => {
+const getListCatatanDistribusi = async (page = 1, size = 10) => {
   const response: any = await $api(
     "/reguler/pelaku-usaha/tab-proses/catatan-distribusi/list",
     {
       method: "get",
-      query: {
-        id,
-        page: page.value,
-        size: size.value,
-      },
+      query: { id, page, size },
     }
   );
 
@@ -428,6 +433,7 @@ const getListCatatanDistribusi = async () => {
     catatanDistribusi.value = {
       ...catatanDistribusi.value,
       value: response.data,
+      totalItem: response.total_data,
     };
   }
 
@@ -475,21 +481,26 @@ const getListProduct = async () => {
 
   return response || [];
 };
-
-const getListCatatanBahan = async () => {
+const getCatatanBahanOrProduk = async (page, size, type) => {
+  if (type == 0) {
+    await getListCatatanBahan(page, size);
+  }
+  await getListCatatanProduk(page, size);
+};
+const getListCatatanBahan = async (page, size) => {
   const response: any = await $api(
     "/reguler/pelaku-usaha/tab-proses/list-catatan-bahan",
     {
       method: "get",
-      query: {
-        id,
-        page: page.value,
-        size: size.value,
-      },
+      query: { id, page, size },
     }
   );
 
-  if (response.code === 2000) materialAndProduct.value[0].value = response.data;
+  if (response.code === 2000) {
+    console.log(response);
+    materialAndProduct.value[0].value = response.data;
+    materialAndProduct.value[0].totalItem = response.total_data;
+  }
 
   return response || [];
 };
@@ -501,8 +512,8 @@ const getListCatatanProduk = async () => {
       method: "get",
       query: {
         id,
-        page: page.value,
-        size: size.value,
+        page: pageCatatanProduk.value,
+        size: sizeCatatanProduk.value,
       },
     }
   );
@@ -510,6 +521,7 @@ const getListCatatanProduk = async () => {
   if (response.code === 2000) {
     catatanProduk.value = response.data;
     materialAndProduct.value[1].value = response.data;
+    materialAndProduct.value[1].totalItem = response.total_data;
   }
 
   return response || [];
@@ -569,7 +581,7 @@ const handleAddOrEdit = async () => {
         addDialog.value = false;
         getListLayout();
         getListFactory();
-        getListCatatanBahan();
+        getListCatatanBahan(pageCatatanBahan.value, sizeCatatanBahan.value);
         useSnackbar().sendSnackbar("Sukses menambah data", "success");
       }
     } else {
@@ -587,7 +599,7 @@ const handleAddOrEdit = async () => {
         addDialog.value = false;
         getListLayout();
         getListFactory();
-        getListCatatanBahan();
+        getListCatatanBahan(pageCatatanBahan.value, sizeCatatanBahan.value);
         useSnackbar().sendSnackbar("Sukses menambah data", "success");
       }
     }
@@ -622,7 +634,7 @@ const handleAddOrEdit = async () => {
         addDialog.value = false;
         getListLayout();
         getListFactory();
-        getListCatatanBahan();
+        getListCatatanBahan(pageCatatanBahan.value, sizeCatatanBahan.value);
         getListCatatanProduk();
         useSnackbar().sendSnackbar("Sukses menambah data", "success");
       }
@@ -641,7 +653,7 @@ const handleAddOrEdit = async () => {
         addDialog.value = false;
         getListLayout();
         getListFactory();
-        getListCatatanBahan();
+        getListCatatanBahan(pageCatatanBahan.value, sizeCatatanBahan.value);
         getListCatatanProduk();
         useSnackbar().sendSnackbar("Sukses menambah data", "success");
       }
@@ -672,7 +684,7 @@ const handleAddOrEdit = async () => {
     if (response.code === 2000) {
       resetForm();
       addDialog.value = false;
-      getListDigaramAlur();
+      getListDigaramAlur(pageDiagramAlur.value, itemsPerPageDiagramAlur.value);
       useSnackbar().sendSnackbar("Sukses menambah data", "success");
     }
   } else if (titleDialog.value === "Ubah Diagram Alur Proses") {
@@ -701,7 +713,7 @@ const handleAddOrEdit = async () => {
     if (response.code === 2000) {
       resetForm();
       addDialog.value = false;
-      getListDigaramAlur();
+      getListDigaramAlur(pageDiagramAlur.value, itemsPerPageDiagramAlur.value);
       useSnackbar().sendSnackbar("Sukses menambah data", "success");
     }
   } else if (titleDialog.value === "Tambah Catatan Hasil Produksi") {
@@ -883,9 +895,9 @@ onMounted(async () => {
   await Promise.allSettled([
     getListLayout(),
     getListFactory(),
-    getListCatatanBahan(),
+    getListCatatanBahan(pageCatatanBahan.value, sizeCatatanBahan.value),
     getListCatatanProduk(),
-    getListDigaramAlur(),
+    getListDigaramAlur(pageDiagramAlur.value, itemsPerPageDiagramAlur.value),
     getListHasilProduksi(),
     getListCatatanDistribusi(),
     getListProduct(),
@@ -1634,7 +1646,10 @@ watch(selectedFactory, () => {
       :data="layoutData"
       title="Layout / Denah Ruang Produksi"
       with-add-button
+      :hide-default-footer="false"
       :isviewonly="isviewonly"
+      table-type="server"
+      :load-server-item="getListLayout"
     />
     <br />
     <TableDataWith2Table
@@ -1642,6 +1657,9 @@ watch(selectedFactory, () => {
       :on-submit="() => (confirmSaveDialog = true)"
       :on-edit="(item:any, index:number) => toggleEdit2Table(item, index, 'Layout')"
       :data="materialAndProduct"
+      :hide-default-footer="false"
+      table-type="server"
+      :load-server-item="getCatatanBahanOrProduk"
       title="Catatan Penyimpanan Bahan dan Produk"
     >
       <template #subTitle1>
@@ -1663,7 +1681,10 @@ watch(selectedFactory, () => {
       :data="processProduction"
       title="Diagram Alur Proses Produksi"
       with-add-button
+      :hide-default-footer="false"
       :isviewonly="isviewonly"
+      table-type="server"
+      :server-function="getListDigaramAlur"
     />
     <br />
     <TableData
@@ -1672,8 +1693,11 @@ watch(selectedFactory, () => {
       :on-add="() => toggleAdd('Catatan Hasil Produksi')"
       :data="catatanHasilProduksi"
       title="Catatan Hasil Produksi"
+      :hide-default-footer="false"
+      table-type="server"
       with-add-button
       :isviewonly="isviewonly"
+      :server-function="getListHasilProduksi"
     />
     <br />
     <TableData
@@ -1683,7 +1707,10 @@ watch(selectedFactory, () => {
       :data="catatanDistribusi"
       title="Catatan Distribusi / Penjualan Produk"
       with-add-button
+      :hide-default-footer="false"
+      table-type="server"
       :isviewonly="isviewonly"
+      :server-function="getListCatatanDistribusi"
     />
   </div>
 </template>
