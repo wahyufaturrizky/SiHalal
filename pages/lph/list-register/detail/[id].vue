@@ -581,7 +581,37 @@ onMounted(async () => {
                   variant="plain"
                   style="align-content: start"
                   @click="
-                    downloadDocument(detailSubmission.dokumen.sjph, 'FILES')
+                    downloadDocument(detailSubmission?.certificate_halal?.lph?.file_sertifikat, 'SERT_LPH')
+                  "
+                />
+              </InfoRow>
+              <InfoRow
+                cols-name="8"
+                cols-separator="1"
+                cols-value="3"
+                name="Unduh SJPH"
+              >
+                <VBtn
+                  append-icon="fa-download"
+                  variant="plain"
+                  style="align-content: start"
+                  @click="
+                    downloadDocument(detailSubmission?.dokumen?.sjph, 'FILES')
+                  "
+                />
+              </InfoRow>
+              <InfoRow
+                cols-name="8"
+                cols-separator="1"
+                cols-value="3"
+                name="Unduh Surat Permohonan"
+              >
+                <VBtn
+                  append-icon="fa-download"
+                  variant="plain"
+                  style="align-content: start"
+                  @click="
+                    downloadDocument(detailSubmission?.dokumen?.permohonan, 'FILES')
                   "
                 />
               </InfoRow>
