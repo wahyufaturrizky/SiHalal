@@ -1,5 +1,9 @@
 import type { NuxtError } from 'nuxt/app'
 
+interface DraftBody {
+  id_reg: string
+}
+
 const runtimeConfig = useRuntimeConfig()
 export default defineEventHandler(async (event: any) => {
   const authorizationHeader = getRequestHeader(event, 'Authorization')
@@ -11,23 +15,18 @@ export default defineEventHandler(async (event: any) => {
     })
   }
 
-  const { id, page, size } = (await getQuery(event)) as {
+  const { id } = (await getQuery(event)) as {
     id: string
-    page: number
-    size: number
   }
 
-  const params = {
-    page,
-    size,
-  }
+  const body: DraftBody = await readBody(event)
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/lph/proses/distribusi/${id}`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/lph/assign-dates/${id}/auditor`,
     {
-      method: 'get',
+      method: 'post',
       headers: { Authorization: authorizationHeader },
-      params,
+      body,
     },
   ).catch((err: NuxtError) => {
     setResponseStatus(event, 400)

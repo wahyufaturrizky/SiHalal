@@ -23,6 +23,8 @@ const listFactory = ref<any[]>([]);
 const catatanProduk = ref<any[]>([]);
 const selectedProduct = ref<any>({});
 const listProduk = ref<any>([]);
+const page = ref(1)
+const size = ref(10)
 
 const formAddLayout = ref({
   file_layout: "",
@@ -97,12 +99,6 @@ const handleRemoveFile = () => {
 
 onMounted(() => {
   tabs.value = 0;
-});
-
-const dummyDataDiagramAlur = ref({
-  title: "Air Mineral",
-  proccess: [{ title: "Penggilingan" }, { title: "Penyulingan" }],
-  detail: "Digilingkan Air",
 });
 
 const documentList = ref([
@@ -351,7 +347,11 @@ const getListLayout = async () => {
     "/reguler/pelaku-usaha/tab-proses/list-layout",
     {
       method: "get",
-      query: { id },
+      query: {
+        id,
+        page: page.value,
+        size: size.value,
+      },
     }
   );
 
@@ -370,7 +370,11 @@ const getListDigaramAlur = async () => {
     "/reguler/pelaku-usaha/tab-proses/diagram-alur/list",
     {
       method: "get",
-      query: { id },
+      query: {
+        id,
+        page: page.value,
+        size: size.value,
+      },
     }
   );
 
@@ -389,7 +393,11 @@ const getListHasilProduksi = async () => {
     "/reguler/pelaku-usaha/tab-proses/hasil-produksi/list",
     {
       method: "get",
-      query: { id },
+      query: {
+        id,
+        page: page.value,
+        size: size.value,
+      },
     }
   );
 
@@ -408,7 +416,11 @@ const getListCatatanDistribusi = async () => {
     "/reguler/pelaku-usaha/tab-proses/catatan-distribusi/list",
     {
       method: "get",
-      query: { id },
+      query: {
+        id,
+        page: page.value,
+        size: size.value,
+      },
     }
   );
 
@@ -427,7 +439,11 @@ const getListFactory = async () => {
     "/reguler/pelaku-usaha/tab-proses/list-factory",
     {
       method: "get",
-      query: { id },
+      query: {
+        id,
+        page: page.value,
+        size: size.value,
+      },
     }
   );
 
@@ -444,7 +460,11 @@ const getListProduct = async () => {
     "/reguler/pelaku-usaha/tab-proses/list-product",
     {
       method: "get",
-      query: { id },
+      query: {
+        id,
+        page: page.value,
+        size: size.value,
+      },
     }
   );
 
@@ -461,7 +481,11 @@ const getListCatatanBahan = async () => {
     "/reguler/pelaku-usaha/tab-proses/list-catatan-bahan",
     {
       method: "get",
-      query: { id },
+      query: {
+        id,
+        page: page.value,
+        size: size.value,
+      },
     }
   );
 
@@ -475,7 +499,11 @@ const getListCatatanProduk = async () => {
     "/reguler/pelaku-usaha/tab-proses/list-catatan-produk",
     {
       method: "get",
-      query: { id },
+      query: {
+        id,
+        page: page.value,
+        size: size.value,
+      },
     }
   );
 
@@ -697,7 +725,11 @@ const handleAddOrEdit = async () => {
       "/reguler/pelaku-usaha/tab-proses/hasil-produksi/add",
       {
         method: "post",
-        query: { id },
+        query: {
+          id,
+          page: page.value,
+          size: size.value,
+        },
         body,
       }
     );
@@ -900,7 +932,7 @@ watch(selectedFactory, () => {
           />
           <br />
           <div class="d-flex justify-space-between mt-5">
-            <label> Unggah Bahan </label>
+            <label> Unggah Layout </label>
             <VCol cols="6">
               <VTextField
                 v-if="uploadedFile.file"

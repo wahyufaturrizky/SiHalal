@@ -11,8 +11,15 @@ export default defineEventHandler(async (event: any) => {
     })
   }
 
-  const { id } = (await getQuery(event)) as {
+  const { id, page, size } = (await getQuery(event)) as {
     id: string
+    page: number
+    size: number
+  }
+
+  const params = {
+    page,
+    size,
   }
 
   const data = await $fetch<any>(
@@ -20,6 +27,7 @@ export default defineEventHandler(async (event: any) => {
     {
       method: 'get',
       headers: { Authorization: authorizationHeader },
+      params,
     },
   ).catch((err: NuxtError) => {
     setResponseStatus(event, 400)

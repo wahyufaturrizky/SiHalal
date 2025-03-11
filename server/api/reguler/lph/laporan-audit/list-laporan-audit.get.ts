@@ -11,28 +11,20 @@ export default defineEventHandler(async (event: any) => {
     })
   }
 
-  const { id, page, size } = (await getQuery(event)) as {
+  const { id } = (await getQuery(event)) as {
     id: string
-    page: number
-    size: number
-  }
-
-  const params = {
-    page,
-    size,
   }
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/lph/proses/distribusi/${id}`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/lph/upload-laporan/${id}`,
     {
       method: 'get',
       headers: { Authorization: authorizationHeader },
-      params,
     },
   ).catch((err: NuxtError) => {
-    setResponseStatus(event, 400)
+    //setResponseStatus(event, 400)
 
-    return err.data
+    return null
   })
 
   return data || null

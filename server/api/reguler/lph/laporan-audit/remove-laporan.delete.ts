@@ -1,4 +1,10 @@
+/* eslint-disable camelcase */
 import type { NuxtError } from 'nuxt/app'
+
+interface DraftBody {
+  id_reg: string
+  id_legal: string
+}
 
 const runtimeConfig = useRuntimeConfig()
 export default defineEventHandler(async (event: any) => {
@@ -10,24 +16,14 @@ export default defineEventHandler(async (event: any) => {
         'Need to pass valid Bearer-authorization header to access this endpoint',
     })
   }
-
-  const { id, page, size } = (await getQuery(event)) as {
-    id: string
-    page: number
-    size: number
-  }
-
-  const params = {
-    page,
-    size,
-  }
+  const body: DraftBody = await readBody(event)
+  const { id, id_hasil_doc } = body
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/lph/proses/distribusi/${id}`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/lph/remove-laporan-audit/${id}/${id_hasil_doc}`,
     {
-      method: 'get',
+      method: 'delete',
       headers: { Authorization: authorizationHeader },
-      params,
     },
   ).catch((err: NuxtError) => {
     setResponseStatus(event, 400)

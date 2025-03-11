@@ -46,8 +46,7 @@ const loadItem = async ({
         page,
         size,
         keyword,
-        provinsi_code,
-        status: 'OF300,OF290',
+        provinsi_code
       },
     })
 
