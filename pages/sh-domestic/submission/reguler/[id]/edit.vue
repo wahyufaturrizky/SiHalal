@@ -11,6 +11,7 @@ const loadingAll = ref<boolean>(true);
 
 const activeTab = ref(-1);
 const approveRequirements = ref(false);
+const approveRequirementsProses = ref(false);
 const listLegal = ref<any>(null);
 const listFactory = ref<any>(null);
 const listOutlet = ref<any>(null);
@@ -262,10 +263,10 @@ onMounted(async () => {
             />
           </div>
           <div v-if="activeTab === 3">
-            <div v-if="!approveRequirements">
+            <div v-if="!approveRequirementsProses">
               <ProsesLayanan
                 :id="id"
-                :on-complete="() => (approveRequirements = true)"
+                :on-complete="() => (approveRequirementsProses = true)"
               />
             </div>
             <div v-else>
