@@ -132,6 +132,7 @@ onMounted(async () => {
               "
             />
             <VBtn
+              v-if="!dataPemeriksaanProduk?.old_data"
               text="Update Biaya"
               variant="outlined"
               class="me-4"
