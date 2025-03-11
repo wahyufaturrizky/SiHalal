@@ -1,37 +1,31 @@
 import { NuxtError } from "nuxt/app";
-
 const runtimeConfig = useRuntimeConfig();
-
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
-  const { nib } = (await getQuery(event)) as {
-    nib: string | null;
-  };
-
   if (typeof authorizationHeader === "undefined") {
     throw createError({
       statusCode: 403,
-      statusMessage: "Unauthenticated",
+      statusMessage:
+        "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
 
-  const params = {};
-  if (nib) {
-    params["nib"] = nib;
+  const { id, idReg } = (await getQuery(event)) as {
+    id: string,
+    idReg: string
   }
 
-  const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/business-actor`,
+  const { data } = await $fetch<any>(
+    `${runtimeConfig.coreBaseUrl}/api/v1/jenis-product/${id}/${idReg}/combobox`,
     {
-      method: "get",
+      method: 'get',
       headers: { Authorization: authorizationHeader },
-      params,
     }
   ).catch((err: NuxtError) => {
-    setResponseStatus(event, 400);
-
-    return err.data;
+    throw createError({
+      statusCode: err.statusCode,
+      statusMessage: JSON.stringify(err.data),
+    });
   });
-
   return data || null;
 });

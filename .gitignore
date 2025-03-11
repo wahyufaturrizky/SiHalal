@@ -49,3 +49,6 @@ public/mockServiceWorker.js
 .env*
 !.env.example
 /.vscode
+.ipynb_checkpoints/Untitled-checkpoint.ipynb
+list backend uri.xlsx
+Untitled.ipynb
