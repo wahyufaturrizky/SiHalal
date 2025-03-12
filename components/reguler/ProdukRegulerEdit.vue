@@ -29,13 +29,13 @@ const comitmentData = ref({
   label: [
     { title: "No.", key: "no", nowrap: true },
     {
-      title: "pengajuan-reguler.reguler-form-produk-prodname",
-      key: "nama_produk",
+      title: "pengajuan-reguler.reguler-form-produk-pabrikname",
+      key: "nama_pabrik",
       nowrap: true,
     },
     {
-      title: "pengajuan-reguler.reguler-form-produk-pabrikname",
-      key: "nama_pabrik",
+      title: "pengajuan-reguler.reguler-form-produk-prodname",
+      key: "nama_produk",
       nowrap: true,
     },
     {
@@ -52,12 +52,12 @@ const comitmentData = ref({
 const tableHeader = [
   { title: "No", value: "no" },
   {
-    title: "pengajuan-reguler.reguler-form-produk-prodname",
-    value: "nama_produk",
-  },
-  {
     title: "pengajuan-reguler.reguler-form-produk-pabrikname",
     value: "nama_pabrik",
+  },
+  {
+    title: "pengajuan-reguler.reguler-form-produk-prodname",
+    value: "nama_produk",
   },
   { title: "pengajuan-reguler.reguler-form-produk-aksi", value: "action" },
 ];
