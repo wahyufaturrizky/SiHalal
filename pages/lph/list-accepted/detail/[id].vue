@@ -10,6 +10,7 @@ const openedRightPanels = ref([0, 1, 2]);
 const loading = ref(false);
 const dataPengajuan = ref<any>({});
 const dataProduk = ref<any>([]);
+const dokumenLama = ref<any>([]);
 const dataPemeriksaanProduk = ref<any>(null);
 const sjphFile = ref<any>(null);
 
@@ -66,6 +67,30 @@ const getSjphDocument = async () => {
   }
 };
 
+const OldDoc = async (noDaftar: string) => {
+  const url = `https://prod-api.halal.go.id/v1/referensi/dokumen_reguler?no_daftar=${noDaftar}`;
+  console.log("berhasil");
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    dokumenLama.value = data.data;
+    return data;
+  } catch (error) {
+    console.error("Terjadi kesalahan saat mengambil data:", error);
+    return null;
+  }
+};
+
 const getDetailData = async (type: string) => {
   try {
     const response: any = await $api("/reguler/lph/detail-payment", {
@@ -73,10 +98,25 @@ const getDetailData = async (type: string) => {
       params: { url: `${LIST_DAFTAR_AJUAN_DITERIMA}/${id}/${type}` },
     });
 
-    if (response?.code === 2000) return response?.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (response?.code === 2000) {
+      const data = response?.data;
+      if (type == "pemeriksaanproduk") {
+        const noDaftar = data?.no_pendaftaran?.no_daftar;
+        if (noDaftar) {
+          await OldDoc(noDaftar);
+        } else {
+          console.error("noDaftar tidak ditemukan dalam response API");
+        }
+      }
+
+      return data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      return null;
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    return null;
   }
 };
 
@@ -114,6 +154,10 @@ const handleDownloadForm = async (fileName: string, param?: string) => {
   return await downloadDocument(fileName, param);
 };
 
+const handleDownloadFormDokumenLama = async (fileName: string) => {
+  window.open(fileName, "_blank");
+};
+
 onMounted(async () => {
   loading.value = true;
 
@@ -122,7 +166,8 @@ onMounted(async () => {
     getDetailData("produk"),
     getDetailData("pemeriksaanproduk"),
     getDownloadForm("sttd", "sttd"),
-    getSjphDocument()
+    getSjphDocument()    //OldDoc(//),
+
     // getDownloadForm('setifikasi-halal', 'setifikasi_halal'),
   ]);
 
@@ -149,7 +194,7 @@ onMounted(async () => {
               variant="outlined"
               @click="
                 downloadForms.sttd
-                  ? handleDownloadForm(downloadForms.sttd,'FILES')
+                  ? handleDownloadForm(downloadForms.sttd, 'FILES')
                   : null
               "
             />
@@ -255,6 +300,7 @@ onMounted(async () => {
               </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
+
           <VExpansionPanel :value="2" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Dokumen
@@ -334,6 +380,42 @@ onMounted(async () => {
               </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
+
+          <VExpansionPanel
+            v-if="dokumenLama.length > 0"
+            :value="3"
+            class="pt-3"
+          >
+            <VExpansionPanelTitle class="font-weight-bold text-h4">
+              Dokumen Lama
+            </VExpansionPanelTitle>
+            <VExpansionPanelText class="mt-5">
+              <VRow
+                v-for="(item, idx) in dokumenLama"
+                :key="idx"
+                align="center"
+              >
+                <VCol cols="5" class="text-h6"> {{ item.ref_desc }} </VCol>
+                <VCol class="d-flex align-center">
+                  <div class="me-1">:</div>
+                  <VBtn
+                    :color="item?.file_dok ? 'primary' : '#A09BA1'"
+                    density="compact"
+                    class="px-2"
+                    @click="
+                      item?.file_dok
+                        ? handleDownloadFormDokumenLama(item.file_download)
+                        : null
+                    "
+                  >
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn>
+                </VCol>
+              </VRow>
+            </VExpansionPanelText>
+          </VExpansionPanel>
         </VExpansionPanels>
         <div class="mt-10">
           <PanelTracking :data="dataPemeriksaanProduk?.tracking" />
@@ -379,9 +461,9 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 :deep(
-.v-expansion-panel--active:not(:first-child),
-.v-expansion-panel--active + .v-expansion-panel
-) {
+    .v-expansion-panel--active:not(:first-child),
+    .v-expansion-panel--active + .v-expansion-panel
+  ) {
   margin-block-start: 40px !important;
 }
 
