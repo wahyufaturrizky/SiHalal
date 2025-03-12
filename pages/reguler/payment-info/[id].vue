@@ -10,6 +10,7 @@ const dataPengajuan = ref<any>({})
 const dataProduk = ref<any>([])
 const dataPemeriksaanProduk = ref<any>({})
 const sjphFile = ref<any>(null);
+const suratMohonFile = ref<any>(null);
 
 const openedLeftPanels = ref([0, 1, 2, 3, 4, 5]);
 const openedRightPanels = ref([0, 1, 2]);
@@ -60,6 +61,19 @@ const getSjphDocument = async () => {
   }
 };
 
+const getSuratPermohonan = async () => {
+  const result: any = await $api(`/reguler/lph/generate-surat-permohonan`, {
+    method: "get",
+    query: {
+      id,
+    },
+  });
+
+  if (result?.code === 2000) {
+    suratMohonFile.value = result?.data?.file
+  }
+};
+
 const handleOpenSendModal = () => {
   isSendModalOpen.value = false
 }
@@ -95,6 +109,7 @@ onMounted(async () => {
     getDetailData('produk'),
     getDetailData('pemeriksaanproduk'),
     getSjphDocument(),
+    getSuratPermohonan(),
   ])
 
   dataPengajuan.value = responseData?.[0]?.value || {}
@@ -254,6 +269,27 @@ onMounted(async () => {
                     density="compact"
                     class="px-2"
                     @click="downloadDocument(sjphFile?.file, 'FILES')"
+                  >
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn>
+                </VCol>
+              </VRow>
+              <VRow align="center">
+                <VCol cols="5" class="text-h6">Surat Permohonan </VCol>
+                <VCol class="d-flex align-center">
+                  <div class="me-1">:</div>
+                  <VBtn
+                    :color="
+                      suratMohonFile
+                        ? 'primary'
+                        : '#A09BA1'
+                    "
+                    density="compact"
+                    class="px-2"
+                    :disabled="suratMohonFile ? false : true"
+                    @click="downloadDocument(suratMohonFile, 'FILES')"
                   >
                     <template #default>
                       <VIcon icon="fa-download" />

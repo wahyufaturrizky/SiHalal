@@ -614,14 +614,21 @@ onMounted(async () => {
                 cols-value="3"
                 name="Hasil Unduhan"
               >
-                <!-- <VBtn
+                <VBtn
                   append-icon="fa-download"
                   variant="plain"
                   style="align-content: start"
+                  density="compact"
+                  :color="
+                    detailSubmission?.certificate_halal?.lph?.file_sertifikat ? 'primary' : '#A09BA1'
+                  "
+                  :disabled="
+                    detailSubmission?.certificate_halal?.lph?.file_sertifikat ? false : true
+                  "
                   @click="
                     downloadDocument(detailSubmission?.certificate_halal?.lph?.file_sertifikat, 'SERT_LPH')
                   "
-                /> -->
+                />
               </InfoRow>
               <InfoRow
                 cols-name="8"
@@ -633,6 +640,13 @@ onMounted(async () => {
                   append-icon="fa-download"
                   variant="plain"
                   style="align-content: start"
+                  density="compact"
+                  :color="
+                    detailSubmission?.dokumen?.sjph ? 'primary' : '#A09BA1'
+                  "
+                  :disabled="
+                    detailSubmission?.dokumen?.sjph ? false : true
+                  "
                   @click="
                     downloadDocument(detailSubmission?.dokumen?.sjph, 'FILES')
                   "
@@ -648,6 +662,13 @@ onMounted(async () => {
                   append-icon="fa-download"
                   variant="plain"
                   style="align-content: start"
+                  density="compact"
+                  :color="
+                    detailSubmission?.dokumen?.permohonan ? 'primary' : '#A09BA1'
+                  "
+                  :disabled="
+                    detailSubmission?.dokumen?.permohonan ? false : true
+                  "
                   @click="
                     downloadDocument(detailSubmission?.dokumen?.permohonan, 'FILES')
                   "
