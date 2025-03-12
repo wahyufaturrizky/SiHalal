@@ -6,6 +6,7 @@ const route = useRoute();
 const id = (route?.params as any)?.id;
 const notFound = ref(false);
 const totalBiaya = ref(0);
+const dokumenLama = ref<any>([]);
 
 const defaultStatus = { color: "error", desc: "Unknown Status" };
 
@@ -52,6 +53,7 @@ const panelSupervisor = ref([0, 1]);
 const panelDownloadFormulir = ref([0, 1]);
 const panelRegistration = ref([0, 1]);
 const panelTracking = ref([0, 1]);
+const panelDocLama = ref([0, 1]);
 const panelPayment = ref([0, 1]);
 
 const detailSubmission = ref();
@@ -234,6 +236,13 @@ const loadItemById = async () => {
       ];
 
       detailSubmission.value = response.data;
+      const noDaftar = response?.data?.certificate_halal?.no_daftar;
+      if (noDaftar) {
+        await OldDoc(noDaftar);
+      } else {
+        console.error("no daftar tidak ditemukan");
+      }  
+
       return response;
     } else {
       notFound.value = true;
@@ -242,6 +251,11 @@ const loadItemById = async () => {
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
+};
+
+
+const handleDownloadFormDokumenLama = async (fileName: string) => {
+  window.open(fileName, "_blank");
 };
 
 const getTotalBiaya = async () => {
@@ -263,8 +277,32 @@ const getTotalBiaya = async () => {
   }
 };
 
+const OldDoc = async (noDaftar: string) => {
+  const url = `https://prod-api.halal.go.id/v1/referensi/dokumen_reguler?no_daftar=${noDaftar}`;
+  //console.log("berhasil");
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    dokumenLama.value = data.data;
+    return data;
+  } catch (error) {
+    console.error("Terjadi kesalahan saat mengambil data:", error);
+    return null;
+  }
+};
+
 onMounted(async () => {
-  const res: any = await Promise.all([loadItemById(), getTotalBiaya()]);
+  const res: any = await Promise.all([loadItemById(), getTotalBiaya()]);     
 
   const checkResIfUndefined = res.every((item: any) => {
     return item !== undefined;
@@ -576,14 +614,14 @@ onMounted(async () => {
                 cols-value="3"
                 name="Hasil Unduhan"
               >
-                <VBtn
+                <!-- <VBtn
                   append-icon="fa-download"
                   variant="plain"
                   style="align-content: start"
                   @click="
                     downloadDocument(detailSubmission?.certificate_halal?.lph?.file_sertifikat, 'SERT_LPH')
                   "
-                />
+                /> -->
               </InfoRow>
               <InfoRow
                 cols-name="8"
@@ -619,6 +657,44 @@ onMounted(async () => {
           </VExpansionPanel>
         </VExpansionPanels>
         <br />
+
+        <VExpansionPanels v-model="panelDocLama">
+          <VExpansionPanel
+            v-if="dokumenLama.length > 0"
+            class="pt-3"
+          >
+            <VExpansionPanelTitle class="font-weight-bold text-h4">
+              Dokumen Lama
+            </VExpansionPanelTitle>
+            <VExpansionPanelText class="mt-5">
+              <VRow
+                v-for="(item, idx) in dokumenLama"
+                :key="idx"
+                align="center"
+              >
+                <VCol cols="5" class="text-h6"> {{ item.ref_desc }} </VCol>
+                <VCol class="d-flex align-center">
+                  <div class="me-1">:</div>
+                  <VBtn
+                    :color="item?.file_dok ? 'primary' : '#A09BA1'"
+                    density="compact"
+                    class="px-2"
+                    @click="
+                      item?.file_dok
+                        ? handleDownloadFormDokumenLama(item.file_download)
+                        : null
+                    "
+                  >
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn>
+                </VCol>
+              </VRow>
+            </VExpansionPanelText>
+          </VExpansionPanel>
+        </VExpansionPanels>
+        <br/>
         <VExpansionPanels v-model="panelTracking">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4">

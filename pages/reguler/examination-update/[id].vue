@@ -13,6 +13,7 @@ const lovAuditor = ref<any>([]);
 const dataPemeriksaanProduk = ref<any>(null);
 const selectedAudiotor = ref<any>(null);
 const loadingAuditor = ref(false);
+const dokumenLama = ref<any>([]);
 const page = ref(1);
 const size = ref(10);
 
@@ -110,12 +111,28 @@ const getDetailData = async (type: string) => {
       params: { url: `${LIST_INFORMASI_PEMBAYARAN}/${id}/${type}` },
     });
 
-    if (response?.code === 2000) return response?.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (response?.code === 2000) {
+      const data = response?.data;
+
+      if (type === "pemeriksaanproduk") {
+        const noDaftar = data?.no_pendaftaran?.no_daftar;
+        if (noDaftar) {
+          await OldDoc(noDaftar);
+        } else {
+          console.error("noDaftar tidak ditemukan dalam response API");
+        }
+      }
+      return data;
+    } else {
+      const snackbar = useSnackbar();
+      snackbar.sendSnackbar("Ada Kesalahan", "error");
+    }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    const snackbar = useSnackbar();
+    snackbar.sendSnackbar(`Ada Kesalahan: ${error.message || error}`, "error");
   }
 };
+
 
 const getDetailProductData = async (pg: number, sz) => {
   try {
@@ -137,8 +154,36 @@ const getDetailProductData = async (pg: number, sz) => {
   }
 };
 
+const OldDoc = async (noDaftar: string) => {
+  const url = `https://prod-api.halal.go.id/v1/referensi/dokumen_reguler?no_daftar=${noDaftar}`;
+  //console.log("berhasil");
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    dokumenLama.value = data.data;
+    return data;
+  } catch (error) {
+    console.error("Terjadi kesalahan saat mengambil data:", error);
+    return null;
+  }
+};
+
 const handleDownloadForm = async (fileName: string, param: string) => {
   return await downloadDocument(fileName, param);
+};
+
+const handleDownloadFormDokumenLama = async (fileName: string) => {
+  window.open(fileName, "_blank");
 };
 
 const getListAuditor = async (type?: string) => {
@@ -448,6 +493,43 @@ const productNameHeader: any[] = [
                 <VCol>{{
                   formatToIDR(dataPemeriksaanProduk?.total_biaya)
                 }}</VCol>
+              </VRow>
+            </VExpansionPanelText>
+          </VExpansionPanel>
+        </VExpansionPanels>
+        <VExpansionPanels>
+          <VExpansionPanel
+            v-if="dokumenLama.length > 0"
+            :value="2"
+            class="pt-3 mt-10"
+          >
+            <VExpansionPanelTitle class="font-weight-bold text-h4">
+              Dokumen Lama
+            </VExpansionPanelTitle>
+            <VExpansionPanelText class="mt-5">
+              <VRow
+                v-for="(item, idx) in dokumenLama"
+                :key="idx"
+                align="center"
+              >
+                <VCol cols="5" class="text-h6"> {{ item.ref_desc }} </VCol>
+                <VCol class="d-flex align-center">
+                  <div class="me-1">:</div>
+                  <VBtn
+                    :color="item?.file_dok ? 'primary' : '#A09BA1'"
+                    density="compact"
+                    class="px-2"
+                    @click="
+                      item?.file_dok
+                        ? handleDownloadFormDokumenLama(item.file_download)
+                        : null
+                    "
+                  >
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn>
+                </VCol>
               </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
