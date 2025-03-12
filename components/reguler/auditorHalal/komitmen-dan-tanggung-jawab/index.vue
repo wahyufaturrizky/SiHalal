@@ -2,7 +2,6 @@
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-const { t } = useI18n();
 const props = defineProps({
   onComplete: {
     type: Function,
@@ -11,6 +10,7 @@ const props = defineProps({
   },
 });
 
+const { t } = useI18n();
 const agreed = ref(false);
 const progress = ref(33);
 const labelProgress = ref("1/3");
@@ -27,12 +27,17 @@ const handleSubmit = () => {
       break;
     case 100:
       props.onComplete();
+      localStorage.setItem("commitmentAndResponsibility", true);
       break;
     default:
       break;
   }
   agreed.value = false;
 };
+
+onMounted(() => {
+  if (localStorage.getItem("commitmentAndResponsibility")) props.onComplete();
+});
 </script>
 
 <template>
@@ -82,7 +87,9 @@ const handleSubmit = () => {
               {{ t("pengajuan-reguler.reguler-form--komitmen-1-content-3") }}
             </li>
             <li>
-              {{ t("pengajuan-reguler.reguler-form--komitmen-1-content-4") }}
+              {{
+                t("pengajuan-reguler.reguler-form--komitmen-1-content-4")
+              }}tondiki
             </li>
           </ol>
         </VCardText>
@@ -117,32 +124,22 @@ const handleSubmit = () => {
           </div>
           <ol class="ml-4">
             <li>
-              {{
-                t("pengajuan-reguler.reguler-form--komitmen-3-content-1")
-              }}
+              {{ t("pengajuan-reguler.reguler-form--komitmen-3-content-1") }}
             </li>
             <li>
-              {{
-                t("pengajuan-reguler.reguler-form--komitmen-3-content-2")
-              }}
-            </li>
-            <li>  {{
-              t("pengajuan-reguler.reguler-form--komitmen-3-content-3")
-            }}</li>
-            <li>
-              {{
-                t("pengajuan-reguler.reguler-form--komitmen-3-content-4")
-              }}
+              {{ t("pengajuan-reguler.reguler-form--komitmen-3-content-2") }}
             </li>
             <li>
-              {{
-                t("pengajuan-reguler.reguler-form--komitmen-3-content-5")
-              }}
+              {{ t("pengajuan-reguler.reguler-form--komitmen-3-content-3") }}
             </li>
             <li>
-              {{
-                t("pengajuan-reguler.reguler-form--komitmen-3-content-6")
-              }}
+              {{ t("pengajuan-reguler.reguler-form--komitmen-3-content-4") }}
+            </li>
+            <li>
+              {{ t("pengajuan-reguler.reguler-form--komitmen-3-content-5") }}
+            </li>
+            <li>
+              {{ t("pengajuan-reguler.reguler-form--komitmen-3-content-6") }}
             </li>
           </ol>
         </VCardText>
