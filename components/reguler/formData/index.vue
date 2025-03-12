@@ -162,16 +162,16 @@ const onSubmit = async () => {
       tgl_daftar: `${tanggalDaftar?.split('/')?.[2]}-${
         tanggalDaftar?.split('/')?.[1]
       }-${tanggalDaftar?.split('/')?.[0]}`,
-      jenis_layanan: jenisLayanan?.code || props.data?.[3]?.value,
+      jenis_layanan: jenisLayanan?.code || props?.service_type?.[0].code || props.data?.[3]?.value,
       jenis_produk: jenisProduk?.code || props.data?.[4]?.value,
       merk_dagang: props.data[5]?.value,
       area_pemasaran: props.data?.[6]?.value,
-      lph_id: lphId ? lphId.lph_id : props.data[7]?.value,
+      lph_id: lphId ? lphId.lph_id : props.data[7]?.id ? props.data[7]?.id : props.data[7]?.value,
       channel_id: '',
       fac_id: props.data[9]?.value,
     }
 
-    if (lphId)
+    if (lphId || props.data[7]?.id)
       props.onSubmit(payload)
     else
       props.onSubmit('error')
@@ -181,11 +181,30 @@ const onSubmit = async () => {
   }
 }
 
+const route = useRoute<''>()
+const submissionId = route.params?.id
+
 const getProductType = async (id: string) => {
   try {
-    const response: any = await $api('/master/product-filter', {
-      method: 'get',
-      params: { id },
+    // const response: any =
+    //   await $api('/master/product-filter', {
+    //   method: 'get',
+    //   params: { id },
+    // })
+
+    const jenisLayanan = props?.service_type?.find(
+      (item: any) =>
+        props.data?.[3]?.value === item.name
+        || props.data?.[3]?.value === item.code
+        || props.data?.[3]?.value === id,
+    )
+
+    const response = await $api("/master/product-filter-by-regid", {
+      method: "get",
+      params: {
+        id: jenisLayanan?.code,
+        idReg: submissionId,
+      },
     })
 
     if (response.length) {
@@ -228,12 +247,14 @@ const lphValidation = async (title: string, value: string, index: number) => {
       || props.data?.[3]?.value === item.code,
   )
 
-  if (title === 'pengajuan-reguler.reguler-detail-pengajuan-jnslay')
+  if (title === 'pengajuan-reguler.reguler-detail-pengajuan-jnslay') {
     await getProductType(value)
+  }
   else if (
     title === 'pengajuan-reguler.reguler-form--pengajuan-pengajuan-marketing'
-  )
+  ) {
     await getLph(LIST_BUSINESS_ACTOR, jenisLayanan?.code, value)
+  }
 
   if (props.title === 'halal_cert_submission.title') {
     const checkData = props.data.map((el: any) => {
@@ -245,8 +266,7 @@ const lphValidation = async (title: string, value: string, index: number) => {
   }
 }
 
-const route = useRoute<''>()
-const submissionId = route.params?.id
+
 
 const checkCodeFasilitas = async () => {
   try {
@@ -368,16 +388,15 @@ const onSubmitReguler = async () => {
 }
 
 onMounted(async () => {
-  setTimeout(async () => {
+  if (props?.service_type) {
     const jenisLayanan = props?.service_type?.find(
       (item: any) =>
         props.data?.[3]?.value === item.name
         || props.data?.[3]?.value === item.code,
     )
 
-    if (props.data?.[3]?.value)
+    if (jenisLayanan || props.data?.[3]?.value)
       await getProductType(jenisLayanan?.code || props.data?.[3]?.value)
-
     if (jenisLayanan && props.data[6]) {
       await getLph(
         LIST_BUSINESS_ACTOR,
@@ -385,7 +404,7 @@ onMounted(async () => {
         props.data?.[6]?.value,
       )
     }
-  }, 1000)
+  }
 })
 
 watchEffect(async () => {

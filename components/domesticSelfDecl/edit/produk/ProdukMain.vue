@@ -201,11 +201,15 @@ const setCertificateHalalData = () => {
 };
 
 const disableTambahProduk = () => {
+  const produkLength = JSON.parse(JSON.stringify(produk.value));
   if (!certHalalData.value?.id_jenis_produk) {
     return false;
   } else {
     if (!props.canNotEdit) {
       return true;
+    }
+    if (produkLength >= 10) {
+      return false;
     }
   }
 

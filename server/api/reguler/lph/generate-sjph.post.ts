@@ -10,29 +10,14 @@ export default defineEventHandler(async (event: any) => {
         'Need to pass valid Bearer-authorization header to access this endpoint',
     })
   }
-
-  const { id,page,size } = (await getQuery(event)) as {
-    id: string,
-    page : string,
-    size : string
-  }
-  const params = {
-    page : 1,
-    size : 10
-  }
-  if (page != '' || page != null || page != undefined) {
-    params.page = Number.parseInt(page,10)
-  }
-  if (size != '' || size != null || size != undefined) {
-    params.size = Number.parseInt(size,10)
-  }
+  const body: any = await readBody(event)
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/lph/proses/layout/${id}`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/generate-sjph`,
     {
-      method: 'get',
+      method: 'post',
       headers: { Authorization: authorizationHeader },
-      params
+      body,
     },
   ).catch((err: NuxtError) => {
     setResponseStatus(event, 400)

@@ -16,6 +16,7 @@ const loadingAuditor = ref(false);
 const dokumenLama = ref<any>([]);
 const page = ref(1);
 const size = ref(10);
+const sjphFile = ref<any>(null);
 
 const downloadForms = reactive({
   sttd: "",
@@ -101,6 +102,27 @@ const handleUpdateStatus = async () => {
         useSnackbar().sendSnackbar("Ada Kesalahan", "error");
       }
     }
+  }
+};
+
+const getSjphDocument = async () => {
+  // useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
+  try {
+    const response: any = await $api("/reguler/lph/generate-sjph", {
+      method: "post",
+      body: {
+        id_reg: id,
+      },
+    });
+
+    if (response?.code === 2000) {
+      sjphFile.value = response.data
+      return response?.data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
   }
 };
 
@@ -245,7 +267,8 @@ onMounted(async () => {
     getDetailData("pengajuan"),
     getDetailProductData(page.value, size.value),
     getDetailData("pemeriksaanproduk"),
-    getListAuditor()
+    getListAuditor(),
+    getSjphDocument(),
   ]);
 
   dataPengajuan.value = responseData?.[0]?.value || {};
@@ -398,11 +421,6 @@ const productNameHeader: any[] = [
                 <VCol cols="5" class="text-h6"> Hasil Audit </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
-                  <!-- <VBtn rounded="xl" density="compact" class="px-2">
-                    <template #default>
-                      <VIcon icon="fa-download" />
-                    </template>
-                  </VBtn> -->
                   <VBtn
                     :color="downloadForms.hasil_audit ? 'primary' : '#A09BA1'"
                     density="compact"
@@ -465,6 +483,26 @@ const productNameHeader: any[] = [
                           )
                         : null
                     "
+                  >
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn>
+                </VCol>
+              </VRow>
+              <VRow align="center">
+                <VCol cols="5" class="text-h6">Dokumen SJPH </VCol>
+                <VCol class="d-flex align-center">
+                  <div class="me-1">:</div>
+                  <VBtn
+                    :color="
+                      sjphFile?.file
+                        ? 'primary'
+                        : '#A09BA1'
+                    "
+                    density="compact"
+                    class="px-2"
+                    @click="downloadDocument(sjphFile?.file, 'FILES')"
                   >
                     <template #default>
                       <VIcon icon="fa-download" />

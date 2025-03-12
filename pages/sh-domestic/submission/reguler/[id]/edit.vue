@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Bahan, Evaluasi, Produk } from "#components";
+import { Bahan, Evaluasi } from "#components";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -11,6 +11,7 @@ const loadingAll = ref<boolean>(true);
 
 const activeTab = ref(-1);
 const approveRequirements = ref(false);
+const approveRequirementsProses = ref(false);
 const listLegal = ref<any>(null);
 const listFactory = ref<any>(null);
 const listOutlet = ref<any>(null);
@@ -78,22 +79,27 @@ const getListPenyelia = async () => {
 
 const getChannel = async (path: string) => {
   try {
-    const params = {
-      url: path,
-    };
+    // const params = {
+    //   url: path,
+    // };
+    //
+    // const response: any = await $api("/reguler/lph/list", {
+    //   method: "get",
+    //   params,
+    // });
 
-    const response: any = await $api("/reguler/lph/list", {
-      method: "get",
-      params,
-    });
+    const response = await $api(`/master/jenis-layanan-by-idreg/${id}`, {
+      method: "get"
+    })
+    itemsChannel.value = response
 
-    if (response?.code === 2000) {
-      itemsChannel.value = response?.data;
-
-      return response;
-    } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    }
+    //
+    // if (response?.code === 2000) {
+    //
+    //   return response;
+    // } else {
+    //   useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    // }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -262,10 +268,10 @@ onMounted(async () => {
             />
           </div>
           <div v-if="activeTab === 3">
-            <div v-if="!approveRequirements">
+            <div v-if="!approveRequirementsProses">
               <ProsesLayanan
                 :id="id"
-                :on-complete="() => (approveRequirements = true)"
+                :on-complete="() => (approveRequirementsProses = true)"
               />
             </div>
             <div v-else>
@@ -273,7 +279,8 @@ onMounted(async () => {
             </div>
           </div>
           <div v-if="activeTab === 4">
-            <Produk :isviewonly="isViewOnly" />
+            <!-- <Produk :isviewonly="isViewOnly" /> -->
+            <ProdukRegulerEdit :isviewonly="isViewOnly" />
           </div>
           <div v-if="activeTab === 5">
             <Evaluasi :isviewonly="isViewOnly" />

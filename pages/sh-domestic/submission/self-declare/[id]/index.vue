@@ -396,7 +396,7 @@
                   append-icon="fa-download"
                   variant="outlined"
                   class="float-end mt-6"
-                  @click="handleDownloadSk(submissionId,'PRODUCT')"
+                  @click="handleDownloadSk(submissionId, 'PRODUCT')"
                 >
                   Download SK Penyelia
                 </VBtn>
@@ -474,8 +474,8 @@
                 <template #item.photo="{ item }: any">
                   <VIcon
                     color="primary"
-                    style="cursor: pointer;"
-                    @click="handleDownload(item.photo,'PRODUCT')"
+                    style="cursor: pointer"
+                    @click="handleDownload(item.photo, 'PRODUCT')"
                   >
                     ri-download-2-fill
                   </VIcon>
@@ -534,7 +534,10 @@
                 <VBtn
                   @click="
                     downloadForms.surat_permohonan
-                      ? handleDownloadForm(downloadForms.surat_permohonan,'FILES')
+                      ? handleDownloadForm(
+                          downloadForms.surat_permohonan,
+                          'FILES'
+                        )
                       : null
                   "
                   :color="
@@ -556,7 +559,10 @@
                 <VBtn
                   @click="
                     downloadForms.surat_pernyataan
-                      ? handleDownloadForm(downloadForms.surat_pernyataan,'FILES')
+                      ? handleDownloadForm(
+                          downloadForms.surat_pernyataan,
+                          'FILES'
+                        )
                       : null
                   "
                   :color="
@@ -578,7 +584,7 @@
                 <VBtn
                   @click="
                     downloadForms.ikrar
-                      ? handleDownload(downloadForms.ikrar,'DOC')
+                      ? handleDownload(downloadForms.ikrar, 'DOC')
                       : null
                   "
                   :color="downloadForms.ikrar ? 'primary' : '#A09BA1'"
@@ -598,7 +604,7 @@
                 <VBtn
                   @click="
                     downloadForms.hasil_verval
-                      ? handleDownloadForm(downloadForms.hasil_verval,'DOC')
+                      ? handleDownloadForm(downloadForms.hasil_verval, 'DOC')
                       : null
                   "
                   :color="downloadForms.hasil_verval ? 'primary' : '#A09BA1'"
@@ -618,7 +624,7 @@
                 <VBtn
                   @click="
                     downloadForms.rekomendasi
-                      ? handleDownloadForm(downloadForms.rekomendasi,'DOC')
+                      ? handleDownloadForm(downloadForms.rekomendasi, 'DOC')
                       : null
                   "
                   :color="downloadForms.rekomendasi ? 'primary' : '#A09BA1'"
@@ -678,7 +684,7 @@
                 <VBtn
                   @click="
                     downloadForms.sttd
-                      ? handleDownloadForm(downloadForms.sttd,'FILES')
+                      ? handleDownloadForm(downloadForms.sttd, 'FILES')
                       : null
                   "
                   :color="downloadForms.sttd ? 'primary' : '#A09BA1'"
@@ -698,11 +704,39 @@
                 <VBtn
                   @click="
                     downloadForms.sertifikasi_halal
-                      ? handleDownloadForm(downloadForms.sertifikasi_halal,'SERT')
+                      ? handleDownloadForm(
+                          downloadForms.sertifikasi_halal,
+                          'SERT'
+                        )
                       : null
                   "
                   :color="
                     downloadForms.sertifikasi_halal ? 'primary' : '#A09BA1'
+                  "
+                  density="compact"
+                  class="px-2"
+                >
+                  <template #default>
+                    <VIcon icon="fa-download" />
+                  </template>
+                </VBtn>
+              </InfoRowV2>
+              <InfoRowV2
+                class="d-flex align-center"
+                name="Lembaga Pendamping"
+                :style="{ fontWeight: '600' }"
+              >
+                <VBtn
+                  @click="
+                    downloadForms.lembaga_pendamping
+                      ? handleDownloadForm(
+                          downloadForms.lembaga_pendamping,
+                          'lembaga-pendamping'
+                        )
+                      : null
+                  "
+                  :color="
+                    downloadForms.lembaga_pendamping ? 'primary' : '#A09BA1'
                   "
                   density="compact"
                   class="px-2"
@@ -778,7 +812,7 @@
                 :style="{ fontWeight: '600' }"
               >
                 <v-chip
-                  style="background: #f0e9f1;"
+                  style="background: #f0e9f1"
                   :color="statusItem[registrationDetail.status].color"
                   variant="outlined"
                   rounded="lg"
@@ -965,7 +999,22 @@
     @submit:commit-action="handleSentSubmission"
   >
     <VCardText>
-      <div>Apakah yakin ingin mengirim pengajuan ini</div>
+      <h2>Disclaimer</h2>
+      <br />
+      <p>Dengan sungguh-sungguh menyatakan bahwa:</p>
+      <ul style="list-style-type: disc; padding-left: 20px">
+        <li>
+          Seluruh pernyataan data dan informasi beserta seluruh dokumen yang
+          saya lampirkan dalam berkas pendaftaran adalah benar.
+        </li>
+        <li>
+          Apabila dikemudian ditemukan bahwa data/dokumen yang saya sampaikan
+          tidak benar dan/atau ada pemalsuan, maka seluruh keputusan yang telah
+          ditetapkan berdasarkan berkas batal berdasarkan hukum dan saya
+          bersedia dikenakan sanksi sesuai ketentuan peraturan
+          perundang-undangan yang berlaku.
+        </li>
+      </ul>
     </VCardText>
   </ShSubmissionDetailFormModal>
 </template>
@@ -1150,6 +1199,7 @@ const downloadForms = reactive({
   laporan: "",
   sttd: "",
   sertifikasi_halal: "",
+  lembaga_pendamping: "",
 }) as Record<string, string>;
 
 const isComplete = computed(() => {
@@ -1263,6 +1313,7 @@ onMounted(async () => {
     getDownloadForm("sjph", "sjph"),
     getDownloadForm("laporan", "hasil_verval"),
     getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
+    getDownloadForm("lembaga-pendamping", "lembaga_pendamping"),
   ]);
   if (registrationDetail.status == "") {
     return;
@@ -1346,14 +1397,14 @@ const getDownloadForm = async (docName: string, propName: string) => {
   }
 };
 
-const handleDownloadForm = async (fileName: string,directori:string) => {
-  return await downloadDocument(fileName,directori);
+const handleDownloadForm = async (fileName: string, directori: string) => {
+  return await downloadDocument(fileName, directori);
 };
-const handleDownload = async (productId: string,directori:string) => {
-  return await downloadDocument(productId,directori);
+const handleDownload = async (productId: string, directori: string) => {
+  return await downloadDocument(productId, directori);
 };
 
-const handleDownloadSk = async (id: string,directori:string) => {
+const handleDownloadSk = async (id: string, directori: string) => {
   try {
     const response = await $api("download-sk-selfdeclare", {
       method: "post",
@@ -1363,7 +1414,7 @@ const handleDownloadSk = async (id: string,directori:string) => {
     });
 
     if (response.data.file) {
-      await handleDownload(response.data?.file,directori);
+      await handleDownload(response.data?.file, directori);
     } else {
       useSnackbar().sendSnackbar("Download gagal", "error");
     }
