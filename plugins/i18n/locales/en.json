@@ -264,7 +264,8 @@
     "asal-attr-1": "Select the Origin of the Business Entity",
     "asal-attr-2": "Overseas",
     "asal-attr-3": "Domestic",
-    "asal-attr-4": "Government Institution"
+    "asal-attr-4": "Government Institution",
+    "back-login": "Back to Login Page"
   },
   "new-foreign": {
     "title": "Company Profile Form",
