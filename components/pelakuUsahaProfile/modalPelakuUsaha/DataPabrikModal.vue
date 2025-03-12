@@ -274,7 +274,8 @@ const openDialog = async () => {
   }
 
   form.value.lokasiPabrik = "Dalam Negeri";
-  if (form.value.negara?.toLowerCase() != "indonesia") {
+  console.log("negara = ", form.value.negara?.toLowerCase());
+  if (form.value.negara?.toLowerCase().trim() != "indonesia") {
     form.value.lokasiPabrik = "Luar Negeri";
   }
 
