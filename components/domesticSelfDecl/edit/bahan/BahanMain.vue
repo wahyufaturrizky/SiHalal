@@ -86,6 +86,34 @@ const loadBahan = async () => {
   store.isAllBahanSelected();
 };
 
+const statusSelf = ref<string>("");
+const handleDetailProduct = async (id: string) => {
+  // selectedProduct.value = id;
+  try {
+    const response: any = await $api(`/self-declare/submission/${id}/detail`, {
+      method: "get",
+    } as any);
+
+    if (response.code === 2000) {
+      console.log(response.data, "ini data");
+
+      const tracking = response.data.tracking ?? [];
+      const lastIndex = tracking.length - 1;
+
+      console.log("result", tracking[lastIndex]?.status);
+
+      statusSelf.value = tracking[lastIndex]?.status || "";
+      console.log(statusSelf.value, "ini status self");
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+const submissionId = route.params?.id as string;
+onMounted(() => {
+  handleDetailProduct(submissionId);
+});
 interface editBahan {
   typeBahan: 0 | 1;
   jenis_bahan: string[] | null;
@@ -131,7 +159,15 @@ interface editBahan {
               }}</v-chip>
             </template>
             <template v-if="!canNotEdit" #item.action="{ item }">
-              <div class="d-flex gap-1" v-if="!item.vefified">
+              <div
+                class="d-flex gap-1"
+                v-if="
+                  !item.verified ||
+                  statusSelf === 'OF1' ||
+                  statusSelf === 'OF280' ||
+                  statusSelf === 'OF285'
+                "
+              >
                 <EditBahanModal
                   :data="{
                     id: item.id,
@@ -192,6 +228,7 @@ interface editBahan {
   line-height: 18px !important;
   padding-inline-start: 10px;
 }
+
 .bgContent {
   border-radius: 10px;
   background-color: #f0e9f1;
