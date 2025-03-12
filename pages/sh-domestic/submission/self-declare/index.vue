@@ -92,7 +92,12 @@ const handleCreate = async (answer: string) => {
     if (result.code === 2000) {
       router.push(`/sh-domestic/submission/self-declare/${result.data.id_reg}`);
     }
-  } catch (error) {}
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      error.data?.errors?.list_error[0] || "Ada kesalahan",
+      "error"
+    );
+  }
 };
 
 const alertData = ref({

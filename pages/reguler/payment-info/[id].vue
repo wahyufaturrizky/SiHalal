@@ -9,6 +9,8 @@ const isSendModalOpen = ref(false)
 const dataPengajuan = ref<any>({})
 const dataProduk = ref<any>([])
 const dataPemeriksaanProduk = ref<any>({})
+const sjphFile = ref<any>(null);
+const suratMohonFile = ref<any>(null);
 
 const openedLeftPanels = ref([0, 1, 2, 3, 4, 5]);
 const openedRightPanels = ref([0, 1, 2]);
@@ -37,6 +39,40 @@ const getDetailData = async (type: string) => {
     useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
   }
 }
+
+const getSjphDocument = async () => {
+  // useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
+  try {
+    const response: any = await $api("/reguler/lph/generate-sjph", {
+      method: "post",
+      body: {
+        id_reg: id,
+      },
+    });
+
+    if (response?.code === 2000) {
+      sjphFile.value = response.data
+      return response?.data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
+  }
+};
+
+const getSuratPermohonan = async () => {
+  const result: any = await $api(`/reguler/lph/generate-surat-permohonan`, {
+    method: "get",
+    query: {
+      id,
+    },
+  });
+
+  if (result?.code === 2000) {
+    suratMohonFile.value = result?.data?.file
+  }
+};
 
 const handleOpenSendModal = () => {
   isSendModalOpen.value = false
@@ -72,6 +108,8 @@ onMounted(async () => {
     getDetailData('pengajuan'),
     getDetailData('produk'),
     getDetailData('pemeriksaanproduk'),
+    getSjphDocument(),
+    getSuratPermohonan(),
   ])
 
   dataPengajuan.value = responseData?.[0]?.value || {}
@@ -209,6 +247,54 @@ onMounted(async () => {
               <VRow>
                 <VCol>
                   {{ dataPemeriksaanProduk?.total_biaya }}
+                </VCol>
+              </VRow>
+            </VExpansionPanelText>
+          </VExpansionPanel>
+          <VExpansionPanel :value="1" class="pt-3">
+            <VExpansionPanelTitle class="font-weight-bold text-h4">
+              Dokumen
+            </VExpansionPanelTitle>
+            <VExpansionPanelText class="mt-5">
+              <VRow align="center">
+                <VCol cols="5" class="text-h6">Dokumen SJPH </VCol>
+                <VCol class="d-flex align-center">
+                  <div class="me-1">:</div>
+                  <VBtn
+                    :color="
+                      sjphFile?.file
+                        ? 'primary'
+                        : '#A09BA1'
+                    "
+                    density="compact"
+                    class="px-2"
+                    @click="downloadDocument(sjphFile?.file, 'FILES')"
+                  >
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn>
+                </VCol>
+              </VRow>
+              <VRow align="center">
+                <VCol cols="5" class="text-h6">Surat Permohonan </VCol>
+                <VCol class="d-flex align-center">
+                  <div class="me-1">:</div>
+                  <VBtn
+                    :color="
+                      suratMohonFile
+                        ? 'primary'
+                        : '#A09BA1'
+                    "
+                    density="compact"
+                    class="px-2"
+                    :disabled="suratMohonFile ? false : true"
+                    @click="downloadDocument(suratMohonFile, 'FILES')"
+                  >
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn>
                 </VCol>
               </VRow>
             </VExpansionPanelText>

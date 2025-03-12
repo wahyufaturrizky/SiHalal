@@ -264,7 +264,8 @@
     "asal-attr-1": "Pilih Asal Pelaku Usaha",
     "asal-attr-2": "Luar Negeri",
     "asal-attr-3": "Dalam Negeri",
-    "asal-attr-4": "Instansi Pemerintah"
+    "asal-attr-4": "Instansi Pemerintah",
+    "back-login": "Kembali ke Halaman Login"
   },
   "new-foreign": {
     "title": "Formulir Profil Perusahaan",

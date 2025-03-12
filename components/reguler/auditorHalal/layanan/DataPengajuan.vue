@@ -206,7 +206,6 @@ const uploadFile = (event: Event, index: string | number) => {
 }
 
 const triggerSaveModal = (payload: any, type: string) => {
-  console.log(payload)
   submitContentType.value = type
   payloadData.value = payload
   confirmSaveDialog.value = true
@@ -332,6 +331,7 @@ const getDetailData = async () => {
           required:
             certificateHalal.jenis_pengajuan != 'Pengembangan',
           key: 'lembaga_pendamping',
+          id: certificateHalal?.lph_id,
         },
         {
           title:
