@@ -991,7 +991,7 @@
       <div>Apakah yakin ingin menghapus data pengajuan ini</div>
     </VCardText>
   </ShSubmissionDetailFormModal>
-  <ShSubmissionDetailFormModal
+  <!-- <ShSubmissionDetailFormModal
     dialog-title="Kirim Pengajuan"
     :dialog-visible="isSendModalOpen"
     dialog-use="SEND"
@@ -1016,7 +1016,7 @@
         </li>
       </ul>
     </VCardText>
-  </ShSubmissionDetailFormModal>
+  </ShSubmissionDetailFormModal> -->
 </template>
 
 <script setup lang="ts">
