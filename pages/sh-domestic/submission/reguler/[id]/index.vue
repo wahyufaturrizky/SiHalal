@@ -418,7 +418,7 @@ onMounted(async () => {
                   cols-value="6"
                   :name="t(`pengajuan-reguler.reguler-detail-pengajuan-lph`)"
                 >
-                  {{ data?.certificate_halal?.lembaga_pendamping || "-" }}
+                  {{ data?.certificate_halal?.nama_lph || "-" }}
                 </InfoRow>
                 <ThinLine :thickness="1" />
                 <InfoRow

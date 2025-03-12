@@ -17,6 +17,7 @@ const dokumenLama = ref<any>([]);
 const page = ref(1);
 const size = ref(10);
 const sjphFile = ref<any>(null);
+const suratMohonFile = ref<any>(null);
 
 const downloadForms = reactive({
   sttd: "",
@@ -123,6 +124,19 @@ const getSjphDocument = async () => {
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
+  }
+};
+
+const getSuratPermohonan = async () => {
+  const result: any = await $api(`/reguler/lph/generate-surat-permohonan`, {
+    method: "get",
+    query: {
+      id,
+    },
+  });
+
+  if (result?.code === 2000) {
+    suratMohonFile.value = result?.data?.file
   }
 };
 
@@ -269,6 +283,7 @@ onMounted(async () => {
     getDetailData("pemeriksaanproduk"),
     getListAuditor(),
     getSjphDocument(),
+    getSuratPermohonan(),
   ]);
 
   dataPengajuan.value = responseData?.[0]?.value || {};
@@ -503,6 +518,27 @@ const productNameHeader: any[] = [
                     density="compact"
                     class="px-2"
                     @click="downloadDocument(sjphFile?.file, 'FILES')"
+                  >
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn>
+                </VCol>
+              </VRow>
+              <VRow align="center">
+                <VCol cols="5" class="text-h6">Surat Permohonan </VCol>
+                <VCol class="d-flex align-center">
+                  <div class="me-1">:</div>
+                  <VBtn
+                    :color="
+                      suratMohonFile
+                        ? 'primary'
+                        : '#A09BA1'
+                    "
+                    density="compact"
+                    class="px-2"
+                    :disabled="suratMohonFile ? false : true"
+                    @click="downloadDocument(suratMohonFile, 'FILES')"
                   >
                     <template #default>
                       <VIcon icon="fa-download" />

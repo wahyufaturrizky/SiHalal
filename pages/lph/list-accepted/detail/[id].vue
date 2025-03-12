@@ -13,6 +13,7 @@ const dataProduk = ref<any>([]);
 const dokumenLama = ref<any>([]);
 const dataPemeriksaanProduk = ref<any>(null);
 const sjphFile = ref<any>(null);
+const suratMohonFile = ref<any>(null);
 
 const isSendModalOpen = ref(false);
 
@@ -69,7 +70,6 @@ const getSjphDocument = async () => {
 
 const OldDoc = async (noDaftar: string) => {
   const url = `https://prod-api.halal.go.id/v1/referensi/dokumen_reguler?no_daftar=${noDaftar}`;
-  console.log("berhasil");
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -131,6 +131,19 @@ const getDownloadForm = async (docName: string, propName: string) => {
   if (result?.code === 2000) downloadForms[propName] = result?.data?.file || "";
 };
 
+const getSuratPermohonan = async () => {
+  const result: any = await $api(`/reguler/lph/generate-surat-permohonan`, {
+    method: "get",
+    query: {
+      id,
+    },
+  });
+
+  if (result?.code === 2000) {
+    suratMohonFile.value = result?.data?.file
+  }
+};
+
 const onUpdateBiaya = async () => {
   try {
     const response: any = await $api("/reguler/lph/update-cost/seed-detail", {
@@ -166,7 +179,8 @@ onMounted(async () => {
     getDetailData("produk"),
     getDetailData("pemeriksaanproduk"),
     getDownloadForm("sttd", "sttd"),
-    getSjphDocument()    //OldDoc(//),
+    getSjphDocument(),
+    getSuratPermohonan(),
 
     // getDownloadForm('setifikasi-halal', 'setifikasi_halal'),
   ]);
@@ -370,7 +384,29 @@ onMounted(async () => {
                     "
                     density="compact"
                     class="px-2"
+                    :disabled="sjphFile?.file ? false : true"
                     @click="downloadDocument(sjphFile?.file, 'FILES')"
+                  >
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn>
+                </VCol>
+              </VRow>
+              <VRow align="center">
+                <VCol cols="5" class="text-h6">Surat Permohonan </VCol>
+                <VCol class="d-flex align-center">
+                  <div class="me-1">:</div>
+                  <VBtn
+                    :color="
+                      suratMohonFile
+                        ? 'primary'
+                        : '#A09BA1'
+                    "
+                    density="compact"
+                    class="px-2"
+                    :disabled="suratMohonFile ? false : true"
+                    @click="downloadDocument(suratMohonFile, 'FILES')"
                   >
                     <template #default>
                       <VIcon icon="fa-download" />
