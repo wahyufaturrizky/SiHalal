@@ -30,6 +30,7 @@ const submissionId = route.params?.id as string;
 const { refresh } = await useAsyncData("list-product", async () => {
   return store.getProduct(submissionId);
 });
+
 const handleSubmit = async (payload: any) => {
   if (modalUse.value === "CREATE") await handleAddProduct(payload);
   // if (modalUse.value === "UPDATE") await handleUpdateProduct(payload);
@@ -49,6 +50,7 @@ const handleAddProduct = async (payload: any) => {
 
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+      handleDetailProduct(submissionId);
       await refresh();
     }
     return response;
@@ -76,6 +78,7 @@ const handleUpdateProduct = async (payload: any, productId: string) => {
 
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil mengubah data", "success");
+      handleDetailProduct(submissionId);
       await refresh();
     }
     return response;
@@ -103,6 +106,7 @@ const handleAddIngredient = async (payload: any, idProduct: string) => {
 
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+      handleDetailProduct(submissionId);
       await refresh();
     }
     return response;
@@ -149,6 +153,7 @@ const detailProduct = ref({
   merek: null,
   nama: null,
 });
+const totalProduct = ref(0);
 const statusSelf = ref<string>("");
 const handleDetailProduct = async (id: string) => {
   // selectedProduct.value = id;
@@ -158,15 +163,15 @@ const handleDetailProduct = async (id: string) => {
     } as any);
 
     if (response.code === 2000) {
-      console.log(response.data, "ini data");
+      console.log(response.data.produk.length, "ini data");
 
       const tracking = response.data.tracking ?? [];
       const lastIndex = tracking.length - 1;
-
-      console.log("result", tracking[lastIndex]?.status);
+      totalProduct.value = response.data.produk.length;
+      // console.log("result", tracking[lastIndex]?.status);
 
       statusSelf.value = tracking[lastIndex]?.status || "";
-      console.log(statusSelf.value, "ini status self");
+      // console.log(statusSelf.value, "ini status self");
     }
     return response;
   } catch (error) {
@@ -188,6 +193,7 @@ const handleDeleteProduct = async () => {
 
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil menghapus data", "success");
+      handleDetailProduct(submissionId);
       await refresh();
     }
     return response;
@@ -232,20 +238,39 @@ watch(
   },
   { immediate: true, deep: true }
 );
+
+const itemsPerPage = ref(10);
+const currentPage = ref(1);
+// Hitung total halaman
+const totalPages = computed(() =>
+  Math.ceil(produk.value.length / itemsPerPage.value)
+);
+
+// Filter data berdasarkan halaman aktif
+const paginatedItems = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  return produk.value.slice(start, start + itemsPerPage.value);
+});
+
+// Ganti halaman
+const changePage = (page: number) => {
+  currentPage.value = page;
+};
 </script>
 
 <template>
-  <VCard style="padding: 1svw">
+  <VCard style="padding: 1svw;">
     <VCardTitle>
       <VRow>
         <VCol cols="6"><h3>Daftar Produk</h3></VCol>
-        <VCol cols="6" style="display: flex; justify-content: end">
+        <VCol cols="6" style="display: flex; justify-content: end;">
           <VBtn
             v-if="disableTambahProduk()"
             @click="handleOpenModal('CREATE')"
             variant="outlined"
             append-icon="fa-plus"
-            style="margin-inline-end: 1svw"
+            style="margin-inline-end: 1svw;"
+            :disabled="totalProduct===10"
             >Tambah</VBtn
           >
           <!-- <VBtn variant="flat">Simpan Perubahan</VBtn> -->
@@ -269,11 +294,24 @@ watch(
           variant="tonal"
           class="mt-5"
         ></v-alert>
+
+        <v-alert
+          v-if="totalProduct === 10"
+          text="Maksimal Produk 10"
+          type="error"
+          variant="tonal"
+          class="mt-5"
+        ></v-alert>
       </div>
     </VCardTitle>
 
     <VCardItem>
-      <VDataTable :headers="tableHeader" :items="produk" class="custom-table">
+      <VDataTable
+        :headers="tableHeader"
+        :items="produk"
+        class="custom-table"
+        hide-default-footer
+      >
         <template #item.no="{ index }">
           {{ index + 1 }}
         </template>
@@ -348,6 +386,14 @@ watch(
           </VMenu>
         </template>
       </VDataTable>
+
+      <VPagination
+        v-model="currentPage"
+        :length="totalPages"
+        total-visible="5"
+        :style="{ marginTop: '20px' }"
+        @update:modelValue="changePage"
+      />
     </VCardItem>
   </VCard>
   <TambahProduk

@@ -11,7 +11,7 @@ const productHeader: any[] = [
   { title: "Foto", value: "foto", nowrap: true },
   { title: "Jumlah Bahan Digunakan", value: "jumlah_bahan" },
   { title: "Input Bahan", value: "ingredientInput" },
-  { title: "Verif oleh Pendamping", value: "vefified" },
+  { title: "Verif oleh Pendamping", value: "verified" },
   { title: "Action", value: "actions", align: "center" },
 ];
 
@@ -122,7 +122,7 @@ const handleListProduct = async () => {
       productData.value = response.data || [];
 
       response.data.forEach((val: any) => {
-        selectedIsVefified.value.push(val.vefified);
+        selectedIsVefified.value.push(val.verified);
       });
 
       return response;
@@ -262,7 +262,7 @@ onMounted(async () => {
           @click="handleOpenModal('CREATE')"
           variant="outlined"
           append-icon="fa-plus"
-          style="margin-right: 1svw"
+          style="margin-inline-end: 1svw;"
           >Tambah</VBtn
         >
         <VBtn variant="flat" @click="handleSaveVerified">
@@ -302,7 +302,7 @@ onMounted(async () => {
             @submit="handleAddIngredient"
           />
         </template>
-        <template #item.vefified="{ item, index }">
+        <template #item.verified="{ item, index }">
           <!-- <VCheckboxBtn v-model="item.isVerified" /> -->
           <VCheckboxBtn
             @change="addVefified($event)"
@@ -374,15 +374,16 @@ onMounted(async () => {
 :deep(.v-data-table.product-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }
