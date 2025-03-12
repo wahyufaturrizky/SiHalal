@@ -206,16 +206,16 @@ const insertBahan = async () => {
 <template>
   <VDialog max-width="60svw" v-model="modalAddBahan">
     <template #activator="{ props: openModal }">
-      <IconBtn size="small" v-bind="openModal">
-        <VIcon icon="ri-pencil-line" />
-      </IconBtn>
+      <VBtn v-bind="openModal" prepend-icon="ri-pencil-line" variant="text">
+        Edit
+      </VBtn>
     </template>
     <template #default="{ isActive }">
       <VCard>
         <VCardTitle>
           <VRow>
             <VCol cols="10"><h3>Edit Data Bahan</h3></VCol>
-            <VCol cols="2" style="display: flex; justify-content: end"
+            <VCol cols="2" style="display: flex; justify-content: end;"
               ><VIcon
                 size="small"
                 icon="fa-times"
@@ -365,7 +365,7 @@ const insertBahan = async () => {
               </VCol>
             </VRow> </VCardItem
           ><VCardActions
-            style="display: flex; justify-content: end; padding: 1.5svw"
+            style="display: flex; justify-content: end; padding: 1.5svw;"
           >
             <div>
               <VBtn @click="isActive.value = false" variant="outlined"
