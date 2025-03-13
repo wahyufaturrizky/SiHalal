@@ -17,6 +17,10 @@ const selectedFile = ref(null);
 const uploadMessage = ref("");
 const selectedAuditResult = ref(null);
 const dokumenLama = ref<any>([]);
+const isUpdateDataModalOpen = ref(false);
+const modalTitle = ref("");
+const modalContent = ref("");
+const isUpdateDataMappingModalOpen = ref(false);
 
 const tanggalMulai = ref("");
 const tanggalSelesai = ref("");
@@ -105,6 +109,23 @@ const resetForm = () => {
   formUploadLaporan.value = {
     filename: "",
   };
+};
+
+const openMappingPabrik = () => {
+  modalContent.value = "mapping_pabrik"; 
+  isUpdateDataMappingModalOpen.value = true;
+};
+
+const openEditProduk = () => {
+  modalTitle.value = "Edit Produk";
+  modalContent.value = "Isi konten untuk Edit Produk.";
+  //isUpdateDataModalOpen.value = true;
+};
+
+const openEditProfile = () => {
+  modalTitle.value = "Edit Profile Pelaku Usaha";
+  modalContent.value = "Isi konten untuk Edit Profile Pelaku Usaha.";
+  isUpdateDataModalOpen.value = true;
 };
 
 const handleRemoveFile = async (uploadedFile: any) => {
@@ -556,19 +577,40 @@ onMounted(async () => {
             <h1>Detail Pemeriksaan</h1>
           </VCol>
           <VCol cols="auto" class="d-flex align-center">
-            <VBtn
-              text="Upload Laporan"
-              variant="outlined"
-              class="me-2"
-              @click="handleOpenUploadModal"
-            />
+            <VMenu open-on-hover>
+              <template v-slot:activator="{ props }">
+                <VBtn v-bind="props" variant="outlined" class="me-2">
+                  Update Data
+                </VBtn>
+              </template>
+              <VList>
+                <VListItem @click="openMappingPabrik">
+                  <VListItemTitle>Mapping Pabrik</VListItemTitle>
+                </VListItem>
+                <!-- <VListItem @click="openEditProduk">
+                  <VListItemTitle>Edit Produk</VListItemTitle>
+                </VListItem>
+                <VListItem @click="openEditProfile">
+                  <VListItemTitle>Edit Profile Pelaku Usaha</VListItemTitle>
+                </VListItem> -->
+              </VList>
+            </VMenu>
+
             <VBtn
               text="Assign Auditor"
               variant="outlined"
               class="me-2"
               @click="handleOpenAssignModal"
             />
-            <VBtn text="Update Status" @click="handleOpenUpdateModal" />
+            <VBtn
+              text="Update Laporan"
+              variant="outlined"
+              class="me-2"
+              @click="handleOpenUploadModal"
+            />
+            <VBtn 
+            text="Update Status" 
+            @click="handleOpenUpdateModal" />
           </VCol>
         </VRow>
       </template>
@@ -739,6 +781,7 @@ onMounted(async () => {
         </div>
       </template>
     </LPHDetailLayout>
+
     <VDialog v-model="isUploadModalOpen" max-width="840px" persistent>
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
@@ -853,6 +896,19 @@ onMounted(async () => {
       </VCard>
     </VDialog>
 
+    <VDialog v-model="isUpdateDataModalOpen" max-width="840px" persistent>
+      <VCard class="pa-4">
+        <VCardTitle>{{ modalTitle }}</VCardTitle>
+        <VCardText>
+          {{ modalContent }}
+        </VCardText>
+        <VCardActions>
+          <VSpacer />
+          <VBtn @click="isUpdateDataModalOpen = false" color="primary">Tutup</VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
     <VDialog v-model="isAssignModalOpen" max-width="840px" persistent>
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
@@ -945,6 +1001,22 @@ onMounted(async () => {
             @click="[handleSaveAuditor(), handleOpenAssignModal()]"
           >
             Simpan
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
+    <VDialog v-model="isUpdateDataMappingModalOpen" max-width="840px" persistent>
+      <VCard>
+        <VCardTitle class="d-flex justify-space-between align-center">
+          <span>{{ modalTitle }}</span>
+        </VCardTitle>
+          <ProdukRegulerEdit v-if="modalContent === 'mapping_pabrik'" :isviewonly="isViewOnly" />
+          <p v-else>{{ modalContent }}</p>
+        <VCardActions>
+          <VSpacer />
+          <VBtn color="primary" @click="isUpdateDataMappingModalOpen = false">
+            Tutup
           </VBtn>
         </VCardActions>
       </VCard>
