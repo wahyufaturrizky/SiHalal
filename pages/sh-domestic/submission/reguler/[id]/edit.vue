@@ -31,6 +31,7 @@ const tabList = ref([
 ]);
 
 const isBahanCompleted = ref(false);
+
 const bahanComplete = (isComplete) => {
   isBahanCompleted.value = isComplete;
 };
@@ -53,8 +54,11 @@ const getListLegal = async () => {
 
     if (response?.code === 2000) {
       listLegal.value = response.data;
+
       return response;
-    } else useSnackbar().sendSnackbar(t("global-error.error-mistake"), "error");
+    } else {
+      useSnackbar().sendSnackbar(t("global-error.error-mistake"), "error");
+    }
   } catch (error) {
     useSnackbar().sendSnackbar(t("global-error.error-mistake"), "error");
   }
@@ -71,7 +75,9 @@ const getListPenyelia = async () => {
       listPenyelia.value = response.data;
 
       return response;
-    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -89,9 +95,10 @@ const getChannel = async (path: string) => {
     // });
 
     const response = await $api(`/master/jenis-layanan-by-idreg/${id}`, {
-      method: "get"
-    })
-    itemsChannel.value = response
+      method: "get",
+    });
+
+    itemsChannel.value = response;
 
     //
     // if (response?.code === 2000) {
@@ -125,6 +132,7 @@ const getFactoryAndOutlet = async (type: string) => {
         response?.data.map((el: any) => (el.checked = false));
         listOutlet.value = response?.data;
       }
+
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -154,9 +162,8 @@ const getListIngredients = async () => {
           ["Bahan", "Cleaning Agent", "Kemasan"].every((item) =>
             jenisBahan.includes(item)
           )
-        ) {
+        )
           bahanComplete(true);
-        }
       }
     }
 
@@ -168,6 +175,7 @@ const getListIngredients = async () => {
 
 onMounted(async () => {
   activeTab.value = 0;
+
   const res: any = await Promise.all([
     getFactoryAndOutlet("FAPAB"),
     getFactoryAndOutlet("FAOUT"),
@@ -181,11 +189,13 @@ onMounted(async () => {
     return item !== undefined;
   });
 
-  if (checkResIfUndefined) {
-    loadingAll.value = false;
-  } else {
-    loadingAll.value = false;
-  }
+  if (checkResIfUndefined) loadingAll.value = false;
+  else loadingAll.value = false;
+});
+
+onUnmounted(() => {
+  localStorage.removeItem("pernyataanBebasBabiAgreement");
+  localStorage.removeItem("commitmentAndResponsibility");
 });
 </script>
 
