@@ -19,7 +19,7 @@ const id_detail = (route.params as any).id as string;
   </div>
   <VRow no-gutters>
     <VCol>
-      <h1 style="font-size: 32px">Detail Pengajuan</h1>
+      <h1 style="font-size: 32px;">Detail Pengajuan</h1>
     </VCol>
     <VCol v-if="userRoles?.includes('Verifikator')" class="d-flex justify-end">
       <VBtn
@@ -61,10 +61,10 @@ const id_detail = (route.params as any).id as string;
           <PlaceTab />
         </VTabsWindowItem>
         <VTabsWindowItem value="INGREDIENT">
-          <IngredientTab />
+          <IngredientTab  :id-detail="id_detail" />
         </VTabsWindowItem>
         <VTabsWindowItem value="PRODUCT">
-          <ProductTab />
+          <ProductTab  :id-detail="id_detail" />
         </VTabsWindowItem>
         <VTabsWindowItem value="PROCESS">
           <ProcessTab :user-roles="userRoles" />

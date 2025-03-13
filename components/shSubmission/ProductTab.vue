@@ -14,6 +14,12 @@ const productHeader: any[] = [
   { title: "Verif oleh Pendamping", value: "verified" },
   { title: "Action", value: "actions", align: "center" },
 ];
+const props = defineProps({
+  idDetail: {
+    required: true,
+    type: String,
+  },
+});
 
 const productData = ref([]);
 
@@ -66,6 +72,7 @@ const handleSaveVerified = async () => {
           "Berhasil menyimpan verifikasi data",
           "success"
         );
+        handleListProduct();
       }
       return response;
     } catch (error) {
@@ -93,6 +100,7 @@ const handleDeleteProduct = async () => {
 
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil menghapus data", "success");
+      handleListProduct();
       refresh();
     }
     return response;
@@ -105,7 +113,7 @@ const handleDeleteProduct = async () => {
 const { refresh } = await useAsyncData("list-product", async () => {
   return handleListProduct();
 });
-
+const totalProduct = ref(0);
 const handleListProduct = async () => {
   try {
     const response: any = await $api(
@@ -120,6 +128,7 @@ const handleListProduct = async () => {
 
     if (response.code === 2000) {
       productData.value = response.data || [];
+      totalProduct.value = response.data.length;
 
       response.data.forEach((val: any) => {
         selectedIsVefified.value.push(val.verified);
@@ -168,6 +177,7 @@ const handleAddProduct = async (payload: any) => {
 
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+      handleListProduct();
       refresh();
     }
     return response;
@@ -194,6 +204,7 @@ const handleAddIngredient = async (payload: any, idProduct: string) => {
 
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+      handleListProduct();
       refresh();
     }
     return response;
@@ -219,6 +230,7 @@ const handleUpdateProduct = async (payload: any, productId: string) => {
 
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil mengubah data", "success");
+      handleListProduct();
       refresh();
     }
     return response;
@@ -238,8 +250,35 @@ const handleDownload = async (filename: string) => {
   }
 };
 
+const statusPengajuan = ref<string>("");
+const handleDetail = async () => {
+  try {
+    const response: any = await $api(
+      `/self-declare/submission/${props.idDetail}/detail`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) {
+      console.log(response.data, "ini data");
+
+      const tracking = response.data.tracking ?? [];
+      const lastIndex = tracking.length - 1;
+
+      console.log("result", tracking[lastIndex]?.status);
+
+      statusPengajuan.value = tracking[lastIndex]?.status || "";
+      console.log(statusPengajuan.value, "ini status pengajuan product");
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 onMounted(async () => {
-  const res: any = await Promise.all([handleListProduct()]);
+  const res: any = await Promise.all([handleListProduct(), handleDetail()]);
 
   const checkResIfUndefined = res.every((item: any) => {
     return item !== undefined;
@@ -251,18 +290,42 @@ onMounted(async () => {
     loadingAll.value = false;
   }
 });
+
+const itemsPerPage = ref(10);
+const currentPage = ref(1);
+
+const totalPages = computed(() =>
+  Math.ceil(totalProduct.value / itemsPerPage.value)
+);
+
+const paginatedItems = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  return totalProduct.value.slice(start, start + itemsPerPage.value);
+});
+
+const changePage = (page: number) => {
+  currentPage.value = page;
+};
 </script>
 
 <template>
   <VCard v-if="!loadingAll">
     <VCardTitle class="my-3 d-flex justify-space-between align-center">
       <div class="font-weight-bold text-h4">Daftar Nama Produk</div>
+      <v-alert
+        v-if="totalProduct === 10"
+        text="Maksimal Produk 10"
+        type="error"
+        variant="tonal"
+        class="mt-5"
+      ></v-alert>
       <div>
         <VBtn
           @click="handleOpenModal('CREATE')"
           variant="outlined"
           append-icon="fa-plus"
-          style="margin-inline-end: 1svw;"
+          :disabled="totalProduct === 10"
+          style="margin-inline-end: 1svw"
           >Tambah</VBtn
         >
         <VBtn variant="flat" @click="handleSaveVerified">
@@ -311,7 +374,13 @@ onMounted(async () => {
           ></VCheckboxBtn>
         </template>
         <template #item.actions="{ item }">
-          <VMenu>
+          <VMenu
+            v-if="
+              statusPengajuan === 'OF1' ||
+              statusPengajuan === 'OF280' ||
+              statusPengajuan === 'OF285'
+            "
+          >
             <template #activator="{ props }">
               <VIcon
                 icon="fa-ellipsis-v"
@@ -346,6 +415,12 @@ onMounted(async () => {
           </VMenu>
         </template>
       </VDataTable>
+      <VPagination
+        v-model="currentPage"
+        :length="totalPages"
+        total-visible="5"
+        @update:modelValue="changePage"
+      />
     </VCardText>
   </VCard>
 
