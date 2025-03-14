@@ -187,15 +187,14 @@ const getSertifikasiDetail = async () => {
 
     if (response?.code === 2000) {
       detailData.value = response.data || {};
-      console.log(detailData.value, "all");
+     
       totalPagesAspek.value = response.data.aspek_legal.length;
       totalPagesPabrik.value = response.data.pabrik.length;
       totalPagesOutlet.value = response.data.outlet.length;
       totalPagesPenyelia.value = response.data.penyelia_halal.length;
       totalPagesProduk.value = response.data.produk.length;
 
-      console.log(totalPagesAspek.value, "aspek legal");
-      console.log(totalPagesProduk.value, "produ");
+
     } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
