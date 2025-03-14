@@ -98,6 +98,52 @@ const filter = ref({
 const navigateAction = (id: string) => {
   navigateTo(`/facilitator/verifikasi/${id}`);
 };
+
+const downloadRekap = async (page: number, size: number) => {
+  try {
+    loading.value = true;
+    const body = {
+      page,
+      size,
+    };
+
+    // if (filter.value?.nama_pengajuan) {
+    //   params["nama_pengajuan"] = filter.value.nama_pengajuan;
+    // }
+
+    // if (filter.value?.tgl_jatuh_tempo) {
+    //   params["start_tgl_jatuh_tempo"] = filter.value?.tgl_jatuh_tempo[0];
+    //   params["end_tgl_jatuh_tempo"] = filter.value?.tgl_jatuh_tempo[1];
+    // }
+
+    if (filter.value?.status) {
+      body["status"] = filter.value?.status;
+    }
+
+    const response: any = await $api("/facilitate/finance/download-rekap", {
+      method: "post",
+      body,
+    });
+
+    const url = URL.createObjectURL(response);
+
+    // Create a temporary <a> tag to trigger the download
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `excel-rekap-${new Date()}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+
+    // Cleanup
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    loadItem(page, size);
+  } catch (err: any) {
+    useSnackbar().sendSnackbar(err.data || "Ada kesalahan", "error");
+    console.log(err);
+  }
+};
+
 onMounted(async () => {
   await getStatusBayar();
 });
@@ -105,17 +151,17 @@ onMounted(async () => {
 <template>
   <VRow>
     <VCol cols="12">
-      <h1 style="font-size: 32px;">Bukti Bayar Fasilitator</h1>
+      <h1 style="font-size: 32px">Bukti Bayar Fasilitator</h1>
     </VCol>
   </VRow>
   <VRow>
     <VCol>
-      <VCard style="padding: 1.5svw;">
+      <VCard style="padding: 1.5svw">
         <VCardTitle>
           <VRow>
             <VCol
               cols="6"
-              style="display: flex; align-items: center;"
+              style="display: flex; align-items: center"
               class="text-h4 font-weight-bold"
             >
               Daftar Lunas Invoice Fasilitator
@@ -179,16 +225,20 @@ onMounted(async () => {
                 v-on:update:model-value="loadItem(page, itemPerPage)"
               ></VSelect>
             </VCol>
-            <!-- <VCol cols="3" style="display: flex; justify-content: end"
-              ><VBtn variant="flat" append-icon="fa-download"
+            <VCol cols="6" style="display: flex; justify-content: end"
+              ><VBtn
+                variant="flat"
+                append-icon="fa-download"
+                @click="downloadRekap(page, itemPerPage)"
                 >Download Rekap</VBtn
               ></VCol
-            > -->
+            >
           </VRow>
           <VRow>
             <VCol cols="12">
               <VDataTableServer
                 v-model:items-per-page="itemPerPage"
+                :items-per-page-options="[10, 25, 50, 100]"
                 v-model:page="page"
                 :headers="tableHeader"
                 :items-length="totalItems"
