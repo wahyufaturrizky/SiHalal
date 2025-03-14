@@ -46,8 +46,10 @@ const handleOssUpdate = () => {
   const legal = JSON.parse(JSON.stringify(store.legal));
 
   if (legal) {
-    const nib = legal.filter((val: any) => val.type?.toLowerCase() === "nib")[0]
-      .doc_number;
+    const nib = legal.filter(
+      (val: any) =>
+        val.type?.toLowerCase() === "nib" || val.type?.toLowerCase() === "lgl01"
+    )[0].doc_number;
     // console.log("nib = ", nib);
     store.fetchProfile(nib);
   }
