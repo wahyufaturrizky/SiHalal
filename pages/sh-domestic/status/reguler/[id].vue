@@ -173,6 +173,11 @@ const handleUpdateStatus = () => {
   useSnackbar().sendSnackbar(snackbarMessage, snackbarType);
 };
 
+const totalPagesAspek = ref(0);
+const totalPagesPabrik = ref(0);
+const totalPagesOutlet = ref(0);
+const totalPagesPenyelia = ref(0);
+const totalPagesProduk = ref(0);
 const getSertifikasiDetail = async () => {
   try {
     const response: any = await $api("/reguler/lph/detail-payment", {
@@ -180,8 +185,18 @@ const getSertifikasiDetail = async () => {
       params: { url: `${SERTIFIKASI_DETAIL}/${id}/detail` },
     });
 
-    if (response?.code === 2000) detailData.value = response.data || {};
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (response?.code === 2000) {
+      detailData.value = response.data || {};
+      console.log(detailData.value, "all");
+      totalPagesAspek.value = response.data.aspek_legal.length;
+      totalPagesPabrik.value = response.data.pabrik.length;
+      totalPagesOutlet.value = response.data.outlet.length;
+      totalPagesPenyelia.value = response.data.penyelia_halal.length;
+      totalPagesProduk.value = response.data.produk.length;
+
+      console.log(totalPagesAspek.value, "aspek legal");
+      console.log(totalPagesProduk.value, "produ");
+    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -200,6 +215,48 @@ const getDownloadForm = async (docName: string, propName: string) => {
 
 const handleDownloadForm = async (fileName: string, type: string) => {
   return await downloadDocument(fileName, type);
+};
+
+const itemsPerPage = ref(10);
+const currentPageAspek = ref(1);
+const currentPagePabrik = ref(1);
+const currentPagesOutlet = ref(1);
+const currentPagesPenyelia = ref(1);
+const currentPagesProduk = ref(1);
+
+const halamanAspek = computed(() =>
+  Math.ceil(totalPagesAspek.value / itemsPerPage.value)
+);
+const changePageAspek = (page: number) => {
+  currentPageAspek.value = page;
+};
+
+const halamanPabrik = computed(() =>
+  Math.ceil(totalPagesPabrik.value / itemsPerPage.value)
+);
+const changePagePabrik = (page: number) => {
+  currentPagePabrik.value = page;
+};
+
+const halamanOutlet = computed(() =>
+  Math.ceil(totalPagesOutlet.value / itemsPerPage.value)
+);
+const changePageOutlet = (page: number) => {
+  currentPageOutlet.value = page;
+};
+
+const halamanPenyelia = computed(() =>
+  Math.ceil(totalPagesPenyelia.value / itemsPerPage.value)
+);
+const changePagePenyelia = (page: number) => {
+  currentPagePenyelia.value = page;
+};
+
+const halamanProduk = computed(() =>
+  Math.ceil(totalPagesProduk.value / itemsPerPage.value)
+);
+const changePageProduk = (page: number) => {
+  currentPageProduk.value = page;
 };
 
 onMounted(async () => {
@@ -281,6 +338,12 @@ onMounted(async () => {
                 :data="detailData?.aspek_legal"
                 :headers="aspectLegalHeader"
               />
+              <VPagination
+                v-model="currentPageAspek"
+                :length="halamanAspek"
+                :style="{ marginTop: '20px' }"
+                @update:modelValue="changePageAspek"
+              />
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="3" class="pt-3">
@@ -291,6 +354,12 @@ onMounted(async () => {
               <TableSertifikasiHalal
                 :data="detailData?.pabrik"
                 :headers="pabrikHeader"
+              />
+              <VPagination
+                v-model="currentPagePabrik"
+                :length="halamanPabrik"
+                :style="{ marginTop: '20px' }"
+                @update:modelValue="changePagePabrik"
               />
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -303,6 +372,12 @@ onMounted(async () => {
                 :data="detailData?.outlet"
                 :headers="outletHeaders"
               />
+              <VPagination
+                v-model="currentPageOutlet1"
+                :length="halamanOutlet1"
+                :style="{ marginTop: '20px' }"
+                @update:modelValue="changePageOutlet1"
+              />
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="5" class="pt-3">
@@ -314,6 +389,12 @@ onMounted(async () => {
                 :data="detailData?.penyelia_halal"
                 :headers="penyeliaHalalHeaders"
               />
+              <VPagination
+                v-model="currentPagePenyelia"
+                :length="halamanPenyelia"
+                :style="{ marginTop: '20px' }"
+                @update:modelValue="changePagePenyelia"
+              />
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="6" class="pt-3">
@@ -324,6 +405,12 @@ onMounted(async () => {
               <TableSertifikasiHalal
                 :data="detailData?.produk"
                 :headers="produkHeaders"
+              />
+              <VPagination
+                v-model="currentPageProduk"
+                :length="halamanProduk"
+                :style="{ marginTop: '20px' }"
+                @update:modelValue="changePageProduk"
               />
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -488,9 +575,9 @@ onMounted(async () => {
                           border-color: #652672;
                           border-radius: 8px;
                           background-color: #f0e9f1;
-                        "
+"
                       >
-                        <span style="color: #652672">
+                        <span style="color: #652672;">
                           {{ detailData?.certificate_halal.status }}
                         </span>
                       </VChip>
@@ -875,9 +962,9 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 :deep(
-    .v-expansion-panel--active:not(:first-child),
-    .v-expansion-panel--active + .v-expansion-panel
-  ) {
+.v-expansion-panel--active:not(:first-child),
+.v-expansion-panel--active + .v-expansion-panel
+) {
   margin-block-start: 40px !important;
 }
 
