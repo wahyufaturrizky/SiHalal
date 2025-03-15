@@ -162,6 +162,7 @@ onMounted(async () => {
               :list_outlet="listOutlet"
               :list_penyelia="listPenyelia"
               :list_channel="itemsChannel"
+              is-disabled
             />
           </div>
           <div v-if="activeTab === 1">
