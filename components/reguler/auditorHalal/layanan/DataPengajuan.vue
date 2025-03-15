@@ -35,6 +35,11 @@ const props = defineProps({
   isviewonly: {
     type: Boolean,
   },
+  isDisabled: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 })
 
 const { t } = useI18n()
@@ -1067,6 +1072,7 @@ onMounted(async () => {
       :isviewonly="props?.isviewonly"
       :fac-id="facId"
       :fac-message="facMessage"
+      :is-disabled="props?.isDisabled"
       @complete="withFacilitator"
     />
     <br>
@@ -1075,6 +1081,7 @@ onMounted(async () => {
       :data="responsibility"
       :title="t(`pengajuan-reguler.reguler-form--pengajuan-pic-title`)"
       :isviewonly="props?.isviewonly"
+      :is-disabled="props?.isDisabled"
     />
     <br>
     <TableData
@@ -1087,6 +1094,7 @@ onMounted(async () => {
       :title="t('pengajuan-reguler.reguler-form--pengajuan-legal-title')"
       with-add-button
       :isviewonly="props?.isviewonly"
+      :is-disabled="props?.isDisabled"
     />
     <br>
 
@@ -1103,6 +1111,7 @@ onMounted(async () => {
       :title="t('pengajuan-reguler.reguler-form--pengajuan-fac-title')"
       with-add-button
       :isviewonly="props?.isviewonly"
+      :is-disabled="props?.isDisabled"
     />
     <br>
     <TableData
@@ -1118,6 +1127,7 @@ onMounted(async () => {
       :title="t('pengajuan-reguler.reguler-form--pengajuan-out-title')"
       with-add-button
       :isviewonly="props?.isviewonly"
+      :is-disabled="props?.isDisabled"
     />
     <br>
     <TableData
@@ -1130,6 +1140,7 @@ onMounted(async () => {
       :title="t('pengajuan-reguler.reguler-form--pengajuan-ph-title')"
       with-add-button
       :isviewonly="props?.isviewonly"
+      :is-disabled="props?.isDisabled"
     />
   </div>
   <div v-else>

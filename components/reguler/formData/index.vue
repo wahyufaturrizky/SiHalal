@@ -45,6 +45,9 @@ const props = defineProps({
   isviewonly: {
     type: Boolean,
   },
+  isDisabled: {
+    type: Boolean,
+  },
   facId: {
     type: String,
     required: false,
@@ -61,6 +64,7 @@ const itemsLph = ref<any>([])
 const searchRegisType = ref<string>(props?.facId)
 const messageFasilitator = ref<string>(props?.facMessage)
 const productList = ref<any[]>([])
+const isDisabledForm = ref(false)
 
 const listAreaPemasaran = [
   { name: 'Kabupaten/Kota', code: 'Kabupaten/Kota' },
@@ -388,6 +392,7 @@ const onSubmitReguler = async () => {
 }
 
 onMounted(async () => {
+  isDisabledForm.value = props.isDisabled
   if (props?.service_type) {
     const jenisLayanan = props?.service_type?.find(
       (item: any) =>
@@ -463,12 +468,14 @@ watchEffect(async () => {
                 teleport-center
                 :enable-time-picker="false"
                 format="dd-MM-yyyy"
+                :disabled="isDisabledForm"
               />
             </div>
             <div v-else>
               <VTextField
                 v-model="item.value"
                 class="-mt-10"
+                :disabled="isDisabledForm"
               />
             </div>
           </div>
@@ -494,7 +501,7 @@ watchEffect(async () => {
             <VSelect
               v-if="!item.disabled"
               v-model="item.value"
-              :disabled="searchRegisType !== ''"
+              :disabled="searchRegisType !== '' || isDisabledForm"
               :items="
                 item.title
                   === 'pengajuan-reguler.reguler-form--pengajuan-pengajuan-lph'
@@ -557,6 +564,7 @@ watchEffect(async () => {
               <VTextarea
                 v-model="item.value"
                 class="-mt-10"
+                :disabled="isDisabledForm"
               />
             </div>
           </div>
