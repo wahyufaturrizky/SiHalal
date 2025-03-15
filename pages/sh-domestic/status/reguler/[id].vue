@@ -173,11 +173,17 @@ const handleUpdateStatus = () => {
   useSnackbar().sendSnackbar(snackbarMessage, snackbarType);
 };
 
-const totalPagesAspek = ref(0);
-const totalPagesPabrik = ref(0);
-const totalPagesOutlet = ref(0);
-const totalPagesPenyelia = ref(0);
-const totalPagesProduk = ref(0);
+const totalPageAspek = ref(0);
+const totalPagePabrik = ref(0);
+const totalPageOutlet = ref(0);
+const totalPagePenyelia = ref(0);
+const totalPageProduk = ref(0);
+
+const allPagesAspek = ref<any[]>([]);
+const allPagesPabrik = ref<any[]>([]);
+const allPagesOutlet = ref<any[]>([]);
+const allPagesPenyelia = ref<any[]>([]);
+const allPagesProduk = ref<any[]>([]);
 const getSertifikasiDetail = async () => {
   try {
     const response: any = await $api("/reguler/lph/detail-payment", {
@@ -187,14 +193,17 @@ const getSertifikasiDetail = async () => {
 
     if (response?.code === 2000) {
       detailData.value = response.data || {};
-     
-      totalPagesAspek.value = response.data.aspek_legal.length;
-      totalPagesPabrik.value = response.data.pabrik.length;
-      totalPagesOutlet.value = response.data.outlet.length;
-      totalPagesPenyelia.value = response.data.penyelia_halal.length;
-      totalPagesProduk.value = response.data.produk.length;
+      allPagesAspek.value = response.data.aspek_legal || {};
+      allPagesPabrik.value = response.data.pabrik || {};
+      allPagesOutlet.value = response.data.outlet || {};
+      allPagesPenyelia.value = response.data.penyelia_halal || {};
+      allPagesProduk.value = response.data.produk || [];
 
-
+      totalPageAspek.value = response.data.aspek_legal.length;
+      totalPagePabrik.value = response.data.pabrik.length;
+      totalPageOutlet.value = response.data.outlet.length;
+      totalPagePenyelia.value = response.data.penyelia_halal.length;
+      totalPageProduk.value = response.data.produk.length;
     } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -219,41 +228,68 @@ const handleDownloadForm = async (fileName: string, type: string) => {
 const itemsPerPage = ref(10);
 const currentPageAspek = ref(1);
 const currentPagePabrik = ref(1);
-const currentPagesOutlet = ref(1);
-const currentPagesPenyelia = ref(1);
-const currentPagesProduk = ref(1);
+const currentPageOutlet = ref(1);
+const currentPagePenyelia = ref(1);
+const currentPageProduk = ref(1);
 
 const halamanAspek = computed(() =>
-  Math.ceil(totalPagesAspek.value / itemsPerPage.value)
+  Math.ceil(totalPageAspek.value / itemsPerPage.value)
 );
+const paginatedAspek = computed(() => {
+  const start = (currentPageAspek.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return allPagesAspek.value.slice(start, end);
+});
 const changePageAspek = (page: number) => {
   currentPageAspek.value = page;
 };
 
 const halamanPabrik = computed(() =>
-  Math.ceil(totalPagesPabrik.value / itemsPerPage.value)
+  Math.ceil(totalPagePabrik.value / itemsPerPage.value)
 );
+const paginatedPabrik = computed(() => {
+  const start = (currentPagePabrik.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return allPagesPabrik.value.slice(start, end);
+});
+
 const changePagePabrik = (page: number) => {
   currentPagePabrik.value = page;
 };
 
 const halamanOutlet = computed(() =>
-  Math.ceil(totalPagesOutlet.value / itemsPerPage.value)
+  Math.ceil(totalPageOutlet.value / itemsPerPage.value)
 );
+const paginatedOutlet = computed(() => {
+  const start = (currentPageOutlet.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return allPagesOutlet.value.slice(start, end);
+});
 const changePageOutlet = (page: number) => {
   currentPageOutlet.value = page;
 };
 
 const halamanPenyelia = computed(() =>
-  Math.ceil(totalPagesPenyelia.value / itemsPerPage.value)
+  Math.ceil(totalPagePenyelia.value / itemsPerPage.value)
 );
+const paginatedPenyelia = computed(() => {
+  const start = (currentPagePenyelia.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return allPagesPenyelia.value.slice(start, end);
+});
 const changePagePenyelia = (page: number) => {
   currentPagePenyelia.value = page;
 };
 
 const halamanProduk = computed(() =>
-  Math.ceil(totalPagesProduk.value / itemsPerPage.value)
+  Math.ceil(totalPageProduk.value / itemsPerPage.value)
 );
+
+const paginatedProduk = computed(() => {
+  const start = (currentPageProduk.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return allPagesProduk.value.slice(start, end);
+});
 const changePageProduk = (page: number) => {
   currentPageProduk.value = page;
 };
@@ -334,8 +370,10 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <TableSertifikasiHalal
-                :data="detailData?.aspek_legal"
+                :data="paginatedAspek"
                 :headers="aspectLegalHeader"
+                :itemsPerPage="itemsPerPage"
+                :currentPage="currentPageAspek"
               />
               <VPagination
                 v-model="currentPageAspek"
@@ -351,8 +389,10 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <TableSertifikasiHalal
-                :data="detailData?.pabrik"
+                :data="paginatedPabrik"
                 :headers="pabrikHeader"
+                :itemsPerPage="itemsPerPage"
+                :currentPage="currentPagePabrik"
               />
               <VPagination
                 v-model="currentPagePabrik"
@@ -368,14 +408,16 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <TableSertifikasiHalal
-                :data="detailData?.outlet"
+                :data="paginatedOutlet"
                 :headers="outletHeaders"
+                :itemsPerPage="itemsPerPage"
+                :currentPage="currentPageOutlet"
               />
               <VPagination
-                v-model="currentPageOutlet1"
-                :length="halamanOutlet1"
+                v-model="currentPageOutlet"
+                :length="halamanOutlet"
                 :style="{ marginTop: '20px' }"
-                @update:modelValue="changePageOutlet1"
+                @update:modelValue="changePageOutlet"
               />
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -385,8 +427,10 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <TableSertifikasiHalal
-                :data="detailData?.penyelia_halal"
+                :data="paginatedPenyelia"
                 :headers="penyeliaHalalHeaders"
+                :itemsPerPage="itemsPerPage"
+                :currentPage="currentPagePenyelia"
               />
               <VPagination
                 v-model="currentPagePenyelia"
@@ -402,8 +446,10 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <TableSertifikasiHalal
-                :data="detailData?.produk"
+                :data="paginatedProduk"
                 :headers="produkHeaders"
+                :itemsPerPage="itemsPerPage"
+                :currentPage="currentPageProduk"
               />
               <VPagination
                 v-model="currentPageProduk"
@@ -574,9 +620,9 @@ onMounted(async () => {
                           border-color: #652672;
                           border-radius: 8px;
                           background-color: #f0e9f1;
-"
+                        "
                       >
-                        <span style="color: #652672;">
+                        <span style="color: #652672">
                           {{ detailData?.certificate_halal.status }}
                         </span>
                       </VChip>
@@ -961,9 +1007,9 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 :deep(
-.v-expansion-panel--active:not(:first-child),
-.v-expansion-panel--active + .v-expansion-panel
-) {
+    .v-expansion-panel--active:not(:first-child),
+    .v-expansion-panel--active + .v-expansion-panel
+  ) {
   margin-block-start: 40px !important;
 }
 
