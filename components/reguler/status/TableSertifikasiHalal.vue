@@ -1,44 +1,45 @@
 <script setup lang="ts">
 const props = defineProps<{
   data: {
-    type: Array
-    required: false
-  }
+    type: Array;
+    required: false;
+  };
   withUnduh: {
-    type: Boolean
-    required: false
-    default: false
-  }
+    type: Boolean;
+    required: false;
+    default: false;
+  };
+  itemsPerPage?: number; // Angka untuk jumlah item per halaman
+  currentPage?: number;
   onDownload: {
-    type: Function
-    default: () => {}
-    required: false
-  }
+    type: Function;
+    default: () => {};
+    required: false;
+  };
   headers: {
-    type: Array
-  }
-}>()
+    type: Array;
+  };
+}>();
 
-const route = useRoute()
+const route = useRoute();
 
 const handleDownload = async (item: any) => {
   try {
-    const response = await $api('/shln/submission/document/download', {
-      method: 'post',
+    const response = await $api("/shln/submission/document/download", {
+      method: "post",
       body: {
         filename: item,
       },
-    })
+    });
 
     if (response.url)
-      window.open(response.url, '_blank', 'noopener,noreferrer')
+      window.open(response.url, "_blank", "noopener,noreferrer");
+  } catch (error) {
+    console.log(error);
   }
-  catch (error) {
-    console.log(error)
-  }
-}
+};
 
-const id = route.params.id
+const id = route.params.id;
 </script>
 
 <template>
@@ -62,17 +63,20 @@ const id = route.params.id
     class="border rounded"
     hide-default-footer
   >
-    
     <template #item.no="{ index }">
       <div>
-        {{ index + 1 }}
+        {{
+          ((props.currentPage || 1) - 1) * (props.itemsPerPage || 10) +
+          index +
+          1
+        }}
       </div>
     </template>
     <template #item.file_skph="{ item }">
       <Vbtn
         v-if="item.file_skph"
         class="d-flex gap-3 cursor-pointer"
-        style="margin-left: -10px"
+        style="margin-inline-start: -10px"
         @click="() => handleDownload(item.file_skph)"
       >
         <div>
@@ -88,7 +92,7 @@ const id = route.params.id
       <Vbtn
         v-if="item.file_spph"
         class="d-flex gap-3 cursor-pointer"
-        style="margin-left: -10px"
+        style="margin-inline-start: -10px"
         @click="() => handleDownload(item.file_spph)"
       >
         <div>
@@ -104,7 +108,7 @@ const id = route.params.id
       <Vbtn
         v-if="item.file_ktp"
         class="d-flex gap-3 cursor-pointer"
-        style="margin-left: -10px"
+        style="margin-inline-start: -10px"
         @click="() => handleDownload(item.file_ktp)"
       >
         <div>
@@ -142,22 +146,28 @@ const id = route.params.id
   color: red;
   font-size: 12px;
 }
+
 .p0 {
-  padding-left: 2px !important;
+  padding-inline-start: 2px !important;
 }
+
 .ml5 {
-  margin-left: 5px;
+  margin-inline-start: 5px;
 }
+
 .textRed {
   color: #e1442e;
 }
+
 .h-20 {
-  height: 20px;
+  block-size: 20px;
 }
+
 .mw30 {
-  min-width: 20rem !important;
+  min-inline-size: 20rem !important;
 }
+
 .-ml10 {
-  margin-left: -10px;
+  margin-inline-start: -10px;
 }
 </style>
