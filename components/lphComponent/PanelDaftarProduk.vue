@@ -12,28 +12,28 @@ const props = defineProps({
     type: Number,
     required: false,
   },
-})
+});
 
-const currentPage = ref(props.page)
+const currentPage = ref(props.page);
 
 const productNameHeader: any[] = [
-  { title: 'No', key: 'index' },
-  { title: 'Layanan Produk', key: 'layanan_produk', nowrap: true },
-  { title: 'Jenis Produk', key: 'jenis_produk', nowrap: true },
-  { title: 'Kelas Produk', key: 'kelas_produk', nowrap: true },
-  { title: 'Rincian Produk', key: 'rincian_produk', nowrap: true },
-  { title: 'Nama Produk', key: 'nama_produk', nowrap: true },
-  { title: 'Publikasi', key: 'publikasi_produk' },
-]
+  { title: "No", key: "index" },
+  { title: "Layanan Produk", key: "layanan_produk", nowrap: true },
+  { title: "Jenis Produk", key: "jenis_produk", nowrap: true },
+  { title: "Kelas Produk", key: "kelas_produk", nowrap: true },
+  { title: "Rincian Produk", key: "rincian_produk", nowrap: true },
+  { title: "Nama Produk", key: "nama_produk", nowrap: true },
+  { title: "Publikasi", key: "publikasi_produk" },
+];
 
-const itemPerPage = ref(10)
+const itemPerPage = ref(10);
 </script>
 
 <template>
   <VDataTable
     v-model:page="currentPage"
     :items-per-page="itemPerPage"
-    :items="props?.data.data"
+    :items="props?.data"
     :headers="productNameHeader"
     :page="props.page"
     class="custom-table"
@@ -44,10 +44,7 @@ const itemPerPage = ref(10)
       {{ index + 1 }}
     </template>
     <template #item.publikasi_produk="{ item }">
-      <VCheckbox
-        :model-value="item.publikasi_produk"
-        class="non-clickable"
-      />
+      <VCheckbox :model-value="item.publikasi_produk" class="non-clickable" />
     </template>
   </VDataTable>
 </template>
