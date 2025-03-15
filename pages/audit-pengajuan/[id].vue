@@ -13,8 +13,8 @@ const panelHasilPemeriksaan = ref([0, 1]);
 const panelAudit = ref([0, 1]);
 const panelNomorPendaftaran = ref([0, 1]);
 const panelTracking = ref([0, 1]);
-const totalItemProduk = ref(0);
-const itemPerPageUncertified = ref(5);
+const totalItemProduk = ref(10);
+const itemPerPageUncertified = ref(10);
 const pageProduk = ref(1);
 
 const detailPengajuan = ref({
@@ -173,6 +173,7 @@ const loadDaftarProduk = async (page: number = 1, size: number = 10): void => {
     const response = await $api(`/reguler/auditor/${id}/produk`, {
       method: "GET",
       params: {
+        id,
         page,
         size,
       },
@@ -247,7 +248,7 @@ onMounted(async () => {
   await Promise.all([
     loadDetailPengajuan(),
     loadDetailSertifikasi(),
-    loadDaftarProduk(),
+    loadDaftarProduk(pageProduk.value, totalItemProduk.value),
     loadPemeriksaanProduk(),
   ]);
 });
@@ -473,11 +474,11 @@ onMounted(async () => {
                 :headers="daftarProdukHeader"
                 :items-per-page="itemPerPageUncertified"
                 :items="daftarProdukItems"
-                :items-per-page-options="[10, 25]"
+                :items-per-page-options="[10]"
                 v-model:page="pageProduk"
                 @update:options="
                   {
-                    loadDaftarProduk(pageProduk, totalItemProduk);
+                    loadDaftarProduk(pageProduk, itemPerPageUncertified);
                   }
                 "
               >
