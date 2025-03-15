@@ -94,8 +94,15 @@ const getChannel = async (path: string) => {
     //   params,
     // });
 
-    const response = await $api(`/master/jenis-layanan-by-idreg/${id}`, {
+    // const response = await $api(`/master/jenis-layanan-by-idreg/${id}`, {
+    //   method: "get",
+    // });
+
+    const response = await $api(`/master/jenis-layanan`, {
       method: "get",
+      query: {
+        query: "empty",
+      },
     });
 
     itemsChannel.value = response;
@@ -175,6 +182,15 @@ const getListIngredients = async () => {
 
 onMounted(async () => {
   activeTab.value = 0;
+
+  const sessionData = await useMyAuthUserStore().getSession();
+
+  const userRole = sessionData?.value?.roles?.[0]?.name;
+
+  if (userRole === "Lembaga Pemeriksa Halal") {
+    localStorage.setItem("pernyataanBebasBabiAgreement", true);
+    localStorage.setItem("commitmentAndResponsibility", true);
+  }
 
   const res: any = await Promise.all([
     getFactoryAndOutlet("FAPAB"),

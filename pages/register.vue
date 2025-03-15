@@ -252,7 +252,7 @@ onMounted(async () => {
     }).then((resp: any) => {
       console.log("fetch type = ", resp);
 
-      const eligibleRole = ["r.45", "r.5"];
+      const eligibleRole = ["r.10", "r.50"];
       fetchType.value = resp?.filter(
         (val: any) =>
           val.name !== "" && eligibleRole.includes(val.code?.toLowerCase())
