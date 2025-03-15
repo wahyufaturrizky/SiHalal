@@ -499,12 +499,70 @@ const getListFormulir = async () => {
   }
 };
 
+const storeDataPengajuan = useMyRegulerPelakuUsahaStore();
+const itemsChannel = ref();
+const productList = ref();
+
+const getChannel = async () => {
+  try {
+    const response = await $api(`/master/jenis-layanan`, {
+      method: "get",
+      query: {
+        query: "empty",
+      },
+    });
+
+    const master = JSON.parse(
+      JSON.stringify(storeDataPengajuan.dataPengajuanCertData)
+    );
+    console.log("store isi = ", master[3].value);
+    return response.filter(
+      (val) => val.name === master[3].value || val.code === master[3].value
+    )[0].code;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const getProductType = async (id: string) => {
+  console.log("id jnlay = ", id);
+  try {
+    const response: any = await $api("/master/product-filter", {
+      method: "get",
+      params: { id },
+    });
+
+    if (response.length) {
+      productList.value = response;
+
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
 const loadItemProductClasifications = async () => {
   try {
-    const response: any = await $api(
-      `/self-declare/verificator/produk/clasification/${id}`,
+    const params = {};
+    const jnlay = await getChannel();
+    const prod = await getProductType(jnlay);
+
+    const master = JSON.parse(
+      JSON.stringify(storeDataPengajuan.dataPengajuanCertData)
+    )[4].value;
+
+    params["idLayanan"] = prod.filter(
+      (val) => val.name === master || val.code === master
+    )[0].code;
+
+    const response = await $api(
+      `/reguler/auditor/combobox-product-klasifikasi`,
       {
         method: "get",
+        params,
       }
     );
 
@@ -526,12 +584,12 @@ const loadItemProductClasifications = async () => {
 const loadItemProductRincian = async (kode_rincian: string) => {
   loadingRincian.value = true;
   try {
-    const response: any = await $api(
-      `/self-declare/verificator/produk/rincian/${kode_rincian}`,
-      {
-        method: "get",
-      }
-    );
+    const response = await $api(`/reguler/auditor/combobox-product-rincian`, {
+      method: "get",
+      params: {
+        idLayanan: kode_rincian,
+      },
+    });
 
     if (response.code === 2000) {
       listRincian.value = response.data || [];
@@ -1321,7 +1379,7 @@ watch([titleDialog, tabAddBahan], () => {
               </div>
               <div v-else class="mt-10">
                 <div>
-                  <label>Klasifikasi Produk</label>
+                  <label>Klasifikasi Produk 1</label>
                   <VSelect
                     outlined
                     placeholder="pilih klasifikasi produk"
