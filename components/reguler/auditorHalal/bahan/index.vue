@@ -591,7 +591,7 @@ const getListIngredients = async () => {
 
       if (response.data !== null) {
         const jenisBahan = response.data?.map((i) => i.jenis_bahan?.toLowerCase());
-        if (dataCertifHalal?.jenis_layanan === "Makanan" || dataCertifHalal?.jenis_layanan === "Minuman") {
+        if (dataCertifHalal?.jenis_layanan !== "Makanan" || dataCertifHalal?.jenis_layanan !== "Minuman") {
           if (jenisBahan.length > 0) {
             emit("complete", true);
           } else {
