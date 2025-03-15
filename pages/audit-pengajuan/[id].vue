@@ -14,6 +14,8 @@ const panelAudit = ref([0, 1]);
 const panelNomorPendaftaran = ref([0, 1]);
 const panelTracking = ref([0, 1]);
 const totalItemProduk = ref(0);
+const itemPerPageUncertified = ref(5);
+const pageProduk = ref(1);
 
 const detailPengajuan = ref({
   alamat: null,
@@ -166,15 +168,19 @@ const loadDetailSertifikasi = async (): void => {
   }
 };
 
-const loadDaftarProduk = async (): void => {
+const loadDaftarProduk = async (page: number = 1, size: number = 10): void => {
   try {
     const response = await $api(`/reguler/auditor/${id}/produk`, {
       method: "GET",
+      params: {
+        page,
+        size,
+      },
     });
 
     if (response.code === 2000) {
       daftarProdukItems.value = response.data;
-      totalItemProduk.value = response.total_item;
+      totalItemProduk.value = response.totalItems;
     }
   } catch (e) {
     snackbar.sendSnackbar("Terjadi Kesalahan ", "error");
@@ -462,12 +468,22 @@ onMounted(async () => {
               Daftar Nama Produk
             </VExpansionPanelTitle>
             <VExpansionPanelText>
-              <VDataTable
+              <VDataTableServer
                 :items-length="totalItemProduk"
                 :headers="daftarProdukHeader"
+                :items-per-page="itemPerPageUncertified"
                 :items="daftarProdukItems"
                 :items-per-page-options="[10, 25]"
+                v-model:page="pageProduk"
+                @update:options="
+                  {
+                    loadDaftarProduk(pageProduk, totalItemProduk);
+                  }
+                "
               >
+                <template #item.index="{ index }">
+                  {{ index + 1 + (pageProduk - 1) * itemPerPageUncertified }}
+                </template>
                 <template #item.productType="{ item }">
                   <div class="mw-170">
                     {{ item.productType }}
@@ -481,10 +497,10 @@ onMounted(async () => {
                 <template #item.publication="{ item }">
                   <VCheckbox true-value="true" />
                 </template>
-                <template #[`item.no`]="{ index }">
+                <!-- <template #[`item.no`]="{ index }">
                   <span>{{ index + 1 }}</span>
-                </template>
-              </VDataTable>
+                </template> -->
+              </VDataTableServer>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
