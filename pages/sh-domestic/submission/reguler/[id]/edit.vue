@@ -213,6 +213,24 @@ onUnmounted(() => {
   localStorage.removeItem("pernyataanBebasBabiAgreement");
   localStorage.removeItem("commitmentAndResponsibility");
 });
+
+const selectedProduct = ref();
+const dataPengajuanRef = ref();
+
+const dataPengajuanEmitted = ref();
+
+const handleDataPengajuanEmitted = (value: any) => {
+  dataPengajuanEmitted.value = value;
+  console.log("data pengajuan val = ", value);
+};
+
+const storeDataPengajuan = useMyRegulerPelakuUsahaStore();
+
+const onclickTab = (tab: any) => {
+  if (tab == 2) {
+    dataPengajuanRef.value.emitRequestCertificateData();
+  }
+};
 </script>
 
 <template>
@@ -256,6 +274,7 @@ onUnmounted(() => {
               :key="item"
               :value="index"
               :disabled="index > 2 && !isBahanCompleted"
+              @click="onclickTab(index)"
             >
               {{ `${t(item)}` }}
             </VTab>
@@ -274,6 +293,8 @@ onUnmounted(() => {
               :list_penyelia="listPenyelia"
               :list_channel="itemsChannel"
               :isviewonly="isViewOnly"
+              ref="dataPengajuanRef"
+              @certificate-data-changed="handleDataPengajuanEmitted"
             />
           </div>
           <div v-if="activeTab === 1">
