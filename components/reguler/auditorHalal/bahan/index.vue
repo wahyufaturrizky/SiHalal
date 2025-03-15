@@ -5,7 +5,6 @@ import "@vuepic/vue-datepicker/dist/main.css";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-const { t } = useI18n();
 const props = defineProps({
   onComplete: {
     type: Function,
@@ -18,7 +17,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits();
-
+const { t } = useI18n();
 const route = useRoute();
 const store = useMyTabEditRegulerStore();
 
@@ -42,6 +41,7 @@ const loading = ref(false);
 const loadingRincian = ref(false);
 const reRender = ref(false);
 const tabBahan = ref(0);
+
 const catatan = ref<any>({
   name: "",
   process: "",
@@ -178,6 +178,7 @@ const productName = ref({
     { title: "Nama Produk", key: "nama", nowrap: true },
     { title: "Foto Produk", key: "foto", nowrap: true },
     { title: "Jumlah Bahan", key: "qtyBahan", nowrap: true },
+
     // { title: 'Jumlah Bahan', key: 'qtyBahan', nowrap: true },
     {
       title: "Action",
@@ -320,6 +321,7 @@ const uploadDocument = async (file: any) => {
 const uploadDocumentBahan = async (file: any) => {
   try {
     const formData = new FormData();
+
     formData.append("file", file);
 
     return await $api("/reguler/pelaku-usaha/tab-bahan/products/upload", {
@@ -337,6 +339,7 @@ const uploadDocumentBahan = async (file: any) => {
 const uploadDocumentProduct = async (file: any) => {
   try {
     const formData = new FormData();
+
     formData.append("file", file);
 
     return await $api(
@@ -362,9 +365,8 @@ const handleUploadFile = async (event: any) => {
     uploadedFile.value.file = fileData;
     try {
       const response = await uploadDocument(fileData);
-      if (response.code === 2000) {
+      if (response.code === 2000)
         formData.value.foto_produk = response.data.file_url;
-      }
     } catch (error) {
       console.log(error);
     }
@@ -379,6 +381,7 @@ const handleUploadFileBahan = async (event: any) => {
     uploadedFile.value.file = fileData;
     try {
       loading.value = true;
+
       const response = await uploadDocumentBahan(fileData);
       if (response.code === 2000) {
         addDialog.value = false;
@@ -409,6 +412,7 @@ const handleUploadFileProduct = async (event: any) => {
     uploadedFile.value.file = fileData;
     try {
       loading.value = true;
+
       const response = await uploadDocumentProduct(fileData);
       if (response.code === 2000) {
         addDialog.value = false;
@@ -576,6 +580,7 @@ const getListIngredients = async () => {
           const missing = ["Bahan", "Cleaning Agent", "Kemasan"].filter(
             (item) => !jenisBahan.includes(item)
           );
+
           emit("failed", missing);
         }
       } else {
@@ -635,7 +640,7 @@ const bulkInsert = async () => {
       {
         method: "put",
         params: { id_reg: id },
-        body: body,
+        body,
       }
     );
 
@@ -653,15 +658,17 @@ const bulkInsert = async () => {
         const payload = {
           reg_prod_name: el.HalalCertificateRegulerProduk?.reg_prod_name,
         };
+
         body.push(payload);
       }
     });
+
     const response: any = await $api(
       "/reguler/pelaku-usaha/tab-bahan/products/bulkInsert-product",
       {
         method: "put",
         params: { id_reg: id },
-        body: body,
+        body,
       }
     );
 
@@ -927,9 +934,7 @@ const getTemplateFile = async (productId: string, type: string) => {
     }
   );
 
-  if (response.code === 2000) {
-    fileTemplate.value = response.data.file;
-  }
+  if (response.code === 2000) fileTemplate.value = response.data.file;
 };
 
 const getTemplateFileProduct = async (productId: string, type: string) => {
@@ -940,9 +945,7 @@ const getTemplateFileProduct = async (productId: string, type: string) => {
     }
   );
 
-  if (response.code === 2000) {
-    fileTemplateProduct.value = response.data.file;
-  }
+  if (response.code === 2000) fileTemplateProduct.value = response.data.file;
 };
 
 const deleteIngredient = async (productId: string) => {
@@ -998,6 +1001,7 @@ const handleInputBahan = async (selected, idProduk) => {
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
       await refresh();
     }
+
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
@@ -1014,7 +1018,7 @@ const downloadTemplate = async (file: any) => {
 const handleAddIngredient = async (payload: any, idProduct: string) => {
   try {
     const response: any = await $api(
-      `/self-declare/business-actor/product/add-ingredient`,
+      "/self-declare/business-actor/product/add-ingredient",
       {
         method: "post",
         body: payload,
@@ -1030,6 +1034,7 @@ const handleAddIngredient = async (payload: any, idProduct: string) => {
       await refresh();
     }
     getListIngredients();
+
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
@@ -1057,11 +1062,9 @@ watch([titleDialog, tabAddBahan], () => {
   if (
     titleDialog.value === "Tambah Data Bahan" &&
     (tabAddBahan.value === "2" || tabAddBahan.value === 2)
-  ) {
+  )
     hideFooterBtn.value = false;
-  } else {
-    hideFooterBtn.value = true;
-  }
+  else hideFooterBtn.value = true;
 });
 </script>
 
@@ -1079,8 +1082,8 @@ watch([titleDialog, tabAddBahan], () => {
       :toggle="() => (visiblePreview = false)"
       :label-save-btn="`Unggah (${
         titleDialog === 'Preview Bahan'
-        ? `${listPreview.filter((a: any) => a.Passed).length} Bahan`
-        : `${listPreview.filter((a: any) => a.Passed).length} Produk`
+          ? `${listPreview.filter((a: any) => a.Passed).length} Bahan`
+          : `${listPreview.filter((a: any) => a.Passed).length} Produk`
       })`"
       :label-back-btn="
         t('pengajuan-reguler.reguler_form-bahan-produk-popupbahan-cancel')
@@ -1091,14 +1094,14 @@ watch([titleDialog, tabAddBahan], () => {
       <template #content>
         <div v-if="titleDialog === 'Preview Produk'">
           <PreviewBahanTable
-            :previewHeader="previewProductHeader"
-            :listPreview="listPreview"
+            :preview-header="previewProductHeader"
+            :list-preview="listPreview"
           />
         </div>
         <div v-else>
           <PreviewBahanTable
-            :previewHeader="previewHeader"
-            :listPreview="listPreview"
+            :preview-header="previewHeader"
+            :list-preview="listPreview"
           />
         </div>
       </template>
@@ -1211,7 +1214,7 @@ watch([titleDialog, tabAddBahan], () => {
               </div>
               <div v-else class="mt-10">
                 <TambahBahanForm
-                  @loadList="
+                  @load-list="
                     async () => {
                       addDialog = false;
                       reRender = !reRender;
@@ -1220,7 +1223,7 @@ watch([titleDialog, tabAddBahan], () => {
                       getListCatatan();
                     }
                   "
-                ></TambahBahanForm>
+                />
               </div>
             </VTabItem>
           </VTabsItems>
@@ -2007,7 +2010,19 @@ watch([titleDialog, tabAddBahan], () => {
       :isviewonly="isviewonly"
       :hide-default-footer="false"
       :items-per-page="10"
-    />
+    >
+      <template #headerDialog>
+        <div class="bgContent">
+          <div class="d-flex flex-wrap mt-5">
+            <VIcon icon="ri-error-warning-line" color="#652672" />
+            <label class="subText"
+              >Jenis Bahan harus terdiri dari : Cleaning Agent, Kemasan dan
+              Bahan, sebelum dapat mengisi Produk.</label
+            >
+          </div>
+        </div>
+      </template>
+    </TableData>
     <br />
     <TableData
       :on-submit="() => (confirmSaveDialog = true)"
@@ -2030,8 +2045,8 @@ watch([titleDialog, tabAddBahan], () => {
           <div class="d-flex flex-wrap mt-5">
             <VIcon icon="ri-error-warning-line" color="#652672" />
             <label class="subText"
-              >Setelah mengisi nama produk jangan lupa untuk menetapkan
-              bahan-bahan yang digunakan pada kolom pengisian bahan.</label
+              >Jenis Bahan harus terdiri dari : Cleaning Agent, Kemasan dan
+              Bahan, sebelum dapat mengisi Produk.</label
             >
           </div>
         </div>
