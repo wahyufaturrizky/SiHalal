@@ -176,6 +176,15 @@ const getListIngredients = async () => {
 onMounted(async () => {
   activeTab.value = 0;
 
+  const sessionData = await useMyAuthUserStore().getSession();
+
+  const userRole = sessionData?.value?.roles?.[0]?.name;
+
+  if (userRole === "Lembaga Pemeriksa Halal") {
+    localStorage.setItem("pernyataanBebasBabiAgreement", true);
+    localStorage.setItem("commitmentAndResponsibility", true);
+  }
+
   const res: any = await Promise.all([
     getFactoryAndOutlet("FAPAB"),
     getFactoryAndOutlet("FAOUT"),
