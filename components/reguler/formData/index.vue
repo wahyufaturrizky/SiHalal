@@ -211,6 +211,10 @@ const getProductType = async (id: string) => {
       },
     })
 
+    if (!response) {
+      return
+    }
+
     if (response.length) {
       productList.value = response
 
