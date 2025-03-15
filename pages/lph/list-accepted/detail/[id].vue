@@ -40,7 +40,7 @@ const handleUpdateStatus = async () => {
 
       return response?.data;
     } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      useSnackbar().sendSnackbar(response?.errors?.list_error?.[0], "error");
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
