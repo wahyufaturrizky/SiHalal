@@ -172,8 +172,10 @@ const loadDaftarProduk = async (): void => {
       method: "GET",
     });
 
-    if (response.code === 2000) daftarProdukItems.value = response.data;
-    totalItemProduk.value = response.total_item;
+    if (response.code === 2000) {
+      daftarProdukItems.value = response.data;
+      totalItemProduk.value = response.total_item;
+    }
   } catch (e) {
     snackbar.sendSnackbar("Terjadi Kesalahan ", "error");
   }
@@ -464,7 +466,7 @@ onMounted(async () => {
                 :items-length="totalItemProduk"
                 :headers="daftarProdukHeader"
                 :items="daftarProdukItems"
-                items-per-page-options=""
+                :items-per-page-options="[10, 25]"
               >
                 <template #item.productType="{ item }">
                   <div class="mw-170">
