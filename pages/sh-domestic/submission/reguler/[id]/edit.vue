@@ -94,8 +94,15 @@ const getChannel = async (path: string) => {
     //   params,
     // });
 
-    const response = await $api(`/master/jenis-layanan-by-idreg/${id}`, {
+    // const response = await $api(`/master/jenis-layanan-by-idreg/${id}`, {
+    //   method: "get",
+    // });
+
+    const response = await $api(`/master/jenis-layanan`, {
       method: "get",
+      query: {
+        query: "empty",
+      },
     });
 
     itemsChannel.value = response;
