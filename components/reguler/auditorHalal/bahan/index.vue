@@ -497,10 +497,13 @@ const getListFormulir = async () => {
 
 const loadItemProductClasifications = async () => {
   try {
-    const response: any = await $api(
-      `/self-declare/verificator/produk/clasification/${id}`,
+    const params = {};
+
+    const response = await $api(
+      `/reguler/auditor/combobox-product-klasifikasi`,
       {
         method: "get",
+        params,
       }
     );
 
@@ -1318,7 +1321,7 @@ watch([titleDialog, tabAddBahan], () => {
               </div>
               <div v-else class="mt-10">
                 <div>
-                  <label>Klasifikasi Produk</label>
+                  <label>Klasifikasi Produk 1</label>
                   <VSelect
                     outlined
                     placeholder="pilih klasifikasi produk"
