@@ -163,14 +163,15 @@ const getListIngredients = async () => {
 
     if (response.code === 2000) {
       if (response.data !== null) {
-        const jenisBahan = response.data?.map((i) => i.jenis_bahan);
+        const jenisBahan = response.data?.map((i) => i.jenis_bahan?.toLowerCase());
 
         if (
           ["Bahan", "Cleaning Agent", "Kemasan"].every((item) =>
-            jenisBahan.includes(item)
+            jenisBahan.includes(item?.toLowerCase())
           )
         )
           bahanComplete(true);
+        else bahanComplete(false)
       }
     }
 
@@ -214,17 +215,13 @@ onUnmounted(() => {
   localStorage.removeItem("commitmentAndResponsibility");
 });
 
-const selectedProduct = ref();
 const dataPengajuanRef = ref();
 
 const dataPengajuanEmitted = ref();
 
 const handleDataPengajuanEmitted = (value: any) => {
   dataPengajuanEmitted.value = value;
-  console.log("data pengajuan val = ", value);
 };
-
-const storeDataPengajuan = useMyRegulerPelakuUsahaStore();
 
 const onclickTab = (tab: any) => {
   if (tab == 2) {
@@ -274,7 +271,6 @@ const onclickTab = (tab: any) => {
               :key="item"
               :value="index"
               :disabled="index > 2 && !isBahanCompleted"
-              @click="onclickTab(index)"
             >
               {{ `${t(item)}` }}
             </VTab>
