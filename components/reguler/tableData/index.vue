@@ -75,6 +75,9 @@ const props = defineProps({
   isviewonly: {
     type: Boolean,
   },
+  isDisabled: {
+    type: Boolean,
+  },
   onInputBahan: {
     type: Function,
     default: () => {},
@@ -107,6 +110,7 @@ const dialogEdit = ref(false);
 const loading = ref(false);
 const itemDetail = ref<any>({});
 const bahanSelected = ref([]);
+const isDisabledForm = ref(false)
 
 const handleCheck = (item: any) => {
   if (item.checked) item.checked = false;
@@ -274,6 +278,7 @@ const detailClicked = (item: any) => {
 };
 
 onMounted(() => {
+  isDisabledForm.value = props.isDisabled
   if (
     props?.title === "Daftar Nama Produk" ||
     props?.title === "Daftar Nama Bahan dan Kemasan"
@@ -331,7 +336,7 @@ const itemsPerPageServer = ref(10);
             ></TambahBahanModal>
           </div>
           <VBtn
-            v-if="withAddButton && !isviewonly"
+            v-if="withAddButton && !isviewonly && !isDisabledForm"
             variant="outlined"
             append-icon="ri-add-line"
             @click="props.onAdd"
@@ -611,7 +616,7 @@ const itemsPerPageServer = ref(10);
           </template>
 
           <template v-if="!isviewonly" #item.action="{ item }">
-            <div v-if="bahanSelected?.some((el: any) => el === item.id)">
+            <div v-if="bahanSelected?.some((el: any) => el === item.id) || isDisabledForm">
               <VBtn
                 v-bind="props"
                 variant="plain"

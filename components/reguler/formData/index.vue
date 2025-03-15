@@ -45,6 +45,9 @@ const props = defineProps({
   isviewonly: {
     type: Boolean,
   },
+  isDisabled: {
+    type: Boolean,
+  },
   facId: {
     type: String,
     required: false,
@@ -61,6 +64,7 @@ const itemsLph = ref<any>([]);
 const searchRegisType = ref<string>(props?.facId);
 const messageFasilitator = ref<string>(props?.facMessage);
 const productList = ref<any[]>([]);
+const isDisabledForm = ref(false);
 
 const listAreaPemasaran = [
   { name: "Kabupaten/Kota", code: "Kabupaten/Kota" },
@@ -212,6 +216,10 @@ const getProductType = async (id: string) => {
     //     idReg: submissionId,
     //   },
     // })
+
+    if (!response) {
+      return;
+    }
 
     if (response.length) {
       productList.value = response;
@@ -389,6 +397,7 @@ const onSubmitReguler = async () => {
 };
 
 onMounted(async () => {
+  isDisabledForm.value = props.isDisabled;
   if (props?.service_type) {
     const jenisLayanan = props?.service_type?.find(
       (item: any) =>
@@ -461,10 +470,15 @@ watchEffect(async () => {
                 teleport-center
                 :enable-time-picker="false"
                 format="dd-MM-yyyy"
+                :disabled="isDisabledForm"
               />
             </div>
             <div v-else>
-              <VTextField v-model="item.value" class="-mt-10" />
+              <VTextField
+                v-model="item.value"
+                class="-mt-10"
+                :disabled="isDisabledForm"
+              />
             </div>
           </div>
           <div v-if="item.type === 'select'">
@@ -486,7 +500,7 @@ watchEffect(async () => {
             <VSelect
               v-if="!item.disabled"
               v-model="item.value"
-              :disabled="searchRegisType !== ''"
+              :disabled="searchRegisType !== '' || isDisabledForm"
               :items="
                 item.title ===
                 'pengajuan-reguler.reguler-form--pengajuan-pengajuan-lph'
@@ -543,7 +557,11 @@ watchEffect(async () => {
                 {{ t(item.title) }}
                 <span v-if="item.required" class="required">*</span>
               </p>
-              <VTextarea v-model="item.value" class="-mt-10" />
+              <VTextarea
+                v-model="item.value"
+                class="-mt-10"
+                :disabled="isDisabledForm"
+              />
             </div>
           </div>
         </VCol>
