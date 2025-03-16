@@ -163,7 +163,9 @@ const getListIngredients = async () => {
 
     if (response.code === 2000) {
       if (response.data !== null) {
-        const jenisBahan = response.data?.map((i) => i.jenis_bahan?.toLowerCase());
+        const jenisBahan = response.data?.map((i) =>
+          i.jenis_bahan?.toLowerCase()
+        );
 
         if (
           ["Bahan", "Cleaning Agent", "Kemasan"].every((item) =>
@@ -171,7 +173,7 @@ const getListIngredients = async () => {
           )
         )
           bahanComplete(true);
-        else bahanComplete(false)
+        else bahanComplete(false);
       }
     }
 
@@ -228,6 +230,7 @@ const onclickTab = (tab: any) => {
     dataPengajuanRef.value.emitRequestCertificateData();
   }
 };
+const valid = ref(false);
 </script>
 
 <template>
@@ -266,14 +269,26 @@ const onclickTab = (tab: any) => {
       <VRow>
         <VCol cols="12" class="pl0">
           <VTabs v-model="activeTab" align-tabs="start" class="w-100">
-            <VTab
+            <div
               v-for="(item, index) in tabList"
-              :key="item"
-              :value="index"
-              :disabled="index > 2 && !isBahanCompleted"
+              :key="index"
+              class="position-relative d-inline-block"
             >
-              {{ `${t(item)}` }}
-            </VTab>
+              <VTooltip
+                v-if="index > 2 && !isBahanCompleted"
+                activator="parent"
+              >
+                Mohon lengkapi Bahan, Cleaning Agent, Kemasan agar menu ini
+                dapat di akses
+              </VTooltip>
+              <VTab
+                :value="index"
+                :disabled="index > 2 && !isBahanCompleted"
+                @click="onclickTab(index)"
+              >
+                {{ t(item) }}
+              </VTab>
+            </div>
           </VTabs>
         </VCol>
       </VRow>
@@ -353,5 +368,9 @@ const onclickTab = (tab: any) => {
 .headerSection {
   display: flex;
   justify-content: space-between;
+}
+
+.tab-hover {
+  position: relative;
 }
 </style>
