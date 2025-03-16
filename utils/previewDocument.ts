@@ -29,6 +29,40 @@ export const previewDocument = async (filename: string, param?: string) => {
   }
 };
 
+export const previewAsModal = async (filename: string, param?: string) => {
+  try {
+    const minio = await $api("/shln/submission/document/download", {
+      method: "post",
+      body: {
+        filename,
+        param: param && `dirName=${param}`,
+      },
+    });
+    const response = await fetch(minio.url);
+    const type = getMimeType(minio.url.split("?")[0].split(".").at(-1));
+    const blob = await response.blob();
+
+    // Force the correct content type
+    const pdfBlob = new Blob([blob], { type: type });
+    const blobUrl = URL.createObjectURL(pdfBlob);
+
+    // Open the PDF in a new tab
+    return {
+      uri: blobUrl,
+      status: response.status,
+    };
+
+    // window.open(response.url, "_blank", "noopener,noreferrer");
+  } catch (error) {
+    console.log("error = ", error.data);
+    if (error.statusCode === 404) {
+      useSnackbar().sendSnackbar(error.statusMessage, "error");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  }
+};
+
 const mimeTypes = {
   // PDF
   pdf: "application/pdf",
