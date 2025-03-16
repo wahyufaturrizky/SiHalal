@@ -249,7 +249,22 @@ onMounted(async () => {
           {{ dialogData?.title }}
         </VCardTitle>
         <VCardText>
-          <p>
+          <div
+            v-if="dialogData.title === 'Mengirim Pengajuan'"
+            style="color: black; text-wrap: wrap;"
+          >
+            <p style="font-weight: bolder;">Disclaimer</p>
+            <p>Dengan sungguh-sungguh menyatakan bahwa:</p>
+            <ul style="padding-left: 20px;">
+              <li>
+                Seluruh pernyataan data dan informasi beserta seluruh dokumen yang saya lampirkan dalam berkas pendaftaran adalah benar.
+              </li>
+              <li>
+                Apabila dikemudian ditemukan bahwa data/dokumen yang saya sampaikan tidak benar dan/atau ada pemalsuan, maka seluruh keputusan yang telah ditetapkan berdasarkan berkas batal berdasarkan hukum dan saya bersedia dikenakan sanksi sesuai ketentuan peraturan perundang-undangan yang berlaku.
+              </li>
+            </ul>
+          </div>
+          <p v-else>
             {{ dialogData?.description }}
           </p>
         </VCardText>
