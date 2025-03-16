@@ -608,7 +608,7 @@ const getListIngredients = async () => {
             const missing = ["Bahan", "Cleaning Agent", "Kemasan"].filter(
               (item) => !jenisBahan.includes(item)
             );
-  
+
             emit("failed", missing);
           }
         }
@@ -1201,8 +1201,9 @@ watch([titleDialog, tabAddBahan], () => {
                     </VBtn>
                   </VCol>
                 </VRow>
-                <VRow no-gutters>
-                  <VCol cols="6" class="d-flex align-center">
+                <br/>
+                <VRow class="mb-3" align="center">
+                  <VCol cols="6">
                     <span> Unggah Bahan </span>
                   </VCol>
                   <VCol cols="6">
@@ -1212,7 +1213,6 @@ watch([titleDialog, tabAddBahan], () => {
                       density="compact"
                       placeholder="No file choosen"
                       rounded="xl"
-                      max-width="400"
                     >
                       <template #append-inner>
                         <VIcon
@@ -1226,11 +1226,10 @@ watch([titleDialog, tabAddBahan], () => {
                     <VFileInput
                       v-else
                       :model-value="uploadedFileBahan.file"
-                      class="custom-file-input mt-5"
+                      class="custom-file-input"
                       density="compact"
                       rounded="xl"
                       label="No file choosen"
-                      max-width="400"
                       prepend-icon=""
                       @change="handleUploadFileBahan"
                     >
@@ -1238,6 +1237,22 @@ watch([titleDialog, tabAddBahan], () => {
                         <VBtn rounded="e-xl" text="Choose" />
                       </template>
                     </VFileInput>
+                  </VCol>
+                  <VCol cols="12">
+                    <VAlert
+                      type="info"
+                      color="primary"
+                      variant="tonal"
+                      density="compact"
+                      prominent
+                    >
+                      <template #prepend>
+                        <VIcon size="24px" icon="ri-information-2-fill" />
+                      </template>
+                      <template #text>
+                        File bahan harus berformat ZIP
+                      </template>
+                    </VAlert>
                   </VCol>
                 </VRow>
               </div>
@@ -1308,8 +1323,9 @@ watch([titleDialog, tabAddBahan], () => {
                     </VBtn>
                   </VCol>
                 </VRow>
-                <VRow no-gutters>
-                  <VCol cols="6" class="d-flex align-center">
+                <br/>
+                <VRow class="mb-3" align="center">
+                  <VCol cols="6">
                     <span> Unggah Produk </span>
                   </VCol>
                   <VCol cols="6">
@@ -1319,7 +1335,6 @@ watch([titleDialog, tabAddBahan], () => {
                       density="compact"
                       placeholder="No file choosen"
                       rounded="xl"
-                      max-width="400"
                     >
                       <template #append-inner>
                         <VIcon
@@ -1333,11 +1348,10 @@ watch([titleDialog, tabAddBahan], () => {
                     <VFileInput
                       v-else
                       :model-value="uploadedFileProduct.file"
-                      class="custom-file-input mt-5"
+                      class="custom-file-input"
                       density="compact"
                       rounded="xl"
                       label="No file choosen"
-                      max-width="400"
                       prepend-icon=""
                       @change="handleUploadFileProduct"
                     >
@@ -1345,6 +1359,22 @@ watch([titleDialog, tabAddBahan], () => {
                         <VBtn rounded="e-xl" text="Choose" />
                       </template>
                     </VFileInput>
+                  </VCol>
+                  <VCol cols="12">
+                    <VAlert
+                      type="info"
+                      color="primary"
+                      variant="tonal"
+                      density="compact"
+                      prominent
+                    >
+                      <template #prepend>
+                        <VIcon size="24px" icon="ri-information-2-fill" />
+                      </template>
+                      <template #text>
+                        File produk harus berformat ZIP
+                      </template>
+                    </VAlert>
                   </VCol>
                 </VRow>
               </div>
@@ -1381,8 +1411,10 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     placeholder="Isi Nama Produk"
                   />
-                  <div class="d-flex justify-space-between mt-5">
-                    <label> Upload Foto </label>
+                  <VRow class="mt-5 mb-3" align="center">
+                    <VCol cols="6">
+                      <label> Upload Foto </label>
+                    </VCol>
                     <VCol cols="6">
                       <VTextField
                         v-if="uploadedFile.file"
@@ -1390,7 +1422,6 @@ watch([titleDialog, tabAddBahan], () => {
                         density="compact"
                         placeholder="No file choosen"
                         rounded="xl"
-                        max-width="400"
                       >
                         <template #append-inner>
                           <VIcon
@@ -1408,16 +1439,32 @@ watch([titleDialog, tabAddBahan], () => {
                         density="compact"
                         rounded="xl"
                         label="No file choosen"
-                        max-width="400"
                         prepend-icon=""
                         @change="handleUploadFile"
+                        accept="image/png, image/jpeg"
                       >
                         <template #append-inner>
                           <VBtn rounded="s-0 e-xl" text="Choose" />
                         </template>
                       </VFileInput>
                     </VCol>
-                  </div>
+                    <VCol cols="12">
+                    <VAlert
+                      type="info"
+                      color="primary"
+                      variant="tonal"
+                      density="compact"
+                      prominent
+                    >
+                      <template #prepend>
+                        <VIcon size="24px" icon="ri-information-2-fill" />
+                      </template>
+                      <template #text>
+                        File foto produk harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                      </template>
+                    </VAlert>
+                  </VCol>
+                  </VRow>
                 </div>
               </div>
             </VTabItem>
@@ -1457,8 +1504,10 @@ watch([titleDialog, tabAddBahan], () => {
               density="compact"
               placeholder="Isi Nama Produk"
             />
-            <div class="d-flex justify-space-between mt-5">
-              <label> Upload Foto </label>
+            <VRow class="mt-5 mb-3" align="center">
+              <VCol cols="6">
+                <label> Upload Foto </label>
+              </VCol>
               <VCol cols="6">
                 <VTextField
                   v-if="uploadedFile.file"
@@ -1466,7 +1515,6 @@ watch([titleDialog, tabAddBahan], () => {
                   density="compact"
                   placeholder="No file choosen"
                   rounded="xl"
-                  max-width="400"
                 >
                   <template #append-inner>
                     <VIcon
@@ -1484,16 +1532,32 @@ watch([titleDialog, tabAddBahan], () => {
                   density="compact"
                   rounded="xl"
                   label="No file choosen"
-                  max-width="400"
                   prepend-icon=""
                   @change="handleUploadFile"
+                  accept="image/png, image/jpeg"
                 >
                   <template #append-inner>
                     <VBtn rounded="s-0 e-xl" text="Choose" />
                   </template>
                 </VFileInput>
               </VCol>
-            </div>
+              <VCol cols="12">
+                <VAlert
+                  type="info"
+                  color="primary"
+                  variant="tonal"
+                  density="compact"
+                  prominent
+                >
+                  <template #prepend>
+                    <VIcon size="24px" icon="ri-information-2-fill" />
+                  </template>
+                  <template #text>
+                    File foto produk harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                  </template>
+                </VAlert>
+              </VCol>
+            </VRow>
           </div>
         </div>
         <div v-else-if="titleDialog === 'Detail Nama Produk'">
@@ -1530,8 +1594,10 @@ watch([titleDialog, tabAddBahan], () => {
               density="compact"
               placeholder="Isi Nama Produk"
             />
-            <div class="d-flex justify-space-between mt-5">
-              <label> Upload Foto </label>
+            <VRow class="mt-5 mb-3" align="center">
+              <VCol cols="6">
+                <label> Upload Foto </label>
+              </VCol>
               <VCol cols="6">
                 <VTextField
                   v-if="uploadedFile.file"
@@ -1539,7 +1605,6 @@ watch([titleDialog, tabAddBahan], () => {
                   density="compact"
                   placeholder="No file choosen"
                   rounded="xl"
-                  max-width="400"
                 />
                 <VFileInput
                   v-else
@@ -1548,16 +1613,32 @@ watch([titleDialog, tabAddBahan], () => {
                   density="compact"
                   rounded="xl"
                   label="No file choosen"
-                  max-width="400"
                   prepend-icon=""
                   @change="handleUploadFile"
+                  accept="image/png, image/jpeg"
                 >
                   <template #append-inner>
                     <VBtn rounded="s-0 e-xl" text="Choose" />
                   </template>
                 </VFileInput>
               </VCol>
-            </div>
+              <VCol cols="12">
+              <VAlert
+                type="info"
+                color="primary"
+                variant="tonal"
+                density="compact"
+                prominent
+              >
+                <template #prepend>
+                  <VIcon size="24px" icon="ri-information-2-fill" />
+                </template>
+                <template #text>
+                  File foto produk harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                </template>
+              </VAlert>
+            </VCol>
+            </VRow>
           </div>
         </div>
         <div v-else-if="titleDialog === 'Ubah Catatan'">
@@ -1612,8 +1693,10 @@ watch([titleDialog, tabAddBahan], () => {
                   placeholder="Isi Nama"
                 />
               </div>
-              <div class="d-flex justify-space-between mt-5">
-                <label style="align-self: center"> Unggah Bahan </label>
+              <VRow class="mt-5 mb-3" align="center">
+                <VCol cols="6">
+                  <label style="align-self: center"> Unggah Bahan </label>
+                </VCol>
                 <VCol cols="6">
                   <VTextField
                     v-if="uploadedFileBahan.file"
@@ -1621,7 +1704,6 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     placeholder="No file choosen"
                     rounded="xl"
-                    max-width="400"
                   >
                     <template #append-inner>
                       <VIcon
@@ -1639,16 +1721,32 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     rounded="xl"
                     label="No file choosen"
-                    max-width="400"
                     prepend-icon=""
                     @change="handleUploadFile"
+                    accept="image/png, image/jpeg"
                   >
                     <template #append-inner>
                       <VBtn rounded="s-0 e-xl" text="Choose" />
                     </template>
                   </VFileInput>
                 </VCol>
-              </div>
+                <VCol cols="12">
+                  <VAlert
+                    type="info"
+                    color="primary"
+                    variant="tonal"
+                    density="compact"
+                    prominent
+                  >
+                    <template #prepend>
+                      <VIcon size="24px" icon="ri-information-2-fill" />
+                    </template>
+                    <template #text>
+                      File bahan harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                    </template>
+                  </VAlert>
+                </VCol>
+              </VRow>
             </VTabsWindowItem>
             <VTabsWindowItem value="2">
               <div class="mt-5">
@@ -1717,8 +1815,10 @@ watch([titleDialog, tabAddBahan], () => {
                   placeholder="Isi Nama"
                 />
               </div>
-              <div class="d-flex justify-space-between mt-5">
-                <label style="align-self: center"> Unggah Bahan </label>
+              <VRow class="mt-5 mb-3" align="center">
+                <VCol cols="6">
+                  <label> Unggah Bahan </label>
+                </VCol>
                 <VCol cols="6">
                   <VTextField
                     v-if="uploadedFileBahan.file"
@@ -1726,7 +1826,6 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     placeholder="No file choosen"
                     rounded="xl"
-                    max-width="400"
                   >
                     <template #append-inner>
                       <VIcon
@@ -1744,16 +1843,32 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     rounded="xl"
                     label="No file choosen"
-                    max-width="400"
                     prepend-icon=""
                     @change="handleUploadFile"
+                    accept="image/png, image/jpeg"
                   >
                     <template #append-inner>
                       <VBtn rounded="s-0 e-xl" text="Choose" />
                     </template>
                   </VFileInput>
                 </VCol>
-              </div>
+                <VCol cols="12">
+                  <VAlert
+                    type="info"
+                    color="primary"
+                    variant="tonal"
+                    density="compact"
+                    prominent
+                  >
+                    <template #prepend>
+                      <VIcon size="24px" icon="ri-information-2-fill" />
+                    </template>
+                    <template #text>
+                      File bahan harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                    </template>
+                  </VAlert>
+                </VCol>
+              </VRow>
             </VTabsWindowItem>
             <VTabsWindowItem value="2">
               <div class="mt-5">
@@ -1834,8 +1949,10 @@ watch([titleDialog, tabAddBahan], () => {
                   placeholder="Isi Nama"
                 />
               </div>
-              <div class="d-flex justify-space-between mt-5">
-                <label style="align-self: center"> Unggah Bahan </label>
+              <VRow class="mt-5 mb-3" align="center">
+                <VCol cols="6">
+                  <label> Unggah Bahan </label>
+                </VCol>
                 <VCol cols="6">
                   <VTextField
                     v-if="uploadedFileBahan.file"
@@ -1843,7 +1960,6 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     placeholder="No file choosen"
                     rounded="xl"
-                    max-width="400"
                   >
                     <template #append-inner>
                       <VIcon
@@ -1861,16 +1977,32 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     rounded="xl"
                     label="No file choosen"
-                    max-width="400"
                     prepend-icon=""
                     @change="handleUploadFile"
+                    accept="image/png, image/jpeg"
                   >
                     <template #append-inner>
                       <VBtn rounded="s-0 e-xl" text="Choose" />
                     </template>
                   </VFileInput>
                 </VCol>
-              </div>
+                <VCol cols="12">
+                  <VAlert
+                    type="info"
+                    color="primary"
+                    variant="tonal"
+                    density="compact"
+                    prominent
+                  >
+                    <template #prepend>
+                      <VIcon size="24px" icon="ri-information-2-fill" />
+                    </template>
+                    <template #text>
+                      File bahan harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                    </template>
+                  </VAlert>
+                </VCol>
+              </VRow>
             </VTabsWindowItem>
             <VTabsWindowItem value="2">
               <div class="mt-5">
@@ -1952,8 +2084,10 @@ watch([titleDialog, tabAddBahan], () => {
                   placeholder="Isi Nama"
                 />
               </div>
-              <div class="d-flex justify-space-between mt-5">
-                <label style="align-self: center"> Unggah Bahan </label>
+              <VRow class="mt-5 mb-3" align="center">
+                <VCol cols="6">
+                  <label> Unggah Bahan </label>
+                </VCol>
                 <VCol cols="6">
                   <VTextField
                     v-if="uploadedFileBahan.file"
@@ -1961,7 +2095,6 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     placeholder="No file choosen"
                     rounded="xl"
-                    max-width="400"
                   >
                     <template #append-inner>
                       <VIcon
@@ -1979,16 +2112,32 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     rounded="xl"
                     label="No file choosen"
-                    max-width="400"
                     prepend-icon=""
                     @change="handleUploadFile"
+                    accept="image/png, image/jpeg"
                   >
                     <template #append-inner>
                       <VBtn rounded="s-0 e-xl" text="Choose" />
                     </template>
                   </VFileInput>
                 </VCol>
-              </div>
+                <VCol cols="12">
+                  <VAlert
+                    type="info"
+                    color="primary"
+                    variant="tonal"
+                    density="compact"
+                    prominent
+                  >
+                    <template #prepend>
+                      <VIcon size="24px" icon="ri-information-2-fill" />
+                    </template>
+                    <template #text>
+                      File bahan harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                    </template>
+                  </VAlert>
+                </VCol>
+              </VRow>
             </VTabsWindowItem>
             <VTabsWindowItem value="2">
               <div class="mt-5">
