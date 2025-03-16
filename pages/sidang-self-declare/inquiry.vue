@@ -17,12 +17,12 @@ const items = ref<
 
 const tableHeader = [
   { title: "No", key: "no" },
-  { title: "Jenis Produk", key: "jenis_produk" },
-  { title: "Nama PU", key: "nama_pu" },
-  { title: "Alamat", key: "alamat" },
-  // { title: "Merk Dagang", key: "merek_dagang" },
   { title: "No. Daftar", key: "no_daftar" },
   { title: "Tanggal Daftar", key: "tgl_daftar" },
+  { title: "Nama PU", key: "nama_pu" },
+  { title: "Alamat", key: "alamat" },
+  { title: "Jenis Produk", key: "jenis_produk" },
+  // { title: "Merk Dagang", key: "merek_dagang" },
   { title: "Action", key: "action" },
 ];
 
@@ -288,7 +288,14 @@ const navigateAction = (id: string) => {
         </VCardTitle>
         <VCardItem>
           <VRow>
-            <VCol cols="3">
+            <VCol
+              cols="3"
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+              "
+            >
               <VMenu v-model="showFilterMenu" :close-on-content-click="false">
                 <template #activator="{ props: openMenu }">
                   <VBtn
@@ -378,18 +385,34 @@ const navigateAction = (id: string) => {
                 </VCard>
               </VMenu>
             </VCol>
-            <VCol cols="12">
-              <VLabel>Cari Berdasarkan : </VLabel>
-              <VRadioGroup
-                v-model="selectedFilterBy"
-                inline
-                @update:model-value="changeFilterBy"
-              >
-                <VRadio :label="`Nama PU`" value="nama_pu" />
-                <VRadio :label="`Nomor Daftar`" value="no_daftar" />
-              </VRadioGroup>
+            <VCol cols="9">
+              <VRow>
+                <VCol>
+                  <VLabel>Cari Berdasarkan : </VLabel>
+                  <VRadioGroup
+                    v-model="selectedFilterBy"
+                    inline
+                    @update:model-value="changeFilterBy"
+                  >
+                    <VRadio :label="`Nama PU`" value="nama_pu" />
+                    <VRadio :label="`Nomor Daftar`" value="no_daftar" />
+                  </VRadioGroup>
+                </VCol>
+              </VRow>
+              <VRow>
+                <VCol>
+                  <VTextField
+                    v-model="searchQuery"
+                    density="compact"
+                    placeholder="Search Data"
+                    append-inner-icon="ri-search-line"
+                    style="max-inline-size: 100%"
+                    @input="handleInput"
+                  />
+                </VCol>
+              </VRow>
             </VCol>
-            <VCol cols="12">
+            <!-- <VCol cols="12">
               <VTextField
                 v-model="searchQuery"
                 density="compact"
@@ -398,7 +421,7 @@ const navigateAction = (id: string) => {
                 style="max-inline-size: 100%"
                 @input="handleInput"
               />
-            </VCol>
+            </VCol> -->
           </VRow>
           <VRow>
             <VCol>
