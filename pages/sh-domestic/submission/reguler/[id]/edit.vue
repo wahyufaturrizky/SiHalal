@@ -231,6 +231,7 @@ const onclickTab = (tab: any) => {
     dataPengajuanRef.value.emitRequestCertificateData();
   }
 };
+const valid = ref(false);
 </script>
 
 <template>
@@ -252,7 +253,7 @@ const onclickTab = (tab: any) => {
               <VBtn
                 color="#E1442E"
                 variant="outlined"
-                style="border-color: #e1442e !important"
+                style="border-color: #e1442e !important;"
               >
                 {{ t("pengajuan-reguler.reguler-form-head-cancel") }}
               </VBtn>
@@ -268,16 +269,27 @@ const onclickTab = (tab: any) => {
       <br />
       <VRow>
         <VCol cols="12" class="pl0">
+        
           <VTabs v-model="activeTab" align-tabs="start" class="w-100">
-            <VTab
+            <div
               v-for="(item, index) in tabList"
-              :key="item"
-              :value="index"
-              :disabled="index > 2 && !isBahanCompleted"
-              @click="onclickTab(index)"
+              :key="index"
+              class="position-relative d-inline-block"
             >
-              {{ `${t(item)}` }}
-            </VTab>
+              <VTooltip
+                v-if="index > 2 && !isBahanCompleted"
+                activator="parent"
+              >
+              Mohon lengkapi Bahan, Cleaning Agent, Kemasan agar menu ini dapat di akses
+              </VTooltip>
+              <VTab
+                :value="index"
+                :disabled="index > 2 && !isBahanCompleted"
+                @click="onclickTab(index)"
+              >
+                {{ t(item) }}
+              </VTab>
+            </div>
           </VTabs>
         </VCol>
       </VRow>
@@ -357,5 +369,9 @@ const onclickTab = (tab: any) => {
 .headerSection {
   display: flex;
   justify-content: space-between;
+}
+
+.tab-hover {
+  position: relative;
 }
 </style>
