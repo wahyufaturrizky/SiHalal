@@ -11,7 +11,7 @@
         </template>
 
         <v-list>
-          <v-list-item
+          <!-- <v-list-item
             value="whatsapp"
             color="primary"
             href="https://wa.me/6281180103146"
@@ -21,7 +21,7 @@
               <v-icon icon="fa-whatsapp" color="success"></v-icon>
             </template>
             <v-list-item-title class="text-success">Whatsapp</v-list-item-title>
-          </v-list-item>
+          </v-list-item> -->
           <v-list-item
             value="email"
             color="primary"
