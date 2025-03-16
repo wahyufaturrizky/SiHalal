@@ -41,8 +41,8 @@ const loading = ref(false);
 const loadingRincian = ref(false);
 const reRender = ref(false);
 const tabBahan = ref(0);
-const dataCertifHalal = ref("")
-const isNotAllowedProduct = ref(false)
+const dataCertifHalal = ref("");
+const isNotAllowedProduct = ref(false);
 
 const catatan = ref<any>({
   name: "",
@@ -505,11 +505,11 @@ const getChannel = async () => {
   try {
     const response: any = await $api("/reguler/pelaku-usaha/detail", {
       method: "get",
-      params: { id},
+      params: { id },
     });
     if (response.code === 2000) {
-      dataCertifHalal.value = response?.data?.certificate_halal
-      return response?.data?.certificate_halal?.id_produk
+      dataCertifHalal.value = response?.data?.certificate_halal;
+      return response?.data?.certificate_halal?.id_produk;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -526,7 +526,7 @@ const loadItemProductClasifications = async () => {
       {
         method: "get",
         params: {
-          idLayanan: productCode
+          idLayanan: productCode,
         },
       }
     );
@@ -591,8 +591,13 @@ const getListIngredients = async () => {
       };
 
       if (response.data !== null) {
-        const jenisBahan = response.data?.map((i) => i.jenis_bahan?.toLowerCase());
-        if (dataCertifHalal?.jenis_layanan !== "Makanan" || dataCertifHalal?.jenis_layanan !== "Minuman") {
+        const jenisBahan = response.data?.map((i) =>
+          i.jenis_bahan?.toLowerCase()
+        );
+        if (
+          dataCertifHalal?.jenis_layanan !== "Makanan" ||
+          dataCertifHalal?.jenis_layanan !== "Minuman"
+        ) {
           if (jenisBahan.length > 0) {
             emit("complete", true);
           } else {
@@ -741,7 +746,7 @@ const addProduct = async () => {
         useSnackbar().sendSnackbar("Sukses menambah data", "success");
       }
     } catch (error) {
-      isNotAllowedProduct.value = true
+      isNotAllowedProduct.value = true;
     }
   } else if (titleDialog.value === "Ubah Nama Produk") {
     const response: any = await $api(
@@ -1079,8 +1084,8 @@ const handleAddIngredient = async (payload: any, idProduct: string) => {
 };
 
 const handleChange = () => {
-  isNotAllowedProduct.value = false
-}
+  isNotAllowedProduct.value = false;
+};
 
 onMounted(async () => {
   loading.value = true;
@@ -1166,14 +1171,14 @@ watch([titleDialog, tabAddBahan], () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1185,12 +1190,12 @@ watch([titleDialog, tabAddBahan], () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
               >
-                <span> Ubah Manual          </span>
+                <span> Ubah Manual </span>
               </VTab>
             </VTabs>
           </div>
@@ -1210,7 +1215,7 @@ watch([titleDialog, tabAddBahan], () => {
                     </VBtn>
                   </VCol>
                 </VRow>
-                <br/>
+                <br />
                 <VRow class="mb-3" align="center">
                   <VCol cols="6">
                     <span> Unggah Bahan </span>
@@ -1259,7 +1264,7 @@ watch([titleDialog, tabAddBahan], () => {
                         <VIcon size="24px" icon="ri-information-2-fill" />
                       </template>
                       <template #text>
-                        File bahan harus berformat ZIP
+                        File bahan harus berformat XLS atau XLSX
                       </template>
                     </VAlert>
                   </VCol>
@@ -1288,14 +1293,14 @@ watch([titleDialog, tabAddBahan], () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1307,12 +1312,12 @@ watch([titleDialog, tabAddBahan], () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
               >
-                <span> Ubah Manual      </span>
+                <span> Ubah Manual </span>
               </VTab>
             </VTabs>
           </div>
@@ -1332,7 +1337,7 @@ watch([titleDialog, tabAddBahan], () => {
                     </VBtn>
                   </VCol>
                 </VRow>
-                <br/>
+                <br />
                 <VRow class="mb-3" align="center">
                   <VCol cols="6">
                     <span> Unggah Produk </span>
@@ -1381,7 +1386,7 @@ watch([titleDialog, tabAddBahan], () => {
                         <VIcon size="24px" icon="ri-information-2-fill" />
                       </template>
                       <template #text>
-                        File produk harus berformat ZIP
+                        File produk harus berformat XLS atau XLSX
                       </template>
                     </VAlert>
                   </VCol>
@@ -1422,9 +1427,11 @@ watch([titleDialog, tabAddBahan], () => {
                     @update:model-value="handleChange"
                   />
                   <div v-if="isNotAllowedProduct">
-                    <label style="color: red; font-size: 12px;">Nama Produk mengandung nama dilarang</label>
+                    <label style="color: red; font-size: 12px"
+                      >Nama Produk mengandung nama dilarang</label
+                    >
                   </div>
-                  <br/>
+                  <br />
                   <VRow class="mb-5" align="center">
                     <VCol cols="6">
                       <label> Upload Foto </label>
@@ -1474,7 +1481,8 @@ watch([titleDialog, tabAddBahan], () => {
                           <VIcon size="24px" icon="ri-information-2-fill" />
                         </template>
                         <template #text>
-                          File foto produk harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                          File foto produk harus dalam bentuk gambar berformat
+                          (jpeg/jpg/png)
                         </template>
                       </VAlert>
                     </VCol>
@@ -1567,7 +1575,8 @@ watch([titleDialog, tabAddBahan], () => {
                     <VIcon size="24px" icon="ri-information-2-fill" />
                   </template>
                   <template #text>
-                    File foto produk harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                    File foto produk harus dalam bentuk gambar berformat
+                    (jpeg/jpg/png)
                   </template>
                 </VAlert>
               </VCol>
@@ -1637,21 +1646,22 @@ watch([titleDialog, tabAddBahan], () => {
                 </VFileInput>
               </VCol>
               <VCol cols="12">
-              <VAlert
-                type="info"
-                color="primary"
-                variant="tonal"
-                density="compact"
-                prominent
-              >
-                <template #prepend>
-                  <VIcon size="24px" icon="ri-information-2-fill" />
-                </template>
-                <template #text>
-                  File foto produk harus dalam bentuk gambar berformat (jpeg/jpg/png)
-                </template>
-              </VAlert>
-            </VCol>
+                <VAlert
+                  type="info"
+                  color="primary"
+                  variant="tonal"
+                  density="compact"
+                  prominent
+                >
+                  <template #prepend>
+                    <VIcon size="24px" icon="ri-information-2-fill" />
+                  </template>
+                  <template #text>
+                    File foto produk harus dalam bentuk gambar berformat
+                    (jpeg/jpg/png)
+                  </template>
+                </VAlert>
+              </VCol>
             </VRow>
           </div>
         </div>
@@ -1709,7 +1719,7 @@ watch([titleDialog, tabAddBahan], () => {
               </div>
               <VRow class="mt-5 mb-3" align="center">
                 <VCol cols="6">
-                  <label style="align-self: center;"> Bukti Pembelian </label>
+                  <label style="align-self: center"> Bukti Pembelian </label>
                 </VCol>
                 <VCol cols="6">
                   <VTextField
@@ -1756,7 +1766,8 @@ watch([titleDialog, tabAddBahan], () => {
                       <VIcon size="24px" icon="ri-information-2-fill" />
                     </template>
                     <template #text>
-                      File bahan harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                      File bahan harus dalam bentuk gambar berformat
+                      (jpeg/jpg/png)
                     </template>
                   </VAlert>
                 </VCol>
@@ -1878,7 +1889,8 @@ watch([titleDialog, tabAddBahan], () => {
                       <VIcon size="24px" icon="ri-information-2-fill" />
                     </template>
                     <template #text>
-                      File bahan harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                      File bahan harus dalam bentuk gambar berformat
+                      (jpeg/jpg/png)
                     </template>
                   </VAlert>
                 </VCol>
@@ -1923,14 +1935,14 @@ watch([titleDialog, tabAddBahan], () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1943,12 +1955,12 @@ watch([titleDialog, tabAddBahan], () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
               >
-                <span> Ubah Manual                </span>
+                <span> Ubah Manual </span>
               </VTab>
             </VTabs>
           </div>
@@ -2012,7 +2024,8 @@ watch([titleDialog, tabAddBahan], () => {
                       <VIcon size="24px" icon="ri-information-2-fill" />
                     </template>
                     <template #text>
-                      File bahan harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                      File bahan harus dalam bentuk gambar berformat
+                      (jpeg/jpg/png)
                     </template>
                   </VAlert>
                 </VCol>
@@ -2058,14 +2071,14 @@ watch([titleDialog, tabAddBahan], () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -2078,13 +2091,12 @@ watch([titleDialog, tabAddBahan], () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
               >
-                <span> Ubah Manual
-                </span>
+                <span> Ubah Manual </span>
               </VTab>
             </VTabs>
           </div>
@@ -2148,7 +2160,8 @@ watch([titleDialog, tabAddBahan], () => {
                       <VIcon size="24px" icon="ri-information-2-fill" />
                     </template>
                     <template #text>
-                      File bahan harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                      File bahan harus dalam bentuk gambar berformat
+                      (jpeg/jpg/png)
                     </template>
                   </VAlert>
                 </VCol>
