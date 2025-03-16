@@ -304,6 +304,7 @@ const addTtd = async () => {
         const responseFileTtdPj = await uploadFile(
           uploadedFileTTdPj.value.file
         );
+
         if (responseFileTtdPj.code !== 2000) return;
         fileNamePj = responseFileTtdPj.data?.file_url;
       }
@@ -312,6 +313,7 @@ const addTtd = async () => {
         const responseFileTtdPh = await uploadFile(
           uploadedFileTTdPh.value.file
         );
+
         if (responseFileTtdPh.code !== 2000) return;
         fileNamePh = responseFileTtdPh.data?.file_url;
       }
@@ -576,11 +578,8 @@ onMounted(async () => {
     return item !== undefined;
   });
 
-  if (checkResIfUndefined) {
-    loadingAll.value = false;
-  } else {
-    loadingAll.value = false;
-  }
+  if (checkResIfUndefined) loadingAll.value = false;
+  else loadingAll.value = false;
 });
 </script>
 
@@ -876,7 +875,25 @@ onMounted(async () => {
       :data="auditInternal"
       title="Formulir Data Periksa Audit Internal"
       :isviewonly="isviewonly"
-    />
+    >
+      <template #headerDialog>
+        <div class="bgContent">
+          <div
+            class="d-flex flex-wrap mt-5"
+            style="
+              padding-left: 10px !important;
+              padding-top: 5px !important;
+              padding-bottom: 5px !important;
+            "
+          >
+            <div>
+              <VIcon icon="ri-error-warning-line" color="#652672" />
+            </div>
+            <label class="subText">Diisi Pada Saat Audit Internal</label>
+          </div>
+        </div>
+      </template>
+    </TableData>
     <br />
     <VCard>
       <VCardTitle>
@@ -884,6 +901,23 @@ onMounted(async () => {
           >Risalah Kaji Ulang Manajemen</span
         >
       </VCardTitle>
+
+      <div class="bgContent mx-6">
+        <div
+          class="d-flex flex-wrap mt-5"
+          style="
+            padding-left: 10px !important;
+            padding-top: 5px !important;
+            padding-bottom: 5px !important;
+          "
+        >
+          <div>
+            <VIcon icon="ri-error-warning-line" color="#652672" />
+          </div>
+          <label class="subText">Diisi Pada Saat Audit Internal</label>
+        </div>
+      </div>
+
       <VCardText>
         <VDataTable
           :headers="risalahKajiUlang.label"
