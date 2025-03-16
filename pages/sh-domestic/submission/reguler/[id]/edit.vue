@@ -163,14 +163,17 @@ const getListIngredients = async () => {
 
     if (response.code === 2000) {
       if (response.data !== null) {
-        const jenisBahan = response.data?.map((i) => i.jenis_bahan);
+        const jenisBahan = response.data?.map((i) =>
+          i.jenis_bahan?.toLowerCase()
+        );
 
         if (
           ["Bahan", "Cleaning Agent", "Kemasan"].every((item) =>
-            jenisBahan.includes(item)
+            jenisBahan.includes(item?.toLowerCase())
           )
         )
           bahanComplete(true);
+        else bahanComplete(false);
       }
     }
 
@@ -214,17 +217,13 @@ onUnmounted(() => {
   localStorage.removeItem("commitmentAndResponsibility");
 });
 
-const selectedProduct = ref();
 const dataPengajuanRef = ref();
 
 const dataPengajuanEmitted = ref();
 
 const handleDataPengajuanEmitted = (value: any) => {
   dataPengajuanEmitted.value = value;
-  console.log("data pengajuan val = ", value);
 };
-
-const storeDataPengajuan = useMyRegulerPelakuUsahaStore();
 
 const onclickTab = (tab: any) => {
   if (tab == 2) {
@@ -253,7 +252,7 @@ const valid = ref(false);
               <VBtn
                 color="#E1442E"
                 variant="outlined"
-                style="border-color: #e1442e !important;"
+                style="border-color: #e1442e !important"
               >
                 {{ t("pengajuan-reguler.reguler-form-head-cancel") }}
               </VBtn>
@@ -269,7 +268,6 @@ const valid = ref(false);
       <br />
       <VRow>
         <VCol cols="12" class="pl0">
-        
           <VTabs v-model="activeTab" align-tabs="start" class="w-100">
             <div
               v-for="(item, index) in tabList"
@@ -280,7 +278,8 @@ const valid = ref(false);
                 v-if="index > 2 && !isBahanCompleted"
                 activator="parent"
               >
-              Mohon lengkapi Bahan, Cleaning Agent, Kemasan agar menu ini dapat di akses
+                Mohon lengkapi Bahan, Cleaning Agent, Kemasan agar menu ini
+                dapat di akses
               </VTooltip>
               <VTab
                 :value="index"
