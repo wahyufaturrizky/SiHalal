@@ -42,6 +42,7 @@ const loadingRincian = ref(false);
 const reRender = ref(false);
 const tabBahan = ref(0);
 const dataCertifHalal = ref("")
+const isNotAllowedProduct = ref(false)
 
 const catatan = ref<any>({
   name: "",
@@ -713,30 +714,34 @@ const bulkInsert = async () => {
   }
 };
 
-const addProduct = async () => {
+const addProduct = async () => {  
   if (titleDialog.value === "Tambah Nama Produk") {
-    const response: any = await $api(
-      "/reguler/pelaku-usaha/tab-bahan/products/create",
-      {
-        method: "post",
-        params: { id_reg: id },
-        body: formData.value,
+    try {
+      const response: any = await $api(
+        "/reguler/pelaku-usaha/tab-bahan/products/create",
+        {
+          method: "post",
+          params: { id_reg: id },
+          body: formData.value,
+        }
+      );
+  
+      if (response.code === 2000) {
+        formData.value = {
+          kode_rincian: "",
+          nama_produk: "",
+          foto_produk: uploadedFile.value.file || null,
+        };
+        uploadedFile.value = {
+          name: "",
+          file: "",
+        };
+        addDialog.value = false;
+        reRender.value = !reRender.value;
+        useSnackbar().sendSnackbar("Sukses menambah data", "success");
       }
-    );
-
-    if (response.code === 2000) {
-      formData.value = {
-        kode_rincian: "",
-        nama_produk: "",
-        foto_produk: uploadedFile.value.file || null,
-      };
-      uploadedFile.value = {
-        name: "",
-        file: "",
-      };
-      addDialog.value = false;
-      reRender.value = !reRender.value;
-      useSnackbar().sendSnackbar("Sukses menambah data", "success");
+    } catch (error) {
+      isNotAllowedProduct.value = true
     }
   } else if (titleDialog.value === "Ubah Nama Produk") {
     const response: any = await $api(
@@ -1073,6 +1078,10 @@ const handleAddIngredient = async (payload: any, idProduct: string) => {
   }
 };
 
+const handleChange = () => {
+  isNotAllowedProduct.value = false
+}
+
 onMounted(async () => {
   loading.value = true;
   tabs.value = 0;
@@ -1380,7 +1389,11 @@ watch([titleDialog, tabAddBahan], () => {
                     class="-mt-10"
                     density="compact"
                     placeholder="Isi Nama Produk"
+                    @update:model-value="handleChange"
                   />
+                  <div v-if="isNotAllowedProduct">
+                    <label style="color: red; font-size: 12px;">Nama Produk mengandung nama dilarang</label>
+                  </div>
                   <div class="d-flex justify-space-between mt-5">
                     <label> Upload Foto </label>
                     <VCol cols="6">
