@@ -105,7 +105,24 @@ const getCommonCode = async (code: MasterRef) => {
         type: code,
       },
     });
-    return response4;
+
+    const eligibleCode = [
+      "OF1",
+      "OF280",
+      "OF285",
+      "OF10",
+      "OF72",
+      "OF56",
+      "OF71",
+      "OF74",
+      "OF100",
+      "OF120",
+      "OF300",
+    ];
+    const filteredResponse = response4.filter((val) =>
+      eligibleCode.includes(val.code)
+    );
+    return filteredResponse;
   } catch (error) {
     return [];
   }
@@ -344,14 +361,14 @@ onMounted(async () => {
     },
     ...(await getCommonCode(MasterRef.STOFF)),
   ];
-  permohonanItems.value = [
-    {
-      code: "",
-      name: "Semua",
-      name_eng: "All",
-    },
-    ...(await getCommonCode(MasterRef.JNDAF)),
-  ];
+  // permohonanItems.value = [
+  //   {
+  //     code: "",
+  //     name: "Semua",
+  //     name_eng: "All",
+  //   },
+  //   ...(await getCommonCode(MasterRef.JNDAF)),
+  // ];
   await getFasilitator(pageFasilitator.value);
   await getFasilitasi(pageFasilitator.value);
 
@@ -395,7 +412,14 @@ const navigateAction = (id: string) => {
         </VCardTitle>
         <VCardItem>
           <VRow>
-            <VCol cols="3">
+            <VCol
+              cols="3"
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+              "
+            >
               <VMenu v-model="showFilterMenu" :close-on-content-click="false">
                 <template #activator="{ props: openMenu }">
                   <VBtn
@@ -543,25 +567,31 @@ const navigateAction = (id: string) => {
                 </VList>
               </VMenu>
             </VCol>
-            <VCol cols="12">
-              <VLabel>Cari Berdasarkan : </VLabel>
-              <VRadioGroup
-                v-model="selectedFilterBy"
-                inline
-                @update:model-value="changeFilterBy"
-              >
-                <VRadio :label="`Nama PU`" value="nama_pu" />
-                <VRadio :label="`Nomor Daftar`" value="no_daftar" />
-              </VRadioGroup>
-            </VCol>
-            <VCol cols="12">
-              <VTextField
-                density="compact"
-                v-model="searchQuery"
-                placeholder="Cari Nama Pengajuan"
-                append-inner-icon="mdi-magnify"
-                @input="handleInput"
-              />
+            <VCol cols="9">
+              <VRow>
+                <VCol>
+                  <VLabel>Cari Berdasarkan : </VLabel>
+                  <VRadioGroup
+                    v-model="selectedFilterBy"
+                    inline
+                    @update:model-value="changeFilterBy"
+                  >
+                    <VRadio :label="`Nama PU`" value="nama_pu" />
+                    <VRadio :label="`Nomor Daftar`" value="no_daftar" />
+                  </VRadioGroup>
+                </VCol>
+              </VRow>
+              <VRow>
+                <VCol>
+                  <VTextField
+                    density="compact"
+                    v-model="searchQuery"
+                    placeholder="Cari Nama Pengajuan"
+                    append-inner-icon="mdi-magnify"
+                    @input="handleInput"
+                  />
+                </VCol>
+              </VRow>
             </VCol>
           </VRow>
           <VRow>
