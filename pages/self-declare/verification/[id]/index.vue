@@ -832,7 +832,8 @@ const lihatLaporan = async () => {
       loadingLihatLaporan.value = false;
 
       setTimeout(async () => {
-        await downloadDocument(res?.data?.file);
+        // await downloadDocument(res?.data?.file);
+        await previewDocument(res?.data?.file);
       }, 1000);
     } else {
       useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
