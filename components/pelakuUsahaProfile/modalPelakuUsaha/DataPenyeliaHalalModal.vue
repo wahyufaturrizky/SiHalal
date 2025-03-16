@@ -15,7 +15,8 @@ const props = defineProps({
 });
 
 const store = pelakuUsahaProfile();
-const isNoNeedValidation = props?.data?.skala_usaha === 'JU.4' || props?.data?.skala_usaha === 'JU.3';
+const isNoNeedValidation =
+  props?.data?.skala_usaha === "JU.4" || props?.data?.skala_usaha === "JU.3";
 
 const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
 
@@ -130,6 +131,22 @@ watch(
   },
   { immediate: true }
 );
+const ktpError = ref("");
+const checkKtp = async (item) => {
+  ktpError.value = "";
+  if (item.length == 16) {
+    const val: any = await $api(`/pelaku-usaha-profile/check-nik/${item}`, {
+      method: "GET",
+    });
+    if (val.code == 2000) {
+      form.value.namaPenyelia = val.data.nama;
+    }
+    if (val.code == 4000) {
+      ktpError.value = val.message;
+      console.log(ktpError.value);
+    }
+  }
+};
 
 const { t } = useI18n();
 </script>
@@ -148,7 +165,7 @@ const { t } = useI18n();
     <VItemGroup
       v-else-if="props.mode === 'edit'"
       @click="openDialog"
-      style="display: inline-flex; cursor: pointer;"
+      style="display: inline-flex; cursor: pointer"
     >
       <VIcon class="mr-2"> mdi-pencil </VIcon>
       <p>{{ t("detail-pu.pu-edit-edit") }}</p>
@@ -164,7 +181,9 @@ const { t } = useI18n();
     <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
         <VCardTitle>
-          <div class="text-h5 font-weight-bold d-flex justify-space-between align-center">
+          <div
+            class="text-h5 font-weight-bold d-flex justify-space-between align-center"
+          >
             <span>{{
               props.mode === "add"
                 ? t("detail-pu.pu-penyelia-halal-tambah-title")
@@ -173,7 +192,7 @@ const { t } = useI18n();
             <VBtn
               icon
               color="transparent"
-              style="border: none;"
+              style="border: none"
               elevation="0"
               @click="closeDialog"
             >
@@ -182,10 +201,16 @@ const { t } = useI18n();
           </div>
           <div class="bgContent">
             <div class="d-flex mt-5">
-              <VIcon icon="ri-error-warning-line" color="#652672" class="mt-1" />
+              <VIcon
+                icon="ri-error-warning-line"
+                color="#652672"
+                class="mt-1"
+              />
               <div class="wrap-text">
                 <label class="subText"
-                  >Pelaku Usaha Besar, Menengah, dan Luar Negeri wajib melengkapi Nomor Sertifikat, Tanggal Sertifikat, Sertifikat Kompetensi dan Pelatihan Penyelia Halal.</label
+                  >Pelaku Usaha Besar, Menengah, dan Luar Negeri wajib
+                  melengkapi Nomor Sertifikat, Tanggal Sertifikat, Sertifikat
+                  Kompetensi dan Pelatihan Penyelia Halal.</label
                 >
               </div>
             </div>
@@ -207,6 +232,8 @@ const { t } = useI18n();
                   outlined
                   dense
                   required
+                  @update:modelValue="checkKtp"
+                  :error-messages="ktpError"
                 />
               </VCol>
               <VCol cols="6">
@@ -338,12 +365,16 @@ const { t } = useI18n();
             >
               <template v-slot:activator="{ props: tooltipOpen }">
                 <VFileInput
-                  :rules="isNoNeedValidation ? [] : [
-                    requiredValidator,
-                    fileSizeValidator,
-                    fileNameLengthValidator,
-                    fileExtensionValidator,
-                  ]"
+                  :rules="
+                    isNoNeedValidation
+                      ? []
+                      : [
+                          requiredValidator,
+                          fileSizeValidator,
+                          fileNameLengthValidator,
+                          fileExtensionValidator,
+                        ]
+                  "
                   v-model="form.sertifikatKompetensi"
                   label="Unggah Sertifikat Kompetensi Penyelia Halal"
                   outlined
@@ -359,12 +390,16 @@ const { t } = useI18n();
             >
               <template v-slot:activator="{ props: tooltipPelatihan }">
                 <VFileInput
-                  :rules="isNoNeedValidation ? [] : [
-                    requiredValidator,
-                    fileSizeValidator,
-                    fileNameLengthValidator,
-                    fileExtensionValidator,
-                  ]"
+                  :rules="
+                    isNoNeedValidation
+                      ? []
+                      : [
+                          requiredValidator,
+                          fileSizeValidator,
+                          fileNameLengthValidator,
+                          fileExtensionValidator,
+                        ]
+                  "
                   v-model="form.sertifikatPelatihan"
                   label="Unggah Sertifikat Pelatihan Penyelia Halal"
                   outlined
@@ -380,12 +415,16 @@ const { t } = useI18n();
             >
               <template v-slot:activator="{ props: tooltipKtp }">
                 <VFileInput
-                  :rules="isNoNeedValidation ? [] : [
-                    requiredValidator,
-                    fileSizeValidator,
-                    fileNameLengthValidator,
-                    fileExtensionValidator,
-                  ]"
+                  :rules="
+                    isNoNeedValidation
+                      ? []
+                      : [
+                          requiredValidator,
+                          fileSizeValidator,
+                          fileNameLengthValidator,
+                          fileExtensionValidator,
+                        ]
+                  "
                   v-model="form.ktpFile"
                   label="Unggah KTP"
                   outlined

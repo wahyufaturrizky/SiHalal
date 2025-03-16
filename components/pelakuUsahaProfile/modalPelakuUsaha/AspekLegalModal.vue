@@ -126,7 +126,7 @@
                       readonly
                       append-inner-icon="fa-calendar"
                       :model-value="form.expiration_date"
-                      :rules="[requiredValidator]"
+                      :rules="form.type === 'LGL02'  ? [] : [requiredValidator]"
                     />
                   </template>
                 </Vuepicdatepicker>

@@ -606,9 +606,10 @@ onMounted(async () => {
             class="-mt-10"
             placeholder="isi nama dokumen"
           />
-          <br />
-          <div class="d-flex justify-space-between mt-5">
-            <label> Upload Foto </label>
+          <VRow class="mt-5 mb-3" align="center">
+            <VCol cols="6">
+              <label> Upload Dokumen </label>
+            </VCol>
             <VCol cols="6">
               <VTextField
                 v-if="uploadedFileDokumenLainnya.file"
@@ -616,7 +617,6 @@ onMounted(async () => {
                 density="compact"
                 placeholder="No file choosen"
                 rounded="xl"
-                max-width="400"
               >
                 <template #append-inner>
                   <VIcon
@@ -634,7 +634,6 @@ onMounted(async () => {
                 density="compact"
                 rounded="xl"
                 label="No file choosen"
-                max-width="400"
                 prepend-icon=""
                 @change="handleUploadFileDokumentLainnya"
               >
@@ -643,9 +642,41 @@ onMounted(async () => {
                 </template>
               </VFileInput>
             </VCol>
-          </div>
+            <VCol cols="12">
+              <VAlert
+                type="info"
+                color="primary"
+                variant="tonal"
+                density="compact"
+                prominent
+              >
+                <template #prepend>
+                  <VIcon size="24px" icon="ri-information-2-fill" />
+                </template>
+                <template #text>
+                  File dokumen harus berformat PDF
+                </template>
+              </VAlert>
+            </VCol>
+          </VRow>
         </div>
         <div v-if="titleDialog === 'Tambah Tanda Tangan'">
+          <div>
+            <VAlert
+              type="info"
+              color="primary"
+              variant="tonal"
+              density="compact"
+              prominent
+            >
+              <template #prepend>
+                <VIcon size="24px" icon="ri-information-2-fill" />
+              </template>
+              <template #text>
+                File tanda tangan harus dalam bentuk gambar berformat (jpeg/jpg/png)
+              </template>
+            </VAlert>
+          </div>
           <div class="d-flex justify-space-between mt-5 mb-5">
             <label> Upload Tanda Tangan Penanggung Jawab </label>
             <VFileInput
@@ -657,6 +688,7 @@ onMounted(async () => {
               class="input-file-izin"
               :model-value="uploadedFileTTdPj.file"
               @change="handleUploadFileTTdPj"
+              accept="image/png, image/jpeg"
             >
               <!-- Button upload input -->
               <template v-if="uploadedFileTTdPj.file === null" #append-inner>
@@ -690,6 +722,7 @@ onMounted(async () => {
               style="max-inline-size: 300px"
               class="input-file-izin"
               @change="handleUploadFileTTdPh"
+              accept="image/png, image/jpeg"
             >
               <!-- Button upload input -->
               <template v-if="uploadedFileTTdPh.file === null" #append-inner>
@@ -712,34 +745,68 @@ onMounted(async () => {
             class="-mt-10"
             placeholder="isi nama dokumen"
           />
-          <br />
-          <div class="d-flex justify-space-between mt-5">
-            <label> Unggah Dokumen </label>
-            <VFileInput
-              v-model="uploadedFileDokumenLainnya.file"
-              dense
-              prepend-icon=""
-              label="No File Chosen"
-              hide-details
-              style="max-inline-size: 300px"
-              class="input-file-izin"
-              @change="uploadFile"
-            >
-              <!-- Button upload input -->
-              <template v-if="file === null" #append-inner>
-                <VBtn
-                  color="primary"
-                  variant="flat"
-                  class="choose-file"
-                  style="block-size: 100%; inline-size: 150px"
-                >
-                  Choose File
-                </VBtn>
-              </template>
-            </VFileInput>
-          </div>
+          <VRow class="mt-5 mb-3" align="center">
+            <VCol cols="6">
+              <label> Unggah Dokumen </label>
+            </VCol>
+            <VCol cols="6">
+              <VFileInput
+                v-model="uploadedFileDokumenLainnya.file"
+                dense
+                prepend-icon=""
+                label="No File Chosen"
+                hide-details
+                class="input-file-izin"
+                @change="uploadFile"
+              >
+                <!-- Button upload input -->
+                <template v-if="file === null" #append-inner>
+                  <VBtn
+                    color="primary"
+                    variant="flat"
+                    class="choose-file"
+                    style="block-size: 100%; inline-size: 150px"
+                  >
+                    Choose File
+                  </VBtn>
+                </template>
+              </VFileInput>
+            </VCol>
+            <VCol cols="12">
+              <VAlert
+                type="info"
+                color="primary"
+                variant="tonal"
+                density="compact"
+                prominent
+              >
+                <template #prepend>
+                  <VIcon size="24px" icon="ri-information-2-fill" />
+                </template>
+                <template #text>
+                  File dokumen harus berformat PDF
+                </template>
+              </VAlert>
+            </VCol>
+          </VRow>
         </div>
         <div v-if="titleDialog === 'Ubah Tanda Tangan'">
+          <div>
+            <VAlert
+              type="info"
+              color="primary"
+              variant="tonal"
+              density="compact"
+              prominent
+            >
+              <template #prepend>
+                <VIcon size="24px" icon="ri-information-2-fill" />
+              </template>
+              <template #text>
+                File tanda tangan harus dalam bentuk gambar berformat (jpeg/jpg/png)
+              </template>
+            </VAlert>
+          </div>
           <div class="d-flex justify-space-between mt-5 mb-5">
             <label> Upload Tanda Tangan Penanggung Jawab </label>
             <VFileInput
@@ -751,6 +818,7 @@ onMounted(async () => {
               style="max-inline-size: 300px"
               class="input-file-izin"
               @change="handleUploadFileTTdPj"
+              accept="image/png, image/jpeg"
             >
               <!-- Button upload input -->
               <template v-if="uploadedFileTTdPj.file === null" #append-inner>
@@ -774,7 +842,7 @@ onMounted(async () => {
             placeholder="pilih penyelia halal"
           />
           <div class="d-flex justify-space-between mt-5">
-            <label> Upload Tanda Tangan Penanggung Jawab </label>
+            <label> Upload Tanda Tangan Penyelia Halal </label>
             <VFileInput
               :model-value="uploadedFileTTdPh.file"
               dense
@@ -784,6 +852,7 @@ onMounted(async () => {
               style="max-inline-size: 300px"
               class="input-file-izin"
               @change="handleUploadFileTTdPh"
+              accept="image/png, image/jpeg"
             >
               <!-- Button upload input -->
               <template v-if="uploadedFileTTdPh.file === null" #append-inner>
