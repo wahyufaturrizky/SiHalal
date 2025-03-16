@@ -288,7 +288,8 @@ const toggleEdit = (item: any, type: string) => {
   titleDialog.value = `Ubah ${type}`;
 };
 
-const toggleEdit2Table = (item: any, index: number, type: string) => {
+const toggleEdit2Table = (item: any, index: number) => {
+  console.log(index, "< index here")
   detailItem.value = item;
   addDialog.value = true;
   labelSaveBtn.value = "Ubah";
@@ -329,24 +330,38 @@ const uploadDocument = async (file: any) => {
   }
 };
 
+const handleSelectFile = (newFile: any, type: string) => {
+  if (!newFile) return;
+
+  const validFileTypes = ["image/jpeg", "image/png"].includes(newFile.type);
+  if (!validFileTypes) {
+    useSnackbar().sendSnackbar(`Upload ${type} dalam bentuk gambar berformat png/jpg/jpeg`, "error");
+  }
+}
+
 const handleUploadFile = async (event: any) => {
   if (event?.target?.files.length) {
     const fileData = event.target.files[0];
-    uploadedFile.value.name = fileData.name;
-    uploadedFile.value.file = fileData;
-    try {
-      const response = await uploadDocument(fileData);
-      if (response.code === 2000) {
-        formAddLayout.value = {
-          ...formAddLayout.value,
-          file_layout: response.data.file_url,
-        };
+
+    if (["image/jpeg", "image/png"].includes(fileData.type)) {
+      uploadedFile.value.name = fileData.name;
+      uploadedFile.value.file = fileData;
+      try {
+        const response = await uploadDocument(fileData);
+        if (response.code === 2000) {
+          formAddLayout.value = {
+            ...formAddLayout.value,
+            file_layout: response.data.file_url,
+          };
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
     }
   }
 };
+
+
 const pageLayout = ref(1);
 const sizeLayout = ref(10);
 const pageCatatanBahan = ref(1);
@@ -943,8 +958,10 @@ watch(selectedFactory, () => {
             return-object
           />
           <br />
-          <div class="d-flex justify-space-between mt-5">
-            <label> Unggah Layout </label>
+          <VRow class="mb-3" align="center">
+            <VCol cols="6">
+              <label> Unggah Layout </label>
+            </VCol>
             <VCol cols="6">
               <VTextField
                 v-if="uploadedFile.file"
@@ -952,7 +969,6 @@ watch(selectedFactory, () => {
                 density="compact"
                 placeholder="No file choosen"
                 rounded="xl"
-                max-width="400"
               >
                 <template #append-inner>
                   <VIcon
@@ -970,16 +986,32 @@ watch(selectedFactory, () => {
                 density="compact"
                 rounded="xl"
                 label="No file choosen"
-                max-width="400"
                 prepend-icon=""
                 @change="handleUploadFile"
+                accept="image/png, image/jpeg"
               >
                 <template #append-inner>
                   <VBtn rounded="s-0 e-xl" text="Choose" />
                 </template>
               </VFileInput>
             </VCol>
-          </div>
+            <VCol cols="12">
+              <VAlert
+                type="info"
+                color="primary"
+                variant="tonal"
+                density="compact"
+                prominent
+              >
+                <template #prepend>
+                  <VIcon size="24px" icon="ri-information-2-fill" />
+                </template>
+                <template #text>
+                  File layout harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                </template>
+              </VAlert>
+            </VCol>
+          </VRow>
         </div>
         <div v-if="titleDialog === 'Ubah Catatan Bahan'">
           <div class="d-flex justify-center">
@@ -1070,8 +1102,11 @@ watch(selectedFactory, () => {
                   placeholder="isi judul"
                   disabled
                 />
-                <div class="d-flex justify-space-between mt-5">
-                  <label> Upload Foto </label>
+                <br />
+                <VRow class="mb-3" align="center">
+                  <VCol cols="6">
+                    <label> Upload Foto </label>
+                  </VCol>
                   <VCol cols="6">
                     <VTextField
                       v-if="uploadedFile.file"
@@ -1079,7 +1114,6 @@ watch(selectedFactory, () => {
                       density="compact"
                       placeholder="No file choosen"
                       rounded="xl"
-                      max-width="400"
                     >
                       <template #append-inner>
                         <VIcon
@@ -1097,16 +1131,32 @@ watch(selectedFactory, () => {
                       density="compact"
                       rounded="xl"
                       label="No file choosen"
-                      max-width="400"
                       prepend-icon=""
                       @change="handleUploadFile"
+                      accept="image/png, image/jpeg"
                     >
                       <template #append-inner>
                         <VBtn rounded="s-0 e-xl" text="Choose" />
                       </template>
                     </VFileInput>
                   </VCol>
-                </div>
+                  <VCol cols="12">
+                    <VAlert
+                      type="info"
+                      color="primary"
+                      variant="tonal"
+                      density="compact"
+                      prominent
+                    >
+                      <template #prepend>
+                        <VIcon size="24px" icon="ri-information-2-fill" />
+                      </template>
+                      <template #text>
+                        File foto harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                      </template>
+                    </VAlert>
+                  </VCol>
+                </VRow>
               </div>
             </VTabItem>
           </VTabsItems>
@@ -1200,8 +1250,11 @@ watch(selectedFactory, () => {
                   placeholder="isi judul"
                   disabled
                 />
-                <div class="d-flex justify-space-between mt-5">
-                  <label> Upload Foto </label>
+                <br />
+                <VRow class="mb-3" align="center">
+                  <VCol cols="6">
+                    <label> Upload Foto </label>
+                  </VCol>
                   <VCol cols="6">
                     <VTextField
                       v-if="uploadedFile.file"
@@ -1209,7 +1262,6 @@ watch(selectedFactory, () => {
                       density="compact"
                       placeholder="No file choosen"
                       rounded="xl"
-                      max-width="400"
                     >
                       <template #append-inner>
                         <VIcon
@@ -1227,16 +1279,32 @@ watch(selectedFactory, () => {
                       density="compact"
                       rounded="xl"
                       label="No file choosen"
-                      max-width="400"
                       prepend-icon=""
                       @change="handleUploadFile"
+                      accept="image/png, image/jpeg"
                     >
                       <template #append-inner>
                         <VBtn rounded="s-0 e-xl" text="Choose" />
                       </template>
                     </VFileInput>
                   </VCol>
-                </div>
+                  <VCol cols="12">
+                    <VAlert
+                      type="info"
+                      color="primary"
+                      variant="tonal"
+                      density="compact"
+                      prominent
+                    >
+                      <template #prepend>
+                        <VIcon size="24px" icon="ri-information-2-fill" />
+                      </template>
+                      <template #text>
+                        File foto harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                      </template>
+                    </VAlert>
+                  </VCol>
+                </VRow>
               </div>
             </VTabItem>
           </VTabsItems>
@@ -1325,8 +1393,11 @@ watch(selectedFactory, () => {
                   class="-mt-10"
                   placeholder="isi judul"
                 />
-                <div class="d-flex justify-space-between mt-5">
-                  <label> Upload Foto </label>
+                <br/>
+                <VRow class="mb-3" align="center">
+                  <VCol cols="6">
+                    <label> Upload Foto </label>
+                  </VCol>
                   <VCol cols="6">
                     <VTextField
                       v-if="uploadedFile.file"
@@ -1334,7 +1405,6 @@ watch(selectedFactory, () => {
                       density="compact"
                       placeholder="No file choosen"
                       rounded="xl"
-                      max-width="400"
                     >
                       <template #append-inner>
                         <VIcon
@@ -1352,16 +1422,32 @@ watch(selectedFactory, () => {
                       density="compact"
                       rounded="xl"
                       label="No file choosen"
-                      max-width="400"
                       prepend-icon=""
                       @change="handleUploadFile"
+                      accept="image/png, image/jpeg"
                     >
                       <template #append-inner>
                         <VBtn rounded="s-0 e-xl" text="Choose" />
                       </template>
                     </VFileInput>
                   </VCol>
-                </div>
+                  <VCol cols="12">
+                    <VAlert
+                      type="info"
+                      color="primary"
+                      variant="tonal"
+                      density="compact"
+                      prominent
+                    >
+                      <template #prepend>
+                        <VIcon size="24px" icon="ri-information-2-fill" />
+                      </template>
+                      <template #text>
+                        File foto harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                      </template>
+                    </VAlert>
+                  </VCol>
+                </VRow>
               </div>
             </VTabItem>
           </VTabsItems>
@@ -1464,8 +1550,11 @@ watch(selectedFactory, () => {
                   class="-mt-10"
                   placeholder="isi judul"
                 />
-                <div class="d-flex justify-space-between mt-5">
-                  <label> Upload Foto </label>
+                <br/>
+                <VRow class="mb-3" align="center">
+                  <VCol cols="6">
+                    <label> Upload Foto </label>
+                  </VCol>
                   <VCol cols="6">
                     <VTextField
                       v-if="uploadedFile.file"
@@ -1473,7 +1562,6 @@ watch(selectedFactory, () => {
                       density="compact"
                       placeholder="No file choosen"
                       rounded="xl"
-                      max-width="400"
                     >
                       <template #append-inner>
                         <VIcon
@@ -1491,16 +1579,32 @@ watch(selectedFactory, () => {
                       density="compact"
                       rounded="xl"
                       label="No file choosen"
-                      max-width="400"
                       prepend-icon=""
                       @change="handleUploadFile"
+                      accept="image/png, image/jpeg"
                     >
                       <template #append-inner>
                         <VBtn rounded="s-0 e-xl" text="Choose" />
                       </template>
                     </VFileInput>
                   </VCol>
-                </div>
+                  <VCol cols="12">
+                    <VAlert
+                      type="info"
+                      color="primary"
+                      variant="tonal"
+                      density="compact"
+                      prominent
+                    >
+                      <template #prepend>
+                        <VIcon size="24px" icon="ri-information-2-fill" />
+                      </template>
+                      <template #text>
+                        File foto harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                      </template>
+                    </VAlert>
+                  </VCol>
+                </VRow>
               </div>
             </VTabItem>
           </VTabsItems>
@@ -1595,8 +1699,11 @@ watch(selectedFactory, () => {
                   class="-mt-10"
                   placeholder="isi judul"
                 />
-                <div class="d-flex justify-space-between mt-5">
-                  <label> Upload Foto </label>
+                <br/>
+                <VRow class="mb-3" align="center">
+                  <VCol cols="6">
+                    <label> Upload Foto </label>
+                  </VCol>
                   <VCol cols="6">
                     <VTextField
                       v-if="uploadedFile.file"
@@ -1604,7 +1711,6 @@ watch(selectedFactory, () => {
                       density="compact"
                       placeholder="No file choosen"
                       rounded="xl"
-                      max-width="400"
                     >
                       <template #append-inner>
                         <VIcon
@@ -1622,16 +1728,32 @@ watch(selectedFactory, () => {
                       density="compact"
                       rounded="xl"
                       label="No file choosen"
-                      max-width="400"
                       prepend-icon=""
                       @change="handleUploadFile"
+                      accept="image/png, image/jpeg"
                     >
                       <template #append-inner>
                         <VBtn rounded="s-0 e-xl" text="Choose" />
                       </template>
                     </VFileInput>
                   </VCol>
-                </div>
+                  <VCol cols="12">
+                    <VAlert
+                      type="info"
+                      color="primary"
+                      variant="tonal"
+                      density="compact"
+                      prominent
+                    >
+                      <template #prepend>
+                        <VIcon size="24px" icon="ri-information-2-fill" />
+                      </template>
+                      <template #text>
+                        File foto harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                      </template>
+                    </VAlert>
+                  </VCol>
+                </VRow>
               </div>
             </VTabItem>
           </VTabsItems>
@@ -1655,7 +1777,7 @@ watch(selectedFactory, () => {
     <TableDataWith2Table
       :isviewonly="isviewonly"
       :on-submit="() => (confirmSaveDialog = true)"
-      :on-edit="(item:any, index:number) => toggleEdit2Table(item, index, 'Layout')"
+      :on-edit="(item:any, index:number) => toggleEdit2Table(item, index)"
       :data="materialAndProduct"
       :hide-default-footer="false"
       table-type="server"
@@ -1664,12 +1786,12 @@ watch(selectedFactory, () => {
     >
       <template #subTitle1>
         <p class="label-pengajuan font-weight-bold mt-2">
-          Tambah Catatatan Bahan
+          Tambah Catatan Bahan
         </p>
       </template>
       <template #subTitle2>
         <p class="label-pengajuan font-weight-bold mt-5">
-          Tambah Catatatan Produk
+          Tambah Catatan Produk
         </p>
       </template>
     </TableDataWith2Table>
@@ -1715,7 +1837,7 @@ watch(selectedFactory, () => {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .text-center {
   text-align: center;
 }
@@ -1738,5 +1860,13 @@ watch(selectedFactory, () => {
 
 .custom-date-input .v-input__icon--append {
   right: 0;
+}
+</style>
+
+<style lang="css">
+.custom-file-input {
+  .v-field--appended {
+    padding-inline-end: 0 !important;
+  }
 }
 </style>
