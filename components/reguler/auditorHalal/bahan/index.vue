@@ -1424,8 +1424,11 @@ watch([titleDialog, tabAddBahan], () => {
                   <div v-if="isNotAllowedProduct">
                     <label style="color: red; font-size: 12px;">Nama Produk mengandung nama dilarang</label>
                   </div>
-                  <div class="d-flex justify-space-between mt-5">
-                    <label> Upload Foto </label>
+                  <br/>
+                  <VRow class="mb-5" align="center">
+                    <VCol cols="6">
+                      <label> Upload Foto </label>
+                    </VCol>
                     <VCol cols="6">
                       <VTextField
                         v-if="uploadedFile.file"
@@ -1460,23 +1463,22 @@ watch([titleDialog, tabAddBahan], () => {
                       </VFileInput>
                     </VCol>
                     <VCol cols="12">
-                    <VAlert
-                      type="info"
-                      color="primary"
-                      variant="tonal"
-                      density="compact"
-                      prominent
-                    >
-                      <template #prepend>
-                        <VIcon size="24px" icon="ri-information-2-fill" />
-                      </template>
-                      <template #text>
-                        File foto produk harus dalam bentuk gambar berformat (jpeg/jpg/png)
-                      </template>
-                    </VAlert>
-                  </VCol>
+                      <VAlert
+                        type="info"
+                        color="primary"
+                        variant="tonal"
+                        density="compact"
+                        prominent
+                      >
+                        <template #prepend>
+                          <VIcon size="24px" icon="ri-information-2-fill" />
+                        </template>
+                        <template #text>
+                          File foto produk harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                        </template>
+                      </VAlert>
+                    </VCol>
                   </VRow>
-                  </div>
                 </div>
               </div>
             </VTabItem>
