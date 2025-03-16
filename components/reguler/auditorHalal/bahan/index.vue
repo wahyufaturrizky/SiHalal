@@ -1476,6 +1476,7 @@ watch([titleDialog, tabAddBahan], () => {
                     </VAlert>
                   </VCol>
                   </VRow>
+                  </div>
                 </div>
               </div>
             </VTabItem>
