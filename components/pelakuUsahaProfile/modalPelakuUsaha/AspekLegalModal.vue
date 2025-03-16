@@ -76,32 +76,70 @@
             <VRow class="mb-1">
               <VCol cols="12">
                 <VLabel>{{ t('detail-pu.pu-legal-modal-3')}}</VLabel>
-                <VTextField
-                  v-model="form.date"
-                  placeholder="Isi Tanggal Document"
-                  outlined
-                  dense
-                  required
-                  type="date"
-                  class="input-field"
-                  :rules="[requiredValidator]"
-                />
+
+                <Vuepicdatepicker
+                  v-model:model-value="form.date"
+                  auto-apply
+                  model-type="dd/MM/yyyy"
+                  :enable-time-picker="false"
+                  clearable
+                  position="auto"
+                >
+                  <template #trigger>
+                    <VTextField
+                      placeholder="Isi Tanggal Document"
+                      readonly
+                      append-inner-icon="fa-calendar"
+                      :model-value="form.date"
+                      :rules="[requiredValidator]"
+                    />
+                  </template>
+                </Vuepicdatepicker>
+
+<!--                <VTextField-->
+<!--                  v-model="form.date"-->
+<!--                  placeholder="Isi Tanggal Document"-->
+<!--                  outlined-->
+<!--                  dense-->
+<!--                  required-->
+<!--                  type="date"-->
+<!--                  class="input-field"-->
+<!--                  :rules="[requiredValidator]"-->
+<!--                />-->
               </VCol>
             </VRow>
 
             <VRow class="mb-1">
               <VCol cols="12">
                 <VLabel>{{ t('detail-pu.pu-legal-modal-4')}}</VLabel>
-                <VTextField
-                  v-model="form.expiration_date"
-                  placeholder="Isi Masa Berlaku"
-                  outlined
-                  dense
-                  required
-                  type="date"
-                  class="input-field"
-                  :rules="[requiredValidator]"
-                />
+                <Vuepicdatepicker
+                  v-model:model-value="form.expiration_date"
+                  auto-apply
+                  model-type="dd/MM/yyyy"
+                  :enable-time-picker="false"
+                  clearable
+                  position="auto"
+                >
+                  <template #trigger>
+                    <VTextField
+                      placeholder="Isi Masa Berlaku"
+                      readonly
+                      append-inner-icon="fa-calendar"
+                      :model-value="form.expiration_date"
+                      :rules="[requiredValidator]"
+                    />
+                  </template>
+                </Vuepicdatepicker>
+<!--                <VTextField-->
+<!--                  v-model="form.expiration_date"-->
+<!--                  placeholder="Isi Masa Berlaku"-->
+<!--                  outlined-->
+<!--                  dense-->
+<!--                  required-->
+<!--                  type="date"-->
+<!--                  class="input-field"-->
+<!--                  :rules="[requiredValidator]"-->
+<!--                />-->
               </VCol>
             </VRow>
 
@@ -140,7 +178,7 @@ import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 import { computed, defineEmits, defineProps, ref, watch } from "vue";
 import { useDisplay } from "vuetify";
-import type { VForm } from "vuetify/components";
+import { type VForm, VTextField } from "vuetify/components"
 
 const props = defineProps({
   mode: { type: String, default: "add" },

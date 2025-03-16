@@ -7,12 +7,12 @@ const route = useRoute();
 const dataPelakuUsaha = ref();
 const dataPenanggungJawab = ref();
 const dataPendaftaran = ref();
-const dataRequirementGeneral = ref();
-const dataRequirementSpecific = ref();
-const dataBahanList = ref();
-const dataProdukList = ref();
-const dataProsesList = ref();
-const dataTracking = ref();
+const dataRequirementGeneral = ref<any[]>([]);
+const dataRequirementSpecific = ref<any[]>([]);
+const dataBahanList = ref<any[]>([]);
+const dataProdukList = ref<any[]>([]);
+const dataProsesList = ref<any[]>([]);
+const dataTracking = ref<any[]>([]);
 const generalReqRef = ref();
 const specificReqRef = ref();
 const ingredientTableRef = ref();
@@ -20,6 +20,8 @@ const productRef = ref();
 const prodProcessRef = ref();
 const fileImage = ref<File | null>(null);
 const imageData = ref(null);
+
+const itemsPerPage = ref(10);
 
 const getDetail = async () => {
   try {
@@ -43,7 +45,7 @@ const getDetail = async () => {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
 };
-
+const totalGeneralQuestion = ref(0);
 const getGeneralQuestion = async () => {
   try {
     const response = await $api(
@@ -57,10 +59,24 @@ const getGeneralQuestion = async () => {
       return;
     }
 
-    dataRequirementGeneral.value = response.data;
+    dataRequirementGeneral.value = response.data || [];
+    totalGeneralQuestion.value = response.data.length;
+    // console.log(totalGeneralQuestion,'ini page')
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
+};
+const currentPageGeneralQuestion = ref(1);
+const halamanGeneralQuestion = computed(() =>
+  Math.ceil(totalGeneralQuestion.value / itemsPerPage.value)
+);
+const paginatedGeneralQuestion = computed(() => {
+  const start = (currentPageGeneralQuestion.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return dataRequirementGeneral.value.slice(start, end);
+});
+const changePageGeneralQuestion = (page: number) => {
+  currentPageGeneralQuestion.value = page;
 };
 
 const getSpecificQuestion = async () => {
@@ -81,7 +97,7 @@ const getSpecificQuestion = async () => {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
 };
-
+const totalIngredients = ref(0);
 const getIngredientList = async () => {
   try {
     const response = await $api(
@@ -94,13 +110,28 @@ const getIngredientList = async () => {
       useSnackbar().sendSnackbar("ada kesalahan", "error");
       return;
     }
-
-    dataBahanList.value = response.data;
+    dataBahanList.value = response.data || [];
+    totalIngredients.value = response.data.length;
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
 };
 
+const currentPageIngredients = ref(1);
+
+const halamanIngredients = computed(() =>
+  Math.ceil(totalIngredients.value / itemsPerPage.value)
+);
+const paginatedIngredients = computed(() => {
+  const start = (currentPageIngredients.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return dataBahanList.value.slice(start, end);
+});
+const changePagekIngredients = (page: number) => {
+  currentPageIngredients.value = page;
+};
+
+const totalProductList = ref(0);
 const getProductList = async () => {
   try {
     const response = await $api(
@@ -111,7 +142,7 @@ const getProductList = async () => {
     );
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan", "error");
-      return;
+      return "";
     }
 
     if (response.data) {
@@ -119,11 +150,26 @@ const getProductList = async () => {
     } else {
       dataProdukList.value = [];
     }
+    totalProductList.value = response.data.length;
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
 };
+const currentPageProductList = ref(1);
 
+const halamanProductList = computed(() =>
+  Math.ceil(totalProductList.value / itemsPerPage.value)
+);
+const paginatedProductList = computed(() => {
+  const start = (currentPageProductList.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return dataProdukList.value.slice(start, end);
+});
+const changePagekProductList = (page: number) => {
+  currentPageProductList.value = page;
+};
+
+const totalProductProcessList = ref(0);
 const getProductProcessList = async () => {
   try {
     const response = await $api(
@@ -137,10 +183,24 @@ const getProductProcessList = async () => {
       return;
     }
 
-    dataProsesList.value = response.data;
+    dataProsesList.value = response.data || [];
+    totalProductProcessList.value = response.data.length;
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
+};
+const currentPageProductProcessList = ref(1);
+
+const halamanProductProcessList = computed(() =>
+  Math.ceil(totalProductProcessList.value / itemsPerPage.value)
+);
+const paginatedProductProcessList = computed(() => {
+  const start = (currentPageProductProcessList.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return dataProsesList.value.slice(start, end);
+});
+const changePageProductProcessList = (page: number) => {
+  currentPageProductProcessList.value = page;
 };
 
 const handleBahanAdd = async (result: boolean) => {
@@ -368,7 +428,7 @@ onMounted(async () => {
         >Download Rekomendasi</VBtn
       >
       <VBtn
-        style="margin-inline-start: 1svw"
+        style="margin-inline-start: 1svw;"
         variant="flat"
         append-icon="fa-plus"
         @click="triggerFileInput"
@@ -382,14 +442,14 @@ onMounted(async () => {
       />
       <VBtn
         v-if="imageData"
-        style="margin-inline-start: 1svw"
+        style="margin-inline-start: 1svw;"
         variant="flat"
         title="Download Foto Pendampingan"
         @click="onClickDownload(imageData)"
         ><VIcon icon="fa-download"></VIcon
       ></VBtn>
     </VCol>
-    <VCol cols="4" style="display: flex; justify-content: end">
+    <VCol cols="4" style="display: flex; justify-content: end;">
       <ModalPengembalianDanKirim
         :modal-type="modalTypeEnum.KEMBALI"
         @verval-return="vervalReturn"
@@ -431,9 +491,17 @@ onMounted(async () => {
       <PersyaratanUmumTable
         id="generalReqTableId"
         ref="generalReqRef"
-        :data-persyaratan="dataRequirementGeneral"
+        :data-persyaratan="paginatedGeneralQuestion"
         v-if="dataRequirementGeneral"
+        :itemsPerPage="itemsPerPage"
+       :currentPage="currentPageGeneralQuestion"
       ></PersyaratanUmumTable>
+      <VPagination
+        v-model="currentPageGeneralQuestion"
+        :length="halamanGeneralQuestion"
+        :style="{ marginTop: '20px' }"
+        @update:modelValue="changePageGeneralQuestion"
+      />
     </VCol>
   </VRow>
   <VRow>
@@ -450,11 +518,20 @@ onMounted(async () => {
       <BahanTablePendamping
         id="ingredientTableId"
         ref="ingredientTableRef"
-        :data="dataBahanList"
+        :data="paginatedIngredients"
         :id-reg="route.params?.id"
         @confirm-add="handleBahanAdd"
         :is-temuan-can-edit="true"
+         :itemsPerPage="itemsPerPage"
+       :currentPage="currentPageIngredients"
       ></BahanTablePendamping>
+
+      <VPagination
+        v-model="currentPageIngredients"
+        :length="halamanIngredients"
+        :style="{ marginTop: '20px' }"
+        @update:modelValue="changePagekIngredients"
+      />
     </VCol>
   </VRow>
   <VRow>
@@ -462,10 +539,19 @@ onMounted(async () => {
       <ProsesProdukHalalPendamping
         id="processProductReqTableId"
         ref="prodProcessRef"
-        :data="dataProsesList"
+        :data="paginatedProductProcessList"
         @confirm-add="handleProsesProdukAdd"
         @confirm-delete="handleProsesProdukDelete"
+        :itemsPerPage="itemsPerPage"
+      :currentPage="currentPageProductProcessList"
       ></ProsesProdukHalalPendamping>
+
+      <VPagination
+        v-model="currentPageProductProcessList"
+        :length="halamanProductProcessList"
+        :style="{ marginTop: '20px' }"
+        @update:modelValue="changePageProductProcessList"
+      />
     </VCol>
   </VRow>
   <VRow>
@@ -473,13 +559,22 @@ onMounted(async () => {
       <ProdukHalalPendamping
         id="productReqTableId"
         ref="productRef"
-        :data="dataProdukList"
+        :data="paginatedProductList"
         @confirm-add="handleProdukAdd"
         @confirm-delete="handleProdukDelete"
+        :itemsPerPage="itemsPerPage"
+        :currentPage="currentPageProductList"
       ></ProdukHalalPendamping>
+
+      <VPagination
+        v-model="currentPageProductList"
+        :length="halamanProductList"
+        :style="{ marginTop: '20px' }"
+        @update:modelValue="changePagekProductList"
+      />
     </VCol>
   </VRow>
-  <VRow style="display: none">
+  <VRow style="display: none;">
     <VCol cols="12">
       <VCard>
         <VCardItem>

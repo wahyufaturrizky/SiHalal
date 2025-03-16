@@ -24,6 +24,14 @@ const props = defineProps({
   isTemuanCanEdit: {
     type: Boolean,
   },
+  itemsPerPage: {
+    type: Number,
+    default: 10,
+  },
+  currentPage: {
+    type: Number,
+    default: 1,
+  },
 });
 
 const emit = defineEmits(["confirm-add", "confirm-delete"]);
@@ -85,7 +93,7 @@ watch(
     <VCardTitle>
       <VRow>
         <VCol cols="6"><h3>Bahan</h3></VCol>
-        <VCol cols="6" style="display: flex; justify-content: end">
+        <VCol cols="6" style="display: flex; justify-content: end;">
           <ModalBahanPendampingVerval
             :modal-type="modalTypeEnum.ADD"
             :id-reg="props.idReg"
@@ -110,7 +118,13 @@ watch(
       <br />
       <VDataTable :headers="tableHeader" :items="content" hide-default-footer>
         <template #item.no="{ index }">
-          {{ index + 1 }}
+          <div>
+            {{
+              ((props.currentPage || 1) - 1) * (props.itemsPerPage || 10) +
+              index +
+              1
+            }}
+          </div>
         </template>
         <template #item.status="{ item }">
           {{
@@ -136,7 +150,7 @@ watch(
               ></ModalBahanPendampingVerval>
               <VListItem @click="handleDeleteBahan(item.id_bahan)">
                 <template #prepend>
-                  <VIcon style="color: red" icon="fa-trash"></VIcon>
+                  <VIcon style="color: red;" icon="fa-trash"></VIcon>
                 </template>
                 <template #append> Hapus </template>
               </VListItem>
