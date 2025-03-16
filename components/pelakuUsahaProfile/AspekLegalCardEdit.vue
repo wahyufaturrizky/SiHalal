@@ -65,9 +65,9 @@ const handleAddAspekLegalConfirm = (formData) => {
         document_type: formData.type,
         document_number: formData.doc_number,
         date: parseFlexibleDate(formData.date).toISOString().substring(0, 10),
-        valid_date: parseFlexibleDate(formData.expiration_date)
+        valid_date: formData.expiration_date !== "" ? parseFlexibleDate(formData.expiration_date)
           .toISOString()
-          .substring(0, 10),
+          .substring(0, 10) : null,
         publish_agency: formData.publishing_agency,
       },
     }
@@ -96,7 +96,7 @@ const handleEditAspekLegalConfirm = (formData) => {
       document_type: formData.type,
       document_number: formData.doc_number,
       date: parseFlexibleDate(formData.date).toISOString(),
-      valid_date: parseFlexibleDate(formData.expiration_date).toISOString(),
+      valid_date: formData.expiration_date !== "" ? parseFlexibleDate(formData.expiration_date).toISOString() : null,
       publish_agency: formData.publishing_agency,
     },
   })
