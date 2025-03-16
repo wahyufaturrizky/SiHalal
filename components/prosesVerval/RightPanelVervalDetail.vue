@@ -70,6 +70,7 @@ const downloadForms = reactive({
   surat_penyelia: "",
   surat_permohonan: "",
   surat_pernyataan: "",
+  cek_laporan: "",
 }) as Record<string, string>;
 
 const getDownloadForm = async (docName: string, propName: string) => {
@@ -98,6 +99,7 @@ onMounted(async () => {
     getDownloadForm("laporan-pendamping", "laporan_pendamping"),
     getDownloadForm("surat-permohonan", "surat_permohonan"),
     getDownloadForm("surat-pernyataan", "surat_pernyataan"),
+    getDownloadForm("laporan", "cek_laporan"),
   ]);
 });
 </script>
