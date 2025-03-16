@@ -23,6 +23,14 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  itemsPerPage: {
+    type: Number,
+    default: 10,
+  },
+  currentPage: {
+    type: Number,
+    default: 1,
+  },
 });
 
 const countPersyaratan = ref({
@@ -116,7 +124,7 @@ const onOpenModal = async () => {
     <VCardTitle>
       <VRow>
         <VCol cols="6"><h3>Proses Produk Halal</h3></VCol>
-        <VCol cols="6" style="display: flex; justify-content: end">
+        <VCol cols="6" style="display: flex; justify-content: end;">
           <ModalProsesProdukHalalVerval
             :disable-add="disableAddBtn"
             :modal-type="modalTypeEnum.ADD"
@@ -140,7 +148,13 @@ const onOpenModal = async () => {
       <br />
       <VDataTable :headers="tableHeader" :items="content" hide-default-footer>
         <template #item.no="{ index }">
-          {{ index + 1 }}
+          <div>
+            {{
+              ((props.currentPage || 1) - 1) * (props.itemsPerPage || 10) +
+              index +
+              1
+            }}
+          </div>
         </template>
         <template #item.persyaratan="{ item }">
           {{
@@ -154,7 +168,7 @@ const onOpenModal = async () => {
         <template #item.action="{ item }">
           <VBtn variant="text" @click="handleDeleteProsesProduk(item.id)">
             <template #default>
-              <VIcon style="color: red" icon="fa-trash"></VIcon>
+              <VIcon style="color: red;" icon="fa-trash"></VIcon>
             </template>
           </VBtn>
         </template>

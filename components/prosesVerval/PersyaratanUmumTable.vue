@@ -18,6 +18,14 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  itemsPerPage: {
+    type: Number,
+    default: 10,
+  },
+  currentPage: {
+    type: Number,
+    default: 1,
+  },
 });
 
 const selected = ref(new Set<number>()); // Use a Set for efficient selection management
@@ -122,7 +130,13 @@ defineExpose({
         :hide-default-footer="true"
       >
         <template #item.nomor="{ index }">
-          {{ index + 1 }}
+          <div>
+            {{
+              ((props.currentPage || 1) - 1) * (props.itemsPerPage || 10) +
+              index +
+              1
+            }}
+          </div>
         </template>
         <template #item.memenuhi="{ index }">
           <VCheckbox
@@ -133,7 +147,7 @@ defineExpose({
       </VDataTable>
     </VCardItem>
 
-    <VCardActions style="display: flex; justify-content: end">
+    <VCardActions style="display: flex; justify-content: end;">
       <VBtn @click="onSubmit" variant="flat"
         >Simpan Pengecekan Persyaratan</VBtn
       >

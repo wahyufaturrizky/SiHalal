@@ -193,10 +193,10 @@ const getSertifikasiDetail = async () => {
 
     if (response?.code === 2000) {
       detailData.value = response.data || {};
-      allPagesAspek.value = response.data.aspek_legal || {};
-      allPagesPabrik.value = response.data.pabrik || {};
-      allPagesOutlet.value = response.data.outlet || {};
-      allPagesPenyelia.value = response.data.penyelia_halal || {};
+      allPagesAspek.value = response.data.aspek_legal || [];
+      allPagesPabrik.value = response.data.pabrik || [];
+      allPagesOutlet.value = response.data.outlet || [];
+      allPagesPenyelia.value = response.data.penyelia_halal || [];
       allPagesProduk.value = response.data.produk || [];
 
       totalPageAspek.value = response.data.aspek_legal.length;
@@ -620,9 +620,9 @@ onMounted(async () => {
                           border-color: #652672;
                           border-radius: 8px;
                           background-color: #f0e9f1;
-                        "
+"
                       >
-                        <span style="color: #652672">
+                        <span style="color: #652672;">
                           {{ detailData?.certificate_halal.status }}
                         </span>
                       </VChip>
@@ -1007,9 +1007,9 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 :deep(
-    .v-expansion-panel--active:not(:first-child),
-    .v-expansion-panel--active + .v-expansion-panel
-  ) {
+.v-expansion-panel--active:not(:first-child),
+.v-expansion-panel--active + .v-expansion-panel
+) {
   margin-block-start: 40px !important;
 }
 
