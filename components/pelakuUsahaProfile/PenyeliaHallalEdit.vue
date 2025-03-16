@@ -68,23 +68,24 @@ const uploadDocument = async (file, type: string) => {
 // };
 
 async function handleAddAspekLegalConfirm(item) {
+
   // console.log("executed emit", item.namaPenyelia);
   try {
     if (isNoNeedValidation) {
-      console.log("step 0", item);
+      // console.log("step 0", item);
       let payload = {
         id_number: item.noKtp,
         phone_number: item.noKontak,
         name: item.namaPenyelia,
         religion: item.agamaPenyelia,
         sk_number: item.nomorSk,
-        sk_date: new Date(item.tanggalSk).toISOString().substring(0, 19) + "Z",
+        sk_date: parseFlexibleDate(item.tanggalSk).toISOString().substring(0, 19) + "Z",
       };
       if (item.certificate_date) {
         payload = {
           ...payload,
           certificate_date:
-            new Date(item.tanggalSertifikat).toISOString().substring(0, 19) +
+            parseFlexibleDate(item.tanggalSertifikat).toISOString().substring(0, 19) +
             "Z",
         };
       }
@@ -171,11 +172,11 @@ async function handleAddAspekLegalConfirm(item) {
             religion: item.agamaPenyelia,
             certificate_number: item.nomorSertifikat,
             certificate_date:
-              new Date(item.tanggalSertifikat).toISOString().substring(0, 19) +
+              parseFlexibleDate(item.tanggalSertifikat).toISOString().substring(0, 19) +
               "Z",
             sk_number: item.nomorSk,
             sk_date:
-              new Date(item.tanggalSk).toISOString().substring(0, 19) + "Z",
+              parseFlexibleDate(item.tanggalSk).toISOString().substring(0, 19) + "Z",
             skph_file: skkFile.data.file_url,
             spph_file: skpFile.data.file_url,
             ktp_file: ktpFile.data.file_url,
@@ -195,6 +196,7 @@ async function handleAddAspekLegalConfirm(item) {
       useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
     }
   } catch (error) {
+    // console.log("ERROR : ", error)
     // loadReqDialog.value = false;
     if (error.data?.data?.code === 4001) {
       useSnackbar().sendSnackbar(
@@ -237,11 +239,11 @@ const handleEditEmitted = async (item, idPenyelia) => {
           religion: item.agamaPenyelia,
           certificate_number: item.nomorSertifikat,
           certificate_date:
-            new Date(item.tanggalSertifikat).toISOString().substring(0, 19) +
+            parseFlexibleDate(item.tanggalSertifikat).toISOString().substring(0, 19) +
             "Z",
           sk_number: item.nomorSk,
           sk_date:
-            new Date(item.tanggalSk).toISOString().substring(0, 19) + "Z",
+            parseFlexibleDate(item.tanggalSk).toISOString().substring(0, 19) + "Z",
           skph_file: skkFile.data.file_url,
           spph_file: skpFile.data.file_url,
           ktp_file: ktpFile.data.file_url,
@@ -263,7 +265,7 @@ const handleEditEmitted = async (item, idPenyelia) => {
 };
 
 function handleDelete(item) {
-  console.log("Delete item:", item);
+  // console.log("Delete item:", item);
 
   const submitApi = $api(
     `/pelaku-usaha-profile/${store.profileData?.id}/penyelia/${item.id}/delete`,

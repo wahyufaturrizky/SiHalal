@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { formatToDDMMYYYY } from "@/utils/formatToISOString"
 import { defineEmits, defineProps, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
-import { VForm } from "vuetify/components";
+import { VForm, VTextField } from "vuetify/components"
 
 const props = defineProps({
   mode: { type: String, default: "add" },
@@ -99,20 +100,16 @@ const fillEditForm = async (newData) => {
   );
 
   if (val.code == 2000) {
-    console.log("edited data", val.data);
+    // console.log("edited data", val.data);
     // form.value = { ...val.data };
     form.value.noKtp = val.data.id_number;
     form.value.noKontak = val.data.phone_number;
     form.value.namaPenyelia = val.data.name;
     form.value.agamaPenyelia = val.data.religion;
     form.value.nomorSertifikat = val.data.certificate_number;
-    form.value.tanggalSertifikat = new Date(val.data.certificate_date)
-      .toISOString()
-      .substring(0, 10);
+    form.value.tanggalSertifikat = formatToDDMMYYYY(new Date(val.data.certificate_date))
     form.value.nomorSk = val.data.sk_number;
-    form.value.tanggalSk = new Date(val.data.sk_date)
-      .toISOString()
-      .substring(0, 10);
+    form.value.tanggalSk = formatToDDMMYYYY(new Date(val.data.sk_date))
     form.value.sertifikatKompetensi = val.data.skph_file;
     form.value.sertifikatPelatihan = val.data.spph_file;
     form.value.ktpFile = val.data.ktp_file;
@@ -125,7 +122,7 @@ watch(
   () => props.initialData,
   (newData) => {
     if (props.mode === "edit" && newData) {
-      console.log("existing data", newData);
+      // console.log("existing data", newData);
       // form.value = { ...newData };
       selectedIdPenyelia.value = newData.id;
       fillEditForm(newData);
@@ -265,15 +262,33 @@ const { t } = useI18n();
                 />
               </VCol>
               <VCol cols="6">
-                <VTextField
-                  :rules="isNoNeedValidation ? [] : [requiredValidator]"
-                  v-model="form.tanggalSertifikat"
-                  label="Tanggal Sertifikat"
-                  outlined
-                  dense
-                  required
-                  type="date"
-                />
+<!--                <VTextField-->
+<!--                  :rules="isNoNeedValidation ? [] : [requiredValidator]"-->
+<!--                  v-model="form.tanggalSertifikat"-->
+<!--                  label="Tanggal Sertifikat"-->
+<!--                  outlined-->
+<!--                  dense-->
+<!--                  required-->
+<!--                  type="date"-->
+<!--                />-->
+                <Vuepicdatepicker
+                  v-model:model-value="form.tanggalSertifikat"
+                  auto-apply
+                  model-type="dd/MM/yyyy"
+                  :enable-time-picker="false"
+                  clearable
+                  position="auto"
+                >
+                  <template #trigger>
+                    <VTextField
+                      placeholder="Tanggal Sertifikat"
+                      readonly
+                      append-inner-icon="fa-calendar"
+                      :model-value="form.tanggalSertifikat"
+                      :rules="[requiredValidator]"
+                    />
+                  </template>
+                </Vuepicdatepicker>
               </VCol>
             </VRow>
             <VRow class="mb-2">
@@ -288,15 +303,34 @@ const { t } = useI18n();
                 />
               </VCol>
               <VCol cols="6">
-                <VTextField
-                  :rules="[requiredValidator]"
-                  v-model="form.tanggalSk"
-                  label="Tanggal SK"
-                  outlined
-                  dense
-                  required
-                  type="date"
-                />
+<!--                <VTextField-->
+<!--                  :rules="[requiredValidator]"-->
+<!--                  v-model="form.tanggalSk"-->
+<!--                  label="Tanggal SK"-->
+<!--                  outlined-->
+<!--                  dense-->
+<!--                  required-->
+<!--                  type="date"-->
+<!--                />-->
+
+                <Vuepicdatepicker
+                  v-model:model-value="form.tanggalSk"
+                  auto-apply
+                  model-type="dd/MM/yyyy"
+                  :enable-time-picker="false"
+                  clearable
+                  position="auto"
+                >
+                  <template #trigger>
+                    <VTextField
+                      placeholder="Tanggal SK"
+                      readonly
+                      append-inner-icon="fa-calendar"
+                      :model-value="form.tanggalSk"
+                      :rules="[requiredValidator]"
+                    />
+                  </template>
+                </Vuepicdatepicker>
               </VCol>
             </VRow>
             <v-tooltip

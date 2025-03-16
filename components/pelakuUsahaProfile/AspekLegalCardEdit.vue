@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatToDDMMYYYY } from "@/utils/formatToISOString"
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
@@ -63,8 +64,8 @@ const handleAddAspekLegalConfirm = (formData) => {
       body: {
         document_type: formData.type,
         document_number: formData.doc_number,
-        date: new Date(formData.date).toISOString().substring(0, 10),
-        valid_date: new Date(formData.expiration_date)
+        date: parseFlexibleDate(formData.date).toISOString().substring(0, 10),
+        valid_date: parseFlexibleDate(formData.expiration_date)
           .toISOString()
           .substring(0, 10),
         publish_agency: formData.publishing_agency,
@@ -94,8 +95,8 @@ const handleEditAspekLegalConfirm = (formData) => {
       legal_id: formData.id,
       document_type: formData.type,
       document_number: formData.doc_number,
-      date: new Date(formData.date).toISOString(),
-      valid_date: new Date(formData.expiration_date).toISOString(),
+      date: parseFlexibleDate(formData.date).toISOString(),
+      valid_date: parseFlexibleDate(formData.expiration_date).toISOString(),
       publish_agency: formData.publishing_agency,
     },
   })
@@ -115,10 +116,8 @@ const handleEditAspekLegalConfirm = (formData) => {
 const initialDataAspekLegal = (item: any) => ({
   id: item.id,
   doc_number: item.doc_number,
-  expiration_date: new Date(item.expiration_date)
-    .toISOString()
-    .substring(0, 10),
-  date: new Date(item.date).toISOString().substring(0, 10),
+  expiration_date: formatToDDMMYYYY(item.expiration_date),
+  date: formatToDDMMYYYY(item.date),
   publishing_agency: item.publishing_agency,
   type: item.type,
 });
