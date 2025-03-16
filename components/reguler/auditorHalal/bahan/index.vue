@@ -41,6 +41,7 @@ const loading = ref(false);
 const loadingRincian = ref(false);
 const reRender = ref(false);
 const tabBahan = ref(0);
+const dataCertifHalal = ref("")
 
 const catatan = ref<any>({
   name: "",
@@ -499,45 +500,15 @@ const getListFormulir = async () => {
   }
 };
 
-const storeDataPengajuan = useMyRegulerPelakuUsahaStore();
-const itemsChannel = ref();
-const productList = ref();
-
 const getChannel = async () => {
   try {
-    const response = await $api(`/master/jenis-layanan`, {
+    const response: any = await $api("/reguler/pelaku-usaha/detail", {
       method: "get",
-      query: {
-        query: "empty",
-      },
+      params: { id},
     });
-
-    const master = JSON.parse(
-      JSON.stringify(storeDataPengajuan.dataPengajuanCertData)
-    );
-    console.log("store isi = ", master[3].value);
-    return response.filter(
-      (val) => val.name === master[3].value || val.code === master[3].value
-    )[0].code;
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
-
-const getProductType = async (id: string) => {
-  console.log("id jnlay = ", id);
-  try {
-    const response: any = await $api("/master/product-filter", {
-      method: "get",
-      params: { id },
-    });
-
-    if (response.length) {
-      productList.value = response;
-
-      return response;
-    } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (response.code === 2000) {
+      dataCertifHalal.value = response?.data?.certificate_halal
+      return response?.data?.certificate_halal?.id_produk
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -547,22 +518,15 @@ const getProductType = async (id: string) => {
 const loadItemProductClasifications = async () => {
   try {
     const params = {};
-    const jnlay = await getChannel();
-    const prod = await getProductType(jnlay);
-
-    const master = JSON.parse(
-      JSON.stringify(storeDataPengajuan.dataPengajuanCertData)
-    )[4].value;
-
-    params["idLayanan"] = prod.filter(
-      (val) => val.name === master || val.code === master
-    )[0].code;
+    const productCode = await getChannel();
 
     const response = await $api(
       `/reguler/auditor/combobox-product-klasifikasi`,
       {
         method: "get",
-        params,
+        params: {
+          idLayanan: productCode
+        },
       }
     );
 
@@ -626,20 +590,27 @@ const getListIngredients = async () => {
       };
 
       if (response.data !== null) {
-        const jenisBahan = response.data?.map((i) => i.jenis_bahan);
-
-        if (
-          ["Bahan", "Cleaning Agent", "Kemasan"].every((item) =>
-            jenisBahan.includes(item)
-          )
-        ) {
-          emit("complete", true);
+        const jenisBahan = response.data?.map((i) => i.jenis_bahan?.toLowerCase());
+        if (dataCertifHalal?.jenis_layanan !== "Makanan" || dataCertifHalal?.jenis_layanan !== "Minuman") {
+          if (jenisBahan.length > 0) {
+            emit("complete", true);
+          } else {
+            emit("failed", missing);
+          }
         } else {
-          const missing = ["Bahan", "Cleaning Agent", "Kemasan"].filter(
-            (item) => !jenisBahan.includes(item)
-          );
-
-          emit("failed", missing);
+          if (
+            ["Bahan", "Cleaning Agent", "Kemasan"].every((item) =>
+              jenisBahan.includes(item?.toLowerCase())
+            )
+          ) {
+            emit("complete", true);
+          } else {
+            const missing = ["Bahan", "Cleaning Agent", "Kemasan"].filter(
+              (item) => !jenisBahan.includes(item)
+            );
+  
+            emit("failed", missing);
+          }
         }
       } else {
         emit("failed", ["Bahan", "Cleaning Agent", "Kemasan"]);
@@ -1379,7 +1350,7 @@ watch([titleDialog, tabAddBahan], () => {
               </div>
               <div v-else class="mt-10">
                 <div>
-                  <label>Klasifikasi Produk 1</label>
+                  <label>Klasifikasi Produk</label>
                   <VSelect
                     outlined
                     placeholder="pilih klasifikasi produk"
