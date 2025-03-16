@@ -116,7 +116,7 @@ export default defineNuxtConfig({
         type: "bearer",
         cookieName: "accessToken",
         headerName: "Authorization",
-        maxAgeInSeconds: 18000,
+        maxAgeInSeconds: 86400,
         sameSiteAttribute: "lax",
         secureCookieAttribute: true,
         httpOnly: true,
