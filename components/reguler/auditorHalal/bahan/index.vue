@@ -1166,14 +1166,14 @@ watch([titleDialog, tabAddBahan], () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px"
+              style="border-radius: 40px;"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1185,12 +1185,12 @@ watch([titleDialog, tabAddBahan], () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 variant="flat"
                 height="40px"
               >
-                <span> Tambah Manual </span>
+                <span> Ubah Manual          </span>
               </VTab>
             </VTabs>
           </div>
@@ -1288,14 +1288,14 @@ watch([titleDialog, tabAddBahan], () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px"
+              style="border-radius: 40px;"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1307,12 +1307,12 @@ watch([titleDialog, tabAddBahan], () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 variant="flat"
                 height="40px"
               >
-                <span> Tambah Manual </span>
+                <span> Ubah Manual      </span>
               </VTab>
             </VTabs>
           </div>
@@ -1674,19 +1674,19 @@ watch([titleDialog, tabAddBahan], () => {
         </div>
         <div v-else-if="titleDialog === 'Tambah Pembelian Bahan'">
           <div class="d-flex justify-center align-center">
-            <VTabs
+            <!-- <VTabs
               v-model="tabBahan"
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px"
+              style="border-radius: 40px;"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1694,7 +1694,7 @@ watch([titleDialog, tabAddBahan], () => {
               >
                 <span>Unggah File </span>
               </VTab>
-            </VTabs>
+            </VTabs> -->
           </div>
           <VTabsWindow v-model="tabBahan">
             <VTabsWindowItem value="1">
@@ -1709,7 +1709,7 @@ watch([titleDialog, tabAddBahan], () => {
               </div>
               <VRow class="mt-5 mb-3" align="center">
                 <VCol cols="6">
-                  <label style="align-self: center"> Unggah Bahan </label>
+                  <label style="align-self: center;"> Bukti Pembelian </label>
                 </VCol>
                 <VCol cols="6">
                   <VTextField
@@ -1796,19 +1796,19 @@ watch([titleDialog, tabAddBahan], () => {
         </div>
         <div v-else-if="titleDialog === 'Tambah Formulir Pemeriksaan Bahan'">
           <div class="d-flex justify-center align-center">
-            <VTabs
+            <!-- <VTabs
               v-model="tabBahan"
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px"
+              style="border-radius: 40px;"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1816,7 +1816,7 @@ watch([titleDialog, tabAddBahan], () => {
               >
                 <span>Unggah File </span>
               </VTab>
-            </VTabs>
+            </VTabs> -->
           </div>
           <VTabsWindow v-model="tabBahan">
             <VTabsWindowItem value="1">
@@ -1831,7 +1831,7 @@ watch([titleDialog, tabAddBahan], () => {
               </div>
               <VRow class="mt-5 mb-3" align="center">
                 <VCol cols="6">
-                  <label> Unggah Bahan </label>
+                  <label> Pemeriksaan Bahan </label>
                 </VCol>
                 <VCol cols="6">
                   <VTextField
@@ -1923,14 +1923,14 @@ watch([titleDialog, tabAddBahan], () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px"
+              style="border-radius: 40px;"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1943,12 +1943,12 @@ watch([titleDialog, tabAddBahan], () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 variant="flat"
                 height="40px"
               >
-                <span> Tambah Manual </span>
+                <span> Ubah Manual                </span>
               </VTab>
             </VTabs>
           </div>
@@ -2058,14 +2058,14 @@ watch([titleDialog, tabAddBahan], () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px"
+              style="border-radius: 40px;"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -2078,12 +2078,13 @@ watch([titleDialog, tabAddBahan], () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 variant="flat"
                 height="40px"
               >
-                <span> Tambah Manual </span>
+                <span> Ubah Manual
+                </span>
               </VTab>
             </VTabs>
           </div>
