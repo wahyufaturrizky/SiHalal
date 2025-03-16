@@ -94,8 +94,15 @@ const getChannel = async (path: string) => {
     //   params,
     // });
 
-    const response = await $api(`/master/jenis-layanan-by-idreg/${id}`, {
+    // const response = await $api(`/master/jenis-layanan-by-idreg/${id}`, {
+    //   method: "get",
+    // });
+
+    const response = await $api(`/master/jenis-layanan`, {
       method: "get",
+      query: {
+        query: "empty",
+      },
     });
 
     itemsChannel.value = response;
@@ -156,14 +163,17 @@ const getListIngredients = async () => {
 
     if (response.code === 2000) {
       if (response.data !== null) {
-        const jenisBahan = response.data?.map((i) => i.jenis_bahan);
+        const jenisBahan = response.data?.map((i) =>
+          i.jenis_bahan?.toLowerCase()
+        );
 
         if (
           ["Bahan", "Cleaning Agent", "Kemasan"].every((item) =>
-            jenisBahan.includes(item)
+            jenisBahan.includes(item?.toLowerCase())
           )
         )
           bahanComplete(true);
+        else bahanComplete(false);
       }
     }
 
@@ -175,6 +185,15 @@ const getListIngredients = async () => {
 
 onMounted(async () => {
   activeTab.value = 0;
+
+  const sessionData = await useMyAuthUserStore().getSession();
+
+  const userRole = sessionData?.value?.roles?.[0]?.name;
+
+  if (userRole === "Lembaga Pemeriksa Halal") {
+    localStorage.setItem("pernyataanBebasBabiAgreement", true);
+    localStorage.setItem("commitmentAndResponsibility", true);
+  }
 
   const res: any = await Promise.all([
     getFactoryAndOutlet("FAPAB"),
@@ -197,6 +216,21 @@ onUnmounted(() => {
   localStorage.removeItem("pernyataanBebasBabiAgreement");
   localStorage.removeItem("commitmentAndResponsibility");
 });
+
+const dataPengajuanRef = ref();
+
+const dataPengajuanEmitted = ref();
+
+const handleDataPengajuanEmitted = (value: any) => {
+  dataPengajuanEmitted.value = value;
+};
+
+const onclickTab = (tab: any) => {
+  if (tab == 2) {
+    dataPengajuanRef.value.emitRequestCertificateData();
+  }
+};
+const valid = ref(false);
 </script>
 
 <template>
@@ -235,14 +269,26 @@ onUnmounted(() => {
       <VRow>
         <VCol cols="12" class="pl0">
           <VTabs v-model="activeTab" align-tabs="start" class="w-100">
-            <VTab
+            <div
               v-for="(item, index) in tabList"
-              :key="item"
-              :value="index"
-              :disabled="index > 2 && !isBahanCompleted"
+              :key="index"
+              class="position-relative d-inline-block"
             >
-              {{ `${t(item)}` }}
-            </VTab>
+              <VTooltip
+                v-if="index > 2 && !isBahanCompleted"
+                activator="parent"
+              >
+                Mohon lengkapi Bahan, Cleaning Agent, Kemasan agar menu ini
+                dapat di akses
+              </VTooltip>
+              <VTab
+                :value="index"
+                :disabled="index > 2 && !isBahanCompleted"
+                @click="onclickTab(index)"
+              >
+                {{ t(item) }}
+              </VTab>
+            </div>
           </VTabs>
         </VCol>
       </VRow>
@@ -258,6 +304,8 @@ onUnmounted(() => {
               :list_penyelia="listPenyelia"
               :list_channel="itemsChannel"
               :isviewonly="isViewOnly"
+              ref="dataPengajuanRef"
+              @certificate-data-changed="handleDataPengajuanEmitted"
             />
           </div>
           <div v-if="activeTab === 1">
@@ -320,5 +368,9 @@ onUnmounted(() => {
 .headerSection {
   display: flex;
   justify-content: space-between;
+}
+
+.tab-hover {
+  position: relative;
 }
 </style>

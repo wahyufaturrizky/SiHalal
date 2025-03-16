@@ -474,7 +474,7 @@
                 <template #item.photo="{ item }: any">
                   <VIcon
                     color="primary"
-                    style="cursor: pointer"
+                    style="cursor: pointer;"
                     @click="handleDownload(item.photo, 'PRODUCT')"
                   >
                     ri-download-2-fill
@@ -723,7 +723,7 @@
               </InfoRowV2>
               <InfoRowV2
                 class="d-flex align-center"
-                name="Lembaga Pendamping"
+                name="Laporan Pendampingan"
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
@@ -738,6 +738,27 @@
                   :color="
                     downloadForms.lembaga_pendamping ? 'primary' : '#A09BA1'
                   "
+                  density="compact"
+                  class="px-2"
+                >
+                  <template #default>
+                    <VIcon icon="fa-download" />
+                  </template>
+                </VBtn>
+              </InfoRowV2>
+
+              <InfoRowV2
+                class="d-flex align-center"
+                name="SJPH"
+                :style="{ fontWeight: '600' }"
+              >
+                <VBtn
+                  @click="
+                    downloadForms.lembaga_pendamping
+                      ? handleDownloadForm(downloadForms.sjph, 'sjph')
+                      : null
+                  "
+                  :color="downloadForms.sjph ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
                 >
@@ -812,7 +833,7 @@
                 :style="{ fontWeight: '600' }"
               >
                 <v-chip
-                  style="background: #f0e9f1"
+                  style="background: #f0e9f1;"
                   :color="statusItem[registrationDetail.status].color"
                   variant="outlined"
                   rounded="lg"
@@ -1002,7 +1023,7 @@
       <h2>Disclaimer</h2>
       <br />
       <p>Dengan sungguh-sungguh menyatakan bahwa:</p>
-      <ul style="list-style-type: disc; padding-left: 20px">
+      <ul style="list-style-type: disc; padding-inline-start: 20px;">
         <li>
           Seluruh pernyataan data dan informasi beserta seluruh dokumen yang
           saya lampirkan dalam berkas pendaftaran adalah benar.
@@ -1314,6 +1335,7 @@ onMounted(async () => {
     getDownloadForm("laporan", "hasil_verval"),
     getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
     getDownloadForm("lembaga-pendamping", "lembaga_pendamping"),
+
   ]);
   if (registrationDetail.status == "") {
     return;

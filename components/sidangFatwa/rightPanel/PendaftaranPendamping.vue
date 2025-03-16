@@ -141,7 +141,7 @@ const getDownloadForm = async (docName: string, propName: string) => {
 };
 
 const handleDownloadForm = async (fileName: string) => {
-  return await downloadDocument(fileName);
+  return await previewDocument(fileName);
 };
 
 onMounted(async () => {

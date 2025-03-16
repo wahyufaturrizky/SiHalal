@@ -87,9 +87,7 @@ onMounted(() => {
               {{ t("pengajuan-reguler.reguler-form--komitmen-1-content-3") }}
             </li>
             <li>
-              {{
-                t("pengajuan-reguler.reguler-form--komitmen-1-content-4")
-              }}tondiki
+              {{ t("pengajuan-reguler.reguler-form--komitmen-1-content-4") }}
             </li>
           </ol>
         </VCardText>

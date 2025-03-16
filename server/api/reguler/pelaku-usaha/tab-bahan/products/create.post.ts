@@ -24,12 +24,9 @@ export default defineEventHandler(async (event: any) => {
       } as any
     );
 
-    console.log(response, '<<<<');
-    
-
     return response || null;
   } catch (error) {
     setResponseStatus(event, 400);
-    return (error as NuxtError).data;
+    return (error as NuxtError);
   }
 });

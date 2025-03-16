@@ -175,7 +175,7 @@ const handleDownload = async (item: any) => {
                   button-text="Hapus"
                 />
               </template>
-              <template v-if="!isviewonly" #item.actionEdit="{ item }">
+              <template v-if="!isviewonly" #item.actionEdit="{ item, index }">
                 <Vbtn
                   variant="plain"
                   class="cursor-pointer"

@@ -5,7 +5,6 @@ import "@vuepic/vue-datepicker/dist/main.css";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-const { t } = useI18n();
 const props = defineProps({
   onComplete: {
     type: Function,
@@ -18,7 +17,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits();
-
+const { t } = useI18n();
 const route = useRoute();
 const store = useMyTabEditRegulerStore();
 
@@ -42,6 +41,9 @@ const loading = ref(false);
 const loadingRincian = ref(false);
 const reRender = ref(false);
 const tabBahan = ref(0);
+const dataCertifHalal = ref("")
+const isNotAllowedProduct = ref(false)
+
 const catatan = ref<any>({
   name: "",
   process: "",
@@ -178,6 +180,7 @@ const productName = ref({
     { title: "Nama Produk", key: "nama", nowrap: true },
     { title: "Foto Produk", key: "foto", nowrap: true },
     { title: "Jumlah Bahan", key: "qtyBahan", nowrap: true },
+
     // { title: 'Jumlah Bahan', key: 'qtyBahan', nowrap: true },
     {
       title: "Action",
@@ -320,6 +323,7 @@ const uploadDocument = async (file: any) => {
 const uploadDocumentBahan = async (file: any) => {
   try {
     const formData = new FormData();
+
     formData.append("file", file);
 
     return await $api("/reguler/pelaku-usaha/tab-bahan/products/upload", {
@@ -337,6 +341,7 @@ const uploadDocumentBahan = async (file: any) => {
 const uploadDocumentProduct = async (file: any) => {
   try {
     const formData = new FormData();
+
     formData.append("file", file);
 
     return await $api(
@@ -362,9 +367,8 @@ const handleUploadFile = async (event: any) => {
     uploadedFile.value.file = fileData;
     try {
       const response = await uploadDocument(fileData);
-      if (response.code === 2000) {
+      if (response.code === 2000)
         formData.value.foto_produk = response.data.file_url;
-      }
     } catch (error) {
       console.log(error);
     }
@@ -379,6 +383,7 @@ const handleUploadFileBahan = async (event: any) => {
     uploadedFile.value.file = fileData;
     try {
       loading.value = true;
+
       const response = await uploadDocumentBahan(fileData);
       if (response.code === 2000) {
         addDialog.value = false;
@@ -409,6 +414,7 @@ const handleUploadFileProduct = async (event: any) => {
     uploadedFile.value.file = fileData;
     try {
       loading.value = true;
+
       const response = await uploadDocumentProduct(fileData);
       if (response.code === 2000) {
         addDialog.value = false;
@@ -495,12 +501,33 @@ const getListFormulir = async () => {
   }
 };
 
+const getChannel = async () => {
+  try {
+    const response: any = await $api("/reguler/pelaku-usaha/detail", {
+      method: "get",
+      params: { id},
+    });
+    if (response.code === 2000) {
+      dataCertifHalal.value = response?.data?.certificate_halal
+      return response?.data?.certificate_halal?.id_produk
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
 const loadItemProductClasifications = async () => {
   try {
-    const response: any = await $api(
-      `/self-declare/verificator/produk/clasification/${id}`,
+    const params = {};
+    const productCode = await getChannel();
+
+    const response = await $api(
+      `/reguler/auditor/combobox-product-klasifikasi`,
       {
         method: "get",
+        params: {
+          idLayanan: productCode
+        },
       }
     );
 
@@ -522,12 +549,12 @@ const loadItemProductClasifications = async () => {
 const loadItemProductRincian = async (kode_rincian: string) => {
   loadingRincian.value = true;
   try {
-    const response: any = await $api(
-      `/self-declare/verificator/produk/rincian/${kode_rincian}`,
-      {
-        method: "get",
-      }
-    );
+    const response = await $api(`/reguler/auditor/combobox-product-rincian`, {
+      method: "get",
+      params: {
+        idLayanan: kode_rincian,
+      },
+    });
 
     if (response.code === 2000) {
       listRincian.value = response.data || [];
@@ -564,19 +591,27 @@ const getListIngredients = async () => {
       };
 
       if (response.data !== null) {
-        const jenisBahan = response.data?.map((i) => i.jenis_bahan);
-
-        if (
-          ["Bahan", "Cleaning Agent", "Kemasan"].every((item) =>
-            jenisBahan.includes(item)
-          )
-        ) {
-          emit("complete", true);
+        const jenisBahan = response.data?.map((i) => i.jenis_bahan?.toLowerCase());
+        if (dataCertifHalal?.jenis_layanan !== "Makanan" || dataCertifHalal?.jenis_layanan !== "Minuman") {
+          if (jenisBahan.length > 0) {
+            emit("complete", true);
+          } else {
+            emit("failed", missing);
+          }
         } else {
-          const missing = ["Bahan", "Cleaning Agent", "Kemasan"].filter(
-            (item) => !jenisBahan.includes(item)
-          );
-          emit("failed", missing);
+          if (
+            ["Bahan", "Cleaning Agent", "Kemasan"].every((item) =>
+              jenisBahan.includes(item?.toLowerCase())
+            )
+          ) {
+            emit("complete", true);
+          } else {
+            const missing = ["Bahan", "Cleaning Agent", "Kemasan"].filter(
+              (item) => !jenisBahan.includes(item)
+            );
+
+            emit("failed", missing);
+          }
         }
       } else {
         emit("failed", ["Bahan", "Cleaning Agent", "Kemasan"]);
@@ -635,7 +670,7 @@ const bulkInsert = async () => {
       {
         method: "put",
         params: { id_reg: id },
-        body: body,
+        body,
       }
     );
 
@@ -653,15 +688,17 @@ const bulkInsert = async () => {
         const payload = {
           reg_prod_name: el.HalalCertificateRegulerProduk?.reg_prod_name,
         };
+
         body.push(payload);
       }
     });
+
     const response: any = await $api(
       "/reguler/pelaku-usaha/tab-bahan/products/bulkInsert-product",
       {
         method: "put",
         params: { id_reg: id },
-        body: body,
+        body,
       }
     );
 
@@ -679,28 +716,32 @@ const bulkInsert = async () => {
 
 const addProduct = async () => {
   if (titleDialog.value === "Tambah Nama Produk") {
-    const response: any = await $api(
-      "/reguler/pelaku-usaha/tab-bahan/products/create",
-      {
-        method: "post",
-        params: { id_reg: id },
-        body: formData.value,
-      }
-    );
+    try {
+      const response: any = await $api(
+        "/reguler/pelaku-usaha/tab-bahan/products/create",
+        {
+          method: "post",
+          params: { id_reg: id },
+          body: formData.value,
+        }
+      );
 
-    if (response.code === 2000) {
-      formData.value = {
-        kode_rincian: "",
-        nama_produk: "",
-        foto_produk: uploadedFile.value.file || null,
-      };
-      uploadedFile.value = {
-        name: "",
-        file: "",
-      };
-      addDialog.value = false;
-      reRender.value = !reRender.value;
-      useSnackbar().sendSnackbar("Sukses menambah data", "success");
+      if (response.code === 2000) {
+        formData.value = {
+          kode_rincian: "",
+          nama_produk: "",
+          foto_produk: uploadedFile.value.file || null,
+        };
+        uploadedFile.value = {
+          name: "",
+          file: "",
+        };
+        addDialog.value = false;
+        reRender.value = !reRender.value;
+        useSnackbar().sendSnackbar("Sukses menambah data", "success");
+      }
+    } catch (error) {
+      isNotAllowedProduct.value = true
     }
   } else if (titleDialog.value === "Ubah Nama Produk") {
     const response: any = await $api(
@@ -927,9 +968,7 @@ const getTemplateFile = async (productId: string, type: string) => {
     }
   );
 
-  if (response.code === 2000) {
-    fileTemplate.value = response.data.file;
-  }
+  if (response.code === 2000) fileTemplate.value = response.data.file;
 };
 
 const getTemplateFileProduct = async (productId: string, type: string) => {
@@ -940,9 +979,7 @@ const getTemplateFileProduct = async (productId: string, type: string) => {
     }
   );
 
-  if (response.code === 2000) {
-    fileTemplateProduct.value = response.data.file;
-  }
+  if (response.code === 2000) fileTemplateProduct.value = response.data.file;
 };
 
 const deleteIngredient = async (productId: string) => {
@@ -998,6 +1035,7 @@ const handleInputBahan = async (selected, idProduk) => {
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
       await refresh();
     }
+
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
@@ -1014,7 +1052,7 @@ const downloadTemplate = async (file: any) => {
 const handleAddIngredient = async (payload: any, idProduct: string) => {
   try {
     const response: any = await $api(
-      `/self-declare/business-actor/product/add-ingredient`,
+      "/self-declare/business-actor/product/add-ingredient",
       {
         method: "post",
         body: payload,
@@ -1030,6 +1068,7 @@ const handleAddIngredient = async (payload: any, idProduct: string) => {
       await refresh();
     }
     getListIngredients();
+
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
@@ -1038,6 +1077,10 @@ const handleAddIngredient = async (payload: any, idProduct: string) => {
     store.isAllBahanSelected();
   }
 };
+
+const handleChange = () => {
+  isNotAllowedProduct.value = false
+}
 
 onMounted(async () => {
   loading.value = true;
@@ -1057,11 +1100,9 @@ watch([titleDialog, tabAddBahan], () => {
   if (
     titleDialog.value === "Tambah Data Bahan" &&
     (tabAddBahan.value === "2" || tabAddBahan.value === 2)
-  ) {
+  )
     hideFooterBtn.value = false;
-  } else {
-    hideFooterBtn.value = true;
-  }
+  else hideFooterBtn.value = true;
 });
 </script>
 
@@ -1079,8 +1120,8 @@ watch([titleDialog, tabAddBahan], () => {
       :toggle="() => (visiblePreview = false)"
       :label-save-btn="`Unggah (${
         titleDialog === 'Preview Bahan'
-        ? `${listPreview.filter((a: any) => a.Passed).length} Bahan`
-        : `${listPreview.filter((a: any) => a.Passed).length} Produk`
+          ? `${listPreview.filter((a: any) => a.Passed).length} Bahan`
+          : `${listPreview.filter((a: any) => a.Passed).length} Produk`
       })`"
       :label-back-btn="
         t('pengajuan-reguler.reguler_form-bahan-produk-popupbahan-cancel')
@@ -1091,14 +1132,14 @@ watch([titleDialog, tabAddBahan], () => {
       <template #content>
         <div v-if="titleDialog === 'Preview Produk'">
           <PreviewBahanTable
-            :previewHeader="previewProductHeader"
-            :listPreview="listPreview"
+            :preview-header="previewProductHeader"
+            :list-preview="listPreview"
           />
         </div>
         <div v-else>
           <PreviewBahanTable
-            :previewHeader="previewHeader"
-            :listPreview="listPreview"
+            :preview-header="previewHeader"
+            :list-preview="listPreview"
           />
         </div>
       </template>
@@ -1169,8 +1210,9 @@ watch([titleDialog, tabAddBahan], () => {
                     </VBtn>
                   </VCol>
                 </VRow>
-                <VRow no-gutters>
-                  <VCol cols="6" class="d-flex align-center">
+                <br/>
+                <VRow class="mb-3" align="center">
+                  <VCol cols="6">
                     <span> Unggah Bahan </span>
                   </VCol>
                   <VCol cols="6">
@@ -1180,7 +1222,6 @@ watch([titleDialog, tabAddBahan], () => {
                       density="compact"
                       placeholder="No file choosen"
                       rounded="xl"
-                      max-width="400"
                     >
                       <template #append-inner>
                         <VIcon
@@ -1194,11 +1235,10 @@ watch([titleDialog, tabAddBahan], () => {
                     <VFileInput
                       v-else
                       :model-value="uploadedFileBahan.file"
-                      class="custom-file-input mt-5"
+                      class="custom-file-input"
                       density="compact"
                       rounded="xl"
                       label="No file choosen"
-                      max-width="400"
                       prepend-icon=""
                       @change="handleUploadFileBahan"
                     >
@@ -1207,11 +1247,27 @@ watch([titleDialog, tabAddBahan], () => {
                       </template>
                     </VFileInput>
                   </VCol>
+                  <VCol cols="12">
+                    <VAlert
+                      type="info"
+                      color="primary"
+                      variant="tonal"
+                      density="compact"
+                      prominent
+                    >
+                      <template #prepend>
+                        <VIcon size="24px" icon="ri-information-2-fill" />
+                      </template>
+                      <template #text>
+                        File bahan harus berformat ZIP
+                      </template>
+                    </VAlert>
+                  </VCol>
                 </VRow>
               </div>
               <div v-else class="mt-10">
                 <TambahBahanForm
-                  @loadList="
+                  @load-list="
                     async () => {
                       addDialog = false;
                       reRender = !reRender;
@@ -1220,7 +1276,7 @@ watch([titleDialog, tabAddBahan], () => {
                       getListCatatan();
                     }
                   "
-                ></TambahBahanForm>
+                />
               </div>
             </VTabItem>
           </VTabsItems>
@@ -1276,8 +1332,9 @@ watch([titleDialog, tabAddBahan], () => {
                     </VBtn>
                   </VCol>
                 </VRow>
-                <VRow no-gutters>
-                  <VCol cols="6" class="d-flex align-center">
+                <br/>
+                <VRow class="mb-3" align="center">
+                  <VCol cols="6">
                     <span> Unggah Produk </span>
                   </VCol>
                   <VCol cols="6">
@@ -1287,7 +1344,6 @@ watch([titleDialog, tabAddBahan], () => {
                       density="compact"
                       placeholder="No file choosen"
                       rounded="xl"
-                      max-width="400"
                     >
                       <template #append-inner>
                         <VIcon
@@ -1301,11 +1357,10 @@ watch([titleDialog, tabAddBahan], () => {
                     <VFileInput
                       v-else
                       :model-value="uploadedFileProduct.file"
-                      class="custom-file-input mt-5"
+                      class="custom-file-input"
                       density="compact"
                       rounded="xl"
                       label="No file choosen"
-                      max-width="400"
                       prepend-icon=""
                       @change="handleUploadFileProduct"
                     >
@@ -1313,6 +1368,22 @@ watch([titleDialog, tabAddBahan], () => {
                         <VBtn rounded="e-xl" text="Choose" />
                       </template>
                     </VFileInput>
+                  </VCol>
+                  <VCol cols="12">
+                    <VAlert
+                      type="info"
+                      color="primary"
+                      variant="tonal"
+                      density="compact"
+                      prominent
+                    >
+                      <template #prepend>
+                        <VIcon size="24px" icon="ri-information-2-fill" />
+                      </template>
+                      <template #text>
+                        File produk harus berformat ZIP
+                      </template>
+                    </VAlert>
                   </VCol>
                 </VRow>
               </div>
@@ -1348,9 +1419,16 @@ watch([titleDialog, tabAddBahan], () => {
                     class="-mt-10"
                     density="compact"
                     placeholder="Isi Nama Produk"
+                    @update:model-value="handleChange"
                   />
-                  <div class="d-flex justify-space-between mt-5">
-                    <label> Upload Foto </label>
+                  <div v-if="isNotAllowedProduct">
+                    <label style="color: red; font-size: 12px;">Nama Produk mengandung nama dilarang</label>
+                  </div>
+                  <br/>
+                  <VRow class="mb-5" align="center">
+                    <VCol cols="6">
+                      <label> Upload Foto </label>
+                    </VCol>
                     <VCol cols="6">
                       <VTextField
                         v-if="uploadedFile.file"
@@ -1358,7 +1436,6 @@ watch([titleDialog, tabAddBahan], () => {
                         density="compact"
                         placeholder="No file choosen"
                         rounded="xl"
-                        max-width="400"
                       >
                         <template #append-inner>
                           <VIcon
@@ -1376,16 +1453,32 @@ watch([titleDialog, tabAddBahan], () => {
                         density="compact"
                         rounded="xl"
                         label="No file choosen"
-                        max-width="400"
                         prepend-icon=""
                         @change="handleUploadFile"
+                        accept="image/png, image/jpeg"
                       >
                         <template #append-inner>
                           <VBtn rounded="s-0 e-xl" text="Choose" />
                         </template>
                       </VFileInput>
                     </VCol>
-                  </div>
+                    <VCol cols="12">
+                      <VAlert
+                        type="info"
+                        color="primary"
+                        variant="tonal"
+                        density="compact"
+                        prominent
+                      >
+                        <template #prepend>
+                          <VIcon size="24px" icon="ri-information-2-fill" />
+                        </template>
+                        <template #text>
+                          File foto produk harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                        </template>
+                      </VAlert>
+                    </VCol>
+                  </VRow>
                 </div>
               </div>
             </VTabItem>
@@ -1425,8 +1518,10 @@ watch([titleDialog, tabAddBahan], () => {
               density="compact"
               placeholder="Isi Nama Produk"
             />
-            <div class="d-flex justify-space-between mt-5">
-              <label> Upload Foto </label>
+            <VRow class="mt-5 mb-3" align="center">
+              <VCol cols="6">
+                <label> Upload Foto </label>
+              </VCol>
               <VCol cols="6">
                 <VTextField
                   v-if="uploadedFile.file"
@@ -1434,7 +1529,6 @@ watch([titleDialog, tabAddBahan], () => {
                   density="compact"
                   placeholder="No file choosen"
                   rounded="xl"
-                  max-width="400"
                 >
                   <template #append-inner>
                     <VIcon
@@ -1452,16 +1546,32 @@ watch([titleDialog, tabAddBahan], () => {
                   density="compact"
                   rounded="xl"
                   label="No file choosen"
-                  max-width="400"
                   prepend-icon=""
                   @change="handleUploadFile"
+                  accept="image/png, image/jpeg"
                 >
                   <template #append-inner>
                     <VBtn rounded="s-0 e-xl" text="Choose" />
                   </template>
                 </VFileInput>
               </VCol>
-            </div>
+              <VCol cols="12">
+                <VAlert
+                  type="info"
+                  color="primary"
+                  variant="tonal"
+                  density="compact"
+                  prominent
+                >
+                  <template #prepend>
+                    <VIcon size="24px" icon="ri-information-2-fill" />
+                  </template>
+                  <template #text>
+                    File foto produk harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                  </template>
+                </VAlert>
+              </VCol>
+            </VRow>
           </div>
         </div>
         <div v-else-if="titleDialog === 'Detail Nama Produk'">
@@ -1498,8 +1608,10 @@ watch([titleDialog, tabAddBahan], () => {
               density="compact"
               placeholder="Isi Nama Produk"
             />
-            <div class="d-flex justify-space-between mt-5">
-              <label> Upload Foto </label>
+            <VRow class="mt-5 mb-3" align="center">
+              <VCol cols="6">
+                <label> Upload Foto </label>
+              </VCol>
               <VCol cols="6">
                 <VTextField
                   v-if="uploadedFile.file"
@@ -1507,7 +1619,6 @@ watch([titleDialog, tabAddBahan], () => {
                   density="compact"
                   placeholder="No file choosen"
                   rounded="xl"
-                  max-width="400"
                 />
                 <VFileInput
                   v-else
@@ -1516,16 +1627,32 @@ watch([titleDialog, tabAddBahan], () => {
                   density="compact"
                   rounded="xl"
                   label="No file choosen"
-                  max-width="400"
                   prepend-icon=""
                   @change="handleUploadFile"
+                  accept="image/png, image/jpeg"
                 >
                   <template #append-inner>
                     <VBtn rounded="s-0 e-xl" text="Choose" />
                   </template>
                 </VFileInput>
               </VCol>
-            </div>
+              <VCol cols="12">
+              <VAlert
+                type="info"
+                color="primary"
+                variant="tonal"
+                density="compact"
+                prominent
+              >
+                <template #prepend>
+                  <VIcon size="24px" icon="ri-information-2-fill" />
+                </template>
+                <template #text>
+                  File foto produk harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                </template>
+              </VAlert>
+            </VCol>
+            </VRow>
           </div>
         </div>
         <div v-else-if="titleDialog === 'Ubah Catatan'">
@@ -1580,8 +1707,10 @@ watch([titleDialog, tabAddBahan], () => {
                   placeholder="Isi Nama"
                 />
               </div>
-              <div class="d-flex justify-space-between mt-5">
-                <label style="align-self: center"> Unggah Bahan </label>
+              <VRow class="mt-5 mb-3" align="center">
+                <VCol cols="6">
+                  <label style="align-self: center"> Unggah Bahan </label>
+                </VCol>
                 <VCol cols="6">
                   <VTextField
                     v-if="uploadedFileBahan.file"
@@ -1589,7 +1718,6 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     placeholder="No file choosen"
                     rounded="xl"
-                    max-width="400"
                   >
                     <template #append-inner>
                       <VIcon
@@ -1607,16 +1735,32 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     rounded="xl"
                     label="No file choosen"
-                    max-width="400"
                     prepend-icon=""
                     @change="handleUploadFile"
+                    accept="image/png, image/jpeg"
                   >
                     <template #append-inner>
                       <VBtn rounded="s-0 e-xl" text="Choose" />
                     </template>
                   </VFileInput>
                 </VCol>
-              </div>
+                <VCol cols="12">
+                  <VAlert
+                    type="info"
+                    color="primary"
+                    variant="tonal"
+                    density="compact"
+                    prominent
+                  >
+                    <template #prepend>
+                      <VIcon size="24px" icon="ri-information-2-fill" />
+                    </template>
+                    <template #text>
+                      File bahan harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                    </template>
+                  </VAlert>
+                </VCol>
+              </VRow>
             </VTabsWindowItem>
             <VTabsWindowItem value="2">
               <div class="mt-5">
@@ -1685,8 +1829,10 @@ watch([titleDialog, tabAddBahan], () => {
                   placeholder="Isi Nama"
                 />
               </div>
-              <div class="d-flex justify-space-between mt-5">
-                <label style="align-self: center"> Unggah Bahan </label>
+              <VRow class="mt-5 mb-3" align="center">
+                <VCol cols="6">
+                  <label> Unggah Bahan </label>
+                </VCol>
                 <VCol cols="6">
                   <VTextField
                     v-if="uploadedFileBahan.file"
@@ -1694,7 +1840,6 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     placeholder="No file choosen"
                     rounded="xl"
-                    max-width="400"
                   >
                     <template #append-inner>
                       <VIcon
@@ -1712,16 +1857,32 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     rounded="xl"
                     label="No file choosen"
-                    max-width="400"
                     prepend-icon=""
                     @change="handleUploadFile"
+                    accept="image/png, image/jpeg"
                   >
                     <template #append-inner>
                       <VBtn rounded="s-0 e-xl" text="Choose" />
                     </template>
                   </VFileInput>
                 </VCol>
-              </div>
+                <VCol cols="12">
+                  <VAlert
+                    type="info"
+                    color="primary"
+                    variant="tonal"
+                    density="compact"
+                    prominent
+                  >
+                    <template #prepend>
+                      <VIcon size="24px" icon="ri-information-2-fill" />
+                    </template>
+                    <template #text>
+                      File bahan harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                    </template>
+                  </VAlert>
+                </VCol>
+              </VRow>
             </VTabsWindowItem>
             <VTabsWindowItem value="2">
               <div class="mt-5">
@@ -1802,8 +1963,10 @@ watch([titleDialog, tabAddBahan], () => {
                   placeholder="Isi Nama"
                 />
               </div>
-              <div class="d-flex justify-space-between mt-5">
-                <label style="align-self: center"> Unggah Bahan </label>
+              <VRow class="mt-5 mb-3" align="center">
+                <VCol cols="6">
+                  <label> Unggah Bahan </label>
+                </VCol>
                 <VCol cols="6">
                   <VTextField
                     v-if="uploadedFileBahan.file"
@@ -1811,7 +1974,6 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     placeholder="No file choosen"
                     rounded="xl"
-                    max-width="400"
                   >
                     <template #append-inner>
                       <VIcon
@@ -1829,16 +1991,32 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     rounded="xl"
                     label="No file choosen"
-                    max-width="400"
                     prepend-icon=""
                     @change="handleUploadFile"
+                    accept="image/png, image/jpeg"
                   >
                     <template #append-inner>
                       <VBtn rounded="s-0 e-xl" text="Choose" />
                     </template>
                   </VFileInput>
                 </VCol>
-              </div>
+                <VCol cols="12">
+                  <VAlert
+                    type="info"
+                    color="primary"
+                    variant="tonal"
+                    density="compact"
+                    prominent
+                  >
+                    <template #prepend>
+                      <VIcon size="24px" icon="ri-information-2-fill" />
+                    </template>
+                    <template #text>
+                      File bahan harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                    </template>
+                  </VAlert>
+                </VCol>
+              </VRow>
             </VTabsWindowItem>
             <VTabsWindowItem value="2">
               <div class="mt-5">
@@ -1920,8 +2098,10 @@ watch([titleDialog, tabAddBahan], () => {
                   placeholder="Isi Nama"
                 />
               </div>
-              <div class="d-flex justify-space-between mt-5">
-                <label style="align-self: center"> Unggah Bahan </label>
+              <VRow class="mt-5 mb-3" align="center">
+                <VCol cols="6">
+                  <label> Unggah Bahan </label>
+                </VCol>
                 <VCol cols="6">
                   <VTextField
                     v-if="uploadedFileBahan.file"
@@ -1929,7 +2109,6 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     placeholder="No file choosen"
                     rounded="xl"
-                    max-width="400"
                   >
                     <template #append-inner>
                       <VIcon
@@ -1947,16 +2126,32 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     rounded="xl"
                     label="No file choosen"
-                    max-width="400"
                     prepend-icon=""
                     @change="handleUploadFile"
+                    accept="image/png, image/jpeg"
                   >
                     <template #append-inner>
                       <VBtn rounded="s-0 e-xl" text="Choose" />
                     </template>
                   </VFileInput>
                 </VCol>
-              </div>
+                <VCol cols="12">
+                  <VAlert
+                    type="info"
+                    color="primary"
+                    variant="tonal"
+                    density="compact"
+                    prominent
+                  >
+                    <template #prepend>
+                      <VIcon size="24px" icon="ri-information-2-fill" />
+                    </template>
+                    <template #text>
+                      File bahan harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                    </template>
+                  </VAlert>
+                </VCol>
+              </VRow>
             </VTabsWindowItem>
             <VTabsWindowItem value="2">
               <div class="mt-5">
@@ -2007,7 +2202,19 @@ watch([titleDialog, tabAddBahan], () => {
       :isviewonly="isviewonly"
       :hide-default-footer="false"
       :items-per-page="10"
-    />
+    >
+      <template #headerDialog>
+        <div class="bgContent">
+          <div class="d-flex flex-wrap mt-5">
+            <VIcon icon="ri-error-warning-line" color="#652672" />
+            <label class="subText"
+              >Jenis Bahan harus terdiri dari : Cleaning Agent, Kemasan dan
+              Bahan, sebelum dapat mengisi Produk.</label
+            >
+          </div>
+        </div>
+      </template>
+    </TableData>
     <br />
     <TableData
       :on-submit="() => (confirmSaveDialog = true)"
@@ -2030,8 +2237,8 @@ watch([titleDialog, tabAddBahan], () => {
           <div class="d-flex flex-wrap mt-5">
             <VIcon icon="ri-error-warning-line" color="#652672" />
             <label class="subText"
-              >Setelah mengisi nama produk jangan lupa untuk menetapkan
-              bahan-bahan yang digunakan pada kolom pengisian bahan.</label
+              >Jenis Bahan harus terdiri dari : Cleaning Agent, Kemasan dan
+              Bahan, sebelum dapat mengisi Produk.</label
             >
           </div>
         </div>

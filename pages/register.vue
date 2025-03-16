@@ -151,7 +151,7 @@ const onSubmit = async () => {
       const payload = {
         role_id: form.value.typeUser.id,
         name: form.value.name,
-        email: form.value.email,
+        email: form.value.email.toLowerCase(),
         phone_number: form.value.noHandphone,
         password: form.value.password,
         confirm_password: form.value.passwordConfirm,
@@ -159,7 +159,7 @@ const onSubmit = async () => {
       };
 
       const payloadcheck = {
-        email: form.value.email,
+        email: form.value.email.toLowerCase(),
         phone_number: `${selectedPhoneCode.value}${form.value.noHandphone}`,
       };
 
@@ -252,7 +252,7 @@ onMounted(async () => {
     }).then((resp: any) => {
       console.log("fetch type = ", resp);
 
-      const eligibleRole = ["r.10", "r.45", "r.5", "r.50"];
+      const eligibleRole = ["r.10", "r.50"];
       fetchType.value = resp?.filter(
         (val: any) =>
           val.name !== "" && eligibleRole.includes(val.code?.toLowerCase())
@@ -361,7 +361,7 @@ const { t } = useI18n();
   <VRow
     no-gutters
     class="position-relative"
-    style="min-block-size: calc(100vh - 48px)"
+    style="min-block-size: calc(100vh - 48px);"
   >
     <VCol cols="12" md="6" class="d-flex align-center justify-center bg-white">
       <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-3">
@@ -443,7 +443,7 @@ const { t } = useI18n();
                     </VCol>
                   </VRow>
                   <VRow no-gutters>
-                    <VCol cols="4" style="padding-inline-end: 0">
+                    <VCol cols="4" style="padding-inline-end: 0;">
                       <VSelect
                         rounded="s-xl e-0"
                         density="comfortable"
@@ -454,7 +454,7 @@ const { t } = useI18n();
                         item-value="cc"
                         item-title="name"
                         v-model="selectedPhoneCode"
-                        style="border-radius: 10px 0 0 10px"
+                        style="border-radius: 10px 0 0 10px;"
                       >
                         <!-- Custom item slot -->
                         <template v-slot:item="{ props, item }">
@@ -462,22 +462,22 @@ const { t } = useI18n();
                             v-bind="props"
                             :title="item.raw.cc"
                             :subtitle="item.raw.name"
-                            style="inline-size: 200px"
+                            style="inline-size: 200px;"
                           >
                           </VListItem>
                         </template>
 
                         <!-- Custom selection slot -->
                         <template v-slot:selection="{ item }">
-                          <p style="margin-block-end: 0">
+                          <p style="margin-block-end: 0;">
                             {{ `+${item.raw.cc}` }}
                           </p>
                         </template>
                       </VSelect>
                     </VCol>
-                    <VCol cols="8" style="padding-inline-start: 0">
+                    <VCol cols="8" style="padding-inline-start: 0;">
                       <VTextField
-                        style="padding: 0"
+                        style="padding: 0;"
                         rounded="s-0 e-xl"
                         v-model="form.noHandphone"
                         type="tel"
@@ -585,7 +585,7 @@ const { t } = useI18n();
       v-if="mdAndUp"
       md="6"
       class="py-1 pe-2 bg-white position-sticky"
-      style="inset-block-start: 23px; max-block-size: calc(100vh - 48px)"
+      style="inset-block-start: 23px; max-block-size: calc(100vh - 48px);"
     >
       <div
         v-if="fileType === 'IMG'"
@@ -594,7 +594,7 @@ const { t } = useI18n();
         <img
           :src="currentDisplayFile"
           height="100%"
-          style="border-radius: 20px"
+          style="border-radius: 20px;"
         />
       </div>
       <div v-else class="h-100">
@@ -608,7 +608,7 @@ const { t } = useI18n();
             autoplay
             controls
             loop
-            style="border-radius: 20px"
+            style="border-radius: 20px;"
           >
             <source :src="currentDisplayFile" type="video/mp4" />
             Your browser does not support the video tag.
@@ -621,7 +621,7 @@ const { t } = useI18n();
             autoplay
             controls
             loop
-            style="border-radius: 20px"
+            style="border-radius: 20px;"
           >
             <source :src="currentDisplayFile" type="video/mp4" />
             Your browser does not support the video tag.

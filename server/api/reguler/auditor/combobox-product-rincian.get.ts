@@ -1,8 +1,9 @@
 import type { NuxtError } from "nuxt/app";
 
-const runtimeConfig = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
+
+  const runtimeConfig = useRuntimeConfig();
 
   if (typeof authorizationHeader === "undefined") {
     throw createError({
@@ -11,24 +12,16 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-  // const { id, page, size } = event.context.params;
-  const { id, page, size } = (await getQuery(event)) as {
-    id: string;
-    page: number;
-    size: number;
+
+  const { idLayanan } = (await getQuery(event)) as {
+    idLayanan: string;
   };
 
-  console.log("id = ", id);
-
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/auditor/${id}/produk`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/rincian-product-regular/${idLayanan}/combobox`,
     {
       method: "GET",
       headers: { Authorization: authorizationHeader },
-      params: {
-        page,
-        size,
-      },
     }
   ).catch((err: NuxtError) => {
     setResponseStatus(event, 400);

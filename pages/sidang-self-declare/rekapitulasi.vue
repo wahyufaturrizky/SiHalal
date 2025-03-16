@@ -29,8 +29,8 @@ const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
-const startDate = ref("");
-const endDate = ref("");
+const startDate = ref(formatToYYYYMMDD(new Date(0)));
+const endDate = ref(formatToYYYYMMDD(new Date()));
 const filterFasilitasi = ref([]);
 const filterPendamping = ref([]);
 const filterProduk = ref([]);
@@ -62,12 +62,9 @@ const loadItem = async (
     );
 
     if (response.code === 2000) {
-      console.log(response.data, "ini response data");
       items.value = response.data || [];
       totalItems.value = response.total_item || 0;
       loading.value = false;
-      console.log("Total Items:", totalItems.value);
-
       return response;
     } else {
       loading.value = false;
@@ -79,7 +76,7 @@ const loadItem = async (
   }
 };
 
-const debouncedFetch = debounce(loadItem, 500);
+const debouncedFetch = debounce(loadItem, 1000);
 
 const handleInput = () => {
   debouncedFetch(
@@ -128,7 +125,7 @@ const loadFilter = async () => {
     filterPendamping.value = response3.data || [];
     filterProduk.value = response4.data || [];
     loading.value = false;
-    console.log(response1.data, "ini response filter fasilitasi");
+    // console.log(response1.data, "ini response filter fasilitasi");
 
     return response1;
   } catch (error) {
@@ -177,9 +174,12 @@ const currentYear = now.getFullYear();
 const currentDay = now.getDate();
 const date = ref("");
 const changeData = (item) => {
+  if(!date.value.includes("to")) return
+
   const rangeDate = date.value.split(" to ");
-  startDate.value = formatToISOString(rangeDate[0]);
-  endDate.value = formatToISOString(rangeDate[1]);
+  startDate.value = convertDDMMYYYYtoISO(rangeDate[0]);
+  endDate.value = convertDDMMYYYYtoISO(rangeDate[1]);
+
   debouncedFetch(
     page.value,
     itemPerPage.value,
@@ -215,7 +215,7 @@ const changeData = (item) => {
                   },
                 ],
               }"
-              @change="changeData"
+              @update:model-value="changeData"
             />
           </VCol>
           <VCol cols="12" md="8">
@@ -237,7 +237,7 @@ const changeData = (item) => {
           :loading="loading"
           :items-length="totalItems"
           loading-text="Loading..."
-          @update:options="loadItem(page, itemPerPage)"
+          @update:options="loadItem(page, itemPerPage, startDate, endDate)"
         >
           <template #item.no="{ index }">
             {{ index + 1 + (page - 1) * itemPerPage }}
