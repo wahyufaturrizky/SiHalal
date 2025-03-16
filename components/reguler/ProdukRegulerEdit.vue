@@ -138,6 +138,17 @@ const toggleSelectionProduct = (item) => {
     listProductChecked.value.push(item.id_reg_prod);
   }
 };
+const checkboxAll = ref(false);
+const toggleAllProduct = () => {
+  if (!checkboxAll.value) {
+    start.value = 1;
+    end.value = lengthData.value.length;
+  } else {
+    start.value = 0;
+    end.value = 0;
+    listProductChecked.value = [];
+  }
+};
 const itemsPerPageCommitment = ref(10);
 const getListProduct = async (page = 1, size = 99999) => {
   try {
@@ -232,9 +243,9 @@ onMounted(async () => {
 
 watch([start, end], () => {
   if (start.value !== null && end.value !== null) {
-    listProductChecked.value = lovProduct.value.map(
-      (product: any, index: number) => product.id_reg_prod
-    );
+    listProductChecked.value = lovProduct.value
+      .slice(start.value - 1, end.value)
+      .map((product: any, index: number) => product.id_reg_prod);
   }
 });
 </script>
@@ -312,14 +323,17 @@ watch([start, end], () => {
                     <label>{{ t(column.title) }}</label>
                   </template>
 
-                  <template #header.action="{ column }">
-                    <label>{{ t(column.title) }}</label>
-                  </template>
-
                   <template #item.no="{ index }">
                     <label>{{
                       index + 1 + (listProductPage - 1) * listProductSize
                     }}</label>
+                  </template>
+                  <template #header.action="{ column }">
+                    <VCheckbox
+                      v-model="checkboxAll"
+                      @Click="toggleAllProduct()"
+                      >{{ t(column.title) }}</VCheckbox
+                    >
                   </template>
                   <template #item.action="{ item }">
                     <VCheckbox
