@@ -534,9 +534,10 @@ const getListCatatanProduk = async () => {
   );
 
   if (response.code === 2000) {
+    
     catatanProduk.value = response.data;
     materialAndProduct.value[1].value = response.data;
-    materialAndProduct.value[1].totalItem = response.total_data;
+    materialAndProduct.value[1].totalItem = response.total;
   }
 
   return response || [];
@@ -1020,14 +1021,14 @@ watch(selectedFactory, () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px"
+              style="border-radius: 40px;"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1039,7 +1040,7 @@ watch(selectedFactory, () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 variant="flat"
                 height="40px"
@@ -1168,14 +1169,14 @@ watch(selectedFactory, () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px"
+              style="border-radius: 40px;"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1187,7 +1188,7 @@ watch(selectedFactory, () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 variant="flat"
                 height="40px"
@@ -1321,14 +1322,14 @@ watch(selectedFactory, () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px"
+              style="border-radius: 40px;"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1340,7 +1341,7 @@ watch(selectedFactory, () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 variant="flat"
                 height="40px"
@@ -1464,14 +1465,14 @@ watch(selectedFactory, () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px"
+              style="border-radius: 40px;"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1483,7 +1484,7 @@ watch(selectedFactory, () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 variant="flat"
                 height="40px"
@@ -1621,14 +1622,14 @@ watch(selectedFactory, () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px"
+              style="border-radius: 40px;"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1640,7 +1641,7 @@ watch(selectedFactory, () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px"
+                style="border-radius: 40px;"
                 hide-slider
                 variant="flat"
                 height="40px"
@@ -1841,25 +1842,28 @@ watch(selectedFactory, () => {
 .text-center {
   text-align: center;
 }
+
 .bgContent {
-  background-color: #f0e9f1;
   border-radius: 10px;
+  background-color: #f0e9f1;
 }
+
 .progress-text {
   font-size: 14px !important;
   font-weight: 700 !important;
   line-height: 20px !important;
 }
+
 .custom-date-input .v-input__control {
   position: relative;
 }
 
 .custom-date-input input[type="date"] {
-  padding-right: 40px; /* Ensure there is space on the right for the icon */
+  padding-inline-end: 40px; /* Ensure there is space on the right for the icon */
 }
 
 .custom-date-input .v-input__icon--append {
-  right: 0;
+  inset-inline-end: 0;
 }
 </style>
 
