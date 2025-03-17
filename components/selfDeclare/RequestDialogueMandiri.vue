@@ -48,11 +48,12 @@ const router = useRouter();
 const registerNewDevelopment = async () => {
   try {
     const response: any = await $api(
-      "/pelaku-usaha/layanan-sertifikasi-halal-mandiri/development",
+      "/pelaku-usaha/layanan-sertifikasi-halal-mandiri/pengembangan",
       {
         method: "post",
         body: {
           no_sertifikat: noSertifikat.value,
+          type_pengembangan: "self-declare"
         },
       }
     );

@@ -163,6 +163,25 @@ const onUpdateBiaya = async () => {
   }
 };
 
+const downloadInvoice = async (el: any) => {
+  try {
+    const response: any = await $api("/reguler/lph/download-invoice", {
+      method: "post",
+      body: {
+        no_daftar: 'SH2024-1-497336'
+      },
+    });
+
+    if (response?.code === 2000) {
+      return response?.data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
 const handleDownloadForm = async (fileName: string, param?: string) => {
   return await downloadDocument(fileName, param);
 };
@@ -201,6 +220,19 @@ onMounted(async () => {
             <h1>Detail Ajuan Diterima</h1>
           </VCol>
           <VCol class="d-flex justify-end">
+            <VBtn
+              class="me-4"
+              text="STTD"
+              variant="outlined"
+              @click="() => downloadInvoice(dataPemeriksaanProduk?.no_pendaftaran)"
+            >
+              <template #default>
+                <div class="d-flex gap-2">
+                  <label>Download Invoice</label>
+                  <VIcon icon="fa-download" />
+                </div>
+              </template>
+            </VBtn>
             <VBtn
               :color="downloadForms.sttd ? 'primary' : '#A09BA1'"
               class="me-4"
