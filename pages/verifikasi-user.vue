@@ -65,7 +65,7 @@ const form = ref({
 // validasi
 
 const isDisabledEmail = ref(false);
-const isDisabledNoHp = ref(true);
+const isDisabledNoHp = ref(false);
 
 const currentTab = ref(0);
 
@@ -252,9 +252,9 @@ const resendCode = async () => {
   sendSnackbar("Kode Verifikasi Berhasil Dikirim Ulang", "success");
 
   const payload = {
-    channel: currentTab.value === 0 ? "email" : "phone_number",
+    channel: currentTab.value === 1 ? "email" : "phone_number",
     destination:
-      currentTab.value === 0 ? form.value.email : form.value.noHandphone,
+      currentTab.value === 1 ? form.value.email : form.value.noHandphone,
   };
 
   console.log("RESEND CODE  PAYLOAD : ", payload);
@@ -424,10 +424,12 @@ const handleLoadImageAuth = async () => {
 
     if (response.code === 2000) {
       fileType.value = response.data.type.toUpperCase();
+
       // const fileExt = response.data.file_name.split(".").pop();
       // fileType.value = !["webp"].includes(fileExt) ? "VID" : "IMG";
       if (fileType.value === "VID") {
         const orientationStr = response.data.file_name.split("-").pop();
+
         videOrientation.value = orientationStr.split(".")[0];
       }
 
@@ -440,6 +442,7 @@ const handleLoadImageAuth = async () => {
     console.error(error);
   }
 };
+
 const handleLoadImageFile = async (filename: string) => {
   try {
     const response: any = await $api("/admin/images/download", {
@@ -448,6 +451,7 @@ const handleLoadImageFile = async (filename: string) => {
         filename,
       },
     } as any);
+
     currentDisplayFile.value = response.url;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -477,110 +481,17 @@ onMounted(() => {
           <p class="mb-0">
             Terima kasih telah membuat akun di website
             {{ themeConfig.app.title }}, untuk proses selanjutnya verfikasi
-            menggunakan email atau nomor handphone yang telah terdaftar
+            menggunakan nomor handphone atau email yang telah terdaftar
           </p>
         </VCardText>
 
         <VCardText>
           <VTabs v-model="currentTab" grow>
-            <VTab :disabled="isDisabledEmail"> Email </VTab>
             <VTab :disabled="isDisabledNoHp"> Nomor Handphone </VTab>
+            <VTab :disabled="isDisabledEmail"> Email </VTab>
           </VTabs>
 
           <VWindow v-model="currentTab" class="mt-5">
-            <VWindowItem key="1">
-              <VCol cols="12">
-                <!-- Verifikasi Email  -->
-                <p v-if="!isSucess" class="verifikasi-title text-email">
-                  Verifikasi dengan Email
-                </p>
-                <div v-if="!isOtpEmail && !isSucess">
-                  <p>klik button untuk mengirim kode verifikasi</p>
-                  <VTextField
-                    v-model="form.email"
-                    class="mb-5"
-                    type="text"
-                    disabled="true"
-                    :error-messages="errors.email"
-                    placeholder="Masukan Email"
-                  />
-
-                  <VBtn block type="submit" @click="onSubmitEmail">
-                    Kirim Kode Verifikasi
-                  </VBtn>
-                  <div class="back-link">
-                    <a href="/register" class="back-icon">
-                      ← Kembali ke Halaman Buat Akun
-                    </a>
-                  </div>
-                </div>
-                <!-- verifikasi end email -->
-
-                <!-- Verfikasi kode  Email -->
-                <div v-if="isOtpEmail && !isSucess">
-                  <p>Kami telah mengirimkan kode verifikasi ke email</p>
-                  <b>"{{ form.email }}"</b>
-                  <VOtpInput
-                    v-model="kodeOtpEmail"
-                    class="mb-2"
-                    variant="solo-filled"
-                  />
-                  <p>
-                    Belum terima kode?
-                    <span v-if="cooldown > 0"
-                      >Kirim Ulang dalam ({{ cooldown }}) detik</span
-                    >
-                    <span v-else>
-                      <a @click="resendCode">Kirim Ulang</a>
-                    </span>
-                  </p>
-                  <!-- <OtpVerification /> -->
-                  <VBtn
-                    block
-                    type="submit"
-                    :disabled="isDisabledKodeEmail"
-                    @click="onSubmitKodeEmail"
-                  >
-                    Verifikasi Kode
-                  </VBtn>
-                  <div class="back-link">
-                    <a href="/register" class="back-icon">
-                      ← Kembali ke Halaman Buat Akun
-                    </a>
-                  </div>
-                </div>
-                <!-- end verifikasi   email -->
-
-                <!-- Verfikasi  Sucess kode  Email -->
-                <div v-if="isSucess">
-                  <VRow>
-                    <VCol>
-                      <h2 class="text-success">
-                        <VIcon color="green" size="30">
-                          mdi-check-circle
-                        </VIcon>
-                        Sukses!
-                      </h2>
-                      <p>Verifikasi dengan email telah berhasil dilakukan</p>
-                    </VCol>
-                  </VRow>
-                  <VRow class="mt-4">
-                    <VCol>
-                      <VBtn
-                        outlined
-                        style="inline-size: 100%"
-                        class="text-none text-body-1 font-weight-medium custom-btn"
-                        href="/"
-                      >
-                        Pergi ke Halaman Login
-                        <VIcon end> mdi-arrow-right </VIcon>
-                      </VBtn>
-                    </VCol>
-                  </VRow>
-                </div>
-                <!-- Verfikasi end  Sucess kode  Email -->
-              </VCol>
-            </VWindowItem>
             <VWindowItem key="2">
               <p class="verifikasi-title text-nomor-handphone">
                 Verifikasi dengan Nomor Handphone
@@ -676,6 +587,99 @@ onMounted(() => {
                 </VRow>
               </div>
               <!-- Verfikasi end  Sucess kode  Email -->
+            </VWindowItem>
+            <VWindowItem key="1">
+              <VCol cols="12">
+                <!-- Verifikasi Email  -->
+                <p v-if="!isSucess" class="verifikasi-title text-email">
+                  Verifikasi dengan Email
+                </p>
+                <div v-if="!isOtpEmail && !isSucess">
+                  <p>klik button untuk mengirim kode verifikasi</p>
+                  <VTextField
+                    v-model="form.email"
+                    class="mb-5"
+                    type="text"
+                    disabled="true"
+                    :error-messages="errors.email"
+                    placeholder="Masukan Email"
+                  />
+
+                  <VBtn block type="submit" @click="onSubmitEmail">
+                    Kirim Kode Verifikasi
+                  </VBtn>
+                  <div class="back-link">
+                    <a href="/register" class="back-icon">
+                      ← Kembali ke Halaman Buat Akun
+                    </a>
+                  </div>
+                </div>
+                <!-- verifikasi end email -->
+
+                <!-- Verfikasi kode  Email -->
+                <div v-if="isOtpEmail && !isSucess">
+                  <p>Kami telah mengirimkan kode verifikasi ke email</p>
+                  <b>"{{ form.email }}"</b>
+                  <VOtpInput
+                    v-model="kodeOtpEmail"
+                    class="mb-2"
+                    variant="solo-filled"
+                  />
+                  <p>
+                    Belum terima kode?
+                    <span v-if="cooldown > 0"
+                      >Kirim Ulang dalam ({{ cooldown }}) detik</span
+                    >
+                    <span v-else>
+                      <a @click="resendCode">Kirim Ulang</a>
+                    </span>
+                  </p>
+                  <!-- <OtpVerification /> -->
+                  <VBtn
+                    block
+                    type="submit"
+                    :disabled="isDisabledKodeEmail"
+                    @click="onSubmitKodeEmail"
+                  >
+                    Verifikasi Kode
+                  </VBtn>
+                  <div class="back-link">
+                    <a href="/register" class="back-icon">
+                      ← Kembali ke Halaman Buat Akun
+                    </a>
+                  </div>
+                </div>
+                <!-- end verifikasi   email -->
+
+                <!-- Verfikasi  Sucess kode  Email -->
+                <div v-if="isSucess">
+                  <VRow>
+                    <VCol>
+                      <h2 class="text-success">
+                        <VIcon color="green" size="30">
+                          mdi-check-circle
+                        </VIcon>
+                        Sukses!
+                      </h2>
+                      <p>Verifikasi dengan email telah berhasil dilakukan</p>
+                    </VCol>
+                  </VRow>
+                  <VRow class="mt-4">
+                    <VCol>
+                      <VBtn
+                        outlined
+                        style="inline-size: 100%"
+                        class="text-none text-body-1 font-weight-medium custom-btn"
+                        href="/"
+                      >
+                        Pergi ke Halaman Login
+                        <VIcon end> mdi-arrow-right </VIcon>
+                      </VBtn>
+                    </VCol>
+                  </VRow>
+                </div>
+                <!-- Verfikasi end  Sucess kode  Email -->
+              </VCol>
             </VWindowItem>
           </VWindow>
         </VCardText>

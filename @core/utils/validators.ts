@@ -1,11 +1,13 @@
 import { isEmpty, isEmptyArray, isNullOrUndefined } from "./helpers";
 
 // 👉 Required Validator
-export const requiredValidator = (value: unknown) => {
+export const requiredValidator = (value: unknown, translatedLabel?: string) => {
   if (isNullOrUndefined(value) || isEmptyArray(value) || value === false)
-    return "Kolom ini wajib diisi";
+    return translatedLabel || "Kolom ini wajib diisi";
 
-  return !!String(value).trim().length || "Kolom ini wajib diisi";
+  return (
+    !!String(value).trim().length || translatedLabel || "Kolom ini wajib diisi"
+  );
 };
 
 // HSCODE validator
@@ -14,11 +16,12 @@ export const hsCodeValidator = (value: unknown) => {
 
   const re = /^\d{4}\.\d{2}\.\d{2}$/;
 
-  if (Array.isArray(value))
+  if (Array.isArray(value)) {
     return (
       value.every((val) => re.test(String(val))) ||
       "Kolom HS Code hanya berisi angka dan titik berformat 0000.00.00"
     );
+  }
 
   return (
     re.test(String(value)) ||
@@ -30,11 +33,12 @@ export const hsCodeDescValidator = (value: unknown) => {
 
   const re = /^[a-zA-Z0-9 .,]+$/;
 
-  if (Array.isArray(value))
+  if (Array.isArray(value)) {
     return (
       value.every((val) => re.test(String(val))) ||
       "Kolom HS Code Desc hanya berisi alphanumeric, spasi, (.), (,)"
     );
+  }
 
   return (
     re.test(String(value)) ||
@@ -49,11 +53,12 @@ export const emailValidator = (value: unknown) => {
   const re =
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-  if (Array.isArray(value))
+  if (Array.isArray(value)) {
     return (
       value.every((val) => re.test(String(val))) ||
       "Kolom Email harus berisi email yang valid"
     );
+  }
 
   return re.test(String(value)) || "Kolom Email harus berisi email yang valid";
 };
@@ -88,11 +93,12 @@ export const betweenValidator = (value: unknown, min: number, max: number) => {
 export const integerValidator = (value: unknown) => {
   if (isEmpty(value)) return true;
 
-  if (Array.isArray(value))
+  if (Array.isArray(value)) {
     return (
       value.every((val) => /^-?[0-9]+$/.test(String(val))) ||
       "Kolom ini harus berupa angka"
     );
+  }
 
   return /^-?[0-9]+$/.test(String(value)) || "Kolom ini harus berupa angka";
 };
@@ -112,8 +118,7 @@ export const regexValidator = (
     return value.every((val) => regexValidator(val, regeX));
 
   return (
-    regeX.test(String(value)) ||
-    (message ? message : "Format kolom Regex tidak valid")
+    regeX.test(String(value)) || message || "Format kolom Regex tidak valid"
   );
 };
 export const phoneNumberIdValidator = (value: unknown): string | boolean => {
@@ -124,7 +129,7 @@ export const phoneNumberIdValidator = (value: unknown): string | boolean => {
 
   return (
     regeX.test(String(value)) ||
-    "Nomor Hp harus diawali 08 dan diantara 10-13 digit"
+    "Nomor HP harus diawali 08 dan diantara 10-13 digit"
   );
 };
 
@@ -169,18 +174,16 @@ export const alphaDashValidator = (value: unknown) => {
 // 👉 File Size Validator
 export const fileSizeValidator = (value: unknown) => {
   // console.log("file attribute = ", value[0]);
-  if (value[0].size > 2097152) {
-    return "File maksimal 2MB";
-  }
+  if (value[0].size > 2097152) return "File maksimal 2MB";
+
   return true;
 };
 
 export const fileExtensionValidator = (value: unknown) => {
   // use this reference for allowed extension: https://developer.mozilla.org/en-US/docs/Web/HTTP/MIME_types/Common_types
   let file = value;
-  if (Array.isArray(value)) {
-    file = value[0];
-  }
+  if (Array.isArray(value)) file = value[0];
+
   // console.log("file attribute = ", file.type);
   const allowedFileExtensionList = [
     "image/jpg",
@@ -193,11 +196,12 @@ export const fileExtensionValidator = (value: unknown) => {
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     "text/csv",
   ];
+
   const result = useArrayIncludes(allowedFileExtensionList, file?.type).value;
+
   // console.log("file extension match = ", result);
-  if (result) {
-    return true;
-  }
+  if (result) return true;
+
   return "File extension not allowed";
 };
 export const fileExtensionTypeValidator = (
@@ -211,22 +215,20 @@ export const fileExtensionTypeValidator = (
 ) => {
   // use this reference for allowed extension: https://developer.mozilla.org/en-US/docs/Web/HTTP/MIME_types/Common_types
   let file = value;
-  if (Array.isArray(value)) {
-    file = value[0];
-  }
+  if (Array.isArray(value)) file = value[0];
+
   // console.log("file attribute = ", value[0].type);
   const result = useArrayIncludes(allowed, file.type).value;
+
   // console.log("file extension match = ", result);
-  if (result) {
-    return true;
-  }
+  if (result) return true;
+
   return "File extension not allowed";
 };
 
 export const fileNameLengthValidator = (value: unknown) => {
   // console.log("file attribute = ", value[0].name);
-  if (value[0].name.length > 77) {
-    return "File name too long";
-  }
+  if (value[0].name.length > 77) return "File name too long";
+
   return true;
 };
