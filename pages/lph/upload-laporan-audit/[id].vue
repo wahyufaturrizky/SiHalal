@@ -1,8 +1,28 @@
 <script setup lang="ts">
 import LPHDetailLayout from "@/layouts/LPHDetailLayout.vue";
 import { onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 
 const route = useRoute();
+const { t } = useI18n();
+const props = defineProps({
+  onComplete: {
+    type: Function,
+    default: () => {},
+    required: false,
+  },
+  isviewonly: {
+    type: Boolean,
+  },
+
+  onInputBahan: {
+    type: Function,
+    default: () => {},
+    required: false,
+  },
+});
+
+const store = useMyTabEditRegulerStore();
 const id = route?.params?.id;
 const openedLeftPanels = ref([0, 1, 2, 3, 4, 5]);
 const openedRightPanels = ref([0, 1, 2]);
@@ -14,16 +34,71 @@ const dataPemeriksaanProduk = ref<any>(null);
 const selectedAudiotor = ref<any>(null);
 const loadingAuditor = ref(false);
 const selectedFile = ref(null);
-const uploadMessage = ref("");
 const selectedAuditResult = ref(null);
 const dokumenLama = ref<any>([]);
 const isUpdateDataModalOpen = ref(false);
 const modalTitle = ref("");
 const modalContent = ref("");
 const isUpdateDataMappingModalOpen = ref(false);
+const isUpdateDataProdukModalOpen = ref(false);
+const productItems = ref<any>([]);
+const bahanSelected = ref([]);
+const tabAddBahan = ref("1");
+const fileTemplateProduct = ref("");
+const listPreview = ref([]);
+const visiblePreview = ref(false);
+const addDialog = ref(false);
+const reRender = ref(false);
+const titleDialog = ref("");
+const confirmSaveDialog = ref(false);
+const dataProductClasification = ref([]);
+const loadingRincian = ref(false);
+const listRincian = ref([]);
+const labelSaveBtn = ref("");
+const hideFooterBtn = ref(false);
+const totalItems = ref(0);
+const page = ref(1);
+
+const EditProdukModalOpen = ref(false);
+
+const { refresh } = await useAsyncData("list-product", async () => {
+  return store.getProduct(id);
+});
+const itemDetail = ref<any>({});
+
 
 const tanggalMulai = ref("");
 const tanggalSelesai = ref("");
+
+
+// const openInputBahan = (id) => {
+//   (isUpdateDataProdukModalOpen.value = false), (selectedIdProd.value = id);
+//   showInputBahan.value = true;
+// };
+
+const formData = ref({
+  kode_rincian: "",
+  nama_produk: "",
+  foto_produk: "",
+  kode_rincian_desc: "",
+});
+
+const toggle = () => {
+  addDialog.value = false;
+};
+
+// const toggleAdd = () => {
+//   isUpdateDataProdukModalOpen.value = false;
+// };
+
+// const toggleAdd = (type: string) => {
+//   addDialog.value = true;
+//   titleDialog.value = `Tambah ${type}`;
+//   labelSaveBtn.value =
+//     type === "Data Bahan"
+//       ? t("pengajuan-reguler.reguler_form-bahan-produk-popupproduk-produp2")
+//       : t("pengajuan-reguler.reguler-form--bahan-add");
+// };
 
 watch(tanggalMulai, (newVal) => {
   localStorage.setItem("tanggalMulai", newVal);
@@ -36,6 +111,21 @@ watch(tanggalSelesai, (newVal) => {
 const formatDateTime = (date) => {
   return new Date(date).toISOString();
 };
+
+const previewProductHeader = ref([
+  {
+    title: "No",
+    key: "no",
+  },
+  {
+    title: "Nama Produk",
+    key: "reg_prod_name",
+  },
+  {
+    title: "Action",
+    key: "actionProduct",
+  },
+]);
 
 const auditResults = ref([
   { label: "Lulus", value: "PR001" },
@@ -111,15 +201,55 @@ const resetForm = () => {
   };
 };
 
+const downloadTemplate = async (file: any) => {
+  await downloadDocument(file, "FILES");
+};
+
+const uploadedFileProduct = ref({
+  name: "",
+  file: null,
+});
+
+const handleSubmit = () => {
+  confirmSaveDialog.value = false;
+};
+
+// const productName = ref({
+//   label: [
+//     { title: "No.", key: "no", nowrap: true },
+//     { title: "Nama Produk", key: "nama", nowrap: true },
+//     { title: "Foto Produk", key: "foto", nowrap: true },
+//     { title: "Jumlah Bahan", key: "qtyBahan", nowrap: true },
+//     // { title: 'Jumlah Bahan', key: 'qtyBahan', nowrap: true },
+//     {
+//       title: "Action",
+//       key: "actionV3",
+//       value: "actionPopOver4",
+//       sortable: false,
+//       nowrap: true,
+//       popOver: true,
+//     },
+//   ],
+//   value: [],
+// });
+
+const productName: any[] = [
+  { title: "No", key: "no" },
+  { title: "Nama Produk", key: "nama", nowrap: true },
+  { title: "Foto", key: "foto", nowrap: true },
+  { title: "Jumlah Bahan  ", key: "qty_bahan", nowrap: true },
+  { title: "Action", key: "actions", align: "center", nowrap: true },
+];
+
 const openMappingPabrik = () => {
-  modalContent.value = "mapping_pabrik"; 
+  modalContent.value = "mapping_pabrik";
   isUpdateDataMappingModalOpen.value = true;
 };
 
 const openEditProduk = () => {
-  modalTitle.value = "Edit Produk";
-  modalContent.value = "Isi konten untuk Edit Produk.";
-  //isUpdateDataModalOpen.value = true;
+  modalTitle.value = "Tambah Nama Produk";
+  isUpdateDataProdukModalOpen.value = true;
+  getListProducts();
 };
 
 const openEditProfile = () => {
@@ -127,6 +257,12 @@ const openEditProfile = () => {
   modalContent.value = "Isi konten untuk Edit Profile Pelaku Usaha.";
   isUpdateDataModalOpen.value = true;
 };
+
+const handleEditProduct = async (productId) => {
+  await getDetailProduk(productId, "edit"); 
+  EditProdukModalOpen.value = true;
+};
+
 
 const handleRemoveFile = async (uploadedFile: any) => {
   try {
@@ -155,6 +291,75 @@ const handleRemoveFile = async (uploadedFile: any) => {
   }
 };
 
+const handleRemoveFiles = () => {
+  uploadedFile.value.name = "";
+  uploadedFile.value.file = null;
+  formData.value.foto_produk = "";
+};
+
+const getTemplateFileProduct = async (productId: string, type: string) => {
+  const response: any = await $api(
+    "/reguler/pelaku-usaha/tab-bahan/products/template-product",
+    {
+      method: "get",
+    }
+  );
+
+  if (response.code === 2000) {
+    fileTemplateProduct.value = response.data.file;
+  }
+};
+
+const handleUploadFileProduct = async (event: any) => {
+  if (event?.target?.files.length) {
+    const fileData = event.target.files[0];
+
+    uploadedFile.value.name = fileData.name;
+    uploadedFile.value.file = fileData;
+    try {
+      loading.value = true;
+      const response = await uploadDocumentProduct(fileData);
+      if (response.code === 2000) {
+        addDialog.value = false;
+        uploadedFileProduct.value.file = response.data.file_url;
+        listPreview.value = response?.data?.validated_produk;
+        visiblePreview.value = true;
+        titleDialog.value = "Preview Produk";
+        loading.value = false;
+      } else {
+        useSnackbar().sendSnackbar(
+          response.errors?.list_error?.join(),
+          "error"
+        );
+        loading.value = false;
+      }
+    } catch (error) {
+      console.log(error);
+      loading.value = false;
+    }
+  }
+};
+
+const uploadDocumentProduct = async (file: any) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return await $api(
+      "/reguler/pelaku-usaha/tab-bahan/products/upload-product",
+      {
+        method: "post",
+        body: formData,
+      }
+    );
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      "ada kesalahan saat upload file, gagal menyimpan!",
+      "error"
+    );
+  }
+};
+
 const handleAddAuditor = () => {
   dataPemeriksaanProduk.value?.auditor.push(selectedAudiotor.value);
   assignAuditorData.value.push(newAuditorData);
@@ -175,6 +380,60 @@ const handleSaveAuditor = async () => {
   }
 };
 
+const bulkInsert = async () => {
+  try {
+    const body: any[] = [];
+
+    listPreview.value.forEach((el: any) => {
+      if (el.Passed) {
+        body.push({
+          reg_prod_name: el.HalalCertificateRegulerProduk?.reg_prod_name,
+        });
+      }
+    });
+
+    const endpoint =
+      body.length > 0
+        ? "/reguler/pelaku-usaha/tab-bahan/products/bulkInsert-product"
+        : "/reguler/pelaku-usaha/tab-bahan/products/bulkInsert";
+
+    const response: any = await $api(endpoint, {
+      method: "put",
+      params: { id_reg: id },
+      body: body,
+    });
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar("Sukses menambah data", "success");
+
+      reRender.value = !reRender.value;
+      visiblePreview.value = false;
+      uploadedFileProduct.value = { name: "", file: null };
+    }
+  } catch (error) {
+    console.error("Terjadi kesalahan saat bulk insert:", error);
+    useSnackbar().sendSnackbar("Gagal menambah data", "error");
+  }
+};
+
+const handleUploadFileFoto = async (event: any) => {
+  if (event?.target?.files.length) {
+    const fileData = event.target.files[0];
+
+    uploadedFile.value.name = fileData.name;
+    uploadedFile.value.file = fileData;
+    try {
+      const response = await uploadDocument(fileData);
+      if (response.code === 2000) {
+        console.log(response);
+        formData.value.foto_produk = response.data.file_url;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+};
+
 const uploadDocument = async (file: File) => {
   try {
     const formData = new FormData();
@@ -187,8 +446,8 @@ const uploadDocument = async (file: File) => {
       body: formData,
     });
 
-    if (response?.code === 2000) {
-      return response.data.file_url; // URL file yang telah diunggah
+    if (response.code === 2000) {
+      return response.data.file_url; 
     } else {
       useSnackbar().sendSnackbar("Gagal mengunggah file!", "error");
       throw new Error("File upload failed");
@@ -296,6 +555,62 @@ const handleSaveFileUpload = async () => {
   }
 };
 
+const handleInputBahan = async (selected, idProduk) => {
+  try {
+    const response: any = await $api(
+      "/self-declare/business-actor/product/add-ingredient",
+      {
+        method: "post",
+        body: selected,
+        query: {
+          id_reg: id,
+          product_id: idProduk,
+        },
+      } as any
+    );
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+      getListProducts();
+      await refresh();
+    }
+    return response;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+    console.log(error);
+  } finally {
+    store.isAllBahanSelected();
+  }
+};
+
+// const handleAddIngredient = async (payload: any, idProduct: string) => {
+//   try {
+//     const response: any = await $api(
+//       `/self-declare/business-actor/product/add-ingredient`,
+//       {
+//         method: "post",
+//         body: payload,
+//         query: {
+//           id_reg: id,
+//           product_id: idProduct,
+//         },
+//       } as any
+//     );
+
+//     if (response.code === 2000) {
+//       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+//       handleDetailProduct(id);
+//       await refresh();
+//     }
+//     return response;
+//   } catch (error) {
+//     useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+//     console.log(error);
+//   } finally {
+//     store.isAllBahanSelected();
+//   }
+// };
+
 const handleUpdateStatus = async () => {
   if (!process.client) return;
 
@@ -321,7 +636,6 @@ const handleUpdateStatus = async () => {
   const ids = dataArray.map((item) => item.id_auditor || null);
 
   try {
-    // API Assign Auditor
     const responseAuditor = await $api("/reguler/auditor/assign", {
       method: "post",
       query: { id },
@@ -351,7 +665,6 @@ const handleUpdateStatus = async () => {
       return useSnackbar().sendSnackbar("Gagal menyimpan tanggal", "error");
     }
 
-    // API Kirim Data (Pastikan tetap dijalankan)
     const response = await $api("/reguler/lph/post-audit/kirim", {
       method: "put",
       body: {
@@ -377,6 +690,175 @@ const handleUpdateStatus = async () => {
     );
   }
 };
+
+const loadItemProductClasifications = async () => {
+  try {
+    const response: any = await $api(
+      `/self-declare/verificator/produk/clasification/${id}`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) {
+      dataProductClasification.value = response.data || [];
+
+      return response;
+    } else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const deleteProduct = async (productId: string) => {
+  const response: any = await $api(
+    "/reguler/pelaku-usaha/tab-bahan/products/remove",
+    {
+      method: "delete",
+      params: { id_reg: id, product_id: productId },
+    }
+  );
+
+  if (response.code === 2000) {
+    getListProducts(),
+    reRender.value = !reRender.value;
+    useSnackbar().sendSnackbar("Sukses menghapus data", "success");
+  } else {
+    useSnackbar().sendSnackbar("Bahan tidak dapat dihapus", "error");
+  }
+};
+
+const loadItemProductRincian = async (kode_rincian: string) => {
+  loadingRincian.value = true;
+  try {
+    const response: any = await $api(
+      `/self-declare/verificator/produk/rincian/${kode_rincian}`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) {
+      listRincian.value = response.data || [];
+      loadingRincian.value = false;
+    } else {
+      useSnackbar().sendSnackbar(
+        response.errors.list_error.join(", "),
+        "error"
+      );
+      loadingRincian.value = false;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan aaa", "error");
+    loadingRincian.value = false;
+  }
+};
+
+const addProduct = async () => {
+  if (titleDialog.value === "Tambah Nama Produk") {
+    const response: any = await $api(
+      "/reguler/pelaku-usaha/tab-bahan/products/create",
+      {
+        method: "post",
+        params: { id_reg: id },
+        body: {kode_rincian: formData.value.kode_rincian,
+              nama_produk: formData.value.nama_produk, 
+              foto_produk: formData.value.foto_produk || uploadedFile.value.name,
+        }
+      }
+    );
+
+    if (response.code === 2000) {
+      formData.value = {
+        kode_rincian: "",
+        nama_produk: "",
+        foto_produk: uploadedFile.value.file || uploadedFile.value.name || null,
+      };
+      uploadedFile.value = {
+        name: "",
+        file: "",
+      };
+      getListProducts(),
+      addDialog.value = false;
+      reRender.value = !reRender.value;
+      useSnackbar().sendSnackbar("Sukses menambah data", "success");
+    }
+  }
+};
+
+const updateProduct = async () => {
+  try {
+    const response = await $api(
+      "/reguler/pelaku-usaha/tab-bahan/products/update",
+      {
+        method: "PUT",
+        params: { id_reg: id, product_id: itemDetail.value.id },
+        body: {
+          kode_rincian: formData.value.kode_rincian,
+          nama_produk: formData.value.nama_produk, 
+          foto_produk: formData.value.foto_produk || uploadedFile.value.name, 
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      console.log("Berhasil update, mengambil data terbaru...");
+      await getListProducts(); 
+
+      formData.value = {
+        kode_rincian: "",
+        nama_produk: "",
+        foto_produk: null,
+        merek: "",
+      };
+
+      uploadedFile.value = {
+        name: "",
+        file: "",
+      };
+
+      addDialog.value = false; // Tutup modal
+      reRender.value = !reRender.value; // Paksa re-render UI jika diperlukan
+
+      useSnackbar().sendSnackbar("Sukses memperbarui data", "success");
+    } else {
+      useSnackbar().sendSnackbar("Gagal memperbarui data", "error");
+    }
+  } catch (error) {
+    console.error("Terjadi kesalahan saat memperbarui produk:", error);
+    useSnackbar().sendSnackbar("Terjadi kesalahan saat memperbarui produk", "error");
+  }
+};
+
+
+
+const getDetailProduk = async (productId, type) => {
+  const response = await $api("/reguler/pelaku-usaha/tab-bahan/products/detail", {
+    method: "get",
+    params: { id_reg: id, product_id: productId },
+  });
+
+  if (response.code === 2000) {
+    itemDetail.value = response.data || {};
+
+    formData.value = {
+      kode_rincian_desc: response.data.koderincian_desc,
+      kode_rincian: response.data.koderincian,
+      nama_produk: response.data.nama,
+    };
+
+    uploadedFile.value = {
+      name: response.data.foto_produk,
+      file: response.data.foto_produk,
+    };
+  }
+};
+
 
 const getDetailData = async (type: string) => {
   try {
@@ -407,6 +889,36 @@ const getDetailData = async (type: string) => {
   }
 };
 
+const getListProducts = async () => {
+  try {
+    const response = await $api(
+      "/reguler/pelaku-usaha/tab-bahan/products/list",
+      {
+        method: "get",
+        query: {
+          id_reg: id,
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        response.data.map((item) => {
+          item.qtyBahan =
+            item.bahan_selected !== null ? item.bahan_selected.length : 0;
+        });
+      }
+
+      productItems.value = response.data || [];
+      totalItems.value = productItems.value.length; // 🔥 Hitung total item
+
+      console.log("Total Items:", totalItems.value); // Debugging
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
 const OldDoc = async (noDaftar: string) => {
   const url = `https://prod-api.halal.go.id/v1/referensi/dokumen_reguler?no_daftar=${noDaftar}`;
   //console.log("berhasil");
@@ -430,7 +942,6 @@ const OldDoc = async (noDaftar: string) => {
     return null;
   }
 };
-
 
 const handleDownloadForm = async (fileName: string, param: string) => {
   return await downloadDocument(fileName, param);
@@ -553,6 +1064,8 @@ onMounted(async () => {
     getListAuditor(),
     fetchHasilAudit(),
     getListLaporan(),
+    getTemplateFileProduct(),
+    loadItemProductClasifications(),
     // getDownloadForm("file_laporan", "file_laporan"),
     // getDownloadForm("file_kh", "file_kh"),
   ]);
@@ -570,6 +1083,51 @@ onMounted(async () => {
 
 <template>
   <div v-if="!loading">
+    <DialogSaveDataPengajuan
+      title="Simpan Perubahan"
+      :is-open="confirmSaveDialog"
+      :toggle="() => (confirmSaveDialog = false)"
+      :on-save="() => handleSubmit()"
+    />
+    <DialogPreviewBahan
+      :title="titleDialog"
+      :is-open="visiblePreview"
+      :toggle="() => (visiblePreview = false)"
+      :label-save-btn="`Unggah (${
+        titleDialog === 'Preview Bahan'
+        ? `${listPreview.filter((a: any) => a.Passed).length} Bahan`
+        : `${listPreview.filter((a: any) => a.Passed).length} Produk`
+      })`"
+      :label-back-btn="'Batal'"
+      :on-save="bulkInsert"
+      hide-footer
+    >
+      <template #content>
+        <div v-if="titleDialog === 'Preview Produk'">
+          <PreviewBahanTable
+            :previewHeader="previewProductHeader"
+            :listPreview="listPreview"
+          />
+        </div>
+        <!-- <div v-else>
+          <PreviewBahanTable
+            :previewHeader="previewHeader"
+            :listPreview="listPreview"
+          />
+        </div> -->
+      </template>
+    </DialogPreviewBahan>
+    <DialogWithAction
+      :title="titleDialog"
+      :is-open="addDialog"
+      :toggle="toggle"
+      :label-save-btn="labelSaveBtn"
+      :label-back-btn="
+        t('pengajuan-reguler.reguler_form-bahan-produk-popupbahan-cancel')
+      "
+      :on-save="addProduct"
+      :hide-footer="hideFooterBtn"
+    ></DialogWithAction>
     <LPHDetailLayout>
       <template #page-title>
         <VRow no-gutters>
@@ -587,10 +1145,10 @@ onMounted(async () => {
                 <VListItem @click="openMappingPabrik">
                   <VListItemTitle>Mapping Pabrik</VListItemTitle>
                 </VListItem>
-                <!-- <VListItem @click="openEditProduk">
+                <VListItem @click="openEditProduk">
                   <VListItemTitle>Edit Produk</VListItemTitle>
                 </VListItem>
-                <VListItem @click="openEditProfile">
+                <!-- <VListItem @click="openEditProfile">
                   <VListItemTitle>Edit Profile Pelaku Usaha</VListItemTitle>
                 </VListItem> -->
               </VList>
@@ -608,9 +1166,7 @@ onMounted(async () => {
               class="me-2"
               @click="handleOpenUploadModal"
             />
-            <VBtn 
-            text="Update Status" 
-            @click="handleOpenUpdateModal" />
+            <VBtn text="Update Status" @click="handleOpenUpdateModal" />
           </VCol>
         </VRow>
       </template>
@@ -904,7 +1460,9 @@ onMounted(async () => {
         </VCardText>
         <VCardActions>
           <VSpacer />
-          <VBtn @click="isUpdateDataModalOpen = false" color="primary">Tutup</VBtn>
+          <VBtn @click="isUpdateDataModalOpen = false" color="primary"
+            >Tutup</VBtn
+          >
         </VCardActions>
       </VCard>
     </VDialog>
@@ -1006,13 +1564,19 @@ onMounted(async () => {
       </VCard>
     </VDialog>
 
-    <VDialog v-model="isUpdateDataMappingModalOpen" max-width="840px" persistent>
+    <VDialog
+      v-model="isUpdateDataMappingModalOpen"
+      max-width="840px"
+      persistent
+    >
       <VCard>
         <VCardTitle class="d-flex justify-space-between align-center">
-          <span>{{ modalTitle }}</span>
         </VCardTitle>
-          <ProdukRegulerEdit v-if="modalContent === 'mapping_pabrik'" :isviewonly="isViewOnly" />
-          <p v-else>{{ modalContent }}</p>
+        <ProdukRegulerEdit
+          v-if="modalContent === 'mapping_pabrik'"
+          :isviewonly="isViewOnly"
+        />
+        <p v-else>{{ modalContent }}</p>
         <VCardActions>
           <VSpacer />
           <VBtn color="primary" @click="isUpdateDataMappingModalOpen = false">
@@ -1055,6 +1619,376 @@ onMounted(async () => {
       </VCard>
     </VDialog>
   </div>
+
+  <VDialog v-model="isUpdateDataProdukModalOpen" max-width="840px" persistent>
+    <VCard class="pa-4">
+      <div>
+        <div class="d-flex justify-center">
+          <VTabs
+            v-model="tabAddBahan"
+            align-tabs="center"
+            bg-color="#f0dcf5"
+            class="border pa-2"
+            style="border-radius: 40px"
+            height="auto"
+          >
+            <VTab
+              value="1"
+              base-color="#f0dcf5"
+              active-color="primary"
+              style="border-radius: 40px"
+              hide-slider
+              color="primary"
+              variant="flat"
+              height="40px"
+            >
+              <span>Unggah File </span>
+            </VTab>
+            <VTab
+              value="2"
+              active-color="primary"
+              base-color="#f0dcf5"
+              style="border-radius: 40px"
+              hide-slider
+              variant="flat"
+              height="40px"
+            >
+              <span> Tambah Manual </span>
+            </VTab>
+          </VTabs>
+        </div>
+
+        <div class="mt-5">
+          <div v-show="tabAddBahan === '1'">
+            <VRow no-gutters class="mb-4">
+              <VCol cols="6" class="d-flex align-center">
+                <span> Unduh template acuan "unggah produk" </span>
+              </VCol>
+              <VCol cols="6">
+                <VBtn
+                  append-icon="mdi-download"
+                  @click="() => downloadTemplate(fileTemplateProduct)"
+                >
+                  Unduh
+                </VBtn>
+              </VCol>
+            </VRow>
+            <VRow no-gutters>
+              <VCol cols="6" class="d-flex align-center">
+                <span> Unggah Produk </span>
+              </VCol>
+              <VCol cols="6">
+                <VTextField
+                  v-if="uploadedFileProduct.file"
+                  :model-value="uploadedFileProduct.name"
+                  density="compact"
+                  placeholder="No file choosen"
+                  rounded="xl"
+                  max-width="400"
+                >
+                  <template #append-inner>
+                    <VIcon
+                      icon="fa-trash"
+                      color="error"
+                      class="cursor-pointer"
+                      @click="handleRemoveFiles"
+                    />
+                  </template>
+                </VTextField>
+                <VFileInput
+                  v-else
+                  :model-value="uploadedFileProduct.file"
+                  class="custom-file-input mt-5"
+                  density="compact"
+                  rounded="xl"
+                  label="No file choosen"
+                  max-width="400"
+                  prepend-icon=""
+                  @change="handleUploadFileProduct"
+                >
+                  <template #append-inner>
+                    <VBtn rounded="e-xl" text="Choose" />
+                  </template>
+                </VFileInput>
+              </VCol>
+            </VRow>
+          </div>
+
+          <div class="mt-10">
+            <div v-show="tabAddBahan === '2'">
+              <label>Klasifikasi Produk</label>
+              <VSelect
+                outlined
+                placeholder="pilih klasifikasi produk"
+                density="compact"
+                :loading="loadingRincian"
+                item-title="name"
+                item-value="code"
+                :items="dataProductClasification"
+                @update:model-value="loadItemProductRincian"
+              />
+              <br />
+              <label>Rincian Produk</label>
+              <VSelect
+                v-model="formData.kode_rincian_desc"
+                outlined
+                placeholder="pilih rincian produk"
+                density="compact"
+                :loading="loadingRincian"
+                item-title="name"
+                item-value="code"
+                :items="listRincian"
+              />
+              <br />
+              <label>Nama Produk</label>
+              <VTextField
+                v-model="formData.nama_produk"
+                class="-mt-10"
+                density="compact"
+                placeholder="Isi Nama Produk"
+              />
+              <div class="d-flex justify-space-between mt-5">
+                <label> Upload Foto </label>
+                <VCol cols="6">
+                  <VTextField
+                    v-if="uploadedFile.file"
+                    :model-value="uploadedFile.name"
+                    density="compact"
+                    placeholder="No file choosen"
+                    rounded="xl"
+                    max-width="400"
+                  >
+                    <template #append-inner>
+                      <VIcon
+                        icon="fa-trash"
+                        color="error"
+                        class="cursor-pointer"
+                        @click="handleRemoveFiles"
+                      />
+                    </template>
+                  </VTextField>
+                  <VFileInput
+                    v-else
+                    :model-value="uploadedFile.file"
+                    class="custom-file-input"
+                    density="compact"
+                    rounded="xl"
+                    label="No file choosen"
+                    max-width="400"
+                    prepend-icon=""
+                    @change="handleUploadFileFoto"
+                  >
+                    <template #append-inner>
+                      <VBtn rounded="s-0 e-xl" text="Choose" />
+                    </template>
+                  </VFileInput>
+                </VCol>
+              </div>
+              <div class="d-flex justify-end mt-5">
+                <div class="d-flex justify-end mt-5">
+                  <VBtn
+                    color="primary"
+                    @click="
+                      () => {
+                        titleDialog = 'Tambah Nama Produk';
+                        addProduct();
+                      }
+                    "
+                  >
+                    Tambah Produk
+                  </VBtn>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <VDataTable
+          class="domestic-table border rounded mt-5"
+          :headers="productName"
+          :items="productItems || []"
+          :items-per-page="10"
+          v-model:page="page"
+          :items-length="totalItems"
+          show-current-page
+        >
+          <template #body="{ items }">
+            <tr v-if="items.length === 0">
+              <td colspan="7" class="text-center">
+                <div class="pt-2">
+                  <img src="~/assets/images/empty-data.png" alt="Data Kosong" />
+                  <div class="pt-2 font-weight-bold">Data Kosong</div>
+                </div>
+              </td>
+            </tr>
+            <tr v-for="(item, idx) in items" :key="idx">
+              <td>{{ (page - 1) * 5 + idx + 1 }}</td>
+              <td>{{ item.nama }}</td>
+              <td class="text-center">
+                <VBtn
+                  :color="item.foto ? 'primary' : '#A09BA1'"
+                  density="compact"
+                  class="px-2"
+                  @click="
+                    item.foto ? handleDownloadForm(item.foto, 'FILES') : null
+                  "
+                >
+                  <template #default>
+                    <VIcon icon="fa-download" />
+                  </template>
+                </VBtn>
+              </td>
+              <td>{{ item.jumlah_bahan }}</td>
+              <td class="text-center">
+                <VMenu>
+                  <template #activator="{ props }">
+                    <VIcon
+                      icon="fa-ellipsis-v"
+                      color="primary"
+                      class="cursor-pointer"
+                      v-bind="props"
+                    />
+                  </template>
+                  <VList>
+                    <LPHInputBahan
+                        :product-name="item.nama"
+                        :product-id="item.id"
+                        :bahan-selected="item.bahan_selected"
+                        @submit="handleInputBahan"
+                        :embedded-in-module="'pelakuSelfDec'"
+                      />
+                    <VListItem prepend-icon="mdi-pen" title="Edit" @click="handleEditProduct(item.id)" />
+                    <VListItem prepend-icon="fa-trash" title="Hapus" @click="deleteProduct(item.id)" />
+                  </VList>
+                </VMenu>
+              </td>
+            </tr>
+          </template>
+        </VDataTable>
+        <div class="d-flex justify-end">
+          <VBtn color="primary" class="mt-2" @click="isUpdateDataProdukModalOpen = false">
+            Tutup
+          </VBtn>
+        </div>
+      </div>
+    </VCard>
+  </VDialog>
+
+  <VDialog v-model="EditProdukModalOpen" max-width="840px" persistent>
+    <VCard class="pa-4">
+      <div>
+        <div class="d-flex justify-center">
+          <VTabs
+            v-model="tabAddBahan"
+            align-tabs="center"
+            bg-color="#f0dcf5"
+            class="border pa-2"
+            style="border-radius: 40px"
+            height="auto"
+          >
+              <span> Tambah Manual </span>
+          </VTabs>
+        </div>
+
+          <div class="mt-10">
+            <div>
+              <label>Klasifikasi Produk</label>
+              <VSelect
+                outlined
+                placeholder="pilih klasifikasi produk"
+                density="compact"
+                :loading="loadingRincian"
+                item-title="name"
+                item-value="code"
+                :items="dataProductClasification"
+                @update:model-value="loadItemProductRincian"
+              />
+              <br />
+              <label>Rincian Produk</label>
+              <VSelect
+                v-model="formData.kode_rincian_desc"
+                outlined
+                placeholder="pilih rincian produk"
+                density="compact"
+                :loading="loadingRincian"
+                item-title="name"
+                item-value="code"
+                :items="listRincian"
+              />
+              <br />
+              <label>Nama Produk</label>
+              <VTextField
+                v-model="formData.nama_produk"
+                class="-mt-10"
+                density="compact"
+                placeholder="Isi Nama Produk"
+              />
+              <div class="d-flex justify-space-between mt-5">
+                <label> Upload Foto </label>
+                <VCol cols="6">
+                  <VTextField
+                    v-if="uploadedFile.file"
+                    :model-value="uploadedFile.name"
+                    density="compact"
+                    placeholder="No file choosen"
+                    rounded="xl"
+                    max-width="400"
+                  >
+                    <template #append-inner>
+                      <VIcon
+                        icon="fa-trash"
+                        color="error"
+                        class="cursor-pointer"
+                        @click="handleRemoveFiles"
+                      />
+                    </template>
+                  </VTextField>
+                  <VFileInput
+                    v-else
+                    :model-value="uploadedFile.file"
+                    class="custom-file-input"
+                    density="compact"
+                    rounded="xl"
+                    label="No file choosen"
+                    max-width="400"
+                    prepend-icon=""
+                    @change="handleUploadFileFoto"
+                  >
+                    <template #append-inner>
+                      <VBtn rounded="s-0 e-xl" text="Choose" />
+                    </template>
+                  </VFileInput>
+                </VCol>
+              </div>
+              <div class="d-flex justify-end mt-5">
+                <div class="d-flex justify-end mt-5">
+                  <VBtn color="grey" variant="outlined" class="mr-2" @click="EditProdukModalOpen = false">
+                    Tutup
+                  </VBtn>
+                  <VBtn
+                    color="primary"
+                    @click="
+                      () => {
+                        updateProduct();
+                        EditProdukModalOpen = false; 
+                      }
+                    "
+                  >
+                    Simpan
+                  </VBtn>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </VCard>
+  </VDialog>
+
+  <!-- <VDialog v-model="showInputBahan" max-width="840px" persistent>
+    <VCard class="pa-4">asdasd </VCard>
+  </VDialog> -->
+
+  
 </template>
 
 <style scoped lang="scss">
