@@ -222,7 +222,7 @@ const { t } = useI18n();
             <VRow>
               <VCol cols="6">
                 <VTextField
-                  :rules="[
+                  :rules="isNoNeedValidation ? [] : [
                     requiredValidator,
                     integerValidator,
                     lengthValidator(form.noKtp, 16),
@@ -312,7 +312,7 @@ const { t } = useI18n();
                       readonly
                       append-inner-icon="fa-calendar"
                       :model-value="form.tanggalSertifikat"
-                      :rules="[requiredValidator]"
+                      :rules="isNoNeedValidation ? [] : [requiredValidator]"
                     />
                   </template>
                 </Vuepicdatepicker>
