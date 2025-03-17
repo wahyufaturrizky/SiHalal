@@ -36,7 +36,7 @@
           <v-list-item
             value="telepon"
             color="primary"
-            href="tel:147"
+            href="tel:+628111421142"
             target="-blank"
           >
             <template v-slot:prepend>
