@@ -220,6 +220,10 @@ const handleLoadImageFile = async (filename: string) => {
   }
 };
 
+const requiredValidatorTranslated = (value) => {
+  return requiredValidator(value, t("validation.fill"));
+};
+
 onMounted(() => {
   handleLoadImageAuth();
 });
@@ -276,7 +280,7 @@ const { t } = useI18n();
                   :placeholder="t('login.username-tip')"
                   type="text"
                   :autofocus="false"
-                  :rules="[requiredValidator]"
+                  :rules="[requiredValidatorTranslated]"
                   :error-messages="errors.email"
                 />
               </VCol>
@@ -289,7 +293,7 @@ const { t } = useI18n();
                   v-model="credentials.password"
                   :label="t('login.password-attr')"
                   :placeholder="t('login.password-tip')"
-                  :rules="[requiredValidator]"
+                  :rules="[requiredValidatorTranslated]"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   :error-messages="errors.username"
                   :append-inner-icon="
