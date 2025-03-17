@@ -65,7 +65,7 @@ const form = ref({
 // validasi
 
 const isDisabledEmail = ref(false);
-const isDisabledNoHp = ref(false);
+const isDisabledNoHp = ref(true);
 
 const currentTab = ref(0);
 
@@ -477,14 +477,14 @@ onMounted(() => {
           <p class="mb-0">
             Terima kasih telah membuat akun di website
             {{ themeConfig.app.title }}, untuk proses selanjutnya verfikasi
-            menggunakan email atua nomor handphone yang telah terdaftar
+            menggunakan email atau nomor handphone yang telah terdaftar
           </p>
         </VCardText>
 
         <VCardText>
           <VTabs v-model="currentTab" grow>
             <VTab :disabled="isDisabledEmail"> Email </VTab>
-            <VTab :disabled="isDisabledNoHp"> NomorHandphone </VTab>
+            <VTab :disabled="isDisabledNoHp"> Nomor Handphone </VTab>
           </VTabs>
 
           <VWindow v-model="currentTab" class="mt-5">
@@ -667,7 +667,7 @@ onMounted(() => {
                       outlined
                       style="inline-size: 100%"
                       class="text-none text-body-1 font-weight-medium custom-btn"
-                      href="/register"
+                      href="/"
                     >
                       Pergi ke Halaman Login
                       <VIcon end> mdi-arrow-right </VIcon>
