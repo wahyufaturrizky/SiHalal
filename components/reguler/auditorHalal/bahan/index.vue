@@ -722,6 +722,12 @@ const bulkInsert = async () => {
 const addProduct = async () => {
   if (titleDialog.value === "Tambah Nama Produk") {
     try {
+      const { kode_rincian, nama_produk, foto_produk } = formData.value;
+      if (!kode_rincian || !nama_produk || !foto_produk) {
+        throw {
+          message: "mandatory"
+        }
+      }
       const response: any = await $api(
         "/reguler/pelaku-usaha/tab-bahan/products/create",
         {
@@ -745,8 +751,15 @@ const addProduct = async () => {
         reRender.value = !reRender.value;
         useSnackbar().sendSnackbar("Sukses menambah data", "success");
       }
+      else {
+        throw {
+          message: 'mandatory'
+        }
+      }
     } catch (error) {
-      isNotAllowedProduct.value = true;
+      if (error.message !== 'mandatory') {
+        isNotAllowedProduct.value = true;
+      }
     }
   } else if (titleDialog.value === "Ubah Nama Produk") {
     const response: any = await $api(
