@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { themeConfig } from "@themeConfig";
+import { useI18n } from "vue-i18n";
+import { RecaptchaV2, useRecaptcha } from "vue3-recaptcha-v2";
 import { useDisplay } from "vuetify";
 import { VForm } from "vuetify/components/VForm";
 
@@ -14,8 +16,7 @@ import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-il
 import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
 import authV2LoginMaskDark from "@images/pages/auth-v2-login-mask-dark.png";
 import authV2LoginMaskLight from "@images/pages/auth-v2-login-mask-light.png";
-import { useI18n } from "vue-i18n";
-import { RecaptchaV2, useRecaptcha } from "vue3-recaptcha-v2";
+
 const { signIn, data: sessionData, status, signOut } = useAuth();
 const { mdAndUp } = useDisplay();
 
@@ -36,6 +37,7 @@ definePageMeta({
   layout: "blank",
   unauthenticatedOnly: true,
 });
+
 const { handleReset, handleGetResponse } = useRecaptcha();
 
 const isPasswordVisible = useState("isPasswordVisible", () => false);
@@ -59,13 +61,13 @@ const credentials = ref({
   email: "",
   password: "",
 });
+
 const loadingSubmit = ref(false);
 const rememberMe = useState("rememberMe", () => false);
 
 const evaluateEmail = (value: string) => {
-  if (value.includes("@")) {
-    return value.toLowerCase();
-  }
+  if (value.includes("@")) return value.toLowerCase();
+
   return value;
 };
 
@@ -100,6 +102,7 @@ async function login() {
           email: error.data.data.user.email,
         },
       });
+
       return;
     }
     if (error.data.data.code === 400000) {
@@ -109,6 +112,7 @@ async function login() {
     if (error.data.data.success == false) {
       useSnackbar().sendSnackbar("Captcha Failed", "error");
       loadingSubmit.value = false;
+
       return;
     }
     useSnackbar().sendSnackbar(t("login.msg-err-login"), "error");
@@ -136,18 +140,24 @@ const onSubmit = async () => {
 const redirectToForgotPass = () => {
   navigateTo("/forgot-password");
 };
+
 const widgetCaptcha = ref();
+
 const handleWidgetId = (widgetId: number) => {
   widgetCaptcha.value = widgetId;
   handleGetResponse(widgetId);
 };
+
 const handleErrorCallback = () => {
   token.value = "";
 };
+
 const handleExpiredCallback = () => {
   token.value = "";
 };
+
 const token = ref<unknown | string>("");
+
 const handleLoadCallback = (response: unknown) => {
   token.value = response;
 };
@@ -157,18 +167,17 @@ const getDate = (): string => {
   const currentDate = new Date();
 
   // Format the modified date to "id-ID" locale
-  const formattedDate = currentDate.toLocaleDateString("id-ID", {
+  return currentDate.toLocaleDateString("id-ID", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
-
-  return formattedDate;
 };
 
 const fileType = ref("IMG");
 const videOrientation = ref("PORTRAIT");
 const currentDisplayFile = ref("");
+
 const handleLoadImageAuth = async () => {
   try {
     const response: any = await $api("/admin/images/random-image", {
@@ -177,10 +186,12 @@ const handleLoadImageAuth = async () => {
 
     if (response.code === 2000) {
       fileType.value = response.data.type.toUpperCase();
+
       // const fileExt = response.data.file_name.split(".").pop();
       // fileType.value = !["webp"].includes(fileExt) ? "VID" : "IMG";
       if (fileType.value === "VID") {
         const orientationStr = response.data.file_name.split("-").pop();
+
         videOrientation.value = orientationStr.split(".")[0];
       }
 
@@ -193,6 +204,7 @@ const handleLoadImageAuth = async () => {
     console.error(error);
   }
 };
+
 const handleLoadImageFile = async (filename: string) => {
   try {
     const response: any = await $api("/admin/images/download", {
@@ -201,6 +213,7 @@ const handleLoadImageFile = async (filename: string) => {
         filename,
       },
     } as any);
+
     currentDisplayFile.value = response.url;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -210,6 +223,7 @@ const handleLoadImageFile = async (filename: string) => {
 onMounted(() => {
   handleLoadImageAuth();
 });
+
 const items = [
   {
     title: "Option 1",
@@ -247,7 +261,7 @@ const { t } = useI18n();
             }}</span>
           </h4>
           <p class="mb-0">
-            {{ t("login.subheader") }} {{ themeConfig.app.title }}
+            {{ t("login.subheader") }}
           </p>
         </VCardText>
 
