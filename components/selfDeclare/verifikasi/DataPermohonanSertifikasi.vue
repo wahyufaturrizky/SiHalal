@@ -134,6 +134,49 @@ const loadItem = async ({
     loading.value = false;
   }
 };
+const loadItemReturn = async ({
+  page,
+  size,
+  keyword,
+  fasilitas,
+  jenis_produk,
+  provinsi,
+  lembaga,
+  pendamping,
+  kabupaten,
+}: {
+  page: number;
+  size: number;
+  keyword: string;
+  fasilitas: string;
+  jenis_produk: string;
+  provinsi: string;
+  lembaga: string;
+  pendamping: string;
+  kabupaten: string;
+}) => {
+  try {
+    const response: any = await $api("/self-declare/verificator/submission", {
+      method: "get",
+      params: {
+        page,
+        size,
+        keyword,
+        fasilitas,
+        jenis_produk,
+        provinsi,
+        lembaga,
+        pendamping,
+        kabupaten,
+        status: "OF71",
+        channel_id: "CH003,CH004",
+      },
+    });
+    return response;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 
 const debouncedFetch = debounce(loadItem, 500);
 
@@ -191,15 +234,37 @@ const resetFilters = () => {
   showFilterMenu.value = false;
 };
 
-const isAllSelected = computed(
-  () =>
-    selectedItems.value.length === items.value.length && items.value.length > 0
-);
+const isAllSelected = computed(() => {
+  return (
+    items.value.length > 0 && selectedItems.value.length === items.value.length
+  );
+});
 
 // Toggle select all
-const toggleSelectAll = () => {
-  selectedItems.value = isAllSelected.value ? [] : items.value.slice();
+const toggleSelectAll = async () => {
+  if (isAllSelected.value) {
+    selectedItems.value = [];
+  } else {
+    const getallData = await loadItemReturn({
+      page: 1,
+      size: 9999,
+      keyword: "",
+      fasilitas: "",
+      jenis_produk: "",
+      provinsi: "",
+      lembaga: "",
+      pendamping: "",
+      kabupaten: "",
+    });
+    selectedItems.value = getallData.data.map((item) => item.id_daftar);
+  }
 };
+
+watch(selectedItems, () => {
+  if (selectedItems.value.length !== items.value.length) {
+    // Jika ada yang tidak tercentang, pastikan checkbox utama tidak aktif
+  }
+});
 
 // Adaptive button text
 const buttonText = computed(() =>
@@ -225,33 +290,28 @@ const loadItemProduct = async () => {
   }
 };
 
-const postSubmission = async (selectedItems: any) => {
+const postSubmission = async () => {
   try {
-    loadingAddSubmission.value = true;
+    if (selectedItems.value.length === 0) return;
 
-    const res: any = await $api("/self-declare/verificator/submission/assign", {
+    loadingAddSubmission.value = true;
+    const res = await $api("/self-declare/verificator/submission/assign", {
       method: "post",
-      body: {
-        certificate_id: selectedItems,
-      },
+      body: { certificate_id: selectedItems.value },
     });
 
     if (res?.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
-      dialogVisible.value = false;
-      loadingAddSubmission.value = false;
-      selectedItems.value = [];
       emit("refresh");
     } else {
-      useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
-      selectedItems.value = [];
-      dialogVisible.value = false;
-      loadingAddSubmission.value = false;
+      throw new Error("Gagal menambahkan data");
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar(error.message || "Ada Kesalahan", "error");
+  } finally {
     dialogVisible.value = false;
     loadingAddSubmission.value = false;
+    selectedItems.value = [];
   }
 };
 
@@ -361,7 +421,8 @@ const openDialog = async () => {
     loadItemProduct(),
     loadItemFacility(),
     loadItemLembaga(),
-    loadItemPendamping(),
+    loadPendamping(1, 10),
+    // loadItemPendamping(),
     loadItemProvince(),
   ]);
 
@@ -374,6 +435,61 @@ const openDialog = async () => {
   } else {
     loadingAll.value = false;
   }
+};
+const loadPendamping = async (page, item, name = "") => {
+  try {
+    loadingPendamping.value = true;
+    const response: any = await $api(
+      "/self-declare/komite-fatwa/proses-sidang/filter-pendamping",
+      {
+        method: "get",
+        params: {
+          page,
+          item,
+          name,
+        },
+      }
+    );
+    console.log("response pendamping ", response);
+    if (response.code == 2000) {
+      if (page === 1) {
+        itemsPendamping.value = response.data || [];
+        console.log("items Pendamping : ", itemsPendamping.value);
+      } else {
+        itemsPendamping.value = [...itemsPendamping.value, ...response.data];
+      }
+      totalItemsPendamping.value = response.total_item || 0;
+      return;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } finally {
+    loadingPendamping.value = false;
+  }
+};
+const loadMorePendamping = () => {
+  if (
+    itemsPendamping.value.length < totalItemsPendamping.value &&
+    !loadingPendamping.value
+  ) {
+    pagePendamping.value += 1;
+    loadPendamping(pagePendamping.value, itemPerPagePendamping.value, "");
+  }
+};
+const totalItemsPendamping = ref(0);
+const searchPendamping = ref("");
+const pagePendamping = ref(1);
+const itemPerPagePendamping = ref(0);
+const loadingPendamping = ref(false);
+const debouncedFetchPendamping = debounce(loadPendamping, 500);
+
+const handleInputPendamping = (val: any) => {
+  pagePendamping.value = 1;
+  debouncedFetchPendamping(
+    pagePendamping.value,
+    itemPerPagePendamping.value,
+    val.target.value
+  );
 };
 </script>
 
@@ -418,7 +534,7 @@ const openDialog = async () => {
               <VCheckbox
                 v-model="isAllSelected"
                 class="custom-checkbox"
-                @click="toggleSelectAll"
+                @update:modelValue="toggleSelectAll"
                 :disabled="items.length === 0"
               />
             </div>
@@ -464,14 +580,34 @@ const openDialog = async () => {
                   item-title="name"
                   item-value="id"
                 />
-                <VSelect
+                <!-- <VSelect
                   v-model="selectedFilters.pendamping"
                   label="Pendamping"
                   :items="itemsPendamping"
                   class="mt-3"
                   item-title="name"
                   item-value="id"
-                />
+                /> -->
+                <br />
+                <VAutocomplete
+                  :items="itemsPendamping"
+                  v-model="selectedFilters.pendamping"
+                  label="Pendamping"
+                  item-value="id"
+                  item-title="name"
+                  density="compact"
+                  placeholder="Pilih atau Cari Pendamping"
+                  :loading="loadingPendamping"
+                  @input="handleInputPendamping"
+                >
+                  <template #item="{ props, item }">
+                    <VListItem v-bind="props" :title="(item.raw as any).name">
+                    </VListItem>
+                  </template>
+                  <template #append-item>
+                    <div v-intersect="loadMorePendamping" />
+                  </template>
+                </VAutocomplete>
                 <VSelect
                   v-model="selectedFilters.provinsi"
                   label="Provinsi"
@@ -509,7 +645,7 @@ const openDialog = async () => {
               density="compact"
               placeholder="Search Data"
               append-inner-icon="ri-search-line"
-              style="max-width: 100%"
+              style="max-inline-size: 100%"
               @input="handleInput"
             />
           </VCol>
@@ -542,7 +678,11 @@ const openDialog = async () => {
               {{ index + 1 + (page - 1) * itemPerPage }}
             </template>
             <template #item.tgl_daftar="{ item }">
-              {{ formatDateIntl(new Date((item as any).tgl_daftar)) }}
+              {{
+                item.tgl_daftar != ""
+                  ? formatDateIntl(new Date((item as any).tgl_daftar))
+                  : ""
+              }}
             </template>
             <template #item.action="{ item }">
               <div class="d-flex gap-1">
