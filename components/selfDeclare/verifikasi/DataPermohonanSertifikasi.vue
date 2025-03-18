@@ -191,15 +191,24 @@ const resetFilters = () => {
   showFilterMenu.value = false;
 };
 
-const isAllSelected = computed(
-  () =>
-    selectedItems.value.length === items.value.length && items.value.length > 0
-);
+const isAllSelected = computed(() => {
+  return items.value.length > 0 && selectedItems.value.length === items.value.length;
+});
 
 // Toggle select all
 const toggleSelectAll = () => {
-  selectedItems.value = isAllSelected.value ? [] : items.value.slice();
+  if (isAllSelected.value) {
+    selectedItems.value = [];
+  } else {
+    selectedItems.value = items.value.map((item) => item.id_daftar);
+  }
 };
+
+watch(selectedItems, () => {
+  if (selectedItems.value.length !== items.value.length) {
+    // Jika ada yang tidak tercentang, pastikan checkbox utama tidak aktif
+  }
+});
 
 // Adaptive button text
 const buttonText = computed(() =>
@@ -225,35 +234,31 @@ const loadItemProduct = async () => {
   }
 };
 
-const postSubmission = async (selectedItems: any) => {
+const postSubmission = async () => {
   try {
-    loadingAddSubmission.value = true;
+    if (selectedItems.value.length === 0) return;
 
-    const res: any = await $api("/self-declare/verificator/submission/assign", {
+    loadingAddSubmission.value = true;
+    const res = await $api("/self-declare/verificator/submission/assign", {
       method: "post",
-      body: {
-        certificate_id: selectedItems,
-      },
+      body: { certificate_id: selectedItems.value },
     });
 
     if (res?.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
-      dialogVisible.value = false;
-      loadingAddSubmission.value = false;
-      selectedItems.value = [];
       emit("refresh");
     } else {
-      useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
-      selectedItems.value = [];
-      dialogVisible.value = false;
-      loadingAddSubmission.value = false;
+      throw new Error("Gagal menambahkan data");
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar(error.message || "Ada Kesalahan", "error");
+  } finally {
     dialogVisible.value = false;
     loadingAddSubmission.value = false;
+    selectedItems.value = [];
   }
 };
+
 
 const loadItemFacility = async () => {
   try {
@@ -381,7 +386,7 @@ const openDialog = async () => {
   <VBtn
     variant="flat"
     append-icon="fa-plus"
-    style="margin: 1svw"
+    style="margin: 1svw;"
     @click="openDialog"
   >
     Ambil Data
@@ -392,7 +397,7 @@ const openDialog = async () => {
       <VCardTitle>
         <VRow>
           <VCol cols="10"><h3>Data Permohonan Sertifikasi</h3></VCol>
-          <VCol cols="2" style="display: flex; justify-content: end">
+          <VCol cols="2" style="display: flex; justify-content: end;">
             <VIcon
               size="small"
               icon="fa-times"
@@ -418,7 +423,7 @@ const openDialog = async () => {
               <VCheckbox
                 v-model="isAllSelected"
                 class="custom-checkbox"
-                @click="toggleSelectAll"
+                @update:modelValue="toggleSelectAll"
                 :disabled="items.length === 0"
               />
             </div>
@@ -509,7 +514,7 @@ const openDialog = async () => {
               density="compact"
               placeholder="Search Data"
               append-inner-icon="ri-search-line"
-              style="max-width: 100%"
+              style="max-inline-size: 100%;"
               @input="handleInput"
             />
           </VCol>
@@ -523,7 +528,7 @@ const openDialog = async () => {
             :loading="loading"
             :items-length="totalItems"
             loading-text="Loading..."
-            style="white-space: nowrap"
+            style="white-space: nowrap;"
             @update:options="
               loadItem({
                 page: page,
