@@ -52,3 +52,4 @@ public/mockServiceWorker.js
 .ipynb_checkpoints/Untitled-checkpoint.ipynb
 list backend uri.xlsx
 Untitled.ipynb
+*.xlsx
