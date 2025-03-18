@@ -183,35 +183,35 @@ onMounted(async () => {
           :headers="headers"
           :items="data"
           :items-length="totalItems"
-          class="elevation-1"
+          class="elevation-1 custom-table"
           @update:options="loadItem(page, size, searchQuery)"
         >
           <template #header.no_daftar="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="font-bold">{{ t(column.title) }}</div>
           </template>
 
           <template #header.tgl_daftar="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="font-bold">{{ t(column.title) }}</div>
           </template>
 
           <template #header.nama_pu="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="font-bold">{{ t(column.title) }}</div>
           </template>
 
           <template #header.jenis_daftar="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="font-bold">{{ t(column.title) }}</div>
           </template>
 
           <template #header.jenis_produk="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="font-bold">{{ t(column.title) }}</div>
           </template>
 
           <template #header.newStatus="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="font-bold">{{ t(column.title) }}</div>
           </template>
 
           <template #header.action="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="font-bold">{{ t(column.title) }}</div>
           </template>
           <template #item.no="{ index }">
             <label>{{ index + 1 }}</label>
