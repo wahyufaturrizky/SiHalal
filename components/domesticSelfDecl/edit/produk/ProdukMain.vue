@@ -37,7 +37,8 @@ const handleSubmit = async (payload: any) => {
 };
 const handleAddProduct = async (payload: any) => {
   try {
-    const { foto_produk, kode_rincian, merek, nama_produk, product_grade } = payload;
+    const { foto_produk, kode_rincian, merek, nama_produk, product_grade } =
+      payload;
     if (
       !foto_produk ||
       !kode_rincian ||
@@ -46,8 +47,8 @@ const handleAddProduct = async (payload: any) => {
       !product_grade
     ) {
       throw {
-        message: 'Isi semua form'
-      }
+        message: "Isi semua form",
+      };
     }
     const response: any = await $api(
       `/self-declare/business-actor/product/create`,
@@ -66,10 +67,13 @@ const handleAddProduct = async (payload: any) => {
     }
     return response;
   } catch (error) {
-    if (error.message === 'Isi semua form') {
+    if (error.message === "Isi semua form") {
       useSnackbar().sendSnackbar(error.message, "error");
     } else {
-      useSnackbar().sendSnackbar("Maaf, Merek yang Anda pilih dilarang.", "error");
+      useSnackbar().sendSnackbar(
+        "Maaf, Merek yang Anda pilih dilarang.",
+        "error"
+      );
     }
   } finally {
     store.isAllBahanSelected();
@@ -273,18 +277,18 @@ const changePage = (page: number) => {
 </script>
 
 <template>
-  <VCard style="padding: 1svw;">
+  <VCard style="padding: 1svw">
     <VCardTitle>
       <VRow>
         <VCol cols="6"><h3>Daftar Produk</h3></VCol>
-        <VCol cols="6" style="display: flex; justify-content: end;">
+        <VCol cols="6" style="display: flex; justify-content: end">
           <VBtn
             v-if="disableTambahProduk()"
             @click="handleOpenModal('CREATE')"
             variant="outlined"
             append-icon="fa-plus"
-            style="margin-inline-end: 1svw;"
-            :disabled="totalProduct===10"
+            style="margin-inline-end: 1svw"
+            :disabled="totalProduct === 10"
             >Tambah</VBtn
           >
           <!-- <VBtn variant="flat">Simpan Perubahan</VBtn> -->
@@ -320,12 +324,7 @@ const changePage = (page: number) => {
     </VCardTitle>
 
     <VCardItem>
-      <VDataTable
-        :headers="tableHeader"
-        :items="produk"
-        class="custom-table"
-        hide-default-footer
-      >
+      <VDataTable :headers="tableHeader" :items="produk" class="custom-table">
         <template #item.no="{ index }">
           {{ index + 1 }}
         </template>
@@ -401,13 +400,13 @@ const changePage = (page: number) => {
         </template>
       </VDataTable>
 
-      <VPagination
+      <!-- <VPagination
         v-model="currentPage"
         :length="totalPages"
         total-visible="5"
         :style="{ marginTop: '20px' }"
         @update:modelValue="changePage"
-      />
+      /> -->
     </VCardItem>
   </VCard>
   <TambahProduk
