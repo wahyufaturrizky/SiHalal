@@ -418,10 +418,11 @@ const getDetail = async () => {
       },
     )
 
-    /// / console.log("response pengajuan detail", response);
+   
     /// / console.log("response pengajuan list layanan", listLayanan.value);
 
     if (response.code == 2000) {
+      console.log("response pengajuan detail", response);
       submissionDetail.tanggal_buat = response.data.tgl_daftar.split('T')[0]
       submissionDetail.status = response.data.status_reg
       submissionDetail.id_jenis_pengajuan = response.data.jenis_pendaftaran
@@ -438,7 +439,7 @@ const getDetail = async () => {
       formData.id_jenis_layanan = response.data.id_jenis_layanan
       formData.lokasi_pendamping = response.data.lokasi_pendamping
       formData.id_jenis_produk = response.data.id_product
-      formData.nama_pu = response.data.nama_usaha
+      formData.nama_pu = response.data.merek_dagang
       formData.area_pemasaran = response.data.area_pemasaran
 
       formData.id_lembaga_pendamping = response.data.id_lembaga_pendamping
@@ -551,7 +552,7 @@ const handleUpdateSubmission = async () => {
           tgl_surat_permohonan: new Date(formData.tgl_surat_permohonan),
           jenis_layanan: formData.id_jenis_layanan,
           jenis_produk: formData.id_jenis_produk,
-          nama_usaha: formData.nama_pu,
+          merek_dagang: formData.nama_pu,
           area_pemasaran: formData.area_pemasaran,
           lokasi_pendamping: formData.lokasi_pendamping,
           lembaga_pendamping: formData.id_lembaga_pendamping,
@@ -855,7 +856,7 @@ const getItemData = item => {
             </VItemGroup>
             <br>
             <VItemGroup>
-              <VLabel>Nama Usaha</VLabel>
+              <VLabel>Nama Usaha / Merek Dagang </VLabel>
               <VTextField
                 v-model="formData.nama_pu"
                 :rules="[requiredValidator]"

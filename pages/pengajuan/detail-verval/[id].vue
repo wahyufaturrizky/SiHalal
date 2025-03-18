@@ -36,6 +36,7 @@ const getDetail = async () => {
       useSnackbar().sendSnackbar("ada kesalahan", "error");
       return;
     }
+  
     dataPelakuUsaha.value = response.data?.pelaku_usaha;
     dataPenanggungJawab.value = response.data?.penanggung_jawab;
     dataPendaftaran.value = response.data?.pendaftaran;
@@ -107,9 +108,11 @@ const getIngredientList = async () => {
       }
     );
     if (response.code != 2000) {
+    
       useSnackbar().sendSnackbar("ada kesalahan", "error");
       return;
     }
+    console.log(response,'ini response')
     dataBahanList.value = response.data || [];
     totalIngredients.value = response.data.length;
   } catch (error) {

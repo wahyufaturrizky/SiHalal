@@ -38,7 +38,7 @@ watch(
           selected.value.add(index);
         }
       });
-      console.log("Initial selected items:", Array.from(selected.value));
+      // console.log("Initial selected items:", Array.from(selected.value));
     }
   },
   { immediate: true }
