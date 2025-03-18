@@ -493,15 +493,23 @@ onMounted(async () => {
     <VDialog v-model="isSendModalOpen" max-width="840px" persistent>
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
-          <div class="text-h3 font-weight-bold">Kirim Pengajuan</div>
+          <div class="text-h3 font-weight-bold">
+            {{
+              invoiceFile ? "Kirim Pengajuan" : "Pengajuan Belum Dapat Dikirim"
+            }}
+          </div>
           <VIcon @click="handleOpenSendModal"> fa-times </VIcon>
         </VCardTitle>
         <VCardText>
           <VRow>
             <VCol>
-              Pastikan dokumen persyaratan lengkap dan semua biaya pemeriksaan
+              {{
+                invoiceFile
+                  ? `Pastikan dokumen persyaratan lengkap dan semua biaya pemeriksaan
               sudah dimasukkan. Invoice akan diterbitkan saat Anda klik tombol
-              ”kirim” dan invoice tidak dapat diedit kembali
+              ”kirim” dan invoice tidak dapat diedit kembali`
+                  : "Pengajuan belum dapat dikirim dikarenakan Biaya belum ditetapkan."
+              }}
             </VCol>
           </VRow>
         </VCardText>
@@ -514,6 +522,7 @@ onMounted(async () => {
             Batal
           </VBtn>
           <VBtn
+            v-if="Boolean(invoiceFile)"
             variant="flat"
             class="px-4"
             color="primary"
