@@ -173,6 +173,7 @@ const downloadInvoice = async (el: any) => {
     });
 
     if (response?.code === 2000) {
+      downloadDocument(response?.data?.file, "INVOICE")
       return response?.data;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
