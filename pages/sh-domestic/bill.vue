@@ -320,7 +320,7 @@ watch([status, outDated, page], () => {
             {{ formatToIDR(item.total_inv) }}
           </template>
           <template #item.no="{ index }">
-            <label>{{ index + 1 }}</label>
+            <label>{{ (index + 1) + (page - 1) * size }}</label>
           </template>
           <template v-slot:[`item.status`]="{ item }">
             <div class="d-flex flex-wrap">
