@@ -109,7 +109,7 @@ onMounted(async () => {
     loadingAll.value = false;
   }
 });
-const selectedFilterBy = ref("nama_pu");
+const selectedFilterBy = ref("pelaku_usaha");
 </script>
 
 <template>
@@ -141,7 +141,7 @@ const selectedFilterBy = ref("nama_pu");
             inline
             @update:model-value="changeFilterBy"
           >
-            <VRadio :label="`Nama PU`" value="nama_pu" />
+            <VRadio :label="`Nama PU`" value="pelaku_usaha" />
             <VRadio :label="`Nomor Daftar`" value="no_daftar" />
           </VRadioGroup>
         </VCol>
