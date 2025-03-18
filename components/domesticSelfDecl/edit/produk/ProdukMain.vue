@@ -37,6 +37,18 @@ const handleSubmit = async (payload: any) => {
 };
 const handleAddProduct = async (payload: any) => {
   try {
+    const { foto_produk, kode_rincian, merek, nama_produk, product_grade } = payload;
+    if (
+      !foto_produk ||
+      !kode_rincian ||
+      !merek ||
+      !nama_produk ||
+      !product_grade
+    ) {
+      throw {
+        message: 'Isi semua form'
+      }
+    }
     const response: any = await $api(
       `/self-declare/business-actor/product/create`,
       {
@@ -47,7 +59,6 @@ const handleAddProduct = async (payload: any) => {
         },
       } as any
     );
-
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
       handleDetailProduct(submissionId);
@@ -55,8 +66,11 @@ const handleAddProduct = async (payload: any) => {
     }
     return response;
   } catch (error) {
-    useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
-    console.log(error);
+    if (error.message === 'Isi semua form') {
+      useSnackbar().sendSnackbar(error.message, "error");
+    } else {
+      useSnackbar().sendSnackbar("Maaf, Merek yang Anda pilih dilarang.", "error");
+    }
   } finally {
     store.isAllBahanSelected();
   }
