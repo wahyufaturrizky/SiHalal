@@ -254,6 +254,7 @@ const toggleEdit = (item: any, type: string) => {
       tanggal_produksi: item?.tanggal_produksi,
       tanggal_kadaluarsa: item?.tanggal_kadaluarsa,
       file_dok: item?.file_dok,
+      id_hasil_produksi: item?.id_hasil_produksi,
     };
     uploadedFile.value = {
       file: item?.file_dok,
@@ -289,7 +290,14 @@ const toggleEdit = (item: any, type: string) => {
 };
 
 const toggleEdit2Table = (item: any, index: number) => {
-  console.log(index, "< index here")
+  selectedProduct.value = {
+    nama_produk: item?.nama_produk,
+    jumlah: item?.jumlah,
+    tanggal: item?.tanggal,
+    tujuan: item?.tujuan,
+    file_dok: item?.file_dok,
+    id_reg_prod: item?.id_reg_prod,
+  };
   detailItem.value = item;
   addDialog.value = true;
   labelSaveBtn.value = "Ubah";
@@ -622,8 +630,9 @@ const handleAddOrEdit = async () => {
   } else if (titleDialog.value === "Ubah Catatan Produk") {
     let body: any = {};
     if (tabs.value === "2") {
+      console.log(selectedProduct.value, 'selectedProduct')
       body = {
-        id_produk: selectedProduct.value.id,
+        id_produk: detailItem.value.id_prod_penyimpanan,
         jumlah: +detailItem.value.jumlah,
         tanggal_masuk: formatDateId(detailItem.value.tanggal_masuk),
         tanggal_keluar: formatDateId(detailItem.value.tanggal_keluar),
@@ -769,10 +778,11 @@ const handleAddOrEdit = async () => {
       useSnackbar().sendSnackbar("Sukses menambah data", "success");
     }
   } else if (titleDialog.value === "Ubah Catatan Hasil Produksi") {
+    console.log(selectedProduct.value, 'selectedProduct', detailItem.value)
     let body: any = {};
     if (tabs.value === "2") {
       body = {
-        id_produk: selectedProduct.value.id,
+        id_produk: selectedProduct?.value?.id_reg_prod,
         jumlah: +selectedProduct.value?.jumlah,
         tanggal_produksi: formatDateId(selectedProduct.value?.tanggal_masuk),
         tanggal_kadaluarsa: formatDateId(selectedProduct.value?.tanggal_keluar),
@@ -804,7 +814,7 @@ const handleAddOrEdit = async () => {
     let body: any = {};
     if (tabs.value === "2") {
       body = {
-        id_produk: selectedProduct.value.id,
+        id_produk: selectedProduct.value.id_reg_prod,
         jumlah: +selectedProduct.value?.jumlah,
         tanggal: formatDateId(selectedProduct.value?.tanggal),
         tujuan: selectedProduct.value?.tujuan,
@@ -1053,15 +1063,11 @@ watch(selectedFactory, () => {
             <VTabItem>
               <div v-if="tabs === '2'" class="mt-5">
                 <label>Nama Produk</label>
-                <VSelect
-                  v-model="selectedProduct"
-                  :items="listProduk"
-                  outlined
-                  placeholder="pilih pabrik"
-                  item-title="nama"
-                  item-value="id"
-                  default-value="'pilih'"
-                  return-object
+                <VTextField
+                  v-model="detailItem.nama_bahan"
+                  class="-mt-10"
+                  placeholder="isi judul"
+                  disabled
                 />
                 <br />
                 <label class="label-pengajuan"> Jumlah </label>
@@ -1201,15 +1207,11 @@ watch(selectedFactory, () => {
             <VTabItem>
               <div v-if="tabs === '2'" class="mt-5">
                 <label>Nama Produk</label>
-                <VSelect
-                  v-model="selectedProduct"
-                  :items="listProduk"
-                  outlined
-                  placeholder="pilih pabrik"
-                  item-title="nama"
-                  item-value="id"
-                  default-value="'pilih'"
-                  return-object
+                <VTextField
+                  v-model="detailItem.nama_produk"
+                  class="-mt-10"
+                  placeholder="isi judul"
+                  disabled
                 />
                 <br />
                 <label class="label-pengajuan"> Jumlah </label>
@@ -1500,7 +1502,7 @@ watch(selectedFactory, () => {
                   <br />
                   <label>Nama Produk</label>
                   <VSelect
-                    v-model="selectedProduct"
+                    v-model="payloadHasilProduksi.nama_produk"
                     :items="listProduk"
                     outlined
                     placeholder="pilih pabrik"
@@ -1508,6 +1510,7 @@ watch(selectedFactory, () => {
                     item-value="id"
                     default-value="'pilih'"
                     return-object
+                    :disabled="titleDialog === 'Ubah Catatan Hasil Produksi'"
                   />
                   <br />
                   <label>Jumlah</label>
@@ -1550,6 +1553,7 @@ watch(selectedFactory, () => {
                   v-model="payloadHasilProduksi.nama_produk"
                   class="-mt-10"
                   placeholder="isi judul"
+                  :disabled="titleDialog === 'Ubah Catatan Hasil Produksi'"
                 />
                 <br/>
                 <VRow class="mb-3" align="center">
@@ -1657,14 +1661,14 @@ watch(selectedFactory, () => {
                   <br />
                   <label>Nama Produk</label>
                   <VSelect
-                    v-model="selectedProduct"
+                    v-model="payloadHasilDistribusi.nama_produk"
                     :items="listProduk"
                     outlined
                     placeholder="pilih pabrik"
                     item-title="nama"
                     item-value="id"
                     default-value="'pilih'"
-                    return-object
+                    :disabled="titleDialog === 'Ubah Catatan Distribusi'"
                   />
                   <br />
                   <label>Jumlah</label>
@@ -1699,6 +1703,7 @@ watch(selectedFactory, () => {
                   v-model="payloadHasilDistribusi.nama_produk"
                   class="-mt-10"
                   placeholder="isi judul"
+                  :disabled="titleDialog === 'Ubah Catatan Distribusi'"
                 />
                 <br/>
                 <VRow class="mb-3" align="center">
