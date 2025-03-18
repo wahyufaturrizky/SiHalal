@@ -66,6 +66,7 @@ export const useMyTabEditRegulerStore = defineStore({
       }
     },
     isBahan() {
+      let countBahan = 0;
       const jenisBahan = new Set(this.bahan.map((item) => item.jenis_bahan));
       const verifyBahan = new Set(["Kemasan", "Cleaning Agent", "Bahan"]);
       if (jenisBahan.size != verifyBahan.size) {
@@ -77,6 +78,15 @@ export const useMyTabEditRegulerStore = defineStore({
           this.bahanCheck = false;
           return false;
         }
+      }
+      this.bahan.map((item: any) => {
+        if (item.jenis_bahan === "Bahan") {
+          countBahan ++
+        }
+      })
+      if (countBahan < 5) {
+        this.bahanCheck = false;
+        return false;
       }
       this.bahanCheck = true;
 

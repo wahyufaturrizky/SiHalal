@@ -171,9 +171,22 @@ const getListIngredients = async () => {
           ["Bahan", "Cleaning Agent", "Kemasan"].every((item) =>
             jenisBahan.includes(item?.toLowerCase())
           )
-        )
-          bahanComplete(true);
-        else bahanComplete(false);
+        ) {
+          let count = 0
+          jenisBahan.map((element: any) => {
+              if (element === 'bahan') {
+                count ++
+              }
+          })
+          if (count < 5) {
+            bahanComplete(false);
+          } else {
+            bahanComplete(true);
+          }
+        }
+        else {
+          bahanComplete(false);
+      }
       }
     }
 

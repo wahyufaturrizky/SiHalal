@@ -509,7 +509,7 @@ const getChannel = async () => {
     });
     if (response.code === 2000) {
       dataCertifHalal.value = response?.data?.certificate_halal;
-      return response?.data?.certificate_halal?.id_produk;
+      return response?.data?.certificate_halal;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -520,13 +520,14 @@ const loadItemProductClasifications = async () => {
   try {
     const params = {};
     const productCode = await getChannel();
+    dataCertifHalal.value = productCode;
 
     const response = await $api(
       `/reguler/auditor/combobox-product-klasifikasi`,
       {
         method: "get",
         params: {
-          idLayanan: productCode,
+          idLayanan: productCode?.id_produk,
         },
       }
     );
@@ -582,7 +583,7 @@ const getListIngredients = async () => {
           id_reg: id,
         },
       }
-    );
+    );    
 
     if (response.code === 2000) {
       materialName.value = {
@@ -595,26 +596,39 @@ const getListIngredients = async () => {
           i.jenis_bahan?.toLowerCase()
         );
         if (
-          dataCertifHalal?.jenis_layanan !== "Makanan" ||
-          dataCertifHalal?.jenis_layanan !== "Minuman"
+          dataCertifHalal?.value?.jenis_layanan === "Makanan" ||
+          dataCertifHalal?.value?.jenis_layanan === "Minuman"
         ) {
-          if (jenisBahan.length > 0) {
-            emit("complete", true);
-          } else {
-            emit("failed", missing);
-          }
-        } else {
           if (
             ["Bahan", "Cleaning Agent", "Kemasan"].every((item) =>
               jenisBahan.includes(item?.toLowerCase())
             )
           ) {
-            emit("complete", true);
+            let count = 0
+            jenisBahan.map((element: any) => {
+              
+              if (element === 'bahan') {
+                count ++
+              }
+            })
+            if (count < 5) {
+              console.log('siini kah?');
+              
+              emit("failed", 'Bahan minimal 5');
+            } else {
+              emit("complete", true);
+            }
           } else {
             const missing = ["Bahan", "Cleaning Agent", "Kemasan"].filter(
               (item) => !jenisBahan.includes(item)
             );
 
+            emit("failed", missing);
+          }
+        } else {
+          if (jenisBahan.length > 0) {
+            emit("complete", true);
+          } else {
             emit("failed", missing);
           }
         }
@@ -1103,8 +1117,9 @@ const handleChange = () => {
 onMounted(async () => {
   loading.value = true;
   tabs.value = 0;
+  const response = await loadItemProductClasifications()
+  
   await Promise.allSettled([
-    loadItemProductClasifications(),
     getListCatatan(),
     getListFormulir(),
     getListIngredients(),
