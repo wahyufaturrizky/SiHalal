@@ -134,6 +134,49 @@ const loadItem = async ({
     loading.value = false;
   }
 };
+const loadItemReturn = async ({
+  page,
+  size,
+  keyword,
+  fasilitas,
+  jenis_produk,
+  provinsi,
+  lembaga,
+  pendamping,
+  kabupaten,
+}: {
+  page: number;
+  size: number;
+  keyword: string;
+  fasilitas: string;
+  jenis_produk: string;
+  provinsi: string;
+  lembaga: string;
+  pendamping: string;
+  kabupaten: string;
+}) => {
+  try {
+    const response: any = await $api("/self-declare/verificator/submission", {
+      method: "get",
+      params: {
+        page,
+        size,
+        keyword,
+        fasilitas,
+        jenis_produk,
+        provinsi,
+        lembaga,
+        pendamping,
+        kabupaten,
+        status: "OF71",
+        channel_id: "CH003,CH004",
+      },
+    });
+    return response;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 
 const debouncedFetch = debounce(loadItem, 500);
 
@@ -192,15 +235,28 @@ const resetFilters = () => {
 };
 
 const isAllSelected = computed(() => {
-  return items.value.length > 0 && selectedItems.value.length === items.value.length;
+  return (
+    items.value.length > 0 && selectedItems.value.length === items.value.length
+  );
 });
 
 // Toggle select all
-const toggleSelectAll = () => {
+const toggleSelectAll = async () => {
   if (isAllSelected.value) {
     selectedItems.value = [];
   } else {
-    selectedItems.value = items.value.map((item) => item.id_daftar);
+    const getallData = await loadItemReturn({
+      page: 1,
+      size: 9999,
+      keyword: "",
+      fasilitas: "",
+      jenis_produk: "",
+      provinsi: "",
+      lembaga: "",
+      pendamping: "",
+      kabupaten: "",
+    });
+    selectedItems.value = getallData.data.map((item) => item.id_daftar);
   }
 };
 
@@ -258,7 +314,6 @@ const postSubmission = async () => {
     selectedItems.value = [];
   }
 };
-
 
 const loadItemFacility = async () => {
   try {
@@ -366,7 +421,8 @@ const openDialog = async () => {
     loadItemProduct(),
     loadItemFacility(),
     loadItemLembaga(),
-    loadItemPendamping(),
+    loadPendamping(1, 10),
+    // loadItemPendamping(),
     loadItemProvince(),
   ]);
 
@@ -380,13 +436,68 @@ const openDialog = async () => {
     loadingAll.value = false;
   }
 };
+const loadPendamping = async (page, item, name = "") => {
+  try {
+    loadingPendamping.value = true;
+    const response: any = await $api(
+      "/self-declare/komite-fatwa/proses-sidang/filter-pendamping",
+      {
+        method: "get",
+        params: {
+          page,
+          item,
+          name,
+        },
+      }
+    );
+    console.log("response pendamping ", response);
+    if (response.code == 2000) {
+      if (page === 1) {
+        itemsPendamping.value = response.data || [];
+        console.log("items Pendamping : ", itemsPendamping.value);
+      } else {
+        itemsPendamping.value = [...itemsPendamping.value, ...response.data];
+      }
+      totalItemsPendamping.value = response.total_item || 0;
+      return;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } finally {
+    loadingPendamping.value = false;
+  }
+};
+const loadMorePendamping = () => {
+  if (
+    itemsPendamping.value.length < totalItemsPendamping.value &&
+    !loadingPendamping.value
+  ) {
+    pagePendamping.value += 1;
+    loadPendamping(pagePendamping.value, itemPerPagePendamping.value, "");
+  }
+};
+const totalItemsPendamping = ref(0);
+const searchPendamping = ref("");
+const pagePendamping = ref(1);
+const itemPerPagePendamping = ref(0);
+const loadingPendamping = ref(false);
+const debouncedFetchPendamping = debounce(loadPendamping, 500);
+
+const handleInputPendamping = (val: any) => {
+  pagePendamping.value = 1;
+  debouncedFetchPendamping(
+    pagePendamping.value,
+    itemPerPagePendamping.value,
+    val.target.value
+  );
+};
 </script>
 
 <template>
   <VBtn
     variant="flat"
     append-icon="fa-plus"
-    style="margin: 1svw;"
+    style="margin: 1svw"
     @click="openDialog"
   >
     Ambil Data
@@ -397,7 +508,7 @@ const openDialog = async () => {
       <VCardTitle>
         <VRow>
           <VCol cols="10"><h3>Data Permohonan Sertifikasi</h3></VCol>
-          <VCol cols="2" style="display: flex; justify-content: end;">
+          <VCol cols="2" style="display: flex; justify-content: end">
             <VIcon
               size="small"
               icon="fa-times"
@@ -469,14 +580,34 @@ const openDialog = async () => {
                   item-title="name"
                   item-value="id"
                 />
-                <VSelect
+                <!-- <VSelect
                   v-model="selectedFilters.pendamping"
                   label="Pendamping"
                   :items="itemsPendamping"
                   class="mt-3"
                   item-title="name"
                   item-value="id"
-                />
+                /> -->
+                <br />
+                <VAutocomplete
+                  :items="itemsPendamping"
+                  v-model="selectedFilters.pendamping"
+                  label="Pendamping"
+                  item-value="id"
+                  item-title="name"
+                  density="compact"
+                  placeholder="Pilih atau Cari Pendamping"
+                  :loading="loadingPendamping"
+                  @input="handleInputPendamping"
+                >
+                  <template #item="{ props, item }">
+                    <VListItem v-bind="props" :title="(item.raw as any).name">
+                    </VListItem>
+                  </template>
+                  <template #append-item>
+                    <div v-intersect="loadMorePendamping" />
+                  </template>
+                </VAutocomplete>
                 <VSelect
                   v-model="selectedFilters.provinsi"
                   label="Provinsi"
@@ -514,7 +645,7 @@ const openDialog = async () => {
               density="compact"
               placeholder="Search Data"
               append-inner-icon="ri-search-line"
-              style="max-inline-size: 100%;"
+              style="max-inline-size: 100%"
               @input="handleInput"
             />
           </VCol>
@@ -528,7 +659,7 @@ const openDialog = async () => {
             :loading="loading"
             :items-length="totalItems"
             loading-text="Loading..."
-            style="white-space: nowrap;"
+            style="white-space: nowrap"
             @update:options="
               loadItem({
                 page: page,
@@ -547,7 +678,11 @@ const openDialog = async () => {
               {{ index + 1 + (page - 1) * itemPerPage }}
             </template>
             <template #item.tgl_daftar="{ item }">
-              {{ formatDateIntl(new Date((item as any).tgl_daftar)) }}
+              {{
+                item.tgl_daftar != ""
+                  ? formatDateIntl(new Date((item as any).tgl_daftar))
+                  : ""
+              }}
             </template>
             <template #item.action="{ item }">
               <div class="d-flex gap-1">

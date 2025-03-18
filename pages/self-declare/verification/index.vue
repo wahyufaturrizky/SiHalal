@@ -34,6 +34,14 @@ const handleInput = () => {
     status.value
   );
 };
+const changeFilterBy = (item) => {
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    status.value
+  );
+};
 
 const navigateAction = (id: string) => {
   navigateTo(`/self-declare/verification/${id}`);
@@ -55,6 +63,7 @@ const loadItem = async (
         size,
         keyword,
         status,
+        filterBy: selectedFilterBy.value,
       },
     });
 
@@ -100,6 +109,7 @@ onMounted(async () => {
     loadingAll.value = false;
   }
 });
+const selectedFilterBy = ref("nama_pu");
 </script>
 
 <template>
@@ -124,7 +134,17 @@ onMounted(async () => {
     </VCardTitle>
     <VCardText v-if="!loadingAll">
       <VRow>
-        <VCol />
+        <VCol>
+          <VLabel>Cari Berdasarkan : </VLabel>
+          <VRadioGroup
+            v-model="selectedFilterBy"
+            inline
+            @update:model-value="changeFilterBy"
+          >
+            <VRadio :label="`Nama PU`" value="nama_pu" />
+            <VRadio :label="`Nomor Daftar`" value="no_daftar" />
+          </VRadioGroup>
+        </VCol>
       </VRow>
       <VRow>
         <VCol cols="3">
