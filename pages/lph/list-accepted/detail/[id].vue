@@ -14,6 +14,7 @@ const dokumenLama = ref<any>([]);
 const dataPemeriksaanProduk = ref<any>(null);
 const sjphFile = ref<any>(null);
 const suratMohonFile = ref<any>(null);
+const invoiceFile = ref<string>("");
 
 const isSendModalOpen = ref(false);
 
@@ -58,7 +59,8 @@ const getSjphDocument = async () => {
     });
 
     if (response?.code === 2000) {
-      sjphFile.value = response.data
+      sjphFile.value = response.data;
+
       return response?.data;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
@@ -77,16 +79,17 @@ const OldDoc = async (noDaftar: string) => {
         "Content-Type": "application/json",
       },
     });
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
+
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
     const data = await response.json();
 
     dokumenLama.value = data.data;
+
     return data;
   } catch (error) {
     console.error("Terjadi kesalahan saat mengambil data:", error);
+
     return null;
   }
 };
@@ -102,20 +105,19 @@ const getDetailData = async (type: string) => {
       const data = response?.data;
       if (type == "pemeriksaanproduk") {
         const noDaftar = data?.no_pendaftaran?.no_daftar;
-        if (noDaftar) {
-          await OldDoc(noDaftar);
-        } else {
-          console.error("noDaftar tidak ditemukan dalam response API");
-        }
+        if (noDaftar) await OldDoc(noDaftar);
+        else console.error("noDaftar tidak ditemukan dalam response API");
       }
 
       return data;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
       return null;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
     return null;
   }
 };
@@ -132,16 +134,14 @@ const getDownloadForm = async (docName: string, propName: string) => {
 };
 
 const getSuratPermohonan = async () => {
-  const result: any = await $api(`/reguler/lph/generate-surat-permohonan`, {
+  const result: any = await $api("/reguler/lph/generate-surat-permohonan", {
     method: "get",
     query: {
       id,
     },
   });
 
-  if (result?.code === 2000) {
-    suratMohonFile.value = result?.data?.file
-  }
+  if (result?.code === 2000) suratMohonFile.value = result?.data?.file;
 };
 
 const onUpdateBiaya = async () => {
@@ -168,18 +168,14 @@ const downloadInvoice = async (el: any) => {
     const response: any = await $api("/reguler/lph/download-invoice", {
       method: "post",
       body: {
-        no_daftar: 'SH2024-1-497336'
+        no_daftar: el,
       },
     });
 
-    if (response?.code === 2000) {
-      downloadDocument(response?.data?.file, "INVOICE")
-      return response?.data;
-    } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    }
+    if (response?.code === 2000) return response?.data?.file;
+    else useSnackbar().sendSnackbar("Invoice Tidak Tersedia", "warning");
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Invoice Tidak Tersedia", "warning");
   }
 };
 
@@ -208,6 +204,14 @@ onMounted(async () => {
   dataPengajuan.value = responseData?.[0]?.value || {};
   dataProduk.value = responseData?.[1]?.value || [];
   dataPemeriksaanProduk.value = responseData?.[2]?.value || {};
+
+  const fetchedInvoiceFile =
+    (await downloadInvoice(
+      responseData?.[2]?.value?.no_pendaftaran?.no_daftar
+    )) || "";
+
+  if (fetchedInvoiceFile) invoiceFile.value = fetchedInvoiceFile;
+
   loading.value = false;
 });
 </script>
@@ -223,9 +227,10 @@ onMounted(async () => {
           <VCol class="d-flex justify-end">
             <VBtn
               class="me-4"
-              text="STTD"
+              :color="invoiceFile ? 'primary' : '#A09BA1'"
               variant="outlined"
-              @click="() => downloadInvoice(dataPemeriksaanProduk?.no_pendaftaran)"
+              :disabled="!Boolean(invoiceFile)"
+              @click="handleDownloadForm(invoiceFile, 'INVOICE')"
             >
               <template #default>
                 <div class="d-flex gap-2">
@@ -341,9 +346,9 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <VRow>
-                <VCol>{{
-                  formatToIDR(dataPemeriksaanProduk?.total_biaya)
-                }}</VCol>
+                <VCol>
+                  {{ formatToIDR(dataPemeriksaanProduk?.total_biaya) }}
+                </VCol>
               </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -406,15 +411,11 @@ onMounted(async () => {
                 </VCol>
               </VRow>
               <VRow align="center">
-                <VCol cols="5" class="text-h6">Dokumen SJPH </VCol>
+                <VCol cols="5" class="text-h6"> Dokumen SJPH </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
-                    :color="
-                      sjphFile?.file
-                        ? 'primary'
-                        : '#A09BA1'
-                    "
+                    :color="sjphFile?.file ? 'primary' : '#A09BA1'"
                     density="compact"
                     class="px-2"
                     :disabled="sjphFile?.file ? false : true"
@@ -427,15 +428,11 @@ onMounted(async () => {
                 </VCol>
               </VRow>
               <VRow align="center">
-                <VCol cols="5" class="text-h6">Surat Permohonan </VCol>
+                <VCol cols="5" class="text-h6"> Surat Permohonan </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
-                    :color="
-                      suratMohonFile
-                        ? 'primary'
-                        : '#A09BA1'
-                    "
+                    :color="suratMohonFile ? 'primary' : '#A09BA1'"
                     density="compact"
                     class="px-2"
                     :disabled="suratMohonFile ? false : true"
@@ -464,7 +461,9 @@ onMounted(async () => {
                 :key="idx"
                 align="center"
               >
-                <VCol cols="5" class="text-h6"> {{ item.ref_desc }} </VCol>
+                <VCol cols="5" class="text-h6">
+                  {{ item.ref_desc }}
+                </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
