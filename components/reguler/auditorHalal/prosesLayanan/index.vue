@@ -38,7 +38,7 @@ const getDetailData = async () => {
         namaPerusahaan: response.data?.certificate_halal?.nama_pu,
         namaPenanggungJawab: response.data?.penanggung_jawab?.nama_pj,
         jabatan: 'Tim managemen Halal',
-        nib: response?.data.aspek_legal?.filter(i => i.jenis_surat === 'NIB')[0].no_surat,
+        nib: response?.data.aspek_legal?.filter(i => i.jenis_surat === 'NIB' || i.jenis_surat === 'LGL01')[0].no_surat,
       }
     }
     loading.value = false
