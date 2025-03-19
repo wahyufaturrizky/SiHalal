@@ -84,7 +84,7 @@ export const useMyTabEditRegulerStore = defineStore({
           countBahan ++
         }
       })
-      if (countBahan < 5) {
+      if (countBahan < 3) {
         this.bahanCheck = false;
         return false;
       }

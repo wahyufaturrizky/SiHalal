@@ -80,6 +80,8 @@ const itemPerPageCertified = ref(5);
 const totalItemsCertified = ref(0);
 const loadingCertified = ref(true);
 const pageCertified = ref(1);
+const tanggalBerlakuAll = ref("");
+
 const loadItemBahan = async (page: number, size: number, name: string = "") => {
   try {
     if (form.value.typeBahan == 0) {
@@ -104,6 +106,15 @@ const loadItemBahan = async (page: number, size: number, name: string = "") => {
     if (form.value.typeBahan == 0) {
       itemsCertified.value = response.data != null ? response.data : [];
       totalItemsCertified.value = response.total_item;
+      tanggalBerlakuAll.value = {
+              ...tanggalBerlakuAll.value, // Data sebelumnya
+              ...response.data.reduce((acc: Record<string, string>, item) => {
+                acc[item.nama_bahan] = item.tgl_berlaku_sertifikat
+                  ? new Date(item.tgl_berlaku_sertifikat).toISOString().split("T")[0]
+                  : "";
+                return acc;
+              }, {}),
+            };
       return;
     }
 
@@ -171,31 +182,48 @@ const insertBahan = async () => {
   submitAddBahanButton.value = true;
 
   try {
+    // Siapkan payload awal
+    let bodyData: Record<string, any> = {
+      id: form.value.id,
+      jenis_bahan: `${
+        form.value.typeBahan == 0 ? "certified" : "uncertified"
+      }|${form.value.jenis_bahan}`,
+      nama_bahan: form.value.nama_bahan,
+      kelompok: form.value.kelompok,
+      merek: form.value.merek,
+      produsen: form.value.produsen,
+      no_sertifikat: form.value.no_sertifikat,
+    };
+
+    // Jika bahan bersertifikat, tambahkan tgl_berlaku jika ada
+    const namaBahanKey = Object.keys(tanggalBerlakuAll.value).find(
+      (key) =>
+        key.trim().toLowerCase() === form.value.nama_bahan.trim().toLowerCase()
+    );
+
+    if (namaBahanKey) {
+      bodyData.tgl_berlaku = tanggalBerlakuAll.value[namaBahanKey];
+    }
+
+    console.log("Data yang dikirim ke API (Edit):", bodyData);
+
     const response = await $api(
       `/self-declare/submission/bahan/${route.params.id}/edit`,
       {
         method: "post",
-        body: {
-          id: form.value.id,
-          jenis_bahan: `${
-            form.value.typeBahan == 0 ? "certified" : "uncertified"
-          }|${form.value.jenis_bahan}`,
-          nama_bahan: form.value.nama_bahan,
-          kelompok: form.value.kelompok,
-          merek: form.value.merek,
-          produsen: form.value.produsen,
-          no_sertifikat: form.value.no_sertifikat,
-        },
+        body: bodyData,
       }
     );
+
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("Gagal menambahkan bahan", "error");
+      useSnackbar().sendSnackbar("Gagal mengedit bahan", "error");
       return;
     }
+
     emits("loadList", true);
-    useSnackbar().sendSnackbar("Berhasil menambahkan bahan", "success");
+    useSnackbar().sendSnackbar("Berhasil mengedit bahan", "success");
   } catch (error) {
-    useSnackbar().sendSnackbar("Gagal menambahkan bahan", "error");
+    useSnackbar().sendSnackbar("Gagal mengedit bahan", "error");
   } finally {
     submitAddBahanButton.value = false;
     modalAddBahan.value = false;

@@ -161,8 +161,8 @@ const getDetailBahan = async () => {
         : parseInt(response.data?.status) === parseInt(1)
         ? parseInt(1)
         : "";
-    form.value.temuan = response.data?.temuan;
-    form.value.keterangan = response.data?.notes;
+    form.value.temuan = response.data?.notes;
+    form.value.keterangan = response.data?.keterangan;
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
@@ -296,7 +296,7 @@ onMounted(async () => {
                     density="compact"
                     placeholder="Data otomatis terisi apabila nama bahan telah dipilih"
                     v-model="form.keterangan"
-                    :disabled="modalType === modalTypeEnum.ADD || modalType === modalTypeEnum.EDIT"
+                    :disabled="modalType === modalTypeEnum.ADD"
                   ></VTextField>
                 </VItemGroup>
               </VCol>
