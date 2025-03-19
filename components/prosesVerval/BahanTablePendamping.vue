@@ -6,7 +6,7 @@ const tableHeader = [
   { title: "Nama Bahan", value: "nama_bahan" },
   { title: "Diragukan / Tidak Diragukan", value: "status" },
   { title: "Temuan", value: "temuan" },
-  { title: "Catatan", value: "keterangan" },
+  { title: "Keterangan", value: "keterangan" },
   { title: "Action", value: "action" },
 ];
 
