@@ -33,7 +33,7 @@ const getDetail = async () => {
     );
 
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 1", "error");
       return;
     }
   
@@ -43,7 +43,7 @@ const getDetail = async () => {
     dataTracking.value = response.data?.tracking;
     imageData.value = response?.data?.lembaga_pendamping?.foto_pendampingan;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 2", "error");
   }
 };
 const totalGeneralQuestion = ref(0);
@@ -56,15 +56,14 @@ const getGeneralQuestion = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 3", "error");
       return;
     }
 
     dataRequirementGeneral.value = response.data || [];
     totalGeneralQuestion.value = response.data.length;
-    // console.log(totalGeneralQuestion,'ini page')
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 4", "error");
   }
 };
 const currentPageGeneralQuestion = ref(1);
@@ -89,13 +88,13 @@ const getSpecificQuestion = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 5", "error");
       return;
     }
 
     dataRequirementSpecific.value = response.data;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 6", "error");
   }
 };
 const totalIngredients = ref(0);
@@ -109,14 +108,13 @@ const getIngredientList = async () => {
     );
     if (response.code != 2000) {
     
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 7", "error");
       return;
     }
-    console.log(response,'ini response')
     dataBahanList.value = response.data || [];
-    totalIngredients.value = response.data.length;
+    totalIngredients.value = response?.data?.length || 0;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 8", "error");
   }
 };
 
@@ -144,7 +142,7 @@ const getProductList = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 9", "error");
       return "";
     }
 
@@ -153,9 +151,9 @@ const getProductList = async () => {
     } else {
       dataProdukList.value = [];
     }
-    totalProductList.value = response.data.length;
+    totalProductList.value = response?.data?.length || 0;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 10", "error");
   }
 };
 const currentPageProductList = ref(1);
@@ -182,14 +180,14 @@ const getProductProcessList = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 11", "error");
       return;
     }
 
     dataProsesList.value = response.data || [];
-    totalProductProcessList.value = response.data.length;
+    totalProductProcessList.value = response?.data?.length || 0;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 12", "error");
   }
 };
 const currentPageProductProcessList = ref(1);
@@ -259,13 +257,13 @@ const getIngredientListDropdown = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 13", "error");
       return;
     }
 
     dataBahanListOption.value = response.data;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 14", "error");
   }
 };
 
@@ -342,13 +340,13 @@ const vervalReturn = async (notesPengembalian: string) => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 15", "error");
       return;
     }
     useSnackbar().sendSnackbar("Kembalikan data sukses", "success");
     navigateTo("/pengajuan/verval-pendamping");
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 16", "error");
   }
 };
 
@@ -391,13 +389,13 @@ const handleFileSelect = async (event) => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 17", "error");
       return;
     }
     useSnackbar().sendSnackbar("Upload Image Success", "success");
     getDetail();
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 18", "error");
   }
 };
 
