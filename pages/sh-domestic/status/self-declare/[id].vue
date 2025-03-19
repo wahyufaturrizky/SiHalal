@@ -470,7 +470,7 @@
                 <template #item.photo="{ item }: any">
                   <VIcon
                     color="primary"
-                    style="cursor: pointer"
+                    style="cursor: pointer;"
                     @click="handleDownload(item.photo, 'PRODUCT')"
                   >
                     ri-download-2-fill
@@ -741,20 +741,20 @@
               </InfoRowV2>
               <InfoRowV2
                 class="d-flex align-center"
-                name="Lembaga Pendamping"
+                name="Laporan Pendamping"
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
                   @click="
-                    downloadForms.lembaga_pendamping
+                    downloadForms.laporan_pendamping
                       ? handleDownloadForm(
-                          downloadForms.lembaga_pendamping,
+                          downloadForms.laporan_pendamping,
                           'FILES'
                         )
                       : null
                   "
                   :color="
-                    downloadForms.lembaga_pendamping ? 'primary' : '#A09BA1'
+                    downloadForms.laporan_pendamping ? 'primary' : '#A09BA1'
                   "
                   density="compact"
                   class="px-2"
@@ -832,7 +832,7 @@
                 <v-tooltip :text="statusItem[registrationDetail.status].desc">
                   <template v-slot:activator="{ props }">
                     <v-chip
-                      style="background: #f0e9f1"
+                      style="background: #f0e9f1;"
                       :color="statusItem[registrationDetail.status].color"
                       variant="outlined"
                       rounded="lg"
@@ -1342,7 +1342,7 @@ onMounted(async () => {
     getDownloadForm("sjph", "sjph"),
     // getDownloadForm("laporan", "laporan"),
     getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
-    getDownloadForm("lembaga-pendamping", "lembaga_pendamping"),
+    getDownloadForm("laporan-pendamping", "laporan_pendamping"),
   ]);
   if (registrationDetail.status == "") {
     return;
@@ -1421,7 +1421,9 @@ const getDownloadForm = async (docName: string, propName: string) => {
       },
     }
   );
+
   if (result.code === 2000) {
+
     downloadForms[propName] = result.data.file;
   }
 };
