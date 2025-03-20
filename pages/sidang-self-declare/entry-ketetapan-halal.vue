@@ -364,7 +364,7 @@ const navigateAction = (id: string) => {
                 <VIcon
                   icon="ri-arrow-right-line"
                   color="primary"
-                  @click="navigateAction((item as any).id_daftar)"
+                  @click="navigateAction((item as any).id_reg)"
                 />
               </IconBtn>
               <!-- Right arrow icon for action -->
