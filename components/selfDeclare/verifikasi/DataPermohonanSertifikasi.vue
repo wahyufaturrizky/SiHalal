@@ -241,22 +241,11 @@ const isAllSelected = computed(() => {
 });
 
 // Toggle select all
-const toggleSelectAll = async () => {
+const toggleSelectAll = () => {
   if (isAllSelected.value) {
     selectedItems.value = [];
   } else {
-    const getallData = await loadItemReturn({
-      page: 1,
-      size: 9999,
-      keyword: "",
-      fasilitas: "",
-      jenis_produk: "",
-      provinsi: "",
-      lembaga: "",
-      pendamping: "",
-      kabupaten: "",
-    });
-    selectedItems.value = getallData.data.map((item) => item.id_daftar);
+    selectedItems.value = items.value.map((item) => item.id_daftar);
   }
 };
 
