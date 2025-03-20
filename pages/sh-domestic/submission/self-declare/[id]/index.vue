@@ -422,7 +422,6 @@
                 :items="substanceItems"
                 v-model:page="pages.bahan"
                 v-model:items-per-page="itemPerPages.bahan"
-                :hide-default-footer="substanceItems.length < 10"
               >
                 <template #item.no="{ index }">
                   {{ (pages.bahan - 1) * itemPerPages.bahan + index + 1 }}
@@ -474,7 +473,7 @@
                 <template #item.photo="{ item }: any">
                   <VIcon
                     color="primary"
-                    style="cursor: pointer;"
+                    style="cursor: pointer"
                     @click="handleDownload(item.photo, 'PRODUCT')"
                   >
                     ri-download-2-fill
@@ -833,7 +832,7 @@
                 :style="{ fontWeight: '600' }"
               >
                 <v-chip
-                  style="background: #f0e9f1;"
+                  style="background: #f0e9f1"
                   :color="statusItem[registrationDetail.status].color"
                   variant="outlined"
                   rounded="lg"
@@ -1023,7 +1022,7 @@
       <h2>Disclaimer</h2>
       <br />
       <p>Dengan sungguh-sungguh menyatakan bahwa:</p>
-      <ul style="list-style-type: disc; padding-inline-start: 20px;">
+      <ul style="list-style-type: disc; padding-inline-start: 20px">
         <li>
           Seluruh pernyataan data dan informasi beserta seluruh dokumen yang
           saya lampirkan dalam berkas pendaftaran adalah benar.
@@ -1335,7 +1334,6 @@ onMounted(async () => {
     getDownloadForm("laporan", "hasil_verval"),
     getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
     getDownloadForm("lembaga-pendamping", "lembaga_pendamping"),
-
   ]);
   if (registrationDetail.status == "") {
     return;

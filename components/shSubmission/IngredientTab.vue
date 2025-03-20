@@ -3,7 +3,7 @@ const loadingAll = ref(true);
 
 const ingredientHeader: any = [
   { title: "No", key: "index" },
-  { title: "ID", key: "id", nowrap: true },
+  // { title: "ID", key: "id", nowrap: true },
   { title: "Jenis Bahan", key: "jenis_bahan", nowrap: true },
   { title: "Nama Bahan", key: "nama_bahan", nowrap: true },
   { title: "Kelompok", key: "kelompok", nowrap: true },
@@ -14,11 +14,11 @@ const ingredientHeader: any = [
     key: "no_sertifikat",
     nowrap: true,
   },
-  {
-    title: "Tanggal Berlaku",
-    key: "tgl_berlaku_sertifikat",
-    nowrap: true,
-  },
+  // {
+  //   title: "Tanggal Berlaku",
+  //   key: "tgl_berlaku_sertifikat",
+  //   nowrap: true,
+  // },
   {
     title: "Verif Pendamping",
     key: "vefified",
@@ -166,7 +166,7 @@ const handleDetail = async () => {
     );
 
     if (response.code === 2000) {
-      console.log(response.data, "ini data");
+      // console.log(response.data, "ini data");
 
       const tracking = response.data.tracking ?? [];
       const lastIndex = tracking.length - 1;
@@ -174,7 +174,7 @@ const handleDetail = async () => {
       console.log("result", tracking[lastIndex]?.status);
 
       statusPengajuan.value = tracking[lastIndex]?.status || "";
-      console.log(statusPengajuan.value, "ini status pengajuan");
+      // console.log(statusPengajuan.value, "ini status pengajuan");
     }
     return response;
   } catch (error) {
@@ -229,13 +229,15 @@ onMounted(async () => {
           />
         </template>
         <template #item.actions="{ item }">
-          <VMenu v-if="
-          statusPengajuan === 'OF1' ||
-          statusPengajuan === 'OF280' ||
-          statusPengajuan === 'OF285'
-        ">
+          <VMenu
+            v-if="
+              statusPengajuan === 'OF1' ||
+              statusPengajuan === 'OF280' ||
+              statusPengajuan === 'OF285'
+            "
+          >
             <template #activator="{ props }">
-              <VIcon  
+              <VIcon
                 icon="fa-ellipsis-v"
                 color="primary"
                 class="cursor-pointer"

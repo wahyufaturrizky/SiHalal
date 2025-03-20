@@ -147,10 +147,11 @@ const getDetailBahan = async () => {
       }
     );
     if (response.code != 2000) {
+      console.log(response, "ini code detail bahan");
       useSnackbar().sendSnackbar("ada kesalahan", "error");
       return;
     }
-
+    console.log(response, "ini detail Bahan");
     form.value.id = response.data?.id;
     form.value.id_bahan = response.data?.id_bahan;
     form.value.nama_bahan = response.data?.nama_bahan;
@@ -160,8 +161,8 @@ const getDetailBahan = async () => {
         : parseInt(response.data?.status) === parseInt(1)
         ? parseInt(1)
         : "";
-    form.value.temuan = response.data?.temuan;
-    form.value.keterangan = response.data?.notes;
+    form.value.temuan = response.data?.notes;
+    form.value.keterangan = response.data?.keterangan;
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
@@ -203,6 +204,12 @@ const onOpenModal = async () => {
     };
   }
 };
+onMounted(async () => {
+  if (props.modalType === modalTypeEnum.EDIT && props.idBahan) {
+    console.log("Memuat detail bahan untuk ID:", props.idBahan);
+    await getDetailBahan();
+  }
+});
 </script>
 <template>
   <VDialog v-model="isVisible">
@@ -227,12 +234,12 @@ const onOpenModal = async () => {
       <VCard>
         <VCardTitle>
           <VRow>
-            <VCol cols="10" style="display: flex; align-items: center"
+            <VCol cols="10" style="display: flex; align-items: center;"
               ><h3 v-if="modalType === modalTypeEnum.ADD">Tambah Bahan</h3>
               <h3 v-if="modalType === modalTypeEnum.EDIT">Ubah Bahan</h3></VCol
             >
-            <VCol cols="2" style="display: flex; justify-content: end">
-              <VCol cols="2" style="display: flex; justify-content: end"
+            <VCol cols="2" style="display: flex; justify-content: end;">
+              <VCol cols="2" style="display: flex; justify-content: end;"
                 ><VIcon
                   size="small"
                   icon="fa-times"
@@ -257,6 +264,7 @@ const onOpenModal = async () => {
                     v-model="form.id_bahan"
                     v-on:update:model-value="onClickBahan"
                     :rules="[requiredValidator]"
+                    :disabled="modalType === modalTypeEnum.EDIT"
                   ></VSelect>
                 </VItemGroup>
                 <br />
@@ -272,8 +280,8 @@ const onOpenModal = async () => {
                     :rules="[requiredValidator]"
                   ></VSelect>
                 </VItemGroup>
-                <br v-if="modalType === modalTypeEnum.ADD" />
-                <VItemGroup v-if="modalType === modalTypeEnum.ADD">
+                <br />
+                <VItemGroup>
                   <VLabel>Temuan</VLabel>
                   <VTextField
                     density="compact"
@@ -282,12 +290,13 @@ const onOpenModal = async () => {
                   ></VTextField>
                 </VItemGroup>
                 <br />
-                <VItemGroup v-if="modalType === modalTypeEnum.EDIT">
+                <VItemGroup>
                   <VLabel>Keterangan</VLabel>
                   <VTextField
                     density="compact"
                     placeholder="Data otomatis terisi apabila nama bahan telah dipilih"
                     v-model="form.keterangan"
+                    :disabled="modalType === modalTypeEnum.ADD"
                   ></VTextField>
                 </VItemGroup>
               </VCol>
@@ -295,7 +304,7 @@ const onOpenModal = async () => {
           </VForm>
         </VCardItem>
         <VCardActions
-          style="display: flex; justify-content: end; padding: 1.5svw"
+          style="display: flex; justify-content: end; padding: 1.5svw;"
         >
           <div>
             <VBtn @click="isActive.value = false" variant="outlined"

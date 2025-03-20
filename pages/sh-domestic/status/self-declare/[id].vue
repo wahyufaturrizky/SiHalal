@@ -471,7 +471,7 @@
                   <VIcon
                     color="primary"
                     style="cursor: pointer;"
-                    @click="handleDownload(item.photo,'PRODUCT')"
+                    @click="handleDownload(item.photo, 'PRODUCT')"
                   >
                     ri-download-2-fill
                   </VIcon>
@@ -580,7 +580,7 @@
                 <VBtn
                   @click="
                     downloadForms.ikrar
-                      ? handleDownload(downloadForms.ikrar,'DOC')
+                      ? handleDownload(downloadForms.ikrar, 'DOC')
                       : null
                   "
                   :color="downloadForms.ikrar ? 'primary' : '#A09BA1'"
@@ -741,17 +741,20 @@
               </InfoRowV2>
               <InfoRowV2
                 class="d-flex align-center"
-                name="Lembaga Pendamping"
+                name="Laporan Pendamping"
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
                   @click="
-                    downloadForms.lembaga_pendamping
-                      ? handleDownloadForm(downloadForms.lembaga_pendamping, 'FILES')
+                    downloadForms.laporan_pendamping
+                      ? handleDownloadForm(
+                          downloadForms.laporan_pendamping,
+                          'FILES'
+                        )
                       : null
                   "
                   :color="
-                    downloadForms.lembaga_pendamping ? 'primary' : '#A09BA1'
+                    downloadForms.laporan_pendamping ? 'primary' : '#A09BA1'
                   "
                   density="compact"
                   class="px-2"
@@ -826,14 +829,19 @@
                 name="Status"
                 :style="{ fontWeight: '600' }"
               >
-                <v-chip
-                  style="background: #f0e9f1;"
-                  :color="statusItem[registrationDetail.status].color"
-                  variant="outlined"
-                  rounded="lg"
-                >
-                  {{ statusItem[registrationDetail.status].desc }}
-                </v-chip>
+                <v-tooltip :text="statusItem[registrationDetail.status].desc">
+                  <template v-slot:activator="{ props }">
+                    <v-chip
+                      style="background: #f0e9f1;"
+                      :color="statusItem[registrationDetail.status].color"
+                      variant="outlined"
+                      rounded="lg"
+                      v-bind="props"
+                    >
+                      {{ statusItem[registrationDetail.status].desc }}
+                    </v-chip>
+                  </template>
+                </v-tooltip>
               </InfoRowV2>
               <InfoRowV2
                 class="d-flex align-top"
@@ -1025,15 +1033,42 @@ const defaultStatus = { color: "error", desc: "Unknown Status" };
 const statusItem = new Proxy(
   {
     OF1: { color: "primary", desc: "Draft" },
+
     OF10: { color: "success", desc: "Submitted" },
+
     OF11: { color: "success", desc: "Verification" },
+
     OF15: { color: "success", desc: "Verified" },
+
     OF2: { color: "error", desc: "Returned" },
+
     OF280: { color: "error", desc: "Returned to PU" },
+
     OF285: { color: "error", desc: "Returned By KF" },
+
     OF290: { color: "error", desc: "Rejected" },
+
     OF5: { color: "success", desc: "Invoice issued" },
+
     OF300: { color: "success", desc: "Halal Certified Issued" },
+
+    OF320: { color: "success", desc: "Code Issued" },
+
+    OF50: { color: "success", desc: "Dikirim ke LPH" },
+
+    OF74: { color: "success", desc: "Sent to Komite Fatwa" },
+
+    OF100: { color: "success", desc: "Selesai Sidang Fatwa" },
+
+    OF120: { color: "success", desc: "Certificate Issued" },
+
+    OF900: { color: "error", desc: "Dibatalkan" },
+
+    OF71: { color: "success", desc: "Selesai P3H" },
+
+    OF56: { color: "success", desc: "Pembayaran" },
+
+    OF72: { color: "success", desc: "Verifikasi LP3H" },
   },
   {
     get(target: any, prop: string) {
@@ -1307,7 +1342,7 @@ onMounted(async () => {
     getDownloadForm("sjph", "sjph"),
     // getDownloadForm("laporan", "laporan"),
     getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
-    getDownloadForm("lembaga-pendamping", "lembaga_pendamping"),
+    getDownloadForm("laporan-pendamping", "laporan_pendamping"),
   ]);
   if (registrationDetail.status == "") {
     return;
@@ -1386,7 +1421,9 @@ const getDownloadForm = async (docName: string, propName: string) => {
       },
     }
   );
+
   if (result.code === 2000) {
+
     downloadForms[propName] = result.data.file;
   }
 };

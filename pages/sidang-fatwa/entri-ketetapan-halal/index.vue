@@ -139,7 +139,7 @@ const navigateAction = (id: string) => {
 
 <template>
   <div>
-    <h1 style="font-size: 32px">Tabel Pengajuan Ketetapan Halal</h1>
+    <h1 style="font-size: 32px;">Tabel Pengajuan Ketetapan Halal</h1>
     <br />
     <VCard class="pa-4">
       <VRow v-if="!loadingAll">
@@ -178,12 +178,12 @@ const navigateAction = (id: string) => {
               </div>
               <div class="mt-5">
                 <VBtn
-                  style="float: inline-start"
+                  style="float: inline-start;"
                   text="Reset Filter"
                   @click="reset"
                 />
                 <VBtn
-                  style="float: inline-end"
+                  style="float: inline-end;"
                   color="primary"
                   @click="applyFilters"
                 >

@@ -76,6 +76,9 @@ const loadingCertified = ref(true);
 const pageCertified = ref(1);
 const searchQueryUncertified = ref("");
 const searchQueryCertified = ref("");
+const tanggalBerlakuAll = ref("");
+
+
 const loadItemBahan = async (page: number, size: number, name: string = "") => {
   try {
     if (form.value.typeBahan == 0) {
@@ -107,6 +110,19 @@ const loadItemBahan = async (page: number, size: number, name: string = "") => {
     if (form.value.typeBahan == 0) {
       itemsCertified.value = response.data != null ? response.data : [];
       totalItemsCertified.value = response.total_item;
+
+      tanggalBerlakuAll.value = {
+        ...tanggalBerlakuAll.value, // Data sebelumnya
+        ...response.data.reduce((acc: Record<string, string>, item) => {
+          acc[item.nama_bahan] = item.tgl_berlaku_sertifikat
+            ? new Date(item.tgl_berlaku_sertifikat).toISOString().split("T")[0]
+            : "";
+          return acc;
+        }, {}),
+      };
+
+      console.log(tanggalBerlakuAll.value, "Semua tanggal berlaku");
+
       return;
     }
 
@@ -181,26 +197,43 @@ const insertBahan = async () => {
   submitAddBahanButton.value = true;
 
   try {
+    // Siapkan payload awal
+    let bodyData: Record<string, any> = {
+      jenis_bahan: `${
+        form.value.typeBahan == 0 ? "certified" : "uncertified"
+      }|${form.value.jenis_bahan}`,
+      nama_bahan: form.value.nama_bahan,
+      kelompok: form.value.kelompok,
+      merek: form.value.merek,
+      produsen: form.value.produsen,
+      no_sertifikat: form.value.no_sertifikat,
+    };
+
+    // Jika bahan bersertifikat, tambahkan tgl_berlaku jika ada
+    const namaBahanKey = Object.keys(tanggalBerlakuAll.value).find(
+      (key) =>
+        key.trim().toLowerCase() === form.value.nama_bahan.trim().toLowerCase()
+    );
+
+    if (namaBahanKey) {
+      bodyData.tgl_berlaku = tanggalBerlakuAll.value[namaBahanKey];
+    }
+
+    console.log("Data yang dikirim ke API:", bodyData);
+
     const response = await $api(
       `/self-declare/submission/bahan/${route.params.id}/add`,
       {
         method: "post",
-        body: {
-          jenis_bahan: `${
-            form.value.typeBahan == 0 ? "certified" : "uncertified"
-          }|${form.value.jenis_bahan}`,
-          nama_bahan: form.value.nama_bahan,
-          kelompok: form.value.kelompok,
-          merek: form.value.merek,
-          produsen: form.value.produsen,
-          no_sertifikat: form.value.no_sertifikat,
-        },
+        body: bodyData,
       }
     );
+
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("Gagal menambahkan bahan", "error");
       return;
     }
+
     emits("loadList", true);
     useSnackbar().sendSnackbar("Berhasil menambahkan bahan", "success");
   } catch (error) {
@@ -228,7 +261,7 @@ const insertBahan = async () => {
         v-if="!canNotEdit"
         variant="outlined"
         prepend-icon="fa-plus"
-        style="margin: 1svw"
+        style="margin: 1svw;"
         v-bind="openModal"
         >Tambah</VBtn
       >
@@ -238,7 +271,7 @@ const insertBahan = async () => {
         <VCardTitle>
           <VRow>
             <VCol cols="10"><h3>Tambah Data Bahan</h3></VCol>
-            <VCol cols="2" style="display: flex; justify-content: end"
+            <VCol cols="2" style="display: flex; justify-content: end;"
               ><VIcon
                 size="small"
                 icon="fa-times"
@@ -388,7 +421,7 @@ const insertBahan = async () => {
               </VCol>
             </VRow> </VCardItem
           ><VCardActions
-            style="display: flex; justify-content: end; padding: 1.5svw"
+            style="display: flex; justify-content: end; padding: 1.5svw;"
           >
             <div>
               <VBtn @click="isActive.value = false" variant="outlined"
@@ -415,7 +448,7 @@ const insertBahan = async () => {
     <VCard>
       <VCardTitle>Cari Bahan</VCardTitle>
       <VCardText>
-        <VRow style="align-items: center">
+        <VRow style="align-items: center;">
           <VCol cols="10" md="4">
             <VTextField
               v-model="searchQueryUncertified"
@@ -493,7 +526,7 @@ const insertBahan = async () => {
     <VCard>
       <VCardTitle>Cari Bahan</VCardTitle>
       <VCardText>
-        <VRow style="align-items: center">
+        <VRow style="align-items: center;">
           <VCol cols="10" md="4">
             <VTextField
               v-model="searchQueryCertified"

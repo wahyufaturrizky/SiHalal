@@ -1,8 +1,8 @@
 import { NuxtError } from "nuxt/app";
 
 export default defineEventHandler(async (event: any) => {
-  const authHeader = getRequestHeader(event, "Authorization");
-  if (typeof authHeader === "undefined") {
+  const authorizationHeader = getRequestHeader(event, "Authorization");
+  if (typeof authorizationHeader === "undefined") {
     throw createError({
       statusCode: 403,
       statusMessage:
@@ -19,7 +19,7 @@ export default defineEventHandler(async (event: any) => {
       `${runtimeConfig.coreBaseUrl}/api/v1${apiEndpoint}`,
       {
         method: "post",
-        headers: { Authorization: authHeader },
+        headers: { Authorization: authorizationHeader },
         body: payload,
       } as any
     );

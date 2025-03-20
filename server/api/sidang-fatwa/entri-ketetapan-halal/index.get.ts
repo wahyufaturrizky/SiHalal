@@ -11,20 +11,26 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { page, size, keyword } = (await getQuery(event)) as {
-    page: string;
-    size: string;
-    keyword: string;
+  const { page, size, keyword ,provinsi} = (await getQuery(event)) as {
+    page?: string;
+  size?: string;
+  keyword?: string;
+  provinsi?: string;
   };
 
   const params: any = {
     page: isNaN(Number.parseInt(page, 10)) ? 1 : Number.parseInt(page, 10),
     size: isNaN(Number.parseInt(size, 10)) ? 10 : Number.parseInt(size, 10),
-    keywords: "",
+    keyword: keyword ?? "",
+    provinsi: provinsi ?? "",
   };
 
   if (keyword !== "" && keyword !== undefined) {
-    params["keywords"] = keyword;
+    params["keyword"] = keyword;
+  }
+
+  if (provinsi !== "" && provinsi !== undefined) {
+    params["provinsi"] = provinsi;
   }
 
   const data = await $fetch<any>(

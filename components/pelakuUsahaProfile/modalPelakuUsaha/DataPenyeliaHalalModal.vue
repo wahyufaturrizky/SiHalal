@@ -134,16 +134,17 @@ watch(
 const ktpError = ref("");
 const checkKtp = async (item) => {
   ktpError.value = "";
-  if (item.length == 16) {
-    const val: any = await $api(`/pelaku-usaha-profile/check-nik/${item}`, {
-      method: "GET",
-    });
-    if (val.code == 2000) {
-      form.value.namaPenyelia = val.data.nama;
-    }
-    if (val.code == 4000) {
-      ktpError.value = val.message;
-      console.log(ktpError.value);
+  if (isNoNeedValidation.value) {
+    if (item.length == 16) {
+      const val: any = await $api(`/pelaku-usaha-profile/check-nik/${item}`, {
+        method: "GET",
+      });
+      if (val.code == 2000) {
+        form.value.namaPenyelia = val.data.nama;
+      }
+      if (val.code == 4000) {
+        ktpError.value = val.message;
+      }
     }
   }
 };
@@ -222,7 +223,7 @@ const { t } = useI18n();
             <VRow>
               <VCol cols="6">
                 <VTextField
-                  :rules="[
+                  :rules="isNoNeedValidation ? [] : [
                     requiredValidator,
                     integerValidator,
                     lengthValidator(form.noKtp, 16),
@@ -232,6 +233,7 @@ const { t } = useI18n();
                   outlined
                   dense
                   required
+                  maxlength="16"
                   @update:modelValue="checkKtp"
                   :error-messages="ktpError"
                 />
@@ -312,7 +314,7 @@ const { t } = useI18n();
                       readonly
                       append-inner-icon="fa-calendar"
                       :model-value="form.tanggalSertifikat"
-                      :rules="[requiredValidator]"
+                      :rules="isNoNeedValidation ? [] : [requiredValidator]"
                     />
                   </template>
                 </Vuepicdatepicker>
@@ -415,15 +417,12 @@ const { t } = useI18n();
             >
               <template v-slot:activator="{ props: tooltipKtp }">
                 <VFileInput
-                  :rules="
-                    isNoNeedValidation
-                      ? []
-                      : [
-                          requiredValidator,
-                          fileSizeValidator,
-                          fileNameLengthValidator,
-                          fileExtensionValidator,
-                        ]
+                  :rules="[
+                    requiredValidator,
+                    fileSizeValidator,
+                    fileNameLengthValidator,
+                    fileExtensionValidator,
+                  ]
                   "
                   v-model="form.ktpFile"
                   label="Unggah KTP"
