@@ -52,6 +52,7 @@ const getIngredientListDropdown = async () => {
       return;
     }
 
+    console.log("response = ", response.data);
     dataBahanList.value = response.data;
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
@@ -63,17 +64,24 @@ const hardcodeDiragukan = [
   { name: "Tidak Diragukan", value: 1 },
 ];
 
-const onClickBahan = () => {
-  dataBahanList.value.filter((val) => {
-    if (val.id_bahan == form.value.id_bahan) {
-      form.value.id = val.id;
-      if (val.tgl_berlaku_sertifikat) {
-        form.value.temuan = `"SH/KH No ${val.no_sertifikat}, berlaku s.d ${tgl_berlaku_sertifikat} (Merek ${val.nama_bahan} dari produsen ${val.produsen})`;
-      } else {
-        form.value.temuan = null;
-      }
+const onClickBahan = (value: any) => {
+  const tmp = JSON.parse(JSON.stringify(dataBahanList.value));
+  console.log(" data bahan list = ", tmp);
+  const result = tmp.filter((val) => val.id == value);
+
+  console.log("result = ", result);
+
+  if (result.length > 0) {
+    if (result[0].no_sertifikat) {
+      form.value.diragukan = "Diragukan";
+      form.value.temuan = `"SH/KH No ${result[0].no_sertifikat}, berlaku s.d ${result[0].tgl_berlaku_sertifikat} (Merek ${result[0].nama_bahan} dari produsen ${result[0].produsen})`;
+      form.value.keterangan = null;
+    } else {
+      form.value.diragukan = "Tidak Diragukan";
+      form.value.temuan = null;
+      form.value.keterangan = result[0].kelompok;
     }
-  });
+  }
 };
 
 const onSubmit = async () => {
@@ -182,14 +190,14 @@ watch(
 
 const onOpenModal = async () => {
   await getIngredientListDropdown();
-  if (tmpList) {
-    tmpList.value.forEach((val) => {
-      const tmpIdx = dataBahanList.value.findIndex(
-        (val2) => val2.id == val.id_bahan
-      );
-      dataBahanList.value.splice(tmpIdx, 1);
-    });
-  }
+  // if (tmpList) {
+  //   tmpList.value.forEach((val) => {
+  //     const tmpIdx = dataBahanList.value.findIndex(
+  //       (val2) => val2.id == val.id_bahan
+  //     );
+  //     dataBahanList.value.splice(tmpIdx, 1);
+  //   });
+  // }
   if (props.modalType === modalTypeEnum.EDIT) {
     console.log("edit");
     await getDetailBahan();
