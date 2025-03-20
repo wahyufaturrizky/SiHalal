@@ -175,7 +175,7 @@ const getDetail = async () => {
       formData.nama_pu = nama_pu;
       formData.area_pemasaran = area_pemasaran;
       formData.id_lembaga_pendamping = response.data.id_lembaga_pendamping;
-      formData.id_pendamping = response.data.id_pendamping;
+      formData.id_pendamping = response.data.pendamping;
       formData.id_jenis_pengajuan = jenis_pendaftaran;
       formData.id_fasilitator = response.data.fac_id;
       formData.no_mohon = no_surat_permohonan;
