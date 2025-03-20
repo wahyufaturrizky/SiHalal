@@ -93,7 +93,7 @@ const OldDoc = async (noDaftar: string) => {
     return null;
   }
 };
-
+const biayaValidasi = ref("");
 const getDetailData = async (type: string) => {
   try {
     const response: any = await $api("/reguler/lph/detail-payment", {
@@ -105,6 +105,7 @@ const getDetailData = async (type: string) => {
       const data = response?.data;
       if (type == "pemeriksaanproduk") {
         const noDaftar = data?.no_pendaftaran?.no_daftar;
+        biayaValidasi.value = data?.biaya.length;
         if (noDaftar) await OldDoc(noDaftar);
         else console.error("noDaftar tidak ditemukan dalam response API");
       }
@@ -494,7 +495,12 @@ onMounted(async () => {
     <VDialog v-model="isSendModalOpen" max-width="840px" persistent>
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
-          <div class="text-h3 font-weight-bold">Terbitkan Invoice</div>
+          <div class="text-h3 font-weight-bold" v-if="biayaValidasi === 0">
+            Pengajuan Belum Dapat Dikirim
+          </div>
+          <div class="text-h3 font-weight-bold" v-if="biayaValidasi >= 1">
+            Terbitkan Invoice
+          </div>
           <VIcon @click="handleOpenSendModal"> fa-times </VIcon>
         </VCardTitle>
         <VCardText>
@@ -506,7 +512,7 @@ onMounted(async () => {
             </VCol>
           </VRow>
         </VCardText>
-        <VCardActions class="px-4">
+        <VCardActions class="px-4" v-if="biayaValidasi >= 1">
           <VBtn
             variant="outlined"
             class="px-4 me-3"
@@ -530,9 +536,9 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 :deep(
-    .v-expansion-panel--active:not(:first-child),
-    .v-expansion-panel--active + .v-expansion-panel
-  ) {
+.v-expansion-panel--active:not(:first-child),
+.v-expansion-panel--active + .v-expansion-panel
+) {
   margin-block-start: 40px !important;
 }
 
