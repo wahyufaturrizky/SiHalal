@@ -172,10 +172,12 @@ const downloadInvoice = async (el: any) => {
       },
     });
 
-    if (response?.code === 2000) return response?.data?.file;
-    else useSnackbar().sendSnackbar("Invoice Tidak Tersedia", "warning");
+    if (response?.code === 2000)
+      return response?.data?.file;
+
+    return null
   } catch (error) {
-    useSnackbar().sendSnackbar("Invoice Tidak Tersedia", "warning");
+    return null
   }
 };
 
