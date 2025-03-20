@@ -498,20 +498,31 @@ onMounted(async () => {
                 :name="t(`status-permohoanan.reguler-detail-form-sh`)"
                 :style="{ fontWeight: '600' }"
               >
+                <!-- 
+                    <VBtn
+                      :color="
+                        downloadForms.setifikasi_halal ? 'primary' : '#A09BA1'
+                      "
+                      density="compact"
+                      class="px-2"
+                      @click="
+                        downloadForms.setifikasi_halal
+                          ? handleDownloadForm(
+                              downloadForms.setifikasi_halal,
+                              'SERT'
+                            )
+                          : null
+                      "
+                    >
+                      <template #default>
+                        <VIcon icon="fa-download" />
+                      </template>
+                    </VBtn>
+                -->
                 <VBtn
-                  :color="
-                    downloadForms.setifikasi_halal ? 'primary' : '#A09BA1'
-                  "
+                  color="#A09BA1"
                   density="compact"
                   class="px-2"
-                  @click="
-                    downloadForms.setifikasi_halal
-                      ? handleDownloadForm(
-                          downloadForms.setifikasi_halal,
-                          'SERT'
-                        )
-                      : null
-                  "
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
