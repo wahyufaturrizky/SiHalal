@@ -494,9 +494,7 @@ onMounted(async () => {
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
           <div class="text-h3 font-weight-bold">
-            {{
-              invoiceFile ? "Kirim Pengajuan" : "Pengajuan Belum Dapat Dikirim"
-            }}
+            Pengajuan Belum Dapat Dikirim
           </div>
           <VIcon @click="handleOpenSendModal"> fa-times </VIcon>
         </VCardTitle>
