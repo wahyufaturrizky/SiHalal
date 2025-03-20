@@ -503,13 +503,9 @@ onMounted(async () => {
         <VCardText>
           <VRow>
             <VCol>
-              {{
-                invoiceFile
-                  ? `Pastikan dokumen persyaratan lengkap dan semua biaya pemeriksaan
+              Pastikan dokumen persyaratan lengkap dan semua biaya pemeriksaan
               sudah dimasukkan. Invoice akan diterbitkan saat Anda klik tombol
-              ”kirim” dan invoice tidak dapat diedit kembali`
-                  : "Pengajuan belum dapat dikirim dikarenakan Biaya belum ditetapkan."
-              }}
+              ”kirim” dan invoice tidak dapat diedit kembali
             </VCol>
           </VRow>
         </VCardText>
@@ -522,7 +518,6 @@ onMounted(async () => {
             Batal
           </VBtn>
           <VBtn
-            v-if="Boolean(invoiceFile)"
             variant="flat"
             class="px-4"
             color="primary"
