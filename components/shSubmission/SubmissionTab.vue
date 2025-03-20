@@ -286,6 +286,8 @@ const handleGetPendamping = async (idLembaga: string | null) => {
         method: "get",
         query: {
           id_lembaga: idLembaga,
+           lokasi: formData.lokasi_pendamping,
+                    id_reg: submissionId,
         },
       }
     );
