@@ -3,7 +3,7 @@ const loadingAll = ref(true);
 
 const ingredientHeader: any = [
   { title: "No", key: "index" },
-  { title: "ID", key: "id", nowrap: true },
+  // { title: "ID", key: "id", nowrap: true },
   { title: "Jenis Bahan", key: "jenis_bahan", nowrap: true },
   { title: "Nama Bahan", key: "nama_bahan", nowrap: true },
   { title: "Kelompok", key: "kelompok", nowrap: true },
@@ -14,11 +14,11 @@ const ingredientHeader: any = [
     key: "no_sertifikat",
     nowrap: true,
   },
-  {
-    title: "Tanggal Berlaku",
-    key: "tgl_berlaku_sertifikat",
-    nowrap: true,
-  },
+  // {
+  //   title: "Tanggal Berlaku",
+  //   key: "tgl_berlaku_sertifikat",
+  //   nowrap: true,
+  // },
   {
     title: "Verif Pendamping",
     key: "vefified",
