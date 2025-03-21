@@ -390,7 +390,11 @@ const route = useRoute();
 const navigateAction = (id: string) => {
   routeStore.setPreviousRoute(route.fullPath);
   routeStore.setCurrentRoute(`/sidang-fatwa/proses-sidang/${id}`);
-  navigateTo(`/sidang-fatwa/proses-sidang/${id}`);
+  navigateTo(`/sidang-fatwa/proses-sidang/${id}`, {
+    open: {
+      target: "_blank",
+    },
+  });
 };
 </script>
 
