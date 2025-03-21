@@ -172,12 +172,11 @@ const downloadInvoice = async (el: any) => {
       },
     });
 
-    if (response?.code === 2000)
-      return response?.data?.file;
+    if (response?.code === 2000) return response?.data?.file;
 
-    return null
+    return null;
   } catch (error) {
-    return null
+    return null;
   }
 };
 
@@ -495,9 +494,7 @@ onMounted(async () => {
     <VDialog v-model="isSendModalOpen" max-width="840px" persistent>
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
-          <div class="text-h3 font-weight-bold">
-            Pengajuan Belum Dapat Dikirim
-          </div>
+          <div class="text-h3 font-weight-bold">Terbitkan Invoice</div>
           <VIcon @click="handleOpenSendModal"> fa-times </VIcon>
         </VCardTitle>
         <VCardText>
