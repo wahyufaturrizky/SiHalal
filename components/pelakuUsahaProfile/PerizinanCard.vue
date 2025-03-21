@@ -46,13 +46,20 @@ const handleOssUpdate = () => {
   const legal = JSON.parse(JSON.stringify(store.legal));
 
   if (legal) {
-    const nib = legal.filter(
-      (val: any) =>
-        val.type?.toLowerCase() === "nib" || val.type?.toLowerCase() === "lgl01"
+    const eligibleCriteria = ["nib", "lgl01", "lgl09"];
+    const nib = legal.filter((val: any) =>
+      eligibleCriteria.includes(val.type?.toLowerCase())
     )[0].doc_number;
-    // console.log("nib = ", nib);
-    store.fetchProfile(nib);
+
+    if (nib) {
+      store.fetchProfile(nib);
+      return;
+    }
   }
+  useSnackbar().sendSnackbar(
+    "Tidak bisa melakukan update data OSS, NIB tidak ditemukan",
+    "error"
+  );
 };
 
 const closeModal = ref(false);
