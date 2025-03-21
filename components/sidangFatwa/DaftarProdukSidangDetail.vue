@@ -29,6 +29,9 @@
               :doc-query="'PRODUCT'"
             ></ImagePreviewModal>
           </template>
+          <template #item.reg_publish="{ item }">
+            {{ item.reg_publish ? "Ya" : "Tidak" }}
+          </template>
         </VDataTable>
       </VExpansionPanelText>
     </VExpansionPanel>
@@ -51,7 +54,7 @@ const tableHeader = [
   { title: "Jumlah Bahan", key: "jumlah_bahan" },
   { title: "Daftar Bahan", key: "daftar_bahan" },
   { title: "Foto Produk", key: "photo" },
-  { title: "Keterangan", key: "reg_publish" },
+  { title: "Publish", key: "reg_publish" },
 ];
 
 // Helper function to get value or return a dash
