@@ -8,8 +8,19 @@
         variant="text"
         @click="preview(props.namabahan)"
       >
-        <template #default>
-          <VIcon color="primary" size="large" icon="fa-picture-o"></VIcon>
+        <template #prepend>
+          <VIcon
+            v-if="props.iconActivator"
+            color="primary"
+            size="large"
+            icon="fa-picture-o"
+          ></VIcon>
+          <p
+            style="color: white"
+            v-else-if="!props.iconActivator && props.stringBtnActivator"
+          >
+            {{ props.stringBtnActivator }}
+          </p>
         </template>
       </v-btn>
       <p v-else>-</p>
@@ -68,6 +79,13 @@ const props = defineProps({
     required: true,
   },
   docQuery: {
+    type: String,
+  },
+  iconActivator: {
+    type: Boolean,
+    default: true,
+  },
+  stringBtnActivator: {
     type: String,
   },
 });
