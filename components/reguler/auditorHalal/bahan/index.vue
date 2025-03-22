@@ -611,10 +611,8 @@ const getListIngredients = async () => {
                 count ++
               }
             })
-            if (count < 5) {
-              console.log('siini kah?');
-              
-              emit("failed", 'Bahan minimal 5');
+            if (count < 3) {
+              emit("failed", 'Bahan minimal 3');
             } else {
               emit("complete", true);
             }

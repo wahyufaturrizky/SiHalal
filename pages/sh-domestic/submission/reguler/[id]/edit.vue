@@ -178,7 +178,7 @@ const getListIngredients = async () => {
                 count ++
               }
           })
-          if (count < 5) {
+          if (count < 3) {
             bahanComplete(false);
           } else {
             bahanComplete(true);
