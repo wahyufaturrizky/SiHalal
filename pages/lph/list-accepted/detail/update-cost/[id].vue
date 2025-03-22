@@ -24,7 +24,7 @@ const totalDomestic = ref(0);
 
 const detailDataLn = ref<any>({
   keterangan: "",
-  qty: 0,
+  qty: 1,
   harga: 0,
   total: 0,
 });
@@ -387,7 +387,7 @@ const onAddDataLn = async () => {
       query: { id },
       body: {
         ...detailDataLn.value,
-        qty: +detailDataLn.value.qty,
+        qty: detailDataLn.value.qty,
         harga: +detailDataLn.value.harga,
         total: +detailDataLn.value.total,
       },
@@ -407,9 +407,9 @@ const onEditDataLn = async () => {
   const body = {
     id_biaya: editDataLn.value?.id,
     keterangan: editDataLn.value?.keterangan,
-    qty: +editDataLn.value?.jumlah,
+    qty: 1,
     harga: editDataLn.value?.harga,
-    total: editDataLn.value?.sub_total,
+    total: +editDataLn.value?.sub_total,
   };
 
   try {
@@ -1003,7 +1003,7 @@ onMounted(async () => {
                 placeholder="Biaya Admin"
               />
             </VCol>
-            <VCol>
+            <!-- <VCol>
               <div class="text-h6">Jumlah</div>
               <VTextField
                 v-model="editDataLn.jumlah"
@@ -1011,7 +1011,7 @@ onMounted(async () => {
                 density="compact"
                 placeholder="2"
               />
-            </VCol>
+            </VCol> -->
             <VCol>
               <div class="text-h6">Harga</div>
               <VTextField
@@ -1021,7 +1021,7 @@ onMounted(async () => {
                 placeholder="Rp 400.000"
               />
             </VCol>
-            <VCol>
+            <!-- <VCol>
               <div class="text-h6">Sub Total</div>
               <VTextField
                 v-model="editDataLn.sub_total"
@@ -1029,7 +1029,7 @@ onMounted(async () => {
                 density="compact"
                 placeholder="Rp 800.000"
               />
-            </VCol>
+            </VCol> -->
           </VRow>
         </VCardText>
         <VCardActions class="pt-2 px-4">
