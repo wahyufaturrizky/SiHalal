@@ -210,7 +210,10 @@ const skReadyHandler = (blob) => {
     </template>
 
     <!-- right content -->
-    <template #rightContent>
+    <template
+      v-if="store.profileData?.asal_usaha?.toLowerCase() !== 'luar negeri'"
+      #rightContent
+    >
       <VRow>
         <VCol :cols="12">
           <PerizinanCard />
