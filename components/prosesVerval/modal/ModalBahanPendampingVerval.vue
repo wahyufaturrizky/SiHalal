@@ -73,11 +73,11 @@ const onClickBahan = (value: any) => {
 
   if (result.length > 0) {
     if (result[0].no_sertifikat) {
-      form.value.diragukan = "Diragukan";
+      form.value.diragukan = hardcodeDiragukan[0].value;
       form.value.temuan = `"SH/KH No ${result[0].no_sertifikat}, berlaku s.d ${result[0].tgl_berlaku_sertifikat} (Merek ${result[0].nama_bahan} dari produsen ${result[0].produsen})`;
       form.value.keterangan = null;
     } else {
-      form.value.diragukan = "Tidak Diragukan";
+      form.value.diragukan = hardcodeDiragukan[1].value;
       form.value.temuan = null;
       form.value.keterangan = result[0].kelompok;
     }
@@ -190,6 +190,7 @@ watch(
 
 const onOpenModal = async () => {
   await getIngredientListDropdown();
+  console.log("modal type = ", props.modalType);
   // if (tmpList) {
   //   tmpList.value.forEach((val) => {
   //     const tmpIdx = dataBahanList.value.findIndex(
@@ -201,6 +202,7 @@ const onOpenModal = async () => {
   if (props.modalType === modalTypeEnum.EDIT) {
     console.log("edit");
     await getDetailBahan();
+    onClickBahan(form.value.id);
   } else {
     form.value = {
       id: null,
@@ -242,12 +244,12 @@ onMounted(async () => {
       <VCard>
         <VCardTitle>
           <VRow>
-            <VCol cols="10" style="display: flex; align-items: center;"
+            <VCol cols="10" style="display: flex; align-items: center"
               ><h3 v-if="modalType === modalTypeEnum.ADD">Tambah Bahan</h3>
               <h3 v-if="modalType === modalTypeEnum.EDIT">Ubah Bahan</h3></VCol
             >
-            <VCol cols="2" style="display: flex; justify-content: end;">
-              <VCol cols="2" style="display: flex; justify-content: end;"
+            <VCol cols="2" style="display: flex; justify-content: end">
+              <VCol cols="2" style="display: flex; justify-content: end"
                 ><VIcon
                   size="small"
                   icon="fa-times"
@@ -312,7 +314,7 @@ onMounted(async () => {
           </VForm>
         </VCardItem>
         <VCardActions
-          style="display: flex; justify-content: end; padding: 1.5svw;"
+          style="display: flex; justify-content: end; padding: 1.5svw"
         >
           <div>
             <VBtn @click="isActive.value = false" variant="outlined"
