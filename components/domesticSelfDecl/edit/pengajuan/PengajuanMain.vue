@@ -158,7 +158,10 @@ const responseId = ref('')
 const facName = ref('')
 
 const onSearchFasilitator = async (kode: any) => {
-  if (!hideOnSearchFasilitatorFunction) {
+  const isSubmissionReturned = submissionDetail.status === 'OF280'
+  || submissionDetail.status === 'OF285'
+
+  if (!hideOnSearchFasilitatorFunction && !isSubmissionReturned) {
     try {
       facName.value = ''
 
