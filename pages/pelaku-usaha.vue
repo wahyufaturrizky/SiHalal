@@ -52,9 +52,9 @@ onMounted(() => {
       <VRow align="center">
         <VCol>
           <!-- <h2 :class="mdAndUp ? 'text-menu' : 'mobile-text-menu'">Detail Pelaku Usaha</h2> -->
-          <h1 style="font-size: 32px;">{{ t("detail-pu.pu-title") }}</h1>
+          <h1 style="font-size: 32px">{{ t("detail-pu.pu-title") }}</h1>
         </VCol>
-        <VCol style="display: flex; justify-content: end;">
+        <VCol style="display: flex; justify-content: end">
           <VBtn
             density="compact"
             variant="outlined"
@@ -230,7 +230,10 @@ onMounted(() => {
     </template>
 
     <!-- right content -->
-    <template #rightContent>
+    <template
+      #rightContent
+      v-if="store.profileData?.asal_usaha?.toLowerCase() !== 'luar negeri'"
+    >
       <VRow>
         <VCol :cols="12">
           <PerizinanCard />
