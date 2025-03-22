@@ -36,7 +36,7 @@ const loadItemById = async () => {
     );
 
     if (response.code === 2000) {
-      console.log(response.data, "ini response data");
+      // console.log(response.data, "ini response data");
 
       const {
         certificate_halal,
@@ -53,8 +53,6 @@ const loadItemById = async () => {
       melacak.value = Array.isArray(tracking) ? tracking : [];
       listProduk.value = produk;
 
-      console.log(tracking, "ini data tracking");
-      console.log(melacak.value, "ini data trackking value");
       combinedNamaProduk.value = produk
         .map(
           (item: any, index: number) =>
@@ -151,8 +149,31 @@ watch(
     </VCol>
   </VRow>
   <VRow>
-    <VCol cols="12">
+    <VCol cols="8">
       <h2>Laporan Hasil Pendampingan</h2>
+    </VCol>
+    <VCol style="display: flex; justify-content: end" cols="4">
+      <VBtn color="primary" text="Lihat Foto Pendampingan">
+        <template #default>
+          <ImagePreviewModal
+            :card-title="'Foto Pendampingan'"
+            :namabahan="
+              newDataSertifikatHalal?.sertifikatHalal?.photo_pendampingan
+            "
+            :doc-query="
+              newDataSertifikatHalal.sertifikatHalal.photo_pendampingan
+                ? newDataSertifikatHalal?.sertifikatHalal?.photo_pendampingan.includes(
+                    'lembaga.halal.go.id'
+                  )
+                  ? 'PRODUCT'
+                  : ''
+                : ''
+            "
+            :icon-activator="false"
+            string-btn-activator="Buka Foto Pendampingan"
+          ></ImagePreviewModal>
+        </template>
+      </VBtn>
     </VCol>
   </VRow>
   <VRow>
