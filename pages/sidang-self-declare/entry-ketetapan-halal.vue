@@ -48,7 +48,7 @@ const headers = [
   { title: "Ketetapan", key: "keteteapan", nowrap: true },
   { title: "Catatan 1", key: "catatan", nowrap: true },
   { title: "Catatan 2", key: "catatan2", nowrap: true },
-    { title: "Action", key: "action" },
+  { title: "Action", key: "action" },
 ];
 
 const loadItem = async (
@@ -209,18 +209,20 @@ const dialogMaxWidth = computed(() => {
 const routeStore = useCommonRoutingStore();
 const route = useRoute();
 
-
 const navigateAction = (id: string) => {
   routeStore.setPreviousRoute(route.fullPath);
   routeStore.setCurrentRoute(`/sidang-fatwa/proses-sidang/${id}`);
-  navigateTo(`/sidang-fatwa/proses-sidang/${id}`);
+  navigateTo(`/sidang-fatwa/proses-sidang/${id}`, {
+    open: {
+      target: "_blank",
+    },
+  });
 };
-
 </script>
 
 <template>
   <div>
-    <h1 style="font-size: 32px;">Hasil Penetapan</h1>
+    <h1 style="font-size: 32px">Hasil Penetapan</h1>
     <br />
 
     <VCard class="pa-4">
@@ -289,12 +291,12 @@ const navigateAction = (id: string) => {
                   </VCardText>
                   <br />
                   <VBtn
-                    style="float: inline-start;"
+                    style="float: inline-start"
                     text="Reset Filter"
                     @click="reset"
                   />
                   <VBtn
-                    style="float: inline-end;"
+                    style="float: inline-end"
                     text="Apply"
                     @click="applyFilters"
                   />

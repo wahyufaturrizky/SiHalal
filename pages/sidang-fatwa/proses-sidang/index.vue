@@ -217,7 +217,11 @@ const handleInput = () => {
 };
 
 const navigateAction = (id: string) => {
-  navigateTo(`/sidang-fatwa/proses-sidang/${id}`);
+  navigateTo(`/sidang-fatwa/proses-sidang/${id}`, {
+    open: {
+      target: "_blank",
+    },
+  });
 };
 
 // Filter state
