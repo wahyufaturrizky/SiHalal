@@ -93,7 +93,7 @@ watch(
     <VCardTitle>
       <VRow>
         <VCol cols="6"><h3>Bahan</h3></VCol>
-        <VCol cols="6" style="display: flex; justify-content: end;">
+        <VCol cols="6" style="display: flex; justify-content: end">
           <ModalBahanPendampingVerval
             :modal-type="modalTypeEnum.ADD"
             :id-reg="props.idReg"
@@ -145,12 +145,13 @@ watch(
               <ModalBahanPendampingVerval
                 :modal-type="modalTypeEnum.EDIT"
                 :id-bahan="item.id_bahan"
+                :list-bahan="content"
                 @emit-add="handleAddBahan"
                 :is-temuan-can-edit="props.isTemuanCanEdit"
               ></ModalBahanPendampingVerval>
               <VListItem @click="handleDeleteBahan(item.id_bahan)">
                 <template #prepend>
-                  <VIcon style="color: red;" icon="fa-trash"></VIcon>
+                  <VIcon style="color: red" icon="fa-trash"></VIcon>
                 </template>
                 <template #append> Hapus </template>
               </VListItem>
