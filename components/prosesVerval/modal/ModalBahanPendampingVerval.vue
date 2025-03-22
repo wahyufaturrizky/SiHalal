@@ -53,7 +53,7 @@ const getIngredientListDropdown = async () => {
     }
 
     console.log("response = ", response.data);
-    dataBahanList.value = response.data;
+    dataBahanList.value = response.data ? response.data : [];
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
@@ -66,7 +66,6 @@ const hardcodeDiragukan = [
 
 const onClickBahan = (value: any) => {
   const tmp = JSON.parse(JSON.stringify(dataBahanList.value));
-  console.log(" data bahan list = ", tmp);
   const result = tmp.filter((val) => val.id == value);
 
   console.log("result = ", result);
@@ -130,6 +129,7 @@ const editBahan = async () => {
           idBahan: form.value.id_bahan,
           status: form.value.diragukan,
           notes: form.value.keterangan,
+          temuan: form.value.temuan,
         },
       }
     );
@@ -146,20 +146,20 @@ const editBahan = async () => {
   }
 };
 
-const getDetailBahan = async () => {
+const getDetailBahan = async (idBahan: string | null) => {
   try {
+    const param = idBahan ? idBahan : props.idBahan;
     const response = await $api(
-      `/self-declare/proses-verval/${route.params?.id}/ingredient-detail/${props.idBahan}`,
+      `/self-declare/proses-verval/${route.params?.id}/ingredient-detail/${param}`,
       {
         method: "get",
       }
     );
     if (response.code != 2000) {
-      console.log(response, "ini code detail bahan");
       useSnackbar().sendSnackbar("ada kesalahan", "error");
       return;
     }
-    console.log(response, "ini detail Bahan");
+
     form.value.id = response.data?.id;
     form.value.id_bahan = response.data?.id_bahan;
     form.value.nama_bahan = response.data?.nama_bahan;
@@ -169,8 +169,23 @@ const getDetailBahan = async () => {
         : parseInt(response.data?.status) === parseInt(1)
         ? parseInt(1)
         : "";
-    form.value.temuan = response.data?.notes;
-    form.value.keterangan = response.data?.keterangan;
+
+    if (props.modalType === modalTypeEnum.EDIT) {
+      dataBahanList.value = [
+        { id: response.data?.id_bahan, nama_bahan: response.data?.nama_bahan },
+      ];
+
+      if (props.listBahan) {
+        const listBahanTmp = JSON.parse(JSON.stringify(props.listBahan));
+        const bahanTmp = listBahanTmp?.filter(
+          (val) => val.id_bahan === param
+        )[0];
+        console.log("list bahan tmp = ", bahanTmp);
+
+        form.value.temuan = bahanTmp.temuan;
+        form.value.keterangan = bahanTmp.keterangan;
+      }
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
@@ -200,9 +215,8 @@ const onOpenModal = async () => {
   //   });
   // }
   if (props.modalType === modalTypeEnum.EDIT) {
-    console.log("edit");
-    await getDetailBahan();
-    onClickBahan(form.value.id);
+    await getDetailBahan(form.value.id_bahan);
+    // onClickBahan(form.value.id_bahan);
   } else {
     form.value = {
       id: null,
@@ -217,7 +231,7 @@ const onOpenModal = async () => {
 onMounted(async () => {
   if (props.modalType === modalTypeEnum.EDIT && props.idBahan) {
     console.log("Memuat detail bahan untuk ID:", props.idBahan);
-    await getDetailBahan();
+    await getDetailBahan(null);
   }
 });
 </script>
