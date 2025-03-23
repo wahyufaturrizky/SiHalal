@@ -4,6 +4,7 @@ import initCore from "@core/initCore";
 import { initConfigStore, useConfigStore } from "@core/stores/config";
 import { hexToRgb } from "@core/utils/colorConverter";
 import { useTheme } from "vuetify";
+import { useCheckVersion } from "./composables/checkVersion";
 
 const { global } = useTheme();
 
@@ -15,6 +16,9 @@ const configStore = useConfigStore();
 const { isMobile } = useDevice();
 const snackbar = useSnackbar();
 if (isMobile) configStore.appContentLayoutNav = "vertical";
+onMounted(() => {
+  useCheckVersion();
+});
 </script>
 
 <template>

@@ -62,6 +62,7 @@ export default defineNuxtConfig({
 
     // Public keys that are exposed to the client.
     public: {
+      appVersion: process.env.NUXT_PUBLIC_APP_VERSION || "",
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || "",
       appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || "",
       turnstile: {
