@@ -175,7 +175,7 @@ const getDetail = async () => {
       formData.nama_pu = nama_pu;
       formData.area_pemasaran = area_pemasaran;
       formData.id_lembaga_pendamping = response.data.id_lembaga_pendamping;
-      formData.id_pendamping = response.data.pendamping;
+      formData.id_pendamping = response.data.id_pendamping;
       formData.id_jenis_pengajuan = jenis_pendaftaran;
       formData.id_fasilitator = response.data.fac_id;
       formData.no_mohon = no_surat_permohonan;
@@ -216,7 +216,7 @@ const findListFasilitator = (fac_id: string) => {
   return data;
 };
 
-const listFasilitasi = ref([]);
+const listFasilitasi = ref();
 const listLayanan = ref([]);
 const listProduk = ref([]);
 const handleGetFasilitator = async () => {
@@ -232,12 +232,14 @@ const handleGetFasilitator = async () => {
       }
     );
 
+    listFasilitasi.value = [];
     if (response.code === 2000) {
       listFasilitasi.value = response.data;
       listFasilitasi.value.push({
         id: "Lainnya",
         name: "Lainnya",
       });
+      console.log("list fasilitasi = ", listFasilitasi.value);
       return response;
     }
     return response;
@@ -286,8 +288,8 @@ const handleGetPendamping = async (idLembaga: string | null) => {
         method: "get",
         query: {
           id_lembaga: idLembaga,
-           lokasi: formData.lokasi_pendamping,
-                    id_reg: submissionId,
+          lokasi: formData.lokasi_pendamping,
+          id_reg: submissionId,
         },
       }
     );
@@ -376,6 +378,7 @@ const handleUpdateSubmission = async () => {
 onMounted(async () => {
   // await Promise.all([
   await getDetail();
+  await handleGetPendamping(formData.id_lembaga_pendamping);
   await handleGetListPendaftaran();
   await handleGetJenisLayanan();
   await handleGetJenisProduk();
@@ -385,7 +388,6 @@ onMounted(async () => {
   await getDownloadForm("surat-permohonan");
   await getDownloadForm("surat-pernyataan");
   await handleGetFasilitator();
-  await handleGetPendamping(formData.id_lembaga_pendamping);
   console.log(submissionDetail);
   if (
     formData.id_fasilitator != null &&
@@ -629,7 +631,6 @@ onMounted(async () => {
           item-title="name"
           :rules="[requiredValidator]"
           item-value="code"
-          @update:model-value="handleGetJenisProdukFilter"
         />
       </VItemGroup>
       <br />
@@ -647,7 +648,7 @@ onMounted(async () => {
       </VItemGroup>
       <br />
       <VItemGroup>
-        <Vlabel class="font-weight-bold mb-1">Nama Usaha</Vlabel>
+        <VLabel class="font-weight-bold mb-1">Nama Usaha</VLabel>
         <VTextField
           placeholder="Masukkan Nama Usaha"
           density="compact"
@@ -664,7 +665,7 @@ onMounted(async () => {
           placeholder="Pilih Area Pemasaran"
           :rules="[requiredValidator]"
           density="compact"
-          :items="listAreaPemasaran"
+          :items="[]"
           readonly
         />
       </VItemGroup>
@@ -676,7 +677,7 @@ onMounted(async () => {
           placeholder="Pilih Area Pemasaran"
           density="compact"
           :rules="[requiredValidator]"
-          :items="lokasiPendamping"
+          :items="[]"
           @update:model-value="loadDataPendamping"
           readonly
         />
