@@ -551,8 +551,8 @@ const getDocShln = async (pathname: string) => {
           <InfoRow name="Download Halal Registration Number">
             <VBtn
               @click="
-                registration?.download_file != ''
-                  ? getDocShln(registration?.download_file)
+                registration?.file_tte !== ''
+                  ? getDocShln(registration?.file_tte)
                   : () => {}
               "
               target="_blank"
