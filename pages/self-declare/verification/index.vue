@@ -44,7 +44,11 @@ const changeFilterBy = (item) => {
 };
 
 const navigateAction = (id: string) => {
-  navigateTo(`/self-declare/verification/${id}`);
+  navigateTo(`/self-declare/verification/${id}`, {
+    open: {
+      target: "_blank",
+    },
+  });
 };
 
 const loadItem = async (
