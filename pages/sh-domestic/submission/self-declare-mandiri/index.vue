@@ -100,9 +100,7 @@ const handleCreate = async (answer: string) => {
       useSnackbar().sendSnackbar(result?.errors?.list_error?.[0], "error");
     }
   } catch (error) {
-    if (error.message === '[POST] "http://localhost:3000/api/pelaku-usaha/layanan-sertifikasi-halal-mandiri": 400 Bad Request') {
-      useSnackbar().sendSnackbar("KBLI tidak bisa digunakan untuk pengajuan Self Declare", "error");
-    }
+    useSnackbar().sendSnackbar("KBLI tidak bisa digunakan untuk pengajuan Self Declare", "error");
   }
 };
 

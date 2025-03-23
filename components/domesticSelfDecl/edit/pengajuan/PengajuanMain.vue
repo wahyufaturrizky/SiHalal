@@ -895,7 +895,7 @@ const getItemData = item => {
               <VLabel>Lembaga Pendamping</VLabel>
               <VSelect
                 v-model="formData.id_lembaga_pendamping"
-                placeholder="Pilih Area Pemasaran"
+                placeholder="Pilih Lembaga Pendamping"
                 density="compact"
                 :items="lembagaPendamping"
                 item-title="name"
