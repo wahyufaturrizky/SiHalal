@@ -261,6 +261,8 @@ const handleGetPendamping = async (idLembaga: string | null) => {
         method: "get",
         query: {
           id_lembaga: idLembaga,
+           lokasi: formData.lokasi_pendamping,
+                    id_reg: submissionId,
         },
       }
     );
@@ -732,10 +734,10 @@ onMounted(async () => {
           </VCol>
         </VRow>
         <br />
-        <div style="display: flex; justify-content: end">
-          <VItemGroup style="display: inline-flex">
+        <div style="display: flex; justify-content: end;">
+          <VItemGroup style="display: inline-flex;">
             <SuratPermohonanModal :data="submissionDetail" />
-            <div style="margin-inline-start: 1svw" />
+            <div style="margin-inline-start: 1svw;" />
             <SuratPernyataanModal :data="submissionDetail" />
           </VItemGroup>
         </div>

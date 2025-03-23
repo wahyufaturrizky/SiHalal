@@ -517,6 +517,12 @@ onMounted(async () => {
                     <VIcon icon="fa-download" />
                   </template>
                 </VBtn>
+
+                <!-- <VBtn color="#A09BA1" density="compact" class="px-2">
+                  <template #default>
+                    <VIcon icon="fa-download" />
+                  </template>
+                </VBtn> -->
               </InfoRowV2>
               <InfoRowV2
                 class="d-flex align-center"
@@ -620,9 +626,9 @@ onMounted(async () => {
                           border-color: #652672;
                           border-radius: 8px;
                           background-color: #f0e9f1;
-"
+                        "
                       >
-                        <span style="color: #652672;">
+                        <span style="color: #652672">
                           {{ detailData?.certificate_halal.status }}
                         </span>
                       </VChip>
@@ -1007,9 +1013,9 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 :deep(
-.v-expansion-panel--active:not(:first-child),
-.v-expansion-panel--active + .v-expansion-panel
-) {
+    .v-expansion-panel--active:not(:first-child),
+    .v-expansion-panel--active + .v-expansion-panel
+  ) {
   margin-block-start: 40px !important;
 }
 

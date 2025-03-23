@@ -3,6 +3,7 @@ const dataTable = ref<any[]>([]);
 const loading = ref<boolean>(false);
 const page = ref<number>(1);
 const size = ref<number>(10);
+const totalItems = ref(0)
 const searchQuery = ref<string>("");
 import { useI18n } from "vue-i18n";
 
@@ -53,16 +54,21 @@ const loadItem = async (
   try {
     const response: any = await $api("/reguler/list", {
       method: "get",
-      params: {
-        pageNumber,
-        sizeData,
+      query: {
+        page: pageNumber,
+        size: sizeData,
         keyword,
         url: path,
       },
     });
 
-    if (response?.code === 2000) dataTable.value = response?.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (response?.code === 2000) {
+      dataTable.value = response?.data;
+      totalItems.value = response.total_item || 0
+    }
+    else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -74,6 +80,10 @@ const handleInput = (e: any) => {
     500
   );
 };
+
+const handlePagination = async (filters: any) => {
+  await loadItem(filters.page, filters.itemsPerPage, '', LIST_MENU_STATUS)
+}
 
 onMounted(async () => {
   loading.value = true;
@@ -118,11 +128,15 @@ onMounted(async () => {
           </VRow>
           <VRow>
             <VCol cols="12">
-              <VDataTable
+              <VDataTableServer
+                v-model:items-per-page="size"
+                v-model:page="page"
+                :items-length="totalItems"
                 :headers="tableHeader"
                 :items="dataTable"
                 :hide-default-footer="dataTable.length === 0"
                 class="border rounded"
+                @update:options="handlePagination"
               >
                 <template #no-data>
                   <div class="w-full mt-2">
@@ -243,7 +257,7 @@ onMounted(async () => {
                     @click="navigateToDetail(item)"
                   />
                 </template>
-              </VDataTable>
+              </VDataTableServer>
             </VCol>
           </VRow>
         </VCardItem>

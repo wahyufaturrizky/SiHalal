@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { VDataTableServer } from "vuetify/components";
 const { t } = useI18n();
 
 const loadingAll = ref(true);
 const sessionData = await useMyAuthUserStore().getSession();
-const isKomisiPusat = sessionData?.value?.name === 'Komisi Fatwa Pusat'
+const isKomisiPusat = sessionData?.value?.name === "Komisi Fatwa Pusat";
 
 const items = ref([]);
 const itemPerPage = ref(10);
@@ -16,7 +16,7 @@ const showFilterMenu = ref(false);
 const page = ref(1);
 const searchQuery = ref("");
 const filterProvinsi = ref([]);
-const selectedProvince = ref("")
+const selectedProvince = ref("");
 
 const loadItem = async ({
   page,
@@ -69,14 +69,11 @@ const handleInput = () => {
 };
 
 const getProvince = async () => {
-  const response: any = await $api(
-    "/sidang-fatwa/task-force/provinsi",
-    {
-      method: "get",
-    }
-  );
-  filterProvinsi.value = response.data
-}
+  const response: any = await $api("/sidang-fatwa/task-force/provinsi", {
+    method: "get",
+  });
+  filterProvinsi.value = response.data;
+};
 
 const applyFilters = () => {
   loadItem({
@@ -84,17 +81,17 @@ const applyFilters = () => {
     size: itemPerPage.value,
     keyword: searchQuery.value,
     provinsi: selectedProvince.value,
-  })
+  });
 };
 
 const reset = () => {
-  selectedProvince.value = ''
+  selectedProvince.value = "";
   loadItem({
     page: page.value,
     size: itemPerPage.value,
     keyword: searchQuery.value,
     provinsi: selectedProvince.value,
-  })
+  });
 };
 
 onMounted(async () => {
@@ -133,7 +130,11 @@ const verifikatorTableHeader = [
 ];
 
 const navigateAction = (id: string) => {
-  navigateTo(`/sidang-fatwa/entri-ketetapan-halal/${id}`);
+  navigateTo(`/sidang-fatwa/entri-ketetapan-halal/${id}`, {
+    open: {
+      target: "_blank",
+    },
+  });
 };
 </script>
 
@@ -166,14 +167,16 @@ const navigateAction = (id: string) => {
             </template>
             <VCard class="pa-3" width="300">
               <div class="mt-5">
-                <label>{{ t('task-force.proses-sidang.filter.province') }}</label>
+                <label>{{
+                  t("task-force.proses-sidang.filter.province")
+                }}</label>
                 <VSelect
                   v-model="selectedProvince"
                   :items="filterProvinsi"
                   class="-mt-10"
                   item-title="name"
                   item-value="code"
-                  style="background-color: white;"
+                  style="background-color: white"
                 />
               </div>
               <div class="mt-5">

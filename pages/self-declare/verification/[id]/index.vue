@@ -280,7 +280,7 @@ const loadItemAspekLegalById = async ({
 
     if (response.code === 2000) {
       aspekLegal.value = response.data || [];
-      totalItemsAspekLegal.value = response.total || 0;
+      totalItemsAspekLegal.value = response.total_page || 0;
       loadingAspekLegal.value = false;
       return response;
     } else {
@@ -318,7 +318,7 @@ const loadItemPenyeliaById = async ({
 
     if (response.code === 2000) {
       penyeliaHalal.value = response.data || [];
-      totalItemsPenyelia.value = response.total || 0;
+      totalItemsPenyelia.value = response.total_page || 0;
       loadingPenyelia.value = false;
       return response;
     } else {
@@ -356,7 +356,7 @@ const loadItemProdukById = async ({
 
     if (response.code === 2000) {
       listTableProduk.value = response.data || [];
-      totalItemsTableProduk.value = response.total || 0;
+      totalItemsTableProduk.value = response.total_page || 0;
       loadingTableProduk.value = false;
       return response;
     } else {
@@ -652,6 +652,8 @@ const handleGetPendamping = async (idLembaga: string | null) => {
         method: "get",
         query: {
           id_lembaga: idLembaga,
+           lokasi: formData.lokasi_pendamping,
+                    id_reg: submissionId,
         },
       }
     );
@@ -1005,7 +1007,7 @@ const onSelectFasilitator = (selectedId: string) => {
               class="d-flex justify-space-between align-center"
               @click="showDetail = !showDetail"
             >
-              <p class="text-h4" style="font-weight: bold">
+              <p class="text-h4" style="font-weight: bold;">
                 Pengajuan Sertifikasi Halal
               </p>
               <VIcon
@@ -1040,7 +1042,7 @@ const onSelectFasilitator = (selectedId: string) => {
       <VRow>
         <VCol>
           <VCard variant="flat" class="pa-4">
-            <p class="text-h4" style="font-weight: bold">Penanggung Jawab</p>
+            <p class="text-h4" style="font-weight: bold;">Penanggung Jawab</p>
             <!-- Nama Usaha -->
             <!-- <VCol cols="12">
               <VLabel class="required"> Jenis Badan Usaha </VLabel>
@@ -1173,7 +1175,9 @@ const onSelectFasilitator = (selectedId: string) => {
                     {{ index + 1 + (pagePenyelia - 1) * itemPerPagePenyelia }}
                   </template>
                   <template #item.tgl_sk="{ item }">
-                    {{ formatDate((item as any).tgl_sk) }}
+                    <div v-if="item.tgl_sk">
+                      {{ formatDate((item as any).tgl_sk) }}
+                    </div>
                   </template>
                   <!-- <template #item.action="{ item }">
                     <div class="d-flex gap-1">
@@ -1626,17 +1630,18 @@ const onSelectFasilitator = (selectedId: string) => {
 }
 
 .label {
-  min-width: 300px; /* Adjust this value based on the longest label */
   font-weight: 500;
+  min-inline-size: 300px; /* Adjust this value based on the longest label */
 }
 
 .colon {
-  margin: 0 8px; /* Space between colon and value */
+  margin-block: 0;
+  margin-inline: 8px; /* Space between colon and value */
 }
 
 .value {
   flex: 1;
-  text-align: left;
+  text-align: start;
 }
 
 .required::after {
@@ -1645,9 +1650,9 @@ const onSelectFasilitator = (selectedId: string) => {
 }
 
 :deep .choose-file {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  margin-right: 0;
+  border-end-start-radius: 0;
+  border-start-start-radius: 0;
+  margin-inline-end: 0;
   scroll-margin-inline-end: 0;
 }
 </style>

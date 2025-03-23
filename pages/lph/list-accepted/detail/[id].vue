@@ -14,6 +14,8 @@ const dokumenLama = ref<any>([]);
 const dataPemeriksaanProduk = ref<any>(null);
 const sjphFile = ref<any>(null);
 const suratMohonFile = ref<any>(null);
+const invoiceFile = ref<string>("");
+const regNumber = ref<string>("");
 
 const isSendModalOpen = ref(false);
 
@@ -36,6 +38,10 @@ const handleUpdateStatus = async () => {
     });
 
     if (response?.code === 2000) {
+      const fetchedInvoiceFile = (await downloadInvoice(regNumber.value)) || "";
+
+      if (fetchedInvoiceFile) invoiceFile.value = fetchedInvoiceFile;
+
       useSnackbar().sendSnackbar("Berhasil kirim data", "success");
 
       return response?.data;
@@ -58,7 +64,8 @@ const getSjphDocument = async () => {
     });
 
     if (response?.code === 2000) {
-      sjphFile.value = response.data
+      sjphFile.value = response.data;
+
       return response?.data;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
@@ -77,19 +84,22 @@ const OldDoc = async (noDaftar: string) => {
         "Content-Type": "application/json",
       },
     });
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
+
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
     const data = await response.json();
 
     dokumenLama.value = data.data;
+
     return data;
   } catch (error) {
     console.error("Terjadi kesalahan saat mengambil data:", error);
+
     return null;
   }
 };
+
+const biayaValidasi = ref("");
 
 const getDetailData = async (type: string) => {
   try {
@@ -102,20 +112,21 @@ const getDetailData = async (type: string) => {
       const data = response?.data;
       if (type == "pemeriksaanproduk") {
         const noDaftar = data?.no_pendaftaran?.no_daftar;
-        if (noDaftar) {
-          await OldDoc(noDaftar);
-        } else {
-          console.error("noDaftar tidak ditemukan dalam response API");
-        }
+
+        biayaValidasi.value = data?.biaya.length;
+        if (noDaftar) await OldDoc(noDaftar);
+        else console.error("noDaftar tidak ditemukan dalam response API");
       }
 
       return data;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
       return null;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
     return null;
   }
 };
@@ -132,16 +143,14 @@ const getDownloadForm = async (docName: string, propName: string) => {
 };
 
 const getSuratPermohonan = async () => {
-  const result: any = await $api(`/reguler/lph/generate-surat-permohonan`, {
+  const result: any = await $api("/reguler/lph/generate-surat-permohonan", {
     method: "get",
     query: {
       id,
     },
   });
 
-  if (result?.code === 2000) {
-    suratMohonFile.value = result?.data?.file
-  }
+  if (result?.code === 2000) suratMohonFile.value = result?.data?.file;
 };
 
 const onUpdateBiaya = async () => {
@@ -160,6 +169,23 @@ const onUpdateBiaya = async () => {
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const downloadInvoice = async (el: any) => {
+  try {
+    const response: any = await $api("/reguler/lph/download-invoice", {
+      method: "post",
+      body: {
+        no_daftar: el,
+      },
+    });
+
+    if (response?.code === 2000) return response?.data?.file;
+
+    return null;
+  } catch (error) {
+    return null;
   }
 };
 
@@ -188,6 +214,15 @@ onMounted(async () => {
   dataPengajuan.value = responseData?.[0]?.value || {};
   dataProduk.value = responseData?.[1]?.value || [];
   dataPemeriksaanProduk.value = responseData?.[2]?.value || {};
+
+  const noDaftar = responseData?.[2]?.value?.no_pendaftaran?.no_daftar;
+
+  regNumber.value = noDaftar;
+
+  const fetchedInvoiceFile = (await downloadInvoice(noDaftar)) || "";
+
+  if (fetchedInvoiceFile) invoiceFile.value = fetchedInvoiceFile;
+
   loading.value = false;
 });
 </script>
@@ -201,6 +236,20 @@ onMounted(async () => {
             <h1>Detail Ajuan Diterima</h1>
           </VCol>
           <VCol class="d-flex justify-end">
+            <VBtn
+              class="me-4"
+              :color="invoiceFile ? 'primary' : '#A09BA1'"
+              variant="outlined"
+              :disabled="!Boolean(invoiceFile)"
+              @click="handleDownloadForm(invoiceFile, 'INVOICE')"
+            >
+              <template #default>
+                <div class="d-flex gap-2">
+                  <label>Download Invoice</label>
+                  <VIcon icon="fa-download" />
+                </div>
+              </template>
+            </VBtn>
             <VBtn
               :color="downloadForms.sttd ? 'primary' : '#A09BA1'"
               class="me-4"
@@ -308,9 +357,9 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <VRow>
-                <VCol>{{
-                  formatToIDR(dataPemeriksaanProduk?.total_biaya)
-                }}</VCol>
+                <VCol>
+                  {{ formatToIDR(dataPemeriksaanProduk?.total_biaya) }}
+                </VCol>
               </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -373,15 +422,11 @@ onMounted(async () => {
                 </VCol>
               </VRow>
               <VRow align="center">
-                <VCol cols="5" class="text-h6">Dokumen SJPH </VCol>
+                <VCol cols="5" class="text-h6"> Dokumen SJPH </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
-                    :color="
-                      sjphFile?.file
-                        ? 'primary'
-                        : '#A09BA1'
-                    "
+                    :color="sjphFile?.file ? 'primary' : '#A09BA1'"
                     density="compact"
                     class="px-2"
                     :disabled="sjphFile?.file ? false : true"
@@ -394,15 +439,11 @@ onMounted(async () => {
                 </VCol>
               </VRow>
               <VRow align="center">
-                <VCol cols="5" class="text-h6">Surat Permohonan </VCol>
+                <VCol cols="5" class="text-h6"> Surat Permohonan </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
-                    :color="
-                      suratMohonFile
-                        ? 'primary'
-                        : '#A09BA1'
-                    "
+                    :color="suratMohonFile ? 'primary' : '#A09BA1'"
                     density="compact"
                     class="px-2"
                     :disabled="suratMohonFile ? false : true"
@@ -431,7 +472,9 @@ onMounted(async () => {
                 :key="idx"
                 align="center"
               >
-                <VCol cols="5" class="text-h6"> {{ item.ref_desc }} </VCol>
+                <VCol cols="5" class="text-h6">
+                  {{ item.ref_desc }}
+                </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
@@ -461,7 +504,12 @@ onMounted(async () => {
     <VDialog v-model="isSendModalOpen" max-width="840px" persistent>
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
-          <div class="text-h3 font-weight-bold">Kirim Pengajuan</div>
+          <div v-if="biayaValidasi === 0" class="text-h3 font-weight-bold">
+            Pengajuan Belum Dapat Dikirim
+          </div>
+          <div v-if="biayaValidasi >= 1" class="text-h3 font-weight-bold">
+            Terbitkan Invoice
+          </div>
           <VIcon @click="handleOpenSendModal"> fa-times </VIcon>
         </VCardTitle>
         <VCardText>
@@ -473,7 +521,7 @@ onMounted(async () => {
             </VCol>
           </VRow>
         </VCardText>
-        <VCardActions class="px-4">
+        <VCardActions v-if="biayaValidasi >= 1" class="px-4">
           <VBtn
             variant="outlined"
             class="px-4 me-3"

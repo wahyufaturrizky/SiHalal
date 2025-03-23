@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import LPHDetailLayout from '@/layouts/LPHDetailLayout.vue'
+import LPHDetailLayout from "@/layouts/LPHDetailLayout.vue";
 
-const route = useRoute()
-const id = route?.params?.id
+const route = useRoute();
+const id = route?.params?.id;
 
-const loading = ref(false)
-const isSendModalOpen = ref(false)
-const dataPengajuan = ref<any>({})
-const dataProduk = ref<any>([])
-const dataPemeriksaanProduk = ref<any>({})
+const loading = ref(false);
+const isSendModalOpen = ref(false);
+const dataPengajuan = ref<any>({});
+const dataProduk = ref<any>([]);
+const dataPemeriksaanProduk = ref<any>({});
 const sjphFile = ref<any>(null);
 const suratMohonFile = ref<any>(null);
 
@@ -16,29 +16,26 @@ const openedLeftPanels = ref([0, 1, 2, 3, 4, 5]);
 const openedRightPanels = ref([0, 1, 2]);
 
 const checkingCostHeader: any[] = [
-  { title: 'No', key: 'index' },
-  { title: 'Keterangan Biaya', key: 'keterangan', nowrap: true },
-  { title: 'Jumlah', key: 'qty' },
-  { title: 'Harga', key: 'harga', nowrap: true },
-  { title: 'Sub Total', key: 'total', nowrap: true },
-]
+  { title: "No", key: "index" },
+  { title: "Keterangan Biaya", key: "keterangan", nowrap: true },
+  { title: "Jumlah", key: "qty" },
+  { title: "Harga", key: "harga", nowrap: true },
+  { title: "Sub Total", key: "total", nowrap: true },
+];
 
 const getDetailData = async (type: string) => {
   try {
-    const response: any = await $api('/reguler/lph/detail-payment', {
-      method: 'get',
+    const response: any = await $api("/reguler/lph/detail-payment", {
+      method: "get",
       params: { url: `${LIST_INFORMASI_PEMBAYARAN}/${id}/${type}` },
-    })
+    });
 
-    if (response?.code === 2000)
-      return response?.data
-    else
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    if (response?.code === 2000) return response?.data;
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const getSjphDocument = async () => {
   // useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
@@ -51,7 +48,8 @@ const getSjphDocument = async () => {
     });
 
     if (response?.code === 2000) {
-      sjphFile.value = response.data
+      sjphFile.value = response.data;
+
       return response?.data;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
@@ -62,61 +60,58 @@ const getSjphDocument = async () => {
 };
 
 const getSuratPermohonan = async () => {
-  const result: any = await $api(`/reguler/lph/generate-surat-permohonan`, {
+  const result: any = await $api("/reguler/lph/generate-surat-permohonan", {
     method: "get",
     query: {
       id,
     },
   });
 
-  if (result?.code === 2000) {
-    suratMohonFile.value = result?.data?.file
-  }
+  if (result?.code === 2000) suratMohonFile.value = result?.data?.file;
 };
 
 const handleOpenSendModal = () => {
-  isSendModalOpen.value = false
-}
+  isSendModalOpen.value = false;
+};
 
 const handleUpdateStatus = async () => {
   try {
-    const response: any = await $api('/reguler/update-status-payment', {
-      method: 'put',
+    const response: any = await $api("/reguler/update-status-payment", {
+      method: "put",
       body: {
         id_reg: id,
-        keterangan: 'update',
+        keterangan: "update",
       },
-    })
+    });
 
     if (response?.code === 2000) {
-      useSnackbar().sendSnackbar('Sukses kirim ke LPH', 'success')
-      return response?.data
+      useSnackbar().sendSnackbar("Sukses kirim ke LPH", "success");
+
+      return response?.data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 onMounted(async () => {
-  loading.value = true
+  loading.value = true;
 
   const responseData = await Promise.allSettled([
-    getDetailData('pengajuan'),
-    getDetailData('produk'),
-    getDetailData('pemeriksaanproduk'),
+    getDetailData("pengajuan"),
+    getDetailData("produk"),
+    getDetailData("pemeriksaanproduk"),
     getSjphDocument(),
     getSuratPermohonan(),
-  ])
+  ]);
 
-  dataPengajuan.value = responseData?.[0]?.value || {}
-  dataProduk.value = responseData?.[1]?.value || []
-  dataPemeriksaanProduk.value = responseData?.[2]?.value || {}
-  loading.value = false
-})
+  dataPengajuan.value = responseData?.[0]?.value || {};
+  dataProduk.value = responseData?.[1]?.value || [];
+  dataPemeriksaanProduk.value = responseData?.[2]?.value || {};
+  loading.value = false;
+});
 </script>
 
 <template>
@@ -128,7 +123,11 @@ onMounted(async () => {
             <h1>Informasi Pembayaran Detail</h1>
           </VCol>
           <VCol class="d-flex justify-end">
-            <VBtn text="Proses di LPH" append-icon="fa-paper-plane" @click="() => isSendModalOpen = true" />
+            <VBtn
+              text="Proses di LPH"
+              append-icon="fa-paper-plane"
+              @click="() => (isSendModalOpen = true)"
+            />
           </VCol>
         </VRow>
       </template>
@@ -177,15 +176,16 @@ onMounted(async () => {
                     <td>{{ item.keterangan }}</td>
                     <td>{{ item.qty }}</td>
                     <td>{{ item.harga }}</td>
-                    <td class="d-flex justify-center align-center" width="150px">
+                    <td
+                      class="d-flex justify-center align-center"
+                      width="150px"
+                    >
                       {{ item.total }}
                     </td>
                   </tr>
                   <tr>
                     <td colspan="3" />
-                    <td colspan="1" class="font-weight-bold">
-                      Total
-                    </td>
+                    <td colspan="1" class="font-weight-bold">Total</td>
                     <td
                       colspan="1"
                       class="d-flex justify-center align-center font-weight-bold"
@@ -219,7 +219,9 @@ onMounted(async () => {
               Hasil Pemeriksaan
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelHasilPemeriksaan :data="dataPemeriksaanProduk?.hasil_pemeriksaan" />
+              <PanelHasilPemeriksaan
+                :data="dataPemeriksaanProduk?.hasil_pemeriksaan"
+              />
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -236,7 +238,9 @@ onMounted(async () => {
               No. Pendaftaran
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelNoPendaftaran :data="dataPemeriksaanProduk?.no_pendaftaran" />
+              <PanelNoPendaftaran
+                :data="dataPemeriksaanProduk?.no_pendaftaran"
+              />
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="1" class="pt-3">
@@ -257,15 +261,11 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <VRow align="center">
-                <VCol cols="5" class="text-h6">Dokumen SJPH </VCol>
+                <VCol cols="5" class="text-h6"> Dokumen SJPH </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
-                    :color="
-                      sjphFile?.file
-                        ? 'primary'
-                        : '#A09BA1'
-                    "
+                    :color="sjphFile?.file ? 'primary' : '#A09BA1'"
                     density="compact"
                     class="px-2"
                     @click="downloadDocument(sjphFile?.file, 'FILES')"
@@ -277,15 +277,11 @@ onMounted(async () => {
                 </VCol>
               </VRow>
               <VRow align="center">
-                <VCol cols="5" class="text-h6">Surat Permohonan </VCol>
+                <VCol cols="5" class="text-h6"> Surat Permohonan </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
-                    :color="
-                      suratMohonFile
-                        ? 'primary'
-                        : '#A09BA1'
-                    "
+                    :color="suratMohonFile ? 'primary' : '#A09BA1'"
                     density="compact"
                     class="px-2"
                     :disabled="suratMohonFile ? false : true"
@@ -313,17 +309,17 @@ onMounted(async () => {
         </VCardTitle>
         <VCardText>
           <VRow>
-            <VCol>
-              Pastikan dokumen persyaratan lengkap dan semua biaya pemeriksaan
-              sudah dimasukkan. Invoice akan diterbitkan saat Anda klik tombol
-              ”kirim” dan invoice tidak dapat diedit kembali
-            </VCol>
+            <VCol> Apakah anda yakin pengajuan ini Proses di LPH? </VCol>
           </VRow>
         </VCardText>
         <VCardActions class="px-4">
-          <VBtn variant="outlined" class="px-4 me-3" @click="handleOpenSendModal"
-            >Batal</VBtn
+          <VBtn
+            variant="outlined"
+            class="px-4 me-3"
+            @click="handleOpenSendModal"
           >
+            Batal
+          </VBtn>
           <VBtn
             variant="flat"
             class="px-4"

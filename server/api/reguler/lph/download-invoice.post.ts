@@ -10,26 +10,14 @@ export default defineEventHandler(async (event: any) => {
         'Need to pass valid Bearer-authorization header to access this endpoint',
     })
   }
-
-  const { url, page, size, keyword } = (await getQuery(event)) as {
-    url: string
-    page: string
-    size: string
-    keyword: string
-  }
-
-  const params = {
-    page: page || 1,
-    size: size || 10,
-    keyword,
-  }
+  const body: any = await readBody(event)
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/${url}`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/lph/download-invoice`,
     {
-      method: 'get',
+      method: 'post',
       headers: { Authorization: authorizationHeader },
-      params,
+      body,
     },
   ).catch((err: NuxtError) => {
     setResponseStatus(event, 400)

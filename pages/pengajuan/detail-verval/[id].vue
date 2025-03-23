@@ -33,16 +33,17 @@ const getDetail = async () => {
     );
 
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 1", "error");
       return;
     }
+
     dataPelakuUsaha.value = response.data?.pelaku_usaha;
     dataPenanggungJawab.value = response.data?.penanggung_jawab;
     dataPendaftaran.value = response.data?.pendaftaran;
     dataTracking.value = response.data?.tracking;
     imageData.value = response?.data?.lembaga_pendamping?.foto_pendampingan;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 2", "error");
   }
 };
 const totalGeneralQuestion = ref(0);
@@ -55,15 +56,14 @@ const getGeneralQuestion = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 3", "error");
       return;
     }
 
     dataRequirementGeneral.value = response.data || [];
     totalGeneralQuestion.value = response.data.length;
-    // console.log(totalGeneralQuestion,'ini page')
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 4", "error");
   }
 };
 const currentPageGeneralQuestion = ref(1);
@@ -88,13 +88,13 @@ const getSpecificQuestion = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 5", "error");
       return;
     }
 
     dataRequirementSpecific.value = response.data;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 6", "error");
   }
 };
 const totalIngredients = ref(0);
@@ -107,13 +107,13 @@ const getIngredientList = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 7", "error");
       return;
     }
     dataBahanList.value = response.data || [];
-    totalIngredients.value = response.data.length;
+    totalIngredients.value = response?.data?.length || 0;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 8", "error");
   }
 };
 
@@ -141,7 +141,7 @@ const getProductList = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 9", "error");
       return "";
     }
 
@@ -150,9 +150,9 @@ const getProductList = async () => {
     } else {
       dataProdukList.value = [];
     }
-    totalProductList.value = response.data.length;
+    totalProductList.value = response?.data?.length || 0;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 10", "error");
   }
 };
 const currentPageProductList = ref(1);
@@ -179,14 +179,14 @@ const getProductProcessList = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 11", "error");
       return;
     }
 
     dataProsesList.value = response.data || [];
-    totalProductProcessList.value = response.data.length;
+    totalProductProcessList.value = response?.data?.length || 0;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 12", "error");
   }
 };
 const currentPageProductProcessList = ref(1);
@@ -256,75 +256,77 @@ const getIngredientListDropdown = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 13", "error");
       return;
     }
 
     dataBahanListOption.value = response.data;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 14", "error");
   }
 };
 
 const goToComponent = useGoTo();
 
 const validateVerval = async () => {
-  let scrollTo = null;
-  let countValidation = 5;
+  // let scrollTo = null;
+  // let countValidation = 5;
 
-  const countGeneralReqRefSelected = generalReqRef.value.selected.size;
-  const countSpecificReqRefSelected = specificReqRef.value.selected.size;
-  await getIngredientListDropdown();
+  // const countGeneralReqRefSelected = generalReqRef.value.selected.size;
+  // const countSpecificReqRefSelected = specificReqRef.value.selected.size;
+  // await getIngredientListDropdown();
 
-  if (countGeneralReqRefSelected < dataRequirementGeneral.value?.length) {
-    countValidation -= 1;
-    generalReqRef.value.openValidationErrorRibbon();
-    if (!scrollTo) {
-      scrollTo = "#generalReqTableId";
-    }
-  }
-  if (countSpecificReqRefSelected < dataRequirementSpecific.value?.length) {
-    countValidation -= 1;
-    specificReqRef.value.openValidationErrorRibbon();
-    if (!scrollTo) {
-      scrollTo = "#specificReqTableId";
-    }
-  }
-  if (dataBahanList.value?.length != dataBahanListOption.value?.length) {
-    countValidation -= 1;
-    ingredientTableRef.value.openValidationErrorRibbon();
-    if (!scrollTo) {
-      scrollTo = "#ingredientTableId";
-    }
-  }
-  if (dataProsesList.value?.length < 2) {
-    countValidation -= 1;
-    prodProcessRef.value.openValidationErrorRibbon();
-    if (!scrollTo) {
-      scrollTo = "#processProductReqTableId";
-    }
-  }
-  if (dataProdukList.value?.length < 1) {
-    countValidation -= 1;
-    productRef.value.openValidationErrorRibbon();
-    if (!scrollTo) {
-      scrollTo = "#productReqTableId";
-    }
-  }
+  // if (countGeneralReqRefSelected < dataRequirementGeneral.value?.length) {
+  //   countValidation -= 1;
+  //   generalReqRef.value.openValidationErrorRibbon();
+  //   if (!scrollTo) {
+  //     scrollTo = "#generalReqTableId";
+  //   }
+  // }
+  // if (countSpecificReqRefSelected < dataRequirementSpecific.value?.length) {
+  //   countValidation -= 1;
+  //   specificReqRef.value.openValidationErrorRibbon();
+  //   if (!scrollTo) {
+  //     scrollTo = "#specificReqTableId";
+  //   }
+  // }
+  // if (dataBahanList.value?.length != dataBahanListOption.value?.length) {
+  //   countValidation -= 1;
+  //   ingredientTableRef.value.openValidationErrorRibbon();
+  //   if (!scrollTo) {
+  //     scrollTo = "#ingredientTableId";
+  //   }
+  // }
+  // if (dataProsesList.value?.length < 2) {
+  //   countValidation -= 1;
+  //   prodProcessRef.value.openValidationErrorRibbon();
+  //   if (!scrollTo) {
+  //     scrollTo = "#processProductReqTableId";
+  //   }
+  // }
+  // if (dataProdukList.value?.length < 1) {
+  //   countValidation -= 1;
+  //   productRef.value.openValidationErrorRibbon();
+  //   if (!scrollTo) {
+  //     scrollTo = "#productReqTableId";
+  //   }
+  // }
 
-  if (countValidation == 5) {
-    await vervalSend();
-  } else {
-    if (scrollTo) {
-      goToComponent(scrollTo, {
-        duration: 500,
-        easing: "easeInOutCubic",
-        offset: -10,
-      });
-    }
+  // if (countValidation == 5) {
+  //   await vervalSend();
+  // } else {
+  //   if (scrollTo) {
+  //     goToComponent(scrollTo, {
+  //       duration: 500,
+  //       easing: "easeInOutCubic",
+  //       offset: -10,
+  //     });
+  //   }
 
-    useSnackbar().sendSnackbar("Data Verval belum terisi sepenuhnya", "error");
-  }
+  //   useSnackbar().sendSnackbar("Data Verval belum terisi sepenuhnya", "error");
+  // }
+
+  await vervalSend();
 };
 
 const vervalReturn = async (notesPengembalian: string) => {
@@ -339,13 +341,13 @@ const vervalReturn = async (notesPengembalian: string) => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 15", "error");
       return;
     }
     useSnackbar().sendSnackbar("Kembalikan data sukses", "success");
     navigateTo("/pengajuan/verval-pendamping");
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 16", "error");
   }
 };
 
@@ -388,13 +390,13 @@ const handleFileSelect = async (event) => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 17", "error");
       return;
     }
     useSnackbar().sendSnackbar("Upload Image Success", "success");
     getDetail();
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 18", "error");
   }
 };
 
@@ -428,7 +430,7 @@ onMounted(async () => {
         >Download Rekomendasi</VBtn
       >
       <VBtn
-        style="margin-inline-start: 1svw;"
+        style="margin-inline-start: 1svw"
         variant="flat"
         append-icon="fa-plus"
         @click="triggerFileInput"
@@ -442,14 +444,14 @@ onMounted(async () => {
       />
       <VBtn
         v-if="imageData"
-        style="margin-inline-start: 1svw;"
+        style="margin-inline-start: 1svw"
         variant="flat"
         title="Download Foto Pendampingan"
         @click="onClickDownload(imageData)"
         ><VIcon icon="fa-download"></VIcon
       ></VBtn>
     </VCol>
-    <VCol cols="4" style="display: flex; justify-content: end;">
+    <VCol cols="4" style="display: flex; justify-content: end">
       <ModalPengembalianDanKirim
         :modal-type="modalTypeEnum.KEMBALI"
         @verval-return="vervalReturn"
@@ -494,7 +496,7 @@ onMounted(async () => {
         :data-persyaratan="paginatedGeneralQuestion"
         v-if="dataRequirementGeneral"
         :itemsPerPage="itemsPerPage"
-       :currentPage="currentPageGeneralQuestion"
+        :currentPage="currentPageGeneralQuestion"
       ></PersyaratanUmumTable>
       <VPagination
         v-model="currentPageGeneralQuestion"
@@ -522,8 +524,8 @@ onMounted(async () => {
         :id-reg="route.params?.id"
         @confirm-add="handleBahanAdd"
         :is-temuan-can-edit="true"
-         :itemsPerPage="itemsPerPage"
-       :currentPage="currentPageIngredients"
+        :itemsPerPage="itemsPerPage"
+        :currentPage="currentPageIngredients"
       ></BahanTablePendamping>
 
       <VPagination
@@ -543,7 +545,7 @@ onMounted(async () => {
         @confirm-add="handleProsesProdukAdd"
         @confirm-delete="handleProsesProdukDelete"
         :itemsPerPage="itemsPerPage"
-      :currentPage="currentPageProductProcessList"
+        :currentPage="currentPageProductProcessList"
       ></ProsesProdukHalalPendamping>
 
       <VPagination
@@ -574,7 +576,7 @@ onMounted(async () => {
       />
     </VCol>
   </VRow>
-  <VRow style="display: none;">
+  <VRow style="display: none">
     <VCol cols="12">
       <VCard>
         <VCardItem>

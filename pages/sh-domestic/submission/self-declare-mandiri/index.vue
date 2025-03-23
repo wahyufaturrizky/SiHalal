@@ -92,13 +92,16 @@ const handleCreate = async (answer: string) => {
         },
       }
     );
-
     if (result.code === 2000) {
       router.push(
         `/sh-domestic/submission/self-declare-mandiri/${result.data.id_reg}`
       );
+    } else {
+      useSnackbar().sendSnackbar(result?.errors?.list_error?.[0], "error");
     }
-  } catch (error) {}
+  } catch (error) {
+    useSnackbar().sendSnackbar("KBLI tidak bisa digunakan untuk pengajuan Self Declare", "error");
+  }
 };
 
 const alertData = ref({

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { VDataTableServer } from "vuetify/components";
-import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 
 const items = ref<
@@ -32,31 +32,28 @@ const lembaga = ref("");
 const fasilitasi = ref("");
 const pendamping = ref("");
 const filterData = ref({
-  layanan: '',
-  produk: '',
-  provinsi: '',
-  lph: '',
-})
+  layanan: "",
+  produk: "",
+  provinsi: "",
+  lph: "",
+});
 
 const loadItem = async () => {
   try {
     loading.value = true;
 
-    const response: any = await $api(
-      "/sidang-fatwa/task-force/proses-sidang",
-      {
-        method: "get",
-        params: {
-          page: page.value,
-          size: itemPerPage.value,
-          keywords: searchQuery.value,
-          jenis_layanan: filterData.value.layanan,
-          jenis_produk: filterData.value.produk,
-          provinsi: filterData.value.provinsi,
-          lph: filterData.value.lph,
-        },
-      }
-    );
+    const response: any = await $api("/sidang-fatwa/task-force/proses-sidang", {
+      method: "get",
+      params: {
+        page: page.value,
+        size: itemPerPage.value,
+        keywords: searchQuery.value,
+        jenis_layanan: filterData.value.layanan,
+        jenis_produk: filterData.value.produk,
+        provinsi: filterData.value.provinsi,
+        lph: filterData.value.lph,
+      },
+    });
 
     items.value = response.data || [];
     totalItems.value = response.total_item || 0;
@@ -73,33 +70,21 @@ const loadFilter = async () => {
   try {
     loading.value = true;
 
-    const response1: any = await $api(
-      "/sidang-fatwa/task-force/layanan",
-      {
-        method: "get",
-      }
-    );
+    const response1: any = await $api("/sidang-fatwa/task-force/layanan", {
+      method: "get",
+    });
 
-    const response2: any = await $api(
-      "/sidang-fatwa/task-force/produk",
-      {
-        method: "get",
-      }
-    );
+    const response2: any = await $api("/sidang-fatwa/task-force/produk", {
+      method: "get",
+    });
 
-    const response3: any = await $api(
-      "/sidang-fatwa/task-force/provinsi",
-      {
-        method: "get",
-      }
-    );
+    const response3: any = await $api("/sidang-fatwa/task-force/provinsi", {
+      method: "get",
+    });
 
-    const response4: any = await $api(
-      "/sidang-fatwa/task-force/lph",
-      {
-        method: "get",
-      }
-    );
+    const response4: any = await $api("/sidang-fatwa/task-force/lph", {
+      method: "get",
+    });
 
     filterLayanan.value = response1.data || [];
     filterProduk.value = response2.data || [];
@@ -206,7 +191,7 @@ const refresh = async () => {
     lembaga.value,
     fasilitasi.value,
     pendamping.value,
-    searchQuery.value,
+    searchQuery.value
   );
 };
 
@@ -230,7 +215,11 @@ const handleInput = () => {
 };
 
 const navigateAction = (id: string) => {
-  navigateTo(`/sidang-fatwa/task-force/proses-sidang/${id}`);
+  navigateTo(`/sidang-fatwa/task-force/proses-sidang/${id}`, {
+    open: {
+      target: "_blank",
+    },
+  });
 };
 
 // Filter state
@@ -242,11 +231,11 @@ const applyFilters = () => {
 
 const reset = () => {
   filterData.value = {
-    layanan: '',
-    produk: '',
-    provinsi: '',
-    lph: '',
-  }
+    layanan: "",
+    produk: "",
+    provinsi: "",
+    lph: "",
+  };
 
   debouncedFetch();
 
@@ -257,12 +246,14 @@ const reset = () => {
 <template>
   <div>
     <KembaliButton />
-    <h1 style="font-size: 32px">{{ t('task-force.proses-sidang.title') }}</h1>
+    <h1 style="font-size: 32px">{{ t("task-force.proses-sidang.title") }}</h1>
     <br />
     <VCard class="pa-4">
       <VRow>
         <VCol>
-          <div class="text-h4 font-weight-bold">{{ t('task-force.proses-sidang.subtitle') }}</div>
+          <div class="text-h4 font-weight-bold">
+            {{ t("task-force.proses-sidang.subtitle") }}
+          </div>
         </VCol>
       </VRow>
       <VRow>
@@ -284,47 +275,53 @@ const reset = () => {
             </template>
             <VCard class="pa-3" width="300">
               <div>
-                <label>{{ t('task-force.proses-sidang.filter.service-type') }}</label>
+                <label>{{
+                  t("task-force.proses-sidang.filter.service-type")
+                }}</label>
                 <VSelect
                   v-model="filterData.layanan"
                   :items="filterLayanan"
                   class="-mt-10"
                   item-title="ref_desc"
                   item-value="jenis_layanan"
-                  style="background-color: white;"
+                  style="background-color: white"
                 />
               </div>
               <div class="mt-5">
-                <label>{{ t('task-force.proses-sidang.filter.product-type') }}</label>
+                <label>{{
+                  t("task-force.proses-sidang.filter.product-type")
+                }}</label>
                 <VSelect
                   v-model="filterData.produk"
                   :items="filterProduk"
                   class="-mt-10"
                   item-title="ref_desc"
                   item-value="jenis_produk"
-                  style="background-color: white;"
+                  style="background-color: white"
                 />
               </div>
               <div class="mt-5">
-                <label>{{ t('task-force.proses-sidang.filter.province') }}</label>
+                <label>{{
+                  t("task-force.proses-sidang.filter.province")
+                }}</label>
                 <VSelect
                   v-model="filterData.provinsi"
                   :items="filterProvinsi"
                   class="-mt-10"
                   item-title="name"
                   item-value="code"
-                  style="background-color: white;"
+                  style="background-color: white"
                 />
               </div>
               <div class="mt-5">
-                <label>{{ t('task-force.proses-sidang.filter.lph') }}</label>
+                <label>{{ t("task-force.proses-sidang.filter.lph") }}</label>
                 <VSelect
                   v-model="filterData.lph"
                   :items="filterLph"
                   class="-mt-10"
                   item-title="nama_lph"
                   item-value="lph_id"
-                  style="background-color: white;"
+                  style="background-color: white"
                 />
               </div>
               <div class="mt-5">
@@ -425,7 +422,7 @@ const reset = () => {
       background: white;
       border-inline-start: 1px solid rgba(#000, 0.12);
       inset-inline-end: 0;
-      justify-items: center,
+      justify-items: center;
     }
   }
 }

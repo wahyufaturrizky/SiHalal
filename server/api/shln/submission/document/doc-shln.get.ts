@@ -1,3 +1,4 @@
+import { NuxtError } from "nuxt/app";
 const runtimeConfig = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
@@ -8,19 +9,20 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-  const payload = await readBody(event);
+  const { filename, param } = (await getQuery(event)) as {
+    filename: string;
+    param: string;
+  };
 
-  return await $fetch(
-    `${runtimeConfig.coreBaseUrl}/api/v1/komisi-fatwa/verify-otp`,
+  const data = await $fetch<any>(
+    `${runtimeConfig.coreBaseUrl}/api/documents/shln/${filename}?${param}`,
     {
-      method: "POST",
+      method: "get",
       headers: { Authorization: authorizationHeader },
-      body: payload,
     }
   ).catch((err: NuxtError) => {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "register gagal otp",
-    });
+    setResponseStatus(event, 400);
+    return err.data;
   });
+  return data || null;
 });

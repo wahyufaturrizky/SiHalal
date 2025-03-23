@@ -48,6 +48,7 @@ const headers = [
   { title: "Ketetapan", key: "keteteapan", nowrap: true },
   { title: "Catatan 1", key: "catatan", nowrap: true },
   { title: "Catatan 2", key: "catatan2", nowrap: true },
+  { title: "Action", key: "action" },
 ];
 
 const loadItem = async (
@@ -205,6 +206,18 @@ const { mdAndUp } = useDisplay();
 const dialogMaxWidth = computed(() => {
   return mdAndUp.value ? 400 : "90%";
 });
+const routeStore = useCommonRoutingStore();
+const route = useRoute();
+
+const navigateAction = (id: string) => {
+  routeStore.setPreviousRoute(route.fullPath);
+  routeStore.setCurrentRoute(`/sidang-fatwa/proses-sidang/${id}`);
+  navigateTo(`/sidang-fatwa/proses-sidang/${id}`, {
+    open: {
+      target: "_blank",
+    },
+  });
+};
 </script>
 
 <template>
@@ -345,6 +358,18 @@ const dialogMaxWidth = computed(() => {
               >
                 {{ item.keteteapan }}
               </VChip>
+            </div>
+          </template>
+          <template #item.action="{ item }">
+            <div class="d-flex gap-1">
+              <IconBtn size="small">
+                <VIcon
+                  icon="ri-arrow-right-line"
+                  color="primary"
+                  @click="navigateAction((item as any).id_reg)"
+                />
+              </IconBtn>
+              <!-- Right arrow icon for action -->
             </div>
           </template>
         </VDataTableServer>

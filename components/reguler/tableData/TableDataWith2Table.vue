@@ -175,11 +175,11 @@ const handleDownload = async (item: any) => {
                   button-text="Hapus"
                 />
               </template>
-              <template v-if="!isviewonly" #item.actionEdit="{ item, index }">
+              <template v-if="!isviewonly" #item.actionEdit="{ item }">
                 <Vbtn
                   variant="plain"
                   class="cursor-pointer"
-                  @click="() => props.onEdit(item, index)"
+                  @click="() => props.onEdit(item, indexColum)"
                 >
                   <VIcon end icon="ri-pencil-line" color="#652672" />
                 </Vbtn>
@@ -269,7 +269,7 @@ const handleDownload = async (item: any) => {
                         <Vbtn
                           variant="plain"
                           class="cursor-pointer"
-                          @click="props.onEdit"
+                          @click="() => props.onEdit(item, indexColum)"
                         >
                           <VRow>
                             <VCol sm="4">

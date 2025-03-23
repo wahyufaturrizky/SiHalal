@@ -126,7 +126,7 @@ const loadItem = async (
       response?.data?.map((item: any) => {
         item.typeAndTotal = [item?.jenis_usaha, item?.jumlah_produk];
       });
-      totalItems.value = response.total_page;
+      totalItems.value = response.total_item;
       data.value = response.data;
       return response;
     } else {
@@ -165,17 +165,15 @@ const navigateToDetail = (id: string) => {
 const unduhFile = () => {
   window.open("/files/Cara Bayar.pdf", "_blank");
 };
+const debounceFetch = debounce(loadItem, 1500);
 
 const handleInput = (e: any) => {
-  debounce(
-    loadItem(
-      page.value,
-      size.value,
-      status.value,
-      outDated.value,
-      e.target.value
-    ),
-    500
+  debounceFetch(
+    page.value,
+    size.value,
+    status.value,
+    outDated.value,
+    e.target.value
   );
 };
 
@@ -186,13 +184,13 @@ const handleInput = (e: any) => {
 onMounted(async () => {
   loading.value = true;
   await Promise.all([
-    loadItem(
-      page.value,
-      size.value,
-      status.value,
-      outDated.value,
-      searchQuery.value
-    ),
+    // loadItem(
+    //   page.value,
+    //   size.value,
+    //   status.value,
+    //   outDated.value,
+    //   searchQuery.value
+    // ),
     getListStatus(),
   ]);
   loading.value = false;
@@ -212,8 +210,8 @@ watch([status, outDated, page], () => {
 <template>
   <div v-if="!loading">
     <!-- <KembaliButton class="pl-0" /> -->
-    <div class="d-flex align-center" style="justify-content: space-between;">
-      <h1 style="font-size: 32px;">
+    <div class="d-flex align-center" style="justify-content: space-between">
+      <h1 style="font-size: 32px">
         {{ t("reguler-invoice.invoice-list-title") }}
       </h1>
       <VBtn
@@ -291,14 +289,14 @@ watch([status, outDated, page], () => {
         </VRow>
       </VCardItem>
       <VCardItem>
-        <VDataTable
+        <VDataTableServer
           :headers="headers"
           :items="data"
-          item-value="no"
           class="elevation-1 border rounded"
-          hide-default-footer
-          :items-per-page="size"
-          :server-items-length="totalItems"
+          :items-length="totalItems"
+          v-model:items-per-page="size"
+          v-model:page="page"
+          @update:options="loadItem(page, size, status, outDated, searchQuery)"
         >
           <template #no-data>
             <div class="pt-2">
@@ -320,7 +318,7 @@ watch([status, outDated, page], () => {
             {{ formatToIDR(item.total_inv) }}
           </template>
           <template #item.no="{ index }">
-            <label>{{ index + 1 }}</label>
+            {{ index + 1 + (page - 1) * size }}
           </template>
           <template v-slot:[`item.status`]="{ item }">
             <div class="d-flex flex-wrap">
@@ -345,7 +343,7 @@ watch([status, outDated, page], () => {
                     @click="downloadDocument(item.file_inv, 'INVOICE')"
                     block
                     class="text-left"
-                    style="justify-content: flex-start; inline-size: 100%;"
+                    style="justify-content: flex-start; inline-size: 100%"
                   >
                     {{ t("reguler-invoice.invoice-list-action-downloadinv") }}
                   </VBtn>
@@ -353,13 +351,7 @@ watch([status, outDated, page], () => {
               </VMenu>
             </VBtn>
           </template>
-        </VDataTable>
-        <VPagination
-          v-model="page"
-          :length="totalItems"
-          class="mt-5"
-          @input="loadItem"
-        />
+        </VDataTableServer>
       </VCardItem>
     </VCard>
   </div>

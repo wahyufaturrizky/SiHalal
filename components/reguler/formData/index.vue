@@ -500,7 +500,7 @@ watchEffect(async () => {
             <VSelect
               v-if="!item.disabled"
               v-model="item.value"
-              :disabled="searchRegisType !== '' || isDisabledForm"
+              :disabled="isDisabledForm"
               :items="
                 item.title ===
                 'pengajuan-reguler.reguler-form--pengajuan-pengajuan-lph'

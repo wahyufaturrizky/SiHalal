@@ -34,9 +34,21 @@ const handleInput = () => {
     status.value
   );
 };
+const changeFilterBy = (item) => {
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    status.value
+  );
+};
 
 const navigateAction = (id: string) => {
-  navigateTo(`/self-declare/verification/${id}`);
+  navigateTo(`/self-declare/verification/${id}`, {
+    open: {
+      target: "_blank",
+    },
+  });
 };
 
 const loadItem = async (
@@ -55,6 +67,7 @@ const loadItem = async (
         size,
         keyword,
         status,
+        filterBy: selectedFilterBy.value,
       },
     });
 
@@ -100,6 +113,7 @@ onMounted(async () => {
     loadingAll.value = false;
   }
 });
+const selectedFilterBy = ref("pelaku_usaha");
 </script>
 
 <template>
@@ -124,7 +138,17 @@ onMounted(async () => {
     </VCardTitle>
     <VCardText v-if="!loadingAll">
       <VRow>
-        <VCol />
+        <VCol>
+          <VLabel>Cari Berdasarkan : </VLabel>
+          <VRadioGroup
+            v-model="selectedFilterBy"
+            inline
+            @update:model-value="changeFilterBy"
+          >
+            <VRadio :label="`Nama PU`" value="pelaku_usaha" />
+            <VRadio :label="`Nomor Daftar`" value="no_daftar" />
+          </VRadioGroup>
+        </VCol>
       </VRow>
       <VRow>
         <VCol cols="3">

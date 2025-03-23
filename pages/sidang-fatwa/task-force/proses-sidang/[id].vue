@@ -27,6 +27,7 @@ const dataNamaProduk = ref<any>([])
 const dataPenetapan = ref<any>({})
 const dataTracking = ref<any>([])
 const fileUnduh = ref<any>({})
+const phoneNumber = ref('')
 
 const newDataSertifikatHalal = reactive({
   sertifikatHalal: {},
@@ -52,7 +53,7 @@ const loadItemById = async () => {
     )
 
     if (response.code === 2000) {
-      const { aspek_legal, data_pengajuan, outlet, pabrik, penanggung_jawab, penyelia_halal, produk, tracking, penetapan } = response.data || {}
+      const { aspek_legal, data_pengajuan, outlet, pabrik, penanggung_jawab, penyelia_halal, produk, tracking, penetapan, no_hp } = response.data || {}
 
       dataPengajuan.value = data_pengajuan
       dataPenanggungJawab.value = penanggung_jawab
@@ -63,6 +64,7 @@ const loadItemById = async () => {
       dataNamaProduk.value = produk
       dataPenetapan.value = penetapan
       dataTracking.value = tracking
+      phoneNumber.value = no_hp
 
       return response
     }
@@ -207,6 +209,8 @@ watch(
             :data="dataPenetapan"
             :data-pengajuan="dataPengajuan"
             :id-reg="idReg"
+            :phoneNumber="phoneNumber"
+            @refresh="loadItemById"
           />
         </VCol>
       </VRow>
