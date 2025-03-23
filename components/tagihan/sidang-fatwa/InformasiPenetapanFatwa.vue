@@ -107,6 +107,8 @@ const reRequestOtp = async () => {
   onRequestOtp()
 }
 
+const emits = defineEmits(["refresh"])
+
 const onSubmitPenetapan = async () => {
   try {
     const response: any = await $api(
@@ -122,6 +124,9 @@ const onSubmitPenetapan = async () => {
     );
     if (response.code === 2000) {
       useSnackbar().sendSnackbar(response.message, "success");
+      visibleOtp.value = false
+      otpNumber.value = ""
+      emits('refresh')
       return;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan submit penetapan", "error");
@@ -149,7 +154,7 @@ const onVerifyOtp = async () => {
       useSnackbar().sendSnackbar("Verifikasi OTP berhasil", "success");
       visibleDialogVerification.value = false
       setTimeout(async () => {
-        await onSubmitPenetapan()
+        const result = await onSubmitPenetapan()
       }, 500);
       return;
     } else {
@@ -202,7 +207,6 @@ watch(countdown, (newValue) => {
 
       <!-- Konten Panel -->
       <VExpansionPanelText>
-       
         <div class="mt-5">
           <label>
             {{ t('task-force.proses-sidang.detail.section-informasi-penetapan.ketetapan') }}
