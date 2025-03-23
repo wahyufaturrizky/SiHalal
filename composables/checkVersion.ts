@@ -8,7 +8,7 @@ export const useCheckVersion = () => {
       maxAge: 60 * 60 * 24 * 7,
       sameSite: "lax",
       path: "/",
-      secure: process.env.NODE_ENV === "production",
+      secure: false,
     });
 
     if (!storedVersion.value) {
@@ -22,7 +22,8 @@ export const useCheckVersion = () => {
         `[App] Version changed (${storedVersion.value} → ${currentVersion}), reloading...`
       );
       storedVersion.value = currentVersion;
-      window.location.href = window.location.pathname + "?v=" + currentVersion;
+      window.location.href =
+        window.location.pathname + "?updated=" + Date.now();
     } else {
       console.log("[App] Version is up to date:", storedVersion.value);
     }
