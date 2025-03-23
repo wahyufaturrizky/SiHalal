@@ -518,11 +518,11 @@ onMounted(async () => {
                   </template>
                 </VBtn>
 
-                <VBtn color="#A09BA1" density="compact" class="px-2">
+                <!-- <VBtn color="#A09BA1" density="compact" class="px-2">
                   <template #default>
                     <VIcon icon="fa-download" />
                   </template>
-                </VBtn>
+                </VBtn> -->
               </InfoRowV2>
               <InfoRowV2
                 class="d-flex align-center"
