@@ -3,12 +3,6 @@ export const useCheckVersion = () => {
   const currentVersion = config.public.appVersion;
   const versionKey = "app_version";
 
-  const storedVersion = useCookie<string>(versionKey, {
-    // This makes sure the cookie is available on the client
-    sameSite: "lax",
-    path: "/",
-  });
-
   if (process.client) {
     const storedVersion = useCookie<string>("app_version", {
       maxAge: 60 * 60 * 24 * 7,
