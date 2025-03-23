@@ -8,23 +8,29 @@ export const useCheckVersion = () => {
       maxAge: 60 * 60 * 24 * 7,
       sameSite: "lax",
       path: "/",
-      secure: process.env.NODE_ENV === "production",
+      secure: false,
     });
+    // console.log(
+    //   "Stored Version and session : ",
+    //   storedVersion.value,
+    //   currentVersion
+    // );
 
     if (!storedVersion.value) {
-      console.log("[App] No version cookie found, setting it now.");
+      // console.log("[App] No version cookie found, setting it now.");
       storedVersion.value = currentVersion;
       return;
     }
 
     if (storedVersion.value !== currentVersion) {
-      console.log(
-        `[App] Version changed (${storedVersion.value} → ${currentVersion}), reloading...`
-      );
+      // console.log(
+      //   `[App] Version changed (${storedVersion.value} → ${currentVersion}), reloading...`
+      // );
       storedVersion.value = currentVersion;
-      window.location.href = window.location.pathname + "?v=" + currentVersion;
+      window.location.href =
+        window.location.pathname + "?updated=" + Date.now();
     } else {
-      console.log("[App] Version is up to date:", storedVersion.value);
+      // console.log("[App] Version is up to date:", storedVersion.value);
     }
   }
 };
