@@ -171,7 +171,7 @@ const onSubmit = async () => {
         jenisLayanan?.code ||
         props?.service_type?.[0].code ||
         props.data?.[3]?.value,
-      jenis_produk: jenisProduk?.code || props.data?.[4]?.value,
+      jenis_produk: jenisProduk?.code || props.data?.[4]?.code,
       merk_dagang: props.data[5]?.value,
       area_pemasaran: props.data?.[6]?.value,
       lph_id: lphId
@@ -397,7 +397,6 @@ const onSubmitReguler = async () => {
 };
 
 onMounted(async () => {
-  isDisabledForm.value = props.isDisabled;
   if (props?.service_type) {
     const jenisLayanan = props?.service_type?.find(
       (item: any) =>
