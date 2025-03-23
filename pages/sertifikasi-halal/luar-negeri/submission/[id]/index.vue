@@ -328,6 +328,26 @@ const timelineEvents = ref([
     dotColor: "teal-lighten-3",
   },
 ]);
+
+const getDocShln = async (pathname: string) => {
+  try {
+    const response = await $api(
+      "/shln/submission/document/doc-shln",
+      {
+        method: "get",
+        query: {
+          filename: pathname,
+          param: 'dirName=SERT',
+        },
+      }
+    );
+    if (response?.url) {
+      window.open(response?.url, "_blank", "noopener,noreferrer");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("NIB tidak ditemukan, silahkan perbaharui data NIB Pelaku Usaha", "error");
+  }
+}
 </script>
 
 <template>
@@ -532,7 +552,7 @@ const timelineEvents = ref([
             <VBtn
               @click="
                 registration?.download_file != ''
-                  ? downloadDocument(registration?.download_file, 'SERT')
+                  ? getDocShln(registration?.download_file)
                   : () => {}
               "
               target="_blank"

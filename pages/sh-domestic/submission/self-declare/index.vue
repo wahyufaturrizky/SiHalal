@@ -93,10 +93,7 @@ const handleCreate = async (answer: string) => {
       router.push(`/sh-domestic/submission/self-declare/${result.data.id_reg}`);
     }
   } catch (error) {
-    useSnackbar().sendSnackbar(
-      error.data?.errors?.list_error[0] || "Ada kesalahan",
-      "error"
-    );
+    useSnackbar().sendSnackbar("KBLI tidak bisa digunakan untuk pengajuan Self Declare", "error");
   }
 };
 
