@@ -153,7 +153,7 @@ const statusItem: any = new Proxy(
           <!-- ... -->
         </template>
         <VBtn
-          v-if="!isVerificator && !verified && !canNotEdit"
+          v-if="!isVerificator && !canNotEdit"
           @click="handleAddSave"
           color="primary"
           variant="elevated"
@@ -164,12 +164,17 @@ const statusItem: any = new Proxy(
     </VCardTitle>
     <VCardItem>
       <VForm ref="form" v-model="formStatus" @submit.prevent="handleAddProcess">
-        <VRow class="d-flex justify-space-between align-center">
-          <VCol cols="6" class="text-h6">Ketik Proses</VCol>
+        <VRow class="d-flex justify-space-between">
+          <VCol lg="2" md="2" sm="3" cols="12" class="text-h6">
+            <VLabel class="pa-2">Ketik Proses</VLabel>
+          </VCol>
           <VCol
             v-if="!canNotEdit"
-            cols="6"
-            class="d-flex justify-space-between align-center ga-4"
+            lg="10"
+            md="10"
+            sm="9"
+            cols="12"
+            class="d-flex justify-space-between ga-4"
           >
             <VTextField
               :disabled="isVerificator"
