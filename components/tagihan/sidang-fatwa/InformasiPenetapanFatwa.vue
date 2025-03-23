@@ -12,6 +12,9 @@ const props = defineProps({
   idReg: {
     type: String,
   },
+  phoneNumber: {
+    type: String
+  }
 });
 
 const panelOpen = ref(0);
@@ -56,13 +59,18 @@ const loadMasterLov = async () => {
 
 const onRequestOtp = async () => {
   try {
+    if (!props.phoneNumber) {
+      throw {
+        message: 'No HP Komisi Fatwa belum ada'
+      }
+    }
     const response: any = await $api(
       "/sidang-fatwa/task-force/request-otp",
       {
         method: "post",
         body: {
           channel: "phone_number",
-          destination: sessionData.value?.phone_number,
+          destination: props.phoneNumber,
         }
       }
     );
@@ -71,7 +79,11 @@ const onRequestOtp = async () => {
       return;
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (error.message === 'No HP belum ada') {
+      useSnackbar().sendSnackbar(error.message, "error");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   } finally {
     // loadingPendamping.value = false;
   }
