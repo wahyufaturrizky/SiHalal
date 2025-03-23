@@ -1175,7 +1175,9 @@ const onSelectFasilitator = (selectedId: string) => {
                     {{ index + 1 + (pagePenyelia - 1) * itemPerPagePenyelia }}
                   </template>
                   <template #item.tgl_sk="{ item }">
-                    {{ formatDate((item as any).tgl_sk) }}
+                    <div v-if="item.tgl_sk">
+                      {{ formatDate((item as any).tgl_sk) }}
+                    </div>
                   </template>
                   <!-- <template #item.action="{ item }">
                     <div class="d-flex gap-1">
