@@ -1131,5 +1131,15 @@
         }
       }
     }
+  },
+  "self-declare": {
+    "title": "Data Pengajuan Self Declare",
+    "create": "Buat Pengajuan",
+    "search": "Cari Data"
+  },
+  "self-declare-mandiri": {
+    "title": "Data Pengajuan Self Declare Mandiri",
+    "create": "Buat Pengajuan",
+    "search": "Cari Data"
   }
 }
