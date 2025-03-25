@@ -19,7 +19,7 @@ export default defineEventHandler(async (event: any) => {
   console.log('Server received params:', { id_reg, type });
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/${id_reg}/list-fasilitas?page=1&size=10&fas_id=${type}&id_reg=${id_reg}`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/${id_reg}/list-fasilitas-not-taken?page=1&size=10&fas_id=${type}&id_reg=${id_reg}`,
     {
       method: 'get',
       headers: { Authorization: authorizationHeader },
