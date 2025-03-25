@@ -11,6 +11,8 @@ const page = ref(1);
 const searchQuery = ref("");
 const status = ref("OF71");
 const itemsStatus = ref<any[]>([]);
+const sortBy = ref<any[]>([]);
+const sortDesc = ref<any[]>([]);
 
 // Table headers
 const headers: any = [
@@ -55,7 +57,9 @@ const loadItem = async (
   page: number,
   size: number,
   keyword: string = "",
-  status: string = ""
+  status: string = "",
+  shortBy: string = "",
+  shortByField: string = "",
 ) => {
   try {
     loading.value = true;
@@ -68,6 +72,8 @@ const loadItem = async (
         keyword,
         status,
         filterBy: selectedFilterBy.value,
+        shortBy,
+        shortByField,
       },
     });
 
@@ -130,9 +136,7 @@ const selectedFilterBy = ref("pelaku_usaha");
           <div class="text-h4 font-weight-bold">Data Pengajuan</div>
         </VCol>
         <VCol cols="6" align="end">
-          <DataPermohonanSertifikasi
-            @refresh="loadItem(1, itemPerPage, searchQuery, status)"
-          />
+          <DataPermohonanSertifikasi @refresh="loadItem(1, itemPerPage, searchQuery, status, '', '')" />
         </VCol>
       </VRow>
     </VCardTitle>
@@ -158,7 +162,7 @@ const selectedFilterBy = ref("pelaku_usaha");
             :items="itemsStatus"
             item-title="name"
             item-value="code"
-            @update:modelValue="loadItem(1, itemPerPage, searchQuery, $event)"
+            @update:model-value="loadItem(1, itemPerPage, searchQuery, $event, '', '')"
           />
         </VCol>
         <VCol class="d-flex justify-sm-space-between align-center" cols="9">
@@ -176,12 +180,14 @@ const selectedFilterBy = ref("pelaku_usaha");
         <VDataTableServer
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
+          v-model:sort-by="sortBy"
+          v-model:sort-desc="sortDesc"
           :headers="headers"
           :items="items"
           :loading="loading"
           :items-length="totalItems"
           loading-text="Loading..."
-          @update:options="loadItem(page, itemPerPage, searchQuery, status)"
+          @update:options="(newFilter) => loadItem(page, itemPerPage, searchQuery, status, newFilter?.sortBy?.[0]?.order, newFilter?.sortBy?.[0]?.key)"
         >
           <template #item.no="{ index }">
             {{ index + 1 + (page - 1) * itemPerPage }}
