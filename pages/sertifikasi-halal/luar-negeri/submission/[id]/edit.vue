@@ -163,7 +163,7 @@ const disabledTab = (
         <EditManufacture
           v-if="manufacture != undefined && identity != undefined"
           :manufacture="manufacture"
-          :hcb-country="identity.hcb.country"
+          :hcb-country="mra?.country"
         />
       </VTabsWindowItem>
       <VTabsWindowItem value="product">

@@ -3,18 +3,38 @@ import { ref } from "vue";
 
 const searchQuery = ref("");
 const loadingAll = ref(true);
-
+const { t } = useI18n();
 const headers: any = [
   { title: "No", key: "no", nowrap: true },
   { title: "ID Reg", key: "id_reg", nowrap: true },
-  { title: "No. Daftar", key: "no_daftar", nowrap: true },
-  { title: "Tanggal", key: "tgl_daftar", nowrap: true },
-  { title: "Nama PU", key: "nama_pu", nowrap: true },
-  { title: "Jenis Produk", key: "jenis_produk", nowrap: true },
-  { title: "Status", key: "status", nowrap: true },
+  {
+    title: "status-permohoanan.reguler-detail-reg-nodaftar",
+    key: "no_daftar",
+    nowrap: true,
+  },
+  {
+    title: "status-permohoanan.permohonan-list-tanggal",
+    key: "tgl_daftar",
+    nowrap: true,
+  },
+  {
+    title: "status-permohoanan.permohonan-list-namapu",
+    key: "nama_pu",
+    nowrap: true,
+  },
+  {
+    title: "status-permohoanan.permohonan-list-jnsprod",
+    key: "jenis_produk",
+    nowrap: true,
+  },
+  {
+    title: "status-permohoanan.permohonan-list-status",
+    key: "status",
+    nowrap: true,
+  },
   // { title: "Merk Dagang", key: "merk_dagang", nowrap: true },
   {
-    title: "Action",
+    title: "status-permohoanan.permohonan-list-action",
     value: "action",
     sortable: false,
     nowrap: true,
@@ -93,7 +113,10 @@ const handleCreate = async (answer: string) => {
       router.push(`/sh-domestic/submission/self-declare/${result.data.id_reg}`);
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("KBLI tidak bisa digunakan untuk pengajuan Self Declare", "error");
+    useSnackbar().sendSnackbar(
+      "KBLI tidak bisa digunakan untuk pengajuan Self Declare",
+      "error"
+    );
   }
 };
 
@@ -172,7 +195,7 @@ onMounted(async () => {
 <template>
   <div>
     <di>
-      <h1 style="font-size: 32px">Pengajuan Self Declare</h1>
+      <h1 style="font-size: 32px">{{ t("self-declare.title") }}</h1>
       <br />
     </di>
 
@@ -180,7 +203,7 @@ onMounted(async () => {
       <VRow>
         <VCol class="d-flex justify-sm-space-between align-center">
           <div class="text-h4 font-weight-bold">
-            Data Pengajuan Self Declare
+            {{ t("self-declare.title") }}
           </div>
         </VCol>
         <VCol class="d-flex justify-end align-center">
@@ -190,10 +213,10 @@ onMounted(async () => {
             append-icon="fa-plus"
             @click="openModalsQuestionare"
           >
-            Buat Pengajuan
+            {{ t("self-declare.create") }}
           </VBtn>
           <VBtn v-else color="#A09BA1" append-icon="fa-plus">
-            Buat Pengajuan
+            {{ t("self-declare.create") }}
           </VBtn>
         </VCol>
       </VRow>
@@ -222,7 +245,7 @@ onMounted(async () => {
             v-model="searchQuery"
             @update:model-value="handleSearchSubmission"
             density="compact"
-            placeholder="Cari Data"
+            :placeholder="t('self-declare-mandiri.search')"
             append-inner-icon="fa-search"
             style="max-width: 100%"
           />
@@ -247,6 +270,11 @@ onMounted(async () => {
             <template #item.no_daftar="{ item }: any">
               {{ item.no_daftar ? item.no_daftar : "-" }}
             </template>
+            <template #header.no_daftar="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
+            </template>
             <template #item.tgl_daftar="{ item }: any">
               {{
                 item.tgl_daftar
@@ -254,8 +282,18 @@ onMounted(async () => {
                   : "-"
               }}
             </template>
+            <template #header.tgl_daftar="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
+            </template>
             <template #item.jenis_produk="{ item }: any">
               {{ item.jenis_produk ? item.jenis_produk : "-" }}
+            </template>
+            <template #header.jenis_produk="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
             </template>
             <!-- <template #item.merk_dagang="{ item }: any">
               {{ item.merk_dagang ? item.merk_dagang : "-" }}
@@ -272,6 +310,21 @@ onMounted(async () => {
               >
                 ri-arrow-right-line
               </VIcon>
+            </template>
+            <template #header.action="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
+            </template>
+            <template #header.status="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
+            </template>
+            <template #header.nama_pu="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
             </template>
             <template #no-data>
               <VCard variant="outlined" class="my-7 mx-1 py-2">
