@@ -59,6 +59,7 @@ const totalItems = ref(0);
 const page = ref(1);
 const isAddFactoryModalOpen = ref(false);
 const isEditFactoryModalOpen = ref(false);
+const isUpdateDataPuModalOpen = ref(false);
 
 const listFactory = ref({
   label: [
@@ -119,6 +120,17 @@ const formDataPabrik = ref({
   idFas: "",
   fasilId: "",
 });
+
+const formDataPU = ref({
+  namaPu: "",
+  namaPuSH: "",
+  alamat: "",
+  kotaKab: "",
+  provinsi: "",
+  negara: "",
+  kodePos: "",
+  skala: "",
+})
 
 const toggle = () => {
   addDialog.value = false;
@@ -322,11 +334,10 @@ const HandleEditPabrik = async (fasId) => {
   isEditFactoryModalOpen.value = !isEditFactoryModalOpen.value;
 }
 
-// const openEditProfile = () => {
-//   modalTitle.value = "Edit Profile Pelaku Usaha";
-//   modalContent.value = "Isi konten untuk Edit Profile Pelaku Usaha.";
-//   isUpdateDataModalOpen.value = true;
-// };
+const openEditProfile = () => {
+  getDetailData('pengajuan');
+  isUpdateDataPuModalOpen.value = !isUpdateDataPuModalOpen.value;
+};
 
 const handleEditProduct = async (productId) => {
   await getDetailProduk(productId, "edit"); 
@@ -951,6 +962,50 @@ const updateProduct = async () => {
   }
 };
 
+const updateDataPU = async () => {
+  try {
+    const response = await $api(
+      "/reguler/pelaku-usaha/tab-bahan/products/update",
+      {
+        method: "PUT",
+        params: { id_reg: id, product_id: itemDetail.value.id },
+        body: {
+          kode_rincian: formData.value.kode_rincian,
+          nama_produk: formData.value.nama_produk, 
+          foto_produk: formData.value.foto_produk || uploadedFile.value.name, 
+        },
+      }
+    );
+
+    if (response.code === 2000) {
+      console.log("Berhasil update, mengambil data terbaru...");
+      await getListProducts(); 
+
+      formData.value = {
+        kode_rincian: "",
+        nama_produk: "",
+        foto_produk: null,
+        merek: "",
+      };
+
+      uploadedFile.value = {
+        name: "",
+        file: "",
+      };
+
+      addDialog.value = false; // Tutup modal
+      reRender.value = !reRender.value; // Paksa re-render UI jika diperlukan
+
+      useSnackbar().sendSnackbar("Sukses memperbarui data", "success");
+    } else {
+      useSnackbar().sendSnackbar("Gagal memperbarui data", "error");
+    }
+  } catch (error) {
+    console.error("Terjadi kesalahan saat memperbarui produk:", error);
+    useSnackbar().sendSnackbar("Terjadi kesalahan saat memperbarui produk", "error");
+  }
+};
+
 const getDetailProduk = async (productId, type) => {
   const response = await $api("/reguler/pelaku-usaha/tab-bahan/products/detail", {
     method: "get",
@@ -1009,7 +1064,13 @@ const getDetailData = async (type: string) => {
     if (response?.code === 2000) {
       const data = response?.data;
 
+      if (type === "pengajuan")
+      {
+        formDataPU.value = data;
+        
+      }
       if (type === "pemeriksaanproduk") {
+
         const noDaftar = data?.no_pendaftaran?.no_daftar;
         if (noDaftar) {
           await OldDoc(noDaftar);
@@ -1355,9 +1416,9 @@ onMounted(async () => {
                 <VListItem @click="openEditPabrik">
                   <VListItemTitle>Update Pabrik</VListItemTitle>
                 </VListItem>
-                <!-- <VListItem @click="openEditProfile">
-                  <VListItemTitle>Edit Profile Pelaku Usaha</VListItemTitle>
-                </VListItem> -->
+                <VListItem @click="openEditProfile">
+                  <VListItemTitle>Edit Data Pengajuan</VListItemTitle>
+                </VListItem>
               </VList>
             </VMenu>
 
@@ -2328,6 +2389,46 @@ onMounted(async () => {
         />
       </VCardText>
     </VCard>
+  </VDialog>
+
+  <VDialog
+      v-model="isUpdateDataPuModalOpen"
+      max-width="840px"
+      persistent
+    >
+      <VCard>
+        <VCardTitle class="d-flex justify-space-between align-center">
+          Update Data Perusahaan
+        </VCardTitle>
+        <VCardText>
+          <VForm>
+            <div class="form-group">
+              <VTextField v-model="formDataPU.nama_pu" density="compact" label="Nama Perusahaan" disabled class="mb-3" />
+              <VTextField v-model="formDataPU.nama_pu_sh" label="Nama Perusahaan (tampil di sertifikat)"  class="mb-3" />
+              <VTextField v-model="formDataPU.alamat" label="Alamat" disabled class="mb-3" />
+              <VTextField v-model="formDataPU.kota" label="Kota/Kabupaten" disabled class="mb-3" />
+              <VTextField v-model="formDataPU.provinsi" label="Provinsi" disabled class="mb-3" />
+              <VTextField v-model="formDataPU.negara" label="Negara" disabled class="mb-3" />
+              <VTextField v-model="formDataPU.kode_pos" label="Kode Pos" disabled class="mb-3" />
+              <VTextField v-model="formDataPU.skala_usaha" label="Skala Usaha" disabled class="mb-3" />
+            </div>
+          </VForm>
+        </VCardText>
+        <VCardActions>
+            <VSpacer />
+              <VBtn color="primary" @click="isUpdateDataPuModalOpen = false">
+                Tutup
+              </VBtn>
+              <VBtn
+                variant="flat"
+                class="px-4"
+                color="primary"
+                @click="updateDataPU"
+              >
+                Simpan
+              </VBtn>
+          </VCardActions>
+      </VCard>
   </VDialog>
 
 </template>
