@@ -1374,6 +1374,7 @@ const handleCertificate = async (fileName: string, type: string) => {
     });
     if (response) {
       fileName = response.filename;
+      await getSubmissionDetail();
     }
   }
   return await downloadDocument(fileName, type);
