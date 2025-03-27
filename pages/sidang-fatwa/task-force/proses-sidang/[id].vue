@@ -210,6 +210,7 @@ watch(
             :data-pengajuan="dataPengajuan"
             :id-reg="idReg"
             :phoneNumber="phoneNumber"
+            @refresh="loadItemById"
           />
         </VCol>
       </VRow>

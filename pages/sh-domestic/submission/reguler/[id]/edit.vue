@@ -287,16 +287,15 @@ const valid = ref(false);
               :key="index"
               class="position-relative d-inline-block"
             >
-              <VTooltip
+              <!-- <VTooltip
                 v-if="index > 2 && !isBahanCompleted"
                 activator="parent"
               >
                 Mohon lengkapi Bahan, Cleaning Agent, Kemasan agar menu ini
                 dapat di akses
-              </VTooltip>
+              </VTooltip> -->
               <VTab
                 :value="index"
-                :disabled="index > 2 && !isBahanCompleted"
                 @click="onclickTab(index)"
               >
                 {{ t(item) }}

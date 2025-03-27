@@ -15,6 +15,7 @@ const dataPemeriksaanProduk = ref<any>(null);
 const sjphFile = ref<any>(null);
 const suratMohonFile = ref<any>(null);
 const invoiceFile = ref<string>("");
+const regNumber = ref<string>("");
 
 const isSendModalOpen = ref(false);
 
@@ -37,6 +38,10 @@ const handleUpdateStatus = async () => {
     });
 
     if (response?.code === 2000) {
+      const fetchedInvoiceFile = (await downloadInvoice(regNumber.value)) || "";
+
+      if (fetchedInvoiceFile) invoiceFile.value = fetchedInvoiceFile;
+
       useSnackbar().sendSnackbar("Berhasil kirim data", "success");
 
       return response?.data;
@@ -94,6 +99,8 @@ const OldDoc = async (noDaftar: string) => {
   }
 };
 
+const biayaValidasi = ref("");
+
 const getDetailData = async (type: string) => {
   try {
     const response: any = await $api("/reguler/lph/detail-payment", {
@@ -105,6 +112,8 @@ const getDetailData = async (type: string) => {
       const data = response?.data;
       if (type == "pemeriksaanproduk") {
         const noDaftar = data?.no_pendaftaran?.no_daftar;
+
+        biayaValidasi.value = data?.biaya.length;
         if (noDaftar) await OldDoc(noDaftar);
         else console.error("noDaftar tidak ditemukan dalam response API");
       }
@@ -206,10 +215,11 @@ onMounted(async () => {
   dataProduk.value = responseData?.[1]?.value || [];
   dataPemeriksaanProduk.value = responseData?.[2]?.value || {};
 
-  const fetchedInvoiceFile =
-    (await downloadInvoice(
-      responseData?.[2]?.value?.no_pendaftaran?.no_daftar
-    )) || "";
+  const noDaftar = responseData?.[2]?.value?.no_pendaftaran?.no_daftar;
+
+  regNumber.value = noDaftar;
+
+  const fetchedInvoiceFile = (await downloadInvoice(noDaftar)) || "";
 
   if (fetchedInvoiceFile) invoiceFile.value = fetchedInvoiceFile;
 
@@ -494,7 +504,12 @@ onMounted(async () => {
     <VDialog v-model="isSendModalOpen" max-width="840px" persistent>
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
-          <div class="text-h3 font-weight-bold">Terbitkan Invoice</div>
+          <div v-if="biayaValidasi === 0" class="text-h3 font-weight-bold">
+            Pengajuan Belum Dapat Dikirim
+          </div>
+          <div v-if="biayaValidasi >= 1" class="text-h3 font-weight-bold">
+            Terbitkan Invoice
+          </div>
           <VIcon @click="handleOpenSendModal"> fa-times </VIcon>
         </VCardTitle>
         <VCardText>
@@ -506,7 +521,7 @@ onMounted(async () => {
             </VCol>
           </VRow>
         </VCardText>
-        <VCardActions class="px-4">
+        <VCardActions v-if="biayaValidasi >= 1" class="px-4">
           <VBtn
             variant="outlined"
             class="px-4 me-3"

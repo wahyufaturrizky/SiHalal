@@ -1131,5 +1131,15 @@
         }
       }
     }
+  },
+  "self-declare": {
+    "title": "Self-Declaration Submission",
+    "create": "Create Submission",
+    "search": "Search Data"
+  },
+  "self-declare-mandiri": {
+    "title": "Independent Self-Declaration Submission",
+    "create": "Create Submission",
+    "search": "Search Data"
   }
 }

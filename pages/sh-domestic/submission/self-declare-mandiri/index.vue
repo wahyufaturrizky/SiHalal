@@ -4,17 +4,39 @@ import { ref } from "vue";
 const searchQuery = ref("");
 const loadingAll = ref(true);
 
+const { t } = useI18n();
+
 const headers: any = [
   { title: "No", key: "no", nowrap: true },
   { title: "ID Reg", key: "id_reg", nowrap: true },
-  { title: "No. Daftar", key: "no_daftar", nowrap: true },
-  { title: "Tanggal", key: "tgl_daftar", nowrap: true },
-  { title: "Nama PU", key: "nama_pu", nowrap: true },
-  { title: "Jenis Produk", key: "jenis_produk", nowrap: true },
-  { title: "Status", key: "status", nowrap: true },
+  {
+    title: "status-permohoanan.reguler-detail-reg-nodaftar",
+    key: "no_daftar",
+    nowrap: true,
+  },
+  {
+    title: "status-permohoanan.permohonan-list-tanggal",
+    key: "tgl_daftar",
+    nowrap: true,
+  },
+  {
+    title: "status-permohoanan.permohonan-list-namapu",
+    key: "nama_pu",
+    nowrap: true,
+  },
+  {
+    title: "status-permohoanan.permohonan-list-jnsprod",
+    key: "jenis_produk",
+    nowrap: true,
+  },
+  {
+    title: "status-permohoanan.permohonan-list-status",
+    key: "status",
+    nowrap: true,
+  },
   // { title: "Merk Dagang", key: "merk_dagang", nowrap: true },
   {
-    title: "Action",
+    title: "status-permohoanan.permohonan-list-action",
     value: "action",
     sortable: false,
     nowrap: true,
@@ -26,7 +48,7 @@ const submission = ref([]);
 const currentPage = ref(1);
 const itemPerPage = ref(10);
 const totalItems = ref(0);
-const countResult = ref(0)
+const countResult = ref(0);
 
 const questions = [
   "Saya tidak pernah mendapatkan fasilitas sertifikasi halal sebelumnya ",
@@ -100,7 +122,10 @@ const handleCreate = async (answer: string) => {
       useSnackbar().sendSnackbar(result?.errors?.list_error?.[0], "error");
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("KBLI tidak bisa digunakan untuk pengajuan Self Declare", "error");
+    useSnackbar().sendSnackbar(
+      "KBLI tidak bisa digunakan untuk pengajuan Self Declare",
+      "error"
+    );
   }
 };
 
@@ -149,7 +174,7 @@ const checkCountFactory = async () => {
     });
 
     if (response.code === 2000) {
-      countResult.value = response.data.count
+      countResult.value = response.data.count;
       return response;
     }
   } catch (error) {}
@@ -196,7 +221,7 @@ onMounted(async () => {
       <VRow>
         <VCol class="d-flex justify-sm-space-between align-center">
           <div class="text-h4 font-weight-bold">
-            Data Pengajuan Self Declare Mandiri
+            {{ t("self-declare-mandiri.title") }}
           </div>
         </VCol>
         <VCol class="d-flex justify-end align-center">
@@ -207,10 +232,10 @@ onMounted(async () => {
             @click="openModalsQuestionare"
             :disabled="countResult > 1"
           >
-            Buat Pengajuan
+            {{ t("self-declare-mandiri.create") }}
           </VBtn>
           <VBtn v-else color="#A09BA1" append-icon="fa-plus">
-            Buat Pengajuan
+            {{ t("self-declare-mandiri.create") }}
           </VBtn>
         </VCol>
       </VRow>
@@ -247,7 +272,7 @@ onMounted(async () => {
             v-model="searchQuery"
             @update:model-value="handleSearchSubmission"
             density="compact"
-            placeholder="Cari Data"
+            :placeholder="t('self-declare-mandiri.search')"
             append-inner-icon="fa-search"
             style="max-width: 100%"
           />
@@ -272,6 +297,11 @@ onMounted(async () => {
             <template #item.no_daftar="{ item }: any">
               {{ item.no_daftar ? item.no_daftar : "-" }}
             </template>
+            <template #header.no_daftar="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
+            </template>
             <template #item.tgl_daftar="{ item }: any">
               {{
                 item.tgl_daftar
@@ -279,8 +309,18 @@ onMounted(async () => {
                   : "-"
               }}
             </template>
+            <template #header.tgl_daftar="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
+            </template>
             <template #item.jenis_produk="{ item }: any">
               {{ item.jenis_produk ? item.jenis_produk : "-" }}
+            </template>
+            <template #header.jenis_produk="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
             </template>
             <!-- <template #item.merk_dagang="{ item }: any">
               {{ item.merk_dagang ? item.merk_dagang : "-" }}
@@ -297,6 +337,21 @@ onMounted(async () => {
               >
                 ri-arrow-right-line
               </VIcon>
+            </template>
+            <template #header.action="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
+            </template>
+            <template #header.status="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
+            </template>
+            <template #header.nama_pu="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
             </template>
             <template #no-data>
               <VCard variant="outlined" class="my-7 mx-1 py-2">
@@ -368,7 +423,7 @@ onMounted(async () => {
 }
 .subText {
   align-content: center;
-  color: #FF4D49 !important;
+  color: #ff4d49 !important;
   font-size: 12px !important;
   font-weight: 500 !important;
   line-height: 18px !important;
@@ -376,7 +431,7 @@ onMounted(async () => {
 }
 .bgContent {
   border-radius: 10px;
-  background-color: #FFE2E2;
+  background-color: #ffe2e2;
   padding-inline-start: 10px;
 }
 </style>

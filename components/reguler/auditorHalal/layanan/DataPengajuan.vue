@@ -296,7 +296,7 @@ const getDetailData = async () => {
         },
         {
           title: "pengajuan-reguler.reguler-form--pengajuan-pengajuan-tglmohon",
-          value: certificateHalal.tgl_daftar || "",
+          value: certificateHalal.tgl_mohon || "",
           type: "text",
           required: true,
           key: "tgl_mohon",
@@ -316,6 +316,7 @@ const getDetailData = async () => {
           disabled: certificateHalal.jenis_pengajuan == "Pengembangan",
           required: certificateHalal.jenis_pengajuan != "Pengembangan",
           key: "jenis_produk",
+          code: certificateHalal?.id_produk,
         },
         {
           title: "pengajuan-reguler.reguler-form--pengajuan-pengajuan-merek",

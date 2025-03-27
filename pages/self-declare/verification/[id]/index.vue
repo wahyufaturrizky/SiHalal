@@ -280,7 +280,7 @@ const loadItemAspekLegalById = async ({
 
     if (response.code === 2000) {
       aspekLegal.value = response.data || [];
-      totalItemsAspekLegal.value = response.total || 0;
+      totalItemsAspekLegal.value = response.total_page || 0;
       loadingAspekLegal.value = false;
       return response;
     } else {
@@ -318,7 +318,7 @@ const loadItemPenyeliaById = async ({
 
     if (response.code === 2000) {
       penyeliaHalal.value = response.data || [];
-      totalItemsPenyelia.value = response.total || 0;
+      totalItemsPenyelia.value = response.total_page || 0;
       loadingPenyelia.value = false;
       return response;
     } else {
@@ -356,7 +356,7 @@ const loadItemProdukById = async ({
 
     if (response.code === 2000) {
       listTableProduk.value = response.data || [];
-      totalItemsTableProduk.value = response.total || 0;
+      totalItemsTableProduk.value = response.total_page || 0;
       loadingTableProduk.value = false;
       return response;
     } else {

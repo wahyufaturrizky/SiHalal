@@ -11,12 +11,14 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { page, size, keyword, status, filterBy } = (await getQuery(event)) as {
+  const { page, size, keyword, status, filterBy, shortBy, shortByField } = (await getQuery(event)) as {
     page: string;
     size: string;
     keyword: string;
     status: string;
     filterBy: string;
+    shortBy: string;
+    shortByField: string;
   };
 
   const params: any = {
@@ -28,11 +30,15 @@ export default defineEventHandler(async (event) => {
     params["keyword"] = keyword;
   }
 
+  if (shortByField) {
+    params["shortBy"] = shortBy;
+    params["shortByField"] = shortByField;
+  }
+
   if (status !== "" && status !== "Semua") {
     params["status"] = status;
   }
   if (filterBy !== undefined) params["query_by"] = filterBy;
-  console.log(params);
 
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/verifikator/halal-certificate-reguler/list`,
