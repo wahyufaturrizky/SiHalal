@@ -16,6 +16,8 @@ const totalItems = ref<number>(0);
 const data = ref<any[]>([]);
 const listOss = ref<any[]>([]);
 
+const store = pelakuUsahaProfile();
+
 const headers = [
   { title: "No", key: "no" },
   {
@@ -77,8 +79,8 @@ const loadItem = async (
     const response: any = await $api("/reguler/pelaku-usaha", {
       method: "get",
       params: {
-        page : pageNumber,
-        size : sizeData,
+        page: pageNumber,
+        size: sizeData,
         keyword,
       },
     });
@@ -141,7 +143,7 @@ const newRegister = async (type: string, id: string) => {
 const additionalRegister = () => {};
 
 onMounted(async () => {
-  await Promise.allSettled([getListOss()]);
+  await Promise.allSettled([getListOss(), store.fetchProfile(null)]);
 });
 </script>
 
