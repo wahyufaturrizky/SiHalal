@@ -224,6 +224,21 @@ const getDownloadForm = async (docName: string, propName: string) => {
 const handleDownloadForm = async (fileName: string, type: string) => {
   return await downloadDocument(fileName, type);
 };
+const handleCertificate = async (fileName: string, type: string) => {
+  if (fileName == "") {
+    const response = await $api(`/certificate/regenerate`, {
+      method: "post",
+      body: {
+        document_type: "certificate-reguler",
+        ref_id: id,
+      },
+    });
+    if (response) {
+      fileName = response.filename;
+    }
+  }
+  return await downloadDocument(fileName, type);
+};
 
 const itemsPerPage = ref(10);
 const currentPageAspek = ref(1);
@@ -499,14 +514,25 @@ onMounted(async () => {
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
-                  :color="
-                    downloadForms.setifikasi_halal ? 'primary' : '#A09BA1'
+                  :color="'primary'"
+                  :disabled="
+                    !detailData?.tracking.some(
+                      (track) =>
+                        track.status == 'OF100' ||
+                        track.status == 'OF120' ||
+                        track.status == 'OF300'
+                    )
                   "
                   density="compact"
                   class="px-2"
                   @click="
-                    downloadForms.setifikasi_halal
-                      ? handleDownloadForm(
+                    detailData?.tracking.some(
+                      (track) =>
+                        track.status == 'OF100' ||
+                        track.status == 'OF120' ||
+                        track.status == 'OF300'
+                    )
+                      ? handleCertificate(
                           downloadForms.setifikasi_halal,
                           'SERT'
                         )

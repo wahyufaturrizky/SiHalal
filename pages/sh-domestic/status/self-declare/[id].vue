@@ -470,7 +470,7 @@
                 <template #item.photo="{ item }: any">
                   <VIcon
                     color="primary"
-                    style="cursor: pointer;"
+                    style="cursor: pointer"
                     @click="handleDownload(item.photo, 'PRODUCT')"
                   >
                     ri-download-2-fill
@@ -699,15 +699,26 @@
               >
                 <VBtn
                   @click="
-                    downloadForms.sertifikasi_halal
-                      ? handleDownloadForm(
+                    trackingDetail.some(
+                      (track) =>
+                        track.status == 'OF100' ||
+                        track.status == 'OF120' ||
+                        track.status == 'OF300'
+                    )
+                      ? handleCertificate(
                           downloadForms.sertifikasi_halal,
                           'SERT'
                         )
                       : null
                   "
-                  :color="
-                    downloadForms.sertifikasi_halal ? 'primary' : '#A09BA1'
+                  :color="'primary'"
+                  :disabled="
+                    !trackingDetail.some(
+                      (track) =>
+                        track.status == 'OF100' ||
+                        track.status == 'OF120' ||
+                        track.status == 'OF300'
+                    )
                   "
                   density="compact"
                   class="px-2"
@@ -832,7 +843,7 @@
                 <v-tooltip :text="statusItem[registrationDetail.status].desc">
                   <template v-slot:activator="{ props }">
                     <v-chip
-                      style="background: #f0e9f1;"
+                      style="background: #f0e9f1"
                       :color="statusItem[registrationDetail.status].color"
                       variant="outlined"
                       rounded="lg"
@@ -1352,6 +1363,22 @@ onMounted(async () => {
   }
 });
 
+const handleCertificate = async (fileName: string, type: string) => {
+  if (fileName == "") {
+    const response = await $api(`/certificate/regenerate`, {
+      method: "post",
+      body: {
+        document_type: "certificate-self-declare",
+        ref_id: submissionId,
+      },
+    });
+    if (response) {
+      fileName = response.filename;
+    }
+  }
+  return await downloadDocument(fileName, type);
+};
+
 const getSubmissionDetail = async () => {
   try {
     const response: any = await $api(
@@ -1423,7 +1450,6 @@ const getDownloadForm = async (docName: string, propName: string) => {
   );
 
   if (result.code === 2000) {
-
     downloadForms[propName] = result.data.file;
   }
 };
