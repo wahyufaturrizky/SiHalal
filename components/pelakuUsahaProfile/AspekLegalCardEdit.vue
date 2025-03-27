@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatToDDMMYYYY } from "@/utils/formatToISOString"
+import { formatToDDMMYYYY } from "@/utils/formatToISOString";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
@@ -65,16 +65,19 @@ const handleAddAspekLegalConfirm = (formData) => {
         document_type: formData.type,
         document_number: formData.doc_number,
         date: parseFlexibleDate(formData.date).toISOString().substring(0, 10),
-        valid_date: formData.expiration_date !== "" ? parseFlexibleDate(formData.expiration_date)
-          .toISOString()
-          .substring(0, 10) : null,
+        valid_date:
+          formData.expiration_date !== ""
+            ? parseFlexibleDate(formData.expiration_date)
+                .toISOString()
+                .substring(0, 10)
+            : null,
         publish_agency: formData.publishing_agency,
       },
     }
   )
     .then((val: any) => {
       if (val.code == 2000) {
-        store.fetchProfile();
+        store.fetchProfile(null);
         snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
       } else {
         snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
@@ -96,7 +99,10 @@ const handleEditAspekLegalConfirm = (formData) => {
       document_type: formData.type,
       document_number: formData.doc_number,
       date: parseFlexibleDate(formData.date).toISOString(),
-      valid_date: formData.expiration_date !== "" ? parseFlexibleDate(formData.expiration_date).toISOString() : null,
+      valid_date:
+        formData.expiration_date !== ""
+          ? parseFlexibleDate(formData.expiration_date).toISOString()
+          : null,
       publish_agency: formData.publishing_agency,
     },
   })
@@ -140,7 +146,9 @@ onMounted(() => {
     <VCardTitle>
       <VRow>
         <VCol cols="6">
-          <div class="text-h4 font-weight-bold">{{t('detail-pu.pu-legal-title')}}</div>
+          <div class="text-h4 font-weight-bold">
+            {{ t("detail-pu.pu-legal-title") }}
+          </div>
         </VCol>
         <VCol cols="6" style="display: flex; justify-content: end">
           <AspekLegalModal
@@ -190,11 +198,16 @@ onMounted(() => {
         <template #[`item.action`]="{ item }">
           <VMenu :close-on-content-click="false">
             <template #activator="{ props }">
-              <VBtn icon variant="text" v-bind="props"   v-if="item?.type !== 'NIB'">
+              <VBtn
+                icon
+                variant="text"
+                v-bind="props"
+                v-if="item?.type !== 'NIB'"
+              >
                 <VIcon>mdi-dots-vertical</VIcon>
               </VBtn>
             </template>
-            <VList >
+            <VList>
               <VListItem>
                 <!-- <VListItemTitle>
                     <VIcon class="mr-2"> mdi-pencil </VIcon>
@@ -214,7 +227,7 @@ onMounted(() => {
               >
                 <VListItemTitle class="text-red">
                   <VIcon color="red" class="mr-2"> mdi-delete </VIcon>
-                  {{t('detail-pu.pu-legal-modal-hapus')}}
+                  {{ t("detail-pu.pu-legal-modal-hapus") }}
                 </VListItemTitle>
               </VListItem>
             </VList>

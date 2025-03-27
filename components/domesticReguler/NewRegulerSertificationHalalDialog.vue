@@ -154,7 +154,7 @@ const registerNewDevelopment = async () => {
           </VCol>
         </VRow>
 
-        <VCardText>
+        <!-- <VCardText>
           <span class="font-weight-bold mb-4">
             {{ t("pengajuan-reguler.popup-kbli-title") }}
           </span>
@@ -166,7 +166,7 @@ const registerNewDevelopment = async () => {
             item-text="uraian_usaha"
             item-value="id"
           />
-        </VCardText>
+        </VCardText> -->
       </VCard>
     </VDialog>
   </div>

@@ -68,7 +68,6 @@ const uploadDocument = async (file, type: string) => {
 // };
 
 async function handleAddAspekLegalConfirm(item) {
-
   // console.log("executed emit", item.namaPenyelia);
   try {
     if (isNoNeedValidation) {
@@ -79,14 +78,17 @@ async function handleAddAspekLegalConfirm(item) {
         name: item.namaPenyelia,
         religion: item.agamaPenyelia,
         sk_number: item.nomorSk,
-        sk_date: parseFlexibleDate(item.tanggalSk).toISOString().substring(0, 19) + "Z",
+        sk_date:
+          parseFlexibleDate(item.tanggalSk).toISOString().substring(0, 19) +
+          "Z",
       };
       if (item.certificate_date) {
         payload = {
           ...payload,
           certificate_date:
-            parseFlexibleDate(item.tanggalSertifikat).toISOString().substring(0, 19) +
-            "Z",
+            parseFlexibleDate(item.tanggalSertifikat)
+              .toISOString()
+              .substring(0, 19) + "Z",
         };
       }
       if (item.certificate_number) {
@@ -144,7 +146,7 @@ async function handleAddAspekLegalConfirm(item) {
         );
         return;
       }
-      await store.fetchProfile();
+      await store.fetchProfile(null);
       // useMyUpdateSubmissionEditStore().setData("document");
       useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
     } else {
@@ -172,11 +174,13 @@ async function handleAddAspekLegalConfirm(item) {
             religion: item.agamaPenyelia,
             certificate_number: item.nomorSertifikat,
             certificate_date:
-              parseFlexibleDate(item.tanggalSertifikat).toISOString().substring(0, 19) +
-              "Z",
+              parseFlexibleDate(item.tanggalSertifikat)
+                .toISOString()
+                .substring(0, 19) + "Z",
             sk_number: item.nomorSk,
             sk_date:
-              parseFlexibleDate(item.tanggalSk).toISOString().substring(0, 19) + "Z",
+              parseFlexibleDate(item.tanggalSk).toISOString().substring(0, 19) +
+              "Z",
             skph_file: skkFile.data.file_url,
             spph_file: skpFile.data.file_url,
             ktp_file: ktpFile.data.file_url,
@@ -191,7 +195,7 @@ async function handleAddAspekLegalConfirm(item) {
         );
         return;
       }
-      await store.fetchProfile();
+      await store.fetchProfile(null);
       // useMyUpdateSubmissionEditStore().setData("document");
       useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
     }
@@ -239,11 +243,13 @@ const handleEditEmitted = async (item, idPenyelia) => {
           religion: item.agamaPenyelia,
           certificate_number: item.nomorSertifikat,
           certificate_date:
-            parseFlexibleDate(item.tanggalSertifikat).toISOString().substring(0, 19) +
-            "Z",
+            parseFlexibleDate(item.tanggalSertifikat)
+              .toISOString()
+              .substring(0, 19) + "Z",
           sk_number: item.nomorSk,
           sk_date:
-            parseFlexibleDate(item.tanggalSk).toISOString().substring(0, 19) + "Z",
+            parseFlexibleDate(item.tanggalSk).toISOString().substring(0, 19) +
+            "Z",
           skph_file: skkFile.data.file_url,
           spph_file: skpFile.data.file_url,
           ktp_file: ktpFile.data.file_url,
@@ -255,7 +261,7 @@ const handleEditEmitted = async (item, idPenyelia) => {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
       return;
     }
-    await store.fetchProfile();
+    await store.fetchProfile(null);
     // useMyUpdateSubmissionEditStore().setData("document");
     useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
   } catch (error) {
@@ -275,7 +281,7 @@ function handleDelete(item) {
   )
     .then((val: any) => {
       if (val.code == 2000) {
-        store.fetchProfile();
+        store.fetchProfile(null);
         snackbar.sendSnackbar("Berhasil Menghapus Data ", "success");
       } else {
         snackbar.sendSnackbar("Gagal Menghapus Data ", "error");

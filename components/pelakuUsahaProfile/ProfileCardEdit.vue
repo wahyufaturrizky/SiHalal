@@ -193,7 +193,7 @@ async function submitProfile() {
           if (modalDasarRule.length > 1) {
             modalDasarRule = [requiredValidator];
           }
-          store.fetchProfile();
+          store.fetchProfile(null);
           snackbar.sendSnackbar("Berhasil Mengubah Data ", "success");
         } else {
           snackbar.sendSnackbar("Gagal Mengubah Data ", "error");
@@ -224,7 +224,7 @@ async function submitProfilePemerintah() {
           if (modalDasarRule.length > 1) {
             modalDasarRule = [requiredValidator];
           }
-          store.fetchProfile();
+          store.fetchProfile(null);
           snackbar.sendSnackbar("Berhasil Mengubah Data ", "success");
         } else {
           snackbar.sendSnackbar("Gagal Mengubah Data ", "error");
@@ -237,7 +237,7 @@ async function submitProfilePemerintah() {
 defineExpose({ submitProfile, submitProfilePemerintah });
 
 onMounted(async () => {
-  await store.fetchProfile();
+  await store.fetchProfile(null);
   jenisBadanUsahaOption.value = await getMasterData("bustype");
   skalaUsahaOption.value = await getMasterData("busscale");
 });

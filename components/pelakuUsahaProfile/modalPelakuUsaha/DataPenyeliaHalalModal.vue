@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { formatToDDMMYYYY } from "@/utils/formatToISOString"
+import { formatToDDMMYYYY } from "@/utils/formatToISOString";
 import { defineEmits, defineProps, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
-import { VForm, VTextField } from "vuetify/components"
+import { VForm, VTextField } from "vuetify/components";
 
 const props = defineProps({
   mode: { type: String, default: "add" },
@@ -15,8 +15,12 @@ const props = defineProps({
 });
 
 const store = pelakuUsahaProfile();
-const isNoNeedValidation =
-  props?.data?.skala_usaha === "JU.4" || props?.data?.skala_usaha === "JU.3";
+const isNoNeedValidation = () => {
+  console.log("validation = ", props?.data?.skala_usaha);
+  return (
+    props?.data?.skala_usaha === "JU.4" || props?.data?.skala_usaha === "JU.3"
+  );
+};
 
 const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
 
@@ -108,9 +112,11 @@ const fillEditForm = async (newData) => {
     form.value.namaPenyelia = val.data.name;
     form.value.agamaPenyelia = val.data.religion;
     form.value.nomorSertifikat = val.data.certificate_number;
-    form.value.tanggalSertifikat = formatToDDMMYYYY(new Date(val.data.certificate_date))
+    form.value.tanggalSertifikat = formatToDDMMYYYY(
+      new Date(val.data.certificate_date)
+    );
     form.value.nomorSk = val.data.sk_number;
-    form.value.tanggalSk = formatToDDMMYYYY(new Date(val.data.sk_date))
+    form.value.tanggalSk = formatToDDMMYYYY(new Date(val.data.sk_date));
     form.value.sertifikatKompetensi = val.data.skph_file;
     form.value.sertifikatPelatihan = val.data.spph_file;
     form.value.ktpFile = val.data.ktp_file;
@@ -223,11 +229,15 @@ const { t } = useI18n();
             <VRow>
               <VCol cols="6">
                 <VTextField
-                  :rules="isNoNeedValidation ? [] : [
-                    requiredValidator,
-                    integerValidator,
-                    lengthValidator(form.noKtp, 16),
-                  ]"
+                  :rules="
+                    isNoNeedValidation
+                      ? []
+                      : [
+                          requiredValidator,
+                          integerValidator,
+                          lengthValidator(form.noKtp, 16),
+                        ]
+                  "
                   v-model="form.noKtp"
                   label="No. KTP"
                   outlined
@@ -291,15 +301,15 @@ const { t } = useI18n();
                 />
               </VCol>
               <VCol cols="6">
-<!--                <VTextField-->
-<!--                  :rules="isNoNeedValidation ? [] : [requiredValidator]"-->
-<!--                  v-model="form.tanggalSertifikat"-->
-<!--                  label="Tanggal Sertifikat"-->
-<!--                  outlined-->
-<!--                  dense-->
-<!--                  required-->
-<!--                  type="date"-->
-<!--                />-->
+                <!--                <VTextField-->
+                <!--                  :rules="isNoNeedValidation ? [] : [requiredValidator]"-->
+                <!--                  v-model="form.tanggalSertifikat"-->
+                <!--                  label="Tanggal Sertifikat"-->
+                <!--                  outlined-->
+                <!--                  dense-->
+                <!--                  required-->
+                <!--                  type="date"-->
+                <!--                />-->
                 <Vuepicdatepicker
                   v-model:model-value="form.tanggalSertifikat"
                   auto-apply
@@ -332,15 +342,15 @@ const { t } = useI18n();
                 />
               </VCol>
               <VCol cols="6">
-<!--                <VTextField-->
-<!--                  :rules="[requiredValidator]"-->
-<!--                  v-model="form.tanggalSk"-->
-<!--                  label="Tanggal SK"-->
-<!--                  outlined-->
-<!--                  dense-->
-<!--                  required-->
-<!--                  type="date"-->
-<!--                />-->
+                <!--                <VTextField-->
+                <!--                  :rules="[requiredValidator]"-->
+                <!--                  v-model="form.tanggalSk"-->
+                <!--                  label="Tanggal SK"-->
+                <!--                  outlined-->
+                <!--                  dense-->
+                <!--                  required-->
+                <!--                  type="date"-->
+                <!--                />-->
 
                 <Vuepicdatepicker
                   v-model:model-value="form.tanggalSk"
@@ -422,8 +432,7 @@ const { t } = useI18n();
                     fileSizeValidator,
                     fileNameLengthValidator,
                     fileExtensionValidator,
-                  ]
-                  "
+                  ]"
                   v-model="form.ktpFile"
                   label="Unggah KTP"
                   outlined

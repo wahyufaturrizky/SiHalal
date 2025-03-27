@@ -43,7 +43,7 @@ const handleAddAspekLegalConfirm = (formData) => {
     }
   ).then((val: any) => {
     if (val.code == 2000) {
-      store.fetchProfile();
+      store.fetchProfile(null);
       snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
       addOutletRef.value.hideErrorProhbName();
       addOutletRef.value.closeDialog();
@@ -73,7 +73,7 @@ const handleEditOutletConfirm = (formData, id_outlet) => {
   })
     .then((val: any) => {
       if (val.code == 2000) {
-        store.fetchProfile();
+        store.fetchProfile(null);
         snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
         editOutletRef.value.hideErrorProhbName();
         editOutletRef.value.closeDialog();
@@ -100,7 +100,7 @@ function handleDelete(item) {
   })
     .then((val: any) => {
       if (val.code == 2000) {
-        store.fetchProfile();
+        store.fetchProfile(null);
         snackbar.sendSnackbar("Berhasil Menghapus Data ", "success");
       } else {
         snackbar.sendSnackbar("Gagal Menghapus Data ", "error");

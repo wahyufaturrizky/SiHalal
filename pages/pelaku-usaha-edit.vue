@@ -20,6 +20,7 @@ const formData = ref({
 const snackbar = useSnackbar();
 const penanggungJawabRef = ref<VForm>();
 const profileCardEditRef = ref();
+const dataProfilePU = ref();
 
 const submitPenanggungJawab = () => {
   console.log("asal usaha = ", store.profileData?.asal_usaha?.toLowerCase());
@@ -43,7 +44,7 @@ const submitPenanggungJawab = () => {
         }
       ).then((val: any) => {
         if (val.code == 2000) {
-          store.fetchProfile();
+          store.fetchProfile(null);
           snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
         } else {
           snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
@@ -69,6 +70,7 @@ const nameValidator = (value: string) => {
 };
 
 onMounted(() => {
+  store.fetchProfile(null);
   formData.value.nameResponsible = store.penanggungJawabHalal?.name;
   formData.value.nomorKontak = store.penanggungJawabHalal?.phone;
   formData.value.email = store.penanggungJawabHalal?.email;
