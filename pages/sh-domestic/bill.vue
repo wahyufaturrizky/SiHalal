@@ -14,9 +14,31 @@ const data = ref<any[]>([]);
 const lovStatus = ref<any[]>([]);
 const loading = ref(false);
 const totalItems = ref(0);
-
+const typeInvoice = {
+  "Registrasi Self Declare": "invoice-self-declare-mandiri",
+  "Sertifikasi Halal": "invoice-reguler",
+};
 const { t } = useI18n();
-
+const handleInvoice = async (
+  fileName: string,
+  type: string,
+  id: string,
+  invoiceType: string
+) => {
+  if (fileName == "") {
+    const response = await $api(`/certificate/regenerate`, {
+      method: "post",
+      body: {
+        document_type: typeInvoice[invoiceType],
+        ref_id: id,
+      },
+    });
+    if (response) {
+      fileName = response.filename;
+    }
+  }
+  return await downloadDocument(fileName, type);
+};
 const headers = [
   { title: "No", key: "no" },
   {
@@ -333,6 +355,7 @@ watch([status, outDated, page], () => {
             </div>
           </template>
           <template #item.action="{ item }">
+            <!-- {{ item }} -->
             <VBtn color="primary" variant="plain">
               <VIcon>mdi-dots-vertical</VIcon>
               <VMenu activator="parent" :close-on-content-click="false">
@@ -340,7 +363,14 @@ watch([status, outDated, page], () => {
                   <VBtn
                     variant="text"
                     prepend-icon="mdi-download-box"
-                    @click="downloadDocument(item.file_inv, 'INVOICE')"
+                    @click="
+                      handleInvoice(
+                        item.file_inv,
+                        'INVOICE',
+                        item.id_inv,
+                        item.jenis_transaksi
+                      )
+                    "
                     block
                     class="text-left"
                     style="justify-content: flex-start; inline-size: 100%"
