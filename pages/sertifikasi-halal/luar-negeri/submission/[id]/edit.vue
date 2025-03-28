@@ -73,8 +73,8 @@ const getMra = async () => {
       disabledTab("document", true);
       return;
     }
-    reloadkey.value++;
     mra.value = response.data;
+    reloadkey.value++;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
