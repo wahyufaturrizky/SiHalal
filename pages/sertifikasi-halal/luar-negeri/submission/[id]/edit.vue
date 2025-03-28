@@ -154,12 +154,7 @@ const reloadkey = ref(0);
     <!-- <v-card-text> -->
     <VTabsWindow v-model="tab">
       <VTabsWindowItem value="identity">
-        <EditIdentity
-          v-if="identity"
-          :hcb="hcb"
-          :event="identity"
-          :key="reloadkey"
-        />
+        <EditIdentity v-if="identity" :hcb="hcb" :event="identity" />
       </VTabsWindowItem>
 
       <VTabsWindowItem value="document">
