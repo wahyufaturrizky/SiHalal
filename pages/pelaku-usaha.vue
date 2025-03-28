@@ -42,7 +42,7 @@ const store = pelakuUsahaProfile();
 const { mdAndUp } = useDisplay();
 
 onMounted(() => {
-  store.fetchProfile();
+  store.fetchProfile(null);
 });
 </script>
 

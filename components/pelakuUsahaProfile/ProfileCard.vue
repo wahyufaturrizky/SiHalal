@@ -110,7 +110,7 @@ const jenisBadanUsaha = ref("");
 const skalaUsaha = ref("");
 
 onMounted(async () => {
-  // await store.fetchProfile();
+  // await store.fetchProfile(null);
   jenisBadanUsaha.value = await convertJnbus(
     store.profileData?.jenis_badan_usaha
   );

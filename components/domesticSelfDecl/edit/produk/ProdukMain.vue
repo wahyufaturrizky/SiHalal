@@ -346,6 +346,7 @@ const changePage = (page: number) => {
             v-if="
               !item.verified ||
               statusSelf === 'OF1' ||
+              statusSelf === 'OF10' ||
               statusSelf === 'OF280' ||
               statusSelf === 'OF285'
             "

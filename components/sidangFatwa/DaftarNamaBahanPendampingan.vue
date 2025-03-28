@@ -66,7 +66,7 @@ const paneSwitcher = [0];
           </template>
           <template #item.diragukan="{ item }">
             <VChip
-              v-if="!item.diragukan"
+              v-if="item.diragukan === 'Diragukan'"
               variant="outlined"
               style="
                 color: #e1442e;
@@ -74,10 +74,11 @@ const paneSwitcher = [0];
                 background-color: #fcecea;
               "
               color="danger"
-              >Diragukan</VChip
-            >
+              >Diragukan
+            </VChip>
+
             <VChip
-              v-if="item.diragukan"
+              v-else
               variant="outlined"
               style="
                 color: #49a84c;
@@ -85,8 +86,8 @@ const paneSwitcher = [0];
                 background-color: #edf6ed;
               "
               color="success"
-              >Tidak Diragukan</VChip
-            >
+              >Tidak Diragukan
+            </VChip>
           </template>
         </VDataTable>
       </VExpansionPanelText>
