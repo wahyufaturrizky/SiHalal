@@ -74,6 +74,7 @@ const getMra = async () => {
       return;
     }
     mra.value = response.data;
+    reloadkey.value++;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -140,6 +141,7 @@ const disabledTab = (
 ) => {
   tabDisable.value[type] = value;
 };
+const reloadkey = ref(0);
 </script>
 
 <template>
@@ -169,6 +171,7 @@ const disabledTab = (
       <VTabsWindowItem value="manufacture">
         <EditManufacture
           v-if="manufacture != undefined && identity != undefined"
+          :key="reloadkey"
           :manufacture="manufacture"
           :hcb-country="mra?.country"
         />
