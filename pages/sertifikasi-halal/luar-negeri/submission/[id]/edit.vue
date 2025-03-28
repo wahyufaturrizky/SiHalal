@@ -98,6 +98,13 @@ const changeHcb = (item: string) => {
 onMounted(async () => {
   await Promise.allSettled([getidentity(), getManufacture(), getMra()]);
 });
+
+const handleUploadBulk = async (value: Boolean) => {
+  if (value) {
+    await getManufacture();
+  }
+};
+
 const updateData = useMyUpdateSubmissionEditStore();
 watch(
   () => updateData.dataUpdate,
@@ -171,6 +178,7 @@ const disabledTab = (
           v-if="manufacture != undefined"
           :manufacture="manufacture"
           :scope="identity?.hcn.scope"
+          @upload-bulk="handleUploadBulk"
         />
       </VTabsWindowItem>
     </VTabsWindow>
