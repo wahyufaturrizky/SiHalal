@@ -752,11 +752,7 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
-                  @click="
-                    downloadForms.lembaga_pendamping
-                      ? handleDownloadForm(downloadForms.sjph, 'sjph')
-                      : null
-                  "
+                  @click="handleDownloadForm(downloadForms.sjph, 'sjph')"
                   :color="downloadForms.sjph ? 'primary' : '#A09BA1'"
                   density="compact"
                   class="px-2"
@@ -1316,8 +1312,33 @@ const loadBahan = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+
+const getSjphDocument = async () => {
+  // useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
+  try {
+    const response: any = await $api("/reguler/lph/generate-sjph", {
+      method: "post",
+      body: {
+        id_reg: submissionId,
+      },
+    });
+
+    if (response?.code === 2000) {
+      // sjphFile.value = response.data;
+      downloadForms["sjph"] = response.data?.file;
+
+      return response?.data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
+  }
+};
+
 onMounted(async () => {
   await Promise.all([
+    getSjphDocument(),
     loadBahan(),
     getSkalaUsaha(),
     getSubmissionDetail(),
@@ -1330,7 +1351,7 @@ onMounted(async () => {
     getIkrarFile(),
     // getDownloadForm("surat-verval", "hasil_verval"),
     getDownloadForm("rekomendasi", "rekomendasi"),
-    getDownloadForm("sjph", "sjph"),
+    // getDownloadForm("sjph", "sjph"),
     getDownloadForm("laporan", "hasil_verval"),
     getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
     getDownloadForm("lembaga-pendamping", "lembaga_pendamping"),
