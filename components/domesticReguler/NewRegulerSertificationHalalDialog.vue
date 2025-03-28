@@ -160,7 +160,6 @@ const registerNewDevelopment = async () => {
         <VCardText
           v-if="store.profileData?.asal_usaha?.toLowerCase() !== 'luar negeri'"
         >
-          {{ store.profileData.asal_usaha }}
           <span class="font-weight-bold mb-4">
             {{ t("pengajuan-reguler.popup-kbli-title") }}
           </span>
