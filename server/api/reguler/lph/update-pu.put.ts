@@ -11,11 +11,11 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-  const { id } = event.context.params;
   const body: any = await readBody(event);
+  const query: any = await getQuery(event);
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/lph/${id}`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/lph/update-nama-pu/${query.id_reg}`,
     {
       method: "put",
       headers: { Authorization: authorizationHeader },

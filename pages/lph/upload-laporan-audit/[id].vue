@@ -60,6 +60,7 @@ const page = ref(1);
 const isAddFactoryModalOpen = ref(false);
 const isEditFactoryModalOpen = ref(false);
 const isUpdateDataPuModalOpen = ref(false);
+const draftCertif = ref("");
 
 const listFactory = ref({
   label: [
@@ -122,14 +123,14 @@ const formDataPabrik = ref({
 });
 
 const formDataPU = ref({
-  namaPu: "",
-  namaPuSH: "",
+  nama_pu: "",
+  nama_pu_sh: "",
   alamat: "",
-  kotaKab: "",
+  kota: "",
   provinsi: "",
   negara: "",
-  kodePos: "",
-  skala: "",
+  kodepos: "",
+  skala_usaha: "",
 })
 
 const toggle = () => {
@@ -458,6 +459,22 @@ const handleSaveAuditor = async () => {
     );
     localStorage.setItem("tanggalMulai", tanggalMulai.value);
     localStorage.setItem("tanggalSelesai", tanggalSelesai.value);
+  }
+};
+
+const getDraftSertif = async () => {
+  try {
+    const response: any = await $api("/reguler/lph/draft-certif", {
+      method: "get",
+      params: { id },
+    });
+
+    if (response?.code === 2000) {
+      draftCertif.value = response?.data?.file;
+      return response?.data;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
@@ -964,47 +981,41 @@ const updateProduct = async () => {
 
 const updateDataPU = async () => {
   try {
-    const response = await $api(
-      "/reguler/pelaku-usaha/tab-bahan/products/update",
-      {
-        method: "PUT",
-        params: { id_reg: id, product_id: itemDetail.value.id },
-        body: {
-          kode_rincian: formData.value.kode_rincian,
-          nama_produk: formData.value.nama_produk, 
-          foto_produk: formData.value.foto_produk || uploadedFile.value.name, 
-        },
-      }
-    );
+    const response = await $api("/reguler/lph/update-pu", {  
+      method: "PUT",
+      params: {id_reg: id},
+      body: { 
+        nama_pu_sh: formDataPU.value.nama_pu_sh,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     if (response.code === 2000) {
-      console.log("Berhasil update, mengambil data terbaru...");
-      await getListProducts(); 
+      // formDataPU.value = {
+      //   nama_pu: "",
+      //   nama_pu_sh: "",
+      //   alamat: "",
+      //   kota: "",
+      //   provinsi: "",
+      //   negara: "",
+      //   kodepos: "",
+      //   skala_usaha: "",
+      // };
 
-      formData.value = {
-        kode_rincian: "",
-        nama_produk: "",
-        foto_produk: null,
-        merek: "",
-      };
-
-      uploadedFile.value = {
-        name: "",
-        file: "",
-      };
-
-      addDialog.value = false; // Tutup modal
-      reRender.value = !reRender.value; // Paksa re-render UI jika diperlukan
+      addDialog.value = false;
+      reRender.value = !reRender.value;
 
       useSnackbar().sendSnackbar("Sukses memperbarui data", "success");
     } else {
-      useSnackbar().sendSnackbar("Gagal memperbarui data", "error");
+      console.error("Gagal memperbarui data:", response);
     }
   } catch (error) {
-    console.error("Terjadi kesalahan saat memperbarui produk:", error);
-    useSnackbar().sendSnackbar("Terjadi kesalahan saat memperbarui produk", "error");
+    console.error("Terjadi kesalahan saat memperbarui data:", error);
   }
 };
+
 
 const getDetailProduk = async (productId, type) => {
   const response = await $api("/reguler/pelaku-usaha/tab-bahan/products/detail", {
@@ -1061,12 +1072,13 @@ const getDetailData = async (type: string) => {
       params: { url: `${LIST_INFORMASI_PEMBAYARAN}/${id}/${type}` },
     });
 
-    if (response?.code === 2000) {
+    if (response.code === 2000) {
       const data = response?.data;
 
       if (type === "pengajuan")
       {
         formDataPU.value = data;
+        console.log("Wqdwdqwdwq:", formDataPU);
         
       }
       if (type === "pemeriksaanproduk") {
@@ -1331,6 +1343,7 @@ onMounted(async () => {
     getListLaporan(),
     getTemplateFileProduct(),
     loadItemProductClasifications(),
+    getDraftSertif(),
     // getDownloadForm("file_laporan", "file_laporan"),
     // getDownloadForm("file_kh", "file_kh"),
   ]);
@@ -1400,6 +1413,9 @@ onMounted(async () => {
             <h1>Detail Pemeriksaan</h1>
           </VCol>
           <VCol cols="auto" class="d-flex align-center">
+            <VBtn @click="downloadDocument(draftCertif,'FILES')" variant="outlined" class="me-2">
+                Lihat Draft Sertif
+              </VBtn>
             <VMenu open-on-hover>
               <template v-slot:activator="{ props }">
                 <VBtn v-bind="props" variant="outlined" class="me-2">
@@ -2403,13 +2419,13 @@ onMounted(async () => {
         <VCardText>
           <VForm>
             <div class="form-group">
-              <VTextField v-model="formDataPU.nama_pu" density="compact" label="Nama Perusahaan" disabled class="mb-3" />
+              <VTextField v-model="formDataPU.nama_pu" label="Nama Perusahaan" disabled class="mb-3" />
               <VTextField v-model="formDataPU.nama_pu_sh" label="Nama Perusahaan (tampil di sertifikat)"  class="mb-3" />
               <VTextField v-model="formDataPU.alamat" label="Alamat" disabled class="mb-3" />
               <VTextField v-model="formDataPU.kota" label="Kota/Kabupaten" disabled class="mb-3" />
               <VTextField v-model="formDataPU.provinsi" label="Provinsi" disabled class="mb-3" />
               <VTextField v-model="formDataPU.negara" label="Negara" disabled class="mb-3" />
-              <VTextField v-model="formDataPU.kode_pos" label="Kode Pos" disabled class="mb-3" />
+              <VTextField v-model="formDataPU.kodepos" label="Kode Pos" disabled class="mb-3" />
               <VTextField v-model="formDataPU.skala_usaha" label="Skala Usaha" disabled class="mb-3" />
             </div>
           </VForm>
