@@ -234,6 +234,13 @@ const handleCertificate = async (fileName: string, type: string) => {
       },
     });
     if (response) {
+      if ((response.code = 4001)) {
+        useSnackbar().sendSnackbar(
+          "Ada kesalahan saat TTE sertifikat, silahkan coba beberapa saat lagi",
+          "error"
+        );
+        return;
+      }
       fileName = response.filename;
       await getSertifikasiDetail();
     }
