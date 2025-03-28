@@ -14,7 +14,7 @@ export default defineNuxtConfig({
         {
           rel: "icon",
           type: "image/x-icon",
-          href: `/favicon.ico`,
+          href: "/favicon.ico",
         },
       ],
       script: [
@@ -53,6 +53,7 @@ export default defineNuxtConfig({
         maxAge: 60 * 60 * 24, // 1 day expiration
       },
     },
+
     // Private keys are only available on the server
     authSecret: process.env.NUXT_AUTH_SECRET || "",
     authBaseUrl: process.env.NUXT_AUTH_BASE_URL || "",
@@ -73,6 +74,11 @@ export default defineNuxtConfig({
       },
       captcha: {
         active: process.env.NUXT_PUBLIC_CAPTCHA_ACTIVE || true,
+      },
+      freshChat: {
+        token: process.env.NUXT_PUBLIC_FRESH_CHAT_TOKEN || "",
+        host: process.env.NUXT_PUBLIC_FRESH_CHAT_HOST || "",
+        widgetUuid: process.env.NUXT_PUBLIC_FRESH_CHAT_WIDGET_UUID || "",
       },
     },
     turnstile: {
@@ -221,6 +227,7 @@ export default defineNuxtConfig({
     optimizeDeps: {
       exclude: ["vuetify"],
       include: ["vue", "vue-router", "pinia"],
+
       // entries: ["./**/*.vue"],
     },
 
@@ -256,6 +263,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@nuxtjs/turnstile",
     "@nuxt/scripts",
+
     // (_options, nuxt) => {
     //   nuxt.hooks.hook("vite:extendConfig", (config) => {
     //     // @ts-expect-error

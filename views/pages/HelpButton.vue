@@ -1,3 +1,37 @@
+<script lang="ts" setup>
+import { themeConfig } from "@themeConfig";
+import { useI18n } from "vue-i18n";
+
+const { t, locale } = useI18n({ useScope: "global" });
+
+const config = useRuntimeConfig();
+
+function initFreshChat() {
+  window.fcWidget.init({
+    token: config.public.freshChat.token,
+    host: config.public.freshChat.host,
+    widgetUuid: config.public.freshChat.widgetUuid,
+  });
+}
+function initialize(i, t) {
+  let e;
+  i.getElementById(t)
+    ? initFreshChat()
+    : (((e = i.createElement("script")).id = t),
+      (e.async = !0),
+      (e.src = `${config.public.freshChat.host}/js/widget.js`),
+      (e.onload = initFreshChat),
+      i.head.appendChild(e));
+}
+function initiateCall() {
+  initialize(document, "Freshchat-js-sdk");
+}
+
+onMounted(() => {
+  initiateCall();
+});
+</script>
+
 <template>
   <VRow class="px-2 py-1 bg-white">
     <VCol cols="12" class="d-flex justify-end">
@@ -10,43 +44,45 @@
           </VBtn>
         </template>
 
-        <v-list>
-          <!-- <v-list-item
+        <VList>
+          <!--
+            <v-list-item
             value="whatsapp"
             color="primary"
             href="https://wa.me/6281180103146"
             target="-blank"
-          >
+            >
             <template v-slot:prepend>
-              <v-icon icon="fa-whatsapp" color="success"></v-icon>
+            <v-icon icon="fa-whatsapp" color="success"></v-icon>
             </template>
             <v-list-item-title class="text-success">Whatsapp</v-list-item-title>
-          </v-list-item> -->
-          <v-list-item
+            </v-list-item>
+          -->
+          <VListItem
             value="email"
             color="primary"
             href="mailto:layanan@halal.go.id"
             target="-blank"
           >
-            <template v-slot:prepend>
-              <v-icon icon="fa-envelope"></v-icon>
+            <template #prepend>
+              <VIcon icon="fa-envelope" />
             </template>
-            <v-list-item-title>Email</v-list-item-title>
-          </v-list-item>
-          <v-list-item
+            <VListItemTitle>Email</VListItemTitle>
+          </VListItem>
+          <VListItem
             value="telepon"
             color="primary"
             href="tel:146"
             target="-blank"
           >
-            <template v-slot:prepend>
-              <v-icon icon="fa-phone"></v-icon>
+            <template #prepend>
+              <VIcon icon="fa-phone" />
             </template>
-            <v-list-item-title> {{ t("login.nav-1-phone") }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
+            <VListItemTitle> {{ t("login.nav-1-phone") }}</VListItemTitle>
+          </VListItem>
+        </VList>
       </VMenu>
-      <v-menu>
+      <VMenu>
         <template #activator="{ props }">
           <VBtn
             class="ml-3 text-overline"
@@ -75,16 +111,9 @@
             </VListItemTitle>
           </VListItem>
         </VList>
-      </v-menu>
+      </VMenu>
     </VCol>
   </VRow>
 </template>
-
-<script lang="ts" setup>
-import { themeConfig } from "@themeConfig";
-import { useI18n } from "vue-i18n";
-
-const { t, locale } = useI18n({ useScope: "global" });
-</script>
 
 <style></style>

@@ -42,6 +42,7 @@ const itemsSubmission = ref<
     verificator_name: string;
     nib: string;
     register_number: string;
+    pelaku_usaha: string;
     status_code: string;
   }[]
 >([]);
@@ -94,6 +95,7 @@ const handleInputSubmission = () => {
 const verifikatorTablePopUpHeader = [
   { title: "No", key: "id" },
   { title: "Registration Number", key: "register_number" },
+  { title: "Pelaku Usaha", key: "pelaku_usaha" },
   { title: "NIB / Business ID No", key: "nib" },
   { title: "HCB", key: "hcb" },
   { title: "Registration Date", key: "date" },
@@ -203,7 +205,7 @@ const openDialog = () => {
             density="compact"
             placeholder="Search Data"
             append-inner-icon="ri-search-line"
-            style="max-width: 100%"
+            style="max-inline-size: 100%"
             @input="handleInputSubmission"
           />
         </VCol>
@@ -232,6 +234,9 @@ const openDialog = () => {
             </template>
             <template #item.register_number="{ item }">
               {{ item.register_number || "NA" }}
+            </template>
+            <template #item.pelaku_usaha="{ item }">
+              {{ item.pelaku_usaha || "NA" }}
             </template>
             <template #item.nib="{ item }">
               {{ item.nib || "NA" }}
