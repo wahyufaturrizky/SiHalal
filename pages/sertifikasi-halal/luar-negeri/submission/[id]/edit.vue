@@ -171,7 +171,6 @@ const reloadkey = ref(0);
       </VTabsWindowItem>
       <VTabsWindowItem value="product">
         <EditProduct
-          :key="reloadkey"
           v-if="manufacture != undefined"
           :manufacture="manufacture"
           :scope="identity?.hcn.scope"
