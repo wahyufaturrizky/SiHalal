@@ -115,6 +115,7 @@ const openModal = async (type: "FAPAB" | "FAOUT") => {
 };
 const submitAddButton = ref(false);
 
+
 const insertData = async () => {
   submitAddButton.value = true;
 
@@ -137,6 +138,8 @@ const insertData = async () => {
       return;
     }
     await loadPabrik(typeAdd.value);
+    window.location.reload()
+   
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal menambahkan pabrik/outlet", "error");
   } finally {
@@ -180,6 +183,7 @@ const deletedPabrikOutlet = async () => {
       useSnackbar().sendSnackbar("Gagal Menghapus pabrik/outlet", "error");
       return;
     }
+    window.location.reload()
     deleteDialog.value = false;
     useSnackbar().sendSnackbar("Berhasil Menghapus pabrik/outlet", "success");
   } catch (error) {
@@ -198,14 +202,14 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <div>
+  <div >
     <VRow>
       <VCol cols="12">
         <VCard>
           <VCardTitle>
             <VRow>
               <VCol cols="6"><h4>Pabrik</h4></VCol>
-              <VCol cols="6" style="display: flex; justify-content: end"
+              <VCol cols="6" style="display: flex; justify-content: end;"
                 ><VBtn
                   v-if="!canNotEdit"
                   density="compact"
@@ -240,7 +244,7 @@ onMounted(async () => {
           <VCardTitle>
             <VRow>
               <VCol cols="6"><h4>Outlet</h4></VCol>
-              <VCol cols="6" style="display: flex; justify-content: end"
+              <VCol cols="6" style="display: flex; justify-content: end;"
                 ><VBtn
                   v-if="!canNotEdit"
                   density="compact"

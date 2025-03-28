@@ -216,11 +216,18 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
 
     return response;
   } catch (error) {
-    useSnackbar().sendSnackbar(
-      error.data?.errors?.list_error[0] || "Ada kesalahan",
-      "error"
-    );
-    console.log(error);
+    if( error.data.code === 4006 || error.data.code === 4001 || error.data.code === 400){
+      useSnackbar().sendSnackbar(
+      'Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet',
+      'error',
+    )
+        formData.id_lembaga_pendamping = 'Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet'
+    }else{
+      useSnackbar().sendSnackbar(
+      error.data?.errors?.list_error[0] || 'Ada kesalahan 1',
+      'error',
+    )
+    }
   }
 };
 const handleGetLembagaPendamping = async (lokasi: string) => {
@@ -244,10 +251,18 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
 
     return response;
   } catch (error) {
-    useSnackbar().sendSnackbar(
-      error.data?.errors?.list_error[0] || "Ada kesalahan",
-      "error"
-    );
+    if( error.data.code === 4006 || error.data.code === 4001 || error.data.code === 400){
+      useSnackbar().sendSnackbar(
+      'Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet',
+      'error',
+    )
+        formData.id_lembaga_pendamping = 'Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet'
+    }else{
+      useSnackbar().sendSnackbar(
+      error.data?.errors?.list_error[0] || 'Ada kesalahan 1',
+      'error',
+    )
+    }
     // console.log(error);
   }
 };
@@ -274,7 +289,18 @@ const handleGetPendamping = async (idLembaga: string | null) => {
 
     return response;
   } catch (error) {
-    console.log(error);
+    if( error.data.code === 4006 || error.data.code === 4001 || error.data.code === 400){
+      useSnackbar().sendSnackbar(
+      'Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet',
+      'error',
+    )
+        formData.id_lembaga_pendamping = 'Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet'
+    }else{
+      useSnackbar().sendSnackbar(
+      error.data?.errors?.list_error[0] || 'Ada kesalahan 1',
+      'error',
+    )
+    }
   }
 };
 
