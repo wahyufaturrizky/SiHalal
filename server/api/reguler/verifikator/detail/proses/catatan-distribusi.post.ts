@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   }
   const { id_reg } = await readBody(event);
 
-  const { page, size, search } = (await getQuery(event)) as {
+  const { page, size } = (await getQuery(event)) as {
     page: string;
     size: string;
   };
