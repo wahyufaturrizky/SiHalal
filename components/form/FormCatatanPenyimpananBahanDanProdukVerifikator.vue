@@ -19,6 +19,9 @@ const catatanBahanHeaders = [
 ];
 
 const catatanBahanItems = ref([]);
+const sizeBahan = ref(10);
+const pageBahan = ref(1);
+const totalDataBahan = ref(0);
 
 const catatanProdukHeaders = [
   { title: "No", key: "no" },
@@ -38,6 +41,7 @@ const catatanProdukHeaders = [
 
 const catatanProdukItems = ref([]);
 const route = useRoute();
+
 const getBahan = async () => {
   try {
     const response = await $api("/reguler/verifikator/detail/proses/bahan", {
@@ -45,16 +49,28 @@ const getBahan = async () => {
       body: {
         id_reg: route.params.id,
       },
+      params: {
+        page: pageBahan.value,
+        size: sizeBahan.value,
+      },
     });
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan", "error");
       return;
     }
     catatanBahanItems.value = response.data;
+    totalDataBahan.value = response.total_data;
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
 };
+
+const updateOptionsBahan = (options: { page: number; itemsPerPage: number }) => {
+  pageBahan.value = options.page
+  sizeBahan.value = options.itemsPerPage
+  getBahan()
+}
+
 const getProduk = async () => {
   try {
     const response = await $api("/reguler/verifikator/detail/proses/produk", {
@@ -80,7 +96,6 @@ const downloadCatatanBahan = async (item) => await downloadDocument(item,'FILES'
 const downloadCatatanProduk = async (item) => await downloadDocument(item,'FILES');
 
 onMounted(async () => {
-  await getBahan();
   await getProduk();
 });
 </script>
@@ -91,10 +106,17 @@ onMounted(async () => {
       <span class="text-h3">Catatan Penyimpanan Bahan Dan Produk </span>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="catatanBahanHeaders" :items="catatanBahanItems">
-        <template #item.no="{ index }">
-          {{ index + 1 }}
-        </template>
+      <VDataTableServer
+        :headers="catatanBahanHeaders"
+        :items="catatanBahanItems"
+        :items-per-page="sizeBahan"
+        :page="pageBahan"
+        :items-length="totalDataBahan"
+        @update:options="updateOptionsBahan"
+      >
+      <template #item.no="{ index }">
+        {{ (pageBahan - 1) * sizeBahan + index + 1 }}
+      </template>
         <template #item.file="{ item }">
           <v-btn
             :disabled="item.file_dok == ''"
@@ -106,7 +128,7 @@ onMounted(async () => {
             File
           </v-btn>
         </template>
-      </VDataTable>
+      </VDataTableServer>
     </VCardItem>
 
     <VCardItem>

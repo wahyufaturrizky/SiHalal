@@ -71,7 +71,7 @@ const download = async (item) => {
         @update:options="getCatatanDistribusi"
       >
         <template #item.no="{ index }">
-          {{ index + 1 }}
+          {{ (page - 1) * size + index + 1 }}
         </template>
         <template #item.file="{ item }">
           <VBtn
