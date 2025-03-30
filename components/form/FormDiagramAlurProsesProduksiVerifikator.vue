@@ -20,6 +20,10 @@ const catatanHeaders = [
 const route = useRoute();
 
 const catatanItems = ref([]);
+const size = ref(10);
+const page = ref(1);
+const totalData = ref(0);
+
 const getAlur = async () => {
   try {
     const response = await $api(
@@ -29,6 +33,10 @@ const getAlur = async () => {
         body: {
           id_reg: route.params.id,
         },
+        params: {
+          page: page.value,
+          size: size.value,
+        },
       }
     );
     if (response.code != 2000) {
@@ -36,6 +44,7 @@ const getAlur = async () => {
       return;
     }
     catatanItems.value = response.data;
+    totalData.value = response.total_data
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
@@ -44,9 +53,6 @@ const getAlur = async () => {
 const downloadCatatanBahan = async (item) => {
   await downloadDocument(item,'FILES');
 };
-onMounted(async () => {
-  await getAlur();
-});
 </script>
 
 <template>
@@ -55,9 +61,16 @@ onMounted(async () => {
       <span class="text-h3">Diagram Alur Proses Produksi </span>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="catatanHeaders" :items="catatanItems">
+      <VDataTableServer
+        v-model:items-per-page="size"
+        v-model:page="page"
+        :headers="catatanHeaders"
+        :items="catatanItems"
+        :items-length="totalData"
+        @update:options="getAlur"
+      >
         <template #item.no="{ index }">
-          {{ index + 1 }}
+          {{ (page - 1) * size + index + 1 }}
         </template>
         <template #item.file="{ item }">
           <v-btn
@@ -70,7 +83,7 @@ onMounted(async () => {
             File
           </v-btn>
         </template>
-      </VDataTable>
+      </VDataTableServer>
     </VCardItem>
   </VCard>
 </template>
