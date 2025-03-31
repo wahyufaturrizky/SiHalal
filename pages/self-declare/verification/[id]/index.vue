@@ -1569,9 +1569,7 @@ const onSelectFasilitator = (selectedId: string) => {
                   </div>
                   <div v-if="comment" class="app-timeline-text mt-1">
                     {{
-                      (comment as any).length > 38
-                        ? (comment as any).slice(0, 38) + "..."
-                        : (comment as any)
+                      comment
                     }}
                   </div>
                 </VTimelineItem>
