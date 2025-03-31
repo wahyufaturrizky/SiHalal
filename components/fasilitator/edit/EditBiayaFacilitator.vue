@@ -28,7 +28,6 @@ const loadingItemsInstitutionName = ref(false);
 const loadingJenisLayanan = ref(false);
 const loadingJenisProduk = ref(false);
 const loadingLembagaPemeriksaHalal = ref(false);
-const itemPerPage = ref(10);
 const totalItems = ref(0);
 const statusFilter = ref("OF1,OF10,OF12,OF15,OF2,OF290,OF5,OF320,OF11");
 const detailBiaya = ref<any>({});
@@ -36,7 +35,8 @@ const biayaDialog = ref<boolean>(false);
 
 const facilitateId = route.params.id;
 const loading = ref(false);
-const page = ref(1);
+const page = ref<number>(1)
+const size = ref<number>(10)
 
 // Data tabel
 const detailBiayaitems = ref([]);
@@ -66,15 +66,20 @@ const formData = ref({
 
 kunciLembaga.value = islockedlembaga;
 
-const loadItemById = async (page: number, size: number) => {
+const loadItemById = async (options?: { page: number; itemsPerPage: number }) => {
   try {
     loading.value = true;
+
+    if (options) {
+      page.value = options.page
+      size.value = options.itemsPerPage
+    }
 
     const response = await $api(`/facilitate/biaya-reguler/list/${facilitateId}`, {
       method: "get",
       params: {
-        page,
-        size,
+        page: page.value,
+        size: size.value,
         status: statusFilter.value
       },
     });
@@ -340,7 +345,8 @@ const deleteFacilitateBiaya = async (id: string) => {
     if (res?.code === 2000) {
       loadingDelete.value = false;
       addDialog.value = false;
-      await loadItemById(1, itemPerPage.value);
+      page.value = 1
+      await loadItemById()
     } else {
       useSnackbar().sendSnackbar("Gagal update data", "error");
       loadingDelete.value = false;
@@ -419,7 +425,8 @@ const addFacilitateLembaga = async () => {
       resetForm();
       addDialog.value = false;
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
-      await loadItemById(1, itemPerPage.value);
+      page.value = 1
+      await loadItemById()
     } else {
       useSnackbar().sendSnackbar("Gagal update data", "error");
       loadingAdd.value = false;
@@ -459,7 +466,6 @@ const updateLockFacilitateLembaga = async () => {
 };
 
 onMounted(async () => {
-  await loadItemById(1, itemPerPage.value);
   await loadItemLembagaPendamping();
   await getProvince();
   await loadJenisLayanan();
@@ -539,57 +545,55 @@ const checkIsFieldEmpty = (data: any) => {
               </VCardText>
 
               <VCardText>
-                <VDataTable
-                  class="domestic-table border rounded"
-                  :headers="domesticAuditHeader"
-                  :items="detailBiayaitems || []"
-                  hide-default-footer
-                >
-                  <template #body="{ items }">
-                    <tr v-if="items.length === 0">
-                      <td colspan="7" class="text-center">
-                        <div class="pt-2">
-                          <img src="~/assets/images/empty-data.png" alt="" />
-                          <div class="pt-2 font-weight-bold">Data Kosong</div>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr v-for="(item, idx) in detailBiayaitems" :key="idx">
-                      <td>{{ idx + 1 }}</td>
-                      <td>{{ item.lph_nama }}</td>
-                      <td>{{ item.mandays }}</td>
-                      <td>{{ formatToIDR(item.unit_cost_awal) || 0 }}</td>
-                      <td>{{ formatToIDR(item.unit_cost_diskon) || 0  }}</td>
-                      <td>{{ formatToIDR(item.unit_cost_akhir) || 0  }}</td>
-                      <td>{{ formatToIDR(item.uhpd_awal) || 0  }}</td>
-                      <td>{{ formatToIDR(item.uhpd_diskon) || 0  }}</td>
-                      <td>{{ formatToIDR(item.uhpd_akhir) || 0  }}</td>
-                      <td>{{ formatToIDR(item.operasional) || 0  }}</td>
-                      <td>{{ formatToIDR(item.akomodasi_awal) || 0  }}</td>
-                      <td>{{ formatToIDR(item.akomodasi_diskon) || 0  }}</td>
-                      <td>{{ formatToIDR(item.akomodasi_akhir) || 0  }}</td>
-                      <td>{{ formatToIDR(item.transport_awal) || 0  }}</td>
-                      <td>{{ formatToIDR(item.transport_diskon) || 0  }}</td>
-                      <td>{{ formatToIDR(item.transport_akhir) || 0  }}</td>
-                      <td>{{ formatToIDR(item.tiket_pesawat_awal) || 0  }}</td>
-                      <td>{{ formatToIDR(item.tiket_pesawat_diskon) || 0  }}</td>
-                      <td>{{ formatToIDR(item.tiket_pesawat_akhir) || 0  }}</td>
-                      <td>{{ formatToIDR(item.biaya_bpjph) || 0  }}</td>
-                      <td>{{ formatToIDR(item.biaya_mui) || 0  }}</td>
-                      <td>{{ formatToIDR(item.total_biaya_satuan) || 0  }}</td>
-                      <td>{{ item.kuota }}</td>
-                      <td>{{ formatToIDR(item.total_biaya) || 0  }}</td>
-                      <td class="text-center">
-                        <VMenu>
-                          <template #activator="{ props }">
-                            <VIcon
-                              icon="fa-ellipsis-v"
-                              color="primary"
-                              class="cursor-pointer"
-                              v-bind="props"
-                            />
-                          </template>
-                          <VList>
+                <VDataTableServer
+                              class="domestic-table border rounded mt-5"
+                              :headers="domesticAuditHeader"
+                              :items="detailBiayaitems || []"
+                              :items-length="totalItems"
+                              :items-per-page="size"
+                              :page="page"
+                              @update:options="loadItemById"              
+                            >
+                              <template #body="{ items }">
+                                <tr v-if="items.length === 0">
+                                  <td colspan="7" class="text-center">
+                                    <div class="pt-2">
+                                      <img src="~/assets/images/empty-data.png" alt="">
+                                      <div class="pt-2 font-weight-bold">Data Kosong</div>
+                                    </div>
+                                  </td>
+                                </tr>
+                                <tr v-for="(item, idx) in detailBiayaitems" :key="idx">
+                                  <td>{{ idx + 1 }}</td>
+                                  <td>{{ item.lph_nama }}</td>
+                                  <td>{{ item.mandays }}</td>
+                                  <td>{{ formatToIDR(item.unit_cost_awal) || 0 }}</td>
+                                  <td>{{ item.unit_cost_diskon || 0 }}</td>
+                                  <td>{{ formatToIDR(item.unit_cost_akhir) || 0 }}</td>
+                                  <td>{{ formatToIDR(item.uhpd_awal) || 0 }}</td>
+                                  <td>{{ item.uhpd_diskon || 0 }}</td>
+                                  <td>{{ formatToIDR(item.uhpd_akhir) || 0 }}</td>
+                                  <td>{{ formatToIDR(item.operasional) || 0 }}</td>
+                                  <td>{{ formatToIDR(item.akomodasi_awal) || 0 }}</td>
+                                  <td>{{ item.akomodasi_diskon || 0 }}</td>
+                                  <td>{{ formatToIDR(item.akomodasi_akhir) || 0 }}</td>
+                                  <td>{{ formatToIDR(item.transport_awal) || 0 }}</td>
+                                  <td>{{ item.transport_diskon || 0 }}</td>
+                                  <td>{{ formatToIDR(item.transport_akhir) || 0 }}</td>
+                                  <td>{{ formatToIDR(item.tiket_pesawat_awal) || 0 }}</td>
+                                  <td>{{ item.tiket_pesawat_diskon || 0 }}</td>
+                                  <td>{{ formatToIDR(item.tiket_pesawat_akhir) || 0 }}</td>
+                                  <td>{{ formatToIDR(item.biaya_bpjph) || 0 }}</td>
+                                  <td>{{ formatToIDR(item.biaya_mui) || 0 }}</td>
+                                  <td>{{ formatToIDR(item.total_biaya_satuan) || 0 }}</td>
+                                  <td>{{ item.kuota }}</td>
+                                  <td>{{ formatToIDR(item.total_biaya) || 0 }}</td>
+                                  <td class="text-center">
+                                    <VMenu>
+                                      <template #activator="{ props }">
+                                        <VIcon icon="fa-ellipsis-v" color="primary" class="cursor-pointer" v-bind="props" />
+                                      </template>
+                                      <VList>
                             <VListItem
                               prepend-icon="mdi-eye"
                               title="Detail"
@@ -602,51 +606,22 @@ const checkIsFieldEmpty = (data: any) => {
                               @click="() => confirmDelete(item)"
                             />
                           
-                          </VList>
-                        </VMenu>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td v-if="items.length">
-                        <div class="d-flex gap-5">
-                          <!-- <td
-                            class="text-right font-weight-bold"
-                            style="align-content: center;"
-                          >
-                            Total
-                          </td> -->
-                          <div class="d-flex align-center font-weight-bold">
-                            {{ formatToIDR(totalBiayaDetail) || 0 }}
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <div />
-                  </template>
-                </VDataTable>
+                                      </VList>
+                                    </VMenu>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td colspan="23"></td>
+                                  <td v-if="items.length">
+                                    <div class="d-flex gap-5">
+                                      <div class="d-flex align-center font-weight-bold">
+                                        {{ formatToIDR(totalBiayaDetail) || 0 }}
+                                      </div>
+                                    </div>
+                                  </td>
+                                </tr>
+                              </template>
+                            </VDataTableServer>
               </VCardText>
             </VCard>
 

@@ -15,6 +15,9 @@ const headers = [
 ];
 
 const items = ref([])
+const size = ref(10);
+const page = ref(1);
+const totalData = ref(0);
 
 const route = useRoute();
 const getLayout = async () => {
@@ -24,19 +27,21 @@ const getLayout = async () => {
       body: {
         id_reg: route.params.id,
       },
+      params: {
+        page: page.value,
+        size: size.value,
+      },
     });
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan", "error");
       return;
     }
     items.value = response.data;
+    totalData.value = response.total_data
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
 };
-onMounted(async () => {
-  await getLayout();
-});
 // TODO -> LOGIc DOWNLOAD
 const download = async (item) => {
   await downloadDocument(item,'FILES');
@@ -49,9 +54,16 @@ const download = async (item) => {
       <span class="text-h3">Layout / Denah Ruang Produksi </span>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="headers" :items="items">
+      <VDataTableServer
+        v-model:items-per-page="size"
+        v-model:page="page"
+        :headers="headers"
+        :items="items"
+        :items-length="totalData"
+        @update:options="getLayout"
+      >
         <template #item.no="{ index }">
-          {{ index + 1 }}
+          {{ (page - 1) * size + index + 1 }}
         </template>
         <template #item.file="{ item }">
           <v-btn
@@ -64,7 +76,7 @@ const download = async (item) => {
             File
           </v-btn>
         </template>
-      </VDataTable>
+      </VDataTableServer>
     </VCardItem>
   </VCard>
 </template>

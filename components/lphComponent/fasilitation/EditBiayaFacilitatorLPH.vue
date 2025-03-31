@@ -28,7 +28,6 @@ const loadingItemsInstitutionName = ref(false)
 const loadingJenisLayanan = ref(false)
 const loadingJenisProduk = ref(false)
 const loadingLembagaPemeriksaHalal = ref(false)
-const itemPerPage = ref(10)
 const totalItems = ref(0)
 const statusFilter = ref('OF12')
 
@@ -38,7 +37,8 @@ const biayaDialog = ref<boolean>(false)
 const facilitateId = route.params.id
 const loading = ref(false)
 const loadingTiketPesawat = ref(false)
-const page = ref(1)
+const page = ref<number>(1)
+const size = ref<number>(10)
 
 // Data tabel
 const detailBiayaitems = ref([])
@@ -69,15 +69,20 @@ const formData = ref({
 
 kunciLembaga.value = islockedlembaga
 
-const loadItemById = async (page: number, size: number) => {
+const loadItemById = async (options?: { page: number; itemsPerPage: number }) => {
   try {
     loading.value = true
+
+    if (options) {
+      page.value = options.page
+      size.value = options.itemsPerPage
+    }
 
     const response = await $api(`/facilitate/biaya-reguler/list/${facilitateId}`, {
       method: 'get',
       params: {
-        page,
-        size,
+        page: page.value,
+        size: size.value,
         status: statusFilter.value,
       },
     })
@@ -351,7 +356,8 @@ const deleteFacilitateBiaya = async (id: string) => {
     if (res?.code === 2000) {
       loadingDelete.value = false
       addDialog.value = false
-      await loadItemById(1, itemPerPage.value)
+      page.value = 1
+      await loadItemById()
     }
     else {
       useSnackbar().sendSnackbar('Gagal update data', 'error')
@@ -419,7 +425,8 @@ const addFacilitateLembaga = async () => {
       resetForm()
       addDialog.value = false
       useSnackbar().sendSnackbar('Berhasil menambahkan data', 'success')
-      await loadItemById(1, itemPerPage.value)
+      page.value = 1
+      await loadItemById()
     }
     else {
       useSnackbar().sendSnackbar('Gagal update data', 'error')
@@ -437,7 +444,6 @@ const addFacilitateLembaga = async () => {
 }
 
 onMounted(async () => {
-  await loadItemById(1, itemPerPage.value)
   await loadItemLembagaPendamping()
   await getProvince()
   await loadJenisLayanan()
@@ -548,7 +554,8 @@ const onEdit = async () => {
     if (response.code === 2000) {
       useSnackbar().sendSnackbar('Berhasil ubah data', 'success')
       biayaDialog.value = false
-      loadItemById(1, itemPerPage.value)
+      page.value = 1
+      await loadItemById()
     }
   }
   catch (error) {
@@ -558,7 +565,8 @@ const onEdit = async () => {
 
 const onCancel = async () => {
   try {
-    await loadItemById(1, itemPerPage.value)
+    page.value = 1
+    await loadItemById()
     biayaDialog.value = false
   }
   catch (error) {
@@ -604,33 +612,25 @@ const onGetTiketPesawat = async () => {
             <h3>Informasi Biaya Fasilitasi</h3>
           </VExpansionPanelTitle>
           <VExpansionPanelText>
-            <VDataTable
+            <VDataTableServer
               class="domestic-table border rounded mt-5"
               :headers="domesticAuditHeader"
               :items="detailBiayaitems || []"
-              hide-default-footer
+              :items-length="totalItems"
+              :items-per-page="size"
+              :page="page"
+              @update:options="loadItemById"
             >
               <template #body="{ items }">
                 <tr v-if="items.length === 0">
-                  <td
-                    colspan="7"
-                    class="text-center"
-                  >
+                  <td colspan="7" class="text-center">
                     <div class="pt-2">
-                      <img
-                        src="~/assets/images/empty-data.png"
-                        alt=""
-                      >
-                      <div class="pt-2 font-weight-bold">
-                        Data Kosong
-                      </div>
+                      <img src="~/assets/images/empty-data.png" alt="">
+                      <div class="pt-2 font-weight-bold">Data Kosong</div>
                     </div>
                   </td>
                 </tr>
-                <tr
-                  v-for="(item, idx) in detailBiayaitems"
-                  :key="idx"
-                >
+                <tr v-for="(item, idx) in detailBiayaitems" :key="idx">
                   <td>{{ idx + 1 }}</td>
                   <td>{{ item.lph_nama }}</td>
                   <td>{{ item.mandays }}</td>
@@ -658,66 +658,26 @@ const onGetTiketPesawat = async () => {
                   <td class="text-center">
                     <VMenu>
                       <template #activator="{ props }">
-                        <VIcon
-                          icon="fa-ellipsis-v"
-                          color="primary"
-                          class="cursor-pointer"
-                          v-bind="props"
-                        />
+                        <VIcon icon="fa-ellipsis-v" color="primary" class="cursor-pointer" v-bind="props" />
                       </template>
                       <VList>
-                        <VListItem
-                          prepend-icon="mdi-pen"
-                          title="Ubah Biaya"
-                          @click="() => openModalBiayaDetail(item)"
-                        />
+                        <VListItem prepend-icon="mdi-pen" title="Ubah Biaya" @click="() => openModalBiayaDetail(item)" />
                       </VList>
                     </VMenu>
                   </td>
                 </tr>
                 <tr>
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
-                  <td />
+                  <td colspan="23"></td>
                   <td v-if="items.length">
                     <div class="d-flex gap-5">
-                      <!--
-                        <td
-                        class="text-right font-weight-bold"
-                        style="align-content: center;"
-                        >
-                        Total
-                        </td>
-                      -->
                       <div class="d-flex align-center font-weight-bold">
                         {{ formatToIDR(totalBiayaDetail) || 0 }}
                       </div>
                     </div>
                   </td>
                 </tr>
-                <div />
               </template>
-            </VDataTable>
+            </VDataTableServer>
           </VExpansionPanelText>
         </VExpansionPanel>
       </VExpansionPanels>
