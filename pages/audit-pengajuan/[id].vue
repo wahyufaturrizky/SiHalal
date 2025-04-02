@@ -470,7 +470,6 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTableServer
-                :items-per-page-options="[10, 25, 50, 100]"
                 :items-length="totalItemProduk"
                 :headers="daftarProdukHeader"
                 :items-per-page="itemPerPageUncertified"
