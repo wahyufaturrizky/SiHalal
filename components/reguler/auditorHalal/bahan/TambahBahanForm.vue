@@ -435,6 +435,7 @@ const onCancel = () => {
       </VCardText>
       <VCardItem>
         <VDataTableServer
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPageUncertified"
           v-model:page="pageUncertified"
           :items-length="totalItemsUncertified"
@@ -513,6 +514,7 @@ const onCancel = () => {
       </VCardText>
       <VCardItem>
         <VDataTableServer
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPageCertified"
           v-model:page="pageCertified"
           :items-length="totalItemsCertified"

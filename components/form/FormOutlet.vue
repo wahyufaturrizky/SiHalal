@@ -48,7 +48,11 @@ const save = (form) => {
       <FormTambahOutlet :is-editable="props.isEditable" @confirm="save" />
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="headers" :items="items">
+      <VDataTable
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="headers"
+        :items="items"
+      >
         <template #item.action="{ item }">
           <v-btn color="primary" variant="plain">
             <VIcon>mdi-dots-vertical</VIcon>

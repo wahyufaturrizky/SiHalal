@@ -61,7 +61,11 @@ const saveNewAspekLegal = (form) => {
       />
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="aspectLegalHeader" :items="aspectLegalItems">
+      <VDataTable
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="aspectLegalHeader"
+        :items="aspectLegalItems"
+      >
         <template #item.action="{ item }">
           <v-btn color="primary" variant="plain">
             <VIcon>mdi-dots-vertical</VIcon>

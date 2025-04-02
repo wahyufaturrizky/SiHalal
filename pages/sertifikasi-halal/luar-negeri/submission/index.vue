@@ -135,6 +135,7 @@ const openModalsRequest = () => {
       <VRow>
         <VCol>
           <VDataTableServer
+            :items-per-page-options="[10, 25, 50, 100]"
             v-model:items-per-page="itemPerPage"
             v-model:page="page"
             :headers="headers"

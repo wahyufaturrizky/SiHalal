@@ -232,6 +232,7 @@ onMounted(async () => {
       <VRow>
         <VCol>
           <VDataTableServer
+            :items-per-page-options="[10, 25, 50, 100]"
             class="elevation-1 custom-table"
             :headers="headers"
             :items="submission"
@@ -265,11 +266,7 @@ onMounted(async () => {
               <VIcon
                 color="success"
                 style="cursor: pointer"
-                @click="
-                  router.push(
-                    `/pengajuan/detail-verval/${item.id_reg}`
-                  )
-                "
+                @click="router.push(`/pengajuan/detail-verval/${item.id_reg}`)"
               >
                 ri-arrow-right-line
               </VIcon>

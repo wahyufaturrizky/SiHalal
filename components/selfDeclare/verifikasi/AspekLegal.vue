@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { VDataTableServer } from "vuetify/components";
-
 interface AspekLegal {
   instansi_penerbit: string;
   jenis: string;
@@ -28,7 +26,10 @@ const legalTableHeader = [
   <div class="mx-auto" max-width="800">
     <VRow>
       <VCol cols="12">
-        <VDataTable :items="dataHalal">
+        <VDataTable
+          :items-per-page-options="[10, 25, 50, 100]"
+          :items="dataHalal"
+        >
           <template #item.id="{ index }">
             {{ index + 1 }}
           </template>

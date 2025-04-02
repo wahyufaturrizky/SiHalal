@@ -175,9 +175,14 @@ onMounted(async () => {
 });
 
 watch([page, size], async () => {
-  const newData = await loadItem(page.value, size.value, searchQuery.value, LIST_POST_AUDIT)
-  dataTable.value = newData?.data
-  totalItems.value = newData?.total_item
+  const newData = await loadItem(
+    page.value,
+    size.value,
+    searchQuery.value,
+    LIST_POST_AUDIT
+  );
+  dataTable.value = newData?.data;
+  totalItems.value = newData?.total_item;
 });
 </script>
 
@@ -265,6 +270,7 @@ watch([page, size], async () => {
               </VCol>
             </VRow>
             <VDataTableServer
+              :items-per-page-options="[10, 25, 50, 100]"
               v-model:items-per-page="size"
               v-model:page="page"
               :items-length="totalItems"

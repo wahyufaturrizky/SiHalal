@@ -1,142 +1,136 @@
 <script setup lang="ts">
 interface DataUser {
-  id: string
-  username: string
-  nama: string
-  email: string
-  password?: string
-  phone_no: string
-  is_verify: boolean
-  roles: Array<{ name: string }>
+  id: string;
+  username: string;
+  nama: string;
+  email: string;
+  password?: string;
+  phone_no: string;
+  is_verify: boolean;
+  roles: Array<{ name: string }>;
 }
 
 const tableHeaders: any[] = [
-  { title: 'No', key: 'no', sortable: false },
-  { title: 'NIK', key: 'nik', nowrap: true },
-  { title: 'Nama', key: 'nama', nowrap: true },
-  { title: 'Angkatan', key: 'angkatan', nowrap: true },
-  { title: 'Status', key: 'status', nowrap: true },
-  { title: 'Sertifikat', key: 'actions', sortable: false, align: 'center' },
-]
+  { title: "No", key: "no", sortable: false },
+  { title: "NIK", key: "nik", nowrap: true },
+  { title: "Nama", key: "nama", nowrap: true },
+  { title: "Angkatan", key: "angkatan", nowrap: true },
+  { title: "Status", key: "status", nowrap: true },
+  { title: "Sertifikat", key: "actions", sortable: false, align: "center" },
+];
 
-const tableItems = ref<Array[]>([])
-const currentPage = ref(1)
-const itemPerPage = ref(10)
-const totalItems = ref(0)
-const selectedItem = ref([])
-const pendampingItems = ref([])
-const isLoading = ref(false)
-const isLoadingPendamping = ref(false)
-const tableType = ref('')
+const tableItems = ref<Array[]>([]);
+const currentPage = ref(1);
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const selectedItem = ref([]);
+const pendampingItems = ref([]);
+const isLoading = ref(false);
+const isLoadingPendamping = ref(false);
+const tableType = ref("");
 
 const handleLoadList = async () => {
   try {
-    const response: any = await $api('/approval/penyelia-bpjph/list', {
-      method: 'get',
+    const response: any = await $api("/approval/penyelia-bpjph/list", {
+      method: "get",
       params: {
         page: currentPage.value,
         size: itemPerPage.value,
         type: tableType.value,
       },
-    } as any)
+    } as any);
 
     if (response.code === 2000) {
       if (response.data !== null) {
-        tableItems.value = response.data
-        currentPage.value = response.current_page
-        totalItems.value = response.total_item
-      }
-      else {
-        tableItems.value = []
-        currentPage.value = 1
-        totalItems.value = 0
+        tableItems.value = response.data;
+        currentPage.value = response.current_page;
+        totalItems.value = response.total_item;
+      } else {
+        tableItems.value = [];
+        currentPage.value = 1;
+        totalItems.value = 0;
       }
 
-      return response
+      return response;
     }
+  } catch (error) {
+    console.error(error);
   }
-  catch (error) {
-    console.error(error)
-  }
-}
+};
 
 const { refresh } = await useAsyncData(
-  'user-list',
+  "user-list",
   async () => await handleLoadList(),
   {
     watch: [currentPage, itemPerPage, tableType],
-  },
-)
+  }
+);
 
 const getTypePendamping = async () => {
   try {
-    isLoadingPendamping.value = true
+    isLoadingPendamping.value = true;
 
-    const response: any = await $api('/approval/penyelia-bpjph/type', {
-      method: 'get',
-    } as any)
+    const response: any = await $api("/approval/penyelia-bpjph/type", {
+      method: "get",
+    } as any);
 
     if (response) {
-      pendampingItems.value = response
+      pendampingItems.value = response;
     }
-    isLoadingPendamping.value = false
+    isLoadingPendamping.value = false;
 
-    return response
+    return response;
+  } catch (error) {
+    isLoadingPendamping.value = false;
+    console.error(error);
   }
-  catch (error) {
-    isLoadingPendamping.value = false
-    console.error(error)
-  }
-}
+};
 
 onMounted(() => {
   // handleLoadList()
-  getTypePendamping()
-})
+  getTypePendamping();
+});
 
 const onApprove = async () => {
   try {
-    const response: any = await $api(
-      '/approval/penyelia-bpjph/approve',
-      {
-        method: 'post',
-        body: { id: selectedItem.value },
-      },
-    )
+    const response: any = await $api("/approval/penyelia-bpjph/approve", {
+      method: "post",
+      body: { id: selectedItem.value },
+    });
 
     if (response.code === 2000) {
-      const totalError = response?.message?.errors
-      const totalSuccess = response?.message?.success
-      const message: any[] = []
-      if (totalError > 0)
-        message.push(`Gagal setujui sebanyak ${totalError}`)
+      const totalError = response?.message?.errors;
+      const totalSuccess = response?.message?.success;
+      const message: any[] = [];
+      if (totalError > 0) message.push(`Gagal setujui sebanyak ${totalError}`);
       if (totalSuccess > 0)
-        message.push(`Sukses setujui sebanyak ${totalSuccess}`)
-      useSnackbar().sendSnackbar(`Penyelia ${message.join()}`, totalSuccess > 0 ? 'success' : 'error')
-      selectedItem.value = []
-      refresh()
+        message.push(`Sukses setujui sebanyak ${totalSuccess}`);
+      useSnackbar().sendSnackbar(
+        `Penyelia ${message.join()}`,
+        totalSuccess > 0 ? "success" : "error"
+      );
+      selectedItem.value = [];
+      refresh();
 
-      return true
+      return true;
     } else {
-      selectedItem.value = []
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      selectedItem.value = [];
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
+  } catch (err) {
+    console.log(err);
   }
-  catch (err) {
-    console.log(err)
-  }
-}
+};
 
 const getChipColor = (status: string) => {
-  if (status === 'lunas')
-    return 'success'
+  if (status === "lunas") return "success";
 
-  return 'primary'
-}
+  return "primary";
+};
 
 const unduhFile = async (link: string) => {
-  await downloadDocument(link, 'FILES')
-}
+  await downloadDocument(link, "FILES");
+};
 </script>
 
 <template>
@@ -150,7 +144,9 @@ const unduhFile = async (link: string) => {
   <VRow>
     <VCol>
       <VCard class="w-100 py-3">
-        <VCardTitle class="d-flex justify-space-between align-center font-weight-bold text-h4">
+        <VCardTitle
+          class="d-flex justify-space-between align-center font-weight-bold text-h4"
+        >
           <div>List Persetujuan Sertifikat Penyelia dari BPJPH</div>
           <DialogApprovalData
             title="Persetujui data"
@@ -165,10 +161,7 @@ const unduhFile = async (link: string) => {
         </VCardTitle>
         <VCardItem>
           <VRow>
-            <VCol
-              cols="12"
-              sm="4"
-            >
+            <VCol cols="12" sm="4">
               <VSelect
                 v-model="tableType"
                 :items="pendampingItems"
@@ -181,6 +174,7 @@ const unduhFile = async (link: string) => {
           </VRow>
           <VCard variant="outlined">
             <VDataTableServer
+              :items-per-page-options="[10, 25, 50, 100]"
               v-model:items-per-page="itemPerPage"
               v-model:page="currentPage"
               v-model="selectedItem"
@@ -194,21 +188,13 @@ const unduhFile = async (link: string) => {
               hover
             >
               <template #no-data>
-                <VCard
-                  variant=""
-                  class="w-full mt-7 mb-5"
-                >
-                  <div
-                    class="pt-2"
-                    style="justify-items: center"
-                  >
+                <VCard variant="" class="w-full mt-7 mb-5">
+                  <div class="pt-2" style="justify-items: center">
                     <img
                       src="~/assets/images/empty-data.png"
                       alt="empty_data"
-                    >
-                    <div class="pt-2 pb-2 font-weight-bold">
-                      Data Kosong
-                    </div>
+                    />
+                    <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
                   </div>
                 </VCard>
               </template>
@@ -229,16 +215,11 @@ const unduhFile = async (link: string) => {
                     class="d-inline-block"
                   >
                     <div>
-                      <span
-                        v-if="idx !== 0"
-                        class="mx-2"
-                      >|</span>{{ el.name }}
+                      <span v-if="idx !== 0" class="mx-2">|</span>{{ el.name }}
                     </div>
                   </div>
                 </div>
-                <div v-else>
-                  -
-                </div>
+                <div v-else>-</div>
               </template>
               <template #item.status="{ item }">
                 <div class="d-flex flex-wrap">
@@ -263,7 +244,7 @@ const unduhFile = async (link: string) => {
                       />
                     </div>
                   </IconBtn>
-                <!-- Right arrow icon for action -->
+                  <!-- Right arrow icon for action -->
                 </div>
               </template>
             </VDataTableServer>
@@ -288,7 +269,7 @@ const unduhFile = async (link: string) => {
       background: white;
       border-inline-start: 1px solid rgba(#000, 0.12);
       inset-inline-end: 0;
-      justify-items: center,
+      justify-items: center;
     }
   }
 }

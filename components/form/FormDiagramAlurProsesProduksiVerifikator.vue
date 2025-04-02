@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import FormEditDiagramAlurProsesProduksi from "@/components/form/FormEditDiagramAlurProsesProduksi.vue";
-import FormEditLayoutProduksi from "@/components/form/FormEditLayoutProduksi.vue";
-import FormTambahDiagramAlurProsesProduksi from "@/components/form/FormTambahDiagramAlurProsesProduksi.vue";
-import FormTambahLayoutProduksi from "@/components/form/FormTambahLayoutProduksi.vue";
-
 const catatanHeaders = [
   { title: "No", key: "no" },
   { title: "Nama Produk", key: "nama_produk", nowrap: true },
@@ -44,14 +39,14 @@ const getAlur = async () => {
       return;
     }
     catatanItems.value = response.data;
-    totalData.value = response.total_data
+    totalData.value = response.total_data;
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
 };
 // TODO -> LOGIC TO DONWLOAD FILE
 const downloadCatatanBahan = async (item) => {
-  await downloadDocument(item,'FILES');
+  await downloadDocument(item, "FILES");
 };
 </script>
 
@@ -62,6 +57,7 @@ const downloadCatatanBahan = async (item) => {
     </VCardTitle>
     <VCardItem>
       <VDataTableServer
+        :items-per-page-options="[10, 25, 50, 100]"
         v-model:items-per-page="size"
         v-model:page="page"
         :headers="catatanHeaders"

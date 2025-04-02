@@ -283,7 +283,11 @@ onMounted(async () => {
       </VRow>
     </VCardTitle>
     <VCardText>
-      <VDataTable :items="itemsPabrik" :headers="tableHeader">
+      <VDataTable
+        :items-per-page-options="[10, 25, 50, 100]"
+        :items="itemsPabrik"
+        :headers="tableHeader"
+      >
         <template #item.index="{ index }">
           {{ index + 1 }}
         </template>
@@ -313,7 +317,11 @@ onMounted(async () => {
       </VRow>
     </VCardTitle>
     <VCardText>
-      <VDataTable :items="itemsOutlet" :headers="tableHeader">
+      <VDataTable
+        :items-per-page-options="[10, 25, 50, 100]"
+        :items="itemsOutlet"
+        :headers="tableHeader"
+      >
         <template #item.index="{ index }">
           {{ index + 1 }}
         </template>

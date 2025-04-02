@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 const items = ref();
 const itemPerPage = ref(10);
 const totalItems = ref(0);
@@ -113,7 +112,7 @@ const navigateAction = (id: string) => {
 <template>
   <VRow>
     <VCol>
-      <h1 style="font-size: 32px;">Verifikasi Fasilitasi</h1>
+      <h1 style="font-size: 32px">Verifikasi Fasilitasi</h1>
     </VCol>
   </VRow>
   <VRow v-if="!loadingAll">
@@ -132,12 +131,13 @@ const navigateAction = (id: string) => {
                 @input="handleInput"
               />
             </VCol>
-            <VCol cols="6" style="display: flex; justify-content: end;">
+            <VCol cols="6" style="display: flex; justify-content: end">
               <EntryFacilitateModal />
             </VCol>
           </VRow>
           <VRow>
             <VDataTableServer
+              :items-per-page-options="[10, 25, 50, 100]"
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
               :headers="tableHeader"

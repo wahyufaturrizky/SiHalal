@@ -38,7 +38,11 @@ const items = [
         </VRow>
       </VAlert>
       <br />
-      <VDataTable :headers="tableHeader" :items="items">
+      <VDataTable
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="tableHeader"
+        :items="items"
+      >
         <template
           #item.signage_responsible
           style="display: flex; align-items: center; align-content: center"

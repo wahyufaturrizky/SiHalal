@@ -312,6 +312,7 @@ watch([status, outDated, page], () => {
       </VCardItem>
       <VCardItem>
         <VDataTableServer
+          :items-per-page-options="[10, 25, 50, 100]"
           :headers="headers"
           :items="data"
           class="elevation-1 border rounded"

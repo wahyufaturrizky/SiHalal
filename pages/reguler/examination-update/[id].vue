@@ -117,7 +117,7 @@ const getSjphDocument = async () => {
     });
 
     if (response?.code === 2000) {
-      sjphFile.value = response.data
+      sjphFile.value = response.data;
       return response?.data;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
@@ -136,7 +136,7 @@ const getSuratPermohonan = async () => {
   });
 
   if (result?.code === 2000) {
-    suratMohonFile.value = result?.data?.file
+    suratMohonFile.value = result?.data?.file;
   }
 };
 
@@ -169,7 +169,6 @@ const getDetailData = async (type: string) => {
   }
 };
 
-
 const getDetailProductData = async (pg: number, sz) => {
   try {
     const response: any = await $api("/reguler/lph/detail-product", {
@@ -182,7 +181,7 @@ const getDetailProductData = async (pg: number, sz) => {
     });
 
     if (response?.code === 2000) {
-      dataProduk.value = response
+      dataProduk.value = response;
       return response?.data;
     } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
@@ -296,24 +295,24 @@ onMounted(async () => {
 });
 
 const handlePageChange = async (pg: any) => {
-  page.value = pg
-  await getDetailProductData(pg || 1, size.value)
-}
+  page.value = pg;
+  await getDetailProductData(pg || 1, size.value);
+};
 
 const handleRowPageChange = async (sz: any) => {
-  size.value = sz
-  await getDetailProductData(page.value, sz || 10)
-}
+  size.value = sz;
+  await getDetailProductData(page.value, sz || 10);
+};
 
 const productNameHeader: any[] = [
-  { title: 'No', key: 'index' },
-  { title: 'Layanan Produk', key: 'layanan_produk', nowrap: true },
-  { title: 'Jenis Produk', key: 'jenis_produk', nowrap: true },
-  { title: 'Kelas Produk', key: 'kelas_produk', nowrap: true },
-  { title: 'Rincian Produk', key: 'rincian_produk', nowrap: true },
-  { title: 'Nama Produk', key: 'nama_produk', nowrap: true },
-  { title: 'Publikasi', key: 'publikasi_produk' },
-]
+  { title: "No", key: "index" },
+  { title: "Layanan Produk", key: "layanan_produk", nowrap: true },
+  { title: "Jenis Produk", key: "jenis_produk", nowrap: true },
+  { title: "Kelas Produk", key: "kelas_produk", nowrap: true },
+  { title: "Rincian Produk", key: "rincian_produk", nowrap: true },
+  { title: "Nama Produk", key: "nama_produk", nowrap: true },
+  { title: "Publikasi", key: "publikasi_produk" },
+];
 </script>
 
 <template>
@@ -367,6 +366,7 @@ const productNameHeader: any[] = [
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <VDataTableServer
+                :items-per-page-options="[10, 25, 50, 100]"
                 v-model:page="page"
                 v-model:items-per-page="size"
                 :items-per-page="size"
@@ -510,11 +510,7 @@ const productNameHeader: any[] = [
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
-                    :color="
-                      sjphFile?.file
-                        ? 'primary'
-                        : '#A09BA1'
-                    "
+                    :color="sjphFile?.file ? 'primary' : '#A09BA1'"
                     density="compact"
                     class="px-2"
                     @click="downloadDocument(sjphFile?.file, 'FILES')"
@@ -530,11 +526,7 @@ const productNameHeader: any[] = [
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
-                    :color="
-                      suratMohonFile
-                        ? 'primary'
-                        : '#A09BA1'
-                    "
+                    :color="suratMohonFile ? 'primary' : '#A09BA1'"
                     density="compact"
                     class="px-2"
                     :disabled="suratMohonFile ? false : true"

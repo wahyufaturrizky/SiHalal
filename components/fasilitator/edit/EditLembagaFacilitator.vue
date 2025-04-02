@@ -256,164 +256,163 @@ const checkIsFieldEMpty = (data: any) => {
 </script>
 
 <template>
-    <!-- Checkbox Kunci Lembaga -->
-    <VCard class="mb-6">
-      <VCardText>
-        <VRow>
-          <VCol cols="3">
-            <label for="kunciLembaga">Kunci Lembaga (LPH / LP3H) </label>
-          </VCol>
-          <VCol cols="9">
-            <VCheckbox
-              id="kunciLembaga"
-              v-model="kunciLembaga"
-              label="Kunci (LPH/LP3H)"
-              :disabled="loadingLock"
-              @change="updateLockFacilitateLembaga"
-            />
-            <span
-              >Dengan mengunci lembaga (LPH/LP3H), maka pelaku usaha hanya bisa
-              memilih lembaga sesuai dengan isian pada form di bawah ini.</span
-            >
-          </VCol>
-        </VRow>
-      </VCardText>
-    </VCard>
+  <!-- Checkbox Kunci Lembaga -->
+  <VCard class="mb-6">
+    <VCardText>
+      <VRow>
+        <VCol cols="3">
+          <label for="kunciLembaga">Kunci Lembaga (LPH / LP3H) </label>
+        </VCol>
+        <VCol cols="9">
+          <VCheckbox
+            id="kunciLembaga"
+            v-model="kunciLembaga"
+            label="Kunci (LPH/LP3H)"
+            :disabled="loadingLock"
+            @change="updateLockFacilitateLembaga"
+          />
+          <span
+            >Dengan mengunci lembaga (LPH/LP3H), maka pelaku usaha hanya bisa
+            memilih lembaga sesuai dengan isian pada form di bawah ini.</span
+          >
+        </VCol>
+      </VRow>
+    </VCardText>
+  </VCard>
 
-    <VCard class="pa-4">
-      <VCardText class="d-flex justify-space-between align-center">
-        <p class="text-h4">List Lembaga</p>
-        <VBtn
-          color="primary"
-          class="mb-4"
-          append-icon="ri-add-line"
-          @click="addDialog = true"
-        >
-          Tambah
-        </VBtn>
-      </VCardText>
-
-      <VDataTableServer
-        v-model:items-per-page="itemPerPage"
-        v-model:page="page"
-        :headers="headers"
-        :items="items"
-        :loading="loading"
-        :items-length="totalItems"
-        loading-text="Loading..."
-        @update:options="loadItemById(page, itemPerPage)"
+  <VCard class="pa-4">
+    <VCardText class="d-flex justify-space-between align-center">
+      <p class="text-h4">List Lembaga</p>
+      <VBtn
+        color="primary"
+        class="mb-4"
+        append-icon="ri-add-line"
+        @click="addDialog = true"
       >
-        <template #item.no="{ index }">
-          {{ index + 1 + (page - 1) * itemPerPage }}
-        </template>
-        <template #item.action="{ item }">
-          <div class="d-flex gap-1">
-            <IconBtn size="small">
-              <VIcon
-                color="error"
-                style="cursor: pointer"
-                @click="confirmDelete((item as any).no)"
-                :disabled="(item as any).isactive"
-              >
-                ri-delete-bin-6-line
-              </VIcon>
-            </IconBtn>
-          </div>
-        </template>
-      </VDataTableServer>
+        Tambah
+      </VBtn>
+    </VCardText>
+
+    <VDataTableServer
+      :items-per-page-options="[10, 25, 50, 100]"
+      v-model:items-per-page="itemPerPage"
+      v-model:page="page"
+      :headers="headers"
+      :items="items"
+      :loading="loading"
+      :items-length="totalItems"
+      loading-text="Loading..."
+      @update:options="loadItemById(page, itemPerPage)"
+    >
+      <template #item.no="{ index }">
+        {{ index + 1 + (page - 1) * itemPerPage }}
+      </template>
+      <template #item.action="{ item }">
+        <div class="d-flex gap-1">
+          <IconBtn size="small">
+            <VIcon
+              color="error"
+              style="cursor: pointer"
+              @click="confirmDelete((item as any).no)"
+              :disabled="(item as any).isactive"
+            >
+              ri-delete-bin-6-line
+            </VIcon>
+          </IconBtn>
+        </div>
+      </template>
+    </VDataTableServer>
+  </VCard>
+
+  <VDialog v-model="addDialog" :max-width="dialogMaxWidth">
+    <VCard class="pa-4">
+      <VCardTitle class="text-h4"> Tambah Lembaga </VCardTitle>
+      <VCardText>
+        <VForm ref="formRef">
+          <label class="text-h6" for="institutionName">
+            {{
+              type === "Reguler"
+                ? "Lembaga Pemeriksa Halal"
+                : "Lembaga Pendamping"
+            }}
+          </label>
+          <VSelect
+            id="institutionName"
+            v-model="formData.institutionName"
+            placeholder="Pilih Lembaga Pendamping"
+            :items="itemsInstitutionName"
+            item-title="name"
+            item-value="id"
+            required
+            class="mb-4"
+            :disabled="loadingItemsInstitutionName"
+            :loading="loadingItemsInstitutionName"
+            :rules="[requiredValidator]"
+          />
+          <label class="text-h6" for="picName">
+            Nama Penanggung Jawab Program LPH / LP3H
+          </label>
+          <VTextField
+            id="picName"
+            v-model="formData.picName"
+            placeholder="Isi Nama Penanggung Jawab Program LPH / LP3H "
+            required
+            class="mb-4"
+            :rules="[requiredValidator]"
+          />
+          <label class="text-h6" for="picName">
+            Nomor Kontak Penanggung Jawab Program LPH / LP3H
+          </label>
+          <VTextField
+            v-model="formData.picPhoneNumber"
+            placeholder="Isi Nomor Kontak Penanggung Jawab Program LPH / LP3H "
+            required
+            class="mb-4"
+            :rules="[requiredValidator]"
+            type="number"
+          />
+        </VForm>
+      </VCardText>
+      <VCardActions>
+        <VSpacer />
+        <VBtn text variant="outlined" @click="addDialog = false"> Batal </VBtn>
+        <VBtn
+          :disabled="loadingAdd || checkIsFieldEMpty(formData)"
+          color="primary"
+          text
+          variant="flat"
+          @click="tambahData"
+        >
+          {{ loadingAdd ? "Loading..." : "Tambah" }}
+        </VBtn>
+      </VCardActions>
     </VCard>
+  </VDialog>
 
-    <VDialog v-model="addDialog" :max-width="dialogMaxWidth">
-      <VCard class="pa-4">
-        <VCardTitle class="text-h4"> Tambah Lembaga </VCardTitle>
-        <VCardText>
-          <VForm ref="formRef">
-            <label class="text-h6" for="institutionName">
-              {{
-                type === "Reguler"
-                  ? "Lembaga Pemeriksa Halal"
-                  : "Lembaga Pendamping"
-              }}
-            </label>
-            <VSelect
-              id="institutionName"
-              v-model="formData.institutionName"
-              placeholder="Pilih Lembaga Pendamping"
-              :items="itemsInstitutionName"
-              item-title="name"
-              item-value="id"
-              required
-              class="mb-4"
-              :disabled="loadingItemsInstitutionName"
-              :loading="loadingItemsInstitutionName"
-              :rules="[requiredValidator]"
-            />
-            <label class="text-h6" for="picName">
-              Nama Penanggung Jawab Program LPH / LP3H
-            </label>
-            <VTextField
-              id="picName"
-              v-model="formData.picName"
-              placeholder="Isi Nama Penanggung Jawab Program LPH / LP3H "
-              required
-              class="mb-4"
-              :rules="[requiredValidator]"
-            />
-            <label class="text-h6" for="picName">
-              Nomor Kontak Penanggung Jawab Program LPH / LP3H
-            </label>
-            <VTextField
-              v-model="formData.picPhoneNumber"
-              placeholder="Isi Nomor Kontak Penanggung Jawab Program LPH / LP3H "
-              required
-              class="mb-4"
-              :rules="[requiredValidator]"
-              type="number"
-            />
-          </VForm>
-        </VCardText>
-        <VCardActions>
-          <VSpacer />
-          <VBtn text variant="outlined" @click="addDialog = false">
-            Batal
-          </VBtn>
-          <VBtn
-            :disabled="loadingAdd || checkIsFieldEMpty(formData)"
-            color="primary"
-            text
-            variant="flat"
-            @click="tambahData"
-          >
-            {{ loadingAdd ? "Loading..." : "Tambah" }}
-          </VBtn>
-        </VCardActions>
-      </VCard>
-    </VDialog>
-
-    <VDialog v-model="deleteDialog" :max-width="dialogMaxWidth">
-      <VCard class="pa-4">
-        <VCardTitle class="text-h4"> Hapus Data Lembaga </VCardTitle>
-        <VCardText>Yakin ingin menghapus data lembaga? </VCardText>
-        <VCardActions>
-          <VSpacer />
-          <VBtn
-            text
-            color="primary"
-            variant="outlined"
-            @click="deleteDialog = false"
-          >
-            Batal
-          </VBtn>
-          <VBtn
-            :disabled="loadingDelete"
-            color="error"
-            variant="flat"
-            text
-            @click="hapusData"
-          >
-            {{ loadingDelete ? "Loading..." : "Ya, Hapus" }}
-          </VBtn>
-        </VCardActions>
-      </VCard>
-    </VDialog>
+  <VDialog v-model="deleteDialog" :max-width="dialogMaxWidth">
+    <VCard class="pa-4">
+      <VCardTitle class="text-h4"> Hapus Data Lembaga </VCardTitle>
+      <VCardText>Yakin ingin menghapus data lembaga? </VCardText>
+      <VCardActions>
+        <VSpacer />
+        <VBtn
+          text
+          color="primary"
+          variant="outlined"
+          @click="deleteDialog = false"
+        >
+          Batal
+        </VBtn>
+        <VBtn
+          :disabled="loadingDelete"
+          color="error"
+          variant="flat"
+          text
+          @click="hapusData"
+        >
+          {{ loadingDelete ? "Loading..." : "Ya, Hapus" }}
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>

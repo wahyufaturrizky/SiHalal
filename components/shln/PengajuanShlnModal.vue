@@ -77,6 +77,7 @@ const tableSelected = ref([]);
           <VRow>
             <VCol>
               <VDataTableServer
+                :items-per-page-options="[10, 25, 50, 100]"
                 v-model="tableSelected"
                 :items="items"
                 :headers="headerTable"
