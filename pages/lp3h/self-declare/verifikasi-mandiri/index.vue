@@ -237,7 +237,6 @@ onMounted(async () => {
       <VRow>
         <VCol>
           <VDataTableServer
-            :items-per-page-options="[10, 25, 50, 100]"
             class="elevation-1 custom-table"
             :headers="headers"
             :items="submission"
