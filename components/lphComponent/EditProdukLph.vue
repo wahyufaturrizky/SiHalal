@@ -27,8 +27,10 @@ const items = [
   <VCard>
     <VCardTitle>
       <VRow>
-        <VCol cols="6"><h3>{{ t('pengajuan-reguler.reguler-form-produk-title') }}</h3></VCol>
-        <VCol cols="6" style="display: flex; justify-content: end;"
+        <VCol cols="6"
+          ><h3>{{ t("pengajuan-reguler.reguler-form-produk-title") }}</h3></VCol
+        >
+        <VCol cols="6" style="display: flex; justify-content: end"
           ><ModalTambahProduk
             :is-editable="props.isEditable"
           ></ModalTambahProduk
@@ -36,7 +38,11 @@ const items = [
       </VRow>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="tableHeader" :items="items">
+      <VDataTable
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="tableHeader"
+        :items="items"
+      >
         <template #item.action>
           <div class="text-center">
             <ModalHapusProduk

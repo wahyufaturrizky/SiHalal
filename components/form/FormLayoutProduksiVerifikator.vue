@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import FormEditLayoutProduksi from "@/components/form/FormEditLayoutProduksi.vue";
-import FormTambahLayoutProduksi from "@/components/form/FormTambahLayoutProduksi.vue";
-
 const headers = [
   { title: "No", key: "no" },
   { title: "Nama Pabrik", key: "nama_pabrik", nowrap: true },
@@ -14,7 +11,7 @@ const headers = [
   },
 ];
 
-const items = ref([])
+const items = ref([]);
 const size = ref(10);
 const page = ref(1);
 const totalData = ref(0);
@@ -37,14 +34,14 @@ const getLayout = async () => {
       return;
     }
     items.value = response.data;
-    totalData.value = response.total_data
+    totalData.value = response.total_data;
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
 };
 // TODO -> LOGIc DOWNLOAD
 const download = async (item) => {
-  await downloadDocument(item,'FILES');
+  await downloadDocument(item, "FILES");
 };
 </script>
 
@@ -55,6 +52,7 @@ const download = async (item) => {
     </VCardTitle>
     <VCardItem>
       <VDataTableServer
+        :items-per-page-options="[10, 25, 50, 100]"
         v-model:items-per-page="size"
         v-model:page="page"
         :headers="headers"

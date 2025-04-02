@@ -552,7 +552,11 @@ const ajukanBahan = () => {
       <VCard class="pa-2">
         <VCardTitle>
           <span class="text-h3">Preview Bahan</span>
-          <VDataTable :headers="uploadFileHeader" :items="previewData">
+          <VDataTable
+            :items-per-page-options="[10, 25, 50, 100]"
+            :headers="uploadFileHeader"
+            :items="previewData"
+          >
             <template #[`item.action`]="{ item }">
               <VCheckbox
                 v-model="selectedItems"

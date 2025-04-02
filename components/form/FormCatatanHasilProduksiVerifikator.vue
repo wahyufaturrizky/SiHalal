@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import FormEditLayoutProduksi from "@/components/form/FormEditLayoutProduksi.vue";
-import FormTambahLayoutProduksi from "@/components/form/FormTambahLayoutProduksi.vue";
-
 const catatanHeaders = [
   { title: "No", key: "no" },
   { title: "Nama Produk", key: "nama_produk", nowrap: true },
@@ -26,16 +23,19 @@ const totalData = ref(0);
 const route = useRoute();
 const getCatatanProduksi = async () => {
   try {
-    const response = await $api("/reguler/verifikator/detail/proses/catatan-produksi", {
-      method: "post",
-      body: {
-        id_reg: route.params.id,
-      },
-      params: {
-        page: page.value,
-        size: size.value,
-      },
-    });
+    const response = await $api(
+      "/reguler/verifikator/detail/proses/catatan-produksi",
+      {
+        method: "post",
+        body: {
+          id_reg: route.params.id,
+        },
+        params: {
+          page: page.value,
+          size: size.value,
+        },
+      }
+    );
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan", "error");
       return;
@@ -49,7 +49,7 @@ const getCatatanProduksi = async () => {
 
 // TODO -> LOGIc DOWNLOAD
 const download = async (item) => {
-  await downloadDocument(item,'FILES');
+  await downloadDocument(item, "FILES");
 };
 </script>
 
@@ -60,6 +60,7 @@ const download = async (item) => {
     </VCardTitle>
     <VCardItem>
       <VDataTableServer
+        :items-per-page-options="[10, 25, 50, 100]"
         v-model:items-per-page="size"
         v-model:page="page"
         :headers="catatanHeaders"
@@ -67,12 +68,12 @@ const download = async (item) => {
         :items-length="totalData"
         @update:options="getCatatanProduksi"
       >
-        <template #item.no="{index}"> 
-          {{index + 1}}
+        <template #item.no="{ index }">
+          {{ index + 1 }}
         </template>
         <template #item.file="{ item }">
           <v-btn
-          :disabled="item.file_dok == ''"
+            :disabled="item.file_dok == ''"
             color="primary"
             variant="plain"
             prepend-icon="mdi-download"

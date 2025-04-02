@@ -167,6 +167,7 @@ const handleConfirmDelete = async () => {
           </VRow>
           <VCard variant="outlined">
             <VDataTableServer
+              :items-per-page-options="[10, 25, 50, 100]"
               class="custom-table"
               :headers="tableHeaders"
               :items="tableItems"

@@ -1,11 +1,10 @@
 <script setup lang="ts">
-
 interface FasilitatorData {
   fasilitasi: Fasilitasi;
   lembaga: Lembaga[];
   status_registrasi: StatusRegistrasi;
   tracking: any[];
-  fasilitasi_detail: FasilitasiDetail[]; 
+  fasilitasi_detail: FasilitasiDetail[];
 }
 
 interface Fasilitasi {
@@ -191,15 +190,15 @@ const institutionHeader = [
 ];
 
 const biayaFasilitasiHeader = [
-  { title: "No", key: "index", nowrap: true},
+  { title: "No", key: "index", nowrap: true },
   { title: "Lembaga Pemeriksa Halal (LPH)", nowrap: true },
   { title: "Alamat Fasilitasi", nowrap: true },
   // { title: "Kabupaten",  nowrap: true },
-  { title: "Jenis Layanan",  nowrap: true },
-  { title: "Jenis Produk",  nowrap: true },
-  { title: "Kuota",  nowrap: true },
+  { title: "Jenis Layanan", nowrap: true },
+  { title: "Jenis Produk", nowrap: true },
+  { title: "Kuota", nowrap: true },
   { title: "Biaya", nowrap: true },
-  { title: "Status",  nowrap: true },
+  { title: "Status", nowrap: true },
 ];
 
 const loading = ref(true);
@@ -238,16 +237,16 @@ const loadItemById = async () => {
     if (response.code === 2000) {
       totalBiayaDetail.value = 0;
       const { fasilitator } = response.data || {};
-      detail.value = fasilitator
+      detail.value = fasilitator;
 
       jenisFasilitasi.value = detail.value.fasilitasi.jenis_fasilitasi;
 
       let url = "/facilitate/verifikator/lp";
-      
+
       if (jenisFasilitasi.value == "Reguler") {
         url = "/facilitate/verifikator/lph";
       }
-      
+
       const lembaga = await $api(url, {
         method: "get",
       });
@@ -256,12 +255,12 @@ const loadItemById = async () => {
         useSnackbar().sendSnackbar("Ada Kesalahan", "error");
         return;
       }
-      
+
       listLembaga.value = lembaga.data;
 
-      fasilitator.fasilitasi_detail.map((value: any)=> {
+      fasilitator.fasilitasi_detail.map((value: any) => {
         totalBiayaDetail.value += value.MFacilitatedDetailBiaya.total_biaya;
-      })
+      });
       // const { fasilitasi, tracking, status_registrasi } = fasilitator || {};
 
       // const {
@@ -391,7 +390,7 @@ const navigateActionLembaga = () => {
 };
 
 const openModalBiayaDetail = (item: any) => {
-  const dataItem = item.MFacilitatedDetailBiaya
+  const dataItem = item.MFacilitatedDetailBiaya;
 
   dataItem.unit_cost_awal = formatToIDR(dataItem.unit_cost_awal);
   dataItem.unit_cost_akhir = formatToIDR(dataItem.unit_cost_akhir);
@@ -421,24 +420,24 @@ const formatLembaga = (val: string) => {
 <template>
   <KembaliButton />
   <VRow v-if="!loading">
-    <VCol cols="6" style="display: flex; align-items: center;">
+    <VCol cols="6" style="display: flex; align-items: center">
       <h2>Detail Data Fasilitasi</h2>
     </VCol>
-    <VCol cols="6" style="display: flex; justify-content: end;">
+    <VCol cols="6" style="display: flex; justify-content: end">
       <div v-if="['OF1', 'OF2'].includes(detail.status_registrasi.status_code)">
         <VBtn
           density="compact"
-          style="margin: 0.5svw;"
+          style="margin: 0.5svw"
           variant="outlined"
           color="#E1442E"
           @click="visibleModalHapus = true"
         >
-          <VIcon style="color: #e1442e;" icon="fa-trash" />
+          <VIcon style="color: #e1442e" icon="fa-trash" />
         </VBtn>
 
         <VBtn
           density="compact"
-          style="margin: 0.5svw;"
+          style="margin: 0.5svw"
           variant="outlined"
           append-icon="fa-pencil"
           @click="navigateAction"
@@ -448,7 +447,7 @@ const formatLembaga = (val: string) => {
 
         <VBtn
           density="compact"
-          style="margin: 0.5svw;"
+          style="margin: 0.5svw"
           variant="flat"
           append-icon="fa-paper-plane"
           @click="visibleModalKirim = true"
@@ -457,10 +456,16 @@ const formatLembaga = (val: string) => {
         </VBtn>
       </div>
 
-      <div v-if="['OF320', 'OF10', 'OF12', 'OF5'].includes(detail.status_registrasi.status_code)">
+      <div
+        v-if="
+          ['OF320', 'OF10', 'OF12', 'OF5'].includes(
+            detail.status_registrasi.status_code
+          )
+        "
+      >
         <VBtn
           density="compact"
-          style="margin: 0.5svw;"
+          style="margin: 0.5svw"
           variant="outlined"
           append-icon="fa-pencil"
           @click="navigateActionLembaga"
@@ -487,186 +492,209 @@ const formatLembaga = (val: string) => {
             <VRow>
               <VCol cols="3"> Nama Program Fasilitasi </VCol>
               <VCol cols="1"> : </VCol>
-              <VCol cols="8"> {{  detail.fasilitasi.nama_program}} </VCol>
+              <VCol cols="8"> {{ detail.fasilitasi.nama_program }} </VCol>
             </VRow>
 
             <VRow>
               <VCol cols="3"> Nama Penanggung Jawab Program </VCol>
               <VCol cols="1"> : </VCol>
-              <VCol cols="8"> {{  detail.fasilitasi.penanggung_jawab }} </VCol>
+              <VCol cols="8"> {{ detail.fasilitasi.penanggung_jawab }} </VCol>
             </VRow>
 
             <VRow>
               <VCol cols="3"> Fasilitasi Deskripsi </VCol>
               <VCol cols="1"> : </VCol>
-              <VCol cols="8"> {{  detail.fasilitasi.fac_description }} </VCol>
+              <VCol cols="8"> {{ detail.fasilitasi.fac_description }} </VCol>
             </VRow>
 
             <VRow>
               <VCol cols="3"> Nomor Kontak Penanggung Jawab </VCol>
               <VCol cols="1"> : </VCol>
-              <VCol cols="8"> {{  detail.fasilitasi.phone_penanggung_jawab }} </VCol>
+              <VCol cols="8">
+                {{ detail.fasilitasi.phone_penanggung_jawab }}
+              </VCol>
             </VRow>
 
             <VRow>
               <VCol cols="3"> Tahun </VCol>
               <VCol cols="1"> : </VCol>
-              <VCol cols="8"> {{  detail.fasilitasi.tahun }} </VCol>
+              <VCol cols="8"> {{ detail.fasilitasi.tahun }} </VCol>
             </VRow>
 
             <VRow>
               <VCol cols="3"> Lingkup Wilayah Fasilitasi </VCol>
               <VCol cols="1"> : </VCol>
-              <VCol cols="8"> {{  detail.fasilitasi.lingkup_wilayah_fasilitas }} </VCol>
+              <VCol cols="8">
+                {{ detail.fasilitasi.lingkup_wilayah_fasilitas }}
+              </VCol>
             </VRow>
 
             <VRow>
               <VCol cols="3"> Tanggal Mulai </VCol>
               <VCol cols="1"> : </VCol>
-              <VCol cols="8"> {{ detail.fasilitasi.tgl_mulai ? formatDate(new Date(detail.fasilitasi.tgl_mulai)) : "" }} </VCol>
+              <VCol cols="8">
+                {{
+                  detail.fasilitasi.tgl_mulai
+                    ? formatDate(new Date(detail.fasilitasi.tgl_mulai))
+                    : ""
+                }}
+              </VCol>
             </VRow>
 
             <VRow>
               <VCol cols="3"> Tanggal Selesai </VCol>
               <VCol cols="1"> : </VCol>
-              <VCol cols="8"> {{ detail.fasilitasi.tgl_selesai ? formatDate(new Date(detail.fasilitasi.tgl_selesai)): "" }} </VCol>
+              <VCol cols="8">
+                {{
+                  detail.fasilitasi.tgl_selesai
+                    ? formatDate(new Date(detail.fasilitasi.tgl_selesai))
+                    : ""
+                }}
+              </VCol>
             </VRow>
 
             <VRow>
               <VCol cols="3"> Jenis Fasilitasi </VCol>
               <VCol cols="1"> : </VCol>
-              <VCol cols="8"> {{  detail.fasilitasi.jenis_fasilitasi }} </VCol>
+              <VCol cols="8"> {{ detail.fasilitasi.jenis_fasilitasi }} </VCol>
             </VRow>
 
             <VRow>
               <VCol cols="3"> Sumber Pembiayaan </VCol>
               <VCol cols="1"> : </VCol>
-              <VCol cols="8"> {{  detail.fasilitasi.sumber_biaya_name }} </VCol>
+              <VCol cols="8"> {{ detail.fasilitasi.sumber_biaya_name }} </VCol>
             </VRow>
 
-            <VRow v-if=" detail.fasilitasi.jenis_fasilitasi == 'Self Declare'">
+            <VRow v-if="detail.fasilitasi.jenis_fasilitasi == 'Self Declare'">
               <VCol cols="3"> Kuota </VCol>
               <VCol cols="1"> : </VCol>
-              <VCol cols="8"> {{  detail.fasilitasi.kuota }} </VCol>
+              <VCol cols="8"> {{ detail.fasilitasi.kuota }} </VCol>
             </VRow>
           </VExpansionPanelText>
         </VExpansionPanel>
       </VExpansionPanels>
 
-       <br />
+      <br />
 
-        <VExpansionPanels v-model="panelInstitution">
-          <VExpansionPanel>
-            <VExpansionPanelTitle>
-              <h3>Lembaga</h3>
-            </VExpansionPanelTitle>
-            <VExpansionPanelText>
-              <VDataTable :headers="institutionHeader" :items="detail.lembaga">
-                <template #item.index="{ index }">
-                  {{ index + 1 }}
-                </template>
-                <template #item.lph="{ item }">
-                  {{
-                    item.lp_id != null
-                      ? formatLembaga(item.lp_id)
-                      : formatLembaga(item.lph_id)
-                  }}
-                </template>
-              </VDataTable>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-        </VExpansionPanels>
+      <VExpansionPanels v-model="panelInstitution">
+        <VExpansionPanel>
+          <VExpansionPanelTitle>
+            <h3>Lembaga</h3>
+          </VExpansionPanelTitle>
+          <VExpansionPanelText>
+            <VDataTable
+              :items-per-page-options="[10, 25, 50, 100]"
+              :headers="institutionHeader"
+              :items="detail.lembaga"
+            >
+              <template #item.index="{ index }">
+                {{ index + 1 }}
+              </template>
+              <template #item.lph="{ item }">
+                {{
+                  item.lp_id != null
+                    ? formatLembaga(item.lp_id)
+                    : formatLembaga(item.lph_id)
+                }}
+              </template>
+            </VDataTable>
+          </VExpansionPanelText>
+        </VExpansionPanel>
+      </VExpansionPanels>
 
-        <br />
+      <br />
 
-        <VExpansionPanels v-model="panelBiayaFasilitasi">
-          <VExpansionPanel>
-            <VExpansionPanelTitle>
-              <h3>Biaya Fasilitasi</h3>
-            </VExpansionPanelTitle>
-            <VExpansionPanelText>
-              <VDataTable
-                  class="domestic-table border rounded"
-                  :headers="biayaFasilitasiHeader"
-                  :items="detail.fasilitasi_detail || []"
-                  hide-default-footer
-                >
-                  <template #body="{ items }">
-                    <tr v-if="items.length === 0">
-                      <td colspan="7" class="text-center">
-                        <div class="pt-2">
-                          <img src="~/assets/images/empty-data.png" alt="" />
-                          <div class="pt-2 font-weight-bold">Data Kosong</div>
-                        </div>
+      <VExpansionPanels v-model="panelBiayaFasilitasi">
+        <VExpansionPanel>
+          <VExpansionPanelTitle>
+            <h3>Biaya Fasilitasi</h3>
+          </VExpansionPanelTitle>
+          <VExpansionPanelText>
+            <VDataTable
+              class="domestic-table border rounded"
+              :headers="biayaFasilitasiHeader"
+              :items="detail.fasilitasi_detail || []"
+              hide-default-footer
+            >
+              <template #body="{ items }">
+                <tr v-if="items.length === 0">
+                  <td colspan="7" class="text-center">
+                    <div class="pt-2">
+                      <img src="~/assets/images/empty-data.png" alt="" />
+                      <div class="pt-2 font-weight-bold">Data Kosong</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr v-for="(item, idx) in detail.fasilitasi_detail" :key="idx">
+                  <td>{{ idx + 1 }}</td>
+                  <td>{{ item.MLPH.nama_lph }}</td>
+                  <td>
+                    {{
+                      item.MProvinsi.namaprovinsi +
+                      ", " +
+                      item.MKabupaten.namakabupaten
+                        .toLowerCase()
+                        .replace(/\b\w/g, (char) => char.toUpperCase())
+                    }}
+                  </td>
+                  <td>{{ item.MJenisLayanan.ref_desc }}</td>
+                  <td>{{ item.MJenisProduk.ref_desc }}</td>
+                  <td>{{ item.kuota }}</td>
+
+                  <td class="text-center">
+                    <VMenu>
+                      <template #activator="{ props }">
+                        <VIcon
+                          icon="fa-ellipsis-v"
+                          color="primary"
+                          class="cursor-pointer"
+                          v-bind="props"
+                        />
+                      </template>
+                      <VList>
+                        <VListItem
+                          prepend-icon="mdi-eye"
+                          title="Detail"
+                          @click="() => openModalBiayaDetail(item)"
+                        />
+                      </VList>
+                    </VMenu>
+                  </td>
+
+                  <td>
+                    <VChip label :color="statusItem[item.fac_status].color">
+                      {{ statusItem[item.fac_status].desc }}
+                    </VChip>
+                  </td>
+                </tr>
+                <tr>
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td />
+                  <td v-if="items.length">
+                    <div class="d-flex gap-5">
+                      <td
+                        class="text-right font-weight-bold"
+                        style="align-content: center"
+                      >
+                        Total
                       </td>
-                    </tr>
-                    <tr v-for="(item, idx) in detail.fasilitasi_detail" :key="idx">
-                      <td>{{ idx + 1 }}</td>
-                      <td>{{ item.MLPH.nama_lph }}</td>
-                      <td>{{ item.MProvinsi.namaprovinsi + ", " + item.MKabupaten.namakabupaten.toLowerCase().replace(/\b\w/g, char => char.toUpperCase()) }}</td>
-                      <td>{{ item.MJenisLayanan.ref_desc }}</td>
-                      <td>{{ item.MJenisProduk.ref_desc }}</td>
-                      <td>{{ item.kuota }}</td>
-                     
-                      <td class="text-center">
-                        <VMenu>
-                          <template #activator="{ props }">
-                            <VIcon
-                              icon="fa-ellipsis-v"
-                              color="primary"
-                              class="cursor-pointer"
-                              v-bind="props"
-                            />
-                          </template>
-                          <VList>
-                            <VListItem
-                              prepend-icon="mdi-eye"
-                              title="Detail"
-                              @click="() => openModalBiayaDetail(item)"
-                            />
-                          </VList>
-                        </VMenu>
-                      </td>
-
-                       <td>
-                          <VChip
-                            label
-                            :color="statusItem[item.fac_status].color"
-                          >
-                            {{ statusItem[item.fac_status].desc }}
-                          </VChip>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td />
-                      <td v-if="items.length">
-                        <div class="d-flex gap-5">
-                          <td
-                            class="text-right font-weight-bold"
-                            style="align-content: center;"
-                          >
-                            Total
-                          </td>
-                          <div class="d-flex align-center font-weight-bold">
-                            {{ formatToIDR(totalBiayaDetail) || 0 }}
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <div />
-                  </template>
-                </VDataTable>
-            </VExpansionPanelText>
-          </VExpansionPanel>
-        </VExpansionPanels>
-
-
+                      <div class="d-flex align-center font-weight-bold">
+                        {{ formatToIDR(totalBiayaDetail) || 0 }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <div />
+              </template>
+            </VDataTable>
+          </VExpansionPanelText>
+        </VExpansionPanel>
+      </VExpansionPanels>
     </VCol>
     <VCol cols="4">
       <VRow>
@@ -702,7 +730,7 @@ const formatLembaga = (val: string) => {
   </VRow>
 
   <VDialog v-model="visibleModalHapus" max-width="50svw">
-    <VCard style="padding: 1svw;">
+    <VCard style="padding: 1svw">
       <VCardTitle><h3>Hapus Pengajuan</h3></VCardTitle>
       <VCardItem>
         <p>Yakin ingin menghapus pengajuan fasilitasi?</p>
@@ -755,356 +783,351 @@ const formatLembaga = (val: string) => {
   </VDialog>
 
   <VDialog v-model="biayaDialog" max-width="840px" persistent>
-      <VCard class="pa-4">
-        <VCardTitle class="d-flex justify-space-between align-center">
-          <div class="text-h3 font-weight-bold">Biaya Fasilitasi</div>
-          <VIcon
-            @click="
-              () => {
-                biayaDialog = false;
-              }
-            "
-          >
-            fa-times
-          </VIcon>
-        </VCardTitle>
-        <VCardText>
-          <VRow>
-            <VCol>
-              <div class="text-h6">Unit Cost Awal</div>
-              <VTextField
-                v-model="detailBiaya.unit_cost_awal"
-                rounded="xl"
-                density="compact"
-                disabled
-              />
-            </VCol>
-            <VCol>
-              <div class="text-h6">Diskon (%)</div>
-              <VTextField
-                disabled
-                v-model="detailBiaya.unit_cost_diskon"
-                type="number"
-                rounded="xl"
-                density="compact"
-                placeholder="Masukkan Diskon"
-                :min="0"
-                :max="100"
-                @keypress="validateInput"
-                @input="
-                  (e) => {
-                    validateInput(e);
-                    if (+e.target.value) {
-                      const initialCost = idrToNumber(
-                        detailBiaya.unit_cost_awal
+    <VCard class="pa-4">
+      <VCardTitle class="d-flex justify-space-between align-center">
+        <div class="text-h3 font-weight-bold">Biaya Fasilitasi</div>
+        <VIcon
+          @click="
+            () => {
+              biayaDialog = false;
+            }
+          "
+        >
+          fa-times
+        </VIcon>
+      </VCardTitle>
+      <VCardText>
+        <VRow>
+          <VCol>
+            <div class="text-h6">Unit Cost Awal</div>
+            <VTextField
+              v-model="detailBiaya.unit_cost_awal"
+              rounded="xl"
+              density="compact"
+              disabled
+            />
+          </VCol>
+          <VCol>
+            <div class="text-h6">Diskon (%)</div>
+            <VTextField
+              disabled
+              v-model="detailBiaya.unit_cost_diskon"
+              type="number"
+              rounded="xl"
+              density="compact"
+              placeholder="Masukkan Diskon"
+              :min="0"
+              :max="100"
+              @keypress="validateInput"
+              @input="
+                (e) => {
+                  validateInput(e);
+                  if (+e.target.value) {
+                    const initialCost = idrToNumber(detailBiaya.unit_cost_awal);
+                    detailBiaya.unit_cost_akhir =
+                      initialCost - initialCost * (+e.target.value / 100);
+                    if (detailBiaya.unit_cost_akhir) {
+                      detailBiaya.unit_cost_akhir = formatToIDR(
+                        detailBiaya.unit_cost_akhir
                       );
-                      detailBiaya.unit_cost_akhir =
-                        initialCost - initialCost * (+e.target.value / 100);
-                      if (detailBiaya.unit_cost_akhir) {
-                        detailBiaya.unit_cost_akhir = formatToIDR(
-                          detailBiaya.unit_cost_akhir
-                        );
-                      }
-                    } else {
-                      detailBiaya.unit_cost_akhir = detailBiaya.unit_cost_awal;
                     }
+                  } else {
+                    detailBiaya.unit_cost_akhir = detailBiaya.unit_cost_awal;
                   }
-                "
-              />
-            </VCol>
-            <VCol>
-              <div class="text-h6">Unit Cost Akhir</div>
-              <VTextField
-                v-model="detailBiaya.unit_cost_akhir"
-                rounded="xl"
-                density="compact"
-                disabled
-              />
-            </VCol>
-          </VRow>
-          <VRow>
-            <VCol>
-              <div class="text-h6">UHPD Awal</div>
-              <VTextField
-                v-model="detailBiaya.uhpd_awal"
-                rounded="xl"
-                density="compact"
-                disabled
-              />
-            </VCol>
-            <VCol>
-              <div class="text-h6">Diskon (%)</div>
-              <VTextField
-                disabled
-                v-model="detailBiaya.uhpd_diskon"
-                rounded="xl"
-                density="compact"
-                placeholder="Masukkan Diskon"
-                :min="0"
-                :max="100"
-                @keypress="validateInput"
-                @input="
-                  (e) => {
-                    validateInput(e);
-                    if (+e.target.value) {
-                      const initialCost = idrToNumber(detailBiaya.uhpd_awal);
-                      detailBiaya.uhpd_akhir =
-                        initialCost - initialCost * (+e.target.value / 100);
-                      if (detailBiaya.uhpd_akhir) {
-                        detailBiaya.uhpd_akhir = formatToIDR(
-                          detailBiaya.uhpd_akhir
-                        );
-                      }
-                    } else {
-                      detailBiaya.uhpd_akhir = detailBiaya.uhpd_awal;
-                    }
-                  }
-                "
-              />
-            </VCol>
-            <VCol>
-              <div class="text-h6">UHPD Akhir</div>
-              <VTextField
-                v-model="detailBiaya.uhpd_akhir"
-                rounded="xl"
-                density="compact"
-                disabled
-              />
-            </VCol>
-          </VRow>
-          <VRow>
-            <VCol>
-              <div class="text-h6">Operasional</div>
-              <VTextField
-                v-model="detailBiaya.operasional"
-                rounded="xl"
-                density="compact"
-                disabled
-              />
-            </VCol>
-          </VRow>
-          <VRow>
-            <VCol>
-              <div class="text-h6">Transportasi Awal</div>
-              <VTextField
-                v-model="detailBiaya.transport_awal"
-                rounded="xl"
-                density="compact"
-                disabled
-              />
-            </VCol>
-            <VCol>
-              <div class="text-h6">Diskon (%)</div>
-              <VTextField
-                disabled
-                v-model="detailBiaya.transport_diskon"
-                rounded="xl"
-                density="compact"
-                placeholder="Masukkan Diskon"
-                :min="0"
-                :max="100"
-                @keypress="validateInput"
-                @input="
-                  (e) => {
-                    validateInput(e);
-                    if (+e.target.value) {
-                      const initialCost = idrToNumber(
-                        detailBiaya.transport_awal
+                }
+              "
+            />
+          </VCol>
+          <VCol>
+            <div class="text-h6">Unit Cost Akhir</div>
+            <VTextField
+              v-model="detailBiaya.unit_cost_akhir"
+              rounded="xl"
+              density="compact"
+              disabled
+            />
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol>
+            <div class="text-h6">UHPD Awal</div>
+            <VTextField
+              v-model="detailBiaya.uhpd_awal"
+              rounded="xl"
+              density="compact"
+              disabled
+            />
+          </VCol>
+          <VCol>
+            <div class="text-h6">Diskon (%)</div>
+            <VTextField
+              disabled
+              v-model="detailBiaya.uhpd_diskon"
+              rounded="xl"
+              density="compact"
+              placeholder="Masukkan Diskon"
+              :min="0"
+              :max="100"
+              @keypress="validateInput"
+              @input="
+                (e) => {
+                  validateInput(e);
+                  if (+e.target.value) {
+                    const initialCost = idrToNumber(detailBiaya.uhpd_awal);
+                    detailBiaya.uhpd_akhir =
+                      initialCost - initialCost * (+e.target.value / 100);
+                    if (detailBiaya.uhpd_akhir) {
+                      detailBiaya.uhpd_akhir = formatToIDR(
+                        detailBiaya.uhpd_akhir
                       );
-                      detailBiaya.transport_akhir =
-                        initialCost - initialCost * (+e.target.value / 100);
-                      if (detailBiaya.transport_akhir) {
-                        detailBiaya.transport_akhir = formatToIDR(
-                          detailBiaya.transport_akhir
-                        );
-                      }
-                    } else {
-                      detailBiaya.transport_akhir = detailBiaya.transport_awal;
                     }
+                  } else {
+                    detailBiaya.uhpd_akhir = detailBiaya.uhpd_awal;
                   }
-                "
-              />
-            </VCol>
-            <VCol>
-              <div class="text-h6">Transportasi Akhir</div>
-              <VTextField
-                v-model="detailBiaya.transport_akhir"
-                rounded="xl"
-                density="compact"
-                disabled
-              />
-            </VCol>
-          </VRow>
-          <VRow>
-            <VCol>
-              <div class="text-h6">Akomodasi Awal</div>
-              <VTextField
-                v-model="detailBiaya.akomodasi_awal"
-                rounded="xl"
-                density="compact"
-                disabled
-              />
-            </VCol>
-            <VCol>
-              <div class="text-h6">Diskon (%)</div>
-              <VTextField
-                disabled
-                v-model="detailBiaya.akomodasi_diskon"
-                rounded="xl"
-                density="compact"
-                placeholder="Masukkan Diskon"
-                :min="0"
-                :max="100"
-                @keypress="validateInput"
-                @input="
-                  (e) => {
-                    validateInput(e);
-                    if (+e.target.value) {
-                      const initialCost = idrToNumber(
-                        detailBiaya.akomodasi_awal
+                }
+              "
+            />
+          </VCol>
+          <VCol>
+            <div class="text-h6">UHPD Akhir</div>
+            <VTextField
+              v-model="detailBiaya.uhpd_akhir"
+              rounded="xl"
+              density="compact"
+              disabled
+            />
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol>
+            <div class="text-h6">Operasional</div>
+            <VTextField
+              v-model="detailBiaya.operasional"
+              rounded="xl"
+              density="compact"
+              disabled
+            />
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol>
+            <div class="text-h6">Transportasi Awal</div>
+            <VTextField
+              v-model="detailBiaya.transport_awal"
+              rounded="xl"
+              density="compact"
+              disabled
+            />
+          </VCol>
+          <VCol>
+            <div class="text-h6">Diskon (%)</div>
+            <VTextField
+              disabled
+              v-model="detailBiaya.transport_diskon"
+              rounded="xl"
+              density="compact"
+              placeholder="Masukkan Diskon"
+              :min="0"
+              :max="100"
+              @keypress="validateInput"
+              @input="
+                (e) => {
+                  validateInput(e);
+                  if (+e.target.value) {
+                    const initialCost = idrToNumber(detailBiaya.transport_awal);
+                    detailBiaya.transport_akhir =
+                      initialCost - initialCost * (+e.target.value / 100);
+                    if (detailBiaya.transport_akhir) {
+                      detailBiaya.transport_akhir = formatToIDR(
+                        detailBiaya.transport_akhir
                       );
-                      detailBiaya.akomodasi_akhir =
-                        initialCost - initialCost * (+e.target.value / 100);
-                      if (detailBiaya.akomodasi_akhir) {
-                        detailBiaya.akomodasi_akhir = formatToIDR(
-                          detailBiaya.akomodasi_akhir
-                        );
-                      }
-                    } else {
-                      detailBiaya.akomodasi_akhir = detailBiaya.akomodasi_awal;
                     }
+                  } else {
+                    detailBiaya.transport_akhir = detailBiaya.transport_awal;
                   }
-                "
-              />
-            </VCol>
-            <VCol>
-              <div class="text-h6">Akomodasi Akhir</div>
-              <VTextField
-                v-model="detailBiaya.akomodasi_akhir"
-                rounded="xl"
-                density="compact"
-                disabled
-              />
-            </VCol>
-          </VRow>
-          <VRow>
-            <VCol>
-              <div class="text-h6">Tiket Pesawat Awal</div>
-              <VTextField
-                v-model="detailBiaya.tiket_pesawat_awal"
-                rounded="xl"
-                density="compact"
-                disabled
-              />
-            </VCol>
-            <VCol>
-              <div class="text-h6">Diskon (%)</div>
-              <VTextField
-                disabled
-                v-model="detailBiaya.tiket_pesawat_diskon"
-                rounded="xl"
-                density="compact"
-                placeholder="Masukkan Diskon"
-                :min="0"
-                :max="100"
-                @keypress="validateInput"
-                @input="
-                  (e) => {
-                    validateInput(e);
-                    if (+e.target.value) {
-                      const initialCost = idrToNumber(
-                        detailBiaya.tiket_pesawat_awal
+                }
+              "
+            />
+          </VCol>
+          <VCol>
+            <div class="text-h6">Transportasi Akhir</div>
+            <VTextField
+              v-model="detailBiaya.transport_akhir"
+              rounded="xl"
+              density="compact"
+              disabled
+            />
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol>
+            <div class="text-h6">Akomodasi Awal</div>
+            <VTextField
+              v-model="detailBiaya.akomodasi_awal"
+              rounded="xl"
+              density="compact"
+              disabled
+            />
+          </VCol>
+          <VCol>
+            <div class="text-h6">Diskon (%)</div>
+            <VTextField
+              disabled
+              v-model="detailBiaya.akomodasi_diskon"
+              rounded="xl"
+              density="compact"
+              placeholder="Masukkan Diskon"
+              :min="0"
+              :max="100"
+              @keypress="validateInput"
+              @input="
+                (e) => {
+                  validateInput(e);
+                  if (+e.target.value) {
+                    const initialCost = idrToNumber(detailBiaya.akomodasi_awal);
+                    detailBiaya.akomodasi_akhir =
+                      initialCost - initialCost * (+e.target.value / 100);
+                    if (detailBiaya.akomodasi_akhir) {
+                      detailBiaya.akomodasi_akhir = formatToIDR(
+                        detailBiaya.akomodasi_akhir
                       );
-                      detailBiaya.tiket_pesawat_akhir =
-                        initialCost - initialCost * (+e.target.value / 100);
-                      if (detailBiaya.tiket_pesawat_akhir) {
-                        detailBiaya.tiket_pesawat_akhir = formatToIDR(
-                          detailBiaya.tiket_pesawat_akhir
-                        );
-                      }
-                    } else {
-                      detailBiaya.tiket_pesawat_akhir =
-                        detailBiaya.tiket_pesawat_awal;
                     }
+                  } else {
+                    detailBiaya.akomodasi_akhir = detailBiaya.akomodasi_awal;
                   }
-                "
-              />
-            </VCol>
-            <VCol>
-              <div class="text-h6">Tiket Pesawat Akhir</div>
-              <VTextField
-                v-model="detailBiaya.tiket_pesawat_akhir"
-                rounded="xl"
-                density="compact"
-                disabled
-              />
-            </VCol>
-          </VRow>
+                }
+              "
+            />
+          </VCol>
+          <VCol>
+            <div class="text-h6">Akomodasi Akhir</div>
+            <VTextField
+              v-model="detailBiaya.akomodasi_akhir"
+              rounded="xl"
+              density="compact"
+              disabled
+            />
+          </VCol>
+        </VRow>
+        <VRow>
+          <VCol>
+            <div class="text-h6">Tiket Pesawat Awal</div>
+            <VTextField
+              v-model="detailBiaya.tiket_pesawat_awal"
+              rounded="xl"
+              density="compact"
+              disabled
+            />
+          </VCol>
+          <VCol>
+            <div class="text-h6">Diskon (%)</div>
+            <VTextField
+              disabled
+              v-model="detailBiaya.tiket_pesawat_diskon"
+              rounded="xl"
+              density="compact"
+              placeholder="Masukkan Diskon"
+              :min="0"
+              :max="100"
+              @keypress="validateInput"
+              @input="
+                (e) => {
+                  validateInput(e);
+                  if (+e.target.value) {
+                    const initialCost = idrToNumber(
+                      detailBiaya.tiket_pesawat_awal
+                    );
+                    detailBiaya.tiket_pesawat_akhir =
+                      initialCost - initialCost * (+e.target.value / 100);
+                    if (detailBiaya.tiket_pesawat_akhir) {
+                      detailBiaya.tiket_pesawat_akhir = formatToIDR(
+                        detailBiaya.tiket_pesawat_akhir
+                      );
+                    }
+                  } else {
+                    detailBiaya.tiket_pesawat_akhir =
+                      detailBiaya.tiket_pesawat_awal;
+                  }
+                }
+              "
+            />
+          </VCol>
+          <VCol>
+            <div class="text-h6">Tiket Pesawat Akhir</div>
+            <VTextField
+              v-model="detailBiaya.tiket_pesawat_akhir"
+              rounded="xl"
+              density="compact"
+              disabled
+            />
+          </VCol>
+        </VRow>
 
-          <VRow>
-            <VCol>
-              <div class="text-h6">Pemeriksaan dan Penerbitan SH</div>
-              <VTextField
-                v-model="detailBiaya.biaya_bpjph"
-                rounded="xl"
-                density="compact"
-                disabled
-              />
-            </VCol>
-          </VRow>
+        <VRow>
+          <VCol>
+            <div class="text-h6">Pemeriksaan dan Penerbitan SH</div>
+            <VTextField
+              v-model="detailBiaya.biaya_bpjph"
+              rounded="xl"
+              density="compact"
+              disabled
+            />
+          </VCol>
+        </VRow>
 
-          <VRow>
-            <VCol>
-              <div class="text-h6">Penetapan</div>
-              <VTextField
-                v-model="detailBiaya.biaya_mui"
-                rounded="xl"
-                density="compact"
-                disabled
-              />
-            </VCol>
-          </VRow>
+        <VRow>
+          <VCol>
+            <div class="text-h6">Penetapan</div>
+            <VTextField
+              v-model="detailBiaya.biaya_mui"
+              rounded="xl"
+              density="compact"
+              disabled
+            />
+          </VCol>
+        </VRow>
 
-          <VRow>
-            <VCol>
-              <div class="text-h6">Total Biaya Satuan</div>
-              <VTextField
-                v-model="detailBiaya.total_biaya_satuan"
-                rounded="xl"
-                density="compact"
-                disabled
-              />
-            </VCol>
-          </VRow>
+        <VRow>
+          <VCol>
+            <div class="text-h6">Total Biaya Satuan</div>
+            <VTextField
+              v-model="detailBiaya.total_biaya_satuan"
+              rounded="xl"
+              density="compact"
+              disabled
+            />
+          </VCol>
+        </VRow>
 
-           <VRow>
-            <VCol>
-              <div class="text-h6">Total Biaya</div>
-              <VTextField
-                v-model="detailBiaya.total_biaya"
-                rounded="xl"
-                density="compact"
-                disabled
-              />
-              <div class="text-sm">Total Biaya adalah hasil total biaya satuan di kali dengan kuota</div>
-            </VCol>
-          </VRow>
-
-        </VCardText>
-        <VCardActions class="pt-2 px-4">
-          <VBtn
-            variant="outlined"
-            class="px-4 me-3"
-            @click="
-              () => {
-                biayaDialog = false;
-              }
-            "
-            >Batal</VBtn
-          >
-        </VCardActions>
-      </VCard>
-    </VDialog>
+        <VRow>
+          <VCol>
+            <div class="text-h6">Total Biaya</div>
+            <VTextField
+              v-model="detailBiaya.total_biaya"
+              rounded="xl"
+              density="compact"
+              disabled
+            />
+            <div class="text-sm">
+              Total Biaya adalah hasil total biaya satuan di kali dengan kuota
+            </div>
+          </VCol>
+        </VRow>
+      </VCardText>
+      <VCardActions class="pt-2 px-4">
+        <VBtn
+          variant="outlined"
+          class="px-4 me-3"
+          @click="
+            () => {
+              biayaDialog = false;
+            }
+          "
+          >Batal</VBtn
+        >
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
 
 <style>
@@ -1168,5 +1191,4 @@ const formatLembaga = (val: string) => {
     }
   }
 }
-
 </style>

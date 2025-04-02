@@ -69,7 +69,7 @@ const handleSearchUser = useDebounceFn((val: string) => {
 }, 350);
 
 const handleDownload = async (filename: string) => {
-  return await downloadDocument(filename,'FILES');
+  return await downloadDocument(filename, "FILES");
 };
 
 const isOpenAddModal = ref(false);
@@ -144,7 +144,7 @@ const handleConfirmDelete = async () => {
 <template>
   <VRow>
     <VCol>
-      <h1 style="font-size: 32px;">Image Authorization</h1>
+      <h1 style="font-size: 32px">Image Authorization</h1>
     </VCol>
   </VRow>
   <VRow>
@@ -172,6 +172,7 @@ const handleConfirmDelete = async () => {
           </VRow>
           <VCard variant="outlined">
             <VDataTableServer
+              :items-per-page-options="[10, 25, 50, 100]"
               class="custom-table"
               :headers="tableHeaders"
               :items="tableItems"
@@ -183,7 +184,7 @@ const handleConfirmDelete = async () => {
             >
               <template #no-data>
                 <VCard variant="outlined" class="w-full mt-7 mb-5">
-                  <div class="pt-2" style="justify-items: center;">
+                  <div class="pt-2" style="justify-items: center">
                     <img
                       src="~/assets/images/empty-data.png"
                       alt="empty_data"

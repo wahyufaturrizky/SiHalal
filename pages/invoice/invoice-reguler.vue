@@ -13,7 +13,7 @@ const showUnduhInvoice = ref(false);
 const loadingDownloadExcel = ref(false);
 
 const selectedFilters = ref({
-  status:"Semua",
+  status: "Semua",
   date: "",
 });
 
@@ -154,8 +154,6 @@ onMounted(async () => {
   }
 });
 
-
-
 const downloadExcel = async () => {
   loadingDownloadExcel.value = true;
 
@@ -196,7 +194,7 @@ const downloadExcel = async () => {
 <template>
   <VRow>
     <VCol cols="12">
-      <h1 style="font-size: 32px;">Bukti Bayar Reguler</h1>
+      <h1 style="font-size: 32px">Bukti Bayar Reguler</h1>
     </VCol>
   </VRow>
   <VRow>
@@ -207,7 +205,7 @@ const downloadExcel = async () => {
             <VCol cols="6">
               <div class="text-h4 font-weight-bold">Invoice List</div>
             </VCol>
-            <VCol cols="6" style="display: flex; justify-content: end;">
+            <VCol cols="6" style="display: flex; justify-content: end">
               <VBtn
                 :loading="loadingDownloadExcel"
                 @click="downloadExcel"
@@ -230,7 +228,7 @@ const downloadExcel = async () => {
                     append-icon="fa-filter"
                     v-bind="openMenu"
                     variant="outlined"
-                    style="inline-size: 100%;"
+                    style="inline-size: 100%"
                     >Filter</VBtn
                   >
                 </template>
@@ -287,6 +285,7 @@ const downloadExcel = async () => {
           </VRow>
           <VRow>
             <VDataTableServer
+              :items-per-page-options="[10, 25, 50, 100]"
               :headers="tableHeader"
               :items="items"
               v-model:items-per-page="itemPerPage"
@@ -320,8 +319,7 @@ const downloadExcel = async () => {
                 <p
                   v-if="(item as any).file_inv"
                   class="cursor-pointer"
-                  @click="downloadDocument( (item as any).file_inv,'INVOICE')"
-              
+                  @click="downloadDocument((item as any).file_inv, 'INVOICE')"
                 >
                   <VIcon icon="fa-download" size="xs" color="primary"></VIcon>
                   Unduh Ivoice

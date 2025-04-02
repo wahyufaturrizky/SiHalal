@@ -1,35 +1,35 @@
 <script setup lang="ts">
-import { useDisplay } from 'vuetify';
+import { useDisplay } from "vuetify";
 
-const { mdAndUp } = useDisplay()
-const isLoading = ref<boolean>(false)
-const tableItems = ref<any[]>([])
+const { mdAndUp } = useDisplay();
+const isLoading = ref<boolean>(false);
+const tableItems = ref<any[]>([]);
 const totalItems = ref<number>(0);
-const currentPage = ref<number>(1)
-const itemPerPage = ref<number>(10)
+const currentPage = ref<number>(1);
+const itemPerPage = ref<number>(10);
 
 const tableHeaders: any[] = [
-  { title: 'No', value: 'index' },
-  { title: 'No. Tagihan', value: 'no_tagihan', nowrap: true },
-  { title: 'Tanggal', value: 'tanggal', nowrap: true },
-  { title: 'Total', value: 'total', nowrap: true },
-  { title: 'Status', value: 'status', nowrap: true },
-  { title: 'Bukti Bayar', value: 'bukti_url', nowrap: true },
-  { title: 'Invoice', value: 'invoice_url', nowrap: true },
-]
+  { title: "No", value: "index" },
+  { title: "No. Tagihan", value: "no_tagihan", nowrap: true },
+  { title: "Tanggal", value: "tanggal", nowrap: true },
+  { title: "Total", value: "total", nowrap: true },
+  { title: "Status", value: "status", nowrap: true },
+  { title: "Bukti Bayar", value: "bukti_url", nowrap: true },
+  { title: "Invoice", value: "invoice_url", nowrap: true },
+];
 const loadItem = async () => {
-  isLoading.value = true
+  isLoading.value = true;
   try {
-    const response: any = await $api('/reguler/lph/bpjph-bill/list', {
-      method: 'get',
+    const response: any = await $api("/reguler/lph/bpjph-bill/list", {
+      method: "get",
       params: {
         page: currentPage.value,
         size: itemPerPage.value,
       },
-    } as any)
+    } as any);
 
     if (response?.code === 2000) {
-      tableItems.value = response?.data
+      tableItems.value = response?.data;
       currentPage.value = response?.current_page;
       totalItems.value = response.total_item;
     } else {
@@ -37,62 +37,56 @@ const loadItem = async () => {
       currentPage.value = 1;
       totalItems.value = 0;
     }
-    isLoading.value = false
-    return response
+    isLoading.value = false;
+    return response;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    isLoading.value = false;
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    isLoading.value = false
-  }
-}
-useAsyncData(
-  "bpjph-bill-list",
-  async () => await loadItem(),
-  {
-    server: false,
-    watch: [currentPage, itemPerPage],
-  }
-);
+};
+useAsyncData("bpjph-bill-list", async () => await loadItem(), {
+  server: false,
+  watch: [currentPage, itemPerPage],
+});
 
 const setChipColor = (status: string) => {
   switch (status) {
-    case 'Pengajuan':
-      return 'primary-chip'
+    case "Pengajuan":
+      return "primary-chip";
     default:
-      return 'success-chip'
+      return "success-chip";
   }
-}
+};
 const formatNumber = (value: number) => {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
     minimumFractionDigits: 0,
-  }).format(value).replace(/^Rp\s?/gi, '');
+  })
+    .format(value)
+    .replace(/^Rp\s?/gi, "");
 };
 
 const handleDownload = async (filename: string, param: string) => {
-  return await downloadDocument(filename, param)
-}
+  return await downloadDocument(filename, param);
+};
 </script>
 
 <template>
   <VRow no-gutters>
     <VCol>
-      <h1 style="font-size: 32px">
-        Daftar Tagihan ke BPJPH
-      </h1>
+      <h1 style="font-size: 32px">Daftar Tagihan ke BPJPH</h1>
     </VCol>
   </VRow>
   <VRow>
     <VCol>
       <VCard>
         <VCardTitle class="my-3 d-flex justify-space-between align-center">
-          <div class="text-h4 font-weight-bold">
-            Daftar Tagihan
-          </div>
+          <div class="text-h4 font-weight-bold">Daftar Tagihan</div>
         </VCardTitle>
         <VCardText>
           <VDataTableServer
+            :items-per-page-options="[10, 25, 50, 100]"
             class="bill-table border rounded mt-5"
             :headers="tableHeaders"
             :items="tableItems"
@@ -104,17 +98,9 @@ const handleDownload = async (filename: string, param: string) => {
           >
             <template #no-data>
               <div class="w-full mt-2">
-                <div
-                  class="pt-2"
-                  style="justify-items: center"
-                >
-                  <img
-                    src="~/assets/images/empty-data.png"
-                    alt="empty_data"
-                  >
-                  <div class="pt-2 pb-2 font-weight-bold">
-                    Data Kosong
-                  </div>
+                <div class="pt-2" style="justify-items: center">
+                  <img src="~/assets/images/empty-data.png" alt="empty_data" />
+                  <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
                 </div>
               </div>
             </template>
@@ -125,10 +111,7 @@ const handleDownload = async (filename: string, param: string) => {
               {{ item.total ? formatNumber(item.total) : 0 }}
             </template>
             <template #item.status="{ item }">
-              <VChip
-                variant="outlined"
-                :class="setChipColor(item.status)"
-              >
+              <VChip variant="outlined" :class="setChipColor(item.status)">
                 <span>
                   {{ item.status }}
                 </span>
@@ -142,7 +125,11 @@ const handleDownload = async (filename: string, param: string) => {
               >
                 <VIcon
                   icon="fa-download"
-                  @click="item.bukti_url ? handleDownload(item.bukti_url, 'FILES') : null"
+                  @click="
+                    item.bukti_url
+                      ? handleDownload(item.bukti_url, 'FILES')
+                      : null
+                  "
                 />
               </VBtn>
             </template>
@@ -154,7 +141,11 @@ const handleDownload = async (filename: string, param: string) => {
               >
                 <VIcon
                   icon="fa-eye"
-                  @click="item.invoice_url ?  handleDownload(item.invoice_url, 'INVOICE') : null"
+                  @click="
+                    item.invoice_url
+                      ? handleDownload(item.invoice_url, 'INVOICE')
+                      : null
+                  "
                 />
               </VBtn>
             </template>
@@ -169,7 +160,7 @@ const handleDownload = async (filename: string, param: string) => {
 .primary-chip {
   border: 1px solid #652672 !important;
   border-radius: 8px;
-  background-color: #F0E9F1;
+  background-color: #f0e9f1;
 
   span {
     color: #652672;

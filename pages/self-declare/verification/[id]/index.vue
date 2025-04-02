@@ -652,8 +652,8 @@ const handleGetPendamping = async (idLembaga: string | null) => {
         method: "get",
         query: {
           id_lembaga: idLembaga,
-           lokasi: formData.lokasi_pendamping,
-                    id_reg: submissionId,
+          lokasi: formData.lokasi_pendamping,
+          id_reg: submissionId,
         },
       }
     );
@@ -1007,7 +1007,7 @@ const onSelectFasilitator = (selectedId: string) => {
               class="d-flex justify-space-between align-center"
               @click="showDetail = !showDetail"
             >
-              <p class="text-h4" style="font-weight: bold;">
+              <p class="text-h4" style="font-weight: bold">
                 Pengajuan Sertifikasi Halal
               </p>
               <VIcon
@@ -1042,7 +1042,7 @@ const onSelectFasilitator = (selectedId: string) => {
       <VRow>
         <VCol>
           <VCard variant="flat" class="pa-4">
-            <p class="text-h4" style="font-weight: bold;">Penanggung Jawab</p>
+            <p class="text-h4" style="font-weight: bold">Penanggung Jawab</p>
             <!-- Nama Usaha -->
             <!-- <VCol cols="12">
               <VLabel class="required"> Jenis Badan Usaha </VLabel>
@@ -1105,6 +1105,7 @@ const onSelectFasilitator = (selectedId: string) => {
             <VRow>
               <VCol>
                 <VDataTableServer
+                  :items-per-page-options="[10, 25, 50, 100]"
                   v-model:items-per-page="itemPerPageAspekLegal"
                   v-model:page="pageAspekLegal"
                   :headers="legalTableHeader"
@@ -1157,6 +1158,7 @@ const onSelectFasilitator = (selectedId: string) => {
             <VRow>
               <VCol>
                 <VDataTableServer
+                  :items-per-page-options="[10, 25, 50, 100]"
                   v-model:items-per-page="itemPerPagePenyelia"
                   v-model:page="pagePenyelia"
                   :headers="penyeliaTableHeader"
@@ -1227,7 +1229,7 @@ const onSelectFasilitator = (selectedId: string) => {
             </VRow>
             <VRow>
               <VCol>
-                <VDataTableServer
+                <VDataTableServer :items-per-page-options="[10, 25, 50, 100]" 
                   :headers="headersDokumenPersyaratanFasilitas"
                   :items="itemsDokumenPersyaratanFasilitas"
                   :loading="loading"
@@ -1278,6 +1280,7 @@ const onSelectFasilitator = (selectedId: string) => {
             <VRow>
               <VCol>
                 <VDataTableServer
+                  :items-per-page-options="[10, 25, 50, 100]"
                   v-model:items-per-page="itemPerPagePabrik"
                   v-model:page="pagePabrik"
                   :headers="pabrikTableHeader"
@@ -1325,6 +1328,7 @@ const onSelectFasilitator = (selectedId: string) => {
             <VRow>
               <VCol>
                 <VDataTableServer
+                  :items-per-page-options="[10, 25, 50, 100]"
                   v-model:items-per-page="itemPerPageOutlet"
                   v-model:page="pageOutlet"
                   :headers="outletTableHeader"
@@ -1414,6 +1418,7 @@ const onSelectFasilitator = (selectedId: string) => {
           <VRow>
             <VCol>
               <VDataTableServer
+                :items-per-page-options="[10, 25, 50, 100]"
                 v-model:items-per-page="itemPerPageBahan"
                 v-model:page="pageBahan"
                 :headers="bahanTableHeader"
@@ -1481,6 +1486,7 @@ const onSelectFasilitator = (selectedId: string) => {
           <VRow>
             <VCol>
               <VDataTableServer
+                :items-per-page-options="[10, 25, 50, 100]"
                 v-model:items-per-page="itemPerPageTableProduk"
                 v-model:page="pageTableProduk"
                 :headers="headersProduk"
@@ -1568,9 +1574,7 @@ const onSelectFasilitator = (selectedId: string) => {
                     {{ username }}
                   </div>
                   <div v-if="comment" class="app-timeline-text mt-1">
-                    {{
-                      comment
-                    }}
+                    {{ comment }}
                   </div>
                 </VTimelineItem>
               </VTimeline>

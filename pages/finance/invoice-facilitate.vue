@@ -237,8 +237,8 @@ onMounted(async () => {
           <VRow>
             <VCol cols="12">
               <VDataTableServer
-                v-model:items-per-page="itemPerPage"
                 :items-per-page-options="[10, 25, 50, 100]"
+                v-model:items-per-page="itemPerPage"
                 v-model:page="page"
                 :headers="tableHeader"
                 :items-length="totalItems"

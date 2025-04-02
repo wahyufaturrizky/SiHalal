@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import FormEditLayoutProduksi from "@/components/form/FormEditLayoutProduksi.vue";
-import FormTambahLayoutProduksi from "@/components/form/FormTambahLayoutProduksi.vue";
-
 const catatanBahanHeaders = [
   { title: "No", key: "no" },
   { title: "Nama Bahan", key: "nama_bahan", nowrap: true },
@@ -65,11 +62,14 @@ const getBahan = async () => {
   }
 };
 
-const updateOptionsBahan = (options: { page: number; itemsPerPage: number }) => {
-  pageBahan.value = options.page
-  sizeBahan.value = options.itemsPerPage
-  getBahan()
-}
+const updateOptionsBahan = (options: {
+  page: number;
+  itemsPerPage: number;
+}) => {
+  pageBahan.value = options.page;
+  sizeBahan.value = options.itemsPerPage;
+  getBahan();
+};
 
 const getProduk = async () => {
   try {
@@ -89,11 +89,13 @@ const getProduk = async () => {
   }
 };
 // TODO -> LOGIC TO DONWLOAD FILE
-const downloadCatatanBahan = async (item) => await downloadDocument(item,'FILES');
+const downloadCatatanBahan = async (item) =>
+  await downloadDocument(item, "FILES");
 
 // PRODUK
 // TODO -> LOGIC TO DONWLOAD FILE
-const downloadCatatanProduk = async (item) => await downloadDocument(item,'FILES');
+const downloadCatatanProduk = async (item) =>
+  await downloadDocument(item, "FILES");
 
 onMounted(async () => {
   await getProduk();
@@ -107,6 +109,7 @@ onMounted(async () => {
     </VCardTitle>
     <VCardItem>
       <VDataTableServer
+        :items-per-page-options="[10, 25, 50, 100]"
         :headers="catatanBahanHeaders"
         :items="catatanBahanItems"
         :items-per-page="sizeBahan"
@@ -114,9 +117,9 @@ onMounted(async () => {
         :items-length="totalDataBahan"
         @update:options="updateOptionsBahan"
       >
-      <template #item.no="{ index }">
-        {{ (pageBahan - 1) * sizeBahan + index + 1 }}
-      </template>
+        <template #item.no="{ index }">
+          {{ (pageBahan - 1) * sizeBahan + index + 1 }}
+        </template>
         <template #item.file="{ item }">
           <v-btn
             :disabled="item.file_dok == ''"
@@ -134,7 +137,11 @@ onMounted(async () => {
     <VCardItem>
       <VCardTitle class="d-flex justify-space-between align-center">
       </VCardTitle>
-      <VDataTable :headers="catatanProdukHeaders" :items="catatanProdukItems">
+      <VDataTable
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="catatanProdukHeaders"
+        :items="catatanProdukItems"
+      >
         <template #item.no="{ index }">
           {{ index + 1 }}
         </template>

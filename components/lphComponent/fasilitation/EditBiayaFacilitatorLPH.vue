@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useDisplay } from 'vuetify'
-import type {
-  MasterDistrict,
-} from '@/server/interface/master.iface'
+import type { MasterDistrict } from "@/server/interface/master.iface";
+import { computed, ref } from "vue";
+import { useDisplay } from "vuetify";
 
 const props = defineProps({
   type: {
@@ -12,84 +10,90 @@ const props = defineProps({
   islockedlembaga: {
     type: Boolean,
   },
-})
+});
 
-const { type, islockedlembaga } = props || {}
+const { type, islockedlembaga } = props || {};
 
 // State untuk checkbox
-const province = ref()
-const district = ref()
-const kunciLembaga = ref(false)
-const route = useRoute()
-const loadingDelete = ref(false)
-const loadingLock = ref(false)
-const loadingAdd = ref(false)
-const loadingItemsInstitutionName = ref(false)
-const loadingJenisLayanan = ref(false)
-const loadingJenisProduk = ref(false)
-const loadingLembagaPemeriksaHalal = ref(false)
-const totalItems = ref(0)
-const statusFilter = ref('OF12')
+const province = ref();
+const district = ref();
+const kunciLembaga = ref(false);
+const route = useRoute();
+const loadingDelete = ref(false);
+const loadingLock = ref(false);
+const loadingAdd = ref(false);
+const loadingItemsInstitutionName = ref(false);
+const loadingJenisLayanan = ref(false);
+const loadingJenisProduk = ref(false);
+const loadingLembagaPemeriksaHalal = ref(false);
+const totalItems = ref(0);
+const statusFilter = ref("OF12");
 
-const detailBiaya = ref<any>({})
-const biayaDialog = ref<boolean>(false)
+const detailBiaya = ref<any>({});
+const biayaDialog = ref<boolean>(false);
 
-const facilitateId = route.params.id
-const loading = ref(false)
-const loadingTiketPesawat = ref(false)
-const page = ref<number>(1)
-const size = ref<number>(10)
+const facilitateId = route.params.id;
+const loading = ref(false);
+const loadingTiketPesawat = ref(false);
+const page = ref<number>(1);
+const size = ref<number>(10);
 
 // Data tabel
-const detailBiayaitems = ref([])
-const itemsInstitutionName = ref([])
-const itemsJenisLayanan = ref([])
-const itemsJenisProduk = ref([])
-const itemsLembagaPemeriksaHalal = ref([])
-const totalBiayaDetail = ref(0)
+const detailBiayaitems = ref([]);
+const itemsInstitutionName = ref([]);
+const itemsJenisLayanan = ref([]);
+const itemsJenisProduk = ref([]);
+const itemsLembagaPemeriksaHalal = ref([]);
+const totalBiayaDetail = ref(0);
 
 // Form data dan dialog
-const formRef = ref(null)
-const selectedItem = ref(null)
-const addDialog = ref(false)
-const deleteDialog = ref(false)
-const openPanelFacilitate = ref(0)
+const formRef = ref(null);
+const selectedItem = ref(null);
+const addDialog = ref(false);
+const deleteDialog = ref(false);
+const openPanelFacilitate = ref(0);
 
 // Data untuk form tambah lembaga
 const formData = ref({
-  ruangLingkup: '',
-  provinsiId: '',
-  kabupatenId: '',
-  jenisLayanan: '',
-  jenisProduk: '',
-  kuota: '',
+  ruangLingkup: "",
+  provinsiId: "",
+  kabupatenId: "",
+  jenisLayanan: "",
+  jenisProduk: "",
+  kuota: "",
   jumlahProduk: 0,
-  lphId: '',
-})
+  lphId: "",
+});
 
-kunciLembaga.value = islockedlembaga
+kunciLembaga.value = islockedlembaga;
 
-const loadItemById = async (options?: { page: number; itemsPerPage: number }) => {
+const loadItemById = async (options?: {
+  page: number;
+  itemsPerPage: number;
+}) => {
   try {
-    loading.value = true
+    loading.value = true;
 
     if (options) {
-      page.value = options.page
-      size.value = options.itemsPerPage
+      page.value = options.page;
+      size.value = options.itemsPerPage;
     }
 
-    const response = await $api(`/facilitate/biaya-reguler/list/${facilitateId}`, {
-      method: 'get',
-      params: {
-        page: page.value,
-        size: size.value,
-        status: statusFilter.value,
-      },
-    })
+    const response = await $api(
+      `/facilitate/biaya-reguler/list/${facilitateId}`,
+      {
+        method: "get",
+        params: {
+          page: page.value,
+          size: size.value,
+          status: statusFilter.value,
+        },
+      }
+    );
 
     if (response.code === 2000) {
-      totalBiayaDetail.value = 0
-      detailBiayaitems.value = response.data?.map(item => {
+      totalBiayaDetail.value = 0;
+      detailBiayaitems.value = response.data?.map((item) => {
         const {
           id,
           lph_nama,
@@ -131,13 +135,13 @@ const loadItemById = async (options?: { page: number; itemsPerPage: number }) =>
           biaya_bpjph,
           biaya_mui,
           total_biaya_satuan,
-        } = item
+        } = item;
 
-        totalBiayaDetail.value += total_biaya
+        totalBiayaDetail.value += total_biaya;
 
-        totalItems.value = response?.total_item
+        totalItems.value = response?.total_item;
 
-        loading.value = false
+        loading.value = false;
 
         return {
           id,
@@ -180,229 +184,212 @@ const loadItemById = async (options?: { page: number; itemsPerPage: number }) =>
           biaya_bpjph,
           biaya_mui,
           total_biaya_satuan,
-        }
-      })
+        };
+      });
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loading.value = false;
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-      loading.value = false
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loading.value = false;
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    loading.value = false
-  }
-}
+};
 
 const loadLembagaPemeriksaHalal = async () => {
   try {
-    const { jenisLayanan, ruangLingkup, provinsiId, kabupatenId } = formData.value
+    const { jenisLayanan, ruangLingkup, provinsiId, kabupatenId } =
+      formData.value;
 
     if (jenisLayanan && ruangLingkup && provinsiId && kabupatenId) {
-      loadingLembagaPemeriksaHalal.value = true
+      loadingLembagaPemeriksaHalal.value = true;
 
-      const response = await $api('/facilitate/lph/list',
-        {
-          method: 'get',
-          params: {
-            jenis_layanan: jenisLayanan,
-            area_pemasaran: ruangLingkup,
-            prov: provinsiId,
-            kab: kabupatenId,
-          },
+      const response = await $api("/facilitate/lph/list", {
+        method: "get",
+        params: {
+          jenis_layanan: jenisLayanan,
+          area_pemasaran: ruangLingkup,
+          prov: provinsiId,
+          kab: kabupatenId,
         },
-      )
+      });
 
       if (response) {
-        itemsLembagaPemeriksaHalal.value = response
+        itemsLembagaPemeriksaHalal.value = response;
 
-        loadingLembagaPemeriksaHalal.value = false
-      }
-      else {
-        useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+        loadingLembagaPemeriksaHalal.value = false;
+      } else {
+        useSnackbar().sendSnackbar("Ada Kesalahan", "error");
 
-        loadingLembagaPemeriksaHalal.value = false
+        loadingLembagaPemeriksaHalal.value = false;
       }
     }
-  }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
 
-    loadingLembagaPemeriksaHalal.value = false
+    loadingLembagaPemeriksaHalal.value = false;
   }
-}
+};
 
 const getProvince = async () => {
-  const response = await $api('/master/province', {
-    method: 'get',
-  })
+  const response = await $api("/master/province", {
+    method: "get",
+  });
 
-  province.value = response
+  province.value = response;
 
-  loadLembagaPemeriksaHalal()
-}
+  loadLembagaPemeriksaHalal();
+};
 
 const getDistrict = async (kode: string) => {
-  const response: MasterDistrict[] = await $api('/master/district', {
-    method: 'post',
+  const response: MasterDistrict[] = await $api("/master/district", {
+    method: "post",
     body: {
       province: kode,
     },
-  })
+  });
 
-  district.value = response
+  district.value = response;
 
-  loadLembagaPemeriksaHalal()
-}
+  loadLembagaPemeriksaHalal();
+};
 
 const loadItemLembagaPendamping = async () => {
   try {
-    loadingItemsInstitutionName.value = true
+    loadingItemsInstitutionName.value = true;
 
     const response = await $api(
       `/master/${
-        type === 'Reguler' ? 'lembaga-pemeriksa-halal' : 'lembaga-pendamping'
+        type === "Reguler" ? "lembaga-pemeriksa-halal" : "lembaga-pendamping"
       }`,
       {
-        method: 'get',
-      },
-    )
+        method: "get",
+      }
+    );
 
     if (response) {
-      itemsInstitutionName.value = response
+      itemsInstitutionName.value = response;
 
-      loadingItemsInstitutionName.value = false
+      loadingItemsInstitutionName.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      loadingItemsInstitutionName.value = false;
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-      loadingItemsInstitutionName.value = false
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingItemsInstitutionName.value = false;
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    loadingItemsInstitutionName.value = false
-  }
-}
+};
 
 const loadJenisLayanan = async () => {
   try {
-    loadingJenisLayanan.value = true
+    loadingJenisLayanan.value = true;
 
-    const response = await $api('/facilitate/jenis-layanan/list',
-      {
-        method: 'get',
-      },
-    )
+    const response = await $api("/facilitate/jenis-layanan/list", {
+      method: "get",
+    });
 
     if (response) {
-      itemsJenisLayanan.value = response
+      itemsJenisLayanan.value = response;
 
-      loadingJenisLayanan.value = false
+      loadingJenisLayanan.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
+      loadingJenisLayanan.value = false;
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
 
-      loadingJenisLayanan.value = false
-    }
+    loadingJenisLayanan.value = false;
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-
-    loadingJenisLayanan.value = false
-  }
-}
+};
 
 const loadJenisProduk = async (parent: string) => {
   try {
-    loadingJenisProduk.value = true
+    loadingJenisProduk.value = true;
 
-    const response = await $api('/facilitate/jenis-produk/list',
-      {
-        method: 'get',
-        params: {
-          parent,
-        },
+    const response = await $api("/facilitate/jenis-produk/list", {
+      method: "get",
+      params: {
+        parent,
       },
-    )
+    });
 
     if (response) {
-      itemsJenisProduk.value = response
+      itemsJenisProduk.value = response;
 
-      loadingJenisProduk.value = false
+      loadingJenisProduk.value = false;
 
-      loadLembagaPemeriksaHalal()
+      loadLembagaPemeriksaHalal();
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
+      loadingJenisProduk.value = false;
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
 
-      loadingJenisProduk.value = false
-    }
+    loadingJenisProduk.value = false;
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-
-    loadingJenisProduk.value = false
-  }
-}
+};
 
 const deleteFacilitateBiaya = async (id: string) => {
   try {
-    loadingDelete.value = true
+    loadingDelete.value = true;
 
     const res = await $api(`/facilitate/biaya-reguler/delete/${id}`, {
-      method: 'delete',
-    })
+      method: "delete",
+    });
 
     if (res?.code === 2000) {
-      loadingDelete.value = false
-      addDialog.value = false
-      page.value = 1
-      await loadItemById()
+      loadingDelete.value = false;
+      addDialog.value = false;
+      page.value = 1;
+      await loadItemById();
+    } else {
+      useSnackbar().sendSnackbar("Gagal update data", "error");
+      loadingDelete.value = false;
+      addDialog.value = false;
     }
-    else {
-      useSnackbar().sendSnackbar('Gagal update data', 'error')
-      loadingDelete.value = false
-      addDialog.value = false
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingDelete.value = false;
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    loadingDelete.value = false
-  }
-}
+};
 
 const openModalBiayaDetail = (item: any) => {
-  const dataItem = item
+  const dataItem = item;
 
-  detailBiaya.value = dataItem
-  biayaDialog.value = true
-}
+  detailBiaya.value = dataItem;
+  biayaDialog.value = true;
+};
 
 // Reset form
 const resetForm = () => {
   formData.value = {
-    ruangLingkup: '',
-    provinsiId: '',
-    kabupatenId: '',
-    jenisLayanan: '',
-    jenisProduk: '',
-    kuota: '',
+    ruangLingkup: "",
+    provinsiId: "",
+    kabupatenId: "",
+    jenisLayanan: "",
+    jenisProduk: "",
+    kuota: "",
     jumlahProduk: 0,
-    lphId: '',
-  }
-}
+    lphId: "",
+  };
+};
 
 const addFacilitateLembaga = async () => {
   try {
-    loadingAdd.value = true
+    loadingAdd.value = true;
 
-    if (formData.value.jenisProduk !== 'A0016')
-      formData.value.jumlahProduk = 50
+    if (formData.value.jenisProduk !== "A0016")
+      formData.value.jumlahProduk = 50;
 
-    formData.value.kuota = Number.parseInt(formData.value.kuota)
+    formData.value.kuota = Number.parseInt(formData.value.kuota);
 
-    const res = await $api('/facilitate/biaya-reguler/add', {
-      method: 'post',
+    const res = await $api("/facilitate/biaya-reguler/add", {
+      method: "post",
       body: {
         fac_id: facilitateId,
         ruang_lingkup: formData.value.ruangLingkup,
@@ -418,108 +405,124 @@ const addFacilitateLembaga = async () => {
         // "is_taken": true,
         // "created_by": "Admin"
       },
-    })
+    });
 
     if (res?.code === 2000) {
-      loadingAdd.value = false
-      resetForm()
-      addDialog.value = false
-      useSnackbar().sendSnackbar('Berhasil menambahkan data', 'success')
-      page.value = 1
-      await loadItemById()
+      loadingAdd.value = false;
+      resetForm();
+      addDialog.value = false;
+      useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+      page.value = 1;
+      await loadItemById();
+    } else {
+      useSnackbar().sendSnackbar("Gagal update data", "error");
+      loadingAdd.value = false;
+      resetForm();
+      addDialog.value = false;
     }
-    else {
-      useSnackbar().sendSnackbar('Gagal update data', 'error')
-      loadingAdd.value = false
-      resetForm()
-      addDialog.value = false
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingAdd.value = false;
+    resetForm();
+    addDialog.value = false;
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    loadingAdd.value = false
-    resetForm()
-    addDialog.value = false
-  }
-}
+};
 
 onMounted(async () => {
-  await loadItemLembagaPendamping()
-  await getProvince()
-  await loadJenisLayanan()
-})
+  await loadItemLembagaPendamping();
+  await getProvince();
+  await loadJenisLayanan();
+});
 
 const domesticAuditHeader: any[] = [
-  { title: 'No', key: 'no' },
-  { title: 'Lembaga Pemeriksa Halal (LPH)', key: 'lph_nama', nowrap: true },
-  { title: 'Man Days', key: 'mandays', nowrap: true },
-  { title: 'Unit Cost Awal', key: 'unit_cost_awal', nowrap: true },
-  { title: 'Diskon (%)', key: 'unit_cost_diskon', nowrap: true },
-  { title: 'Unit Cost Akhir', key: 'unit_cost_akhir', nowrap: true },
-  { title: 'UHPD Awal', key: 'uhpd_awal', nowrap: true },
-  { title: 'Diskon (%)', key: 'uhpd_diskon', nowrap: true },
-  { title: 'UHPD Akhir', key: 'uhpd_akhir', nowrap: true },
-  { title: 'Operasional', key: 'operasional', nowrap: true },
-  { title: 'Akomodasi Awal', key: 'akomodasi_awal', nowrap: true },
-  { title: 'Diskon (%)', key: 'akomodasi_diskon', nowrap: true },
-  { title: 'Akomodasi Akhir', key: 'akomodasi_akhir', nowrap: true },
-  { title: 'Transportasi Awal', key: 'transport_awal', nowrap: true },
-  { title: 'Diskon (%)', key: 'transport_diskon', nowrap: true },
-  { title: 'Transportasi Akhir', key: 'transport_akhir', nowrap: true },
-  { title: 'Tiket Pesawat Awal', key: 'tiket_pesawat_awal', nowrap: true },
-  { title: 'Diskon (%)', key: 'tiket_pesawat_diskon', nowrap: true },
-  { title: 'Tiket Pesawat Akhir', key: 'tiket_pesawat_akhir', nowrap: true },
-  { title: 'Pemeriksaan dan Penerbitan SH', key: 'biaya_bpjph', nowrap: true },
-  { title: 'Penetapan', key: 'biaya_mui', nowrap: true },
-  { title: 'Sub Tot', key: 'total_biaya_satuan', nowrap: true },
-  { title: 'Kuota', key: 'kuota', nowrap: true },
-  { title: 'Total', key: 'total_biaya', nowrap: true },
-  { title: 'Action', key: 'actions', align: 'center', nowrap: true },
-]
+  { title: "No", key: "no" },
+  { title: "Lembaga Pemeriksa Halal (LPH)", key: "lph_nama", nowrap: true },
+  { title: "Man Days", key: "mandays", nowrap: true },
+  { title: "Unit Cost Awal", key: "unit_cost_awal", nowrap: true },
+  { title: "Diskon (%)", key: "unit_cost_diskon", nowrap: true },
+  { title: "Unit Cost Akhir", key: "unit_cost_akhir", nowrap: true },
+  { title: "UHPD Awal", key: "uhpd_awal", nowrap: true },
+  { title: "Diskon (%)", key: "uhpd_diskon", nowrap: true },
+  { title: "UHPD Akhir", key: "uhpd_akhir", nowrap: true },
+  { title: "Operasional", key: "operasional", nowrap: true },
+  { title: "Akomodasi Awal", key: "akomodasi_awal", nowrap: true },
+  { title: "Diskon (%)", key: "akomodasi_diskon", nowrap: true },
+  { title: "Akomodasi Akhir", key: "akomodasi_akhir", nowrap: true },
+  { title: "Transportasi Awal", key: "transport_awal", nowrap: true },
+  { title: "Diskon (%)", key: "transport_diskon", nowrap: true },
+  { title: "Transportasi Akhir", key: "transport_akhir", nowrap: true },
+  { title: "Tiket Pesawat Awal", key: "tiket_pesawat_awal", nowrap: true },
+  { title: "Diskon (%)", key: "tiket_pesawat_diskon", nowrap: true },
+  { title: "Tiket Pesawat Akhir", key: "tiket_pesawat_akhir", nowrap: true },
+  { title: "Pemeriksaan dan Penerbitan SH", key: "biaya_bpjph", nowrap: true },
+  { title: "Penetapan", key: "biaya_mui", nowrap: true },
+  { title: "Sub Tot", key: "total_biaya_satuan", nowrap: true },
+  { title: "Kuota", key: "kuota", nowrap: true },
+  { title: "Total", key: "total_biaya", nowrap: true },
+  { title: "Action", key: "actions", align: "center", nowrap: true },
+];
 
 // Fungsi tambah data
 const tambahData = () => {
-  addFacilitateLembaga()
-}
+  addFacilitateLembaga();
+};
 
 const confirmDelete = (item: any) => {
-  selectedItem.value = item
-  deleteDialog.value = true
-}
+  selectedItem.value = item;
+  deleteDialog.value = true;
+};
 
 const hapusData = () => {
-  const index = selectedItem.value
+  const index = selectedItem.value;
 
-  deleteFacilitateBiaya(index.fac_id_detail)
-  deleteDialog.value = false
-}
+  deleteFacilitateBiaya(index.fac_id_detail);
+  deleteDialog.value = false;
+};
 
-const { mdAndUp } = useDisplay()
-const dialogMaxWidth = computed(() => (mdAndUp ? 700 : '90%'))
+const { mdAndUp } = useDisplay();
+const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
 
 const checkIsFieldEmpty = (data: any) => {
-  return Object.keys(data)?.find(key => key !== 'jumlahProduk' && !data[key])
-}
+  return Object.keys(data)?.find((key) => key !== "jumlahProduk" && !data[key]);
+};
 
 const validateInput = (event: any) => {
-  if (+event.target.value > 100)
-    event.target.value = 100
-  if (event.target.value.length > 2)
-    event.preventDefault()
-  if (['e', 'E', '-', '+'].includes(event.key))
-    event.preventDefault()
-}
+  if (+event.target.value > 100) event.target.value = 100;
+  if (event.target.value.length > 2) event.preventDefault();
+  if (["e", "E", "-", "+"].includes(event.key)) event.preventDefault();
+};
 
 const onEdit = async () => {
   try {
-    const akomodasiAkhir = detailBiaya.value?.akomodasi_akhir !== 0 ? detailBiaya.value?.akomodasi_akhir : 0
-    const tiketPesawatAkhir = detailBiaya.value?.tiket_pesawat_akhir !== 0 ? detailBiaya.value?.tiket_pesawat_akhir : 0
-    const transportAkhir = detailBiaya.value?.transport_akhir !== 0 ? detailBiaya.value?.transport_akhir : 0
-    const uhpdAkhir = detailBiaya.value?.uhpd_akhir !== 0 ? detailBiaya.value?.uhpd_akhir : 0
-    const unitCostAkhir = detailBiaya.value?.unit_cost_akhir !== 0 ? detailBiaya.value?.unit_cost_akhir : 0
+    const akomodasiAkhir =
+      detailBiaya.value?.akomodasi_akhir !== 0
+        ? detailBiaya.value?.akomodasi_akhir
+        : 0;
+    const tiketPesawatAkhir =
+      detailBiaya.value?.tiket_pesawat_akhir !== 0
+        ? detailBiaya.value?.tiket_pesawat_akhir
+        : 0;
+    const transportAkhir =
+      detailBiaya.value?.transport_akhir !== 0
+        ? detailBiaya.value?.transport_akhir
+        : 0;
+    const uhpdAkhir =
+      detailBiaya.value?.uhpd_akhir !== 0 ? detailBiaya.value?.uhpd_akhir : 0;
+    const unitCostAkhir =
+      detailBiaya.value?.unit_cost_akhir !== 0
+        ? detailBiaya.value?.unit_cost_akhir
+        : 0;
 
-    const totalBiayaSatuan = detailBiaya.value.biaya_bpjph + detailBiaya.value.biaya_mui + detailBiaya.value.operasional + akomodasiAkhir + tiketPesawatAkhir + transportAkhir + uhpdAkhir + unitCostAkhir
-    const totalBiaya = totalBiayaSatuan * detailBiaya.value.kuota
+    const totalBiayaSatuan =
+      detailBiaya.value.biaya_bpjph +
+      detailBiaya.value.biaya_mui +
+      detailBiaya.value.operasional +
+      akomodasiAkhir +
+      tiketPesawatAkhir +
+      transportAkhir +
+      uhpdAkhir +
+      unitCostAkhir;
+    const totalBiaya = totalBiayaSatuan * detailBiaya.value.kuota;
 
     const body = {
       id: detailBiaya.value.id,
@@ -544,63 +547,65 @@ const onEdit = async () => {
 
       total_biaya_satuan: totalBiayaSatuan,
       total_biaya: totalBiaya,
-    }
+    };
 
-    const response: any = await $api(`/facilitate/biaya-reguler/update/${detailBiaya.value.id}`, {
-      method: 'put',
-      body,
-    })
+    const response: any = await $api(
+      `/facilitate/biaya-reguler/update/${detailBiaya.value.id}`,
+      {
+        method: "put",
+        body,
+      }
+    );
 
     if (response.code === 2000) {
-      useSnackbar().sendSnackbar('Berhasil ubah data', 'success')
-      biayaDialog.value = false
-      page.value = 1
-      await loadItemById()
+      useSnackbar().sendSnackbar("Berhasil ubah data", "success");
+      biayaDialog.value = false;
+      page.value = 1;
+      await loadItemById();
     }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const onCancel = async () => {
   try {
-    page.value = 1
-    await loadItemById()
-    biayaDialog.value = false
+    page.value = 1;
+    await loadItemById();
+    biayaDialog.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const onGetTiketPesawat = async () => {
   try {
-    loadingTiketPesawat.value = true
+    loadingTiketPesawat.value = true;
 
-    const idDetail = detailBiaya.value.fac_id_detail
+    const idDetail = detailBiaya.value.fac_id_detail;
 
-    const res = await $api(`/facilitate/biaya-reguler/tiket-pesawat/${idDetail}`, {
-      method: 'get',
-    })
+    const res = await $api(
+      `/facilitate/biaya-reguler/tiket-pesawat/${idDetail}`,
+      {
+        method: "get",
+      }
+    );
 
     if (res?.code === 2000) {
-      detailBiaya.value.tiket_pesawat_akhir = res.data?.tiket_pesawat_akhir
-      detailBiaya.value.tiket_pesawat_awal = res.data?.tiket_pesawat_awal
-      detailBiaya.value.tiket_pesawat_diskon = 0
+      detailBiaya.value.tiket_pesawat_akhir = res.data?.tiket_pesawat_akhir;
+      detailBiaya.value.tiket_pesawat_awal = res.data?.tiket_pesawat_awal;
+      detailBiaya.value.tiket_pesawat_diskon = 0;
 
-      loadingTiketPesawat.value = false
+      loadingTiketPesawat.value = false;
+    } else {
+      useSnackbar().sendSnackbar("Tiket pesawat tidak ditemukan", "error");
+      loadingTiketPesawat.value = false;
     }
-    else {
-      useSnackbar().sendSnackbar('Tiket pesawat tidak ditemukan', 'error')
-      loadingTiketPesawat.value = false
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    loadingDelete.value = false;
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    loadingDelete.value = false
-  }
-}
+};
 </script>
 
 <template>
@@ -613,6 +618,7 @@ const onGetTiketPesawat = async () => {
           </VExpansionPanelTitle>
           <VExpansionPanelText>
             <VDataTableServer
+              :items-per-page-options="[10, 25, 50, 100]"
               class="domestic-table border rounded mt-5"
               :headers="domesticAuditHeader"
               :items="detailBiayaitems || []"
@@ -625,7 +631,7 @@ const onGetTiketPesawat = async () => {
                 <tr v-if="items.length === 0">
                   <td colspan="7" class="text-center">
                     <div class="pt-2">
-                      <img src="~/assets/images/empty-data.png" alt="">
+                      <img src="~/assets/images/empty-data.png" alt="" />
                       <div class="pt-2 font-weight-bold">Data Kosong</div>
                     </div>
                   </td>
@@ -658,10 +664,19 @@ const onGetTiketPesawat = async () => {
                   <td class="text-center">
                     <VMenu>
                       <template #activator="{ props }">
-                        <VIcon icon="fa-ellipsis-v" color="primary" class="cursor-pointer" v-bind="props" />
+                        <VIcon
+                          icon="fa-ellipsis-v"
+                          color="primary"
+                          class="cursor-pointer"
+                          v-bind="props"
+                        />
                       </template>
                       <VList>
-                        <VListItem prepend-icon="mdi-pen" title="Ubah Biaya" @click="() => openModalBiayaDetail(item)" />
+                        <VListItem
+                          prepend-icon="mdi-pen"
+                          title="Ubah Biaya"
+                          @click="() => openModalBiayaDetail(item)"
+                        />
                       </VList>
                     </VMenu>
                   </td>
@@ -682,14 +697,9 @@ const onGetTiketPesawat = async () => {
         </VExpansionPanel>
       </VExpansionPanels>
     </VCol>
-    <VDialog
-      v-model="addDialog"
-      :max-width="dialogMaxWidth"
-    >
+    <VDialog v-model="addDialog" :max-width="dialogMaxWidth">
       <VCard class="pa-4">
-        <VCardTitle class="text-h4">
-          Tambah Biaya
-        </VCardTitle>
+        <VCardTitle class="text-h4"> Tambah Biaya </VCardTitle>
         <VCardText>
           <VForm ref="formRef">
             <VRow>
@@ -862,11 +872,7 @@ const onGetTiketPesawat = async () => {
         </VCardText>
         <VCardActions>
           <VSpacer />
-          <VBtn
-            text
-            variant="outlined"
-            @click="addDialog = false"
-          >
+          <VBtn text variant="outlined" @click="addDialog = false">
             Batal
           </VBtn>
           <VBtn
@@ -882,26 +888,16 @@ const onGetTiketPesawat = async () => {
       </VCard>
     </VDialog>
 
-    <VDialog
-      v-model="biayaDialog"
-      max-width="840px"
-      persistent
-    >
+    <VDialog v-model="biayaDialog" max-width="840px" persistent>
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
-          <div class="text-h3 font-weight-bold">
-            Biaya Fasilitasi
-          </div>
-          <VIcon @click="onCancel">
-            fa-times
-          </VIcon>
+          <div class="text-h3 font-weight-bold">Biaya Fasilitasi</div>
+          <VIcon @click="onCancel"> fa-times </VIcon>
         </VCardTitle>
         <VCardText>
           <VRow>
             <VCol>
-              <div class="text-h6">
-                Lembaga Pemeriksa Halal (LPH)
-              </div>
+              <div class="text-h6">Lembaga Pemeriksa Halal (LPH)</div>
               <VTextField
                 v-model="detailBiaya.lph_nama"
                 rounded="xl"
@@ -912,9 +908,7 @@ const onGetTiketPesawat = async () => {
           </VRow>
           <VRow>
             <VCol>
-              <div class="text-h6">
-                Unit Cost Awal
-              </div>
+              <div class="text-h6">Unit Cost Awal</div>
               <VTextField
                 v-model="detailBiaya.unit_cost_awal"
                 rounded="xl"
@@ -923,9 +917,7 @@ const onGetTiketPesawat = async () => {
               />
             </VCol>
             <VCol>
-              <div class="text-h6">
-                Diskon (%)
-              </div>
+              <div class="text-h6">Diskon (%)</div>
               <VTextField
                 v-model="detailBiaya.unit_cost_diskon"
                 type="number"
@@ -939,31 +931,39 @@ const onGetTiketPesawat = async () => {
                   (e) => {
                     validateInput(e);
                     if (+e.target.value) {
-                      const initialCost = detailBiaya.unit_cost_awal
+                      const initialCost = detailBiaya.unit_cost_awal;
 
-                      detailBiaya.unit_cost_akhir
-                        = initialCost - initialCost * (+e.target.value / 100);
+                      detailBiaya.unit_cost_akhir =
+                        initialCost - initialCost * (+e.target.value / 100);
                       if (detailBiaya.unit_cost_akhir) {
-                        detailBiaya.unit_cost_akhir = detailBiaya.unit_cost_akhir
+                        detailBiaya.unit_cost_akhir =
+                          detailBiaya.unit_cost_akhir;
                       }
-                    }
-                    else {
+                    } else {
                       detailBiaya.unit_cost_akhir = detailBiaya.unit_cost_awal;
                     }
 
-                    totalBiayaDetail = totalBiayaDetail - detailBiaya.total_biaya
-                    detailBiaya.total_biaya_satuan = detailBiaya.unit_cost_akhir + detailBiaya.uhpd_akhir + detailBiaya.operasional + detailBiaya.transport_akhir + detailBiaya.akomodasi_akhir + detailBiaya.tiket_pesawat_akhir + detailBiaya.biaya_bpjph + detailBiaya.biaya_mui
-                    detailBiaya.total_biaya = detailBiaya.total_biaya_satuan * detailBiaya.kuota
-                    totalBiayaDetail = totalBiayaDetail + detailBiaya.total_biaya
-
+                    totalBiayaDetail =
+                      totalBiayaDetail - detailBiaya.total_biaya;
+                    detailBiaya.total_biaya_satuan =
+                      detailBiaya.unit_cost_akhir +
+                      detailBiaya.uhpd_akhir +
+                      detailBiaya.operasional +
+                      detailBiaya.transport_akhir +
+                      detailBiaya.akomodasi_akhir +
+                      detailBiaya.tiket_pesawat_akhir +
+                      detailBiaya.biaya_bpjph +
+                      detailBiaya.biaya_mui;
+                    detailBiaya.total_biaya =
+                      detailBiaya.total_biaya_satuan * detailBiaya.kuota;
+                    totalBiayaDetail =
+                      totalBiayaDetail + detailBiaya.total_biaya;
                   }
                 "
               />
             </VCol>
             <VCol>
-              <div class="text-h6">
-                Unit Cost Akhir
-              </div>
+              <div class="text-h6">Unit Cost Akhir</div>
               <VTextField
                 v-model="detailBiaya.unit_cost_akhir"
                 rounded="xl"
@@ -974,9 +974,7 @@ const onGetTiketPesawat = async () => {
           </VRow>
           <VRow>
             <VCol>
-              <div class="text-h6">
-                UHPD Awal
-              </div>
+              <div class="text-h6">UHPD Awal</div>
               <VTextField
                 v-model="detailBiaya.uhpd_awal"
                 rounded="xl"
@@ -985,9 +983,7 @@ const onGetTiketPesawat = async () => {
               />
             </VCol>
             <VCol>
-              <div class="text-h6">
-                Diskon (%)
-              </div>
+              <div class="text-h6">Diskon (%)</div>
               <VTextField
                 v-model="detailBiaya.uhpd_diskon"
                 rounded="xl"
@@ -1000,29 +996,37 @@ const onGetTiketPesawat = async () => {
                   (e) => {
                     validateInput(e);
                     if (+e.target.value) {
-                      const initialCost = detailBiaya.uhpd_awal
-                      detailBiaya.uhpd_akhir
-                        = initialCost - initialCost * (+e.target.value / 100);
+                      const initialCost = detailBiaya.uhpd_awal;
+                      detailBiaya.uhpd_akhir =
+                        initialCost - initialCost * (+e.target.value / 100);
                       if (detailBiaya.uhpd_akhir) {
-                        detailBiaya.uhpd_akhir = detailBiaya.uhpd_akhir
+                        detailBiaya.uhpd_akhir = detailBiaya.uhpd_akhir;
                       }
-                    }
-                    else {
+                    } else {
                       detailBiaya.uhpd_akhir = detailBiaya.uhpd_awal;
                     }
 
-                    totalBiayaDetail = totalBiayaDetail - detailBiaya.total_biaya
-                    detailBiaya.total_biaya_satuan = detailBiaya.unit_cost_akhir + detailBiaya.uhpd_akhir + detailBiaya.operasional + detailBiaya.transport_akhir + detailBiaya.akomodasi_akhir + detailBiaya.tiket_pesawat_akhir + detailBiaya.biaya_bpjph + detailBiaya.biaya_mui
-                    detailBiaya.total_biaya = detailBiaya.total_biaya_satuan * detailBiaya.kuota
-                    totalBiayaDetail = totalBiayaDetail + detailBiaya.total_biaya
+                    totalBiayaDetail =
+                      totalBiayaDetail - detailBiaya.total_biaya;
+                    detailBiaya.total_biaya_satuan =
+                      detailBiaya.unit_cost_akhir +
+                      detailBiaya.uhpd_akhir +
+                      detailBiaya.operasional +
+                      detailBiaya.transport_akhir +
+                      detailBiaya.akomodasi_akhir +
+                      detailBiaya.tiket_pesawat_akhir +
+                      detailBiaya.biaya_bpjph +
+                      detailBiaya.biaya_mui;
+                    detailBiaya.total_biaya =
+                      detailBiaya.total_biaya_satuan * detailBiaya.kuota;
+                    totalBiayaDetail =
+                      totalBiayaDetail + detailBiaya.total_biaya;
                   }
                 "
               />
             </VCol>
             <VCol>
-              <div class="text-h6">
-                UHPD Akhir
-              </div>
+              <div class="text-h6">UHPD Akhir</div>
               <VTextField
                 v-model="detailBiaya.uhpd_akhir"
                 rounded="xl"
@@ -1033,9 +1037,7 @@ const onGetTiketPesawat = async () => {
           </VRow>
           <VRow>
             <VCol>
-              <div class="text-h6">
-                Operasional
-              </div>
+              <div class="text-h6">Operasional</div>
               <VTextField
                 v-model="detailBiaya.operasional"
                 rounded="xl"
@@ -1046,9 +1048,7 @@ const onGetTiketPesawat = async () => {
           </VRow>
           <VRow>
             <VCol>
-              <div class="text-h6">
-                Transportasi Awal
-              </div>
+              <div class="text-h6">Transportasi Awal</div>
               <VTextField
                 v-model="detailBiaya.transport_awal"
                 rounded="xl"
@@ -1057,9 +1057,7 @@ const onGetTiketPesawat = async () => {
               />
             </VCol>
             <VCol>
-              <div class="text-h6">
-                Diskon (%)
-              </div>
+              <div class="text-h6">Diskon (%)</div>
               <VTextField
                 v-model="detailBiaya.transport_diskon"
                 rounded="xl"
@@ -1072,30 +1070,39 @@ const onGetTiketPesawat = async () => {
                   (e) => {
                     validateInput(e);
                     if (+e.target.value) {
-                      const initialCost = detailBiaya.transport_awal
+                      const initialCost = detailBiaya.transport_awal;
 
-                      detailBiaya.transport_akhir
-                        = initialCost - initialCost * (+e.target.value / 100);
+                      detailBiaya.transport_akhir =
+                        initialCost - initialCost * (+e.target.value / 100);
                       if (detailBiaya.transport_akhir) {
-                        detailBiaya.transport_akhir = detailBiaya.transport_akhir
+                        detailBiaya.transport_akhir =
+                          detailBiaya.transport_akhir;
                       }
-                    }
-                    else {
+                    } else {
                       detailBiaya.transport_akhir = detailBiaya.transport_awal;
                     }
 
-                    totalBiayaDetail = totalBiayaDetail - detailBiaya.total_biaya
-                    detailBiaya.total_biaya_satuan = detailBiaya.unit_cost_akhir + detailBiaya.uhpd_akhir + detailBiaya.operasional + detailBiaya.transport_akhir + detailBiaya.akomodasi_akhir + detailBiaya.tiket_pesawat_akhir + detailBiaya.biaya_bpjph + detailBiaya.biaya_mui
-                    detailBiaya.total_biaya = detailBiaya.total_biaya_satuan * detailBiaya.kuota
-                    totalBiayaDetail = totalBiayaDetail + detailBiaya.total_biaya
+                    totalBiayaDetail =
+                      totalBiayaDetail - detailBiaya.total_biaya;
+                    detailBiaya.total_biaya_satuan =
+                      detailBiaya.unit_cost_akhir +
+                      detailBiaya.uhpd_akhir +
+                      detailBiaya.operasional +
+                      detailBiaya.transport_akhir +
+                      detailBiaya.akomodasi_akhir +
+                      detailBiaya.tiket_pesawat_akhir +
+                      detailBiaya.biaya_bpjph +
+                      detailBiaya.biaya_mui;
+                    detailBiaya.total_biaya =
+                      detailBiaya.total_biaya_satuan * detailBiaya.kuota;
+                    totalBiayaDetail =
+                      totalBiayaDetail + detailBiaya.total_biaya;
                   }
                 "
               />
             </VCol>
             <VCol>
-              <div class="text-h6">
-                Transportasi Akhir
-              </div>
+              <div class="text-h6">Transportasi Akhir</div>
               <VTextField
                 v-model="detailBiaya.transport_akhir"
                 rounded="xl"
@@ -1106,9 +1113,7 @@ const onGetTiketPesawat = async () => {
           </VRow>
           <VRow>
             <VCol>
-              <div class="text-h6">
-                Akomodasi Awal
-              </div>
+              <div class="text-h6">Akomodasi Awal</div>
               <VTextField
                 v-model="detailBiaya.akomodasi_awal"
                 rounded="xl"
@@ -1117,9 +1122,7 @@ const onGetTiketPesawat = async () => {
               />
             </VCol>
             <VCol>
-              <div class="text-h6">
-                Diskon (%)
-              </div>
+              <div class="text-h6">Diskon (%)</div>
               <VTextField
                 v-model="detailBiaya.akomodasi_diskon"
                 rounded="xl"
@@ -1132,28 +1135,38 @@ const onGetTiketPesawat = async () => {
                   (e) => {
                     validateInput(e);
                     if (+e.target.value) {
-                      const initialCost = detailBiaya.akomodasi_awal
-                      detailBiaya.akomodasi_akhir = initialCost - initialCost * (+e.target.value / 100);
+                      const initialCost = detailBiaya.akomodasi_awal;
+                      detailBiaya.akomodasi_akhir =
+                        initialCost - initialCost * (+e.target.value / 100);
                       if (detailBiaya.akomodasi_akhir) {
-                        detailBiaya.akomodasi_akhir = detailBiaya.akomodasi_akhir
+                        detailBiaya.akomodasi_akhir =
+                          detailBiaya.akomodasi_akhir;
                       }
-                    }
-                    else {
+                    } else {
                       detailBiaya.akomodasi_akhir = detailBiaya.akomodasi_awal;
                     }
 
-                    totalBiayaDetail = totalBiayaDetail - detailBiaya.total_biaya
-                    detailBiaya.total_biaya_satuan = detailBiaya.unit_cost_akhir + detailBiaya.uhpd_akhir + detailBiaya.operasional + detailBiaya.transport_akhir + detailBiaya.akomodasi_akhir + detailBiaya.tiket_pesawat_akhir + detailBiaya.biaya_bpjph + detailBiaya.biaya_mui
-                    detailBiaya.total_biaya = detailBiaya.total_biaya_satuan * detailBiaya.kuota
-                    totalBiayaDetail = totalBiayaDetail + detailBiaya.total_biaya
+                    totalBiayaDetail =
+                      totalBiayaDetail - detailBiaya.total_biaya;
+                    detailBiaya.total_biaya_satuan =
+                      detailBiaya.unit_cost_akhir +
+                      detailBiaya.uhpd_akhir +
+                      detailBiaya.operasional +
+                      detailBiaya.transport_akhir +
+                      detailBiaya.akomodasi_akhir +
+                      detailBiaya.tiket_pesawat_akhir +
+                      detailBiaya.biaya_bpjph +
+                      detailBiaya.biaya_mui;
+                    detailBiaya.total_biaya =
+                      detailBiaya.total_biaya_satuan * detailBiaya.kuota;
+                    totalBiayaDetail =
+                      totalBiayaDetail + detailBiaya.total_biaya;
                   }
                 "
               />
             </VCol>
             <VCol>
-              <div class="text-h6">
-                Akomodasi Akhir
-              </div>
+              <div class="text-h6">Akomodasi Akhir</div>
               <VTextField
                 v-model="detailBiaya.akomodasi_akhir"
                 rounded="xl"
@@ -1164,9 +1177,7 @@ const onGetTiketPesawat = async () => {
           </VRow>
           <VRow>
             <VCol>
-              <div class="text-h6">
-                Tiket Pesawat Awal
-              </div>
+              <div class="text-h6">Tiket Pesawat Awal</div>
               <VTextField
                 v-model="detailBiaya.tiket_pesawat_awal"
                 rounded="xl"
@@ -1175,9 +1186,7 @@ const onGetTiketPesawat = async () => {
               />
             </VCol>
             <VCol>
-              <div class="text-h6">
-                Diskon (%)
-              </div>
+              <div class="text-h6">Diskon (%)</div>
               <VTextField
                 v-model="detailBiaya.tiket_pesawat_diskon"
                 rounded="xl"
@@ -1190,29 +1199,39 @@ const onGetTiketPesawat = async () => {
                   (e) => {
                     validateInput(e);
                     if (+e.target.value) {
-                      const initialCost = detailBiaya.tiket_pesawat_awal
-                      detailBiaya.tiket_pesawat_akhir = initialCost - initialCost * (+e.target.value / 100);
+                      const initialCost = detailBiaya.tiket_pesawat_awal;
+                      detailBiaya.tiket_pesawat_akhir =
+                        initialCost - initialCost * (+e.target.value / 100);
                       if (detailBiaya.tiket_pesawat_akhir) {
-                        detailBiaya.tiket_pesawat_akhir = detailBiaya.tiket_pesawat_akhir
+                        detailBiaya.tiket_pesawat_akhir =
+                          detailBiaya.tiket_pesawat_akhir;
                       }
-                    }
-                    else {
-                      detailBiaya.tiket_pesawat_akhir
-                        = detailBiaya.tiket_pesawat_awal;
+                    } else {
+                      detailBiaya.tiket_pesawat_akhir =
+                        detailBiaya.tiket_pesawat_awal;
                     }
 
-                    totalBiayaDetail = totalBiayaDetail - detailBiaya.total_biaya
-                    detailBiaya.total_biaya_satuan = detailBiaya.unit_cost_akhir + detailBiaya.uhpd_akhir + detailBiaya.operasional + detailBiaya.transport_akhir + detailBiaya.akomodasi_akhir + detailBiaya.tiket_pesawat_akhir + detailBiaya.biaya_bpjph + detailBiaya.biaya_mui
-                    detailBiaya.total_biaya = detailBiaya.total_biaya_satuan * detailBiaya.kuota
-                    totalBiayaDetail = totalBiayaDetail + detailBiaya.total_biaya
+                    totalBiayaDetail =
+                      totalBiayaDetail - detailBiaya.total_biaya;
+                    detailBiaya.total_biaya_satuan =
+                      detailBiaya.unit_cost_akhir +
+                      detailBiaya.uhpd_akhir +
+                      detailBiaya.operasional +
+                      detailBiaya.transport_akhir +
+                      detailBiaya.akomodasi_akhir +
+                      detailBiaya.tiket_pesawat_akhir +
+                      detailBiaya.biaya_bpjph +
+                      detailBiaya.biaya_mui;
+                    detailBiaya.total_biaya =
+                      detailBiaya.total_biaya_satuan * detailBiaya.kuota;
+                    totalBiayaDetail =
+                      totalBiayaDetail + detailBiaya.total_biaya;
                   }
                 "
               />
             </VCol>
             <VCol>
-              <div class="text-h6">
-                Tiket Pesawat Akhir
-              </div>
+              <div class="text-h6">Tiket Pesawat Akhir</div>
               <VTextField
                 v-model="detailBiaya.tiket_pesawat_akhir"
                 rounded="xl"
@@ -1229,21 +1248,22 @@ const onGetTiketPesawat = async () => {
                 color="primary"
                 @click="onGetTiketPesawat"
               >
-                {{ loadingTiketPesawat ? "Loading..." : "Tambah Tiket Pesawat" }}
+                {{
+                  loadingTiketPesawat ? "Loading..." : "Tambah Tiket Pesawat"
+                }}
               </VBtn>
               <div class="text-sm mt-1">
                 1. Pemilihan tiket pesawat bersifat opsional.
               </div>
               <div class="text-sm">
-                2. Setelah menambahkan tiket pesawat, klik 'Hitung Ulang & Simpan Perubahan' untuk menyimpan data
+                2. Setelah menambahkan tiket pesawat, klik 'Hitung Ulang &
+                Simpan Perubahan' untuk menyimpan data
               </div>
             </VCol>
           </VRow>
           <VRow>
             <VCol>
-              <div class="text-h6">
-                Pemeriksaan dan Penerbitan SH
-              </div>
+              <div class="text-h6">Pemeriksaan dan Penerbitan SH</div>
               <VTextField
                 v-model="detailBiaya.biaya_bpjph"
                 rounded="xl"
@@ -1255,9 +1275,7 @@ const onGetTiketPesawat = async () => {
 
           <VRow>
             <VCol>
-              <div class="text-h6">
-                Penetapan
-              </div>
+              <div class="text-h6">Penetapan</div>
               <VTextField
                 v-model="detailBiaya.biaya_mui"
                 rounded="xl"
@@ -1269,9 +1287,7 @@ const onGetTiketPesawat = async () => {
 
           <VRow>
             <VCol>
-              <div class="text-h6">
-                Total Biaya Satuan
-              </div>
+              <div class="text-h6">Total Biaya Satuan</div>
               <VTextField
                 v-model="detailBiaya.total_biaya_satuan"
                 rounded="xl"
@@ -1283,9 +1299,7 @@ const onGetTiketPesawat = async () => {
 
           <VRow>
             <VCol>
-              <div class="text-h6">
-                Total Biaya
-              </div>
+              <div class="text-h6">Total Biaya</div>
               <VTextField
                 v-model="detailBiaya.total_biaya"
                 rounded="xl"
@@ -1299,12 +1313,7 @@ const onGetTiketPesawat = async () => {
           </VRow>
         </VCardText>
         <VCardActions class="pt-2 px-4">
-          <VBtn
-            variant="flat"
-            class="px-4"
-            color="primary"
-            @click="onEdit"
-          >
+          <VBtn variant="flat" class="px-4" color="primary" @click="onEdit">
             Hitung Ulang & Simpan Perubahan
           </VBtn>
 
@@ -1320,14 +1329,9 @@ const onGetTiketPesawat = async () => {
       </VCard>
     </VDialog>
 
-    <VDialog
-      v-model="deleteDialog"
-      :max-width="dialogMaxWidth"
-    >
+    <VDialog v-model="deleteDialog" :max-width="dialogMaxWidth">
       <VCard class="pa-4">
-        <VCardTitle class="text-h4">
-          Hapus Biaya
-        </VCardTitle>
+        <VCardTitle class="text-h4"> Hapus Biaya </VCardTitle>
         <VCardText>Yakin ingin menghapus data biaya? </VCardText>
         <VCardActions>
           <VSpacer />

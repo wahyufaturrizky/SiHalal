@@ -89,7 +89,7 @@ onMounted(async () => {
 });
 
 watch([page, size], () => {
-  loadItem(page.value, size.value, searchQuery.value)
+  loadItem(page.value, size.value, searchQuery.value);
 });
 </script>
 
@@ -127,6 +127,7 @@ watch([page, size], () => {
             <VRow>
               <VCol cols="12">
                 <VDataTableServer
+                  :items-per-page-options="[10, 25, 50, 100]"
                   v-model:items-per-page="size"
                   v-model:page="page"
                   :items-length="totalItems"

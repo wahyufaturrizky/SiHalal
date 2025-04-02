@@ -313,6 +313,7 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTableServer
+                :items-per-page-options="[10, 25, 50, 100]"
                 :headers="dataPendampingHeader"
                 :items="dataPendampingItem"
                 v-model:items-per-page="itemPerPage"

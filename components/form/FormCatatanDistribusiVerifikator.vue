@@ -52,7 +52,7 @@ const getCatatanDistribusi = async () => {
 
 // TODO -> LOGIc DOWNLOAD
 const download = async (item) => {
-  await downloadDocument(item,'FILE');
+  await downloadDocument(item, "FILE");
 };
 </script>
 
@@ -63,6 +63,7 @@ const download = async (item) => {
     </VCardTitle>
     <VCardItem>
       <VDataTableServer
+        :items-per-page-options="[10, 25, 50, 100]"
         v-model:items-per-page="size"
         v-model:page="page"
         :headers="catatanHeaders"

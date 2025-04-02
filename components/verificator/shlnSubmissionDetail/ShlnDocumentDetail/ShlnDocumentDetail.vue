@@ -257,7 +257,7 @@ const onRefresh = (type: string) => {
             </VCol>
           </VRow>
         </VCardText>
-        <VCardActions style="justify-content: end;">
+        <VCardActions style="justify-content: end">
           <div>
             <ReturnConfirmationModal
               @refresh="onRefresh('loa')"
@@ -362,7 +362,7 @@ const onRefresh = (type: string) => {
               <p>{{ scopeFHC }}</p>
             </VCol>
           </VRow>
-          <VRow style="display: flex; align-items: center;">
+          <VRow style="display: flex; align-items: center">
             <VCol cols="3"> File </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
@@ -374,7 +374,7 @@ const onRefresh = (type: string) => {
             </VCol>
           </VRow>
         </VCardText>
-        <VCardActions style="justify-content: end;">
+        <VCardActions style="justify-content: end">
           <div>
             <ReturnConfirmationModal
               @refresh="onRefresh('fhc')"
@@ -450,6 +450,7 @@ const onRefresh = (type: string) => {
         <VCardTitle>Requirement Document</VCardTitle>
         <VCardText>
           <VDataTableServer
+            :items-per-page-options="[10, 25, 50, 100]"
             v-model:items-per-page="itemPerPage"
             v-model:page="page"
             :headers="headers"
@@ -465,7 +466,7 @@ const onRefresh = (type: string) => {
             <template #item.file="{ item, index }">
               <div class="d-flex align-center justify-center py-3 gap-2">
                 <VBtn
-                  @click="downloadDocument((item as any).file,'SHLN_DOC')"
+                  @click="downloadDocument((item as any).file, 'SHLN_DOC')"
                   v-if="(item as any).file != ''"
                   color="primary"
                 >

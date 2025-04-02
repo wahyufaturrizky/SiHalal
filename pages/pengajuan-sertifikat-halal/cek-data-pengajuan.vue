@@ -545,6 +545,7 @@ const onFasilitatorSearchInput = debounce((input) => {
             <VRow>
               <VCol>
                 <VDataTableServer
+                  :items-per-page-options="[10, 25, 50, 100]"
                   v-model:items-per-page="itemPerPage"
                   v-model:page="page"
                   :headers="legalTableHeader"
@@ -584,6 +585,7 @@ const onFasilitatorSearchInput = debounce((input) => {
             <VRow>
               <VCol>
                 <VDataTableServer
+                  :items-per-page-options="[10, 25, 50, 100]"
                   v-model:items-per-page="itemPerPage"
                   v-model:page="page"
                   :headers="penyeliaTableHeader"
@@ -954,6 +956,7 @@ const onFasilitatorSearchInput = debounce((input) => {
             <VRow>
               <VCol>
                 <VDataTableServer
+                  :items-per-page-options="[10, 25, 50, 100]"
                   v-model:items-per-page="itemPerPage"
                   v-model:page="page"
                   :headers="pabrikTableHeader"
@@ -1008,6 +1011,7 @@ const onFasilitatorSearchInput = debounce((input) => {
             <VRow>
               <VCol>
                 <VDataTableServer
+                  :items-per-page-options="[10, 25, 50, 100]"
                   v-model:items-per-page="itemPerPage"
                   v-model:page="page"
                   :headers="outletTableHeader"
@@ -1100,6 +1104,7 @@ const onFasilitatorSearchInput = debounce((input) => {
           <VRow>
             <VCol>
               <VDataTableServer
+                :items-per-page-options="[10, 25, 50, 100]"
                 v-model:items-per-page="itemPerPage"
                 v-model:page="page"
                 :headers="verifikatorTableHeader"
@@ -1159,6 +1164,7 @@ const onFasilitatorSearchInput = debounce((input) => {
           <VRow>
             <VCol>
               <VDataTableServer
+                :items-per-page-options="[10, 25, 50, 100]"
                 v-model:items-per-page="itemPerPage"
                 v-model:page="page"
                 :headers="verifikatorTableHeader"

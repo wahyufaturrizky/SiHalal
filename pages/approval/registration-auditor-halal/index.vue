@@ -1,142 +1,137 @@
 <script setup lang="ts">
 interface DataUser {
-  id: string
-  username: string
-  nama: string
-  email: string
-  password?: string
-  phone_no: string
-  is_verify: boolean
-  roles: Array<{ name: string }>
+  id: string;
+  username: string;
+  nama: string;
+  email: string;
+  password?: string;
+  phone_no: string;
+  is_verify: boolean;
+  roles: Array<{ name: string }>;
 }
 
 const tableHeaders: any[] = [
-  { title: 'No', key: 'no', sortable: false },
-  { title: 'Jenis Pendaftaran', key: 'jenis', nowrap: true },
-  { title: 'No. Registrasi', key: 'no_registrasi', nowrap: true },
-  { title: 'Tanggal Registrasi', key: 'tgl_registrasi', nowrap: true },
-  { title: 'Nama Auditor/LPH', key: 'nama_auditor', nowrap: true },
-  { title: 'Jenis Kelamin', key: 'jenkel', nowrap: true },
-  { title: 'Pendidikan', key: 'jenjang_didik', nowrap: true },
-  { title: 'Status Payment', key: 'status_payment', nowrap: true },
-  { title: 'Tanggal Bayar', key: 'tgl_bayar', nowrap: true },
-  { title: 'invoice', key: 'file_inv', nowrap: true },
-  { title: 'Draft Sertifikat', key: 'file_draft', sortable: false},
-]
+  { title: "No", key: "no", sortable: false },
+  { title: "Jenis Pendaftaran", key: "jenis", nowrap: true },
+  { title: "No. Registrasi", key: "no_registrasi", nowrap: true },
+  { title: "Tanggal Registrasi", key: "tgl_registrasi", nowrap: true },
+  { title: "Nama Auditor/LPH", key: "nama_auditor", nowrap: true },
+  { title: "Jenis Kelamin", key: "jenkel", nowrap: true },
+  { title: "Pendidikan", key: "jenjang_didik", nowrap: true },
+  { title: "Status Payment", key: "status_payment", nowrap: true },
+  { title: "Tanggal Bayar", key: "tgl_bayar", nowrap: true },
+  { title: "invoice", key: "file_inv", nowrap: true },
+  { title: "Draft Sertifikat", key: "file_draft", sortable: false },
+];
 
-const tableItems = ref<Array[]>([])
-const currentPage = ref(1)
-const itemPerPage = ref(10)
-const totalItems = ref(0)
-const selectedItem = ref([])
-const isLoading = ref(false)
-const tableType = ref('')
+const tableItems = ref<Array[]>([]);
+const currentPage = ref(1);
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const selectedItem = ref([]);
+const isLoading = ref(false);
+const tableType = ref("");
 
-const searchQuery = ref('')
+const searchQuery = ref("");
 
 const handleLoadList = async () => {
   try {
-    const response: any = await $api('/approval/auditor-halal/list', {
-      method: 'get',
+    const response: any = await $api("/approval/auditor-halal/list", {
+      method: "get",
       params: {
         page: currentPage.value,
         size: itemPerPage.value,
         search: searchQuery.value,
       },
-    } as any)
+    } as any);
 
     if (response.code === 2000) {
       if (response.data !== null) {
-        response.data.map((el: any) => el.id = el.auditor_id)
-        tableItems.value = response.data
-        currentPage.value = response.current_page
-        totalItems.value = response.total_item
-      }
-      else {
-        tableItems.value = []
-        currentPage.value = 1
-        totalItems.value = 0
+        response.data.map((el: any) => (el.id = el.auditor_id));
+        tableItems.value = response.data;
+        currentPage.value = response.current_page;
+        totalItems.value = response.total_item;
+      } else {
+        tableItems.value = [];
+        currentPage.value = 1;
+        totalItems.value = 0;
       }
 
-      return response
+      return response;
     }
+  } catch (error) {
+    console.error(error);
   }
-  catch (error) {
-    console.error(error)
-  }
-}
+};
 
 const { refresh } = await useAsyncData(
-  'user-list',
+  "user-list",
   async () => await handleLoadList(),
   {
     watch: [currentPage, itemPerPage],
-  },
-)
+  }
+);
 
 const onApprove = async () => {
   try {
-    const response: any = await $api(
-      '/approval/auditor-halal/approve',
-      {
-        method: 'post',
-        body: {
-          id: selectedItem.value,
-        },
+    const response: any = await $api("/approval/auditor-halal/approve", {
+      method: "post",
+      body: {
+        id: selectedItem.value,
       },
-    )
+    });
 
     if (response.code !== 2000) {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-      selectedItem.value = []
-      refresh()
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      selectedItem.value = [];
+      refresh();
 
-      return
+      return;
     }
-    const totalError = response?.message?.errors
-    const totalSuccess = response?.message?.success
-    const message: any[] = []
-    if (totalError > 0)
-      message.push(`Gagal setujui sebanyak ${totalError}`)
+    const totalError = response?.message?.errors;
+    const totalSuccess = response?.message?.success;
+    const message: any[] = [];
+    if (totalError > 0) message.push(`Gagal setujui sebanyak ${totalError}`);
     if (totalSuccess > 0)
-      message.push(`Sukses setujui sebanyak ${totalSuccess}`)
-    useSnackbar().sendSnackbar(`Asesor ${message.join()}`, totalSuccess > 0 ? 'success' : 'error')
-    selectedItem.value = []
-    refresh()
+      message.push(`Sukses setujui sebanyak ${totalSuccess}`);
+    useSnackbar().sendSnackbar(
+      `Asesor ${message.join()}`,
+      totalSuccess > 0 ? "success" : "error"
+    );
+    selectedItem.value = [];
+    refresh();
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 onMounted(() => {
-  handleLoadList()
-})
+  handleLoadList();
+});
 
 const getChipColor = (status: string) => {
-  if (status === 'lunas')
-    return 'success'
+  if (status === "lunas") return "success";
 
-  return 'primary'
-}
+  return "primary";
+};
 
 const unduhFile = async (path: string, type: string) => {
-  await downloadDocument(path, type)
-}
+  await downloadDocument(path, type);
+};
 </script>
 
 <template>
   <VRow>
     <VCol>
-      <h2 style="font-size: 32px">
-        Registrasi Auditor Halal
-      </h2>
+      <h2 style="font-size: 32px">Registrasi Auditor Halal</h2>
     </VCol>
   </VRow>
   <VRow>
     <VCol>
       <VCard class="w-100 py-3">
-        <VCardTitle class="d-flex justify-space-between align-center font-weight-bold text-h4">
+        <VCardTitle
+          class="d-flex justify-space-between align-center font-weight-bold text-h4"
+        >
           <div>List Registrasi Auditor Halal</div>
           <DialogApprovalData
             title="Persetujui data"
@@ -145,13 +140,14 @@ const unduhFile = async (path: string, type: string) => {
             :disabled="selectedItem.length === 0"
           >
             <template #contentDelete>
-              Anda yakin setujui {{selectedItem.length}} data ?
+              Anda yakin setujui {{ selectedItem.length }} data ?
             </template>
           </DialogApprovalData>
         </VCardTitle>
         <VCardItem>
           <VCard variant="outlined">
             <VDataTableServer
+              :items-per-page-options="[10, 25, 50, 100]"
               v-model:items-per-page="itemPerPage"
               v-model:page="currentPage"
               v-model="selectedItem"
@@ -165,21 +161,13 @@ const unduhFile = async (path: string, type: string) => {
               hover
             >
               <template #no-data>
-                <VCard
-                  variant=""
-                  class="w-full mt-7 mb-5"
-                >
-                  <div
-                    class="pt-2"
-                    style="justify-items: center"
-                  >
+                <VCard variant="" class="w-full mt-7 mb-5">
+                  <div class="pt-2" style="justify-items: center">
                     <img
                       src="~/assets/images/empty-data.png"
                       alt="empty_data"
-                    >
-                    <div class="pt-2 pb-2 font-weight-bold">
-                      Data Kosong
-                    </div>
+                    />
+                    <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
                   </div>
                 </VCard>
               </template>
@@ -197,7 +185,7 @@ const unduhFile = async (path: string, type: string) => {
                 </div>
               </template>
               <template #item.jenkel="{ item }">
-                {{ item.jenkel === 'L' ? 'Laki-laki' : 'Perempuan' }}
+                {{ item.jenkel === "L" ? "Laki-laki" : "Perempuan" }}
               </template>
               <template #item.status="{ item }">
                 <div class="d-flex flex-wrap">
@@ -219,16 +207,11 @@ const unduhFile = async (path: string, type: string) => {
                     class="d-inline-block"
                   >
                     <div>
-                      <span
-                        v-if="idx !== 0"
-                        class="mx-2"
-                      >|</span>{{ el.name }}
+                      <span v-if="idx !== 0" class="mx-2">|</span>{{ el.name }}
                     </div>
                   </div>
                 </div>
-                <div v-else>
-                  -
-                </div>
+                <div v-else>-</div>
               </template>
               <template #item.file_inv="{ item }">
                 <div class="d-flex gap-1">
@@ -241,7 +224,7 @@ const unduhFile = async (path: string, type: string) => {
                       />
                     </div>
                   </IconBtn>
-                <!-- Right arrow icon for action -->
+                  <!-- Right arrow icon for action -->
                 </div>
               </template>
               <template #item.file_draft="{ item }">
@@ -255,7 +238,7 @@ const unduhFile = async (path: string, type: string) => {
                       />
                     </div>
                   </IconBtn>
-                <!-- Right arrow icon for action -->
+                  <!-- Right arrow icon for action -->
                 </div>
               </template>
             </VDataTableServer>
@@ -277,7 +260,7 @@ const unduhFile = async (path: string, type: string) => {
     tbody > tr > td:last-of-type {
       background: white;
       inset-inline-end: 0;
-      justify-items: center,
+      justify-items: center;
     }
   }
 }

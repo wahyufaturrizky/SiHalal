@@ -78,7 +78,6 @@ const searchQueryUncertified = ref("");
 const searchQueryCertified = ref("");
 const tanggalBerlakuAll = ref("");
 
-
 const loadItemBahan = async (page: number, size: number, name: string = "") => {
   try {
     if (form.value.typeBahan == 0) {
@@ -261,7 +260,7 @@ const insertBahan = async () => {
         v-if="!canNotEdit"
         variant="outlined"
         prepend-icon="fa-plus"
-        style="margin: 1svw;"
+        style="margin: 1svw"
         v-bind="openModal"
         >Tambah</VBtn
       >
@@ -271,7 +270,7 @@ const insertBahan = async () => {
         <VCardTitle>
           <VRow>
             <VCol cols="10"><h3>Tambah Data Bahan</h3></VCol>
-            <VCol cols="2" style="display: flex; justify-content: end;"
+            <VCol cols="2" style="display: flex; justify-content: end"
               ><VIcon
                 size="small"
                 icon="fa-times"
@@ -421,7 +420,7 @@ const insertBahan = async () => {
               </VCol>
             </VRow> </VCardItem
           ><VCardActions
-            style="display: flex; justify-content: end; padding: 1.5svw;"
+            style="display: flex; justify-content: end; padding: 1.5svw"
           >
             <div>
               <VBtn @click="isActive.value = false" variant="outlined"
@@ -448,7 +447,7 @@ const insertBahan = async () => {
     <VCard>
       <VCardTitle>Cari Bahan</VCardTitle>
       <VCardText>
-        <VRow style="align-items: center;">
+        <VRow style="align-items: center">
           <VCol cols="10" md="4">
             <VTextField
               v-model="searchQueryUncertified"
@@ -485,6 +484,7 @@ const insertBahan = async () => {
       </VCardText>
       <VCardItem>
         <VDataTableServer
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPageUncertified"
           v-model:page="pageUncertified"
           :items-length="totalItemsUncertified"
@@ -526,7 +526,7 @@ const insertBahan = async () => {
     <VCard>
       <VCardTitle>Cari Bahan</VCardTitle>
       <VCardText>
-        <VRow style="align-items: center;">
+        <VRow style="align-items: center">
           <VCol cols="10" md="4">
             <VTextField
               v-model="searchQueryCertified"
@@ -563,6 +563,7 @@ const insertBahan = async () => {
       </VCardText>
       <VCardItem>
         <VDataTableServer
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPageCertified"
           v-model:page="pageCertified"
           :items-length="totalItemsCertified"
