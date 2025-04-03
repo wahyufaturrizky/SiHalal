@@ -4,6 +4,8 @@ import InformationLoginPopUp from '@/components/halalCommon/InformationLoginPopU
 const sessionData = await useMyAuthUserStore().getSession()
 const loading = ref(false)
 const listAnnouncement = ref<any>([])
+const store = pelakuUsahaProfile()
+const { setLocale } = useI18n()
 
 const getAnnouncementList = async (id: any) => {
   try {
@@ -39,7 +41,6 @@ const handleLoadUserDetail = async () => {
     console.error(error)
   }
 }
-
 onMounted(async () => {
   loading.value = true
   handleLoadUserDetail()
@@ -49,6 +50,20 @@ onMounted(async () => {
 definePageMeta({
   action: 'manage',
   subject: ['Pelaku Usaha'],
+})
+
+onMounted(async () => {
+  const userRole = sessionData?.value?.roles?.[0]?.name
+  const asalUsaha = localStorage.getItem('asalUsaha')
+  if (userRole === 'Pelaku Usaha' && !asalUsaha) {
+    await store.fetchProfile(null)
+
+    const fetchedAsalUsaha = store?.profileData?.asal_usaha
+
+    localStorage.setItem('asalUsaha', fetchedAsalUsaha)
+    if (fetchedAsalUsaha === 'Luar Negeri')
+      setLocale('en')
+  }
 })
 </script>
 
