@@ -16,7 +16,7 @@ const props = defineProps({
 
 const agreed = ref(false)
 const loading = ref(false)
-const timHalal = ref([])
+const timHalal = ref(null)
 
 const penanggungJawabProfile = ref({
   namaPerusahaan: null,
@@ -124,7 +124,7 @@ onMounted(async () => {
               </VCol>
               <VCol>
                 <p class="fs18">
-                  : <span>{{ penanggungJawabProfile.jabatan }}</span>
+                  : <span>{{ timHalal?.posisi }}</span>
                 </p>
               </VCol>
             </VRow>
