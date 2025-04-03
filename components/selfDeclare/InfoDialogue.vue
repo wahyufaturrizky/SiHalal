@@ -11,6 +11,8 @@ const props = defineProps({
 
 const emit = defineEmits(["update:dialogVisible"]);
 
+const { t } = useI18n()
+
 const localDialogVisible = ref(props.dialogVisible);
 
 watch(
@@ -47,7 +49,7 @@ const closeDialog = () => {
         <VRow no-gutters class="ps-5">
           <VCol cols="12">
             <ul v-for="item in data">
-              <li>{{ item }}</li>
+              <li>{{ t(item) ? t(item) : item }}</li>
             </ul>
           </VCol>
         </VRow>

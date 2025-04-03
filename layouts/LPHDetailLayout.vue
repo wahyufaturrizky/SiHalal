@@ -1,12 +1,13 @@
 <script setup lang="ts">
 const router = useRouter();
+const { t } = useI18n()
 </script>
 
 <template>
   <div>
     <div class="d-flex align-center cursor-pointer" @click="router.go(-1)">
       <VIcon icon="mdi-chevron-left" size="40px" color="primary" />
-      <div class="text-primary">Kembali</div>
+      <div class="text-primary">{{t('common.back')}}</div>
     </div>
     <VRow>
       <VCol cols="12">
