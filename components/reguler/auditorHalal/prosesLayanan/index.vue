@@ -124,7 +124,7 @@ onMounted(async () => {
               </VCol>
               <VCol>
                 <p class="fs18">
-                  : <span>{{ timHalal?.posisi }}</span>
+                  : <span>{{ timHalal?.posisi }} {{ timHalal?.jabatan }}</span>
                 </p>
               </VCol>
             </VRow>
