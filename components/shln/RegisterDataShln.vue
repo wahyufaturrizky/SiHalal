@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+
 const props = defineProps({
   data: {
     type: Object,
     required: true,
   },
 });
+
+const { t } = useI18n();
 
 const { status_code, registration_number } = props.data || {};
 
@@ -49,13 +53,24 @@ const statusItem: any = new Proxy(
 
     <VDivider class="my-3" />
 
-    <VRow no-gutters align="center" justify="space-between">
-      <VCol cols="auto">
-        <span class="text-grey-darken-1">Halal Registration Number</span>
-      </VCol>
-      <VCol cols="auto">
-        <span>{{ registration_number }}</span>
-      </VCol>
+    <VRow no-gutters align="center" justify="space-between" class="ga-1">
+      <template v-if="registration_number">
+        <VCol cols="auto">
+          <span class="text-grey-darken-1">{{
+            t("shln-verification.halal-registration-number")
+          }}</span>
+        </VCol>
+        <VCol cols="auto">
+          <span>{{ registration_number }}</span>
+        </VCol>
+      </template>
+      <template v-else>
+        <VCol cols="auto">
+          <span class="text-grey-darken-1">{{
+            t("shln-verification.halal-registration-number-not-available")
+          }}</span>
+        </VCol>
+      </template>
     </VRow>
   </VCardText>
 </template>

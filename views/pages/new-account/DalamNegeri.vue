@@ -217,7 +217,7 @@ const checkNib = async () => {
   if (res.code != 4000) {
     nibData.value = res.data;
     nibAlamat.value = await getAddress(
-      nibData.value.pelaku_usaha.daerah_id_user_proses
+      nibData.value.pelaku_usaha.perseroan_daerah_id
     );
     daftarUsaha.value = nibData.value.pelaku_usaha.DataProyek.map((data) => {
       return {

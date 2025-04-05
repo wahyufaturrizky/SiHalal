@@ -970,6 +970,10 @@
     "invoice-list-status": "Status",
     "invoice-list-invfile": "Invoice File"
   },
+  "shln-verification": {
+    "halal-registration-number": "Halal Registration Number",
+    "halal-registration-number-not-available": "Registration number not available yet"
+  },
   "task-force": {
     "tagihan-bpjph-title": "Daftar Tagihan ke BPJPH",
     "tagihan-bpjph-subtitle": "Daftar Tagihan",
