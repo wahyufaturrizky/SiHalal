@@ -10,7 +10,7 @@ import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 const tableHeader = [
   { title: "No", value: "no" },
-  { title: "No. Daftar", value: "no_daftar" },
+  { title: "status-permohoanan.permohonan-list-reg-no", value: "no_daftar" },
   {
     title: "status-permohoanan.permohonan-list-tanggal",
     value: "tgl_daftar",
@@ -149,6 +149,11 @@ onMounted(async () => {
                         {{ t("status-permohoanan.permohonan-list-no-data") }}
                       </div>
                     </div>
+                  </div>
+                </template>
+                <template #header.no_daftar="{ column }">
+                  <div>
+                    {{ t(column.title) }}
                   </div>
                 </template>
                 <template #header.tgl_daftar="{ column }">
