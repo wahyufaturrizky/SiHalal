@@ -62,7 +62,7 @@ const download = async (item) => {
           {{ (page - 1) * itemsPerPage + index + 1 }}
         </template>
         <template #item.foto="{ item }">
-          <v-btn color="primary" variant="plain" @click="download(item.foto)">
+          <v-btn :color="Boolean(item.foto) ? 'primary' : 'secondary'" variant="plain" @click="download(item.foto)" :disabled="Boolean(!item.foto)" >
             <VIcon>mdi-download</VIcon> File
           </v-btn>
         </template>
