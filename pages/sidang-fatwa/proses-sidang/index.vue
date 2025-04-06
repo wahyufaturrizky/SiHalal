@@ -285,21 +285,20 @@ const reset = () => {
             </template>
             <VCard class="pa-3" width="300">
               <VAutocomplete
-                v-model="fasilitas"
+                v-model="fasilitasi"
                 label="Fasilitas"
                 placeholder="Pilih Fasilitas"
                 :items="filterFasilitasi"
                 item-title="name"
                 item-value="id"
                 :loading="loading"
-                :search="onSearch"
-                @update:search="onSearch"
-                @scroll="onScroll"
                 class="mt-3"
                 density="compact"
+                clearable
               />
 
               <VSelect
+                clearable
                 v-model="lembaga"
                 label="Lembaga"
                 placeholder="Pilih Lembaga"
@@ -310,6 +309,7 @@ const reset = () => {
               />
               <br />
               <VAutocomplete
+                clearable
                 label="Pendamping"
                 :items="filterPendamping"
                 v-model="pendamping"
