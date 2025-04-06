@@ -18,7 +18,7 @@ export interface PelakuUsaha {
   status_nib: string;
   business_actor_category: string;
   authorized_capital: number;
-  daerah_id_user_proses: string;
+  perseroan_daerah_id: string;
   flag_umk?: string;
   DataProyek: DataProyek[];
 }

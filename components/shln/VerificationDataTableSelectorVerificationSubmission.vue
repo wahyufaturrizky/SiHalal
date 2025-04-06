@@ -93,16 +93,16 @@ const handleInputSubmission = () => {
 };
 
 const verifikatorTablePopUpHeader = [
-  { title: "No", key: "id" },
-  { title: "Registration Number", key: "register_number" },
-  { title: "Pelaku Usaha", key: "pelaku_usaha" },
-  { title: "NIB / Business ID No", key: "nib" },
-  { title: "HCB", key: "hcb" },
-  { title: "Registration Date", key: "date" },
-  { title: "Submit Date", key: "date" },
-  { title: "Verifikator", key: "verificator_name" },
-  { title: "Status", key: "status_code" },
-  { title: "Action", key: "check" },
+  { title: "No", key: "id", sortable: false },
+  { title: "Registration Number", key: "register_number", sortable: false },
+  { title: "Pelaku Usaha", key: "pelaku_usaha", sortable: false },
+  { title: "NIB / Business ID No", key: "nib", sortable: false },
+  { title: "HCB", key: "hcb", sortable: false },
+  { title: "Registration Date", key: "date", sortable: false },
+  { title: "Submit Date", key: "date", sortable: false },
+  { title: "Verifikator", key: "verificator_name", sortable: false },
+  { title: "Status", key: "status_code", sortable: false },
+  { title: "Action", key: "check", sortable: false },
 ];
 
 const itemsWithCheckbox = computed(() => {

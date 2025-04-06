@@ -5,11 +5,23 @@ const ability = useAbility();
 
 // TODO: Get type from backend
 const { data: userData, signOut } = useAuth();
+const { setLocale } = useI18n()
+
+// reset locale en to id if asal usaha Luar Negeri
+const resetLocaleAsalUsaha = () => {
+  const asalUsaha = localStorage.getItem('asalUsaha')
+  if (asalUsaha) {
+    if (asalUsaha === 'Luar Negeri')
+      setLocale('id')
+    localStorage.removeItem('asalUsaha')
+  }
+}
 
 async function logout() {
   try {
     await signOut({ redirect: false });
     useMyAuthUserStore().resetUser();
+    resetLocaleAsalUsaha()
 
     navigateTo({ name: "login" });
   } catch (error) {

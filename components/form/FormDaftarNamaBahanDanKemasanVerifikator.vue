@@ -59,19 +59,19 @@ onMounted(async () => {
         :headers="headers"
         :items="items"
       >
-        <template #headers.jenis_bahan="{ column }">
+        <template #header.jenis_bahan="{ column }">
           {{ t(column.title) }}
         </template>
 
-        <template #headers.nama_bahan="{ column }">
+        <template #header.nama_bahan="{ column }">
           {{ t(column.title) }}
         </template>
 
-        <template #headers.produsen="{ column }">
+        <template #header.produsen="{ column }">
           {{ t(column.title) }}
         </template>
 
-        <template #headers.no_sertifikat="{ column }">
+        <template #header.no_sertifikat="{ column }">
           {{ t(column.title) }}
         </template>
 

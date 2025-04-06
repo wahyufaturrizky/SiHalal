@@ -2,6 +2,7 @@
 <script setup lang="ts">
 const router = useRouter();
 const { setVisible } = useSnackbar();
+const { t } = useI18n()
 const back = () => {
   setVisible(false);
   router.back();
@@ -9,6 +10,6 @@ const back = () => {
 </script>
 <template>
   <VBtn variant="text" prepend-icon="mdi-chevron-left" @click="back">
-    Kembali
+    {{t('common.back')}}
   </VBtn>
 </template>
