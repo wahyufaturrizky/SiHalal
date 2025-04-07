@@ -45,11 +45,13 @@ interface NibReq {
   tracking: any;
 }
 
-const route = useRoute();
-const shlnId = route.params.id;
 const prop = defineProps<{
   mra: MRA;
 }>();
+
+const route = useRoute();
+const shlnId = route.params.id;
+
 const loa = ref<LOAData>({
   authorized_company: "",
   authorizer_company: "",
@@ -58,6 +60,7 @@ const loa = ref<LOAData>({
   letter_no: "",
   loa_document: "",
 });
+
 const fhc = ref<FHCData>({
   document: "",
   document_no: "",
@@ -65,9 +68,11 @@ const fhc = ref<FHCData>({
   id: "",
   verification_link: "",
 });
+
 const loadDialog = ref(false);
 const loadFhcDialog = ref(false);
 const loadReqDialog = ref(false);
+
 const getLoa = async () => {
   try {
     const response = await $api("/shln/submission/document/loa", {
@@ -76,14 +81,15 @@ const getLoa = async () => {
         id: shlnId,
       },
     });
-    if (response.code != 2000) {
-      return;
-    }
+
+    if (response.code != 2000) return;
+
     loa.value = response.data;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+
 const getFhc = async () => {
   try {
     const response = await $api("/shln/submission/document/fhc", {
@@ -92,14 +98,15 @@ const getFhc = async () => {
         id: shlnId,
       },
     });
-    if (response.code != 2000) {
-      return;
-    }
+
+    if (response.code != 2000) return;
+
     fhc.value = response.data;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+
 const tableRequirementDocumentHeader = [
   { title: "No", key: "index" },
   { title: "Document Types", key: "documentTypes" },
@@ -108,7 +115,9 @@ const tableRequirementDocumentHeader = [
   { title: "status", key: "status" },
   { title: "Tracking", key: "action" },
 ];
+
 const requirementDocument = ref<RequirementDocument>();
+
 const requirementDocArray = ref([
   {
     documentTypes: "Business License Number (NIB)",
@@ -125,9 +134,11 @@ const requirementDocArray = ref([
     tracking: null,
   },
 ]);
+
 const reqTracking = ref(null);
 const reqTrackingModal = ref(false);
 const reqFile = ref([]);
+
 const getRequirementDocument = async () => {
   try {
     const response = await $api(
@@ -159,6 +170,7 @@ const getRequirementDocument = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+
 const getReqTrackingModal = (data) => {
   reqTracking.value = data;
   reqTrackingModal.value = true;
@@ -167,32 +179,37 @@ const getReqTrackingModal = (data) => {
 const refLoaForm = ref<VForm>();
 const refFhcForm = ref<VForm>();
 const refReqDocForm = ref<VForm>();
+
 const openLoaDialog = () => {
   refLoaForm.value?.validate().then(({ valid: isValid }) => {
     if (isValid) loadDialog.value = true;
   });
 };
+
 const openReqDialog = () => {
   refReqDocForm.value?.validate().then(({ valid: isValid }) => {
     if (isValid) loadReqDialog.value = true;
   });
 };
+
 const openFhcDialog = () => {
   refFhcForm.value?.validate().then(({ valid: isValid }) => {
     if (isValid) loadFhcDialog.value = true;
   });
 };
+
 const uploadDocument = async (file) => {
   try {
     const formData = new FormData();
+
     formData.append("id", shlnId);
     formData.append("file", file);
     formData.append("type", "sample");
-    const response = await $api("/shln/submission/document/upload", {
+
+    return await $api("/shln/submission/document/upload", {
       method: "post",
       body: formData,
     });
-    return response;
   } catch (error) {
     useSnackbar().sendSnackbar(
       "ada kesalahan saat upload file, gagal menyimpan!",
@@ -204,21 +221,24 @@ const uploadDocument = async (file) => {
 const saveLoa = async () => {
   try {
     const file = await uploadDocument(loaFile.value);
+
     loaFile.value = null;
-    if (file.code != 2000) {
-      return;
-    }
+    if (file.code != 2000) return;
+
     loaForm.value.file_url = file.data.file_url;
+
     const response = await $api("/shln/submission/document/add-loa", {
       method: "post",
       body: loaForm.value,
     });
+
     loadDialog.value = false;
     refLoaForm.value?.resetValidation();
     await getLoa();
     await getLoaTracking();
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
+
       return;
     }
     useMyUpdateSubmissionEditStore().setData("document");
@@ -229,18 +249,21 @@ const saveLoa = async () => {
     useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
   }
 };
+
 const saveFhc = async () => {
   try {
     const file = await uploadDocument(fhcFile.value);
+
     fhcFile.value = null;
-    if (file.code != 2000) {
-      return;
-    }
+    if (file.code != 2000) return;
+
     fhcForm.value.file_url = file.data.file_url;
+
     const response = await $api("/shln/submission/document/add-fhc", {
       method: "post",
       body: fhcForm.value,
     });
+
     await getFhc();
     await getFhcTracking();
     refFhcForm.value?.resetValidation();
@@ -248,6 +271,7 @@ const saveFhc = async () => {
 
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
+
       return;
     }
     useMyUpdateSubmissionEditStore().setData("document");
@@ -257,17 +281,17 @@ const saveFhc = async () => {
     useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
   }
 };
+
 const saveReqDocument = async () => {
   try {
     const fileLoa = await uploadDocument(reqFile.value[0]);
-    if (fileLoa.code != 2000) {
-      return;
-    }
+    if (fileLoa.code != 2000) return;
+
     const fileNib = await uploadDocument(reqFile.value[1]);
-    if (fileNib.code != 2000) {
-      return;
-    }
+    if (fileNib.code != 2000) return;
+
     reqFile.value = [];
+
     const response = await $api("/shln/submission/document/add-requirement", {
       method: "post",
       body: {
@@ -282,12 +306,14 @@ const saveReqDocument = async () => {
         is_accept: false,
       },
     });
+
     loadReqDialog.value = false;
     refReqDocForm.value?.reset();
     refReqDocForm.value?.resetValidation();
 
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
+
       return;
     }
     await getRequirementDocument();
@@ -298,8 +324,10 @@ const saveReqDocument = async () => {
     useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
   }
 };
+
 const loaFile = ref();
 const fhcFile = ref();
+
 const loaForm = ref<LOA>({
   id: shlnId,
   authorizer_name: "",
@@ -308,10 +336,12 @@ const loaForm = ref<LOA>({
   date: "",
   file_url: "",
 });
+
 const fhcForm = ref<FHC>({
   id: shlnId,
   file_url: "",
 });
+
 interface Tracking {
   comment: string;
   created_at: string;
@@ -336,6 +366,7 @@ const getLoaTracking = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+
 const getFhcTracking = async () => {
   try {
     const response = await $api("/shln/submission/document/tracking/fhc", {
@@ -360,6 +391,7 @@ function dateddmmyyy(date: Date) {
   const dd = String(date.getDate()).padStart(2, "0");
   const mm = String(date.getMonth() + 1).padStart(2, "0"); // Bulan dimulai dari 0
   const yyyy = date.getFullYear();
+
   return `${dd}/${mm}/${yyyy}`;
 }
 onMounted(async () => {
@@ -386,13 +418,19 @@ watch(loaFile, (newValue, oldValue) => {
     <VCol cols="12">
       <ExpandCard title="Mutual Recognition Agreement / MRA Document ">
         <p>Document for Mutual Halal Certification Recognition</p>
-        <InfoRow name="Halal Instituion Name">{{
-          mra.halal_institution_name
-        }}</InfoRow>
-        <InfoRow name="Validity Period">{{
-          mra.expired_date != "" ? dateddmmyyy(new Date(mra.expired_date)) : "-"
-        }}</InfoRow>
-        <InfoRow name="Country">{{ mra.country }}</InfoRow>
+        <InfoRow name="Halal Instituion Name">
+          {{ mra.halal_institution_name }}
+        </InfoRow>
+        <InfoRow name="Validity Period">
+          {{
+            mra.expired_date != ""
+              ? dateddmmyyy(new Date(mra.expired_date))
+              : "-"
+          }}
+        </InfoRow>
+        <InfoRow name="Country">
+          {{ mra.country }}
+        </InfoRow>
       </ExpandCard>
     </VCol>
   </VRow>
@@ -400,7 +438,7 @@ watch(loaFile, (newValue, oldValue) => {
     <VCol cols="8">
       <ExpandCard title="Letter Of Authorization / LoA Document " class="mb-4">
         <p>An Appointment Letter from the Exporter to the Importer</p>
-        <v-form ref="refLoaForm" @submit.prevent="openLoaDialog">
+        <VForm ref="refLoaForm" @submit.prevent="openLoaDialog">
           <VCol cols="12">
             <VTextField
               v-model="loaForm.authorizer_name"
@@ -423,7 +461,7 @@ watch(loaFile, (newValue, oldValue) => {
                 <Vuepicdatepicker
                   v-model:model-value="loaForm.date"
                   auto-apply
-                  model-type="dd-MM-yyyy"
+                  model-type="DD/MM/YYYY"
                   :enable-time-picker="false"
                   :teleport="true"
                   clearable
@@ -434,12 +472,13 @@ watch(loaFile, (newValue, oldValue) => {
                       density="compact"
                       prepend-inner-icon="fa-calendar"
                       :model-value="loaForm.date"
-                    ></VTextField>
+                    />
                   </template>
                 </Vuepicdatepicker>
               </template>
             </Vuepicdatepicker>
-            <!-- <VTextField
+            <!--
+              <VTextField
               v-model="loaForm.date"
               label="Issued Date"
               outlined
@@ -448,13 +487,14 @@ watch(loaFile, (newValue, oldValue) => {
               type="date"
               class="custom-date-input"
               :rules="[requiredValidator]"
-            /> -->
+              />
+            -->
           </VCol>
           <VCol cols="12" class="d-flex align-center gap-5 justify-center">
             <VBtn
-              @click="downloadDocument(loa.loa_document, 'SHLN_DOC')"
               v-if="loa.loa_document != ''"
               color="primary"
+              @click="downloadDocument(loa.loa_document, 'SHLN_DOC')"
             >
               <VIcon icon="fa-download" />
             </VBtn>
@@ -501,18 +541,18 @@ watch(loaFile, (newValue, oldValue) => {
           </VCol>
 
           <VCol cols="12" class="text-right">
-            <VBtn color="primary" type="submit">Save</VBtn>
+            <VBtn color="primary" type="submit"> Save </VBtn>
           </VCol>
-        </v-form>
+        </VForm>
       </ExpandCard>
 
       <ExpandCard title="Original of the Foreign Halal Certificate ">
-        <v-form ref="refFhcForm" @submit.prevent="openFhcDialog">
+        <VForm ref="refFhcForm" @submit.prevent="openFhcDialog">
           <VCol cols="12" class="d-flex align-center gap-5 justify-center">
             <VBtn
-              @click="downloadDocument(fhc.file, 'SHLN_DOC')"
               v-if="fhc.file != ''"
               color="primary"
+              @click="downloadDocument(fhc.file, 'SHLN_DOC')"
             >
               <VIcon icon="fa-download" />
             </VBtn>
@@ -560,9 +600,9 @@ watch(loaFile, (newValue, oldValue) => {
           </VCol>
 
           <VCol cols="12" class="text-right">
-            <VBtn color="primary" type="submit">Save</VBtn>
+            <VBtn color="primary" type="submit"> Save </VBtn>
           </VCol>
-        </v-form>
+        </VForm>
       </ExpandCard>
     </VCol>
     <VCol cols="4">
@@ -592,7 +632,7 @@ watch(loaFile, (newValue, oldValue) => {
   <VRow>
     <VCol cols="12">
       <ExpandCard title="Requirement Document ">
-        <v-form ref="refReqDocForm" @submit.prevent="openReqDialog">
+        <VForm ref="refReqDocForm" @submit.prevent="openReqDialog">
           <VDataTable
             :items="requirementDocArray"
             :headers="tableRequirementDocumentHeader"
@@ -603,9 +643,9 @@ watch(loaFile, (newValue, oldValue) => {
             <template #item.file="{ item, index }">
               <div class="d-flex align-center justify-center py-3 gap-2">
                 <VBtn
-                  @click="downloadDocument(item.file, 'SHLN_DOC')"
                   v-if="item.file != ''"
                   color="primary"
+                  @click="downloadDocument(item.file, 'SHLN_DOC')"
                 >
                   <VIcon icon="fa-download" />
                 </VBtn>
@@ -651,11 +691,12 @@ watch(loaFile, (newValue, oldValue) => {
                   '7b6c4e03-9ae0-4ee2-b045-53882314443d_sample_template_surat_permohonan_dan_perpanjangan_rshln (3).docx'
                 )
               "
-              >Download FHCR Application Letter Document Format</VBtn
             >
-            <VBtn color="primary" type="submit">Save</VBtn>
+              Download FHCR Application Letter Document Format
+            </VBtn>
+            <VBtn color="primary" type="submit"> Save </VBtn>
           </VCol>
-        </v-form>
+        </VForm>
       </ExpandCard>
     </VCol>
   </VRow>
@@ -674,7 +715,7 @@ watch(loaFile, (newValue, oldValue) => {
         </VRow>
         <VRow class="flex-row-reverse">
           <VCol cols="12" md="auto">
-            <VBtn block color="primary" @click="saveLoa()"> Yes, Save </VBtn>
+            <VBtn block color="primary" @click="saveLoa"> Yes, Save </VBtn>
           </VCol>
           <VCol cols="12" md="auto">
             <VBtn block variant="outlined" @click="loadDialog = false">
@@ -700,7 +741,7 @@ watch(loaFile, (newValue, oldValue) => {
         </VRow>
         <VRow class="flex-row-reverse">
           <VCol cols="12" md="auto">
-            <VBtn block color="primary" @click="saveFhc()"> Yes, Save </VBtn>
+            <VBtn block color="primary" @click="saveFhc"> Yes, Save </VBtn>
           </VCol>
           <VCol cols="12" md="auto">
             <VBtn block variant="outlined" @click="loadFhcDialog = false">
@@ -724,7 +765,7 @@ watch(loaFile, (newValue, oldValue) => {
         </VRow>
         <VRow class="flex-row-reverse">
           <VCol cols="12" md="auto">
-            <VBtn block color="primary" @click="saveReqDocument()">
+            <VBtn block color="primary" @click="saveReqDocument">
               Yes, Save
             </VBtn>
           </VCol>
@@ -739,12 +780,12 @@ watch(loaFile, (newValue, oldValue) => {
   </VDialog>
 
   <VDialog v-model="reqTrackingModal" width="auto">
-    <v-card>
-      <v-card-text>
+    <VCard>
+      <VCardText>
         <p class="text-h5 font-weight-bold">Tracking</p>
         <HalalTimeLine v-if="reqTracking" :event="reqTracking" />
-      </v-card-text>
-    </v-card>
+      </VCardText>
+    </VCard>
   </VDialog>
 </template>
 
