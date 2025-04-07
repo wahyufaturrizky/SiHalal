@@ -110,7 +110,7 @@ const dialogEdit = ref(false);
 const loading = ref(false);
 const itemDetail = ref<any>({});
 const bahanSelected = ref([]);
-const isDisabledForm = ref(false)
+const isDisabledForm = ref(false);
 
 const handleCheck = (item: any) => {
   if (item.checked) item.checked = false;
@@ -278,7 +278,7 @@ const detailClicked = (item: any) => {
 };
 
 onMounted(() => {
-  isDisabledForm.value = props.isDisabled
+  isDisabledForm.value = props.isDisabled;
   if (
     props?.title === "Daftar Nama Produk" ||
     props?.title === "Daftar Nama Bahan dan Kemasan"
@@ -616,7 +616,9 @@ const itemsPerPageServer = ref(10);
           </template>
 
           <template v-if="!isviewonly" #item.action="{ item }">
-            <div v-if="bahanSelected?.some((el: any) => el === item.id) || isDisabledForm">
+            <div
+              v-if="bahanSelected?.some((el: any) => el === item.id) || isDisabledForm"
+            >
               <VBtn
                 v-bind="props"
                 variant="plain"
@@ -1079,6 +1081,7 @@ const itemsPerPageServer = ref(10);
         </VDataTable>
         <VDataTableServer
           v-else
+          :items-per-page-options="[10, 25, 50, 100]"
           class="border rounded"
           v-model:items-per-page="itemsPerPageServer"
           v-model:page="pageServer"

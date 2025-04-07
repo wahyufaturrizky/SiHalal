@@ -13,7 +13,7 @@ const content = ref([]);
 
 const props = defineProps({
   data: {
-    type: Object as PropType<Record<string, any>>, 
+    type: Object as PropType<Record<string, any>>,
     required: true,
   },
   itemsPerPage: {
@@ -87,7 +87,7 @@ defineExpose({
     <VCardTitle>
       <VRow>
         <VCol cols="6"><h3>Produk</h3></VCol>
-        <VCol cols="6" style="display: flex; justify-content: end;"
+        <VCol cols="6" style="display: flex; justify-content: end"
           ><ModalProdukHalalVerval
             :modal-type="modalTypeEnum.ADD"
             @emit-add="handleAddProduk"
@@ -107,7 +107,12 @@ defineExpose({
         </VCol>
       </VRow>
       <br />
-      <VDataTable :headers="tableHeader" :items="content" hide-default-footer>
+      <VDataTable
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="tableHeader"
+        :items="content"
+        hide-default-footer
+      >
         <template #item.no="{ index }">
           <div>
             {{
@@ -120,7 +125,7 @@ defineExpose({
         <template #item.action="{ item }">
           <VBtn variant="text" @click="handleDeleteProduk(item.id)">
             <template #default>
-              <VIcon style="color: red;" icon="fa-trash"></VIcon>
+              <VIcon style="color: red" icon="fa-trash"></VIcon>
             </template>
           </VBtn>
         </template>

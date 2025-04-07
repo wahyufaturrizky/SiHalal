@@ -123,7 +123,11 @@ defineExpose({
         </VCol>
       </VRow>
       <br />
-      <VDataTable :headers="tableHeader" :items="content">
+      <VDataTable
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="tableHeader"
+        :items="content"
+      >
         <!-- Row number -->
         <template #item.nomor="{ index }">
           {{ index + 1 }}

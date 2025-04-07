@@ -174,7 +174,7 @@ const currentYear = now.getFullYear();
 const currentDay = now.getDate();
 const date = ref("");
 const changeData = (item) => {
-  if(!date.value.includes("to")) return
+  if (!date.value.includes("to")) return;
 
   const rangeDate = date.value.split(" to ");
   startDate.value = convertDDMMYYYYtoISO(rangeDate[0]);
@@ -230,6 +230,7 @@ const changeData = (item) => {
       </VCardItem>
       <VCardItem>
         <VDataTableServer
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
           :headers="tableHeader"

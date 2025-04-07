@@ -116,7 +116,12 @@ watch(
         </VCol>
       </VRow>
       <br />
-      <VDataTable :headers="tableHeader" :items="content" hide-default-footer>
+      <VDataTable
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="tableHeader"
+        :items="content"
+        hide-default-footer
+      >
         <template #item.no="{ index }">
           <div>
             {{

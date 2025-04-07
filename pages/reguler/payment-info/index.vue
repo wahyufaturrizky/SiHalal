@@ -67,8 +67,7 @@ const loadItem = async (
     if (response?.code === 2000) {
       totalItems.value = response.total_item;
       dataTable.value = response?.data;
-    }
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -142,6 +141,7 @@ watch([page, size], () => {
             />
           </div>
           <VDataTableServer
+            :items-per-page-options="[10, 25, 50, 100]"
             v-model:items-per-page="size"
             v-model:page="page"
             :items-length="totalItems"

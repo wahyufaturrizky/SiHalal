@@ -17,6 +17,9 @@ const headers = [
 ];
 const items = ref([]);
 const route = useRoute();
+const page = ref(1);
+const itemsPerPage = ref(10);
+
 const getBahan = async () => {
   try {
     const response = await $api("/reguler/verifikator/detail/bahan/note", {
@@ -49,10 +52,17 @@ const download =async (item) => {
       <span class="text-h3">Catatan Pembelian Bahan</span>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="headers" :items="items">
-        <template #item.no="{index}"> 
-          {{index + 1}}
-        </template>
+      <VDataTable
+        :headers="headers"
+        :items="items"
+        :items-per-page="itemsPerPage"
+        :page="page"
+        @update:page="newPage => page = newPage"
+        @update:items-per-page="newSize => itemsPerPage = newSize"
+      >
+      <template v-slot:item.no="{ index }">
+        {{ (page - 1) * itemsPerPage + index + 1 }}
+      </template>
         <template #item.type="{item}"> 
           {{item.FileDok == '' ? 'Manual' : 'Unggah Foto'}}
         </template>

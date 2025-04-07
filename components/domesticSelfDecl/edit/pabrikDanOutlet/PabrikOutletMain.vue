@@ -137,6 +137,7 @@ const insertData = async () => {
       return;
     }
     await loadPabrik(typeAdd.value);
+    window.location.reload();
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal menambahkan pabrik/outlet", "error");
   } finally {
@@ -180,6 +181,7 @@ const deletedPabrikOutlet = async () => {
       useSnackbar().sendSnackbar("Gagal Menghapus pabrik/outlet", "error");
       return;
     }
+    window.location.reload();
     deleteDialog.value = false;
     useSnackbar().sendSnackbar("Berhasil Menghapus pabrik/outlet", "success");
   } catch (error) {
@@ -218,7 +220,11 @@ onMounted(async () => {
             </VRow>
           </VCardTitle>
           <VCardText>
-            <VDataTable :items="itemsPabrik" :headers="tableHeader">
+            <VDataTable
+              :items-per-page-options="[10, 25, 50, 100]"
+              :items="itemsPabrik"
+              :headers="tableHeader"
+            >
               <template #item.index="{ index }">
                 {{ index + 1 }}
               </template>
@@ -253,7 +259,11 @@ onMounted(async () => {
             </VRow>
           </VCardTitle>
           <VCardText>
-            <VDataTable :items="itemsOutlet" :headers="tableHeader">
+            <VDataTable
+              :items-per-page-options="[10, 25, 50, 100]"
+              :items="itemsOutlet"
+              :headers="tableHeader"
+            >
               <template #item.index="{ index }">
                 {{ index + 1 }}
               </template>

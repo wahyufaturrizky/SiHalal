@@ -188,8 +188,13 @@ onMounted(async () => {
 });
 
 watch([page, size], async () => {
-  const refreshData = await loadItem(page.value, size.value, searchQuery.value, LIST_PEMERIKSAAN_PATH)
-  dataTable.value = refreshData
+  const refreshData = await loadItem(
+    page.value,
+    size.value,
+    searchQuery.value,
+    LIST_PEMERIKSAAN_PATH
+  );
+  dataTable.value = refreshData;
 });
 
 watch(dataTable, () => {
@@ -219,7 +224,7 @@ watch(dataTable, () => {
   </div> -->
   <VRow no-gutters>
     <VCol>
-      <h1 style="font-size: 32px;">Update Pemeriksaan</h1>
+      <h1 style="font-size: 32px">Update Pemeriksaan</h1>
     </VCol>
   </VRow>
   <VRow>
@@ -288,12 +293,13 @@ watch(dataTable, () => {
                 placeholder="Cari Nama Pengajuan"
                 density="compact"
                 append-inner-icon="ri-search-line"
-                style="max-inline-size: 100%;"
+                style="max-inline-size: 100%"
                 @input="handleInput"
               />
             </VCol>
           </VRow>
           <VDataTableServer
+            :items-per-page-options="[10, 25, 50, 100]"
             v-model:items-per-page="size"
             v-model:page="page"
             :items-length="totalItems"
@@ -306,7 +312,7 @@ watch(dataTable, () => {
           >
             <template #no-data>
               <div class="w-full mt-2">
-                <div class="pt-2" style="justify-items: center;">
+                <div class="pt-2" style="justify-items: center">
                   <img src="~/assets/images/empty-data.png" alt="empty_data" />
                   <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
                 </div>

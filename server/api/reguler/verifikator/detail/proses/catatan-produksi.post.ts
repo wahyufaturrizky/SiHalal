@@ -11,11 +11,22 @@ export default defineEventHandler(async (event) => {
   }
   const { id_reg } = await readBody(event);
 
+  const { page, size } = (await getQuery(event)) as {
+    page: string;
+    size: string;
+  };
+
+  const params = {
+    page: +page,
+    size: +size,
+  };
+
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/lph/proses/hasil-produksi/${id_reg}`,
     {
       method: "get",
       headers: { Authorization: authorizationHeader },
+      params,
     }
   ).catch((err: NuxtError) => {
     return err.data;

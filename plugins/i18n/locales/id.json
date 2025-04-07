@@ -151,6 +151,11 @@
       "title": "Approval"
     }
   },
+  "common": {
+    "back": "Kembali",
+    "cancel": "Batal",
+    "save": "Simpan"
+  },
   "uam_role": "Role",
   "uam_user": "User",
   "Error": "Error",
@@ -304,6 +309,7 @@
     "msg": "NIB sudah didaftarkan oleh user",
     "msg-1": ",Silakan login dengan menggunakan email tersebut.",
     "msg-error": "NIB tidak ditemukan",
+    "msg-error-find": "Mohon lengkapi data 'Perseroan Daerah ID' Anda di sistem OSS sebelum melanjutkan proses.",
     "btn-1": "Kembali",
     "btn-2": "Kirim"
   },
@@ -373,6 +379,9 @@
     "pu-ph-title": "Penyelia halal",
     "pu-ph-nama": "Nama",
     "pu-ph-ktp": "No KTP",
+    "pu-ph-download-ktp": "Unduh KTP",
+    "pu-ph-download-skph": "Unduh SKPH",
+    "pu-ph-download-spph": "Unduh SPPH",
     "pu-ph-telp": "No Kontak",
     "pu-ph-sertif": "No/Tgl Sertif Penyelia Halal",
     "pu-ph-sk": "No/Tanggal SK",
@@ -447,6 +456,7 @@
     "permohonan-list-title": "Status Permohonan",
     "permohonan-list-subtitle": "Data Pengajuan",
     "permohonan-list-search": "Cari",
+    "permohonan-list-reg-no": "No. Daftar",
     "permohonan-list-tanggal": "Tanggal",
     "permohonan-list-namapu": "Nama PU",
     "permohonan-list-jnsdaftar": "Jenis Daftar",
@@ -961,6 +971,10 @@
     "invoice-list-status": "Status",
     "invoice-list-invfile": "File Invoice"
   },
+  "shln-verification": {
+    "halal-registration-number": "Nomor Registrasi Halal",
+    "halal-registration-number-not-available": "Nomor registrasi belum tersedia"
+  },
   "task-force": {
     "tagihan-bpjph-title": "Daftar Tagihan ke BPJPH",
     "tagihan-bpjph-subtitle": "Daftar Tagihan",
@@ -1135,10 +1149,29 @@
   "self-declare": {
     "title": "Data Pengajuan Self Declare",
     "create": "Buat Pengajuan",
-    "search": "Cari Data"
+    "search": "Cari Data",
+    "questionnaire": {
+      "1": "Saya tidak pernah mendapatkan fasilitas sertifikasi halal sebelumnya",
+      "2": "Aktivitas produksi yang dilakukan merupakan usaha rumahan (bukan usaha pabrikan)",
+      "3": "Proses produksi menggunakan bahan-bahan halal. (contoh bahan halal: 1. Bahan bersertifikat halal 2. Bahan berasal dari alam (tanpa melihat sertifikat): buah segar, sayur segar, telur segar, ikan segar, rempah, dll)",
+      "4": "Jika ada proses produksi produk lain yang menggunakan bahan non-halal, dilakukan pada tempat terpisah dan menggunakan alat yang berbeda.",
+      "5": "Proses produksi tidak menggunakan bahan berbahaya (contoh bahan berbahaya tertuang dalam Peraturan BPOM Nomor 7 Tahun 2018)",
+      "6": "Proses pengawetan produk sederhana dan tidak menggunakan kombinasi lebih dari 1 metode pengawetan",
+      "7": "Proses produksi menggunakan peralatan manual/ semi otomatis"
+    },
+    "questionnaire-response": {
+      "1": "Anda sudah pernah mendapatkan fasilitas self declare",
+      "2": "Aktivitas produksi yang dilakukan bukan merupakan usaha rumahan",
+      "3": "Tidak semua proses produksi menggunakan bahan-bahan halal",
+      "4": "Proses produksi produk lain yang menggunakan bahan non-halal tidak dilakukan pada tempat terpisah dan tidak menggunakan alat yang berbeda.",
+      "5": "Proses produksi menggunakan bahan berbahaya",
+      "6": "Proses pengawetan produk tidak sederhana atau menggunakan kombinasi lebih dari 1 metode pengawetan",
+      "7": "Proses produksi tidak menggunakan peralatan manual/semi otomatis"
+    }
   },
   "self-declare-mandiri": {
-    "title": "Data Pengajuan Self Declare Mandiri",
+    "title": "Pengajuan Self Declare Mandiri",
+    "table-title": "Data Pengajuan Self Declare Mandiri",
     "create": "Buat Pengajuan",
     "search": "Cari Data"
   }

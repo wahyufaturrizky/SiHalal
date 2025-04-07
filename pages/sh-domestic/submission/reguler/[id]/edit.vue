@@ -121,11 +121,12 @@ const getChannel = async (path: string) => {
 
 const getFactoryAndOutlet = async (type: string) => {
   try {
+    let id_reg = id;
     const response: any = await $api(
       "/reguler/pelaku-usaha/list-factory-outlet",
       {
         method: "get",
-        params: { id, type },
+        params: { id_reg, type },
       }
     );
 
@@ -172,21 +173,20 @@ const getListIngredients = async () => {
             jenisBahan.includes(item?.toLowerCase())
           )
         ) {
-          let count = 0
+          let count = 0;
           jenisBahan.map((element: any) => {
-              if (element === 'bahan') {
-                count ++
-              }
-          })
+            if (element === "bahan") {
+              count++;
+            }
+          });
           if (count < 3) {
             bahanComplete(false);
           } else {
             bahanComplete(true);
           }
-        }
-        else {
+        } else {
           bahanComplete(false);
-      }
+        }
       }
     }
 
@@ -209,10 +209,10 @@ onMounted(async () => {
   }
 
   const res: any = await Promise.all([
-    getFactoryAndOutlet("FAPAB"),
-    getFactoryAndOutlet("FAOUT"),
     getListLegal(),
     getListPenyelia(),
+    getFactoryAndOutlet("FAPAB"),
+    getFactoryAndOutlet("FAOUT"),
     getChannel(LIST_CHANNEL_PATH_JNLAY),
     getListIngredients(),
   ]);
@@ -294,10 +294,7 @@ const valid = ref(false);
                 Mohon lengkapi Bahan, Cleaning Agent, Kemasan agar menu ini
                 dapat di akses
               </VTooltip> -->
-              <VTab
-                :value="index"
-                @click="onclickTab(index)"
-              >
+              <VTab :value="index" @click="onclickTab(index)">
                 {{ t(item) }}
               </VTab>
             </div>

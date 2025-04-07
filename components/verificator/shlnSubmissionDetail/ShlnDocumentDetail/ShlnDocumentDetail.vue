@@ -161,7 +161,7 @@ const headers = [
   { title: "Action", key: "action" },
 ];
 
-// const downloadDOcument = async (filename: string) => {
+// const previewDocument = async (filename: string) => {
 //   try {
 //     const response: any = await $api("/shln/submission/document/download", {
 //       method: "post",
@@ -202,7 +202,13 @@ const onRefresh = (type: string) => {
             </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <p>{{ item.value }}</p>
+              <p>
+                {{
+                  item.key.includes("Date") && item.value
+                    ? formatToYYYYMMDD(new Date(item.value))
+                    : item.value
+                }}
+              </p>
             </VCol>
           </VRow>
         </VCardText>
@@ -235,7 +241,7 @@ const onRefresh = (type: string) => {
             <VCol cols="3"> Date </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <p>{{ date }}</p>
+              <p>{{ date ? formatToYYYYMMDD(new Date(date)) : "-" }}</p>
             </VCol>
           </VRow>
           <VRow>
@@ -252,12 +258,12 @@ const onRefresh = (type: string) => {
               <VBtn
                 icon="fa-download"
                 density="compact"
-                @click="downloadDocument(loa_document, 'SHLN_DOC')"
+                @click="previewDocument(loa_document, 'SHLN_DOC')"
               />
             </VCol>
           </VRow>
         </VCardText>
-        <VCardActions style="justify-content: end;">
+        <VCardActions style="justify-content: end">
           <div>
             <ReturnConfirmationModal
               @refresh="onRefresh('loa')"
@@ -345,14 +351,26 @@ const onRefresh = (type: string) => {
             <VCol cols="3"> Issued Date </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <p>{{ issuedDateFHC }}</p>
+              <p>
+                {{
+                  issuedDateFHC
+                    ? formatToYYYYMMDD(new Date(issuedDateFHC))
+                    : "-"
+                }}
+              </p>
             </VCol>
           </VRow>
           <VRow>
             <VCol cols="3"> Expired Date </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <p>{{ expiredDateFHC }}</p>
+              <p>
+                {{
+                  expiredDateFHC
+                    ? formatToYYYYMMDD(new Date(expiredDateFHC))
+                    : "-"
+                }}
+              </p>
             </VCol>
           </VRow>
           <VRow>
@@ -362,19 +380,19 @@ const onRefresh = (type: string) => {
               <p>{{ scopeFHC }}</p>
             </VCol>
           </VRow>
-          <VRow style="display: flex; align-items: center;">
+          <VRow style="display: flex; align-items: center">
             <VCol cols="3"> File </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
               <VBtn
                 icon="fa-download"
                 density="compact"
-                @click="downloadDocument(file, 'SHLN_DOC')"
+                @click="previewDocument(file, 'SHLN_DOC')"
               />
             </VCol>
           </VRow>
         </VCardText>
-        <VCardActions style="justify-content: end;">
+        <VCardActions style="justify-content: end">
           <div>
             <ReturnConfirmationModal
               @refresh="onRefresh('fhc')"
@@ -450,6 +468,7 @@ const onRefresh = (type: string) => {
         <VCardTitle>Requirement Document</VCardTitle>
         <VCardText>
           <VDataTableServer
+            :items-per-page-options="[10, 25, 50, 100]"
             v-model:items-per-page="itemPerPage"
             v-model:page="page"
             :headers="headers"
@@ -465,7 +484,7 @@ const onRefresh = (type: string) => {
             <template #item.file="{ item, index }">
               <div class="d-flex align-center justify-center py-3 gap-2">
                 <VBtn
-                  @click="downloadDocument((item as any).file,'SHLN_DOC')"
+                  @click="previewDocument((item as any).file, 'SHLN_DOC')"
                   v-if="(item as any).file != ''"
                   color="primary"
                 >

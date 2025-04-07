@@ -293,10 +293,18 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
     return response
   }
   catch (error) {
-    useSnackbar().sendSnackbar(
+    if( error.data.code === 4006 || error.data.code === 4001 || error.data.code === 400){
+      useSnackbar().sendSnackbar(
+      'Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet',
+      'error',
+    )
+        formData.id_lembaga_pendamping = 'Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet'
+    }else{
+      useSnackbar().sendSnackbar(
       error.data?.errors?.list_error[0] || 'Ada kesalahan 1',
       'error',
     )
+    }
 
     // console.log(error);
   }
@@ -326,11 +334,18 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
     return response
   }
   catch (error) {
-    useSnackbar().sendSnackbar(
-      error.data?.errors?.list_error[0] || 'Ada kesalahan 2',
+    if( error.data.code === 4006 || error.data.code === 4001 || error.data.code === 400){
+      useSnackbar().sendSnackbar(
+      'Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet',
       'error',
     )
-
+        formData.id_lembaga_pendamping = 'Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet'
+    }else{
+      useSnackbar().sendSnackbar(
+      error.data?.errors?.list_error[0] || 'Ada kesalahan 1',
+      'error',
+    )
+    }
     // console.log(error);
   }
 }
@@ -369,7 +384,18 @@ const handleGetPendamping = async (idLembaga: string | null) => {
     return response
   }
   catch (error) {
-    // console.log(error);
+    if( error.data.code === 4006 || error.data.code === 4001 || error.data.code === 400){
+      useSnackbar().sendSnackbar(
+      'Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet',
+      'error',
+    )
+        formData.id_lembaga_pendamping = 'Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet'
+    }else{
+      useSnackbar().sendSnackbar(
+      error.data?.errors?.list_error[0] || 'Ada kesalahan 1',
+      'error',
+    )
+    }
   }
 }
 
@@ -406,7 +432,18 @@ const handleGetPendampingstart = async (idLembaga: string | null) => {
     return response
   }
   catch (error) {
-    // console.log(error);
+    if( error.data.code === 4006 || error.data.code === 4001 || error.data.code === 400){
+      useSnackbar().sendSnackbar(
+      'Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet',
+      'error',
+    )
+        formData.id_lembaga_pendamping = 'Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet'
+    }else{
+      useSnackbar().sendSnackbar(
+      error.data?.errors?.list_error[0] || 'Ada kesalahan 1',
+      'error',
+    )
+    }
   }
 }
 
@@ -425,7 +462,7 @@ const getDetail = async () => {
     /// / console.log("response pengajuan list layanan", listLayanan.value);
 
     if (response.code == 2000) {
-      console.log("response pengajuan detail", response);
+      // console.log("response pengajuan detail", response);
       submissionDetail.tanggal_buat = response.data.tgl_daftar.split('T')[0]
       submissionDetail.status = response.data.status_reg
       submissionDetail.id_jenis_pengajuan = response.data.jenis_pendaftaran
@@ -463,7 +500,7 @@ const getDetail = async () => {
 
         formData.id_pendamping = foundPendamping
           ? { id: response.data.id_pendamping, name: foundPendamping.name }
-          : { id: response.data.id_pendamping, name: 'Pendamping tidak ditemukan' }
+          : { id: response.data.id_pendamping, name: 'Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet' }
       }
 
       /// / console.log("response pengajuan detail", formData, "data");

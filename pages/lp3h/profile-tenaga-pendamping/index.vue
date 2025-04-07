@@ -172,8 +172,10 @@ const getProfile = async () => {
         if (el.label === "Ijazah")
           el.value = response.data.pendamping.fotoijazah;
         if (el.label === "KTP") el.value = response.data.pendamping.fotoktp;
-        if (el.label === "Sertifikat Pelatihan")
-          el.value = response.data.pendamping.fotosertifikat;
+        if (el.label === "Sertifikat Pelatihan"){
+          const {file_sertifikat, fotosertifikat} = response.data.pendamping || {}
+          el.value = file_sertifikat || fotosertifikat
+        }
       });
 
       return;

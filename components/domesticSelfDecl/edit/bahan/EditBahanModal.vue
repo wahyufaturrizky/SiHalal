@@ -107,14 +107,14 @@ const loadItemBahan = async (page: number, size: number, name: string = "") => {
       itemsCertified.value = response.data != null ? response.data : [];
       totalItemsCertified.value = response.total_item;
       tanggalBerlakuAll.value = {
-              ...tanggalBerlakuAll.value, // Data sebelumnya
-              ...response.data.reduce((acc: Record<string, string>, item) => {
-                acc[item.nama_bahan] = item.tgl_berlaku_sertifikat
-                  ? new Date(item.tgl_berlaku_sertifikat).toISOString().split("T")[0]
-                  : "";
-                return acc;
-              }, {}),
-            };
+        ...tanggalBerlakuAll.value, // Data sebelumnya
+        ...response.data.reduce((acc: Record<string, string>, item) => {
+          acc[item.nama_bahan] = item.tgl_berlaku_sertifikat
+            ? new Date(item.tgl_berlaku_sertifikat).toISOString().split("T")[0]
+            : "";
+          return acc;
+        }, {}),
+      };
       return;
     }
 
@@ -243,7 +243,7 @@ const insertBahan = async () => {
         <VCardTitle>
           <VRow>
             <VCol cols="10"><h3>Edit Data Bahan</h3></VCol>
-            <VCol cols="2" style="display: flex; justify-content: end;"
+            <VCol cols="2" style="display: flex; justify-content: end"
               ><VIcon
                 size="small"
                 icon="fa-times"
@@ -393,7 +393,7 @@ const insertBahan = async () => {
               </VCol>
             </VRow> </VCardItem
           ><VCardActions
-            style="display: flex; justify-content: end; padding: 1.5svw;"
+            style="display: flex; justify-content: end; padding: 1.5svw"
           >
             <div>
               <VBtn @click="isActive.value = false" variant="outlined"
@@ -434,6 +434,7 @@ const insertBahan = async () => {
       </VCardText>
       <VCardItem>
         <VDataTableServer
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPageUncertified"
           v-model:page="pageUncertified"
           :items-length="totalItemsUncertified"
@@ -490,6 +491,7 @@ const insertBahan = async () => {
       </VCardText>
       <VCardItem>
         <VDataTableServer
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPageUncertified"
           v-model:page="pageUncertified"
           :items-length="totalItemsUncertified"
@@ -545,6 +547,7 @@ const insertBahan = async () => {
       </VCardText>
       <VCardItem>
         <VDataTableServer
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPageCertified"
           v-model:page="pageCertified"
           :items-length="totalItemsCertified"

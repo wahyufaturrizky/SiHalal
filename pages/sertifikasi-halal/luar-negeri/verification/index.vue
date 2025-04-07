@@ -76,14 +76,14 @@ const refresh = async () => {
 };
 
 const verifikatorTableHeader = [
-  { title: "No", key: "id" },
-  { title: "Registration Number", key: "no_daftar" },
-  { title: "Importer's Name", key: "nama_importir" },
-  { title: "NIB / Bu  siness ID No", key: "nib" },
-  { title: "NPWP / Taxpayer ID No", key: "npwp" },
-  { title: "Date", key: "tgl_daftar" },
-  { title: "Status", key: "status_reg" },
-  { title: "Action", key: "action" },
+  { title: "No", key: "id", sortable: false },
+  { title: "Registration Number", key: "no_daftar", sortable: false },
+  { title: "Importer's Name", key: "nama_importir", sortable: false },
+  { title: "NIB / Bu  siness ID No", key: "nib", sortable: false },
+  { title: "NPWP / Taxpayer ID No", key: "npwp", sortable: false },
+  { title: "Date", key: "tgl_daftar", sortable: false },
+  { title: "Status", key: "status_reg", sortable: false },
+  { title: "Action", key: "action", sortable: false },
 ];
 
 const searchQuery = ref("");
@@ -139,6 +139,7 @@ const navigateAction = (id: string) => {
       <VRow>
         <VCol>
           <VDataTableServer
+            :items-per-page-options="[10, 25, 50, 100]"
             v-model:items-per-page="itemPerPage"
             v-model:page="page"
             :headers="verifikatorTableHeader"

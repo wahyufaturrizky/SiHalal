@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import FormEditLayoutProduksi from "@/components/form/FormEditLayoutProduksi.vue";
-import FormTambahLayoutProduksi from "@/components/form/FormTambahLayoutProduksi.vue";
-
 const catatanBahanHeaders = [
   { title: "No", key: "no" },
   { title: "Nama Bahan", key: "nama_bahan", nowrap: true },
@@ -19,6 +16,9 @@ const catatanBahanHeaders = [
 ];
 
 const catatanBahanItems = ref([]);
+const sizeBahan = ref(10);
+const pageBahan = ref(1);
+const totalDataBahan = ref(0);
 
 const catatanProdukHeaders = [
   { title: "No", key: "no" },
@@ -38,6 +38,7 @@ const catatanProdukHeaders = [
 
 const catatanProdukItems = ref([]);
 const route = useRoute();
+
 const getBahan = async () => {
   try {
     const response = await $api("/reguler/verifikator/detail/proses/bahan", {
@@ -45,16 +46,31 @@ const getBahan = async () => {
       body: {
         id_reg: route.params.id,
       },
+      params: {
+        page: pageBahan.value,
+        size: sizeBahan.value,
+      },
     });
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan", "error");
       return;
     }
     catatanBahanItems.value = response.data;
+    totalDataBahan.value = response.total_data;
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
 };
+
+const updateOptionsBahan = (options: {
+  page: number;
+  itemsPerPage: number;
+}) => {
+  pageBahan.value = options.page;
+  sizeBahan.value = options.itemsPerPage;
+  getBahan();
+};
+
 const getProduk = async () => {
   try {
     const response = await $api("/reguler/verifikator/detail/proses/produk", {
@@ -73,14 +89,15 @@ const getProduk = async () => {
   }
 };
 // TODO -> LOGIC TO DONWLOAD FILE
-const downloadCatatanBahan = async (item) => await downloadDocument(item,'FILES');
+const downloadCatatanBahan = async (item) =>
+  await downloadDocument(item, "FILES");
 
 // PRODUK
 // TODO -> LOGIC TO DONWLOAD FILE
-const downloadCatatanProduk = async (item) => await downloadDocument(item,'FILES');
+const downloadCatatanProduk = async (item) =>
+  await downloadDocument(item, "FILES");
 
 onMounted(async () => {
-  await getBahan();
   await getProduk();
 });
 </script>
@@ -91,9 +108,17 @@ onMounted(async () => {
       <span class="text-h3">Catatan Penyimpanan Bahan Dan Produk </span>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="catatanBahanHeaders" :items="catatanBahanItems">
+      <VDataTableServer
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="catatanBahanHeaders"
+        :items="catatanBahanItems"
+        :items-per-page="sizeBahan"
+        :page="pageBahan"
+        :items-length="totalDataBahan"
+        @update:options="updateOptionsBahan"
+      >
         <template #item.no="{ index }">
-          {{ index + 1 }}
+          {{ (pageBahan - 1) * sizeBahan + index + 1 }}
         </template>
         <template #item.file="{ item }">
           <v-btn
@@ -106,13 +131,17 @@ onMounted(async () => {
             File
           </v-btn>
         </template>
-      </VDataTable>
+      </VDataTableServer>
     </VCardItem>
 
     <VCardItem>
       <VCardTitle class="d-flex justify-space-between align-center">
       </VCardTitle>
-      <VDataTable :headers="catatanProdukHeaders" :items="catatanProdukItems">
+      <VDataTable
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="catatanProdukHeaders"
+        :items="catatanProdukItems"
+      >
         <template #item.no="{ index }">
           {{ index + 1 }}
         </template>

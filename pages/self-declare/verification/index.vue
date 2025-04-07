@@ -59,7 +59,7 @@ const loadItem = async (
   keyword: string = "",
   status: string = "",
   shortBy: string = "",
-  shortByField: string = "",
+  shortByField: string = ""
 ) => {
   try {
     loading.value = true;
@@ -136,7 +136,9 @@ const selectedFilterBy = ref("pelaku_usaha");
           <div class="text-h4 font-weight-bold">Data Pengajuan</div>
         </VCol>
         <VCol cols="6" align="end">
-          <DataPermohonanSertifikasi @refresh="loadItem(1, itemPerPage, searchQuery, status, '', '')" />
+          <DataPermohonanSertifikasi
+            @refresh="loadItem(1, itemPerPage, searchQuery, status, '', '')"
+          />
         </VCol>
       </VRow>
     </VCardTitle>
@@ -162,7 +164,9 @@ const selectedFilterBy = ref("pelaku_usaha");
             :items="itemsStatus"
             item-title="name"
             item-value="code"
-            @update:model-value="loadItem(1, itemPerPage, searchQuery, $event, '', '')"
+            @update:model-value="
+              loadItem(1, itemPerPage, searchQuery, $event, '', '')
+            "
           />
         </VCol>
         <VCol class="d-flex justify-sm-space-between align-center" cols="9">
@@ -178,6 +182,7 @@ const selectedFilterBy = ref("pelaku_usaha");
       </VRow>
       <VRow>
         <VDataTableServer
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
           v-model:sort-by="sortBy"
@@ -187,7 +192,17 @@ const selectedFilterBy = ref("pelaku_usaha");
           :loading="loading"
           :items-length="totalItems"
           loading-text="Loading..."
-          @update:options="(newFilter) => loadItem(page, itemPerPage, searchQuery, status, newFilter?.sortBy?.[0]?.order, newFilter?.sortBy?.[0]?.key)"
+          @update:options="
+            (newFilter) =>
+              loadItem(
+                page,
+                itemPerPage,
+                searchQuery,
+                status,
+                newFilter?.sortBy?.[0]?.order,
+                newFilter?.sortBy?.[0]?.key
+              )
+          "
         >
           <template #item.no="{ index }">
             {{ index + 1 + (page - 1) * itemPerPage }}

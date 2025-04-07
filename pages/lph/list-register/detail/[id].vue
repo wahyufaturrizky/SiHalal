@@ -241,7 +241,7 @@ const loadItemById = async () => {
         await OldDoc(noDaftar);
       } else {
         console.error("no daftar tidak ditemukan");
-      }  
+      }
 
       return response;
     } else {
@@ -252,7 +252,6 @@ const loadItemById = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
-
 
 const handleDownloadFormDokumenLama = async (fileName: string) => {
   window.open(fileName, "_blank");
@@ -302,7 +301,7 @@ const OldDoc = async (noDaftar: string) => {
 };
 
 onMounted(async () => {
-  const res: any = await Promise.all([loadItemById(), getTotalBiaya()]);     
+  const res: any = await Promise.all([loadItemById(), getTotalBiaya()]);
 
   const checkResIfUndefined = res.every((item: any) => {
     return item !== undefined;
@@ -500,6 +499,7 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTableServer
+                :items-per-page-options="[10, 25, 50, 100]"
                 :headers="supervisorHeader"
                 :items="supervisorItems"
                 :items-per-page="itemPerPageAuditor"
@@ -620,13 +620,20 @@ onMounted(async () => {
                   style="align-content: start"
                   density="compact"
                   :color="
-                    detailSubmission?.certificate_halal?.lph?.file_sertifikat ? 'primary' : '#A09BA1'
+                    detailSubmission?.certificate_halal?.lph?.file_sertifikat
+                      ? 'primary'
+                      : '#A09BA1'
                   "
                   :disabled="
-                    detailSubmission?.certificate_halal?.lph?.file_sertifikat ? false : true
+                    detailSubmission?.certificate_halal?.lph?.file_sertifikat
+                      ? false
+                      : true
                   "
                   @click="
-                    downloadDocument(detailSubmission?.certificate_halal?.lph?.file_sertifikat, 'SERT_LPH')
+                    downloadDocument(
+                      detailSubmission?.certificate_halal?.lph?.file_sertifikat,
+                      'SERT_LPH'
+                    )
                   "
                 />
               </InfoRow>
@@ -644,9 +651,7 @@ onMounted(async () => {
                   :color="
                     detailSubmission?.dokumen?.sjph ? 'primary' : '#A09BA1'
                   "
-                  :disabled="
-                    detailSubmission?.dokumen?.sjph ? false : true
-                  "
+                  :disabled="detailSubmission?.dokumen?.sjph ? false : true"
                   @click="
                     downloadDocument(detailSubmission?.dokumen?.sjph, 'FILES')
                   "
@@ -664,13 +669,18 @@ onMounted(async () => {
                   style="align-content: start"
                   density="compact"
                   :color="
-                    detailSubmission?.dokumen?.permohonan ? 'primary' : '#A09BA1'
+                    detailSubmission?.dokumen?.permohonan
+                      ? 'primary'
+                      : '#A09BA1'
                   "
                   :disabled="
                     detailSubmission?.dokumen?.permohonan ? false : true
                   "
                   @click="
-                    downloadDocument(detailSubmission?.dokumen?.permohonan, 'FILES')
+                    downloadDocument(
+                      detailSubmission?.dokumen?.permohonan,
+                      'FILES'
+                    )
                   "
                 />
               </InfoRow>
@@ -680,10 +690,7 @@ onMounted(async () => {
         <br />
 
         <VExpansionPanels v-model="panelDocLama">
-          <VExpansionPanel
-            v-if="dokumenLama.length > 0"
-            class="pt-3"
-          >
+          <VExpansionPanel v-if="dokumenLama.length > 0" class="pt-3">
             <VExpansionPanelTitle class="font-weight-bold text-h4">
               Dokumen Lama
             </VExpansionPanelTitle>
@@ -715,7 +722,7 @@ onMounted(async () => {
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
-        <br/>
+        <br />
         <VExpansionPanels v-model="panelTracking">
           <VExpansionPanel class="pa-4">
             <VExpansionPanelTitle class="text-h4">

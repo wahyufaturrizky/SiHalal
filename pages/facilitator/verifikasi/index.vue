@@ -101,6 +101,7 @@ const maxWidthSearch = computed(() => (mdAndUp ? 700 : "90%"));
       </VRow>
       <VRow>
         <VDataTableServer
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
           :headers="tableHeader"

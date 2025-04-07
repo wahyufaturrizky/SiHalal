@@ -119,7 +119,11 @@ onMounted(async () => {
                     </VRow>
                   </VCardTitle>
                   <VCardItem>
-                    <VDataTable :headers="tableKBLIHeader" :items="store.kbli">
+                    <VDataTable
+                      :items-per-page-options="[10, 25, 50, 100]"
+                      :headers="tableKBLIHeader"
+                      :items="store.kbli"
+                    >
                       <template #item.no_idx="{ index }">
                         {{ index + 1 }}
                       </template>

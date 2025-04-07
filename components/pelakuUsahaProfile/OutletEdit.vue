@@ -13,10 +13,12 @@ const editOutletRef = ref();
 
 const panelOpen = ref(0);
 
+const { t } = useI18n();
+
 const tableOutletHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "name" },
-  { title: "Alamat", key: "address" },
+  { title: "detail-pu.pu-out-nama", key: "name" },
+  { title: "detail-pu.pu-out-address", key: "address" },
   { title: "Action", key: "action" },
 ];
 
@@ -140,6 +142,17 @@ function handleDelete(item) {
       >
         <template #item.no="{ index }">
           {{ index + 1 }}
+        </template>
+        <template #header.name="{ column }">
+          <div>
+            {{ t(column.title) }}
+          </div>
+        </template>
+
+        <template #header.address="{ column }">
+          <div>
+            {{ t(column.title) }}
+          </div>
         </template>
         <template #item.action="{ item }">
           <VMenu :close-on-content-click="false">

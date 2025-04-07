@@ -213,7 +213,6 @@ onMounted(async () => {
             v-model="formAdd.jabatan"
             class="-mt-10"
             placeholder="isi Jabatan"
-            disabled
           />
           <br />
           <p class="label-pengajuan">

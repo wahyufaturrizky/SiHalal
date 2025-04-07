@@ -161,6 +161,7 @@ const navigateAction = (id: string) => {
       <VRow v-if="!loadingAll">
         <VCol>
           <VDataTableServer
+            :items-per-page-options="[10, 25, 50, 100]"
             v-model:items-per-page="itemPerPage"
             v-model:page="page"
             :headers="verifikatorTableHeader"
