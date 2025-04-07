@@ -63,7 +63,6 @@ const dataPendidikan = ref([
   { label: "Nama Universitas", value: "" },
 ]);
 
-
 const dataRegistrasi = ref([
   { label: "Status", value: "" },
   { label: "No. Registrasi", value: "" },
@@ -78,32 +77,21 @@ const dokumenPersyaratan = ref([
   { label: "Sertifikat Pelatihan", value: "" },
 ]);
 
-const formatDate = (isoString: string): string => {
-  const date = new Date(isoString);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-
-  return `${day}-${month}-${year}`;
-};
-
-
-
 const getProfile = async () => {
   try {
     const response = await $api("/reguler/lph/detail-pendamping", {
       method: "get",
     });
+
     if (
       response.data.pendamping.provinsi &&
       response.data.pendamping.provinsi != "00"
-    ) {
+    )
       await getDistrict(response.data.pendamping.provinsi);
-    }
+
     await getSubDistrict(response.data.pendamping.kabupaten);
 
     if (response.code != 4000) {
- 
       dataProfilePendamping.value.forEach((el) => {
         if (el.label === "NIK") el.value = response.data.pendamping.nik;
         if (el.label === "Nama") el.value = response.data.pendamping.nama;
@@ -113,7 +101,7 @@ const getProfile = async () => {
         if (el.label === "Kota/Kab")
           el.value = response.data.pendamping.kabupaten;
         if (el.label === "Kecamatan")
-          el.value = Math.floor(response.data.pendamping.kecamatan) + "";
+          el.value = `${Math.floor(response.data.pendamping.kecamatan)}`;
         if (el.label === "Kode Pos")
           el.value = response.data.pendamping.kode_pos;
         if (el.label === "Email") el.value = response.data.pendamping.email;
@@ -122,7 +110,7 @@ const getProfile = async () => {
         if (el.label === "Tempat Lahir")
           el.value = response.data.pendamping.tempat_lahir;
         if (el.label === "Tanggal Lahir")
-          el.value = formatDate(response.data.pendamping.tgl_lahir);
+          el.value = formatDateId(response.data.pendamping.tgl_lahir);
         if (el.label === "Pekerjaan")
           el.value = response.data.pendamping.pekerjaan;
         if (el.label === "IDLembaga")
@@ -159,9 +147,9 @@ const getProfile = async () => {
       dataRegistrasi.value.forEach((el) => {
         if (el.label === "Status") el.value = response.data.pendamping.status;
         if (el.label === "No. Registrasi")
-          el.value = Math.floor(response.data.pendamping.no_register) + "";
+          el.value = `${Math.floor(response.data.pendamping.no_register)}`;
         if (el.label === "Tanggal Terbit")
-          el.value = formatDate(response.data.pendamping.tgl_terbit);
+          el.value = formatDateId(response.data.pendamping.tgl_terbit);
       });
 
       documentLMS.value.forEach((el) => {
@@ -172,31 +160,31 @@ const getProfile = async () => {
         if (el.label === "Ijazah")
           el.value = response.data.pendamping.fotoijazah;
         if (el.label === "KTP") el.value = response.data.pendamping.fotoktp;
-        if (el.label === "Sertifikat Pelatihan"){
-          const {file_sertifikat, fotosertifikat} = response.data.pendamping || {}
-          el.value = file_sertifikat || fotosertifikat
+        if (el.label === "Sertifikat Pelatihan") {
+          const { file_sertifikat, fotosertifikat } =
+            response.data.pendamping || {};
+
+          el.value = file_sertifikat || fotosertifikat;
         }
       });
-
-      return;
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+
 const openLink = (url: string) => {
-  
-  if (url) {
-    window.open(url, "_blank");
-  }
+  if (url) window.open(url, "_blank");
 };
 
 const getProvince = async () => {
   const response = await $api("/master/province", {
     method: "get",
   } as any);
+
   provinceList.value = response;
 };
+
 const getDistrict = async (kode: string) => {
   const response: MasterDistrict[] = await $api("/master/district", {
     method: "post",
@@ -204,8 +192,10 @@ const getDistrict = async (kode: string) => {
       province: kode,
     },
   });
+
   districtList.value = response;
 };
+
 const getSubDistrict = async (kode: string) => {
   const response = await $api("/master/subdistrict", {
     method: "post",
@@ -213,8 +203,10 @@ const getSubDistrict = async (kode: string) => {
       district: kode,
     },
   } as any);
+
   subDistrictList.value = response;
 };
+
 const provinceList = ref();
 const districtList = ref();
 const subDistrictList = ref();
@@ -229,13 +221,16 @@ const uploadFileButton = ref(false);
 const uploadDocument = async (file) => {
   try {
     const formData = new FormData();
+
     formData.append("id", authUser.user.id);
     formData.append("file", file);
     formData.append("type", "docs");
+
     const response = await $api("/shln/submission/document/upload", {
       method: "post",
       body: formData,
     });
+
     return response?.data?.file_url;
   } catch (error) {
     useSnackbar().sendSnackbar(
@@ -270,7 +265,9 @@ const handleEdit = async () => {
   await getProfile();
   isEditing.value = true;
 };
+
 const dialog = ref(false);
+
 const handleCancel = async () => {
   dialog.value = false;
   isEditing.value = false;
@@ -278,17 +275,15 @@ const handleCancel = async () => {
 };
 
 function convertToISOString(dateStr) {
-    // Pecah format "DD-MM-YYYY" menjadi bagian-bagian
-    const [day, month, year] = dateStr.split('-');
+  // Pecah format "DD-MM-YYYY" menjadi bagian-bagian
+  const [day, month, year] = dateStr.split("-");
 
-    // Buat objek Date dalam UTC
-    const date = new Date(Date.UTC(year, month - 1, day));
+  // Buat objek Date dalam UTC
+  const date = new Date(Date.UTC(year, month - 1, day));
 
-    // Konversi ke ISO string
-    return date.toISOString();
+  // Konversi ke ISO string
+  return date.toISOString();
 }
-
-
 
 const options = [
   "Penyuluh agama",
@@ -304,7 +299,7 @@ const handleSave = async () => {
   dialog.value = false;
   isEditing.value = false;
 
-  let body = {
+  const body = {
     rekening: {
       no_rekening: "",
       nama: "",
@@ -315,6 +310,7 @@ const handleSave = async () => {
       file_foto_npwp: "",
     },
   };
+
   let id_pendamping = "";
   dataProfilePendamping.value.forEach((el) => {
     if (el.label === "NIK") body.nik = el.value;
@@ -328,7 +324,8 @@ const handleSave = async () => {
     if (el.label === "Telp /HP") body.no_hp = el.value;
     if (el.label === "Tempat Lahir") body.tempat_lahir = el.value;
 
-    if (el.label === "Tanggal Lahir") body.tgl_lahir = convertToISOString(el.value);
+    if (el.label === "Tanggal Lahir")
+      body.tgl_lahir = convertToISOString(el.value);
     if (el.label === "Pekerjaan") body.pekerjaan = el.value;
     if (el.label === "Pekerjaan_lain") body.pekerjaan_lain = el.value;
     if (el.label === "IDLembaga") body.IDLembaga = el.value;
@@ -344,47 +341,37 @@ const handleSave = async () => {
     if (el.label === "Nama Bank") body.rekening.bank = el.value;
     if (el.label === "No. Rekening") body.rekening.no_rekening = el.value;
     if (el.label === "Nama Rekening") body.rekening.nama = el.value;
-    if (el.label === "File Rekening") body.rekening.file_foto_rek = el.value
+    if (el.label === "File Rekening") body.rekening.file_foto_rek = el.value;
   });
 
   dataBank2.value.forEach((el) => {
     if (el.label === "NPWP") body.rekening.npwp = el.value;
     if (el.label === "Nama pada NPWP") body.rekening.nama_npwp = el.value;
-    if (el.label === "File NPWP") body.rekening.file_foto_npwp = el.value
-    ;
+    if (el.label === "File NPWP") body.rekening.file_foto_npwp = el.value;
   });
 
   dokumenPersyaratan.value.forEach((el) => {
+    if (el.label === "Ijazah") body.foto_ijazah = el.value;
+    else body.foto_ijazah = "";
 
-    if (el.label === "Ijazah") {body.foto_ijazah = el.value}else{
-      body.foto_ijazah =''
-    };
-    if (el.label === "KTP") {body.foto_ktp = el.value}else{
-       body.foto_ktp  =''
-    };
-    if (el.label === "Sertifikat Pelatihan") {body.fotosertifikat = el.value }
+    if (el.label === "KTP") body.foto_ktp = el.value;
+    else body.foto_ktp = "";
+
+    if (el.label === "Sertifikat Pelatihan") body.fotosertifikat = el.value;
   });
-
 
   body.foto_ijazah = await uploadDocument(body.foto_ijazah);
 
-
   body.foto_ktp = await uploadDocument(body.foto_ktp);
-
-
-
-
 
   body.fotosertifikat = await uploadDocument(body.fotosertifikat);
   body.rekening.file_foto_npwp = await uploadDocument(
     body.rekening.file_foto_npwp
   );
 
-
   body.rekening.file_foto_rek = await uploadDocument(
     body.rekening.file_foto_rek
   );
-
 
   try {
     await $api(`/reguler/lph/update-profile/${id_pendamping}`, {
@@ -396,7 +383,6 @@ const handleSave = async () => {
 
     await getProfile();
   } catch (error) {
-
     useSnackbar().sendSnackbar("Ada Kesalaan ", "error");
   }
 
@@ -440,10 +426,10 @@ const handleSave = async () => {
     </VDialog>
     <VRow>
       <VBtn
+        v-if="isEditing"
         variant="text"
         prepend-icon="mdi-chevron-left"
         @click="handleCancel"
-        v-if="isEditing"
       >
         Kembali
       </VBtn>
@@ -462,8 +448,8 @@ const handleSave = async () => {
           ubah
         </VBtn>
         <VBtn
-          append-icon="mdi-content-save"
           v-if="isEditing"
+          append-icon="mdi-content-save"
           @click="dialog = true"
         >
           Simpan
@@ -481,20 +467,20 @@ const handleSave = async () => {
             <VExpansionPanelText>
               <VRow v-for="(item, index) in dataProfilePendamping" :key="index">
                 <VCol
-                  cols="3"
-                  class="text-left font-weight-medium"
                   v-if="
                     item.label !== 'IDLembaga' &&
                     item.label !== 'Pekerjaan_lain' &&
                     item.label !== 'ID pendamping'
                   "
+                  cols="3"
+                  class="text-left font-weight-medium"
                 >
                   {{ item.label }}
                 </VCol>
                 <VCol
+                  v-if="item.label !== 'Pekerjaan'"
                   cols="12"
                   class="font-weight-medium"
-                  v-if="item.label !== 'Pekerjaan'"
                 >
                   <VTextField
                     v-if="
@@ -527,37 +513,37 @@ const handleSave = async () => {
 
                   <VSelect
                     v-if="item.label === 'Provinsi'"
-                    placeholder="Pilih provinsi"
                     v-model="item.value"
+                    placeholder="Pilih provinsi"
                     :rules="[requiredValidator]"
-                    @update:model-value="getDistrict"
                     :items="provinceList"
                     item-title="name"
                     item-value="code"
                     density="compact"
                     rounded="xl"
                     :readonly="!isEditing"
+                    @update:model-value="getDistrict"
                   />
 
                   <VSelect
                     v-if="item.label === 'Kota/Kab'"
+                    v-model="item.value"
                     placeholder="Pilih kota/kabupaten"
                     :rules="[requiredValidator]"
-                    v-model="item.value"
-                    @update:model-value="getSubDistrict"
                     :items="districtList"
                     item-title="name"
                     item-value="code"
                     density="compact"
                     rounded="xl"
                     :readonly="!isEditing"
+                    @update:model-value="getSubDistrict"
                   />
 
                   <VSelect
                     v-if="item.label === 'Kecamatan'"
+                    v-model="item.value"
                     placeholder="Pilih kecamatan"
                     :rules="[requiredValidator]"
-                    v-model="item.value"
                     :items="subDistrictList"
                     item-title="name"
                     item-value="code"
@@ -570,7 +556,7 @@ const handleSave = async () => {
                       <Vuepicdatepicker
                         v-model:model-value="item.value"
                         auto-apply
-                        model-type="dd-MM-yyyy"
+                        model-type="DD/MM/YYYY"
                         :enable-time-picker="false"
                         :rules="[requiredValidator]"
                         teleport
@@ -592,7 +578,8 @@ const handleSave = async () => {
                     </template>
                   </Vuepicdatepicker>
 
-                  <!-- <VTextField
+                  <!--
+                    <VTextField
                     v-if="item.label === 'Tanggal Lahir'"
                     placeholder="Pilih Tanggal Lahir"
                     :rules="[requiredValidator]"
@@ -600,7 +587,8 @@ const handleSave = async () => {
                     :model-value="item.value"
                     color="#757575"
                     :readonly="!isEditing"
-                  /> -->
+                    />
+                  -->
                 </VCol>
 
                 <VCol cols="12" class="font-weight-medium">
@@ -665,7 +653,7 @@ const handleSave = async () => {
                   <span class="font-weight-medium">{{ item.label }}</span>
                 </VCol>
 
-                <VCol cols="12" v-if="item.label === 'Pendidikan Terakhir'">
+                <VCol v-if="item.label === 'Pendidikan Terakhir'" cols="12">
                   <VSelect
                     v-model="item.value"
                     :items="['SD', 'SMP', 'SMA', 'D3', 'S1', 'S2', 'S3']"
@@ -677,7 +665,7 @@ const handleSave = async () => {
                 </VCol>
 
                 <!-- Input untuk Nama Universitas -->
-                <VCol cols="12" v-if="item.label === 'Nama Universitas'">
+                <VCol v-if="item.label === 'Nama Universitas'" cols="12">
                   <VTextField
                     v-model="item.value"
                     variant="outlined"
@@ -691,7 +679,7 @@ const handleSave = async () => {
           </VExpansionPanel>
         </VExpansionPanels>
 
-        <VExpansionPanels v-model="panelMelacak" class="mb-4" v-if="false">
+        <VExpansionPanels v-if="false" v-model="panelMelacak" class="mb-4">
           <VExpansionPanel>
             <VExpansionPanelTitle class="text-h4 font-weight-bold">
               Melacak
@@ -730,12 +718,14 @@ const handleSave = async () => {
                       {{ item.label }}
                     </div>
                   </VCol>
-                  <!-- <VBtn variant="flat" class="px-3 ms-2">
+                  <!--
+                    <VBtn variant="flat" class="px-3 ms-2">
                     <VIcon
-                      icon="fa-download"
-                      @click="handleDownload(item.file_name)"
+                    icon="fa-download"
+                    @click="handleDownload(item.file_name)"
                     ></VIcon>
-                  </VBtn> -->
+                    </VBtn>
+                  -->
                   <VCol cols="12" md="4" class="squareBtnIcon" disabled="true">
                     :
                     <VBtn
@@ -743,7 +733,7 @@ const handleSave = async () => {
                       class="px-3 ms-2"
                       @click="openLink(item.value)"
                     >
-                      <VIcon icon="fa-download"></VIcon>
+                      <VIcon icon="fa-download" />
                     </VBtn>
                   </VCol>
                 </VRow>
@@ -792,13 +782,13 @@ const handleSave = async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VRow v-for="(item, index) in dataBank" :key="index" class="my-2">
-                <VCol cols="12" v-if="item.label !== 'File Rekening'">
+                <VCol v-if="item.label !== 'File Rekening'" cols="12">
                   <span class="font-weight-medium">{{ item.label }}</span>
                 </VCol>
-                <VCol cols="2" v-if="item.label === 'File Rekening'">
+                <VCol v-if="item.label === 'File Rekening'" cols="2">
                   <span class="font-weight-medium">{{ item.label }} </span>
                 </VCol>
-                <VCol cols="1" v-if="item.label === 'File Rekening'"> : </VCol>
+                <VCol v-if="item.label === 'File Rekening'" cols="1"> : </VCol>
 
                 <VCol v-if="item.label === 'Nama Bank'" cols="12">
                   <VSelect
@@ -848,13 +838,13 @@ const handleSave = async () => {
                       @click="
                         downloadDocument(item.value, 'PENDAMPING_REKENING')
                       "
-                    ></VIcon>
+                    />
                   </VBtn>
                 </VCol>
                 <VCol
+                  v-if="isEditing && item.label === 'File Rekening'"
                   cols="6"
                   md="6"
-                  v-if="isEditing && item.label === 'File Rekening'"
                 >
                   <HalalFileInput2 v-model="item.value" label="Pilih File" />
                 </VCol>
@@ -865,15 +855,15 @@ const handleSave = async () => {
                 :key="index"
                 class="my-2"
               >
-                <VCol cols="12" v-if="item.label !== 'File NPWP'">
+                <VCol v-if="item.label !== 'File NPWP'" cols="12">
                   <span class="font-weight-medium">{{ item.label }}</span>
                 </VCol>
-                <VCol cols="2" v-if="item.label === 'File NPWP'">
+                <VCol v-if="item.label === 'File NPWP'" cols="2">
                   <span class="font-weight-medium">{{ item.label }} </span>
                 </VCol>
-                <VCol cols="1" v-if="item.label === 'File NPWP'"> : </VCol>
+                <VCol v-if="item.label === 'File NPWP'" cols="1"> : </VCol>
 
-                <VCol cols="12" v-if="item.label !== 'File NPWP'">
+                <VCol v-if="item.label !== 'File NPWP'" cols="12">
                   <VTextField
                     v-model="item.value"
                     variant="outlined"
@@ -897,18 +887,18 @@ const handleSave = async () => {
                     <VIcon
                       icon="fa-download"
                       @click="downloadDocument(item.value, 'PENDAMPING_NPWP')"
-                    ></VIcon>
+                    />
                   </VBtn>
                 </VCol>
                 <VCol
+                  v-if="isEditing && item.label === 'File NPWP'"
                   cols="8"
                   md="6"
-                  v-if="isEditing && item.label === 'File NPWP'"
                 >
                   <HalalFileInput2 v-model="item.value" label="Pilih File" />
                 </VCol>
 
-                <VCol cols="6" md="6" v-if="isEditing && item.label === 'KTP'">
+                <VCol v-if="isEditing && item.label === 'KTP'" cols="6" md="6">
                   <HalalFileInput2 v-model="item.value" label="Pilih File" />
                 </VCol>
               </VRow>
@@ -931,10 +921,7 @@ const handleSave = async () => {
                   class="pa-1"
                 >
                   <VRow>
-                    <VCol
-                    cols="6" md="6"
-                      class="d-flex align-center"
-                    >
+                    <VCol cols="6" md="6" class="d-flex align-center">
                       <div class="text-body-1 font-weight-medium">
                         {{ item.label }}
                       </div>
@@ -942,7 +929,8 @@ const handleSave = async () => {
 
                     <VCol
                       v-if="item.label === 'Ijazah'"
-                   cols="6" md="6"
+                      cols="6"
+                      md="6"
                       class="d-flex align-center"
                     >
                       <span>:</span>
@@ -954,26 +942,28 @@ const handleSave = async () => {
                           downloadDocument(item.value, 'PENDAMPING_IJAZAH')
                         "
                       >
-                        <VIcon icon="fa-download"></VIcon>
+                        <VIcon icon="fa-download" />
                       </VBtn>
                     </VCol>
 
-                    <!-- <VCol
+                    <!--
+                      <VCol
                       cols="8"
                       md="6"
                       v-if="isEditing && item.label === 'Ijazah'"
-                    >
+                      >
                       <HalalFileInput2
-                        v-model="item.value"
-                        label="Pilih File"
+                      v-model="item.value"
+                      label="Pilih File"
                       />
-                    </VCol> -->
+                      </VCol>
+                    -->
 
                     <VCol
+                      v-if="item.label === 'KTP'"
                       :cols="isEditing ? 6 : 6"
                       :md="isEditing ? 6 : 6"
                       class="d-flex align-center"
-                      v-if="item.label === 'KTP'"
                     >
                       :
                       <VBtn
@@ -986,26 +976,28 @@ const handleSave = async () => {
                           @click="
                             downloadDocument(item.value, 'PENDAMPING_KTP')
                           "
-                        ></VIcon>
+                        />
                       </VBtn>
                     </VCol>
 
-                    <!-- <VCol
+                    <!--
+                      <VCol
                       cols="8"
                       md="6"
                       v-if="isEditing && item.label === 'KTP'"
-                    >
+                      >
                       <HalalFileInput2
-                        v-model="item.value"
-                        label="Pilih File"
+                      v-model="item.value"
+                      label="Pilih File"
                       />
-                    </VCol> -->
+                      </VCol>
+                    -->
 
                     <VCol
+                      v-if="item.label === 'Sertifikat Pelatihan'"
                       :cols="isEditing ? 6 : 6"
                       :md="isEditing ? 6 : 6"
                       class="d-flex align-center"
-                      v-if="item.label === 'Sertifikat Pelatihan'"
                     >
                       :
                       <VBtn
@@ -1021,19 +1013,21 @@ const handleSave = async () => {
                               'PENDAMPING_SERT_UPLOAD'
                             )
                           "
-                        ></VIcon>
+                        />
                       </VBtn>
                     </VCol>
-                    <!-- <VCol
+                    <!--
+                      <VCol
                       cols="8"
                       md="6"
                       v-if="isEditing && item.label === 'Sertifikat Pelatihan'"
-                    >
+                      >
                       <HalalFileInput2
-                        v-model="item.value"
-                        label="Pilih File"
+                      v-model="item.value"
+                      label="Pilih File"
                       />
-                    </VCol> -->
+                      </VCol>
+                    -->
                   </VRow>
                 </VListItem>
               </VList>

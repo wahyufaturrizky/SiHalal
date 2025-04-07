@@ -35,14 +35,6 @@ const timelineItems = ref<TimelineItem[]>([
   },
 ]);
 
-const formatDate = (date: string): string => {
-  return new Date(date).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-};
-
 const showTimeline = ref(false);
 const showPengajuan = ref(false);
 const showDetail = ref(false);
@@ -545,9 +537,9 @@ const onFasilitatorSearchInput = debounce((input) => {
             <VRow>
               <VCol>
                 <VDataTableServer
-                  :items-per-page-options="[10, 25, 50, 100]"
                   v-model:items-per-page="itemPerPage"
                   v-model:page="page"
+                  :items-per-page-options="[10, 25, 50, 100]"
                   :headers="legalTableHeader"
                   :items="pabrikTableData"
                   :loading="loading"
@@ -585,9 +577,9 @@ const onFasilitatorSearchInput = debounce((input) => {
             <VRow>
               <VCol>
                 <VDataTableServer
-                  :items-per-page-options="[10, 25, 50, 100]"
                   v-model:items-per-page="itemPerPage"
                   v-model:page="page"
+                  :items-per-page-options="[10, 25, 50, 100]"
                   :headers="penyeliaTableHeader"
                   :items="penyeliaTableData"
                   :loading="loading"
@@ -956,9 +948,9 @@ const onFasilitatorSearchInput = debounce((input) => {
             <VRow>
               <VCol>
                 <VDataTableServer
-                  :items-per-page-options="[10, 25, 50, 100]"
                   v-model:items-per-page="itemPerPage"
                   v-model:page="page"
+                  :items-per-page-options="[10, 25, 50, 100]"
                   :headers="pabrikTableHeader"
                   :items="pabrikTableData"
                   :loading="loading"
@@ -1011,9 +1003,9 @@ const onFasilitatorSearchInput = debounce((input) => {
             <VRow>
               <VCol>
                 <VDataTableServer
-                  :items-per-page-options="[10, 25, 50, 100]"
                   v-model:items-per-page="itemPerPage"
                   v-model:page="page"
+                  :items-per-page-options="[10, 25, 50, 100]"
                   :headers="outletTableHeader"
                   :items="outletTableData"
                   :loading="loading"
@@ -1104,9 +1096,9 @@ const onFasilitatorSearchInput = debounce((input) => {
           <VRow>
             <VCol>
               <VDataTableServer
-                :items-per-page-options="[10, 25, 50, 100]"
                 v-model:items-per-page="itemPerPage"
                 v-model:page="page"
+                :items-per-page-options="[10, 25, 50, 100]"
                 :headers="verifikatorTableHeader"
                 :items="items"
                 :loading="loading"
@@ -1164,9 +1156,9 @@ const onFasilitatorSearchInput = debounce((input) => {
           <VRow>
             <VCol>
               <VDataTableServer
-                :items-per-page-options="[10, 25, 50, 100]"
                 v-model:items-per-page="itemPerPage"
                 v-model:page="page"
+                :items-per-page-options="[10, 25, 50, 100]"
                 :headers="verifikatorTableHeader"
                 :items="items"
                 :loading="loading"
@@ -1234,7 +1226,7 @@ const onFasilitatorSearchInput = debounce((input) => {
                       </div>
                     </div>
                     <div class="text-caption text-grey">
-                      {{ formatDate(item.date) }}
+                      {{ formatDateId(item.date) }}
                     </div>
                   </div>
                 </VTimelineItem>
@@ -1280,17 +1272,18 @@ const onFasilitatorSearchInput = debounce((input) => {
 }
 
 .label {
-  min-width: 300px; /* Adjust this value based on the longest label */
   font-weight: 500;
+  min-inline-size: 300px; /* Adjust this value based on the longest label */
 }
 
 .colon {
-  margin: 0 8px; /* Space between colon and value */
+  margin-block: 0;
+  margin-inline: 8px; /* Space between colon and value */
 }
 
 .value {
   flex: 1;
-  text-align: left;
+  text-align: start;
 }
 
 .required::after {
@@ -1299,9 +1292,9 @@ const onFasilitatorSearchInput = debounce((input) => {
 }
 
 :deep .choose-file {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  margin-right: 0;
+  border-end-start-radius: 0;
+  border-start-start-radius: 0;
+  margin-inline-end: 0;
   scroll-margin-inline-end: 0;
 }
 </style>

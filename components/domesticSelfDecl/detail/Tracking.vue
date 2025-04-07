@@ -15,6 +15,7 @@ interface TimelineItem {
 }
 
 const timelineItems = ref<TimelineItem[]>([]);
+
 timelineItems.value = props.data?.map((item: any) => {
   const { status, username, tanggal, comment } = item || {};
 
@@ -22,21 +23,14 @@ timelineItems.value = props.data?.map((item: any) => {
     title: status,
     user: username,
     date: tanggal,
-    comment: comment,
+    comment,
     color: "grey",
   };
 });
 console.log("@timelineItems", timelineItems);
 
-const formatDate = (date: string): string => {
-  return new Date(date).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-};
-
 const defaultStatus = { color: "error", desc: "Unknown Status" };
+
 const statusItem = new Proxy(
   {
     OF1: { color: "primary", desc: "Draft" },
@@ -92,7 +86,7 @@ const statusItem = new Proxy(
               </div>
             </div>
             <div class="text-caption text-grey">
-              {{ formatDate(item.date) }}
+              {{ formatDateId(item.date) }}
             </div>
           </div>
         </VTimelineItem>

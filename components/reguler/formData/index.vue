@@ -217,9 +217,7 @@ const getProductType = async (id: string) => {
     //   },
     // })
 
-    if (!response) {
-      return;
-    }
+    if (!response) return;
 
     if (response.length) {
       productList.value = response;
@@ -259,13 +257,12 @@ const lphValidation = async (title: string, value: string, index: number) => {
       props.data?.[3]?.value === item.code
   );
 
-  if (title === "pengajuan-reguler.reguler-detail-pengajuan-jnslay") {
+  if (title === "pengajuan-reguler.reguler-detail-pengajuan-jnslay")
     await getProductType(value);
-  } else if (
+  else if (
     title === "pengajuan-reguler.reguler-form--pengajuan-pengajuan-marketing"
-  ) {
+  )
     await getLph(LIST_BUSINESS_ACTOR, jenisLayanan?.code, value);
-  }
 
   if (props.title === "halal_cert_submission.title") {
     const checkData = props.data.map((el: any) => {
@@ -468,7 +465,7 @@ watchEffect(async () => {
                 v-model="item.value"
                 teleport-center
                 :enable-time-picker="false"
-                format="dd-MM-yyyy"
+                format="DD/MM/YYYY"
                 :disabled="isDisabledForm"
               />
             </div>
@@ -605,7 +602,7 @@ watchEffect(async () => {
             {{ messageFasilitator }}
             <br />
 
-            <span class="text-xs" style="padding-top: 20px">
+            <span class="text-xs" style="padding-block-start: 20px">
               Klik <VIcon color="red"> fa-trash </VIcon> untuk mengubah data
             </span>
           </VAlert>

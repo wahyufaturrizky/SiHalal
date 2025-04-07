@@ -213,9 +213,9 @@ const openDialog = () => {
       <VRow>
         <VCol>
           <VDataTableServer
-            :items-per-page-options="[10, 25, 50, 100]"
             v-model:items-per-page="itemPerPageSubmission"
             v-model:page="pageSubmission"
+            :items-per-page-options="[10, 25, 50, 100]"
             :loading="loadingSubmission"
             :items-length="totalItemsSubmission"
             :headers="verifikatorTablePopUpHeader"
@@ -244,6 +244,9 @@ const openDialog = () => {
             </template>
             <template #item.hcb="{ item }">
               {{ item.hcb || "NA" }}
+            </template>
+            <template #item.date="{ item }">
+              {{ item.date ? formatDateId(item.date) : "NA" }}
             </template>
             <template #item.verificator_name="{ item }">
               {{ item.status_code === "OF10" ? item.verificator_name : "" }}

@@ -27,14 +27,6 @@ timelineItems.value = props.data?.map((item: any) => {
     comment,
   };
 });
-
-const formatDate = (date: string): string => {
-  return new Date(date).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-};
 </script>
 
 <template>
@@ -68,7 +60,9 @@ const formatDate = (date: string): string => {
             <span class="app-timeline-title">
               {{ item.title }}
             </span>
-            <span class="app-timeline-meta"> {{ formatDate(item.date) }}</span>
+            <span class="app-timeline-meta">
+              {{ formatDateId(item.date) }}</span
+            >
           </div>
           <div class="app-timeline-text mt-1">
             {{ item.user }}
@@ -76,7 +70,7 @@ const formatDate = (date: string): string => {
           <div v-if="item.comment" class="app-timeline-text mt-1">
             {{
               item.comment.length > 38
-                ? item.comment.slice(0, 38) + "..."
+                ? `${item.comment.slice(0, 38)}...`
                 : item.comment
             }}
           </div>

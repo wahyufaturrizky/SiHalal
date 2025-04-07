@@ -30,19 +30,25 @@ const props = defineProps<{
           <span class="app-timeline-title">
             {{
               (item.comment as any).length > 38
-                ? (item.comment as any).slice(0, 38) + "..."
+                ? `${(item.comment as any).slice(0, 38)}...`
                 : (item.comment as any)
             }}
           </span>
           <span class="app-timeline-meta">{{
-            formatDate((item as any).date)
+            formatDateId((item as any).date)
           }}</span>
         </div>
         <div class="app-timeline-text mt-1">
           {{ (item as any).username }}
         </div>
         <div
-          v-if="(item.status === 'OF280' || item.status === 'OF290' || item.status === 'OF900' || item.status === 'OF285') && item.keterangan"
+          v-if="
+            (item.status === 'OF280' ||
+              item.status === 'OF290' ||
+              item.status === 'OF900' ||
+              item.status === 'OF285') &&
+            item.keterangan
+          "
           class="app-timeline-text mt-1"
         >
           {{ item.keterangan }}
@@ -57,6 +63,7 @@ const props = defineProps<{
   .v-timeline-divider__dot .v-timeline-divider__inner-dot {
     box-shadow: 0 0 0 2px #652672;
   }
+
   // .v-timeline-item:first-child .v-timeline-divider {
   //   padding-block-start: 0px;
   // }

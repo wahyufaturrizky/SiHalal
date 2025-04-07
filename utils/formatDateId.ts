@@ -1,13 +1,11 @@
 export const formatDateId = (date: any) => {
-  if (date) {
-    const tempDate = new Date(date);
+  if (!date) return "";
 
-    return tempDate.toLocaleDateString('id-ID', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    })
-  }
+  const tempDate = new Date(date);
 
-  return "";
-}
+  return tempDate.toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};

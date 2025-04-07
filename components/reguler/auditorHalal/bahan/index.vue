@@ -507,8 +507,10 @@ const getChannel = async () => {
       method: "get",
       params: { id },
     });
+
     if (response.code === 2000) {
       dataCertifHalal.value = response?.data?.certificate_halal;
+
       return response?.data?.certificate_halal;
     }
   } catch (error) {
@@ -520,10 +522,11 @@ const loadItemProductClasifications = async () => {
   try {
     const params = {};
     const productCode = await getChannel();
+
     dataCertifHalal.value = productCode;
 
     const response = await $api(
-      `/reguler/auditor/combobox-product-klasifikasi`,
+      "/reguler/auditor/combobox-product-klasifikasi",
       {
         method: "get",
         params: {
@@ -550,7 +553,7 @@ const loadItemProductClasifications = async () => {
 const loadItemProductRincian = async (kode_rincian: string) => {
   loadingRincian.value = true;
   try {
-    const response = await $api(`/reguler/auditor/combobox-product-rincian`, {
+    const response = await $api("/reguler/auditor/combobox-product-rincian", {
       method: "get",
       params: {
         idLayanan: kode_rincian,
@@ -583,7 +586,7 @@ const getListIngredients = async () => {
           id_reg: id,
         },
       }
-    );    
+    );
 
     if (response.code === 2000) {
       materialName.value = {
@@ -595,6 +598,7 @@ const getListIngredients = async () => {
         const jenisBahan = response.data?.map((i) =>
           i.jenis_bahan?.toLowerCase()
         );
+
         if (
           dataCertifHalal?.value?.jenis_layanan === "Makanan" ||
           dataCertifHalal?.value?.jenis_layanan === "Minuman"
@@ -604,18 +608,14 @@ const getListIngredients = async () => {
               jenisBahan.includes(item?.toLowerCase())
             )
           ) {
-            let count = 0
+            let count = 0;
             jenisBahan.map((element: any) => {
-              
-              if (element === 'bahan') {
-                count ++
+              if (element === "bahan") {
+                count++;
               }
-            })
-            if (count < 3) {
-              emit("failed", 'Bahan minimal 3');
-            } else {
-              emit("complete", true);
-            }
+            });
+            if (count < 3) emit("failed", "Bahan minimal 3");
+            else emit("complete", true);
           } else {
             const missing = ["Bahan", "Cleaning Agent", "Kemasan"].filter(
               (item) => !jenisBahan.includes(item)
@@ -624,11 +624,8 @@ const getListIngredients = async () => {
             emit("failed", missing);
           }
         } else {
-          if (jenisBahan.length > 0) {
-            emit("complete", true);
-          } else {
-            emit("failed", missing);
-          }
+          if (jenisBahan.length > 0) emit("complete", true);
+          else emit("failed", missing);
         }
       } else {
         emit("failed", ["Bahan", "Cleaning Agent", "Kemasan"]);
@@ -737,9 +734,10 @@ const addProduct = async () => {
       const { kode_rincian, nama_produk, foto_produk } = formData.value;
       if (!kode_rincian || !nama_produk || !foto_produk) {
         throw {
-          message: "mandatory"
-        }
+          message: "mandatory",
+        };
       }
+
       const response: any = await $api(
         "/reguler/pelaku-usaha/tab-bahan/products/create",
         {
@@ -762,16 +760,13 @@ const addProduct = async () => {
         addDialog.value = false;
         reRender.value = !reRender.value;
         useSnackbar().sendSnackbar("Sukses menambah data", "success");
-      }
-      else {
+      } else {
         throw {
-          message: 'mandatory'
-        }
+          message: "mandatory",
+        };
       }
     } catch (error) {
-      if (error.message !== 'mandatory') {
-        isNotAllowedProduct.value = true;
-      }
+      if (error.message !== "mandatory") isNotAllowedProduct.value = true;
     }
   } else if (titleDialog.value === "Ubah Nama Produk") {
     const response: any = await $api(
@@ -1115,8 +1110,9 @@ const handleChange = () => {
 onMounted(async () => {
   loading.value = true;
   tabs.value = 0;
-  const response = await loadItemProductClasifications()
-  
+
+  const response = await loadItemProductClasifications();
+
   await Promise.allSettled([
     getListCatatan(),
     getListFormulir(),
@@ -1487,8 +1483,8 @@ watch([titleDialog, tabAddBahan], () => {
                         rounded="xl"
                         label="No file choosen"
                         prepend-icon=""
-                        @change="handleUploadFile"
                         accept="image/png, image/jpeg"
+                        @change="handleUploadFile"
                       >
                         <template #append-inner>
                           <VBtn rounded="s-0 e-xl" text="Choose" />
@@ -1581,8 +1577,8 @@ watch([titleDialog, tabAddBahan], () => {
                   rounded="xl"
                   label="No file choosen"
                   prepend-icon=""
-                  @change="handleUploadFile"
                   accept="image/png, image/jpeg"
+                  @change="handleUploadFile"
                 >
                   <template #append-inner>
                     <VBtn rounded="s-0 e-xl" text="Choose" />
@@ -1663,8 +1659,8 @@ watch([titleDialog, tabAddBahan], () => {
                   rounded="xl"
                   label="No file choosen"
                   prepend-icon=""
-                  @change="handleUploadFile"
                   accept="image/png, image/jpeg"
+                  @change="handleUploadFile"
                 >
                   <template #append-inner>
                     <VBtn rounded="s-0 e-xl" text="Choose" />
@@ -1710,27 +1706,29 @@ watch([titleDialog, tabAddBahan], () => {
         </div>
         <div v-else-if="titleDialog === 'Tambah Pembelian Bahan'">
           <div class="d-flex justify-center align-center">
-            <!-- <VTabs
+            <!--
+              <VTabs
               v-model="tabBahan"
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
               style="border-radius: 40px;"
               height="auto"
-            >
-              <VTab
-                value="1"
-                base-color="#f0dcf5"
-                active-color="primary"
-                style="border-radius: 40px;"
-                hide-slider
-                color="primary"
-                variant="flat"
-                height="40px"
               >
-                <span>Unggah File </span>
+              <VTab
+              value="1"
+              base-color="#f0dcf5"
+              active-color="primary"
+              style="border-radius: 40px;"
+              hide-slider
+              color="primary"
+              variant="flat"
+              height="40px"
+              >
+              <span>Unggah File </span>
               </VTab>
-            </VTabs> -->
+              </VTabs>
+            -->
           </div>
           <VTabsWindow v-model="tabBahan">
             <VTabsWindowItem value="1">
@@ -1772,8 +1770,8 @@ watch([titleDialog, tabAddBahan], () => {
                     rounded="xl"
                     label="No file choosen"
                     prepend-icon=""
-                    @change="handleUploadFile"
                     accept="image/png, image/jpeg"
+                    @change="handleUploadFile"
                   >
                     <template #append-inner>
                       <VBtn rounded="s-0 e-xl" text="Choose" />
@@ -1825,7 +1823,7 @@ watch([titleDialog, tabAddBahan], () => {
                   v-model="formDataCatatan.tgl_pembelian"
                   teleport-center
                   :enable-time-picker="false"
-                  format="dd-MM-yyyy"
+                  format="DD/MM/YYYY"
                 />
               </div>
             </VTabsWindowItem>
@@ -1833,27 +1831,29 @@ watch([titleDialog, tabAddBahan], () => {
         </div>
         <div v-else-if="titleDialog === 'Tambah Formulir Pemeriksaan Bahan'">
           <div class="d-flex justify-center align-center">
-            <!-- <VTabs
+            <!--
+              <VTabs
               v-model="tabBahan"
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
               style="border-radius: 40px;"
               height="auto"
-            >
-              <VTab
-                value="1"
-                base-color="#f0dcf5"
-                active-color="primary"
-                style="border-radius: 40px;"
-                hide-slider
-                color="primary"
-                variant="flat"
-                height="40px"
               >
-                <span>Unggah File </span>
+              <VTab
+              value="1"
+              base-color="#f0dcf5"
+              active-color="primary"
+              style="border-radius: 40px;"
+              hide-slider
+              color="primary"
+              variant="flat"
+              height="40px"
+              >
+              <span>Unggah File </span>
               </VTab>
-            </VTabs> -->
+              </VTabs>
+            -->
           </div>
           <VTabsWindow v-model="tabBahan">
             <VTabsWindowItem value="1">
@@ -1895,8 +1895,8 @@ watch([titleDialog, tabAddBahan], () => {
                     rounded="xl"
                     label="No file choosen"
                     prepend-icon=""
-                    @change="handleUploadFile"
                     accept="image/png, image/jpeg"
+                    @change="handleUploadFile"
                   >
                     <template #append-inner>
                       <VBtn rounded="s-0 e-xl" text="Choose" />
@@ -1948,7 +1948,7 @@ watch([titleDialog, tabAddBahan], () => {
                   v-model="formDataCatatan.tgl_pembelian"
                   teleport-center
                   :enable-time-picker="false"
-                  format="dd-MM-yyyy"
+                  format="DD/MM/YYYY"
                 />
               </div>
             </VTabsWindowItem>
@@ -2030,8 +2030,8 @@ watch([titleDialog, tabAddBahan], () => {
                     rounded="xl"
                     label="No file choosen"
                     prepend-icon=""
-                    @change="handleUploadFile"
                     accept="image/png, image/jpeg"
+                    @change="handleUploadFile"
                   >
                     <template #append-inner>
                       <VBtn rounded="s-0 e-xl" text="Choose" />
@@ -2084,7 +2084,7 @@ watch([titleDialog, tabAddBahan], () => {
                   v-model="itemDetail.tgl_pembelian"
                   teleport-center
                   :enable-time-picker="false"
-                  format="dd-MM-yyyy"
+                  format="DD/MM/YYYY"
                 />
               </div>
             </VTabsWindowItem>
@@ -2166,8 +2166,8 @@ watch([titleDialog, tabAddBahan], () => {
                     rounded="xl"
                     label="No file choosen"
                     prepend-icon=""
-                    @change="handleUploadFile"
                     accept="image/png, image/jpeg"
+                    @change="handleUploadFile"
                   >
                     <template #append-inner>
                       <VBtn rounded="s-0 e-xl" text="Choose" />
@@ -2220,7 +2220,7 @@ watch([titleDialog, tabAddBahan], () => {
                   v-model="itemDetail.tgl_pembelian"
                   teleport-center
                   :enable-time-picker="false"
-                  format="dd-MM-yyyy"
+                  format="DD/MM/YYYY"
                 />
               </div>
             </VTabsWindowItem>
