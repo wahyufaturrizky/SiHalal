@@ -151,7 +151,7 @@
       "title": "Approval"
     }
   },
-  "common":{
+  "common": {
     "back": "Back",
     "cancel": "Cancel",
     "save": "Save"
@@ -309,6 +309,7 @@
     "msg": "The Business Identification Number (NIB) has been registered under the user “sanditama74@gmail.com.”",
     "msg-1": ",Please log in using that email address.",
     "msg-error": "NIB not Found",
+    "msg-error-find": "Please ensure the 'Perseroan Daerah ID' field is filled out in the OSS system before continuing.",
     "btn-1": "Back",
     "btn-2": "Submit"
   },
