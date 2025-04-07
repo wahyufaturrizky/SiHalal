@@ -151,7 +151,7 @@
       "title": "Approval"
     }
   },
-  "common":{
+  "common": {
     "back": "Kembali",
     "cancel": "Batal",
     "save": "Simpan"
@@ -309,6 +309,7 @@
     "msg": "NIB sudah didaftarkan oleh user",
     "msg-1": ",Silakan login dengan menggunakan email tersebut.",
     "msg-error": "NIB tidak ditemukan",
+    "msg-error-find": "Mohon lengkapi data 'Perseroan Daerah ID' Anda di sistem OSS sebelum melanjutkan proses.",
     "btn-1": "Kembali",
     "btn-2": "Kirim"
   },
