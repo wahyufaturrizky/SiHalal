@@ -9,16 +9,6 @@ const data = {
 
 const bahanType = ref(null);
 
-// Function to format the date as DD/MM/YY
-const formatDate = (date: Date): string => {
-  const date2 = new Date(date);
-  const day = date2.getDate().toString().padStart(2, "0"); // Add leading zero for single digit days
-  const month = (date2.getMonth() + 1).toString().padStart(2, "0"); // Add leading zero for single digit months
-  const year = date2.getFullYear().toString().slice(-2); // Extract last 2 digits of the year
-
-  return `${day}/${month}/${year}`;
-};
-
 // Sample data for "Bahan Bersertifikat" and "Tidak Bersertifikat"
 const AgamaOptions = [
   { name: "Islam", value: "islam" },
@@ -214,11 +204,11 @@ const isCariBahanModalOpen = ref(false);
             <VCol cols="12">
               <VRow>
                 <VCol cols="8">
-                  <VCardText
-                    ><h3>
+                  <VCardText>
+                    <h3>
                       Unggahan Sertifikat Kompetensi Penyelia Halal (SKPH)
-                    </h3></VCardText
-                  >
+                    </h3>
+                  </VCardText>
                 </VCol>
                 <VCol cols="4">
                   <div v-if="documentList[0].fileName">
@@ -270,11 +260,9 @@ const isCariBahanModalOpen = ref(false);
             <VCol cols="12">
               <VRow>
                 <VCol cols="8">
-                  <VCardText
-                    ><h3>
-                      Unggahan Sertifikat Pelatihan Penyelia Halal (SPPH)
-                    </h3></VCardText
-                  >
+                  <VCardText>
+                    <h3>Unggahan Sertifikat Pelatihan Penyelia Halal (SPPH)</h3>
+                  </VCardText>
                 </VCol>
                 <VCol cols="4">
                   <div v-if="documentList[0].fileName">

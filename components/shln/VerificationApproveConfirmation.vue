@@ -1,58 +1,58 @@
 <script setup lang="ts">
-import VerificationSaveConfirmation from "@/components/shln/VerificationSaveConfirmation.vue"
-import { computed, defineEmits, ref } from 'vue'
-import { useDisplay } from 'vuetify'
+import VerificationSaveConfirmation from "@/components/shln/VerificationSaveConfirmation.vue";
+import { computed, defineEmits, ref } from "vue";
+import { useDisplay } from "vuetify";
 
-const emit = defineEmits(['confirm', 'cancel'])
+const emit = defineEmits(["confirm", "cancel"]);
 
-const inputValue = ref('')
+const inputValue = ref("");
 
 const headers = [
-  { title: 'Tanggal', key: 'date' },
-  { title: 'Catatan', key: 'notes' },
-  { title: 'Verifikator', key: 'verifikator' },
-]
+  { title: "Tanggal", key: "date" },
+  { title: "Catatan", key: "notes" },
+  { title: "Verifikator", key: "verifikator" },
+];
 
 const items = ref([
-  { date: '18/10/2024, 09:00:00 AM', notes: '', verifikator: 'Joey, HLN' },
-])
+  { date: "18/10/2024, 09:00:00 AM", notes: "", verifikator: "Joey, HLN" },
+]);
 
-const isVisible = ref(false)
+const isVisible = ref(false);
 
 const openDialog = () => {
-  isVisible.value = true
-}
+  isVisible.value = true;
+};
 
 const closeDialog = () => {
-  isVisible.value = false
-}
+  isVisible.value = false;
+};
 
 const confirm = () => {
-  closeDialog()
-  emit('confirm')
-}
+  closeDialog();
+  emit("confirm");
+};
 
 const cancel = () => {
-  emit('cancel')
-  closeDialog()
-}
+  emit("cancel");
+  closeDialog();
+};
 
 const saveNotes = () => {
-  if (inputValue.value.trim() !== '') {
+  if (inputValue.value.trim() !== "") {
     items.value.push({
       date: new Date().toLocaleString(),
       notes: inputValue.value,
-      verifikator: 'User 1',
-    })
-    inputValue.value = ''  // Clear input after adding
+      verifikator: "User 1",
+    });
+    inputValue.value = ""; // Clear input after adding
   }
-}
+};
 
-const { mdAndUp } = useDisplay()
+const { mdAndUp } = useDisplay();
 
 const dialogMaxWidth = computed(() => {
-  return mdAndUp ? 700 : '90%'
-})
+  return mdAndUp ? 700 : "90%";
+});
 </script>
 
 <template>
@@ -66,35 +66,31 @@ const dialogMaxWidth = computed(() => {
       Approve
     </VBtn>
 
-    <VDialog
-      v-model="isVisible"
-      :max-width="dialogMaxWidth"
-    >
+    <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard>
-        <VCardTitle class="text-h5 font-weight-bold d-flex justify-space-between align-center">
+        <VCardTitle
+          class="text-h5 font-weight-bold d-flex justify-space-between align-center"
+        >
           <span>Approve Confirmation</span>
           <VBtn
             icon
             color="transparent"
-            style="border: none;"
+            style="border: none"
             elevation="0"
             @click="closeDialog"
           >
-            <VIcon color="black">
-              ri-close-line
-            </VIcon>
+            <VIcon color="black"> ri-close-line </VIcon>
           </VBtn>
         </VCardTitle>
         <VCardItem>
-          <VDataTable
-            :headers="headers"
-            :items="items"
-          />
+          <VDataTable :headers="headers" :items="items">
+            <template #item.date="{ item }">
+              {{ item.date ? formatDateId(item.date) : "NA" }}
+            </template>
+          </VDataTable>
         </VCardItem>
         <VCardText>
-          <p class="mb-2">
-            Are you sure you want to approve this submission?
-          </p>
+          <p class="mb-2">Are you sure you want to approve this submission?</p>
           <VTextarea
             v-model="inputValue"
             placeholder="Input Additional Notes"
@@ -106,27 +102,15 @@ const dialogMaxWidth = computed(() => {
           />
         </VCardText>
         <VCardActions>
-          <VBtn
-            variant="outlined"
-            text
-            @click="cancel"
-          >
-            Cancel
-          </VBtn>
-          <VBtn
-            variant="flat"
-            color="primary"
-            text
-            @click="saveNotes"
-          >
+          <VBtn variant="outlined" text @click="cancel"> Cancel </VBtn>
+          <VBtn variant="flat" color="primary" text @click="saveNotes">
             Save Notes
           </VBtn>
-          <VerificationSaveConfirmation @confirm="confirm"/>
+          <VerificationSaveConfirmation @confirm="confirm" />
         </VCardActions>
       </VCard>
     </VDialog>
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

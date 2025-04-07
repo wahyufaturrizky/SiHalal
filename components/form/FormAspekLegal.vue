@@ -66,8 +66,12 @@ const saveNewAspekLegal = (form) => {
         :headers="aspectLegalHeader"
         :items="aspectLegalItems"
       >
+        <template #item.date="{ item }">
+          {{ item.date ? formatDateId(item.date) : "NA" }}
+        </template>
+
         <template #item.action="{ item }">
-          <v-btn color="primary" variant="plain">
+          <VBtn color="primary" variant="plain">
             <VIcon>mdi-dots-vertical</VIcon>
             <VMenu activator="parent" :close-on-content-click="false">
               <VCard>
@@ -81,14 +85,14 @@ const saveNewAspekLegal = (form) => {
                   variant="text"
                   color="error"
                   prepend-icon="ri-delete-bin-6-line"
-                  @click="deleteAspekLegal(item.no)"
                   block
+                  @click="deleteAspekLegal(item.no)"
                 >
                   Hapus
                 </VBtn>
               </VCard>
             </VMenu>
-          </v-btn>
+          </VBtn>
         </template>
       </VDataTable>
     </VCardItem>

@@ -5,6 +5,7 @@ import { useDisplay } from "vuetify";
 
 const { t } = useI18n();
 const { mdAndUp } = useDisplay();
+
 const tablePerizinanHeader = [
   { title: "No", key: "no" },
   { title: `${t("detail-pu.pu-izin-penerbit")}`, key: "instansi" },
@@ -26,6 +27,7 @@ const download = (item) => {
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
+
   // console.log("DOWNLOAD FILE ", item.file)
 };
 
@@ -47,12 +49,14 @@ const handleOssUpdate = () => {
 
   if (legal) {
     const eligibleCriteria = ["nib", "lgl01", "lgl09"];
+
     const nib = legal.filter((val: any) =>
       eligibleCriteria.includes(val.type?.toLowerCase())
     )[0].doc_number;
 
     if (nib) {
       store.fetchProfile(nib);
+
       return;
     }
   }
@@ -68,11 +72,13 @@ const closeModal = ref(false);
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
-      <!-- <VExpansionPanelTitle
+      <!--
+        <VExpansionPanelTitle
         ><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">
-          Perizinan
+        Perizinan
         </p></VExpansionPanelTitle
-      > -->
+        >
+      -->
       <VExpansionPanelTitle>
         <div class="text-h4 font-weight-bold">
           {{ t("detail-pu.pu-izin-title") }}
@@ -83,8 +89,8 @@ const closeModal = ref(false);
           <p v-if="store.perizinan?.length === 0">No data</p>
           <p v-if="store.isLoading">Loading...</p>
           <div
-            v-else-if="store.perizinan && !store.isLoading"
             v-for="(item, index) in store.perizinan"
+            v-else-if="store.perizinan && !store.isLoading"
             :key="index"
           >
             <div
@@ -107,10 +113,10 @@ const closeModal = ref(false);
                 </VCol>
               </VRow>
               <VRow>
-                <VCol cols="12"
-                  >{{ t("detail-pu.pu-izin-namaizin") }}:
-                  {{ item?.nama_izin || "-" }}</VCol
-                >
+                <VCol cols="12">
+                  {{ t("detail-pu.pu-izin-namaizin") }}:
+                  {{ item?.nama_izin || "-" }}
+                </VCol>
               </VRow>
             </div>
             <br />
@@ -126,8 +132,8 @@ const closeModal = ref(false);
                   style="inline-size: 100%"
                   v-bind="openModal"
                 >
-                  {{ t("detail-pu.pu-izin-act-detail") }}</VBtn
-                >
+                  {{ t("detail-pu.pu-izin-act-detail") }}
+                </VBtn>
               </template>
               <template #default="{ isActive }">
                 <VCard>
@@ -138,13 +144,16 @@ const closeModal = ref(false);
                           Lihat Data Perizinan
                         </div>
                       </VCol>
-                      <VCol cols="2" style="display: flex; justify-content: end"
-                        ><VIcon
+                      <VCol
+                        cols="2"
+                        style="display: flex; justify-content: end"
+                      >
+                        <VIcon
                           size="small"
-                          @click="isActive.value = false"
                           icon="fa-times"
-                        ></VIcon
-                      ></VCol>
+                          @click="isActive.value = false"
+                        />
+                      </VCol>
                     </VRow>
                   </VCardTitle>
                   <VCardItem
@@ -167,13 +176,11 @@ const closeModal = ref(false);
                             {{
                               item?.tgl_izin == null
                                 ? "-"
-                                : new Date(item.tgl_izin)
-                                    .toISOString()
-                                    .substring(0, 10)
+                                : formatDateId(item.tgl_izin)
                             }}
                           </template>
                           <template #item.file_izin="{ item }">
-                            <v-btn
+                            <VBtn
                               v-if="item.file_izin && item.file_izin != '-'"
                               color="primary"
                               variant="plain"
@@ -181,11 +188,11 @@ const closeModal = ref(false);
                               @click="download(item.file_izin)"
                             >
                               File
-                            </v-btn>
+                            </VBtn>
                             <p v-else>File not available</p>
                           </template>
                           <template #item.file_izin_oss="{ item }">
-                            <v-btn
+                            <VBtn
                               v-if="item.file_izin_oss"
                               color="primary"
                               variant="plain"
@@ -193,7 +200,7 @@ const closeModal = ref(false);
                               @click="download(item.file_izin_oss)"
                             >
                               File
-                            </v-btn>
+                            </VBtn>
                             <p v-else>File not available</p>
                           </template>
                         </VDataTable>
@@ -207,9 +214,9 @@ const closeModal = ref(false);
         </VRow>
         <VRow dense>
           <VCol cols="12">
-            <VBtn @click="handleOssUpdate" style="inline-size: 100%"
-              >Update Data OSS</VBtn
-            >
+            <VBtn style="inline-size: 100%" @click="handleOssUpdate">
+              Update Data OSS
+            </VBtn>
           </VCol>
         </VRow>
       </VExpansionPanelText>

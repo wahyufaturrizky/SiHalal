@@ -115,14 +115,6 @@ const statusItem: any = new Proxy(
   }
 );
 
-const formatDate = (date: string): string => {
-  return new Date(date).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-};
-
 const expanded = ref(0);
 </script>
 
@@ -155,21 +147,19 @@ const expanded = ref(0);
             <div
               class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
             >
-              <span class="app-timeline-title">
-                {{ "statusItem[status].desc" }}
-              </span>
-              <span class="app-timeline-meta">{{ "formatDate(tanggal)" }}</span>
+              <span class="app-timeline-title"> statusItem[status].desc </span>
+              <span class="app-timeline-meta">formatDate(tanggal)</span>
             </div>
-            <div class="app-timeline-text mt-1">
-              {{ "username" }}
-            </div>
-            <!-- <div v-if="comment" class="app-timeline-text mt-1">
+            <div class="app-timeline-text mt-1">username</div>
+            <!--
+              <div v-if="comment" class="app-timeline-text mt-1">
               {{
-                (comment as any).length > 38
-                  ? (comment as any).slice(0, 38) + "..."
-                  : (comment as any)
+              (comment as any).length > 38
+              ? (comment as any).slice(0, 38) + "..."
+              : (comment as any)
               }}
-            </div> -->
+              </div>
+            -->
           </VTimelineItem>
         </VTimeline>
       </VExpansionPanelText>

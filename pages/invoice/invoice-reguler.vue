@@ -66,6 +66,7 @@ const loadItem = async ({
       items.value = response.data || [];
       totalItems.value = response.total_item || 0;
       loading.value = false;
+
       return response;
     } else {
       loading.value = false;
@@ -88,6 +89,7 @@ const loadItemStatusApplication = async () => {
 
     if (response.length) {
       itemsStatus.value = [...response];
+
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -147,11 +149,8 @@ onMounted(async () => {
     return item !== undefined;
   });
 
-  if (checkResIfUndefined) {
-    loadingAll.value = false;
-  } else {
-    loadingAll.value = false;
-  }
+  if (checkResIfUndefined) loadingAll.value = false;
+  else loadingAll.value = false;
 });
 
 const downloadExcel = async () => {
@@ -208,10 +207,11 @@ const downloadExcel = async () => {
             <VCol cols="6" style="display: flex; justify-content: end">
               <VBtn
                 :loading="loadingDownloadExcel"
-                @click="downloadExcel"
                 variant="flat"
-                >Download Excel</VBtn
+                @click="downloadExcel"
               >
+                Download Excel
+              </VBtn>
             </VCol>
           </VRow>
         </VCardTitle>
@@ -229,8 +229,9 @@ const downloadExcel = async () => {
                     v-bind="openMenu"
                     variant="outlined"
                     style="inline-size: 100%"
-                    >Filter</VBtn
                   >
+                    Filter
+                  </VBtn>
                 </template>
                 <VList>
                   <VListItem>
@@ -242,7 +243,7 @@ const downloadExcel = async () => {
                         :items="itemsStatus"
                         item-title="name"
                         item-value="code"
-                      ></VSelect>
+                      />
                     </VItemGroup>
                   </VListItem>
                   <VListItem>
@@ -272,7 +273,7 @@ const downloadExcel = async () => {
                 </VList>
               </VMenu>
             </VCol>
-            <VCol cols="1"></VCol>
+            <VCol cols="1" />
             <VCol cols="8">
               <VTextField
                 v-model="searchQuery"
@@ -280,22 +281,22 @@ const downloadExcel = async () => {
                 placeholder="Cari Nama Pengajuan"
                 append-inner-icon="mdi-magnify"
                 @input="handleInput"
-              ></VTextField>
+              />
             </VCol>
           </VRow>
           <VRow>
             <VDataTableServer
+              v-model:items-per-page="itemPerPage"
+              v-model:page="page"
               :items-per-page-options="[10, 25, 50, 100]"
               :headers="tableHeader"
               :items="items"
-              v-model:items-per-page="itemPerPage"
-              v-model:page="page"
               :loading="loading"
               :items-length="totalItems"
               loading-text="Loading..."
               @update:options="
                 loadItem({
-                  page: page,
+                  page,
                   size: itemPerPage,
                   keyword: searchQuery,
                   status: selectedFilters.status,
@@ -307,13 +308,13 @@ const downloadExcel = async () => {
                 {{ index + 1 + (page - 1) * itemPerPage }}
               </template>
               <template #item.tgl_inv="{ item }">
-                {{ formatDate((item as any).tgl_inv) }}
+                {{ formatDateId((item as any).tgl_inv) }}
               </template>
               <template #item.duedate="{ item }">
-                {{ formatDate((item as any).duedate) }}
+                {{ formatDateId((item as any).duedate) }}
               </template>
               <template #item.tgl_bayar="{ item }">
-                {{ formatDate((item as any).tgl_bayar) }}
+                {{ formatDateId((item as any).tgl_bayar) }}
               </template>
               <template #item.action="{ item }">
                 <p
@@ -321,14 +322,14 @@ const downloadExcel = async () => {
                   class="cursor-pointer"
                   @click="downloadDocument((item as any).file_inv, 'INVOICE')"
                 >
-                  <VIcon icon="fa-download" size="xs" color="primary"></VIcon>
+                  <VIcon icon="fa-download" size="xs" color="primary" />
                   Unduh Ivoice
                 </p>
               </template>
             </VDataTableServer>
           </VRow>
         </VCardItem>
-        <VSkeletonLoader type="card" v-else />
+        <VSkeletonLoader v-else type="card" />
       </VCard>
     </VCol>
   </VRow>

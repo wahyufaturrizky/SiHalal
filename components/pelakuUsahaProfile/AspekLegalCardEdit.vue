@@ -2,13 +2,7 @@
 import { formatToDDMMYYYY } from "@/utils/formatToISOString";
 import { useI18n } from "vue-i18n";
 
-const { t } = useI18n();
-
 import type { legal } from "@/stores/interface/pelakuUsahaProfileIntf";
-
-const snackbar = useSnackbar();
-
-const panelOpen = ref(0);
 
 const props = defineProps({
   aspekLegalData: {
@@ -16,6 +10,12 @@ const props = defineProps({
     required: true,
   },
 });
+
+const { t } = useI18n();
+
+const snackbar = useSnackbar();
+
+const panelOpen = ref(0);
 
 const store = pelakuUsahaProfile();
 const storeDataMaster = dataMasterStore();
@@ -32,7 +32,8 @@ const legalHeader = [
 
 function handleDelete(item) {
   console.log("Delete item:", item);
-  const submitApi = $api(`pelaku-usaha-profile/delete-legal`, {
+
+  const submitApi = $api("pelaku-usaha-profile/delete-legal", {
     method: "post",
     body: {
       id: store.profileData?.id,
@@ -91,7 +92,7 @@ const handleAddAspekLegalConfirm = (formData) => {
 const handleEditAspekLegalConfirm = (formData) => {
   console.log("Edit confirmed:", formData);
 
-  const submitApi = $api(`/pelaku-usaha-profile/update-legal`, {
+  const submitApi = $api("/pelaku-usaha-profile/update-legal", {
     method: "post",
     body: {
       id_profile: store.profileData?.id,
@@ -133,6 +134,7 @@ const convertDocType = (type: string | null) => {
     return storeDataMaster.masterJnlgl.filter((val) => val.code == type)[0]
       ?.name;
   }
+
   return type;
 };
 
@@ -192,27 +194,35 @@ onMounted(() => {
         <template #item.no="{ index }">
           {{ index + 1 }}
         </template>
+
+        <template #item.date="{ item }">
+          {{ item.date ? formatDateId(item.date) : "NA" }}
+        </template>
+
         <template #item.type="{ item }">
           {{ convertDocType(item.type) }}
         </template>
+
         <template #[`item.action`]="{ item }">
           <VMenu :close-on-content-click="false">
             <template #activator="{ props }">
               <VBtn
+                v-if="item?.type !== 'NIB'"
                 icon
                 variant="text"
                 v-bind="props"
-                v-if="item?.type !== 'NIB'"
               >
                 <VIcon>mdi-dots-vertical</VIcon>
               </VBtn>
             </template>
             <VList>
               <VListItem>
-                <!-- <VListItemTitle>
-                    <VIcon class="mr-2"> mdi-pencil </VIcon>
-                    Ubah
-                  </VListItemTitle> -->
+                <!--
+                  <VListItemTitle>
+                  <VIcon class="mr-2"> mdi-pencil </VIcon>
+                  Ubah
+                  </VListItemTitle>
+                -->
                 <AspekLegalModal
                   v-if="item?.type !== 'NIB'"
                   mode="edit"
