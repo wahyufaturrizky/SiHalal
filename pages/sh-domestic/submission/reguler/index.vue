@@ -118,14 +118,22 @@ const handleInput = (e: any) => {
   debouncedFetch(page.value, size.value, searchQuery.value);
 };
 
-const newRegister = async (type: string, id: string) => {
+const newRegister = async (type: string, id: string, isLn: boolean) => {
   try {
+    let body: any = {
+      type,
+      id,
+    }
+    if (isLn) {
+      body = {
+        ...body,
+        Id_prov: '00',
+      }
+    }
+
     const response: any = await $api("/reguler/pelaku-usaha/draft", {
       method: "post",
-      body: {
-        type,
-        id,
-      },
+      body,
     });
 
     if (response?.code === 2000) {
@@ -154,14 +162,13 @@ onMounted(async () => {
       {{ t("pengajuan-reguler.reguler-list-title") }}
     </h1>
     <br />
-
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
         <div class="text-h4 font-weight-bold">
           {{ t("pengajuan-reguler.reguler-list-subtitle") }}
         </div>
         <NewRegulerSertificationHalalDialog
-          :new-register="newRegister"
+          :new-register="(type, id) => newRegister(type, id, store?.profileData?.asal_usaha === 'Luar Negeri')"
           :additional-register="additionalRegister"
           :data="listOss"
         />
