@@ -2,7 +2,9 @@
 const data = {
   bill_date: ref([]),
 };
+
 const items = ref([]);
+
 const tableHeader = [
   { title: "No", value: "index" },
   { title: "No Invoice", value: "no" },
@@ -85,6 +87,7 @@ const loadItem = async ({
       items.value = response.data || [];
       totalItems.value = response.total_item || 0;
       loading.value = false;
+
       return response;
     } else {
       loading.value = false;
@@ -95,6 +98,7 @@ const loadItem = async ({
     loading.value = false;
   }
 };
+
 const defaultStatus = { color: "error", desc: "Unknown Status" };
 
 const statusItem = new Proxy(
@@ -124,6 +128,7 @@ const loadItemStatusApplication = async () => {
 
     if (response.length) {
       itemsStatus.value = [...response];
+
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -132,6 +137,7 @@ const loadItemStatusApplication = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+
 const itemsStatus = ref<any[]>([]);
 
 const searchQuery = ref("");
@@ -195,18 +201,15 @@ const downloadExcel = async () => {
   const endDate = selectedFilters.value.date.split(" ")[2];
 
   try {
-    const response: any = await $api(
-      "/shln/finance/invoice/download-excel",
-      {
-        method: "get",
-        params: {
-          search: searchQuery.value,
-          status: selectedFilters.value.status,
-          start_date: startDate,
-          end_date: endDate,
-        },
-      }
-    );
+    const response: any = await $api("/shln/finance/invoice/download-excel", {
+      method: "get",
+      params: {
+        search: searchQuery.value,
+        status: selectedFilters.value.status,
+        start_date: startDate,
+        end_date: endDate,
+      },
+    });
 
     if (response) {
       downloadFileExcel(response);
@@ -231,17 +234,15 @@ onMounted(async () => {
     return item !== undefined;
   });
 
-  if (checkResIfUndefined) {
-    loadingAll.value = false;
-  } else {
-    loadingAll.value = false;
-  }
+  if (checkResIfUndefined) loadingAll.value = false;
+  else loadingAll.value = false;
 });
 </script>
+
 <template>
   <VRow>
     <VCol cols="12">
-      <h1 style="font-size: 32px;">Bukti Bayar SHLN</h1>
+      <h1 style="font-size: 32px">Bukti Bayar SHLN</h1>
     </VCol>
   </VRow>
   <VRow>
@@ -252,13 +253,14 @@ onMounted(async () => {
             <VCol cols="6">
               <div class="text-h4 font-weight-bold">Invoice List</div>
             </VCol>
-            <VCol cols="6" style="display: flex; justify-content: end;">
+            <VCol cols="6" style="display: flex; justify-content: end">
               <VBtn
                 :loading="loadingDownloadExcel"
-                @click="downloadExcel"
                 variant="flat"
-                >Download Excel</VBtn
+                @click="downloadExcel"
               >
+                Download Excel
+              </VBtn>
             </VCol>
           </VRow>
         </VCardTitle>
@@ -275,9 +277,10 @@ onMounted(async () => {
                     append-icon="fa-filter"
                     v-bind="openMenu"
                     variant="outlined"
-                    style="inline-size: 100%;"
-                    >Filter</VBtn
+                    style="inline-size: 100%"
                   >
+                    Filter
+                  </VBtn>
                 </template>
                 <VList>
                   <VListItem>
@@ -290,7 +293,7 @@ onMounted(async () => {
                         :items="itemsStatus"
                         item-title="name"
                         item-value="code"
-                      ></VSelect>
+                      />
                     </VItemGroup>
                   </VListItem>
                   <VListItem>
@@ -320,7 +323,7 @@ onMounted(async () => {
                 </VList>
               </VMenu>
             </VCol>
-            <VCol cols="1"></VCol>
+            <VCol cols="1" />
             <VCol cols="8">
               <VTextField
                 v-model="searchQuery"
@@ -328,21 +331,22 @@ onMounted(async () => {
                 placeholder="Cari Nama Pengajuan"
                 append-inner-icon="mdi-magnify"
                 @input="handleInput"
-              ></VTextField>
+              />
             </VCol>
           </VRow>
           <VRow>
             <VDataTableServer
-              :headers="tableHeader"
-              :items="items"
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
+              :items-per-page-options="[10, 25, 50, 100]"
+              :headers="tableHeader"
+              :items="items"
               :loading="loading"
               :items-length="totalItems"
               loading-text="Loading..."
               @update:options="
                 loadItem({
-                  page: page,
+                  page,
                   size: itemPerPage,
                   search: searchQuery,
                   status: selectedFilters.status,
@@ -354,7 +358,7 @@ onMounted(async () => {
                 {{ index + 1 + (page - 1) * itemPerPage }}
               </template>
               <template #item.date="{ item }">
-                {{ formatDate((item as any).date) }}
+                {{ formatDateId((item as any).date) }}
               </template>
               <template #item.amount="{ item }">
                 {{ formatToIDR(item.amount) }}
@@ -382,9 +386,11 @@ onMounted(async () => {
                 <p
                   v-if="(item as any).invoice_url"
                   class="cursor-pointer"
-                  @click="downloadDocument((item as any).invoice_url, 'INVOICE')"
+                  @click="
+                    downloadDocument((item as any).invoice_url, 'INVOICE')
+                  "
                 >
-                  <VIcon icon="fa-download" size="xs" color="primary"></VIcon>
+                  <VIcon icon="fa-download" size="xs" color="primary" />
                   Unduh Ivoice
                 </p>
               </template>

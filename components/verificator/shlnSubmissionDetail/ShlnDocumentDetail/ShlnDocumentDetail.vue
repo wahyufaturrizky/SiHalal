@@ -95,6 +95,7 @@ const loadItemListDocumentById = async () => {
 
 const { hcb, hcn } = props.data || {};
 const { hcb_name } = hcb || {};
+
 const {
   issued_date: issuedDateFHC,
   expired_date: expiredDateFHC,
@@ -161,7 +162,7 @@ const headers = [
   { title: "Action", key: "action" },
 ];
 
-// const downloadDOcument = async (filename: string) => {
+// const previewDocument = async (filename: string) => {
 //   try {
 //     const response: any = await $api("/shln/submission/document/download", {
 //       method: "post",
@@ -177,11 +178,8 @@ const headers = [
 // };
 
 const onRefresh = (type: string) => {
-  if (type === "loa") {
-    emit("refreshloa");
-  } else if (type === "fhc") {
-    emit("refreshfhc");
-  }
+  if (type === "loa") emit("refreshloa");
+  else if (type === "fhc") emit("refreshfhc");
 };
 </script>
 
@@ -202,7 +200,13 @@ const onRefresh = (type: string) => {
             </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <p>{{ item.value }}</p>
+              <p>
+                {{
+                  item.key.includes("Date") && item.value
+                    ? formatDateId(new Date(item.value))
+                    : item.value
+                }}
+              </p>
             </VCol>
           </VRow>
         </VCardText>
@@ -235,7 +239,7 @@ const onRefresh = (type: string) => {
             <VCol cols="3"> Date </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <p>{{ date }}</p>
+              <p>{{ date ? formatDateId(new Date(date)) : "-" }}</p>
             </VCol>
           </VRow>
           <VRow>
@@ -252,22 +256,22 @@ const onRefresh = (type: string) => {
               <VBtn
                 icon="fa-download"
                 density="compact"
-                @click="downloadDocument(loa_document, 'SHLN_DOC')"
+                @click="previewDocument(loa_document, 'SHLN_DOC')"
               />
             </VCol>
           </VRow>
         </VCardText>
-        <VCardActions style="justify-content: end;">
+        <VCardActions style="justify-content: end">
           <div>
             <ReturnConfirmationModal
-              @refresh="onRefresh('loa')"
               :id="id"
               documenttype="loa"
+              @refresh="onRefresh('loa')"
             />
             <ApproveConfirmationModal
-              @refresh="onRefresh('loa')"
               :id="id"
               documenttype="loa"
+              @refresh="onRefresh('loa')"
             />
           </div>
         </VCardActions>
@@ -283,7 +287,8 @@ const onRefresh = (type: string) => {
                 ? 'max-height: 350px; overflow-y: auto'
                 : ''
             "
-            ><VTimeline
+          >
+            <VTimeline
               side="end"
               align="start"
               line-inset="9"
@@ -316,7 +321,7 @@ const onRefresh = (type: string) => {
                 <div v-if="item.comment" class="app-timeline-text mt-1">
                   {{
                     item.comment.length > 38
-                      ? item.comment.slice(0, 38) + "..."
+                      ? `${item.comment.slice(0, 38)}...`
                       : item.comment
                   }}
                 </div>
@@ -345,14 +350,22 @@ const onRefresh = (type: string) => {
             <VCol cols="3"> Issued Date </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <p>{{ issuedDateFHC }}</p>
+              <p>
+                {{
+                  issuedDateFHC ? formatDateId(new Date(issuedDateFHC)) : "-"
+                }}
+              </p>
             </VCol>
           </VRow>
           <VRow>
             <VCol cols="3"> Expired Date </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
-              <p>{{ expiredDateFHC }}</p>
+              <p>
+                {{
+                  expiredDateFHC ? formatDateId(new Date(expiredDateFHC)) : "-"
+                }}
+              </p>
             </VCol>
           </VRow>
           <VRow>
@@ -362,29 +375,29 @@ const onRefresh = (type: string) => {
               <p>{{ scopeFHC }}</p>
             </VCol>
           </VRow>
-          <VRow style="display: flex; align-items: center;">
+          <VRow style="display: flex; align-items: center">
             <VCol cols="3"> File </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
               <VBtn
                 icon="fa-download"
                 density="compact"
-                @click="downloadDocument(file, 'SHLN_DOC')"
+                @click="previewDocument(file, 'SHLN_DOC')"
               />
             </VCol>
           </VRow>
         </VCardText>
-        <VCardActions style="justify-content: end;">
+        <VCardActions style="justify-content: end">
           <div>
             <ReturnConfirmationModal
-              @refresh="onRefresh('fhc')"
               :id="idFHC"
               documenttype="fhc"
+              @refresh="onRefresh('fhc')"
             />
             <ApproveConfirmationModal
-              @refresh="onRefresh('fhc')"
               :id="idFHC"
               documenttype="fhc"
+              @refresh="onRefresh('fhc')"
             />
           </div>
         </VCardActions>
@@ -400,7 +413,8 @@ const onRefresh = (type: string) => {
                 ? 'max-height: 240px; overflow-y: auto'
                 : ''
             "
-            ><VTimeline
+          >
+            <VTimeline
               side="end"
               align="start"
               line-inset="9"
@@ -433,7 +447,7 @@ const onRefresh = (type: string) => {
                 <div v-if="item.comment" class="app-timeline-text mt-1">
                   {{
                     item.comment.length > 38
-                      ? item.comment.slice(0, 38) + "..."
+                      ? `${item.comment.slice(0, 38)}...`
                       : item.comment
                   }}
                 </div>
@@ -452,12 +466,13 @@ const onRefresh = (type: string) => {
           <VDataTableServer
             v-model:items-per-page="itemPerPage"
             v-model:page="page"
+            :items-per-page-options="[10, 25, 50, 100]"
             :headers="headers"
             :items="dataListDocument"
             :loading="loadingListDocument"
             :items-length="totalItems"
             loading-text="Loading..."
-            @update:options="loadItemListDocumentById()"
+            @update:options="loadItemListDocumentById"
           >
             <template #item.no="{ index }">
               {{ index + 1 + (page - 1) * itemPerPage }}
@@ -465,24 +480,26 @@ const onRefresh = (type: string) => {
             <template #item.file="{ item, index }">
               <div class="d-flex align-center justify-center py-3 gap-2">
                 <VBtn
-                  @click="downloadDocument((item as any).file,'SHLN_DOC')"
                   v-if="(item as any).file != ''"
                   color="primary"
+                  @click="previewDocument((item as any).file, 'SHLN_DOC')"
                 >
                   <VIcon icon="fa-download" />
                 </VBtn>
-                <!-- <HalalFileInput
+                <!--
+                  <HalalFileInput
                   v-if="(item as any).status != 'Terverifikasi'"
                   v-model="reqFile[index]"
                   :rules="[requiredValidator]"
-                /> -->
+                  />
+                -->
               </div>
             </template>
             <template #item.comment="{ item }">
               <p>
                 {{
                   (item as any).comment.length > 20
-                    ? (item as any).comment.slice(0, 20) + "..."
+                    ? `${(item as any).comment.slice(0, 20)}...`
                     : (item as any).comment
                 }}
               </p>
@@ -495,7 +512,7 @@ const onRefresh = (type: string) => {
                 >
                   <VIcon icon="fa-history" color="primary" />
                 </IconBtn>
-                <v-btn color="primary" variant="plain">
+                <VBtn color="primary" variant="plain">
                   <VIcon>mdi-dots-vertical</VIcon>
                   <VMenu activator="parent" :close-on-content-click="false">
                     <VList>
@@ -503,19 +520,19 @@ const onRefresh = (type: string) => {
                         <ApproveVerifikatorShlbDocumentModal
                           :item="item"
                           :reqfile="reqFile[index]"
-                          @refresh="loadItemListDocumentById()"
-                        ></ApproveVerifikatorShlbDocumentModal>
+                          @refresh="loadItemListDocumentById"
+                        />
                       </VListItem>
                       <VListItem>
                         <ReturnVerifikatorShlbDocumentModal
                           :item="item"
                           :reqfile="reqFile[index]"
-                          @refresh="loadItemListDocumentById()"
-                        ></ReturnVerifikatorShlbDocumentModal>
+                          @refresh="loadItemListDocumentById"
+                        />
                       </VListItem>
                     </VList>
                   </VMenu>
-                </v-btn>
+                </VBtn>
               </div>
             </template>
           </VDataTableServer>
@@ -525,11 +542,11 @@ const onRefresh = (type: string) => {
   </VRow>
 
   <VDialog v-model="reqTrackingModal">
-    <v-card>
-      <v-card-text>
+    <VCard>
+      <VCardText>
         <p class="text-h5 font-weight-bold">Tracking</p>
         <HalalTimeLine v-if="reqTracking" :event="reqTracking" />
-      </v-card-text>
-    </v-card>
+      </VCardText>
+    </VCard>
   </VDialog>
 </template>

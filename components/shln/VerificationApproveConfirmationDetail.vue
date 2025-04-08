@@ -87,7 +87,7 @@ const dialogMaxWidth = computed(() => {
           </VBtn>
         </VCardTitle>
         <VCardText>
-          <p class="mb-2">Are you sure you want to Return this submission?</p>
+          <p class="mb-2">Are you sure you want to Approve this submission?</p>
           <VCardActions style="display: flex; justify-content: end">
             <VBtn variant="outlined" text @click="cancel"> Cancel </VBtn>
             <VBtn

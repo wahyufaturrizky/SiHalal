@@ -102,7 +102,11 @@ const donwloadKtp = (item) => {
       />
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="headers" :items="items">
+      <VDataTable
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="headers"
+        :items="items"
+      >
         <template #item.skph="{ item }">
           <v-btn color="primary" variant="plain" @click="donwloadSkph(item)">
             <VIcon>mdi-download</VIcon>

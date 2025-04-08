@@ -128,10 +128,10 @@ interface editBahan {
   <VCard>
     <VCardTitle>
       <VRow>
-        <VCol cols="6" style="display: flex; align-items: center;"
+        <VCol cols="6" style="display: flex; align-items: center"
           ><h3>Daftar Nama Bahan dan Kemasan</h3></VCol
         >
-        <VCol cols="6" style="display: flex; justify-content: end;">
+        <VCol cols="6" style="display: flex; justify-content: end">
           <TambahBahanModal
             :can-not-edit="canNotEdit"
             @loadList="loadBahan()"
@@ -151,7 +151,11 @@ interface editBahan {
     <VCardItem>
       <VRow>
         <VCol cols="12">
-          <VDataTable :headers="tableHeader" :items="bahan">
+          <VDataTable
+            :items-per-page-options="[10, 25, 50, 100]"
+            :headers="tableHeader"
+            :items="bahan"
+          >
             <template #item.index="{ index }"> {{ index + 1 }} </template>
             <template #item.vefified="{ item }">
               <v-chip :color="item.vefified ? 'success' : 'error'">{{
@@ -181,11 +185,7 @@ interface editBahan {
                   }"
                   @loadList="loadBahan()"
                 />
-                <IconBtn
-                  size="small"
-                  @click="deleteItem(item.id)"
-                 
-                >
+                <IconBtn size="small" @click="deleteItem(item.id)">
                   <VIcon color="error" icon="ri-delete-bin-line" />
                 </IconBtn>
               </div>

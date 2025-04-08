@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 const items = ref();
 const itemPerPage = ref(10);
 const totalItems = ref(0);
@@ -124,6 +123,7 @@ const navigateAction = (id: string) => {
           </VRow>
           <VRow>
             <VDataTableServer
+              :items-per-page-options="[10, 25, 50, 100]"
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
               :headers="tableHeader"

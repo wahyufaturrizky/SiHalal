@@ -14,22 +14,22 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
 const store = pelakuUsahaProfile();
+
 const isNoNeedValidation = () => {
   console.log("validation = ", props?.data?.skala_usaha);
+
   return (
     props?.data?.skala_usaha === "JU.4" || props?.data?.skala_usaha === "JU.3"
   );
 };
 
-const emit = defineEmits(["confirmAdd", "confirmEdit", "cancel"]);
-
 const isVisible = ref(false);
 
 const openDialog = () => {
-  if (props.mode == "add") {
-    form.value = { ...initAddData };
-  }
+  if (props.mode == "add") form.value = { ...initAddData };
+
   isVisible.value = true;
 };
 
@@ -64,6 +64,7 @@ const cancel = () => {
 };
 
 const { mdAndUp } = useDisplay();
+
 const dialogMaxWidth = computed(() => {
   return mdAndUp.value ? 700 : "90%";
 });
@@ -137,7 +138,9 @@ watch(
   },
   { immediate: true }
 );
+
 const ktpError = ref("");
+
 const checkKtp = async (item) => {
   ktpError.value = "";
   if (isNoNeedValidation.value) {
@@ -145,12 +148,10 @@ const checkKtp = async (item) => {
       const val: any = await $api(`/pelaku-usaha-profile/check-nik/${item}`, {
         method: "GET",
       });
-      if (val.code == 2000) {
-        form.value.namaPenyelia = val.data.nama;
-      }
-      if (val.code == 4000) {
-        ktpError.value = val.message;
-      }
+
+      if (val.code == 2000) form.value.namaPenyelia = val.data.nama;
+
+      if (val.code == 4000) ktpError.value = val.message;
     }
   }
 };
@@ -162,29 +163,31 @@ const { t } = useI18n();
   <div class="ma-1">
     <VBtn
       v-if="props.mode === 'add'"
-      @click="openDialog"
       variant="outlined"
       append-icon="ri-add-line"
+      @click="openDialog"
     >
       {{ t("detail-pu.pu-edit-add") }}
     </VBtn>
 
     <VItemGroup
       v-else-if="props.mode === 'edit'"
-      @click="openDialog"
       style="display: inline-flex; cursor: pointer"
+      @click="openDialog"
     >
       <VIcon class="mr-2"> mdi-pencil </VIcon>
       <p>{{ t("detail-pu.pu-edit-edit") }}</p>
     </VItemGroup>
-    <!-- <VBtn
+    <!--
+      <VBtn
       v-else-if="props.mode === 'edit'"
       @click="openDialog"
       variant="outlined"
       prepend-icon="ri-edit-line"
-    >
+      >
       Edit
-    </VBtn> -->
+      </VBtn>
+    -->
     <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
       <VCard class="pa-2">
         <VCardTitle>
@@ -203,7 +206,7 @@ const { t } = useI18n();
               elevation="0"
               @click="closeDialog"
             >
-              <VIcon color="black">ri-close-line</VIcon>
+              <VIcon color="black"> ri-close-line </VIcon>
             </VBtn>
           </div>
           <div class="bgContent">
@@ -229,6 +232,7 @@ const { t } = useI18n();
             <VRow>
               <VCol cols="6">
                 <VTextField
+                  v-model="form.noKtp"
                   :rules="
                     isNoNeedValidation
                       ? []
@@ -238,20 +242,19 @@ const { t } = useI18n();
                           lengthValidator(form.noKtp, 16),
                         ]
                   "
-                  v-model="form.noKtp"
                   label="No. KTP"
                   outlined
                   dense
                   required
                   maxlength="16"
-                  @update:modelValue="checkKtp"
                   :error-messages="ktpError"
+                  @update:model-value="checkKtp"
                 />
               </VCol>
               <VCol cols="6">
                 <VTextField
-                  :rules="[requiredValidator, phoneNumberIdValidator]"
                   v-model="form.noKontak"
+                  :rules="[requiredValidator, phoneNumberIdValidator]"
                   label="No. Kontak"
                   outlined
                   dense
@@ -262,6 +265,7 @@ const { t } = useI18n();
             <VRow>
               <VCol cols="6">
                 <VTextField
+                  v-model="form.namaPenyelia"
                   :rules="[
                     requiredValidator,
                     regexValidator(
@@ -270,7 +274,6 @@ const { t } = useI18n();
                       'Format nama penyelia tidak sesuai'
                     ),
                   ]"
-                  v-model="form.namaPenyelia"
                   label="nama"
                   outlined
                   dense
@@ -279,8 +282,8 @@ const { t } = useI18n();
               </VCol>
               <VCol cols="6">
                 <VSelect
-                  :rules="[requiredValidator]"
                   v-model="form.agamaPenyelia"
+                  :rules="[requiredValidator]"
                   :items="['Islam']"
                   label="Agama Penyelia"
                   outlined
@@ -292,8 +295,8 @@ const { t } = useI18n();
             <VRow>
               <VCol cols="6">
                 <VTextField
-                  :rules="isNoNeedValidation ? [] : [requiredValidator]"
                   v-model="form.nomorSertifikat"
+                  :rules="isNoNeedValidation ? [] : [requiredValidator]"
                   label="Nomor Sertifikat"
                   outlined
                   dense
@@ -301,15 +304,15 @@ const { t } = useI18n();
                 />
               </VCol>
               <VCol cols="6">
-                <!--                <VTextField-->
-                <!--                  :rules="isNoNeedValidation ? [] : [requiredValidator]"-->
-                <!--                  v-model="form.tanggalSertifikat"-->
-                <!--                  label="Tanggal Sertifikat"-->
-                <!--                  outlined-->
-                <!--                  dense-->
-                <!--                  required-->
-                <!--                  type="date"-->
-                <!--                />-->
+                <!--                <VTextField -->
+                <!--                  :rules="isNoNeedValidation ? [] : [requiredValidator]" -->
+                <!--                  v-model="form.tanggalSertifikat" -->
+                <!--                  label="Tanggal Sertifikat" -->
+                <!--                  outlined -->
+                <!--                  dense -->
+                <!--                  required -->
+                <!--                  type="date" -->
+                <!--                /> -->
                 <Vuepicdatepicker
                   v-model:model-value="form.tanggalSertifikat"
                   auto-apply
@@ -333,8 +336,8 @@ const { t } = useI18n();
             <VRow class="mb-2">
               <VCol cols="6">
                 <VTextField
-                  :rules="[requiredValidator]"
                   v-model="form.nomorSk"
+                  :rules="[requiredValidator]"
                   label="Nomor SK"
                   outlined
                   dense
@@ -342,15 +345,15 @@ const { t } = useI18n();
                 />
               </VCol>
               <VCol cols="6">
-                <!--                <VTextField-->
-                <!--                  :rules="[requiredValidator]"-->
-                <!--                  v-model="form.tanggalSk"-->
-                <!--                  label="Tanggal SK"-->
-                <!--                  outlined-->
-                <!--                  dense-->
-                <!--                  required-->
-                <!--                  type="date"-->
-                <!--                />-->
+                <!--                <VTextField -->
+                <!--                  :rules="[requiredValidator]" -->
+                <!--                  v-model="form.tanggalSk" -->
+                <!--                  label="Tanggal SK" -->
+                <!--                  outlined -->
+                <!--                  dense -->
+                <!--                  required -->
+                <!--                  type="date" -->
+                <!--                /> -->
 
                 <Vuepicdatepicker
                   v-model:model-value="form.tanggalSk"
@@ -372,11 +375,12 @@ const { t } = useI18n();
                 </Vuepicdatepicker>
               </VCol>
             </VRow>
-            <v-tooltip
+            <VTooltip
               text="Upload file hanya untuk - pdf, png, jpeg, jpg dan Max file-size 2MB"
             >
-              <template v-slot:activator="{ props: tooltipOpen }">
+              <template #activator="{ props: tooltipOpen }">
                 <VFileInput
+                  v-model="form.sertifikatKompetensi"
                   :rules="
                     isNoNeedValidation
                       ? []
@@ -387,7 +391,6 @@ const { t } = useI18n();
                           fileExtensionValidator,
                         ]
                   "
-                  v-model="form.sertifikatKompetensi"
                   label="Unggah Sertifikat Kompetensi Penyelia Halal"
                   outlined
                   dense
@@ -396,12 +399,13 @@ const { t } = useI18n();
                   v-bind="tooltipOpen"
                 />
               </template>
-            </v-tooltip>
-            <v-tooltip
+            </VTooltip>
+            <VTooltip
               text="Upload file hanya untuk - pdf, png, jpeg, jpg dan Max file-size 2MB"
             >
-              <template v-slot:activator="{ props: tooltipPelatihan }">
+              <template #activator="{ props: tooltipPelatihan }">
                 <VFileInput
+                  v-model="form.sertifikatPelatihan"
                   :rules="
                     isNoNeedValidation
                       ? []
@@ -412,7 +416,6 @@ const { t } = useI18n();
                           fileExtensionValidator,
                         ]
                   "
-                  v-model="form.sertifikatPelatihan"
                   label="Unggah Sertifikat Pelatihan Penyelia Halal"
                   outlined
                   dense
@@ -421,19 +424,19 @@ const { t } = useI18n();
                   v-bind="tooltipPelatihan"
                 />
               </template>
-            </v-tooltip>
-            <v-tooltip
+            </VTooltip>
+            <VTooltip
               text="Upload file hanya untuk - pdf, png, jpeg, jpg dan Max file-size 2MB"
             >
-              <template v-slot:activator="{ props: tooltipKtp }">
+              <template #activator="{ props: tooltipKtp }">
                 <VFileInput
+                  v-model="form.ktpFile"
                   :rules="[
                     requiredValidator,
                     fileSizeValidator,
                     fileNameLengthValidator,
                     fileExtensionValidator,
                   ]"
-                  v-model="form.ktpFile"
                   label="Unggah KTP"
                   outlined
                   dense
@@ -442,13 +445,13 @@ const { t } = useI18n();
                   v-bind="tooltipKtp"
                 />
               </template>
-            </v-tooltip>
+            </VTooltip>
           </VForm>
         </VCardText>
 
         <div class="d-flex justify-end gap-2">
-          <VBtn @click="cancel" variant="outlined"> Batal </VBtn>
-          <VBtn @click="confirms" color="primary">
+          <VBtn variant="outlined" @click="cancel"> Batal </VBtn>
+          <VBtn color="primary" @click="confirms">
             {{ props.mode === "add" ? "Tambah" : "Simpan" }}
           </VBtn>
         </div>
@@ -463,17 +466,19 @@ const { t } = useI18n();
   background-color: #f0e9f1;
   padding-inline-start: 10px;
 }
+
 .subText {
+  display: flex;
+  flex-wrap: wrap;
   align-content: center;
   color: #652672 !important;
   font-size: 12px !important;
   font-weight: 500 !important;
+  inline-size: auto;
   line-height: 18px !important;
   padding-inline-start: 10px;
-  display: flex;
-  flex-wrap: wrap;
-  width: auto;
 }
+
 .wrap-text {
   text-wrap: wrap;
 }

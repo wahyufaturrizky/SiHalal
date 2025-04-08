@@ -22,11 +22,11 @@ const isNoNeedValidation =
 
 const tableHeaders = [
   { title: "No", key: "no", align: "start", sortable: false },
-  { title: "Nama", key: "nama", align: "start", sortable: false },
-  { title: "Unduh SKPH", key: "unduh_skph", align: "start", sortable: false },
-  { title: "Unduh SPPH", key: "unduh_spph", align: "start", sortable: false },
-  { title: "Unduh KTP", key: "unduh_ktp", align: "start", sortable: false },
-  { title: "No. KTP", key: "no_ktp", align: "start", sortable: false },
+  { title: "detail-pu.pu-ph-nama", key: "nama", align: "start", sortable: false },
+  { title: "detail-pu.pu-ph-download-skph", key: "unduh_skph", align: "start", sortable: false },
+  { title: "detail-pu.pu-ph-download-skph", key: "unduh_spph", align: "start", sortable: false },
+  { title: "detail-pu.pu-ph-download-ktp", key: "unduh_ktp", align: "start", sortable: false },
+  { title: "detail-pu.pu-ph-ktp", key: "no_ktp", align: "start", sortable: false },
   { title: "Action", key: "actions", align: "end", sortable: false },
 ];
 
@@ -304,7 +304,7 @@ const downloadSkHandler = () => {
     <VCardTitle>
       <VRow>
         <VCol cols="8" style="display: inline-flex; align-items: center">
-          <div class="text-h4 font-weight-bold mr-4">Penyelia Halal</div>
+          <div class="text-h4 font-weight-bold mr-4">{{ t("detail-pu.pu-ph-title") }}</div>
           <!-- <VChip
             color="primary"
             style="
@@ -341,7 +341,7 @@ const downloadSkHandler = () => {
         <thead>
           <tr>
             <th v-for="header in tableHeaders" :key="header.key">
-              {{ header.title }}
+              {{ t(header.title) ? t(header.title) : header.title }}
             </th>
           </tr>
         </thead>

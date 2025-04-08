@@ -1,33 +1,81 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
+import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 
 const tableHeaders: any[] = [
-  { title: 'No', key: 'no', sortable: false },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.daftar'), key: 'no_daftar', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.date'), key: 'tanggal_daftar', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.pu-name'), key: 'nama_pu', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.city'), key: 'kota_pu', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.product-type'), key: 'jenis_produk', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.market-brand'), key: 'merek_dagang', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.market-area'), key: 'area_pemasaran', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.business-scale'), key: 'skala_usaha', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.lph-name'), key: 'nama_lph', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.determination-no'), key: 'penetapan.no_penetapan', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-buat-tagihan-table-key.determination-date'), key: 'penetapan.tgl_penetapan', nowrap: true },
-]
+  { title: "No", key: "no", sortable: false },
+  {
+    title: t("task-force.tagihan-bpjph-buat-tagihan-table-key.daftar"),
+    key: "no_daftar",
+    nowrap: true,
+  },
+  {
+    title: t("task-force.tagihan-bpjph-buat-tagihan-table-key.date"),
+    key: "tanggal_daftar",
+    nowrap: true,
+  },
+  {
+    title: t("task-force.tagihan-bpjph-buat-tagihan-table-key.pu-name"),
+    key: "nama_pu",
+    nowrap: true,
+  },
+  {
+    title: t("task-force.tagihan-bpjph-buat-tagihan-table-key.city"),
+    key: "kota_pu",
+    nowrap: true,
+  },
+  {
+    title: t("task-force.tagihan-bpjph-buat-tagihan-table-key.product-type"),
+    key: "jenis_produk",
+    nowrap: true,
+  },
+  {
+    title: t("task-force.tagihan-bpjph-buat-tagihan-table-key.market-brand"),
+    key: "merek_dagang",
+    nowrap: true,
+  },
+  {
+    title: t("task-force.tagihan-bpjph-buat-tagihan-table-key.market-area"),
+    key: "area_pemasaran",
+    nowrap: true,
+  },
+  {
+    title: t("task-force.tagihan-bpjph-buat-tagihan-table-key.business-scale"),
+    key: "skala_usaha",
+    nowrap: true,
+  },
+  {
+    title: t("task-force.tagihan-bpjph-buat-tagihan-table-key.lph-name"),
+    key: "nama_lph",
+    nowrap: true,
+  },
+  {
+    title: t(
+      "task-force.tagihan-bpjph-buat-tagihan-table-key.determination-no"
+    ),
+    key: "penetapan.no_penetapan",
+    nowrap: true,
+  },
+  {
+    title: t(
+      "task-force.tagihan-bpjph-buat-tagihan-table-key.determination-date"
+    ),
+    key: "penetapan.tgl_penetapan",
+    nowrap: true,
+  },
+];
 
-const tableItems = ref<Array[]>([])
-const facilityItems = ref<Array[]>([])
-const currentPage = ref(1)
-const itemPerPage = ref(10)
-const totalItems = ref(0)
-const selectedItem = ref([])
-const isLoading = ref(false)
-const isLoadingFacility = ref(false)
-const tableType = ref('')
-const totalData = ref(30)
-const showFilterMenu = ref(false)
+const tableItems = ref<Array[]>([]);
+const facilityItems = ref<Array[]>([]);
+const currentPage = ref(1);
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const selectedItem = ref([]);
+const isLoading = ref(false);
+const isLoadingFacility = ref(false);
+const tableType = ref("");
+const totalData = ref(30);
+const showFilterMenu = ref(false);
 
 // const filterData = ref({
 //   serviceType: `Pilih ${t('task-force.tagihan-bpjph-buat-tagihan-filter.service-type')}`,
@@ -37,177 +85,165 @@ const showFilterMenu = ref(false)
 // })
 
 const filterData = ref({
-  serviceType: '',
-  pelakuUsaha: '',
-  facility: '',
-  year: '',
-})
+  serviceType: "",
+  pelakuUsaha: "",
+  facility: "",
+  year: "",
+});
 
 const bulkCheck = ref({
-  start: '',
-  end: '',
-})
+  start: "",
+  end: "",
+});
 
 const handleLoadList = async (params: any) => {
   try {
-    const response: any = await $api('/bill/bpjph/bill', {
-      method: 'get',
+    const response: any = await $api("/bill/bpjph/bill", {
+      method: "get",
       query: {
         ...params,
         page: currentPage.value,
         size: itemPerPage.value,
       },
-    } as any)
+    } as any);
 
     if (response.code === 2000) {
       if (response.data !== null) {
-        response.data.map((el: any) => el.id = el.id_reg)
-        tableItems.value = response.data
-        currentPage.value = response.current_page
-        totalItems.value = response.total_item
-      }
-      else {
+        response.data.map((el: any) => (el.id = el.id_reg));
+        tableItems.value = response.data;
+        currentPage.value = response.current_page;
+        totalItems.value = response.total_item;
+      } else {
         // tableItems.value = []
-        currentPage.value = 1
-        totalItems.value = 0
+        currentPage.value = 1;
+        totalItems.value = 0;
       }
 
-      return response
-    }
-    else {
+      return response;
+    } else {
       // tableItems.value = []
-      currentPage.value = 1
-      totalItems.value = 0
+      currentPage.value = 1;
+      totalItems.value = 0;
     }
+  } catch (error) {
+    console.error(error);
   }
-  catch (error) {
-    console.error(error)
-  }
-}
+};
 
 const getFacility = async () => {
   try {
-    isLoadingFacility.value = true
+    isLoadingFacility.value = true;
 
-    const response: any = await $api('/bill/bpjph/facility', {
-      method: 'get',
-    } as any)
+    const response: any = await $api("/bill/bpjph/facility", {
+      method: "get",
+    } as any);
 
     if (response.code === 2000) {
       if (response.data !== null) {
-        facilityItems.value = response.data
-        isLoadingFacility.value = false
+        facilityItems.value = response.data;
+        isLoadingFacility.value = false;
       }
 
-      return response
+      return response;
     }
+  } catch (error) {
+    isLoadingLembaga.value = false;
+    console.error(error);
   }
-  catch (error) {
-    isLoadingLembaga.value = false
-    console.error(error)
-  }
-}
+};
 
 const { refresh } = await useAsyncData(
-  'user-list',
+  "user-list",
   async () => await handleLoadList(filterData.value),
   {
     watch: [currentPage, itemPerPage, tableType],
-  },
-)
+  }
+);
 
 const handleCheck = async () => {
-  if (bulkCheck.value.start > bulkCheck.value.end)
-    return null
+  if (bulkCheck.value.start > bulkCheck.value.end) return null;
 
-  const arr: [] = []
+  const arr: [] = [];
 
   tableItems.value.map((item: any, index: number) => {
     if (index >= bulkCheck.value.start - 1 && index <= bulkCheck.value.end - 1)
-      arr.push(item.id)
+      arr.push(item.id);
 
-    return true
-  })
+    return true;
+  });
 
-  return selectedItem.value = arr
-}
+  return (selectedItem.value = arr);
+};
 
 const applyFilters = async () => {
-  let params = {}
+  let params = {};
 
-  if (filterData.value.serviceType !== '') {
+  if (filterData.value.serviceType !== "") {
     params = {
       ...params,
       channel_id: filterData.value.serviceType,
-    }
+    };
   }
-  if (filterData.value.pelakuUsaha !== '') {
+  if (filterData.value.pelakuUsaha !== "") {
     params = {
       ...params,
-      f_ln: filterData.value.pelakuUsaha === 'Dalam Negri' ? 0 : 1,
-    }
+      f_ln: filterData.value.pelakuUsaha === "Dalam Negri" ? 0 : 1,
+    };
   }
-  if (filterData.value.facility !== '') {
+  if (filterData.value.facility !== "") {
     params = {
       ...params,
       fac_id: filterData.value.facility,
-    }
+    };
   }
-  if (filterData.value.year !== '') {
+  if (filterData.value.year !== "") {
     params = {
       ...params,
       tgl_daftar: filterData.value.year,
-    }
+    };
   }
 
-  handleLoadList(params)
-  showFilterMenu.value = false
-}
+  handleLoadList(params);
+  showFilterMenu.value = false;
+};
 
 const resetFilters = () => {
   filterData.value = {
-    serviceType: '',
-    pelakuUsaha: '',
-    facility: '',
-    year: '',
-  }
-  handleLoadList(filterData.value)
-  showFilterMenu.value = false
-}
+    serviceType: "",
+    pelakuUsaha: "",
+    facility: "",
+    year: "",
+  };
+  handleLoadList(filterData.value);
+  showFilterMenu.value = false;
+};
 
 onMounted(async () => {
-  await Promise.allSetled([
-    handleLoadList(filterData.value),
-    getFacility(),
-  ])
-})
+  await Promise.allSetled([handleLoadList(filterData.value), getFacility()]);
+});
 
 const getChipColor = (status: string) => {
-  if (status === 'Terbayar')
-    return 'success'
+  if (status === "Terbayar") return "success";
 
-  return 'primary'
-}
+  return "primary";
+};
 
 const unduhFile = async (link: string) => {
-  await downloadDocument(link, 'FILES')
-}
+  await downloadDocument(link, "FILES");
+};
 
 const onApprove = async () => {
   try {
-    const response: any = await $api(
-      "/bill/bpjph/create-bill",
-      {
-        method: "post",
-        body: {
-          id_reg: selectedItem.value,
-        },
+    const response: any = await $api("/bill/bpjph/create-bill", {
+      method: "post",
+      body: {
+        id_reg: selectedItem.value,
       },
-    );
+    });
     if (response.code === 2000) {
       useSnackbar().sendSnackbar(response.message, "success");
-      selectedItem.value = []
-      handleLoadList(filterData.value)
+      selectedItem.value = [];
+      handleLoadList(filterData.value);
       return;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan submit penetapan", "error");
@@ -217,14 +253,14 @@ const onApprove = async () => {
   } finally {
     // loadingPendamping.value = false;
   }
-}
+};
 </script>
 
 <template>
   <VRow>
     <VCol>
       <h2 style="font-size: 32px">
-        {{ t('task-force.tagihan-bpjph-title') }}
+        {{ t("task-force.tagihan-bpjph-title") }}
       </h2>
     </VCol>
   </VRow>
@@ -233,13 +269,16 @@ const onApprove = async () => {
       <VCard class="w-100 py-3">
         <VCardTitle>
           <div>
-            <div class="d-flex w-100 font-weight-bold text-h4" style="justify-content: space-between;">
-              {{ t('task-force.tagihan-bpjph-buat-tagihan-table.title') }}
+            <div
+              class="d-flex w-100 font-weight-bold text-h4"
+              style="justify-content: space-between"
+            >
+              {{ t("task-force.tagihan-bpjph-buat-tagihan-table.title") }}
               <p class="common-text">
-                {{ t('task-force.tagihan-bpjph-buat-tagihan-table.total-data') }}
-                <span>
-                  : {{ totalData }}
-                </span>
+                {{
+                  t("task-force.tagihan-bpjph-buat-tagihan-table.total-data")
+                }}
+                <span> : {{ totalData }} </span>
               </p>
             </div>
           </div>
@@ -266,7 +305,11 @@ const onApprove = async () => {
                   <div class="w-100 mt-5 mb-5">
                     <div class="w-100">
                       <div>
-                        <label>{{ t('task-force.tagihan-bpjph-buat-tagihan-filter.service-type') }}</label>
+                        <label>{{
+                          t(
+                            "task-force.tagihan-bpjph-buat-tagihan-filter.service-type"
+                          )
+                        }}</label>
                         <VSelect
                           v-model="filterData.serviceType"
                           :value="filterData.serviceType"
@@ -277,11 +320,15 @@ const onApprove = async () => {
                           class="-mt-10"
                           item-title="name"
                           item-value="code"
-                          style="background-color: white;"
+                          style="background-color: white"
                         />
                       </div>
                       <div class="mt-5">
-                        <label>{{ t('task-force.tagihan-bpjph-buat-tagihan-filter.pelaku-usaha') }}</label>
+                        <label>{{
+                          t(
+                            "task-force.tagihan-bpjph-buat-tagihan-filter.pelaku-usaha"
+                          )
+                        }}</label>
                         <VSelect
                           v-model="filterData.pelakuUsaha"
                           :value="filterData.pelakuUsaha"
@@ -292,48 +339,73 @@ const onApprove = async () => {
                           class="-mt-10"
                           item-title="name"
                           item-value="code"
-                          style="background-color: white;"
+                          style="background-color: white"
                         />
                       </div>
                     </div>
                     <div class="w-100 mt-5">
                       <div>
-                        <label>{{ t('task-force.tagihan-bpjph-buat-tagihan-filter.facility') }}</label>
+                        <label>{{
+                          t(
+                            "task-force.tagihan-bpjph-buat-tagihan-filter.facility"
+                          )
+                        }}</label>
                         <VSelect
                           v-model="filterData.facility"
                           :items="facilityItems"
                           class="-mt-10"
                           item-title="fac_name"
                           item-value="fac_id"
-                          style="background-color: white;"
+                          style="background-color: white"
                           :loading="isLoadingFacility"
                           :disabled="isLoadingFacility"
                         />
                       </div>
                       <div class="mt-5">
-                        <label>{{ t('task-force.tagihan-bpjph-buat-tagihan-filter.year') }}</label>
+                        <label>{{
+                          t("task-force.tagihan-bpjph-buat-tagihan-filter.year")
+                        }}</label>
                         <VSelect
                           v-model="filterData.year"
                           :value="filterData.year"
                           :items="[
                             { name: 'Semua', code: '' },
-                            { name: new Date().getFullYear(), code: new Date().getFullYear() },
-                            { name: new Date().getFullYear() - 1, code: new Date().getFullYear() - 1 },
-                            { name: new Date().getFullYear() - 2, code: new Date().getFullYear() - 2 },
-                            { name: new Date().getFullYear() - 3, code: new Date().getFullYear() - 3 },
-                            { name: new Date().getFullYear() - 4, code: new Date().getFullYear() - 4 },
+                            {
+                              name: new Date().getFullYear(),
+                              code: new Date().getFullYear(),
+                            },
+                            {
+                              name: new Date().getFullYear() - 1,
+                              code: new Date().getFullYear() - 1,
+                            },
+                            {
+                              name: new Date().getFullYear() - 2,
+                              code: new Date().getFullYear() - 2,
+                            },
+                            {
+                              name: new Date().getFullYear() - 3,
+                              code: new Date().getFullYear() - 3,
+                            },
+                            {
+                              name: new Date().getFullYear() - 4,
+                              code: new Date().getFullYear() - 4,
+                            },
                           ]"
                           class="-mt-10"
                           item-title="name"
                           item-value="code"
-                          style="background-color: white;"
+                          style="background-color: white"
                         />
                       </div>
                     </div>
                   </div>
                   <VBtn
                     style="float: inline-start"
-                    :text="t('task-force.tagihan-bpjph-buat-tagihan-filter.reset-btn-filter')"
+                    :text="
+                      t(
+                        'task-force.tagihan-bpjph-buat-tagihan-filter.reset-btn-filter'
+                      )
+                    "
                     @click="resetFilters"
                   />
                   <VBtn
@@ -341,31 +413,39 @@ const onApprove = async () => {
                     color="primary"
                     @click="applyFilters"
                   >
-                    {{ t('task-force.tagihan-bpjph-buat-tagihan-filter.btn-filter') }}
+                    {{
+                      t(
+                        "task-force.tagihan-bpjph-buat-tagihan-filter.btn-filter"
+                      )
+                    }}
                   </VBtn>
                 </VCard>
               </VMenu>
             </div>
-            <div class="d-flex gap-5" style="max-height: 40px;">
+            <div class="d-flex gap-5" style="max-height: 40px">
               <VTextField
                 v-model="bulkCheck.start"
                 density="compact"
                 placeholder="pilih no"
-                style="min-width: 110px; max-height: 40px;"
+                style="min-width: 110px; max-height: 40px"
                 @input="onlyAcceptNumber"
               />
               <VTextField
                 v-model="bulkCheck.end"
                 density="compact"
                 placeholder="sampai"
-                style="min-width: 110px; max-height: 40px;"
+                style="min-width: 110px; max-height: 40px"
                 @input="onlyAcceptNumber"
               />
               <VBtn
-                :disabled="!bulkCheck.start || !bulkCheck.end || (+bulkCheck.start > +bulkCheck.end)"
+                :disabled="
+                  !bulkCheck.start ||
+                  !bulkCheck.end ||
+                  +bulkCheck.start > +bulkCheck.end
+                "
                 @click="handleCheck"
               >
-                {{ t('task-force.tagihan-bpjph-buat-tagihan-table.btn-pilih') }}
+                {{ t("task-force.tagihan-bpjph-buat-tagihan-table.btn-pilih") }}
               </VBtn>
             </div>
             <CreateInvoice
@@ -373,12 +453,16 @@ const onApprove = async () => {
               :onApprove="onApprove"
             >
               <template #content>
-                <label>Yakin akan membuat tagihan untuk data-data yang dicontreng tersebut?</label>
+                <label
+                  >Yakin akan membuat tagihan untuk data-data yang dicontreng
+                  tersebut?</label
+                >
               </template>
             </CreateInvoice>
           </div>
           <VCard variant="outlined">
             <VDataTableServer
+              :items-per-page-options="[10, 25, 50, 100]"
               v-model:items-per-page="itemPerPage"
               v-model:page="currentPage"
               v-model="selectedItem"
@@ -392,21 +476,13 @@ const onApprove = async () => {
               show-select
             >
               <template #no-data>
-                <VCard
-                  variant=""
-                  class="w-full mt-7 mb-5"
-                >
-                  <div
-                    class="pt-2"
-                    style="justify-items: center"
-                  >
+                <VCard variant="" class="w-full mt-7 mb-5">
+                  <div class="pt-2" style="justify-items: center">
                     <img
                       src="~/assets/images/empty-data.png"
                       alt="empty_data"
-                    >
-                    <div class="pt-2 pb-2 font-weight-bold">
-                      Data Kosong
-                    </div>
+                    />
+                    <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
                   </div>
                 </VCard>
               </template>
@@ -431,7 +507,7 @@ const onApprove = async () => {
   font-weight: 600;
   font-size: 16px;
   line-height: 24px;
-  color: '#2C222E';
+  color: "#2C222E";
   margin-top: 10px;
 }
 </style>

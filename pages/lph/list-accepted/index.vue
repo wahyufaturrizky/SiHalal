@@ -95,7 +95,7 @@ watch([page, size], () => {
     </VRow> -->
     <VRow>
       <VCol cols="12">
-        <h1 style="font-size: 32px;">Daftar Ajuan Diterima</h1>
+        <h1 style="font-size: 32px">Daftar Ajuan Diterima</h1>
       </VCol>
     </VRow>
     <VRow>
@@ -112,7 +112,7 @@ watch([page, size], () => {
                   placeholder="Cari Nama Pengajuan"
                   density="compact"
                   append-inner-icon="ri-search-line"
-                  style="max-inline-size: 100%;"
+                  style="max-inline-size: 100%"
                   @input="handleInput"
                 />
               </VCol>
@@ -121,6 +121,7 @@ watch([page, size], () => {
               <VCol cols="12">
                 <VDataTableServer
                   v-if="dataTable"
+                  :items-per-page-options="[10, 25, 50, 100]"
                   v-model:items-per-page="size"
                   v-model:page="page"
                   :items-length="totalItems"
@@ -131,7 +132,7 @@ watch([page, size], () => {
                 >
                   <template #no-data>
                     <div class="w-full mt-2">
-                      <div class="pt-2" style="justify-items: center;">
+                      <div class="pt-2" style="justify-items: center">
                         <img
                           src="~/assets/images/empty-data.png"
                           alt="empty_data"
@@ -151,7 +152,7 @@ watch([page, size], () => {
                       text-color="white"
                       small
                       variant="outlined"
-                      style=" background-color: #edf6ed;margin-inline-end: 1svw;"
+                      style="background-color: #edf6ed; margin-inline-end: 1svw"
                     >
                       1
                     </VChip>
@@ -160,7 +161,7 @@ watch([page, size], () => {
                       text-color="white"
                       small
                       variant="outlined"
-                      style=" background-color: #edf6ed;margin-inline-end: 1svw;"
+                      style="background-color: #edf6ed; margin-inline-end: 1svw"
                     >
                       3
                     </VChip>
@@ -169,7 +170,7 @@ watch([page, size], () => {
                       text-color="white"
                       small
                       variant="outlined"
-                      style=" background-color: #f0e9f1;margin-inline-end: 1svw;"
+                      style="background-color: #f0e9f1; margin-inline-end: 1svw"
                     >
                       {{ (item as any).status }}
                     </VChip>

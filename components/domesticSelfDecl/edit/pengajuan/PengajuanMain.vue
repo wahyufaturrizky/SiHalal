@@ -22,12 +22,12 @@ const {
     type: String,
     default: null,
   },
-})
+});
 
-const route = useRoute<''>()
-const submissionId = route.params?.id
+const route = useRoute<"">();
+const submissionId = route.params?.id;
 
-const store = useMyTabEditRegulerStore()
+const store = useMyTabEditRegulerStore();
 
 const submissionDetail = reactive({
   id_reg: null,
@@ -40,11 +40,11 @@ const submissionDetail = reactive({
   jabatan_pj: null,
   nomor_kontak_pj: null,
   nama_pu: null,
-})
+});
 
 const isPengembangan = () => {
-  return submissionDetail.id_jenis_pengajuan == 'JD.3'
-}
+  return submissionDetail.id_jenis_pengajuan == "JD.3";
+};
 
 const formData = reactive({
   id_reg: submissionId,
@@ -61,354 +61,399 @@ const formData = reactive({
   id_fasilitator: null,
   nama_pu: null,
   area_pemasaran: null,
-  lokasi_pendamping: 'Provinsi',
+  lokasi_pendamping: "Provinsi",
   lembaga_pendamping: null,
   id_lembaga_pendamping: null,
   pendamping: null,
   id_pendamping: null,
-})
+});
 
-const listPendaftaran = ref([])
-const listFasilitasi = ref([])
-const listLayanan = ref([])
-const listProduk = ref([])
+const listPendaftaran = ref([]);
+const listFasilitasi = ref([]);
+const listLayanan = ref([]);
+const listProduk = ref([]);
 
 const listAreaPemasaran = ref([
-  { title: 'Kabupaten/Kota', value: 'Kabupaten' },
-  { title: 'Provinsi', value: 'Provinsi' },
-  { title: 'Nasional', value: 'Nasional' },
-  { title: 'Internasional', value: 'Internasional' },
-])
+  { title: "Kabupaten/Kota", value: "Kabupaten" },
+  { title: "Provinsi", value: "Provinsi" },
+  { title: "Nasional", value: "Nasional" },
+  { title: "Internasional", value: "Internasional" },
+]);
 
 const lokasiPendamping = ref([
-  { title: 'Kabupaten', value: 'Kabupaten' },
-  { title: 'Provinsi', value: 'Provinsi' },
-])
+  { title: "Kabupaten", value: "Kabupaten" },
+  { title: "Provinsi", value: "Provinsi" },
+]);
 
-const lembagaPendamping = ref([])
-const listPendamping = ref([])
+const lembagaPendamping = ref([]);
+const listPendamping = ref([]);
 
 const loadDataPendamping = async (lokasi: string | null) => {
-  if (lokasi)
-    await handleGetLembagaPendamping(lokasi)
-}
+  if (lokasi) await handleGetLembagaPendamping(lokasi);
+};
 
 const handleGetListPendaftaran = async () => {
   try {
-    listPendaftaran.value = await $api('/master/jenis-pendaftaran', {
-      method: 'get',
-    })
-  }
-  catch (error) {
+    listPendaftaran.value = await $api("/master/jenis-pendaftaran", {
+      method: "get",
+    });
+  } catch (error) {
     /// / console.log('listPendaftaran',listPendaftaran)
     // console.log(error);
   }
-}
+};
 
-const isFasilitator = ref<boolean>(false)
-const isKodeNotFound = ref<boolean>(false)
-const isKodeFound = ref<boolean>(false)
+const isFasilitator = ref<boolean>(false);
+const isKodeNotFound = ref<boolean>(false);
+const isKodeFound = ref<boolean>(false);
 
 const handleGetFasilitator = async () => {
   try {
     const response: any = await $api(
-      '/self-declare/business-actor/submission/list-fasilitator',
+      "/self-declare/business-actor/submission/list-fasilitator",
       {
-        method: 'get',
+        method: "get",
         query: {
           reg_id: submissionId,
-          lokasi: 'Kabupaten',
+          lokasi: "Kabupaten",
         },
-      },
-    )
+      }
+    );
 
     if (response.code === 2000) {
-      listFasilitasi.value = response.data != null ? response.data : []
+      listFasilitasi.value = response.data != null ? response.data : [];
       listFasilitasi.value.push({
-        id: 'Lainnya',
-        name: 'Lainnya',
-      })
+        id: "Lainnya",
+        name: "Lainnya",
+      });
     }
 
-    return response
-  }
-  catch (error) {
+    return response;
+  } catch (error) {
     // console.log(error);
   }
-}
+};
 
-const querySearch = ref('')
+const querySearch = ref("");
 
-const onSelectFasilitator = selectedId => {
+const onSelectFasilitator = (selectedId) => {
   // console.log(selectedId);
-  if ((isFasilitator.value = selectedId === 'Lainnya')) {
-    onSearchFasilitator(querySearch.value)
+  if ((isFasilitator.value = selectedId === "Lainnya")) {
+    onSearchFasilitator(querySearch.value);
 
-    return
+    return;
   }
-  const fasil = listFasilitasi.value.find(fas => fas.id == selectedId)
+  const fasil = listFasilitasi.value.find((fas) => fas.id == selectedId);
 
-  onSearchFasilitator(fasil.code)
+  onSearchFasilitator(fasil.code);
 
   // isKodeFound.value = false;
-}
+};
 
-const responseMessage = ref('')
-const responseId = ref('')
-const facName = ref('')
+const responseMessage = ref("");
+const responseId = ref("");
+const facName = ref("");
 
 const onSearchFasilitator = async (kode: any) => {
-  const isSubmissionReturned = submissionDetail.status === 'OF280'
-  || submissionDetail.status === 'OF285'
+  const isSubmissionReturned =
+    submissionDetail.status === "OF280" || submissionDetail.status === "OF285";
 
   if (!hideOnSearchFasilitatorFunction && !isSubmissionReturned) {
     try {
-      facName.value = ''
+      facName.value = "";
 
       // console.log(kode);
       // const kode = querySearch.value;
 
-      const response: any = await $api('/self-declare/submission/kode', {
-        method: 'post',
+      const response: any = await $api("/self-declare/submission/kode", {
+        method: "post",
         body: {
           kode,
           id_reg: submissionId,
         },
-      })
+      });
 
       if (response.code === 2000) {
-        isKodeFound.value = true
-        isKodeNotFound.value = false
-        responseMessage.value = ''
-        responseId.value = response.data.id
-        facName.value = response.data.header_name
+        isKodeFound.value = true;
+        isKodeNotFound.value = false;
+        responseMessage.value = "";
+        responseId.value = response.data.id;
+        facName.value = response.data.header_name;
+      } else {
+        responseMessage.value = response.message;
+        isKodeFound.value = false;
+        isKodeNotFound.value = true;
       }
-      else {
-        responseMessage.value = response.message
-        isKodeFound.value = false
-        isKodeNotFound.value = true
-      }
-    }
-    catch (error) {}
+    } catch (error) {}
   }
-}
+};
 
 const responseType = computed(() => {
-  return responseMessage.value == 'Kode Fasilitasi dapat digunakan'
-    ? 'success'
-    : 'error'
-})
+  return responseMessage.value == "Kode Fasilitasi dapat digunakan"
+    ? "success"
+    : "error";
+});
 
 const responseColor = computed(() => {
-  return responseMessage.value == 'Kode Fasilitasi dapat digunakan'
-    ? '#5CB338'
-    : '#FB4141'
-})
+  return responseMessage.value == "Kode Fasilitasi dapat digunakan"
+    ? "#5CB338"
+    : "#FB4141";
+});
 
 const handleGetJenisLayanan = async () => {
   try {
     /*
-    * untuk kebutuhan page sh-domestic/submission/self-declare/{idReg}/edit
-    * & sh-domestic/submission/self-declare-mandiri/{idReg}/edit
-    * Menggunakan endpoint baru, dan penambahan parameter id_reg
-    * */
+     * untuk kebutuhan page sh-domestic/submission/self-declare/{idReg}/edit
+     * & sh-domestic/submission/self-declare-mandiri/{idReg}/edit
+     * Menggunakan endpoint baru, dan penambahan parameter id_reg
+     * */
 
-    listLayanan.value = idReg !== null
-      ? await $api(`/master/jenis-layanan-by-idreg/${idReg}`, {
-        method: 'get',
-      })
-      : await $api('/master/jenis-layanan', {
-        method: 'get',
-      })
-  }
-  catch (error) {
+    listLayanan.value =
+      idReg !== null
+        ? await $api(`/master/jenis-layanan-by-idreg/${idReg}`, {
+            method: "get",
+          })
+        : await $api("/master/jenis-layanan", {
+            method: "get",
+          });
+  } catch (error) {
     // console.log(error);
   }
-}
+};
 
 const handleGetJenisProduk = async () => {
   try {
-    listProduk.value = idReg !== null
-      ? await $api('/master/product-filter-by-regid', {
-        method: 'get',
-        params: {
-          id: formData.id_jenis_layanan,
-          idReg: submissionId,
-        },
-      })
-      : await $api('/master/product-filter', {
-        method: 'get',
-        params: {
-          id: formData.id_jenis_layanan,
-        },
-      })
-  }
-  catch (error) {
+    listProduk.value =
+      idReg !== null
+        ? await $api("/master/product-filter-by-regid", {
+            method: "get",
+            params: {
+              id: formData.id_jenis_layanan,
+              idReg: submissionId,
+            },
+          })
+        : await $api("/master/product-filter", {
+            method: "get",
+            params: {
+              id: formData.id_jenis_layanan,
+            },
+          });
+  } catch (error) {
     // console.log(error);
   }
-}
+};
 
-const handleGetJenisProdukFilter = async item => {
+const handleGetJenisProdukFilter = async (item) => {
   try {
-    formData.id_jenis_produk = null
-    listProduk.value = idReg !== null
-      ? await $api('/master/product-filter-by-regid', {
-        method: 'get',
-        params: {
-          id: item,
-          idReg: submissionId,
-        },
-      })
-      : await $api('/master/product-filter', {
-        method: 'get',
-        params: {
-          id: item,
-        },
-      })
-  }
-  catch (error) {
+    formData.id_jenis_produk = null;
+    listProduk.value =
+      idReg !== null
+        ? await $api("/master/product-filter-by-regid", {
+            method: "get",
+            params: {
+              id: item,
+              idReg: submissionId,
+            },
+          })
+        : await $api("/master/product-filter", {
+            method: "get",
+            params: {
+              id: item,
+            },
+          });
+  } catch (error) {
     // console.log(error);
   }
-}
+};
 
 const handleGetLembagaPendampingInitial = async (lokasi: string) => {
   try {
     const response: any = await $api(
-      '/self-declare/business-actor/submission/list-lembaga-pendamping',
+      "/self-declare/business-actor/submission/list-lembaga-pendamping",
       {
-        method: 'get',
+        method: "get",
         query: {
           id_reg: submissionId,
           lokasi,
         },
-      },
-    )
+      }
+    );
 
     if (response.code === 2000) {
       // console.log("response = ", response.data);
-      if (response.data !== null)
-        lembagaPendamping.value = response.data
+      if (response.data !== null) lembagaPendamping.value = response.data;
     }
 
-    return response
-  }
-  catch (error) {
-    useSnackbar().sendSnackbar(
-      error.data?.errors?.list_error[0] || 'Ada kesalahan 1',
-      'error',
-    )
+    return response;
+  } catch (error) {
+    if (
+      error.data.code === 4006 ||
+      error.data.code === 4001 ||
+      error.data.code === 400
+    ) {
+      useSnackbar().sendSnackbar(
+        "Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet",
+        "error"
+      );
+      formData.id_lembaga_pendamping =
+        "Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet";
+    } else {
+      useSnackbar().sendSnackbar(
+        error.data?.errors?.list_error[0] || "Ada kesalahan 1",
+        "error"
+      );
+    }
 
     // console.log(error);
   }
-}
+};
 
 const handleGetLembagaPendamping = async (lokasi: string) => {
   try {
-    formData.id_lembaga_pendamping = null
-    lembagaPendamping.value = []
+    formData.id_lembaga_pendamping = null;
+    lembagaPendamping.value = [];
 
     const response: any = await $api(
-      '/self-declare/business-actor/submission/list-lembaga-pendamping',
+      "/self-declare/business-actor/submission/list-lembaga-pendamping",
       {
-        method: 'get',
+        method: "get",
         query: {
           id_reg: submissionId,
           lokasi,
         },
-      },
-    )
+      }
+    );
 
     if (response.code === 2000) {
-      if (response.data !== null)
-        lembagaPendamping.value = response.data
+      if (response.data !== null) lembagaPendamping.value = response.data;
     }
 
-    return response
-  }
-  catch (error) {
-    useSnackbar().sendSnackbar(
-      error.data?.errors?.list_error[0] || 'Ada kesalahan 2',
-      'error',
-    )
+    return response;
+  } catch (error) {
+    if (
+      error.data.code === 4006 ||
+      error.data.code === 4001 ||
+      error.data.code === 400
+    ) {
+      useSnackbar().sendSnackbar(
+        "Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet",
+        "error"
+      );
+      formData.id_lembaga_pendamping =
+        "Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet";
+    } else {
+      useSnackbar().sendSnackbar(
+        error.data?.errors?.list_error[0] || "Ada kesalahan 1",
+        "error"
+      );
+    }
 
     // console.log(error);
   }
-}
+};
 
 const handleGetPendamping = async (idLembaga: string | null) => {
-  if (!idLembaga)
-    return
-  formData.id_pendamping = ''
+  if (!idLembaga) return;
+  formData.id_pendamping = "";
   try {
     const response: any = await $api(
-      '/self-declare/business-actor/submission/list-pendamping',
+      "/self-declare/business-actor/submission/list-pendamping",
       {
-        method: 'get',
+        method: "get",
         query: {
           id_lembaga: idLembaga,
           lokasi: formData.lokasi_pendamping,
           id_reg: submissionId,
         },
-      },
-    )
+      }
+    );
 
     if (response.code === 2000) {
       if (response.data !== null) {
-        listPendamping.value = response.data
-        listPendamping.value = listPendamping.value.map(pendamping => {
+        listPendamping.value = response.data;
+        listPendamping.value = listPendamping.value.map((pendamping) => {
           return {
             id: pendamping.id,
             name: `${pendamping.name} - ${pendamping.kabupaten} - ${pendamping.provinsi}`,
-          }
-        })
+          };
+        });
       }
 
       /// / console.log("isi list", listPendamping.value);
     }
 
-    return response
+    return response;
+  } catch (error) {
+    if (
+      error.data.code === 4006 ||
+      error.data.code === 4001 ||
+      error.data.code === 400
+    ) {
+      useSnackbar().sendSnackbar(
+        "Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet",
+        "error"
+      );
+      formData.id_lembaga_pendamping =
+        "Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet";
+    } else {
+      useSnackbar().sendSnackbar(
+        error.data?.errors?.list_error[0] || "Ada kesalahan 1",
+        "error"
+      );
+    }
   }
-  catch (error) {
-    // console.log(error);
-  }
-}
+};
 
 const handleGetPendampingstart = async (idLembaga: string | null) => {
-  if (!idLembaga)
-    return
+  if (!idLembaga) return;
   try {
     const response: any = await $api(
-      '/self-declare/business-actor/submission/list-pendamping',
+      "/self-declare/business-actor/submission/list-pendamping",
       {
-        method: 'get',
+        method: "get",
         query: {
           id_lembaga: idLembaga,
           lokasi: formData.lokasi_pendamping,
           id_reg: submissionId,
         },
-      },
-    )
+      }
+    );
 
     if (response.code === 2000) {
       if (response.data !== null) {
-        listPendamping.value = response.data
-        listPendamping.value = listPendamping.value.map(pendamping => {
+        listPendamping.value = response.data;
+        listPendamping.value = listPendamping.value.map((pendamping) => {
           return {
             id: pendamping.id,
             name: `${pendamping.name} - ${pendamping.kabupaten} - ${pendamping.provinsi}`,
-          }
-        })
+          };
+        });
       }
 
       /// / console.log("isi list", listPendamping.value);
     }
 
-    return response
+    return response;
+  } catch (error) {
+    if (
+      error.data.code === 4006 ||
+      error.data.code === 4001 ||
+      error.data.code === 400
+    ) {
+      useSnackbar().sendSnackbar(
+        "Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet",
+        "error"
+      );
+      formData.id_lembaga_pendamping =
+        "Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet";
+    } else {
+      useSnackbar().sendSnackbar(
+        error.data?.errors?.list_error[0] || "Ada kesalahan 1",
+        "error"
+      );
+    }
   }
-  catch (error) {
-    // console.log(error);
-  }
-}
+};
 
 const getDetail = async () => {
   try {
@@ -417,38 +462,37 @@ const getDetail = async () => {
     const response: any = await $api(
       `/self-declare/pengajuan/${submissionId}/detail`,
       {
-        method: 'get',
-      },
-    )
+        method: "get",
+      }
+    );
 
-   
     /// / console.log("response pengajuan list layanan", listLayanan.value);
 
     if (response.code == 2000) {
-      console.log("response pengajuan detail", response);
-      submissionDetail.tanggal_buat = response.data.tgl_daftar.split('T')[0]
-      submissionDetail.status = response.data.status_reg
-      submissionDetail.id_jenis_pengajuan = response.data.jenis_pendaftaran
-      submissionDetail.nama_pj = response.data.nama_pj
-      submissionDetail.alamat_pu = response.data.alamat_pu
-      submissionDetail.nomor_kontak_pj = response.data.no_kontak_pj
-      submissionDetail.nama_pu = response.data.nama_pu
-      formData.tgl_surat_permohonan
-        = response.data.tgl_surat_permohonan.split('T')[0]
-      formData.id_jenis_pengajuan = response.data.jenis_pendaftaran
-      formData.id_fasilitator = response.data.fac_id
-      querySearch.value = response.data.kode_fac
-      formData.no_mohon = response.data.no_surat_permohonan
-      formData.id_jenis_layanan = response.data.id_jenis_layanan
-      formData.lokasi_pendamping = response.data.lokasi_pendamping
-      formData.id_jenis_produk = response.data.id_product
-      formData.nama_pu = response.data.merek_dagang
-      formData.area_pemasaran = response.data.area_pemasaran
+      // console.log("response pengajuan detail", response);
+      submissionDetail.tanggal_buat = response.data.tgl_daftar.split("T")[0];
+      submissionDetail.status = response.data.status_reg;
+      submissionDetail.id_jenis_pengajuan = response.data.jenis_pendaftaran;
+      submissionDetail.nama_pj = response.data.nama_pj;
+      submissionDetail.alamat_pu = response.data.alamat_pu;
+      submissionDetail.nomor_kontak_pj = response.data.no_kontak_pj;
+      submissionDetail.nama_pu = response.data.nama_pu;
+      formData.tgl_surat_permohonan =
+        response.data.tgl_surat_permohonan.split("T")[0];
+      formData.id_jenis_pengajuan = response.data.jenis_pendaftaran;
+      formData.id_fasilitator = response.data.fac_id;
+      querySearch.value = response.data.kode_fac;
+      formData.no_mohon = response.data.no_surat_permohonan;
+      formData.id_jenis_layanan = response.data.id_jenis_layanan;
+      formData.lokasi_pendamping = response.data.lokasi_pendamping;
+      formData.id_jenis_produk = response.data.id_product;
+      formData.nama_pu = response.data.merek_dagang;
+      formData.area_pemasaran = response.data.area_pemasaran;
 
-      formData.id_lembaga_pendamping = response.data.id_lembaga_pendamping
-      formData.id_pendamping = response.data.id_pendamping
-      if (formData.id_fasilitator == '00000000-0000-0000-0000-000000000000')
-        formData.id_fasilitator = null
+      formData.id_lembaga_pendamping = response.data.id_lembaga_pendamping;
+      formData.id_pendamping = response.data.id_pendamping;
+      if (formData.id_fasilitator == "00000000-0000-0000-0000-000000000000")
+        formData.id_fasilitator = null;
 
       /// / console.log(
       //   "id penadmping before",
@@ -456,25 +500,30 @@ const getDetail = async () => {
       //   "data"
       // );
 
-      if (response.data.id_pendamping !== null && response.data.id_pendamping !== '') {
+      if (
+        response.data.id_pendamping !== null &&
+        response.data.id_pendamping !== ""
+      ) {
         const foundPendamping = listPendamping.value.find(
-          i => i.id === response.data.id_pendamping,
-        )
+          (i) => i.id === response.data.id_pendamping
+        );
 
         formData.id_pendamping = foundPendamping
           ? { id: response.data.id_pendamping, name: foundPendamping.name }
-          : { id: response.data.id_pendamping, name: 'Pendamping tidak ditemukan' }
+          : {
+              id: response.data.id_pendamping,
+              name: "Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet",
+            };
       }
 
       /// / console.log("response pengajuan detail", formData, "data");
     }
-  }
-  catch (error: any) {
+  } catch (error: any) {
     // Tangani error
-    console.error('Error fetching detail:', error.message || error)
-    throw error // Opsional: Lempar ulang error jika perlu
+    console.error("Error fetching detail:", error.message || error);
+    throw error; // Opsional: Lempar ulang error jika perlu
   }
-}
+};
 
 // const getDetail  =()=>({
 //   try {
@@ -510,16 +559,21 @@ const getDetail = async () => {
 //    // console.log(error)
 //   }
 // })
-watch(() => listPendamping.value, newList => {
-  if (formData.id_pendamping?.id) {
-    const foundPendamping = newList.find(i => i.id === formData.id_pendamping.id)
-    if (foundPendamping)
-      formData.id_pendamping.name = foundPendamping.name
-  }
-})
+watch(
+  () => listPendamping.value,
+  (newList) => {
+    if (formData.id_pendamping?.id) {
+      const foundPendamping = newList.find(
+        (i) => i.id === formData.id_pendamping.id
+      );
 
-const formLembagaPendamping = ref<{}>()
-const refVForm = ref<VForm>()
+      if (foundPendamping) formData.id_pendamping.name = foundPendamping.name;
+    }
+  }
+);
+
+const formLembagaPendamping = ref<{}>();
+const refVForm = ref<VForm>();
 
 const onSubmitSubmission = () => {
   refVForm.value?.validate().then(({ valid: isValid }) => {
@@ -527,25 +581,24 @@ const onSubmitSubmission = () => {
 
     if (isValid) {
       // console.log(" check isvalid", isValid);
-      handleUpdateSubmission()
+      handleUpdateSubmission();
     }
-  })
-}
+  });
+};
 
 const handleUpdateSubmission = async () => {
   try {
     if (isKodeFound.value === true) {
       /// / console.log("id fasilitator submit", formData.id_fasilitator);
       /// / console.log("responseid submit", responseId.value);
-    }
-    else {
-      responseId.value = formData.id_fasilitator
+    } else {
+      responseId.value = formData.id_fasilitator;
     }
 
     const response: any = await $api(
-      '/self-declare/business-actor/submission/update',
+      "/self-declare/business-actor/submission/update",
       {
-        method: 'put',
+        method: "put",
         body: {
           id_reg: submissionId,
           jenis_pendaftaran: formData.id_jenis_pengajuan,
@@ -561,78 +614,69 @@ const handleUpdateSubmission = async () => {
           lembaga_pendamping: formData.id_lembaga_pendamping,
           pendamping: formData.id_pendamping.id,
         },
-      },
-    )
+      }
+    );
 
     if (response.code === 2000) {
-      if (response.data !== null)
-        await store.getApiCertHalal(submissionId)
-      useSnackbar().sendSnackbar('Berhasil mengubah data', 'success')
+      if (response.data !== null) await store.getApiCertHalal(submissionId);
+      useSnackbar().sendSnackbar("Berhasil mengubah data", "success");
     }
 
-    return response
-  }
-  catch (error) {
+    return response;
+  } catch (error) {
     // console.log(error, "error");
-    useSnackbar().sendSnackbar('Gagal mengubah data', 'error')
+    useSnackbar().sendSnackbar("Gagal mengubah data", "error");
   }
-}
+};
 
 const findListDaftar = (kode: string) => {
-  const data = listPendaftaran.value.find(code => kode == code.code)
-  if (data == undefined)
-    return { code: null, name: '-' }
+  const data = listPendaftaran.value.find((code) => kode == code.code);
+  if (data == undefined) return { code: null, name: "-" };
 
-  return data
-}
+  return data;
+};
 
 onMounted(async () => {
   // await Promise.all([
-  await getDetail()
-  await handleGetListPendaftaran()
-  await handleGetJenisLayanan()
+  await getDetail();
+  await handleGetListPendaftaran();
+  await handleGetJenisLayanan();
 
-  if (formData.id_jenis_layanan)
-    await handleGetJenisProduk()
+  if (formData.id_jenis_layanan) await handleGetJenisProduk();
 
   if (formData.lokasi_pendamping)
-    handleGetLembagaPendampingInitial(formData.lokasi_pendamping)
+    handleGetLembagaPendampingInitial(formData.lokasi_pendamping);
 
   // handleDetailPengajuan();
   // await loadDataPendamping(formData.lokasi_pendamping);
-  await handleGetFasilitator()
-  await handleGetPendampingstart(formData.id_lembaga_pendamping)
+  await handleGetFasilitator();
+  await handleGetPendampingstart(formData.id_lembaga_pendamping);
 
   // console.log(submissionDetail);
   if (
-    formData.id_fasilitator != null
-    && !listFasilitasi.value.some(item => item.id == formData.id_fasilitator)
+    formData.id_fasilitator != null &&
+    !listFasilitasi.value.some((item) => item.id == formData.id_fasilitator)
   ) {
-    formData.id_fasilitator = 'Lainnya'
-    onSelectFasilitator('Lainnya')
-    onSearchFasilitator()
+    formData.id_fasilitator = "Lainnya";
+    onSelectFasilitator("Lainnya");
+    onSearchFasilitator();
   }
 
   // ]);
-})
+});
 
-const getItemData = item => {
-  return { id: item.id, kode: item.code }
-}
+const getItemData = (item) => {
+  return { id: item.id, kode: item.code };
+};
 </script>
 
 <template>
-  <VCard
-    class="pa-3"
-    variant="elevated"
-    elevation="9"
-  >
-    <VForm
-      ref="refVForm"
-      @submit.prevent="() => {}"
-    >
+  <VCard class="pa-3" variant="elevated" elevation="9">
+    <VForm ref="refVForm" @submit.prevent="() => {}">
       <!-- @submit.prevent="onSubmitSubmission" -->
-      <VCardTitle class="d-flex justify-space-between align-center font-weight-bold text-h4 mb-5">
+      <VCardTitle
+        class="d-flex justify-space-between align-center font-weight-bold text-h4 mb-5"
+      >
         <div>Data Pengajuan</div>
         <VBtn
           v-if="!canNotEdit"
@@ -645,12 +689,8 @@ const getItemData = item => {
       </VCardTitle>
       <VCardTitle>
         <VRow>
-          <VCol cols="2">
-            Tanggal
-          </VCol>
-          <VCol cols="1">
-            :
-          </VCol>
+          <VCol cols="2"> Tanggal </VCol>
+          <VCol cols="1"> : </VCol>
           <VCol cols="9">
             {{
               submissionDetail.status != "OF1"
@@ -662,18 +702,14 @@ const getItemData = item => {
           </VCol>
         </VRow>
         <VRow>
-          <VCol cols="2">
-            Jenis Pengajuan
-          </VCol>
-          <VCol cols="1">
-            :
-          </VCol>
+          <VCol cols="2"> Jenis Pengajuan </VCol>
+          <VCol cols="1"> : </VCol>
           <VCol cols="9">
             {{ findListDaftar(submissionDetail.id_jenis_pengajuan).name }}
           </VCol>
         </VRow>
-        <br>
-        <br>
+        <br />
+        <br />
         <VRow>
           <VCol cols="12">
             <VItemGroup>
@@ -690,7 +726,7 @@ const getItemData = item => {
             </VItemGroup>
           </VCol>
         </VRow>
-        <br>
+        <br />
         <VRow v-if="!hideKodeFasilitasi">
           <VCol cols="12">
             <VLabel>Kode Daftar / Fasilitasi</VLabel>
@@ -711,10 +747,7 @@ const getItemData = item => {
           </VCol>
         </VRow>
         <VRow>
-          <VCol
-            v-if="isFasilitator"
-            cols="12"
-          >
+          <VCol v-if="isFasilitator" cols="12">
             <VTextField
               v-model="querySearch"
               placeholder="Masukan Kode Fasilitasi"
@@ -726,10 +759,7 @@ const getItemData = item => {
           </VCol>
         </VRow>
         <VRow>
-          <VCol
-            v-if="isFasilitator"
-            cols="12"
-          >
+          <VCol v-if="isFasilitator" cols="12">
             <VTextField
               v-model="facName"
               placeholder="nama Fasilitator"
@@ -781,9 +811,9 @@ const getItemData = item => {
           </VAlert>
         </div>
 
-        <br>
+        <br />
         <VDivider />
-        <br>
+        <br />
         <VRow>
           <VCol cols="6">
             <VItemGroup>
@@ -795,7 +825,7 @@ const getItemData = item => {
                 density="compact"
               />
             </VItemGroup>
-            <br>
+            <br />
           </VCol>
           <VCol cols="6">
             <VItemGroup>
@@ -804,16 +834,14 @@ const getItemData = item => {
                   <Vuepicdatepicker
                     v-model:model-value="formData.tgl_surat_permohonan"
                     auto-apply
-                    model-type="yyyy-MM-dd"
+                    model-type="dd/MM/yyyy"
                     :enable-time-picker="false"
                     :rules="[requiredValidator]"
                     teleport
                     clearable
                   >
                     <template #trigger>
-                      <VLabel class="required">
-                        Tanggal Surat Pemohon
-                      </VLabel>
+                      <VLabel class="required"> Tanggal Surat Pemohon </VLabel>
                       <VTextField
                         placeholder="Pilih Tanggal Surat Pemohon"
                         :rules="[requiredValidator]"
@@ -843,7 +871,7 @@ const getItemData = item => {
                 @update:model-value="handleGetJenisProdukFilter"
               />
             </VItemGroup>
-            <br>
+            <br />
             <VItemGroup>
               <VLabel>Jenis Produk</VLabel>
               <VSelect
@@ -857,7 +885,7 @@ const getItemData = item => {
                 item-value="code"
               />
             </VItemGroup>
-            <br>
+            <br />
             <VItemGroup>
               <VLabel>Nama Usaha / Merek Dagang </VLabel>
               <VTextField
@@ -867,7 +895,7 @@ const getItemData = item => {
                 density="compact"
               />
             </VItemGroup>
-            <br>
+            <br />
             <VItemGroup>
               <VLabel>Area Pemasaran</VLabel>
               <VSelect
@@ -878,7 +906,7 @@ const getItemData = item => {
                 :items="listAreaPemasaran"
               />
             </VItemGroup>
-            <br>
+            <br />
             <VItemGroup>
               <VLabel>Lokasi Pendamping</VLabel>
               <VSelect
@@ -890,7 +918,7 @@ const getItemData = item => {
                 @update:model-value="loadDataPendamping"
               />
             </VItemGroup>
-            <br>
+            <br />
             <VItemGroup>
               <VLabel>Lembaga Pendamping</VLabel>
               <VSelect
@@ -905,7 +933,7 @@ const getItemData = item => {
                 @update:model-value="handleGetPendamping"
               />
             </VItemGroup>
-            <br>
+            <br />
             <VItemGroup>
               <VLabel>Pendamping</VLabel>
               <VCombobox
@@ -948,11 +976,11 @@ const getItemData = item => {
             -->
           </VCol>
         </VRow>
-        <br>
-        <div style="display: flex; justify-content: end;">
-          <VItemGroup style="display: inline-flex;">
+        <br />
+        <div style="display: flex; justify-content: end">
+          <VItemGroup style="display: inline-flex">
             <SuratPermohonanModal :data="submissionDetail" />
-            <div style="margin-inline-start: 1svw;" />
+            <div style="margin-inline-start: 1svw" />
             <SuratPernyataanModal :data="submissionDetail" />
           </VItemGroup>
         </div>

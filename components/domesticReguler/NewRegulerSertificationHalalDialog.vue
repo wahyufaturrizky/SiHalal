@@ -32,7 +32,10 @@ const onRegister = () => {
   props.newRegister("JD.1", selectedItem.value);
   isVisible.value = false;
 };
-onMounted(() => {
+
+const store = pelakuUsahaProfile();
+
+onMounted(async () => {
   if (props.data != undefined) {
     if (props.data.length != 0) {
       selectedItem.value = props.data[0].id;
@@ -154,7 +157,9 @@ const registerNewDevelopment = async () => {
           </VCol>
         </VRow>
 
-        <!-- <VCardText>
+        <VCardText
+          v-if="store.profileData?.asal_usaha?.toLowerCase() !== 'luar negeri'"
+        >
           <span class="font-weight-bold mb-4">
             {{ t("pengajuan-reguler.popup-kbli-title") }}
           </span>
@@ -166,7 +171,7 @@ const registerNewDevelopment = async () => {
             item-text="uraian_usaha"
             item-value="id"
           />
-        </VCardText> -->
+        </VCardText>
       </VCard>
     </VDialog>
   </div>

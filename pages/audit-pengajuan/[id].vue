@@ -559,7 +559,11 @@ onMounted(async () => {
               Auditor
             </VExpansionPanelTitle>
             <VExpansionPanelText>
-              <VDataTable :headers="auditHeader" :items="auditItems">
+              <VDataTable
+                :items-per-page-options="[10, 25, 50, 100]"
+                :headers="auditHeader"
+                :items="auditItems"
+              >
                 <template #[`item.no`]="{ index }">
                   <span>{{ index + 1 }}</span>
                 </template>

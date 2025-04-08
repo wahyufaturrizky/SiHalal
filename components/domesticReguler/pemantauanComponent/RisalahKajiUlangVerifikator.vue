@@ -16,7 +16,11 @@ const { risalah_kaji_ulang } = storeToRefs(store);
       </VRow>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="tableHeader" :items="risalah_kaji_ulang">
+      <VDataTable
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="tableHeader"
+        :items="risalah_kaji_ulang"
+      >
         <template #item.no="{ index }">
           {{ index + 1 }}
         </template>

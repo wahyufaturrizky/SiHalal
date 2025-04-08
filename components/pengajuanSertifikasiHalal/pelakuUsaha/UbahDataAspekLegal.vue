@@ -1,39 +1,33 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { VTextField } from "vuetify/components";
-import { ref } from 'vue';
 
 // Static bill date value
 const data = {
   sertifikasi_date: ref([]),
-}
-const bahanType = ref(null);
-// Function to format the date as DD/MM/YY
-const formatDate = (date: Date): string => {
-  let date2 = new Date(date)
-  const day = date2.getDate().toString().padStart(2, '0'); // Add leading zero for single digit days
-  const month = (date2.getMonth() + 1).toString().padStart(2, '0'); // Add leading zero for single digit months
-  const year = date2.getFullYear().toString().slice(-2); // Extract last 2 digits of the year
+};
 
-  return `${day}/${month}/${year}`;
-}
+const bahanType = ref(null);
 
 // Sample data for "Bahan Bersertifikat" and "Tidak Bersertifikat"
 const bahanOptions = [
-  { name: 'Dokumen A', value: 'bersertifikat' },
-  { name: 'Dokumen B', value: 'tidak_bersertifikat' },
-]
+  { name: "Dokumen A", value: "bersertifikat" },
+  { name: "Dokumen B", value: "tidak_bersertifikat" },
+];
 
 // Search term entered by the user
 const searchTerm = ref("");
+
 // Boolean to toggle visibility of the suggestion
 const showSuggestion = ref(false);
+
 // Boolean to toggle the visibility of the CariBahanModal
 const isCariBahanModalOpen = ref(false);
 
 // Function to handle search input
 const handleSearch = () => {
   showSuggestion.value = searchTerm.value.toLowerCase() === "susu";
-}
+};
 </script>
 
 <template>
@@ -52,7 +46,9 @@ const handleSearch = () => {
       <VCard>
         <VCardTitle>
           <VRow>
-            <VCol cols="10"><h3>Tambah Data Aspek Legal</h3></VCol>
+            <VCol cols="10">
+              <h3>Tambah Data Aspek Legal</h3>
+            </VCol>
             <VCol cols="2" style="display: flex; justify-content: end">
               <VIcon
                 size="small"
@@ -83,10 +79,7 @@ const handleSearch = () => {
             <VCol cols="12">
               <VItemGroup>
                 <VLabel>Nomor Dokumen</VLabel>
-                <VTextField
-                  placeholder="Isi Nomor Dokumen"
-                  density="compact"
-                />
+                <VTextField placeholder="Isi Nomor Dokumen" density="compact" />
               </VItemGroup>
             </VCol>
           </VRow>
@@ -163,12 +156,14 @@ const handleSearch = () => {
             </VCol>
           </VRow>
         </VCardItem>
-        <VCardActions style="display: flex; justify-content: end; padding: 1.5svw">
+        <VCardActions
+          style="display: flex; justify-content: end; padding: 1.5svw"
+        >
           <div>
-            <VBtn @click="isActive.value = false" variant="outlined">
+            <VBtn variant="outlined" @click="isActive.value = false">
               Batal
             </VBtn>
-            <VBtn variant="flat">Simpan</VBtn>
+            <VBtn variant="flat"> Simpan </VBtn>
           </div>
         </VCardActions>
       </VCard>

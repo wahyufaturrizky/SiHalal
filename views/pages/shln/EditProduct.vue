@@ -32,6 +32,7 @@ const addBulking = () => {
 };
 const refVForm = ref<VForm>();
 const bulkingForm = ref<VForm>();
+const emit = defineEmits(["upload-bulk"]);
 const uploadDocument = async (file) => {
   try {
     const formData = new FormData();
@@ -41,6 +42,14 @@ const uploadDocument = async (file) => {
       method: "post",
       body: formData,
     });
+
+    if (response.code !== "2000") {
+      useSnackbar().sendSnackbar("HSCode tidak ditemukan!!", "error");
+      emit("upload-bulk", false);
+      bulkingDialog.value = false;
+      return;
+    }
+    emit("upload-bulk", true);
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar(

@@ -206,9 +206,19 @@ const loadDocumentMRAById = async () => {
       dataDocumentMRA.value = response.data;
 
       return response;
-    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
+    if (response.code === 4000) {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (error.data.code === 4000) {
+      useSnackbar().sendSnackbar(
+        error.data?.errors?.list_error[0] || "Ada kesalahan 1",
+        "error"
+      );
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   }
 };
 

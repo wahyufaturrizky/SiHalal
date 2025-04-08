@@ -7,7 +7,6 @@ interface TimelineItem {
   comment: string;
 }
 
-const isVisible = ref(false);
 const props = defineProps({
   data: {
     type: Array<Object>,
@@ -15,6 +14,7 @@ const props = defineProps({
   },
 });
 
+const isVisible = ref(false);
 const timelineItems = ref<TimelineItem[]>([]);
 
 timelineItems.value = props.data?.map((item: any) => {
@@ -28,15 +28,8 @@ timelineItems.value = props.data?.map((item: any) => {
     comment,
   };
 });
-
-const formatDate = (date: string): string => {
-  return new Date(date).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-};
 </script>
+
 <template>
   <IconBtn @click="isVisible = true">
     <VIcon icon="fa-history" />
@@ -45,14 +38,12 @@ const formatDate = (date: string): string => {
     <VCard>
       <VCardTitle style="padding: 2.2svw">
         <VRow>
-          <VCol cols="10"><h3>Tracking Details</h3></VCol>
-          <VCol cols="2" style="display: flex; justify-content: end"
-            ><VIcon
-              @click="isVisible = false"
-              icon="fa-times"
-              size="small"
-            ></VIcon
-          ></VCol>
+          <VCol cols="10">
+            <h3>Tracking Details</h3>
+          </VCol>
+          <VCol cols="2" style="display: flex; justify-content: end">
+            <VIcon icon="fa-times" size="small" @click="isVisible = false" />
+          </VCol>
         </VRow>
       </VCardTitle>
       <VCardItem>
@@ -80,7 +71,7 @@ const formatDate = (date: string): string => {
                 {{ item.title }}
               </span>
               <span class="app-timeline-meta">
-                {{ formatDate(item.date) }}</span
+                {{ formatDateId(item.date) }}</span
               >
             </div>
             <div class="app-timeline-text mt-1">
@@ -89,7 +80,7 @@ const formatDate = (date: string): string => {
             <div v-if="item.comment" class="app-timeline-text mt-1">
               {{
                 item.comment.length > 38
-                  ? item.comment.slice(0, 38) + "..."
+                  ? `${item.comment.slice(0, 38)}...`
                   : item.comment
               }}
             </div>
@@ -101,6 +92,7 @@ const formatDate = (date: string): string => {
     </VCard>
   </VDialog>
 </template>
+
 <style scoped>
 .v-card {
   border: none !important;

@@ -265,11 +265,7 @@ onMounted(async () => {
               <VIcon
                 color="success"
                 style="cursor: pointer"
-                @click="
-                  router.push(
-                    `/pengajuan/detail-verval/${item.id_reg}`
-                  )
-                "
+                @click="router.push(`/pengajuan/detail-verval/${item.id_reg}`)"
               >
                 ri-arrow-right-line
               </VIcon>

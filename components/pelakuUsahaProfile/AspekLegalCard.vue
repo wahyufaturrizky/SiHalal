@@ -3,9 +3,6 @@ import type { legal } from "@/stores/interface/pelakuUsahaProfileIntf";
 import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
 
-const { t } = useI18n();
-const { mdAndUp } = useDisplay();
-const panelOpen = ref(0);
 const props = defineProps({
   aspekLegalData: {
     type: Object as Array<legal> | any,
@@ -16,6 +13,10 @@ const props = defineProps({
     required: false,
   },
 });
+
+const { t } = useI18n();
+const { mdAndUp } = useDisplay();
+const panelOpen = ref(0);
 
 const legalHeader = [
   { title: "No", key: "no" },
@@ -34,6 +35,7 @@ const convertDocType = (type: string | null) => {
     return storeDataMaster.masterJnlgl.filter((val) => val.code == type)[0]
       ?.name;
   }
+
   return type;
 };
 
@@ -45,11 +47,13 @@ onMounted(() => {
 <template>
   <VExpansionPanels v-model="panelOpen">
     <VExpansionPanel>
-      <!-- <VExpansionPanelTitle
+      <!--
+        <VExpansionPanelTitle
         ><p :class="mdAndUp ? 'subtext-menu' : 'mobile-subtext-menu'">
-          Aspek Legal
+        Aspek Legal
         </p></VExpansionPanelTitle
-      > -->
+        >
+      -->
       <VExpansionPanelTitle>
         <div class="text-h4 font-weight-bold">
           {{ t("detail-pu.pu-legal-title") }}
@@ -63,6 +67,9 @@ onMounted(() => {
         >
           <template #item.no="{ index }">
             {{ index + 1 }}
+          </template>
+          <template #item.date="{ item }">
+            {{ item.date ? formatDateId(item.date) : "NA" }}
           </template>
           <template #item.type="{ item }">
             {{ convertDocType(item.type) }}

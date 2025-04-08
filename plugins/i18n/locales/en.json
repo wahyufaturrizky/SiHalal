@@ -151,6 +151,11 @@
       "title": "Approval"
     }
   },
+  "common": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
   "uam_role": "Role",
   "uam_user": "User",
   "Error": "Error",
@@ -304,6 +309,7 @@
     "msg": "The Business Identification Number (NIB) has been registered under the user “sanditama74@gmail.com.”",
     "msg-1": ",Please log in using that email address.",
     "msg-error": "NIB not Found",
+    "msg-error-find": "Please ensure the 'Perseroan Daerah ID' field is filled out in the OSS system before continuing.",
     "btn-1": "Back",
     "btn-2": "Submit"
   },
@@ -373,6 +379,9 @@
     "pu-ph-title": "Halal Supervisor",
     "pu-ph-nama": "Name",
     "pu-ph-ktp": "ID Number (KTP)",
+    "pu-ph-download-ktp": "Download ID Number (KTP)",
+    "pu-ph-download-skph": "Download SKPH",
+    "pu-ph-download-spph": "Download SPPH",
     "pu-ph-telp": "Contact Number",
     "pu-ph-sertif": "Halal Supervisor Certification Number/Date",
     "pu-ph-sk": "Decree Number/Date (SK)",
@@ -447,6 +456,7 @@
     "permohonan-list-title": "Application Status",
     "permohonan-list-subtitle": "Submission Data",
     "permohonan-list-search": "Search",
+    "permohonan-list-reg-no": "Reg. No.",
     "permohonan-list-tanggal": "Date",
     "permohonan-list-namapu": "Business Name",
     "permohonan-list-jnsdaftar": "List Type",
@@ -961,6 +971,10 @@
     "invoice-list-status": "Status",
     "invoice-list-invfile": "Invoice File"
   },
+  "shln-verification": {
+    "halal-registration-number": "Halal Registration Number",
+    "halal-registration-number-not-available": "Registration number not available yet"
+  },
   "task-force": {
     "tagihan-bpjph-title": "Daftar Tagihan ke BPJPH",
     "tagihan-bpjph-subtitle": "Daftar Tagihan",
@@ -1135,10 +1149,29 @@
   "self-declare": {
     "title": "Self-Declaration Submission",
     "create": "Create Submission",
-    "search": "Search Data"
+    "search": "Search Data",
+    "questionnaire": {
+      "1": "I have never received halal certification facilities before",
+      "2": "The production activities carried out are home businesses (not manufacturing businesses)",
+      "3": "The production process uses halal ingredients. (examples of halal ingredients: 1. Halal certified ingredients 2. Ingredients derived from nature (without looking at the certificate): fresh fruit, fresh vegetables, fresh eggs, fresh fish, spices, etc.)",
+      "4": "If there is a production process for other products that use non-halal materials, it is carried out in a separate place and using different tools.",
+      "5": "The production process does not use hazardous materials (examples of hazardous materials are stated in BPOM Regulation Number 7 of 2018)",
+      "6": "The product preservation process is simple and does not use a combination of more than 1 preservation method.",
+      "7": "The production process uses manual/semi-automatic equipment"
+    },
+    "questionnaire-response": {
+      "1": "You have already received the self-declaration facility",
+      "2": "The production activities carried out are not home businesses",
+      "3": "Not all production processes use halal ingredients",
+      "4": "If there is a production process for other products that use non-halal materials, it is carried out in a separate place and using different tools.",
+      "5": "The production process does not use hazardous materials (examples of hazardous materials are stated in BPOM Regulation Number 7 of 2018)",
+      "6": "The product preservation process is simple and does not use a combination of more than 1 preservation method.",
+      "7": "The production process uses manual/semi-automatic equipment"
+    }
   },
   "self-declare-mandiri": {
     "title": "Independent Self-Declaration Submission",
+    "table-title": "Independent Self-Declaration Submission Data",
     "create": "Create Submission",
     "search": "Search Data"
   }

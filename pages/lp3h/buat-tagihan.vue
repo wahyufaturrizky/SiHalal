@@ -1,56 +1,53 @@
 <script setup lang="ts">
-const searchQuery = ref(null)
+const searchQuery = ref(null);
 
-const itemPerPage = ref(10)
-const totalItems = ref(0)
-const page = ref(1)
-const loading = ref(true)
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const page = ref(1);
+const loading = ref(true);
 
-const menu = ref(false)
-const selectedFasilitas = ref('4e792bfe-b16a-4ce0-8092-42b2185e2789')
+const menu = ref(false);
+const selectedFasilitas = ref("4e792bfe-b16a-4ce0-8092-42b2185e2789");
 
-const fasilitas = ref([])
+const fasilitas = ref([]);
 
 const jenisFasilitas = ref([
-  { title: 'SEHATI', value: 'SEHATI' },
-  { title: 'NON SEHATI', value: 'NON SEHATI' },
-  { title: 'SELFDECLARE MANDIRI', value: 'SELFDECLARE MANDIRI' },
-])
+  { title: "SEHATI", value: "SEHATI" },
+  { title: "NON SEHATI", value: "NON SEHATI" },
+  { title: "SELFDECLARE MANDIRI", value: "SELFDECLARE MANDIRI" },
+]);
 
-const selectedJenisFasilitas = ref(jenisFasilitas.value[0].value)
+const selectedJenisFasilitas = ref(jenisFasilitas.value[0].value);
 
-const firstNoSelected = ref('')
-const secondNoSelected = ref('')
+const firstNoSelected = ref("");
+const secondNoSelected = ref("");
 
-const items = ref([])
+const items = ref([]);
 
-const selectOptionDisable = ref(true)
+const selectOptionDisable = ref(true);
 
-const selected = ref([])
+const selected = ref([]);
 
-const years = ref([
-  { title: 2025, value: 2025 },
-])
+const years = ref([{ title: 2025, value: 2025 }]);
 
-const selectedYear = ref(years.value[0].value)
+const selectedYear = ref(years.value[0].value);
 
 const onSelectUpdate = () => {
-  if (firstNoSelected.value !== '' && secondNoSelected.value !== '') {
-    selectOptionDisable.value = false
+  if (firstNoSelected.value !== "" && secondNoSelected.value !== "") {
+    selectOptionDisable.value = false;
+  } else {
+    selectOptionDisable.value = true;
+    selected.value = [];
   }
-  else {
-    selectOptionDisable.value = true
-    selected.value = []
-  }
-}
+};
 
-const generateRange = (a, b) => [...Array(b - a + 1)].map((_, i) => a + i)
+const generateRange = (a, b) => [...Array(b - a + 1)].map((_, i) => a + i);
 
 const onNoSelected = () => {
-  firstNoSelected.value = firstNoSelected.value.replace(/\D/g, '')
-  secondNoSelected.value = secondNoSelected.value.replace(/\D/g, '')
+  firstNoSelected.value = firstNoSelected.value.replace(/\D/g, "");
+  secondNoSelected.value = secondNoSelected.value.replace(/\D/g, "");
 
-  if (firstNoSelected.value !== '' && secondNoSelected.value !== '') {
+  if (firstNoSelected.value !== "" && secondNoSelected.value !== "") {
     //
     // if(secondNoSelected.value > items.value.length){
     //   itemPerPage.value = secondNoSelected.value
@@ -60,103 +57,119 @@ const onNoSelected = () => {
     //   selected = []
     //   return
     // }
-    selected.value = generateRange(Number(firstNoSelected.value), Number(secondNoSelected.value))
+    selected.value = generateRange(
+      Number(firstNoSelected.value),
+      Number(secondNoSelected.value)
+    );
+  } else {
+    selected.value = [];
   }
-  else {
-    selected.value = []
-  }
-}
-
+};
 
 const headers = [
-  { title: 'No', key: 'no' },
-  { title: 'No. Daftar', key: 'no_daftar', nowrap: true },
-  { title: 'Tanggal', key: 'tanggal', nowrap: true },
-  { title: 'Nama PU', key: 'nama_pu', nowrap: true },
-  { title: 'Jenis Produk & Merek', key: 'jenis_produk', nowrap: true },
-  { title: 'Nama Fasilitasi', key: 'nama_fasilitasi', nowrap: true },
-  { title: 'Nama Pendamping', key: 'nama_pendamping', nowrap: true },
-  { title: 'Catatan', key: 'catatan' },
-  { title: 'Status', key: 'status' },
-]
+  { title: "No", key: "no" },
+  { title: "No. Daftar", key: "no_daftar", nowrap: true },
+  { title: "Tanggal", key: "tanggal", nowrap: true },
+  { title: "Nama PU", key: "nama_pu", nowrap: true },
+  { title: "Jenis Produk & Merek", key: "jenis_produk", nowrap: true },
+  { title: "Nama Fasilitasi", key: "nama_fasilitasi", nowrap: true },
+  { title: "Nama Pendamping", key: "nama_pendamping", nowrap: true },
+  { title: "Catatan", key: "catatan" },
+  { title: "Status", key: "status" },
+];
 
-const dialog = ref(false)
+const dialog = ref(false);
 
 const buatInvoiceHandler = async () => {
   // console.log("BUAT INVOICE, SELECTED ITEM : ", selected)
-  dialog.value = false
+  dialog.value = false;
 
-  const listSelected = items.value.filter(i => selected.value.includes(i.no_urut)).map(j => j.id)
+  const listSelected = items.value
+    .filter((i) => selected.value.includes(i.no_urut))
+    .map((j) => j.id);
 
   const body = {
     id_reg: listSelected,
-  }
+  };
 
   try {
-    const response = await $api('/lp3h/create-invoice', {
-      method: 'post',
+    const response = await $api("/lp3h/create-invoice", {
+      method: "post",
       body,
-    })
+    });
 
     if (response.code !== 2000) {
-      useSnackbar().sendSnackbar(response.message, 'error')
+      useSnackbar().sendSnackbar(response.message, "error");
+    } else {
+      selected.value = [];
+      useSnackbar().sendSnackbar("Berhasil membuat invoice ", "success");
     }
-    else {
-      selected.value = []
-      useSnackbar().sendSnackbar('Berhasil membuat invoice ', 'success')
-    }
-  }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 
-  debouncedFetch(1, itemPerPage.value, selectedFasilitas.value, selectedYear.value, searchQuery.value, selectedJenisFasilitas.value)
-}
+  debouncedFetch(
+    1,
+    itemPerPage.value,
+    selectedFasilitas.value,
+    selectedYear.value,
+    searchQuery.value,
+    selectedJenisFasilitas.value
+  );
+};
 
 const loadFasilitasi = async () => {
   try {
-    loading.value = true
+    loading.value = true;
 
-    const response = await $api('/lp3h/list-fasilitasi', {
-      method: 'get',
-    })
+    const response = await $api("/lp3h/list-fasilitasi", {
+      method: "get",
+    });
 
-    const data = response.data
+    const data = response.data;
 
-    if (selectedJenisFasilitas.value === 'SEHATI') {
+    if (selectedJenisFasilitas.value === "SEHATI") {
       fasilitas.value = [
-        { title: 'BPJPH SEHATI', value: '4e792bfe-b16a-4ce0-8092-42b2185e2789' },
-      ]
+        {
+          title: "BPJPH SEHATI",
+          value: "4e792bfe-b16a-4ce0-8092-42b2185e2789",
+        },
+      ];
 
-      selectedFasilitas.value = '4e792bfe-b16a-4ce0-8092-42b2185e2789'
+      selectedFasilitas.value = "4e792bfe-b16a-4ce0-8092-42b2185e2789";
 
-      selectedYear.value = 2025 
+      selectedYear.value = 2025;
 
-      years.value = [{ title: 2025, value: 2025 }]
-    }
-    else {
+      years.value = [{ title: 2025, value: 2025 }];
+    } else {
       fasilitas.value = [
-        { title: 'Semua', value: null },
-        ...data.map(i => ({
+        { title: "Semua", value: null },
+        ...data.map((i) => ({
           title: i.fac_name,
           value: i.fac_id,
         })),
-      ]
+      ];
     }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
-const loadListDokumen = async (page: number, limit: number, fac_id: string, tahun: number, search: string, jenis: string) => {
+const loadListDokumen = async (
+  page: number,
+  limit: number,
+  fac_id: string,
+  tahun: number,
+  search: string,
+  jenis: string
+) => {
   try {
-    await loadFasilitasi()
+    await loadFasilitasi();
 
-    loading.value = true
+    loading.value = true;
 
-    const response = await $api('/lp3h/list-dokumen', {
-      method: 'get',
+    const response = await $api("/lp3h/list-dokumen", {
+      method: "get",
       params: {
         page,
         limit,
@@ -165,13 +178,13 @@ const loadListDokumen = async (page: number, limit: number, fac_id: string, tahu
         search,
         jenis,
       },
-    })
+    });
 
-    totalItems.value = response.totalItems
+    totalItems.value = response.totalItems;
 
-    const data = response.data
+    const data = response.data;
 
-    items.value = []
+    items.value = [];
 
     if (data !== null) {
       data.forEach((v, i) => {
@@ -185,47 +198,45 @@ const loadListDokumen = async (page: number, limit: number, fac_id: string, tahu
           nama_fasilitasi: v.fac_name,
           nama_pendamping: v.nama_pendamping,
           catatan: v.catatan,
-        })
-      })
+        });
+      });
     }
 
     // console.log("items : ", items.value)
-    loading.value = false
+    loading.value = false;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
-const debouncedFetch = debounce(loadListDokumen, 500)
+const debouncedFetch = debounce(loadListDokumen, 500);
 
 const changeFilterByJenisFasilitasi = () => {
-  if (selectedJenisFasilitas.value === 'SEHATI') {
+  if (selectedJenisFasilitas.value === "SEHATI") {
     fasilitas.value = [
-      { title: 'BPJPH SEHATI', value: '4e792bfe-b16a-4ce0-8092-42b2185e2789' },
-    ]
+      { title: "BPJPH SEHATI", value: "4e792bfe-b16a-4ce0-8092-42b2185e2789" },
+    ];
 
-    selectedFasilitas.value = '4e792bfe-b16a-4ce0-8092-42b2185e2789'
+    selectedFasilitas.value = "4e792bfe-b16a-4ce0-8092-42b2185e2789";
 
     // asdasd
-    selectedYear.value = 2025 // Ensure it matches the value type in `years`
-    years.value = [{ title: 2025, value: 2025 }]  
-  }
-  else {
-    selectedFasilitas.value = null
+    selectedYear.value = 2025; // Ensure it matches the value type in `years`
+    years.value = [{ title: 2025, value: 2025 }];
+  } else {
+    selectedFasilitas.value = null;
 
-    const currentYear = new Date().getFullYear()
+    const currentYear = new Date().getFullYear();
 
     years.value = [
-      { title: 'Semua', value: null },
+      { title: "Semua", value: null },
       ...Array.from({ length: currentYear - 2020 }, (_, i) => {
-        const year = 2021 + i
+        const year = 2021 + i;
 
-        return { title: year.toString(), value: year }
+        return { title: year.toString(), value: year };
       }),
-    ]
+    ];
 
-    selectedYear.value = null // Ensure it resets properly
+    selectedYear.value = null; // Ensure it resets properly
   }
 
   debouncedFetch(
@@ -234,42 +245,41 @@ const changeFilterByJenisFasilitasi = () => {
     selectedFasilitas.value,
     selectedYear.value,
     searchQuery.value,
-    selectedJenisFasilitas.value,
-  )
-}
+    selectedJenisFasilitas.value
+  );
+};
 
 const changeFilterBy = () => {
-  debouncedFetch(page.value, itemPerPage.value, selectedFasilitas.value, selectedYear.value, searchQuery.value, selectedJenisFasilitas.value)
-}
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    selectedFasilitas.value,
+    selectedYear.value,
+    searchQuery.value,
+    selectedJenisFasilitas.value
+  );
+};
 
 onMounted(async () => {
-  await loadFasilitasi()
-})
+  await loadFasilitasi();
+});
 </script>
 
 <template>
   <VContainer>
-    <VDialog
-      v-model="dialog"
-      max-width="700"
-    >
+    <VDialog v-model="dialog" max-width="700">
       <VCard class="pa-4">
         <VCardTitle>Konfirmasi Buat Invoice </VCardTitle>
-        <VCardText>Yakin akan membuat tagihan untuk data data yang di contreng tersebut ?</VCardText>
+        <VCardText
+          >Yakin akan membuat tagihan untuk data data yang di contreng tersebut
+          ?</VCardText
+        >
         <VRow>
           <VCol class="d-flex justify-end ga-4">
-            <VBtn
-              variant="outlined"
-              color="primary"
-              @click="dialog = false"
-            >
+            <VBtn variant="outlined" color="primary" @click="dialog = false">
               Batal
             </VBtn>
-            <VBtn
-              variant="flat"
-              color="primary"
-              @click="buatInvoiceHandler"
-            >
+            <VBtn variant="flat" color="primary" @click="buatInvoiceHandler">
               Ya, Setuju
             </VBtn>
           </VCol>
@@ -281,27 +291,20 @@ onMounted(async () => {
     </VRow>
     <VRow class="d-flex justify-space-between align-center">
       <VCol class="">
-        <h3 class="text-h3">
-          Buat Tagihan Ke BPJPH
-        </h3>
+        <h3 class="text-h3">Buat Tagihan Ke BPJPH</h3>
       </VCol>
     </VRow>
 
     <VRow>
       <VCol cols="12">
         <VCard class="pa-2">
-          <VCardTitle class="text-h4 mx-0">
-            Daftar Dokumen
-          </VCardTitle>
+          <VCardTitle class="text-h4 mx-0"> Daftar Dokumen </VCardTitle>
           <VCardItem>
             <VRow class="pa-0">
               <VCol cols="9">
                 <VRow>
                   <VCol cols="2">
-                    <VMenu
-                      v-model="menu"
-                      :close-on-content-click="false"
-                    >
+                    <VMenu v-model="menu" :close-on-content-click="false">
                       <template #activator="{ props }">
                         <VBtn
                           class="d-flex justify-space-between"
@@ -313,14 +316,8 @@ onMounted(async () => {
                           Filter
                         </VBtn>
                       </template>
-                      <VCard
-                        class="pa-4 text-xs"
-                        min-width="400px"
-                      >
-                        <VLabel
-                          for="fasilitas"
-                          class="mb-2"
-                        >
+                      <VCard class="pa-4 text-xs" min-width="400px">
+                        <VLabel for="fasilitas" class="mb-2">
                           Jenis Fasilitasi
                         </VLabel>
                         <VSelect
@@ -332,10 +329,7 @@ onMounted(async () => {
                           class="mb-2"
                           @update:model-value="changeFilterByJenisFasilitasi"
                         />
-                        <VLabel
-                          for="fasilitas"
-                          class="mb-2"
-                        >
+                        <VLabel for="fasilitas" class="mb-2">
                           Fasilitas
                         </VLabel>
                         <VSelect
@@ -347,10 +341,7 @@ onMounted(async () => {
                           class="mb-2"
                           @update:model-value="changeFilterBy"
                         />
-                        <VLabel
-                          for="tahun"
-                          class="mb-2"
-                        >
+                        <VLabel for="tahun" class="mb-2">
                           Tahun Terbit SH
                         </VLabel>
                         <VSelect
@@ -393,14 +384,8 @@ onMounted(async () => {
               </VCol>
               <VCol cols="3">
                 <VRow>
-                  <VCol
-                    cols="12"
-                    class="d-flex justify-space-between"
-                  >
-                    <VBtn
-                      :disabled="selectOptionDisable"
-                      @click="onNoSelected"
-                    >
+                  <VCol cols="12" class="d-flex justify-space-between">
+                    <VBtn :disabled="selectOptionDisable" @click="onNoSelected">
                       Pilih
                     </VBtn>
                     <VBtn
@@ -417,6 +402,7 @@ onMounted(async () => {
           </VCardItem>
           <VCardItem>
             <VDataTableServer
+              :items-per-page-options="[10, 25, 50, 100]"
               v-model="selected"
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
@@ -427,7 +413,16 @@ onMounted(async () => {
               :loading="loading"
               loading-text="Loading..."
               :items-length="totalItems"
-              @update:options="loadListDokumen(page, itemPerPage, selectedFasilitas, selectedYear, searchQuery, selectedJenisFasilitas)"
+              @update:options="
+                loadListDokumen(
+                  page,
+                  itemPerPage,
+                  selectedFasilitas,
+                  selectedYear,
+                  searchQuery,
+                  selectedJenisFasilitas
+                )
+              "
             >
               <template #item.no="{ index }">
                 {{ index + 1 }}
@@ -440,6 +435,4 @@ onMounted(async () => {
   </VContainer>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

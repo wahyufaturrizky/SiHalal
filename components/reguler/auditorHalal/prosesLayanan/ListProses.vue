@@ -23,8 +23,8 @@ const listFactory = ref<any[]>([]);
 const catatanProduk = ref<any[]>([]);
 const selectedProduct = ref<any>({});
 const listProduk = ref<any>([]);
-const page = ref(1)
-const size = ref(10)
+const page = ref(1);
+const size = ref(10);
 
 const formAddLayout = ref({
   file_layout: "",
@@ -322,14 +322,15 @@ const handleSubmit = () => {
 const uploadDocument = async (file: any) => {
   try {
     const formData = new FormData();
+
     formData.append("id", String(id));
     formData.append("file", file);
     formData.append("type", "produk");
-    const response = await $api("/shln/submission/document/upload", {
+
+    return await $api("/shln/submission/document/upload", {
       method: "post",
       body: formData,
     });
-    return response;
   } catch (error) {
     useSnackbar().sendSnackbar(
       "ada kesalahan saat upload file, gagal menyimpan!",
@@ -342,10 +343,12 @@ const handleSelectFile = (newFile: any, type: string) => {
   if (!newFile) return;
 
   const validFileTypes = ["image/jpeg", "image/png"].includes(newFile.type);
-  if (!validFileTypes) {
-    useSnackbar().sendSnackbar(`Upload ${type} dalam bentuk gambar berformat png/jpg/jpeg`, "error");
-  }
-}
+  if (!validFileTypes)
+    useSnackbar().sendSnackbar(
+      `Upload ${type} dalam bentuk gambar berformat png/jpg/jpeg`,
+      "error"
+    );
+};
 
 const handleUploadFile = async (event: any) => {
   if (event?.target?.files.length) {
@@ -368,7 +371,6 @@ const handleUploadFile = async (event: any) => {
     }
   }
 };
-
 
 const pageLayout = ref(1);
 const sizeLayout = ref(10);
@@ -399,6 +401,7 @@ const getListLayout = async (page = 1, size = 10) => {
 
 const pageDiagramAlur = ref(1);
 const itemsPerPageDiagramAlur = ref(10);
+
 const getListDigaramAlur = async (page = 10, size = 10) => {
   const response: any = await $api(
     "/reguler/pelaku-usaha/tab-proses/diagram-alur/list",
@@ -504,12 +507,13 @@ const getListProduct = async () => {
 
   return response || [];
 };
+
 const getCatatanBahanOrProduk = async (page, size, type) => {
-  if (type == 0) {
-    await getListCatatanBahan(page, size);
-  }
+  if (type == 0) await getListCatatanBahan(page, size);
+
   await getListCatatanProduk(page, size);
 };
+
 const getListCatatanBahan = async (page, size) => {
   const response: any = await $api(
     "/reguler/pelaku-usaha/tab-proses/list-catatan-bahan",
@@ -542,7 +546,6 @@ const getListCatatanProduk = async () => {
   );
 
   if (response.code === 2000) {
-    
     catatanProduk.value = response.data;
     materialAndProduct.value[1].value = response.data;
     materialAndProduct.value[1].totalItem = response.total;
@@ -630,7 +633,7 @@ const handleAddOrEdit = async () => {
   } else if (titleDialog.value === "Ubah Catatan Produk") {
     let body: any = {};
     if (tabs.value === "2") {
-      console.log(selectedProduct.value, 'selectedProduct')
+      console.log(selectedProduct.value, "selectedProduct");
       body = {
         id_produk: detailItem.value.id_prod_penyimpanan,
         jumlah: +detailItem.value.jumlah,
@@ -749,6 +752,7 @@ const handleAddOrEdit = async () => {
         jumlah: +selectedProduct.value?.jumlah,
         tanggal_produksi: formatDateId(selectedProduct.value?.tanggal_masuk),
         tanggal_kadaluarsa: formatDateId(selectedProduct.value?.tanggal_keluar),
+
         // nama_produk: payloadHasilProduksi.value?.nama_produk,
       };
     } else {
@@ -778,7 +782,7 @@ const handleAddOrEdit = async () => {
       useSnackbar().sendSnackbar("Sukses menambah data", "success");
     }
   } else if (titleDialog.value === "Ubah Catatan Hasil Produksi") {
-    console.log(selectedProduct.value, 'selectedProduct', detailItem.value)
+    console.log(selectedProduct.value, "selectedProduct", detailItem.value);
     let body: any = {};
     if (tabs.value === "2") {
       body = {
@@ -786,6 +790,7 @@ const handleAddOrEdit = async () => {
         jumlah: +selectedProduct.value?.jumlah,
         tanggal_produksi: formatDateId(selectedProduct.value?.tanggal_masuk),
         tanggal_kadaluarsa: formatDateId(selectedProduct.value?.tanggal_keluar),
+
         // nama_produk: payloadHasilProduksi.value?.nama_produk,
       };
     } else {
@@ -818,6 +823,7 @@ const handleAddOrEdit = async () => {
         jumlah: +selectedProduct.value?.jumlah,
         tanggal: formatDateId(selectedProduct.value?.tanggal),
         tujuan: selectedProduct.value?.tujuan,
+
         // nama_produk: payloadHasilProduksi.value?.nama_produk,
       };
     } else {
@@ -850,6 +856,7 @@ const handleAddOrEdit = async () => {
         jumlah: +selectedProduct.value?.jumlah,
         tanggal: formatDateId(selectedProduct.value?.tanggal),
         tujuan: selectedProduct.value?.tujuan,
+
         // nama_produk: payloadHasilProduksi.value?.nama_produk,
       };
     } else {
@@ -998,8 +1005,8 @@ watch(selectedFactory, () => {
                 rounded="xl"
                 label="No file choosen"
                 prepend-icon=""
-                @change="handleUploadFile"
                 accept="image/png, image/jpeg"
+                @change="handleUploadFile"
               >
                 <template #append-inner>
                   <VBtn rounded="s-0 e-xl" text="Choose" />
@@ -1031,14 +1038,14 @@ watch(selectedFactory, () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1050,7 +1057,7 @@ watch(selectedFactory, () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
@@ -1080,9 +1087,9 @@ watch(selectedFactory, () => {
                   <VCol>
                     <label>Tanggal Masuk</label>
                     <VueDatePicker
+                      id="tanggalDocument"
                       v-model="detailItem.tanggal_masuk"
                       teleport-center
-                      id="tanggalDocument"
                       :enable-time-picker="false"
                       placeholder="tanggal masuk"
                       required
@@ -1091,9 +1098,9 @@ watch(selectedFactory, () => {
                   <VCol>
                     <label>Tanggal Keluar</label>
                     <VueDatePicker
+                      id="tanggalDocument"
                       v-model="detailItem.tanggal_keluar"
                       teleport-center
-                      id="tanggalDocument"
                       :enable-time-picker="false"
                       placeholder="tanggal masuk"
                       required
@@ -1139,8 +1146,8 @@ watch(selectedFactory, () => {
                       rounded="xl"
                       label="No file choosen"
                       prepend-icon=""
-                      @change="handleUploadFile"
                       accept="image/png, image/jpeg"
+                      @change="handleUploadFile"
                     >
                       <template #append-inner>
                         <VBtn rounded="s-0 e-xl" text="Choose" />
@@ -1159,7 +1166,8 @@ watch(selectedFactory, () => {
                         <VIcon size="24px" icon="ri-information-2-fill" />
                       </template>
                       <template #text>
-                        File foto harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                        File foto harus dalam bentuk gambar berformat
+                        (jpeg/jpg/png)
                       </template>
                     </VAlert>
                   </VCol>
@@ -1175,14 +1183,14 @@ watch(selectedFactory, () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1194,7 +1202,7 @@ watch(selectedFactory, () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
@@ -1224,9 +1232,9 @@ watch(selectedFactory, () => {
                   <VCol>
                     <label>Tanggal Masuk</label>
                     <VueDatePicker
+                      id="tanggalDocument"
                       v-model="detailItem.tanggal_masuk"
                       teleport-center
-                      id="tanggalDocument"
                       :enable-time-picker="false"
                       placeholder="tanggal masuk"
                       required
@@ -1235,9 +1243,9 @@ watch(selectedFactory, () => {
                   <VCol>
                     <label>Tanggal Keluar</label>
                     <VueDatePicker
+                      id="tanggalDocument"
                       v-model="detailItem.tanggal_keluar"
                       teleport-center
-                      id="tanggalDocument"
                       :enable-time-picker="false"
                       placeholder="tanggal masuk"
                       required
@@ -1283,8 +1291,8 @@ watch(selectedFactory, () => {
                       rounded="xl"
                       label="No file choosen"
                       prepend-icon=""
-                      @change="handleUploadFile"
                       accept="image/png, image/jpeg"
+                      @change="handleUploadFile"
                     >
                       <template #append-inner>
                         <VBtn rounded="s-0 e-xl" text="Choose" />
@@ -1303,7 +1311,8 @@ watch(selectedFactory, () => {
                         <VIcon size="24px" icon="ri-information-2-fill" />
                       </template>
                       <template #text>
-                        File foto harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                        File foto harus dalam bentuk gambar berformat
+                        (jpeg/jpg/png)
                       </template>
                     </VAlert>
                   </VCol>
@@ -1324,14 +1333,14 @@ watch(selectedFactory, () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1343,7 +1352,7 @@ watch(selectedFactory, () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
@@ -1382,8 +1391,8 @@ watch(selectedFactory, () => {
                   <br />
                   <label>Detail Proses</label>
                   <VTextarea
-                    v-model="formattedArray"
                     id="diagramProcess"
+                    v-model="formattedArray"
                     placeholder="Isi Process"
                     class="mb-2"
                   />
@@ -1396,7 +1405,7 @@ watch(selectedFactory, () => {
                   class="-mt-10"
                   placeholder="isi judul"
                 />
-                <br/>
+                <br />
                 <VRow class="mb-3" align="center">
                   <VCol cols="6">
                     <label> Upload Foto </label>
@@ -1426,8 +1435,8 @@ watch(selectedFactory, () => {
                       rounded="xl"
                       label="No file choosen"
                       prepend-icon=""
-                      @change="handleUploadFile"
                       accept="image/png, image/jpeg"
+                      @change="handleUploadFile"
                     >
                       <template #append-inner>
                         <VBtn rounded="s-0 e-xl" text="Choose" />
@@ -1446,7 +1455,8 @@ watch(selectedFactory, () => {
                         <VIcon size="24px" icon="ri-information-2-fill" />
                       </template>
                       <template #text>
-                        File foto harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                        File foto harus dalam bentuk gambar berformat
+                        (jpeg/jpg/png)
                       </template>
                     </VAlert>
                   </VCol>
@@ -1467,14 +1477,14 @@ watch(selectedFactory, () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1486,7 +1496,7 @@ watch(selectedFactory, () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
@@ -1523,24 +1533,24 @@ watch(selectedFactory, () => {
                     <VCol>
                       <label>Tanggal Produksi</label>
                       <VueDatePicker
+                        id="tanggalDocument"
                         v-model="selectedProduct.tanggal_masuk"
                         teleport-center
-                        id="tanggalDocument"
                         :enable-time-picker="false"
                         placeholder="tanggal masuk"
-                        format="dd-MM-yyyy"
+                        format="DD/MM/YYYY"
                         required
                       />
                     </VCol>
                     <VCol>
                       <label>Tanggal Kadaluarsa</label>
                       <VueDatePicker
+                        id="tanggalDocument"
                         v-model="selectedProduct.tanggal_keluar"
                         teleport-center
-                        id="tanggalDocument"
                         :enable-time-picker="false"
                         placeholder="tanggal masuk"
-                        format="dd-MM-yyyy"
+                        format="DD/MM/YYYY"
                         required
                       />
                     </VCol>
@@ -1555,7 +1565,7 @@ watch(selectedFactory, () => {
                   placeholder="isi judul"
                   :disabled="titleDialog === 'Ubah Catatan Hasil Produksi'"
                 />
-                <br/>
+                <br />
                 <VRow class="mb-3" align="center">
                   <VCol cols="6">
                     <label> Upload Foto </label>
@@ -1585,8 +1595,8 @@ watch(selectedFactory, () => {
                       rounded="xl"
                       label="No file choosen"
                       prepend-icon=""
-                      @change="handleUploadFile"
                       accept="image/png, image/jpeg"
+                      @change="handleUploadFile"
                     >
                       <template #append-inner>
                         <VBtn rounded="s-0 e-xl" text="Choose" />
@@ -1605,7 +1615,8 @@ watch(selectedFactory, () => {
                         <VIcon size="24px" icon="ri-information-2-fill" />
                       </template>
                       <template #text>
-                        File foto harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                        File foto harus dalam bentuk gambar berformat
+                        (jpeg/jpg/png)
                       </template>
                     </VAlert>
                   </VCol>
@@ -1626,14 +1637,14 @@ watch(selectedFactory, () => {
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1645,7 +1656,7 @@ watch(selectedFactory, () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
@@ -1680,12 +1691,12 @@ watch(selectedFactory, () => {
                   <br />
                   <label>Tanggal</label>
                   <VueDatePicker
+                    id="tanggalDocument"
                     v-model="selectedProduct.tanggal"
                     teleport-center
-                    id="tanggalDocument"
                     :enable-time-picker="false"
                     placeholder="tanggal masuk"
-                    format="dd-MM-yyyy"
+                    format="DD/MM/YYYY"
                     required
                   />
                   <br />
@@ -1705,7 +1716,7 @@ watch(selectedFactory, () => {
                   placeholder="isi judul"
                   :disabled="titleDialog === 'Ubah Catatan Distribusi'"
                 />
-                <br/>
+                <br />
                 <VRow class="mb-3" align="center">
                   <VCol cols="6">
                     <label> Upload Foto </label>
@@ -1735,8 +1746,8 @@ watch(selectedFactory, () => {
                       rounded="xl"
                       label="No file choosen"
                       prepend-icon=""
-                      @change="handleUploadFile"
                       accept="image/png, image/jpeg"
+                      @change="handleUploadFile"
                     >
                       <template #append-inner>
                         <VBtn rounded="s-0 e-xl" text="Choose" />
@@ -1755,7 +1766,8 @@ watch(selectedFactory, () => {
                         <VIcon size="24px" icon="ri-information-2-fill" />
                       </template>
                       <template #text>
-                        File foto harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                        File foto harus dalam bentuk gambar berformat
+                        (jpeg/jpg/png)
                       </template>
                     </VAlert>
                   </VCol>

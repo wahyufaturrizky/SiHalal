@@ -324,7 +324,12 @@ const changePage = (page: number) => {
     </VCardTitle>
 
     <VCardItem>
-      <VDataTable :headers="tableHeader" :items="produk" class="custom-table">
+      <VDataTable
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="tableHeader"
+        :items="produk"
+        class="custom-table"
+      >
         <template #item.no="{ index }">
           {{ index + 1 }}
         </template>

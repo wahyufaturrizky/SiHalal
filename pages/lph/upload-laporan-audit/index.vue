@@ -154,18 +154,12 @@ const getMasterProvinsi = async () => {
 const applyFilters = async () => {
   showFilterMenu.value = false;
   getWithFilter.value = true;
-  handleSearch(
-    page.value,
-    size.value,
-    searchQuery.value,
-    UPLOAD_LAPORAN_AUDIT
-  );
+  handleSearch(page.value, size.value, searchQuery.value, UPLOAD_LAPORAN_AUDIT);
 };
 
 const handleInput = (e: any) => {
   debounce(
-    handleSearch(page.value, size.value, e.target.value, UPLOAD_LAPORAN_AUDIT
-    ),
+    handleSearch(page.value, size.value, e.target.value, UPLOAD_LAPORAN_AUDIT),
     500
   );
 };
@@ -190,8 +184,13 @@ onMounted(async () => {
 });
 
 watch([page, size], async () => {
-  const refreshData = await loadItem(page.value, size.value, searchQuery.value, UPLOAD_LAPORAN_AUDIT)
-  dataTable.value = refreshData
+  const refreshData = await loadItem(
+    page.value,
+    size.value,
+    searchQuery.value,
+    UPLOAD_LAPORAN_AUDIT
+  );
+  dataTable.value = refreshData;
 });
 
 watch(dataTable, () => {
@@ -296,6 +295,7 @@ watch(dataTable, () => {
             </VCol>
           </VRow>
           <VDataTableServer
+            :items-per-page-options="[10, 25, 50, 100]"
             v-model:items-per-page="size"
             v-model:page="page"
             :items-length="totalItems"
@@ -308,7 +308,7 @@ watch(dataTable, () => {
           >
             <template #no-data>
               <div class="w-full mt-2">
-                <div class="pt-2" style="justify-items: center;">
+                <div class="pt-2" style="justify-items: center">
                   <img src="~/assets/images/empty-data.png" alt="empty_data" />
                   <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
                 </div>
@@ -340,9 +340,7 @@ watch(dataTable, () => {
                 icon="mdi-arrow-right"
                 color="primary"
                 size="x-large"
-                @click="
-                  router.push(`/lph/upload-laporan-audit/${item.id_reg}`)
-                "
+                @click="router.push(`/lph/upload-laporan-audit/${item.id_reg}`)"
               />
             </template>
           </VDataTableServer>

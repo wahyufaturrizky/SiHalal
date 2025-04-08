@@ -14,6 +14,9 @@ const headers = [
 ];
 const items = ref([]);
 const route = useRoute();
+const page = ref(1);
+const itemsPerPage = ref(10);
+
 const getKomitmen = async () => {
   try {
     const response = await $api("/reguler/verifikator/detail/komitmen", {
@@ -42,9 +45,16 @@ onMounted(async ()=> {
       <span class="text-h3">Komitmen Dan Tanggung Jawab</span>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="headers" :items="items"> 
-        <template #item.no="{index}">
-          {{index + 1}}
+      <VDataTable
+        :headers="headers"
+        :items="items"
+        :items-per-page="itemsPerPage"
+        :page="page"
+        @update:page="newPage => page = newPage"
+        @update:items-per-page="newSize => itemsPerPage = newSize"
+      >
+        <template v-slot:item.no="{ index }">
+          {{ (page - 1) * itemsPerPage + index + 1 }}
         </template>
       </VDataTable>
     </VCardItem>

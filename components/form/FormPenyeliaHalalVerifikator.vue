@@ -23,11 +23,11 @@ const headers = [
 const store = useMyVerifikatorRegulerStore();
 const { penyelia_halal } = storeToRefs(store);
 const donwloadSkph = (item) => {
-  downloadDocument(item,'FILES');
+  downloadDocument(item, "FILES");
 };
 
 const donwloadSpph = (item) => {
-  downloadDocument(item,'FILES');
+  downloadDocument(item, "FILES");
 };
 
 const donwloadKtp = (item) => {
@@ -41,7 +41,11 @@ const donwloadKtp = (item) => {
       <span class="text-h3">Penyelia Halal</span>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="headers" :items="penyelia_halal">
+      <VDataTable
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="headers"
+        :items="penyelia_halal"
+      >
         <template #item.file_skph="{ item }">
           <v-btn
             :disabled="item.file_skph == ''"

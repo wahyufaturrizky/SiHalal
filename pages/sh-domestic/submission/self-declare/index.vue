@@ -48,23 +48,24 @@ const itemPerPage = ref(10);
 const totalItems = ref(0);
 
 const questions = [
-  "Saya tidak pernah mendapatkan fasilitas sertifikasi halal sebelumnya ",
-  "Aktivitas produksi yang dilakukan merupakan usaha rumahan (bukan usaha pabrikan)",
-  "Proses produksi menggunakan bahan-bahan halal. (contoh bahan halal: 1. Bahan bersertifikat halal 2. Bahan berasal dari alam (tanpa melihat sertifikat): buah segar, sayur segar, telur segar, ikan segar, rempah, dll)",
-  "Jika ada proses produksi produk lain yang menggunakan bahan non-halal, dilakukan pada tempat terpisah dan menggunakan alat yang berbeda.",
-  "Proses produksi tidak menggunakan bahan berbahaya (contoh bahan berbahaya tertuang dalam Peraturan BPOM Nomor 7 Tahun 2018)",
-  "Proses pengawetan produk sederhana dan tidak menggunakan kombinasi lebih dari 1 metode pengawetan ",
-  "Proses produksi menggunakan peralatan manual/ semi otomatis",
-];
+  'self-declare.questionnaire.1',
+  'self-declare.questionnaire.2',
+  'self-declare.questionnaire.3',
+  'self-declare.questionnaire.4',
+  'self-declare.questionnaire.5',
+  'self-declare.questionnaire.6',
+  'self-declare.questionnaire.7',
+]
+
 const questionResponse = [
-  "Anda sudah pernah mendapatkan fasilitas self declare",
-  "Aktivitas produksi yang dilakukan bukan merupakan usaha rumahan",
-  "Tidak semua proses produksi menggunakan bahan-bahan halal",
-  "Proses produksi produk lain yang menggunakan bahan non-halal tidak dilakukan pada tempat terpisah dan tidak menggunakan alat yang berbeda.",
-  "Proses produksi menggunakan bahan berbahaya",
-  "Proses pengawetan produk tidak sederhana atau menggunakan kombinasi lebih dari 1 metode pengawetan",
-  "Proses produksi tidak menggunakan peralatan manual/semi otomatis",
-];
+  'self-declare.questionnaire-response.1',
+  'self-declare.questionnaire-response.2',
+  'self-declare.questionnaire-response.3',
+  'self-declare.questionnaire-response.4',
+  'self-declare.questionnaire-response.5',
+  'self-declare.questionnaire-response.6',
+  'self-declare.questionnaire-response.7',
+]
 
 const questionareDialogVisible = ref(false);
 const infoDialogVisible = ref(false);
