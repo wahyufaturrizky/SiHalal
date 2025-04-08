@@ -15,7 +15,7 @@ export default defineEventHandler(async (event: any) => {
     })
   }
   const body: DraftBody = await readBody(event)
-  const { type, id } = body
+  const { type, id, Id_prov } = body
 
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/business-actor/${type}/draft`,
@@ -24,6 +24,7 @@ export default defineEventHandler(async (event: any) => {
       headers: { Authorization: authorizationHeader },
       body: {
         proyek_id: id,
+        Id_prov,
       },
     },
   ).catch((err: NuxtError) => {
