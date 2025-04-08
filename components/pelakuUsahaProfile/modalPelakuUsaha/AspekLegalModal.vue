@@ -185,7 +185,7 @@ async function getMasterDocsTypes() {
                 <Vuepicdatepicker
                   v-model:model-value="form.date"
                   auto-apply
-                  model-type="DD/MM/YYYY"
+                  model-type="dd/MM/yyyy"
                   :enable-time-picker="false"
                   clearable
                   position="auto"
@@ -220,7 +220,7 @@ async function getMasterDocsTypes() {
                 <Vuepicdatepicker
                   v-model:model-value="form.expiration_date"
                   auto-apply
-                  model-type="DD/MM/YYYY"
+                  model-type="dd/MM/yyyy"
                   :enable-time-picker="false"
                   clearable
                   position="auto"

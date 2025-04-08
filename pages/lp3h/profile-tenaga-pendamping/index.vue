@@ -556,7 +556,7 @@ const handleSave = async () => {
                       <Vuepicdatepicker
                         v-model:model-value="item.value"
                         auto-apply
-                        model-type="DD/MM/YYYY"
+                        model-type="dd/MM/yyyy"
                         :enable-time-picker="false"
                         :rules="[requiredValidator]"
                         teleport

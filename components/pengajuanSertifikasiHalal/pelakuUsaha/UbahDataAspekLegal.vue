@@ -92,7 +92,7 @@ const handleSearch = () => {
                     <Vuepicdatepicker
                       v-model:model-value="data.sertifikasi_date.value"
                       auto-apply
-                      model-type="DD/MM/YYYY"
+                      model-type="dd/MM/yyyy"
                       :enable-time-picker="false"
                       :teleport="true"
                       clearable
@@ -122,7 +122,7 @@ const handleSearch = () => {
                     <Vuepicdatepicker
                       v-model:model-value="data.sertifikasi_date.value"
                       auto-apply
-                      model-type="DD/MM/YYYY"
+                      model-type="dd/MM/yyyy"
                       :enable-time-picker="false"
                       :teleport="true"
                       clearable
