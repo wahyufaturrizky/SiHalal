@@ -430,7 +430,7 @@ const formatItemTitle = (item) => {
                   {{ item.name }}
                 </template>
                 <template #item.hs_code="{ item }">
-                  {{ item.hc_code }}
+                  {{ item.hc_code }} ({{ item.hc_code_description }})
                 </template>
                 <template #item.action="{ item }">
                   <div class="d-flex gap-1">
