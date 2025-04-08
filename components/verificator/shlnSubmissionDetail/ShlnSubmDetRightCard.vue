@@ -10,7 +10,7 @@ const props = defineProps({
   },
 });
 
-const { status_code, registration_number, issued_date } =
+const { status_code, registration_number, tanggal_daftar } =
   props.datadetailregistration || {};
 
 const tracking = props.data?.map((item: any) => {
@@ -48,7 +48,11 @@ const statusItem: any = new Proxy(
 const registData = [
   { id: 1, key: "Status", value: status_code },
   { id: 2, key: "Registration No.", value: registration_number },
-  { id: 3, key: "Date", value: issued_date ? formatDate(issued_date) : "" },
+  {
+    id: 3,
+    key: "Date",
+    value: tanggal_daftar ? formatDate(tanggal_daftar) : "",
+  },
 ];
 </script>
 
