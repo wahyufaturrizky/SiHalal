@@ -1538,7 +1538,7 @@ watch(selectedFactory, () => {
                         teleport-center
                         :enable-time-picker="false"
                         placeholder="tanggal masuk"
-                        format="DD/MM/YYYY"
+                        format="dd/MM/yyyy"
                         required
                       />
                     </VCol>
@@ -1550,7 +1550,7 @@ watch(selectedFactory, () => {
                         teleport-center
                         :enable-time-picker="false"
                         placeholder="tanggal masuk"
-                        format="DD/MM/YYYY"
+                        format="dd/MM/yyyy"
                         required
                       />
                     </VCol>
@@ -1696,7 +1696,7 @@ watch(selectedFactory, () => {
                     teleport-center
                     :enable-time-picker="false"
                     placeholder="tanggal masuk"
-                    format="DD/MM/YYYY"
+                    format="dd/MM/yyyy"
                     required
                   />
                   <br />
