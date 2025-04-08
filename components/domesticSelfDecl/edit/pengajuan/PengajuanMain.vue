@@ -834,7 +834,7 @@ const getItemData = (item) => {
                   <Vuepicdatepicker
                     v-model:model-value="formData.tgl_surat_permohonan"
                     auto-apply
-                    model-type="DD/MM/YYYY"
+                    model-type="dd/MM/yyyy"
                     :enable-time-picker="false"
                     :rules="[requiredValidator]"
                     teleport

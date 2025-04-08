@@ -183,7 +183,7 @@ onMounted(async () => {
               <VCol cols="3">
               <Vuepicdatepicker
               auto-apply
-              model-type="DD/MM/YYYY"
+              model-type="dd/MM/yyyy"
               :enable-time-picker="false"
               :teleport="true"
               range
@@ -209,7 +209,7 @@ onMounted(async () => {
                 :teleport="true"
                 :enable-time-picker="false"
                 auto-apply
-                model-type="DD/MM/YYYY"
+                model-type="dd/MM/yyyy"
                 range
                 :clearable="true"
                 @update:model-value="loadItem(page, itemPerPage)"
