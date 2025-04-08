@@ -442,7 +442,7 @@ watch(loaFile, (newValue, oldValue) => {
           <VCol cols="12">
             <VTextField
               v-model="loaForm.authorizer_name"
-              label="Authorizer Name"
+              label="Authorizer Company"
               required
               :rules="[requiredValidator]"
             />
@@ -450,7 +450,7 @@ watch(loaFile, (newValue, oldValue) => {
           <VCol cols="12">
             <VTextField
               v-model="loaForm.authorized_name"
-              label="Authorized Name"
+              label="Authorized Company"
               required
               :rules="[requiredValidator]"
             />
@@ -500,7 +500,7 @@ watch(loaFile, (newValue, oldValue) => {
             </VBtn>
             <VFileInput
               v-model="loaFile"
-              label="Unggah Sertifikat Kompetensi Penyelia Halal"
+              label="Unggah Letter Of Authorization"
               outlined
               dense
               accept=".doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.pdf,.csv"
