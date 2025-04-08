@@ -17,6 +17,7 @@ const props = defineProps({
 const agreed = ref(false)
 const loading = ref(false)
 const timHalal = ref(null)
+const loadingPutFlagProcess = ref(false)
 
 const penanggungJawabProfile = ref({
   namaPerusahaan: null,
@@ -28,6 +29,7 @@ const penanggungJawabProfile = ref({
 const getDetailData = async () => {
   try {
     loading.value = true
+
     const response = await $api('/reguler/pelaku-usaha/detail', {
       method: 'get',
       params: { id: props?.id },
@@ -51,33 +53,51 @@ const getDetailData = async () => {
 
 const getTimHalal = async () => {
   try {
-    const response = await $api("/reguler/pelaku-usaha/detail-tab", {
-      method: "get",
-      params: { id: props?.id, type: "tim-manajemen-halal" },
-    });
+    const response = await $api('/reguler/pelaku-usaha/detail-tab', {
+      method: 'get',
+      params: { id: props?.id, type: 'tim-manajemen-halal' },
+    })
 
-   if (response.code === 2000) {
-    const defaultValue = {
-      nama: 'Ketua Tim Manajemen Halal kosong',
+    if (response.code === 2000) {
+      const defaultValue = {
+        nama: 'Ketua Tim Manajemen Halal kosong',
+      }
+
+      const ketua = response?.data?.find(a => a.posisi === 'Ketua')
+      const anggota = response?.data?.find(a => a.posisi !== 'Ketua')
+
+      timHalal.value = ketua || anggota || defaultValue
     }
-    const ketua = response?.data?.find((a) => a.posisi === 'Ketua')
-    const anggota = response?.data?.find((a) => a.posisi !== 'Ketua')
-    timHalal.value = ketua || anggota || defaultValue
-   }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-};
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
 
-const handleSubmit = () => {
-  props.onComplete()
-  localStorage.setItem('pernyataanBebasBabiAgreement', true)
-  agreed.value = true
+const putFlagProcess = async () => {
+  try {
+    loadingPutFlagProcess.value = true
+
+    const response = await $api('/reguler/pelaku-usaha/flag-process', {
+      method: 'put',
+      query: { id: props?.id },
+    })
+
+    if (response.code === 2000) {
+      props.onComplete()
+      agreed.value = true
+    }
+  }
+  catch (err) {
+    loadingPutFlagProcess.value = false
+  }
+}
+
+const handleSubmit = async () => {
+  putFlagProcess()
 }
 
 onMounted(async () => {
-  if (localStorage.getItem('pernyataanBebasBabiAgreement'))
-    props.onComplete()
   getDetailData()
   getTimHalal()
 })
@@ -161,23 +181,24 @@ onMounted(async () => {
               </p>
             </div>
           </VCardText>
-  
+
           <VDivider class="my-4" />
-  
+
           <VRow align="center">
             <VCheckbox
               v-model="agreed"
               label="Saya telah membaca seluruh persyaratan yang telah dicantumkan, dan berjanji akan memenuhi kebijakan tersebut."
             />
           </VRow>
-  
+
           <VRow
             justify="center"
             class="mt-4"
           >
             <VBtn
-              :disabled="!agreed"
               color="#652672"
+              :disabled="!agreed || loadingPutFlagProcess"
+              :loading="loadingPutFlagProcess"
               @click="handleSubmit"
             >
               Saya Setuju
