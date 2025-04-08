@@ -9,9 +9,8 @@ const props = defineProps({
     required: true,
   },
 });
-console.log("@props", props);
 
-const { status_code, submission_number, issued_date } =
+const { status_code, registration_number, issued_date } =
   props.datadetailregistration || {};
 
 const tracking = props.data?.map((item: any) => {
@@ -48,7 +47,7 @@ const statusItem: any = new Proxy(
 
 const registData = [
   { id: 1, key: "Status", value: status_code },
-  { id: 2, key: "Registration No.", value: submission_number },
+  { id: 2, key: "Registration No.", value: registration_number },
   { id: 3, key: "Date", value: issued_date ? formatDate(issued_date) : "" },
 ];
 </script>
@@ -70,7 +69,9 @@ const registData = [
                   {{ statusItem[item.value].desc }}
                 </VChip>
               </template>
-              <p v-else>{{ item.value }}</p>
+              <p v-else>
+                {{ item.value }}
+              </p>
             </VCol>
           </VRow>
         </VCardText>
@@ -86,7 +87,8 @@ const registData = [
             :style="
               tracking?.length > 5 ? 'max-height: 600px; overflow-y: auto' : ''
             "
-            ><VTimeline
+          >
+            <VTimeline
               :style="
                 tracking?.length > 5
                   ? 'max-height: 500px; overflow-y: auto'
@@ -124,13 +126,13 @@ const registData = [
                 <div v-if="item.comment" class="app-timeline-text mt-1">
                   {{
                     item.comment.length > 38
-                      ? item.comment.slice(0, 38) + "..."
+                      ? `${item.comment.slice(0, 38)}...`
                       : item.comment
                   }}
                 </div>
               </VTimelineItem>
-            </VTimeline></VContainer
-          >
+            </VTimeline>
+          </VContainer>
         </VCardText>
       </VCard>
     </VCol>

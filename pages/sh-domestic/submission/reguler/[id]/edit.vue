@@ -64,6 +64,22 @@ const getListLegal = async () => {
   }
 };
 
+const getFlagProcess = async () => {
+  try {
+    const response: any = await $api('/reguler/pelaku-usaha/flag-process', {
+      method: 'get',
+      params: { id },
+    })
+
+    if (response?.code === 2000)
+      approveRequirementsProses.value = response?.data?.is_proses
+    else useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+  catch (err) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
 const getListPenyelia = async () => {
   try {
     const response: any = await $api("/reguler/pelaku-usaha/list-penyelia", {
@@ -199,15 +215,6 @@ const getListIngredients = async () => {
 onMounted(async () => {
   activeTab.value = 0;
 
-  const sessionData = await useMyAuthUserStore().getSession();
-
-  const userRole = sessionData?.value?.roles?.[0]?.name;
-
-  if (userRole === "Lembaga Pemeriksa Halal") {
-    localStorage.setItem("pernyataanBebasBabiAgreement", true);
-    localStorage.setItem("commitmentAndResponsibility", true);
-  }
-
   const res: any = await Promise.all([
     getListLegal(),
     getListPenyelia(),
@@ -221,13 +228,21 @@ onMounted(async () => {
     return item !== undefined;
   });
 
+  const sessionData = await useMyAuthUserStore().getSession();
+
+  const userRole = sessionData?.value?.roles?.[0]?.name;
+
+  if (userRole === 'Lembaga Pemeriksa Halal')
+    localStorage.setItem('commitmentAndResponsibility', true)
+  else
+    await getFlagProcess()
+
   if (checkResIfUndefined) loadingAll.value = false;
   else loadingAll.value = false;
 });
 
 onUnmounted(() => {
-  localStorage.removeItem("pernyataanBebasBabiAgreement");
-  localStorage.removeItem("commitmentAndResponsibility");
+  localStorage.removeItem('commitmentAndResponsibility');
 });
 
 const dataPengajuanRef = ref();

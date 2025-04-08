@@ -465,7 +465,7 @@ watchEffect(async () => {
                 v-model="item.value"
                 teleport-center
                 :enable-time-picker="false"
-                format="DD/MM/YYYY"
+                format="dd/MM/yyyy"
                 :disabled="isDisabledForm"
               />
             </div>

@@ -104,7 +104,7 @@ const documentTypes = ["SIUP", "ANOTHER"];
               v-model="form.date"
               teleport-center
               :enable-time-picker="false"
-              format="DD/MM/YYYY"
+              format="dd/MM/yyyy"
             />
           </VCol>
         </VRow>
@@ -117,7 +117,7 @@ const documentTypes = ["SIUP", "ANOTHER"];
               v-model="form.validDate"
               teleport-center
               :enable-time-picker="false"
-              format="DD/MM/YYYY"
+              format="dd/MM/yyyy"
             />
           </VCol>
         </VRow>

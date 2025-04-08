@@ -1823,7 +1823,7 @@ watch([titleDialog, tabAddBahan], () => {
                   v-model="formDataCatatan.tgl_pembelian"
                   teleport-center
                   :enable-time-picker="false"
-                  format="DD/MM/YYYY"
+                  format="dd/MM/yyyy"
                 />
               </div>
             </VTabsWindowItem>
@@ -1948,7 +1948,7 @@ watch([titleDialog, tabAddBahan], () => {
                   v-model="formDataCatatan.tgl_pembelian"
                   teleport-center
                   :enable-time-picker="false"
-                  format="DD/MM/YYYY"
+                  format="dd/MM/yyyy"
                 />
               </div>
             </VTabsWindowItem>
@@ -2084,7 +2084,7 @@ watch([titleDialog, tabAddBahan], () => {
                   v-model="itemDetail.tgl_pembelian"
                   teleport-center
                   :enable-time-picker="false"
-                  format="DD/MM/YYYY"
+                  format="dd/MM/yyyy"
                 />
               </div>
             </VTabsWindowItem>
@@ -2220,7 +2220,7 @@ watch([titleDialog, tabAddBahan], () => {
                   v-model="itemDetail.tgl_pembelian"
                   teleport-center
                   :enable-time-picker="false"
-                  format="DD/MM/YYYY"
+                  format="dd/MM/yyyy"
                 />
               </div>
             </VTabsWindowItem>
