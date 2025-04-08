@@ -59,6 +59,8 @@ const totalItems = ref(0);
 const page = ref(1);
 const isAddFactoryModalOpen = ref(false);
 const isEditFactoryModalOpen = ref(false);
+const isUpdateDataPuModalOpen = ref(false);
+const draftCertif = ref("");
 
 const listFactory = ref({
   label: [
@@ -119,6 +121,17 @@ const formDataPabrik = ref({
   idFas: "",
   fasilId: "",
 });
+
+const formDataPU = ref({
+  nama_pu: "",
+  nama_pu_sh: "",
+  alamat: "",
+  kota: "",
+  provinsi: "",
+  negara: "",
+  kodepos: "",
+  skala_usaha: "",
+})
 
 const toggle = () => {
   addDialog.value = false;
@@ -322,11 +335,10 @@ const HandleEditPabrik = async (fasId) => {
   isEditFactoryModalOpen.value = !isEditFactoryModalOpen.value;
 }
 
-// const openEditProfile = () => {
-//   modalTitle.value = "Edit Profile Pelaku Usaha";
-//   modalContent.value = "Isi konten untuk Edit Profile Pelaku Usaha.";
-//   isUpdateDataModalOpen.value = true;
-// };
+const openEditProfile = () => {
+  getDetailData('pengajuan');
+  isUpdateDataPuModalOpen.value = !isUpdateDataPuModalOpen.value;
+};
 
 const handleEditProduct = async (productId) => {
   await getDetailProduk(productId, "edit"); 
@@ -447,6 +459,22 @@ const handleSaveAuditor = async () => {
     );
     localStorage.setItem("tanggalMulai", tanggalMulai.value);
     localStorage.setItem("tanggalSelesai", tanggalSelesai.value);
+  }
+};
+
+const getDraftSertif = async () => {
+  try {
+    const response: any = await $api("/reguler/lph/draft-certif", {
+      method: "get",
+      params: { id },
+    });
+
+    if (response?.code === 2000) {
+      draftCertif.value = response?.data?.file;
+      return response?.data;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
@@ -951,6 +979,44 @@ const updateProduct = async () => {
   }
 };
 
+const updateDataPU = async () => {
+  try {
+    const response = await $api("/reguler/lph/update-pu", {  
+      method: "PUT",
+      params: {id_reg: id},
+      body: { 
+        nama_pu_sh: formDataPU.value.nama_pu_sh,
+      },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.code === 2000) {
+      // formDataPU.value = {
+      //   nama_pu: "",
+      //   nama_pu_sh: "",
+      //   alamat: "",
+      //   kota: "",
+      //   provinsi: "",
+      //   negara: "",
+      //   kodepos: "",
+      //   skala_usaha: "",
+      // };
+
+      addDialog.value = false;
+      reRender.value = !reRender.value;
+
+      useSnackbar().sendSnackbar("Sukses memperbarui data", "success");
+    } else {
+      console.error("Gagal memperbarui data:", response);
+    }
+  } catch (error) {
+    console.error("Terjadi kesalahan saat memperbarui data:", error);
+  }
+};
+
+
 const getDetailProduk = async (productId, type) => {
   const response = await $api("/reguler/pelaku-usaha/tab-bahan/products/detail", {
     method: "get",
@@ -1006,10 +1072,17 @@ const getDetailData = async (type: string) => {
       params: { url: `${LIST_INFORMASI_PEMBAYARAN}/${id}/${type}` },
     });
 
-    if (response?.code === 2000) {
+    if (response.code === 2000) {
       const data = response?.data;
 
+      if (type === "pengajuan")
+      {
+        formDataPU.value = data;
+        console.log("Wqdwdqwdwq:", formDataPU);
+        
+      }
       if (type === "pemeriksaanproduk") {
+
         const noDaftar = data?.no_pendaftaran?.no_daftar;
         if (noDaftar) {
           await OldDoc(noDaftar);
@@ -1270,6 +1343,7 @@ onMounted(async () => {
     getListLaporan(),
     getTemplateFileProduct(),
     loadItemProductClasifications(),
+    getDraftSertif(),
     // getDownloadForm("file_laporan", "file_laporan"),
     // getDownloadForm("file_kh", "file_kh"),
   ]);
@@ -1339,6 +1413,9 @@ onMounted(async () => {
             <h1>Detail Pemeriksaan</h1>
           </VCol>
           <VCol cols="auto" class="d-flex align-center">
+            <VBtn @click="downloadDocument(draftCertif,'FILES')" variant="outlined" class="me-2">
+                Lihat Draft Sertif
+              </VBtn>
             <VMenu open-on-hover>
               <template v-slot:activator="{ props }">
                 <VBtn v-bind="props" variant="outlined" class="me-2">
@@ -1355,9 +1432,9 @@ onMounted(async () => {
                 <VListItem @click="openEditPabrik">
                   <VListItemTitle>Update Pabrik</VListItemTitle>
                 </VListItem>
-                <!-- <VListItem @click="openEditProfile">
-                  <VListItemTitle>Edit Profile Pelaku Usaha</VListItemTitle>
-                </VListItem> -->
+                <VListItem @click="openEditProfile">
+                  <VListItemTitle>Edit Data Pengajuan</VListItemTitle>
+                </VListItem>
               </VList>
             </VMenu>
 
@@ -2328,6 +2405,46 @@ onMounted(async () => {
         />
       </VCardText>
     </VCard>
+  </VDialog>
+
+  <VDialog
+      v-model="isUpdateDataPuModalOpen"
+      max-width="840px"
+      persistent
+    >
+      <VCard>
+        <VCardTitle class="d-flex justify-space-between align-center">
+          Update Data Perusahaan
+        </VCardTitle>
+        <VCardText>
+          <VForm>
+            <div class="form-group">
+              <VTextField v-model="formDataPU.nama_pu" label="Nama Perusahaan" disabled class="mb-3" />
+              <VTextField v-model="formDataPU.nama_pu_sh" label="Nama Perusahaan (tampil di sertifikat)"  class="mb-3" />
+              <VTextField v-model="formDataPU.alamat" label="Alamat" disabled class="mb-3" />
+              <VTextField v-model="formDataPU.kota" label="Kota/Kabupaten" disabled class="mb-3" />
+              <VTextField v-model="formDataPU.provinsi" label="Provinsi" disabled class="mb-3" />
+              <VTextField v-model="formDataPU.negara" label="Negara" disabled class="mb-3" />
+              <VTextField v-model="formDataPU.kodepos" label="Kode Pos" disabled class="mb-3" />
+              <VTextField v-model="formDataPU.skala_usaha" label="Skala Usaha" disabled class="mb-3" />
+            </div>
+          </VForm>
+        </VCardText>
+        <VCardActions>
+            <VSpacer />
+              <VBtn color="primary" @click="isUpdateDataPuModalOpen = false">
+                Tutup
+              </VBtn>
+              <VBtn
+                variant="flat"
+                class="px-4"
+                color="primary"
+                @click="updateDataPU"
+              >
+                Simpan
+              </VBtn>
+          </VCardActions>
+      </VCard>
   </VDialog>
 
 </template>
