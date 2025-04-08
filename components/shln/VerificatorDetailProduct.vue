@@ -51,7 +51,7 @@ const headers = [
   { title: "No", key: "no" },
   { title: "Manufacture", key: "manufactur" },
   { title: "Product Name", key: "name" },
-  { title: "HS Code", key: "hc_code_description" },
+  { title: "HS Code", key: "hc_code" },
 ];
 </script>
 
@@ -79,7 +79,6 @@ const headers = [
           </VCol>
         </VRow>
         <VDataTableServer
-          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
           :headers="headers"
@@ -91,6 +90,9 @@ const headers = [
         >
           <template #item.no="{ index }">
             {{ index + 1 + (page - 1) * itemPerPage }}
+          </template>
+          <template #item.hc_code="{ item }">
+            {{ item.hc_code }} ({{ item.hc_code_description }})
           </template>
         </VDataTableServer>
       </VCard>
