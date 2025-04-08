@@ -49,7 +49,7 @@ const loadItemListProductById = async (page: number, size: number) => {
 
 const headers = [
   { title: "No", key: "no" },
-  { title: "Manufacture", key: "name" },
+  { title: "Manufacture", key: "manufactur" },
   { title: "Product Name", key: "name" },
   { title: "HS Code", key: "hc_code" },
 ];
