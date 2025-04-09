@@ -289,7 +289,9 @@ const toggleEdit = (item: any, type: string) => {
   titleDialog.value = `Ubah ${type}`;
 };
 
+const typeAdd = ref("");
 const toggleEdit2Table = (item: any, index: number) => {
+  typeAdd.value = item?.tipe_penambahan;
   selectedProduct.value = {
     nama_produk: item?.nama_produk,
     jumlah: item?.jumlah,
@@ -298,6 +300,7 @@ const toggleEdit2Table = (item: any, index: number) => {
     file_dok: item?.file_dok,
     id_reg_prod: item?.id_reg_prod,
   };
+  console.log(typeAdd.value, "ini typenya di value");
   detailItem.value = item;
   addDialog.value = true;
   labelSaveBtn.value = "Ubah";
@@ -1050,6 +1053,7 @@ watch(selectedFactory, () => {
                 color="primary"
                 variant="flat"
                 height="40px"
+                v-if="typeAdd === 'Unggah'"
               >
                 <span>Unggah File </span>
               </VTab>
@@ -1061,6 +1065,7 @@ watch(selectedFactory, () => {
                 hide-slider
                 variant="flat"
                 height="40px"
+                v-if="typeAdd === 'Manual'"
               >
                 <span> Tambah Manual </span>
               </VTab>
@@ -1195,6 +1200,7 @@ watch(selectedFactory, () => {
                 color="primary"
                 variant="flat"
                 height="40px"
+                v-if="typeAdd === 'Unggah'"
               >
                 <span>Unggah File </span>
               </VTab>
@@ -1206,6 +1212,7 @@ watch(selectedFactory, () => {
                 hide-slider
                 variant="flat"
                 height="40px"
+                v-if="typeAdd === 'Manual'"
               >
                 <span> Tambah Manual </span>
               </VTab>
@@ -1345,6 +1352,7 @@ watch(selectedFactory, () => {
                 color="primary"
                 variant="flat"
                 height="40px"
+                v-if="typeAdd === 'Unggah'"
               >
                 <span>Unggah File </span>
               </VTab>
@@ -1356,6 +1364,7 @@ watch(selectedFactory, () => {
                 hide-slider
                 variant="flat"
                 height="40px"
+                v-if="typeAdd === 'Manual'"
               >
                 <span> Tambah Manual </span>
               </VTab>
@@ -1489,6 +1498,7 @@ watch(selectedFactory, () => {
                 color="primary"
                 variant="flat"
                 height="40px"
+                v-if="typeAdd === 'Unggah'"
               >
                 <span>Unggah File </span>
               </VTab>
@@ -1500,6 +1510,7 @@ watch(selectedFactory, () => {
                 hide-slider
                 variant="flat"
                 height="40px"
+                v-if="typeAdd === 'Manual'"
               >
                 <span> Tambah Manual </span>
               </VTab>
@@ -1649,6 +1660,7 @@ watch(selectedFactory, () => {
                 color="primary"
                 variant="flat"
                 height="40px"
+                v-if="typeAdd === 'Unggah'"
               >
                 <span>Unggah File </span>
               </VTab>
@@ -1660,6 +1672,7 @@ watch(selectedFactory, () => {
                 hide-slider
                 variant="flat"
                 height="40px"
+                v-if="typeAdd === 'Manual'"
               >
                 <span> Tambah Manual </span>
               </VTab>
