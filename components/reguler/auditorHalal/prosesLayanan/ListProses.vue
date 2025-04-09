@@ -49,6 +49,8 @@ const payloadHasilProduksi = ref({
   tanggal_produksi: "",
   tanggal_kadaluarsa: "",
   file_dok: "",
+  id_hasil_produksi: "",
+  id: "",
 });
 
 const payloadHasilDistribusi = ref({
@@ -57,6 +59,7 @@ const payloadHasilDistribusi = ref({
   tanggal: "",
   tujuan: "",
   file_dok: "",
+  id_reg_prod: "",
 });
 
 const uploadedFile = ref({
@@ -76,6 +79,7 @@ const resetForm = () => {
     tanggal_produksi: "",
     tanggal_kadaluarsa: "",
     file_dok: "",
+    id_hasil_produksi: "",
   };
   payloadHasilDistribusi.value = {
     nama_produk: "",
@@ -90,6 +94,13 @@ const resetForm = () => {
     file: null,
   };
   selectedProduct.value = {};
+  catatan.value = {
+    name: null,
+    type: null,
+    process: '',
+    diagramProcess: [],
+    file: null,
+  }
 };
 
 const handleRemoveFile = () => {
@@ -244,6 +255,12 @@ const toggleEdit = (item: any, type: string) => {
     tabs.value = 2;
   }
   if (type === "Diagram Alur Proses") {
+    console.log(item ,' ???')
+    if (item?.tipe_penambahan !== 'Unggah') {
+      tabs.value = '2'
+    } else {
+      tabs.value = '1'
+    }
     catatan.value = {
       name: item?.nama_produk,
       type: null,
@@ -257,6 +274,11 @@ const toggleEdit = (item: any, type: string) => {
     };
     detailItem.value = item;
   } else if (type === "Catatan Hasil Produksi") {
+    if (item?.tipe_penambahan !== 'Unggah') {
+      tabs.value = '2'
+    } else {
+      tabs.value = '1'
+    }
     payloadHasilProduksi.value = {
       nama_produk: item?.nama_produk,
       jumlah: item?.jumlah,
@@ -264,6 +286,7 @@ const toggleEdit = (item: any, type: string) => {
       tanggal_kadaluarsa: item?.tanggal_kadaluarsa,
       file_dok: item?.file_dok,
       id_hasil_produksi: item?.id_hasil_produksi,
+      id_reg_prod: item?.id_reg_prod,
     };
     uploadedFile.value = {
       file: item?.file_dok,
@@ -271,12 +294,18 @@ const toggleEdit = (item: any, type: string) => {
     };
     detailItem.value = item;
   } else if (type === "Catatan Distribusi") {
+    if (item?.tipe_penambahan !== 'Unggah') {
+      tabs.value = '2'
+    } else {
+      tabs.value = '1'
+    }
     payloadHasilDistribusi.value = {
       nama_produk: item?.nama_produk,
       jumlah: item?.jumlah,
       tanggal: item?.tanggal,
       tujuan: item?.tujuan,
       file_dok: item?.file_dok,
+      id_reg_prod: item?.id_reg_prod,
     };
     uploadedFile.value = {
       file: item?.file_dok,
@@ -741,7 +770,7 @@ const handleAddOrEdit = async () => {
     } else {
       body = {
         nama_produk: catatan.value.name,
-        file_dok: formAddLayout.value.file_layout,
+        file_dok: uploadedFile.value.file,
       };
     }
 
@@ -764,17 +793,17 @@ const handleAddOrEdit = async () => {
     let body: any = {};
     if (tabs.value === "2") {
       body = {
-        id_produk: selectedProduct.value.id,
-        jumlah: +selectedProduct.value?.jumlah,
-        tanggal_produksi: formatDateId(selectedProduct.value?.tanggal_masuk),
-        tanggal_kadaluarsa: formatDateId(selectedProduct.value?.tanggal_keluar),
+        id_produk: payloadHasilProduksi.value.nama_produk?.id,
+        jumlah: +payloadHasilProduksi.value?.jumlah,
+        tanggal_produksi: formatDateId(payloadHasilProduksi.value?.tanggal_produksi),
+        tanggal_kadaluarsa: formatDateId(payloadHasilProduksi.value?.tanggal_kadaluarsa),
 
         // nama_produk: payloadHasilProduksi.value?.nama_produk,
       };
     } else {
       body = {
         nama_produk: payloadHasilProduksi.value?.nama_produk,
-        file_dok: formAddLayout.value.file_layout,
+        file_dok: formAddLayout.value.file_layout || uploadedFile.value?.file,
       };
     }
 
@@ -802,10 +831,10 @@ const handleAddOrEdit = async () => {
     let body: any = {};
     if (tabs.value === "2") {
       body = {
-        id_produk: selectedProduct?.value?.id_reg_prod,
-        jumlah: +selectedProduct.value?.jumlah,
-        tanggal_produksi: formatDateId(selectedProduct.value?.tanggal_masuk),
-        tanggal_kadaluarsa: formatDateId(selectedProduct.value?.tanggal_keluar),
+        id_produk: payloadHasilProduksi.value.id_reg_prod,
+        jumlah: +payloadHasilProduksi.value?.jumlah,
+        tanggal_produksi: formatDateId(payloadHasilProduksi.value?.tanggal_produksi),
+        tanggal_kadaluarsa: formatDateId(payloadHasilProduksi.value?.tanggal_kadaluarsa),
 
         // nama_produk: payloadHasilProduksi.value?.nama_produk,
       };
@@ -833,9 +862,10 @@ const handleAddOrEdit = async () => {
     }
   } else if (titleDialog.value === "Tambah Catatan Distribusi") {
     let body: any = {};
+    
     if (tabs.value === "2") {
       body = {
-        id_produk: selectedProduct.value.id_reg_prod,
+        id_produk: payloadHasilDistribusi.value.nama_produk,
         jumlah: +selectedProduct.value?.jumlah,
         tanggal: formatDateId(selectedProduct.value?.tanggal),
         tujuan: selectedProduct.value?.tujuan,
@@ -845,7 +875,7 @@ const handleAddOrEdit = async () => {
     } else {
       body = {
         nama_produk: payloadHasilDistribusi.value?.nama_produk,
-        file_dok: formAddLayout.value.file_layout,
+        file_dok: uploadedFile.value.file?.name,
       };
     }
 
@@ -868,7 +898,7 @@ const handleAddOrEdit = async () => {
     let body: any = {};
     if (tabs.value === "2") {
       body = {
-        id_produk: selectedProduct.value.id,
+        id_produk: payloadHasilDistribusi.value.id_reg_prod,
         jumlah: +selectedProduct.value?.jumlah,
         tanggal: formatDateId(selectedProduct.value?.tanggal),
         tujuan: selectedProduct.value?.tujuan,
@@ -878,8 +908,7 @@ const handleAddOrEdit = async () => {
     } else {
       body = {
         nama_produk: payloadHasilDistribusi.value?.nama_produk,
-        file_dok:
-          formAddLayout.value.file_layout || payloadHasilDistribusi.value?.file,
+        file_dok: uploadedFile.value.file,
       };
     }
 
@@ -975,7 +1004,10 @@ watch(selectedFactory, () => {
       :title="titleDialog"
       :is-open="addDialog"
       :label-save-btn="labelSaveBtn"
-      :toggle="() => (addDialog = false)"
+      :toggle="() => {
+        addDialog = false
+        resetForm()
+      }"
       :on-save="handleAddOrEdit"
     >
       <template #content>
@@ -1695,16 +1727,16 @@ watch(selectedFactory, () => {
                   <br />
                   <label>Jumlah</label>
                   <VTextField
-                    v-model="selectedProduct.jumlah"
+                    v-model="payloadHasilProduksi.jumlah"
                     class="-mt-10"
-                    placeholder="isi judul"
+                    placeholder="isi jumlah"
                   />
                   <VRow class="mt-2">
                     <VCol>
                       <label>Tanggal Produksi</label>
                       <VueDatePicker
                         id="tanggalDocument"
-                        v-model="selectedProduct.tanggal_masuk"
+                        v-model="payloadHasilProduksi.tanggal_produksi"
                         teleport-center
                         :enable-time-picker="false"
                         placeholder="tanggal masuk"
@@ -1716,7 +1748,7 @@ watch(selectedFactory, () => {
                       <label>Tanggal Kadaluarsa</label>
                       <VueDatePicker
                         id="tanggalDocument"
-                        v-model="selectedProduct.tanggal_keluar"
+                        v-model="payloadHasilProduksi.tanggal_kadaluarsa"
                         teleport-center
                         :enable-time-picker="false"
                         placeholder="tanggal masuk"
@@ -1733,7 +1765,6 @@ watch(selectedFactory, () => {
                   v-model="payloadHasilProduksi.nama_produk"
                   class="-mt-10"
                   placeholder="isi judul"
-                  :disabled="titleDialog === 'Ubah Catatan Hasil Produksi'"
                 />
                 <br />
                 <VRow class="mb-3" align="center">
@@ -1922,7 +1953,6 @@ watch(selectedFactory, () => {
                   v-model="payloadHasilDistribusi.nama_produk"
                   class="-mt-10"
                   placeholder="isi judul"
-                  :disabled="titleDialog === 'Ubah Catatan Distribusi'"
                 />
                 <br />
                 <VRow class="mb-3" align="center">
