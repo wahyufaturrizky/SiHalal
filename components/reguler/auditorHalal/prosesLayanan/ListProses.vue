@@ -234,7 +234,15 @@ const toggleAdd = (type: string) => {
   titleDialog.value = `Tambah ${type}`;
 };
 
+const typeAdd = ref("");
+const editAddtype = ref(false);
+
 const toggleEdit = (item: any, type: string) => {
+  typeAdd.value = item?.tipe_penambahan;
+  editAddtype.value = true;
+  if (typeAdd.value === "Manual") {
+    tabs.value = 2;
+  }
   if (type === "Diagram Alur Proses") {
     catatan.value = {
       name: item?.nama_produk,
@@ -280,7 +288,7 @@ const toggleEdit = (item: any, type: string) => {
       tanggal: item?.tanggal,
       tujuan: item?.tujuan,
       file_dok: item?.file_dok,
-      id_reg_prod: item?.id_reg_prod,
+      id_reg_prod: item?.id_prod_distribusi,
     };
     detailItem.value = item;
   } else {
@@ -290,8 +298,7 @@ const toggleEdit = (item: any, type: string) => {
   titleDialog.value = `Ubah ${type}`;
 };
 
-const typeAdd = ref("");
-const editAddtype = ref(false);
+
 const toggleEdit2Table = (item: any, index: number) => {
   typeAdd.value = item?.tipe_penambahan;
   editAddtype.value = true;
@@ -306,7 +313,7 @@ const toggleEdit2Table = (item: any, index: number) => {
     file_dok: item?.file_dok,
     id_reg_prod: item?.id_reg_prod,
   };
-  console.log(typeAdd.value, "ini typenya di value");
+
   detailItem.value = item;
   addDialog.value = true;
   labelSaveBtn.value = "Ubah";
@@ -618,7 +625,7 @@ const handleAddOrEdit = async () => {
         getListLayout();
         getListFactory();
         getListCatatanBahan(pageCatatanBahan.value, sizeCatatanBahan.value);
-        useSnackbar().sendSnackbar("Sukses menambah data", "success");
+        useSnackbar().sendSnackbar("Sukses ubah data", "success");
       }
     } else {
       const response: any = await $api(
@@ -673,7 +680,7 @@ const handleAddOrEdit = async () => {
         getListFactory();
         getListCatatanBahan(pageCatatanBahan.value, sizeCatatanBahan.value);
         getListCatatanProduk();
-        useSnackbar().sendSnackbar("Sukses menambah data", "success");
+        useSnackbar().sendSnackbar("Sukses ubah data", "success");
       }
     } else {
       const response: any = await $api(
@@ -751,7 +758,7 @@ const handleAddOrEdit = async () => {
       resetForm();
       addDialog.value = false;
       getListDigaramAlur(pageDiagramAlur.value, itemsPerPageDiagramAlur.value);
-      useSnackbar().sendSnackbar("Sukses menambah data", "success");
+      useSnackbar().sendSnackbar("Sukses ubah data", "success");
     }
   } else if (titleDialog.value === "Tambah Catatan Hasil Produksi") {
     let body: any = {};
@@ -822,7 +829,7 @@ const handleAddOrEdit = async () => {
       resetForm();
       addDialog.value = false;
       getListHasilProduksi();
-      useSnackbar().sendSnackbar("Sukses menambah data", "success");
+      useSnackbar().sendSnackbar("Sukses ubah data", "success");
     }
   } else if (titleDialog.value === "Tambah Catatan Distribusi") {
     let body: any = {};
@@ -889,7 +896,7 @@ const handleAddOrEdit = async () => {
       resetForm();
       addDialog.value = false;
       getListCatatanDistribusi();
-      useSnackbar().sendSnackbar("Sukses menambah data", "success");
+      useSnackbar().sendSnackbar("Sukses ubah data", "success");
     }
   } else {
     const response: any = await $api(
@@ -1798,7 +1805,7 @@ watch(selectedFactory, () => {
             <!-- batas add -->
             <VTabs
               v-model="tabs"
-              v-if="editAddtype"
+              v-if="!editAddtype"
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
