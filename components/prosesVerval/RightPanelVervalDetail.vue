@@ -31,8 +31,34 @@ const tracking = ref([
   { id: 5, key: "Submitted", value: "fachrudin@panganlestari.com" },
 ]);
 
-async function onClickDownload(filename: string) {
-  return await downloadDocument(filename);
+const route = useRoute()
+
+async function onClickDownload(filename: string, apiKey: string) {
+  try {
+    if (apiKey === 'laporan_pendamping') {
+      const resGetLaporanPendamping: any = await $api(
+        `/self-declare/verificator/lihat-laporan-download/${route.params?.id}`,
+        {
+          method: 'get',
+        },
+      )
+
+      const newLaporanPendampingFileName = resGetLaporanPendamping?.data?.file
+
+      // regenerate hit minio
+      await $api('/admin/images/download', {
+        method: 'post',
+        query: {
+          filename: newLaporanPendampingFileName,
+        },
+      } as any)
+    }
+
+    return await downloadDocument(filename)
+  }
+  catch (err) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
 }
 
 const expanded = [0, 1, 2];
@@ -59,8 +85,6 @@ watch(
   },
   { immediate: true }
 );
-
-const route = useRoute();
 
 const downloadForms = reactive({
   sttd: "",
@@ -117,7 +141,7 @@ onMounted(async () => {
                 ><VBtn
                   :disabled="item.filename == ''"
                   variant="flat"
-                  @click="onClickDownload(item.filename)"
+                  @click="onClickDownload(item.filename, item.api_key)"
                   ><VIcon icon="fa-download"></VIcon></VBtn
               ></VCol>
             </VRow>
