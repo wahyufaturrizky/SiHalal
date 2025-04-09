@@ -358,7 +358,7 @@ const formatItemTitle = (item) => {
                   variant="outlined"
                   class="ma-1"
                   @click="addBulking"
-                  >Tambah Bulking <v-icon end icon="fa-plus" />
+                  >Upload Product List <v-icon end icon="fa-plus" />
                 </v-btn>
                 <v-btn
                   color="primary"
