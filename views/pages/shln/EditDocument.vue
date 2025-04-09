@@ -692,7 +692,7 @@ watch(loaFile, (newValue, oldValue) => {
                 )
               "
             >
-              Download FHCR Application Letter Document Format
+              Download Letter of Application template
             </VBtn>
             <VBtn color="primary" type="submit"> Save </VBtn>
           </VCol>
