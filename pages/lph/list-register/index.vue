@@ -54,6 +54,7 @@ const loadItem = async (
       data.value = response.data;
       totalItems.value = response.total_item;
       loading.value = false;
+
       return response;
     } else {
       loading.value = false;
@@ -95,11 +96,13 @@ watch([page, size], () => {
 
 <template>
   <div v-if="!loadingAll">
-    <!-- <VRow>
+    <!--
+      <VRow>
       <VCol cols="12">
-        <KembaliButton />
+      <KembaliButton />
       </VCol>
-    </VRow> -->
+      </VRow>
+    -->
     <VRow>
       <VCol cols="12">
         <h1 style="font-size: 32px">Tabel Daftar Ajuan</h1>
@@ -127,9 +130,9 @@ watch([page, size], () => {
             <VRow>
               <VCol cols="12">
                 <VDataTableServer
-                  :items-per-page-options="[10, 25, 50, 100]"
                   v-model:items-per-page="size"
                   v-model:page="page"
+                  :items-per-page-options="[10, 25, 50, 100]"
                   :items-length="totalItems"
                   :loading="loading"
                   :headers="tableHeader"
@@ -152,6 +155,9 @@ watch([page, size], () => {
                   </template>
                   <template #item.no="{ index }">
                     {{ index + 1 + (page - 1) * size }}
+                  </template>
+                  <template #item.tanggal="{ item }">
+                    {{ formatDateId(item.tanggal) }}
                   </template>
                   <template #item.nomor_daftar="{ item }">
                     <div class="mw-9">
@@ -179,7 +185,10 @@ watch([page, size], () => {
                     </div>
                   </template>
                   <template #item.typeAndTotal="{ item }">
-                    <div class="d-flex" style="min-width: 12rem !important">
+                    <div
+                      class="d-flex"
+                      style="min-inline-size: 12rem !important"
+                    >
                       <VChip
                         v-for="(status, index) in item.typeAndTotal"
                         :key="index"
@@ -192,7 +201,10 @@ watch([page, size], () => {
                     </div>
                   </template>
                   <template #item.status="{ item }">
-                    <div class="d-flex" style="min-width: 12rem !important">
+                    <div
+                      class="d-flex"
+                      style="min-inline-size: 12rem !important"
+                    >
                       <VChip
                         :color="getChipColor(item.status)"
                         label
@@ -218,14 +230,15 @@ watch([page, size], () => {
     </VRow>
   </div>
 
-  <VSkeletonLoader type="card" v-else />
+  <VSkeletonLoader v-else type="card" />
 </template>
 
 <style scoped>
 .mw-9 {
-  min-width: 9rem !important;
+  min-inline-size: 9rem !important;
 }
+
 .mw-15 {
-  min-width: 15rem !important;
+  min-inline-size: 15rem !important;
 }
 </style>

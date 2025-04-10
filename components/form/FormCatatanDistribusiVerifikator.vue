@@ -63,9 +63,9 @@ const download = async (item) => {
     </VCardTitle>
     <VCardItem>
       <VDataTableServer
-        :items-per-page-options="[10, 25, 50, 100]"
         v-model:items-per-page="size"
         v-model:page="page"
+        :items-per-page-options="[10, 25, 50, 100]"
         :headers="catatanHeaders"
         :items="catatanItems"
         :items-length="totalData"
@@ -74,6 +74,7 @@ const download = async (item) => {
         <template #item.no="{ index }">
           {{ (page - 1) * size + index + 1 }}
         </template>
+
         <template #item.file="{ item }">
           <VBtn
             :disabled="item.file_dok === ''"
@@ -84,6 +85,10 @@ const download = async (item) => {
           >
             File
           </VBtn>
+        </template>
+
+        <template #item.tanggal="{ item }">
+          {{ formatDateId(item.tanggal) }}
         </template>
       </VDataTableServer>
     </VCardItem>

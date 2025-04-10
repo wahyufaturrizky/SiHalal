@@ -78,14 +78,18 @@ const download = (item) => {
         :items="items"
       >
         <template #item.file="{ item }">
-          <v-btn color="primary" variant="plain" @click="download(item)">
+          <VBtn color="primary" variant="plain" @click="download(item)">
             <VIcon>mdi-download</VIcon>
             File
-          </v-btn>
+          </VBtn>
+        </template>
+
+        <template #item.tanggal="{ item }">
+          {{ formatDateId(item.tanggal) }}
         </template>
 
         <template #item.action="{ item }">
-          <v-btn color="primary" variant="plain">
+          <VBtn color="primary" variant="plain">
             <VIcon>mdi-dots-vertical</VIcon>
             <VMenu activator="parent" :close-on-content-click="false">
               <VCard>
@@ -98,15 +102,15 @@ const download = (item) => {
                   variant="text"
                   color="error"
                   prepend-icon="ri-delete-bin-6-line"
-                  @click="remove(item.no)"
                   block
                   :disabled="!props.isEditable"
+                  @click="remove(item.no)"
                 >
                   Hapus
                 </VBtn>
               </VCard>
             </VMenu>
-          </v-btn>
+          </VBtn>
         </template>
       </VDataTable>
     </VCardItem>

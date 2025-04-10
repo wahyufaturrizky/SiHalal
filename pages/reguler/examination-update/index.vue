@@ -194,6 +194,7 @@ watch([page, size], async () => {
     searchQuery.value,
     LIST_PEMERIKSAAN_PATH
   );
+
   dataTable.value = refreshData;
 });
 
@@ -218,10 +219,12 @@ watch(dataTable, () => {
 </script>
 
 <template>
-  <!-- <div class="d-flex align-center cursor-pointer" @click="router.go(-1)">
+  <!--
+    <div class="d-flex align-center cursor-pointer" @click="router.go(-1)">
     <VIcon icon="mdi-chevron-left" size="40px" color="primary" />
     <div class="text-primary">Kembali</div>
-  </div> -->
+    </div>
+  -->
   <VRow no-gutters>
     <VCol>
       <h1 style="font-size: 32px">Update Pemeriksaan</h1>
@@ -299,9 +302,9 @@ watch(dataTable, () => {
             </VCol>
           </VRow>
           <VDataTableServer
-            :items-per-page-options="[10, 25, 50, 100]"
             v-model:items-per-page="size"
             v-model:page="page"
+            :items-per-page-options="[10, 25, 50, 100]"
             :items-length="totalItems"
             :loading="loading"
             class="border rounded"
@@ -321,14 +324,16 @@ watch(dataTable, () => {
             <template #item.index="{ index }">
               {{ index + 1 + (page - 1) * size }}
             </template>
+            <template #item.tanggal_daftar="{ item }">
+              {{ formatDateId(item.tanggal_daftar) }}
+            </template>
             <template #item.businessType="{ item }">
-              <div class="d-flex">
-                <div
-                  v-for="el in item.businessType"
-                  class="green-box py-1 px-3 me-3"
-                >
-                  {{ el }}
-                </div>
+              <div
+                v-for="(el, idx) in item.businessType"
+                :key="idx"
+                class="green-box py-1 px-3 me-3"
+              >
+                {{ el }}
               </div>
             </template>
             <template #item.status="{ item }">
@@ -366,9 +371,9 @@ watch(dataTable, () => {
         </VRow>
       </VCardText>
       <VCardActions class="px-4">
-        <VBtn variant="outlined" class="px-4 me-3" @click="handleOpenInfoModal"
-          >Tutup</VBtn
-        >
+        <VBtn variant="outlined" class="px-4 me-3" @click="handleOpenInfoModal">
+          Tutup
+        </VBtn>
       </VCardActions>
     </VCard>
   </VDialog>

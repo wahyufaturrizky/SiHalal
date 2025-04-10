@@ -18,7 +18,7 @@ const daftarTagihanHeader = [
 const daftarTagihanItem = ref([]);
 
 const downloadBuktiBayar = async (item) => {
-  //console.log('downloadBuktiBayar : ', item)
+  // console.log('downloadBuktiBayar : ', item)
 
   try {
     const response = await $api("/shln/submission/document/download", {
@@ -34,16 +34,14 @@ const downloadBuktiBayar = async (item) => {
       useSnackbar().sendSnackbar("Berhasil mendownload file ", "success");
     }
 
-    if (response.message) {
-      useSnackbar().sendSnackbar(response.message, "error");
-    }
+    if (response.message) useSnackbar().sendSnackbar(response.message, "error");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada kesalahan saat mendownload file ", "error");
   }
 };
 
 const previewInvoice = async (item) => {
-  //console.log('previewInvoice : ', item)
+  // console.log('previewInvoice : ', item)
 
   try {
     const response = await $api("/shln/submission/document/download", {
@@ -58,9 +56,7 @@ const previewInvoice = async (item) => {
       window.open(response.url, "_blank", "noopener,noreferrer");
       useSnackbar().sendSnackbar("Berhasil mendownload file ", "success");
     }
-    if (response.message) {
-      useSnackbar().sendSnackbar(response.message, "error");
-    }
+    if (response.message) useSnackbar().sendSnackbar(response.message, "error");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada kesalahan saat mendownload file ", "error");
   }
@@ -97,6 +93,7 @@ const loadItem = async () => {
         jumlahPu: i.jumlah_pu,
       }));
     }
+
     // console.log("daftar tagihan : ", daftarTagihanItem.value)
 
     totalItems.value = response.totalItems;
@@ -130,9 +127,9 @@ onMounted(async () => {
           <VCardTitle class="text-h4 mx-0"> Daftar Tagihan </VCardTitle>
           <VCardItem>
             <VDataTableServer
-              :items-per-page-options="[10, 25, 50, 100]"
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
+              :items-per-page-options="ITEMS_PER_PAGE_OPTIONS_HUGE"
               :items-length="totalItems"
               :loading="loading"
               loading-text="Loading..."
@@ -172,6 +169,10 @@ onMounted(async () => {
                 >
                   {{ item.status }}
                 </VChip>
+              </template>
+
+              <template #item.tanggal="{ item }">
+                {{ formatDateId(item.tanggal) }}
               </template>
 
               <template #item.action="{ item }">

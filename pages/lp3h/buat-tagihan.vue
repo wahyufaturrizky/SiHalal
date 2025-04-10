@@ -270,10 +270,9 @@ onMounted(async () => {
     <VDialog v-model="dialog" max-width="700">
       <VCard class="pa-4">
         <VCardTitle>Konfirmasi Buat Invoice </VCardTitle>
-        <VCardText
-          >Yakin akan membuat tagihan untuk data data yang di contreng tersebut
-          ?</VCardText
-        >
+        <VCardText>
+          Yakin akan membuat tagihan untuk data data yang di contreng tersebut ?
+        </VCardText>
         <VRow>
           <VCol class="d-flex justify-end ga-4">
             <VBtn variant="outlined" color="primary" @click="dialog = false">
@@ -402,10 +401,10 @@ onMounted(async () => {
           </VCardItem>
           <VCardItem>
             <VDataTableServer
-              :items-per-page-options="[10, 25, 50, 100]"
               v-model="selected"
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
+              :items-per-page-options="ITEMS_PER_PAGE_OPTIONS_HUGE"
               :headers="headers"
               :items="items"
               item-value="no_urut"
@@ -426,6 +425,10 @@ onMounted(async () => {
             >
               <template #item.no="{ index }">
                 {{ index + 1 }}
+              </template>
+
+              <template #item.tanggal="{ item }">
+                {{ formatDateId(item.tanggal) }}
               </template>
             </VDataTableServer>
           </VCardItem>

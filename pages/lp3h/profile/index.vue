@@ -46,6 +46,7 @@ const dataPendampingHeader = [
   { title: "No. Register", key: "noRegister", nowrap: true },
   { title: "Tanggal Berlaku", key: "tanggalBerlaku", nowrap: true },
   { title: "Status Registrasi", key: "status", nowrap: true },
+
   // { title: "Action", key: "action"}
 ];
 
@@ -58,6 +59,7 @@ const dataPendampingItem = ref([]);
 const loadItem = async (page: number, size: number) => {
   try {
     loading.value = true;
+
     const response = await $api("/lp3h/list-pendamping", {
       method: "get",
       params: {
@@ -80,7 +82,7 @@ const loadItem = async (page: number, size: number) => {
       }));
     }
 
-    //console.log("DATA PENDAMPING : {} ", dataPendampingItem)
+    // console.log("DATA PENDAMPING : {} ", dataPendampingItem)
 
     totalItems.value = response.total_item;
     loading.value = false;
@@ -146,9 +148,11 @@ const loadProfil = async () => {
     });
 
     const data = response.data;
-    //console.log("RESPONSE : ", response)
+
+    // console.log("RESPONSE : ", response)
 
     const lp = data.lembaga_pendamping;
+
     dataProfilePendamping.value = [
       { label: "Nama Lembaga", value: lp.nama_lembaga },
       { label: "Jenis Lembaga", value: lp.jenis_lembaga },
@@ -185,6 +189,7 @@ const loadProfil = async () => {
     console.log("DOKUMEN PERSYARATAN ", dokumenPersyaratan);
 
     const rek = data.rekening;
+
     dataRekeningBankDanNpwp.value = {
       namaBank: rek.bank,
       noRekening: rek.no_rekening,
@@ -213,22 +218,22 @@ onMounted(async () => {
 
 <template>
   <VContainer>
-    <v-dialog v-model="dialog" max-width="700">
-      <v-card class="pa-4">
-        <v-card-title>Pengajuan </v-card-title>
-        <v-card-text>Ajukan sebagai lembaga Pendamping ?</v-card-text>
+    <VDialog v-model="dialog" max-width="700">
+      <VCard class="pa-4">
+        <VCardTitle>Pengajuan </VCardTitle>
+        <VCardText>Ajukan sebagai lembaga Pendamping ?</VCardText>
         <VRow>
           <VCol class="d-flex justify-end ga-4">
-            <v-btn variant="outlined" color="primary" @click="dialog = false"
-              >Batal</v-btn
-            >
-            <v-btn variant="flat" color="primary" @click="ajukanHandler"
-              >Ya, Setuju</v-btn
-            >
+            <VBtn variant="outlined" color="primary" @click="dialog = false">
+              Batal
+            </VBtn>
+            <VBtn variant="flat" color="primary" @click="ajukanHandler">
+              Ya, Setuju
+            </VBtn>
           </VCol>
         </VRow>
-      </v-card>
-    </v-dialog>
+      </VCard>
+    </VDialog>
     <VRow>
       <KembaliButton />
     </VRow>
@@ -245,9 +250,9 @@ onMounted(async () => {
           >
             Ubah
           </VBtn>
-          <!--          <VBtn append-icon="fa-paper-plane" @click="dialog = true">-->
-          <!--            Ajukan-->
-          <!--          </VBtn>-->
+          <!--          <VBtn append-icon="fa-paper-plane" @click="dialog = true"> -->
+          <!--            Ajukan -->
+          <!--          </VBtn> -->
         </VRow>
       </VCol>
     </VRow>
@@ -313,11 +318,11 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTableServer
+                v-model:items-per-page="itemPerPage"
+                v-model:page="page"
                 :items-per-page-options="[10, 25, 50, 100]"
                 :headers="dataPendampingHeader"
                 :items="dataPendampingItem"
-                v-model:items-per-page="itemPerPage"
-                v-model:page="page"
                 :items-length="totalItems"
                 loading-text="Loading..."
                 @update:options="loadItem(page, itemPerPage)"
@@ -328,23 +333,23 @@ onMounted(async () => {
 
                 <template #item.ijazah="{ item }">
                   <VBtn
+                    v-if="item.ijazah"
                     icon
                     variant="text"
                     @click="downloadDocument(item.ijazah, 'PENDAMPING_IJAZAH')"
-                    v-if="item.ijazah"
                   >
-                    <VIcon size="24" color="primary">mdi-eye</VIcon>
+                    <VIcon size="24" color="primary"> mdi-eye </VIcon>
                   </VBtn>
                 </template>
 
                 <template #item.ktp="{ item }">
                   <VBtn
+                    v-if="item.ktp"
                     icon
                     variant="text"
                     @click="downloadDocument(item.ktp, 'PENDAMPING_KTP')"
-                    v-if="item.ktp"
                   >
-                    <VIcon size="24" color="primary">mdi-eye</VIcon>
+                    <VIcon size="24" color="primary"> mdi-eye </VIcon>
                   </VBtn>
                 </template>
 
@@ -358,11 +363,15 @@ onMounted(async () => {
                   </VChip>
                 </template>
 
-                <!--                <template #item.action="{ item }">-->
-                <!--                  <VBtn icon variant="text" @click="deleteItem(item)">-->
-                <!--                    <VIcon size="24" color="error">mdi-delete</VIcon>-->
-                <!--                  </VBtn>-->
-                <!--                </template>-->
+                <template #item.tanggalBerlaku="{ item }">
+                  {{ formatDateId(item.tanggalBerlaku) }}
+                </template>
+
+                <!--                <template #item.action="{ item }"> -->
+                <!--                  <VBtn icon variant="text" @click="deleteItem(item)"> -->
+                <!--                    <VIcon size="24" color="error">mdi-delete</VIcon> -->
+                <!--                  </VBtn> -->
+                <!--                </template> -->
               </VDataTableServer>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -421,9 +430,9 @@ onMounted(async () => {
                       </div>
                     </VCol>
                     <VCol cols="12" md="4" class="squareBtnIcon">
-                      <!--                      <VBtn  icon variant="outlined" color="error" @click="deleteDokumenPersyaratan(item)">-->
-                      <!--                        <VIcon >mdi-delete</VIcon>-->
-                      <!--                      </VBtn>-->
+                      <!--                      <VBtn  icon variant="outlined" color="error" @click="deleteDokumenPersyaratan(item)"> -->
+                      <!--                        <VIcon >mdi-delete</VIcon> -->
+                      <!--                      </VBtn> -->
                       <VBtn
                         icon
                         variant="outlined"
@@ -431,7 +440,7 @@ onMounted(async () => {
                         class="ml-2"
                         @click="downloadDocument(item.file, 'FILES')"
                       >
-                        <VIcon color="primary">mdi-download</VIcon>
+                        <VIcon color="primary"> mdi-download </VIcon>
                       </VBtn>
                     </VCol>
                   </VRow>
@@ -448,32 +457,32 @@ onMounted(async () => {
                   </span>
                 </VCol>
               </VRow>
-              <!--              <VDivider class="my-4"/>-->
-              <!--              <VRow class="d-flex justify-end ma-3">-->
-              <!--                <VBtn>-->
-              <!--                  Simpan-->
-              <!--                </VBtn>-->
-              <!--              </VRow>-->
+              <!--              <VDivider class="my-4"/> -->
+              <!--              <VRow class="d-flex justify-end ma-3"> -->
+              <!--                <VBtn> -->
+              <!--                  Simpan -->
+              <!--                </VBtn> -->
+              <!--              </VRow> -->
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
 
-        <!--        <VExpansionPanels v-model="panelMelacak" class="mb-4">-->
-        <!--          <VExpansionPanel>-->
-        <!--            <VExpansionPanelTitle class="text-h4 font-weight-bold">-->
-        <!--              Melacak-->
-        <!--            </VExpansionPanelTitle>-->
-        <!--            <VExpansionPanelText>-->
-        <!--              <HalalTimeLine :event="[-->
-        <!--                { created_at: '09/09/2024',-->
-        <!--                  id: '1',-->
-        <!--                  status: 'Pengajuan',-->
-        <!--                  username: 'Samsul',-->
-        <!--                  comment: ''},-->
-        <!--              ]" />-->
-        <!--            </VExpansionPanelText>-->
-        <!--          </VExpansionPanel>-->
-        <!--        </VExpansionPanels>-->
+        <!--        <VExpansionPanels v-model="panelMelacak" class="mb-4"> -->
+        <!--          <VExpansionPanel> -->
+        <!--            <VExpansionPanelTitle class="text-h4 font-weight-bold"> -->
+        <!--              Melacak -->
+        <!--            </VExpansionPanelTitle> -->
+        <!--            <VExpansionPanelText> -->
+        <!--              <HalalTimeLine :event="[ -->
+        <!--                { created_at: '09/09/2024', -->
+        <!--                  id: '1', -->
+        <!--                  status: 'Pengajuan', -->
+        <!--                  username: 'Samsul', -->
+        <!--                  comment: ''}, -->
+        <!--              ]" /> -->
+        <!--            </VExpansionPanelText> -->
+        <!--          </VExpansionPanel> -->
+        <!--        </VExpansionPanels> -->
 
         <VExpansionPanels v-model="panelDataRekeningBankDanNpwp" class="mb-8">
           <VExpansionPanel>
@@ -483,25 +492,25 @@ onMounted(async () => {
             <VExpansionPanelText>
               <VLabel for="namaBank"> Nama Bank </VLabel>
               <VTextField
-                class="mb-4"
                 id="namaBank"
                 v-model="dataRekeningBankDanNpwp.namaBank"
+                class="mb-4"
                 disabled
               />
 
               <VLabel for="noRekening"> No. Rekening </VLabel>
               <VTextField
-                class="mb-4"
                 id="noRekening"
                 v-model="dataRekeningBankDanNpwp.noRekening"
+                class="mb-4"
                 disabled
               />
 
               <VLabel for="atasNama"> Atas Nama </VLabel>
               <VTextField
-                class="mb-4"
                 id="atasNama"
                 v-model="dataRekeningBankDanNpwp.atasNama"
+                class="mb-4"
                 disabled
               />
 
@@ -524,28 +533,28 @@ onMounted(async () => {
                       )
                     "
                   >
-                    <VIcon color="primary">mdi-download</VIcon>
+                    <VIcon color="primary"> mdi-download </VIcon>
                   </VBtn>
                 </VCol>
               </VRow>
 
-              <!--              <VLabel for="fotoRekening">-->
-              <!--                Upload Foto Rekening-->
-              <!--              </VLabel>-->
-              <!--              <VBtn block variant="outlined" color="purple" class="ml-2" @click="downloadDokumenPersyaratan(item)">-->
-              <!--                <VIcon color="primary">mdi-download</VIcon>-->
-              <!--              </VBtn>-->
-              <!--              <HalalFileInput-->
-              <!--                class="mb-4"-->
-              <!--                id="fotoRekening"-->
-              <!--                v-model="dataRekeningBankDanNpwp.fotoRekening"-->
-              <!--              />-->
+              <!--              <VLabel for="fotoRekening"> -->
+              <!--                Upload Foto Rekening -->
+              <!--              </VLabel> -->
+              <!--              <VBtn block variant="outlined" color="purple" class="ml-2" @click="downloadDokumenPersyaratan(item)"> -->
+              <!--                <VIcon color="primary">mdi-download</VIcon> -->
+              <!--              </VBtn> -->
+              <!--              <HalalFileInput -->
+              <!--                class="mb-4" -->
+              <!--                id="fotoRekening" -->
+              <!--                v-model="dataRekeningBankDanNpwp.fotoRekening" -->
+              <!--              /> -->
 
               <VLabel for="npwp"> NPWP </VLabel>
               <VTextField
-                class="mb-4"
                 id="npwp"
                 v-model="dataRekeningBankDanNpwp.npwp"
+                class="mb-4"
                 disabled
               />
 
@@ -566,22 +575,22 @@ onMounted(async () => {
                       )
                     "
                   >
-                    <VIcon color="primary">mdi-download</VIcon>
+                    <VIcon color="primary"> mdi-download </VIcon>
                   </VBtn>
                 </VCol>
               </VRow>
 
-              <!--              <VLabel for="fotoNpwp">-->
-              <!--                Upload Foto NPWP-->
-              <!--              </VLabel>-->
-              <!--              <VBtn block  variant="outlined" color="purple" class="ml-2" @click="downloadDokumenPersyaratan(item)">-->
-              <!--                <VIcon color="primary">mdi-download</VIcon>-->
-              <!--              </VBtn>-->
-              <!--              <HalalFileInput-->
-              <!--                class="mb-4"-->
-              <!--                id="fotoNpwp"-->
-              <!--                v-model="dataRekeningBankDanNpwp.fotoNpwp"-->
-              <!--              />-->
+              <!--              <VLabel for="fotoNpwp"> -->
+              <!--                Upload Foto NPWP -->
+              <!--              </VLabel> -->
+              <!--              <VBtn block  variant="outlined" color="purple" class="ml-2" @click="downloadDokumenPersyaratan(item)"> -->
+              <!--                <VIcon color="primary">mdi-download</VIcon> -->
+              <!--              </VBtn> -->
+              <!--              <HalalFileInput -->
+              <!--                class="mb-4" -->
+              <!--                id="fotoNpwp" -->
+              <!--                v-model="dataRekeningBankDanNpwp.fotoNpwp" -->
+              <!--              /> -->
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>

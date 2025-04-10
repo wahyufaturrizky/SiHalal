@@ -94,7 +94,7 @@ const toggle = (type: string) => {
 const handleReturn = async () => {
   loadingModal.value = true;
   try {
-    const response: any = await $api(`/reguler/lph/return`, {
+    const response: any = await $api("/reguler/lph/return", {
       method: "put",
       body: {
         keterangan: inputValueReturn.value,
@@ -123,7 +123,7 @@ const handleReturn = async () => {
 const handleSend = async () => {
   loadingModal.value = true;
   try {
-    const response: any = await $api(`/reguler/lph/kirim`, {
+    const response: any = await $api("/reguler/lph/kirim", {
       method: "put",
       body: {
         keterangan: "Kirim",
@@ -157,6 +157,7 @@ const loadItemById = async () => {
 
     if (response.code === 2000) {
       notFound.value = false;
+
       const { certificate_halal, produk, auditor } = response.data || {};
 
       const {
@@ -236,12 +237,10 @@ const loadItemById = async () => {
       ];
 
       detailSubmission.value = response.data;
+
       const noDaftar = response?.data?.certificate_halal?.no_daftar;
-      if (noDaftar) {
-        await OldDoc(noDaftar);
-      } else {
-        console.error("no daftar tidak ditemukan");
-      }
+      if (noDaftar) await OldDoc(noDaftar);
+      else console.error("no daftar tidak ditemukan");
 
       return response;
     } else {
@@ -278,7 +277,8 @@ const getTotalBiaya = async () => {
 
 const OldDoc = async (noDaftar: string) => {
   const url = `https://prod-api.halal.go.id/v1/referensi/dokumen_reguler?no_daftar=${noDaftar}`;
-  //console.log("berhasil");
+
+  // console.log("berhasil");
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -286,16 +286,17 @@ const OldDoc = async (noDaftar: string) => {
         "Content-Type": "application/json",
       },
     });
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
+
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
     const data = await response.json();
 
     dokumenLama.value = data.data;
+
     return data;
   } catch (error) {
     console.error("Terjadi kesalahan saat mengambil data:", error);
+
     return null;
   }
 };
@@ -333,6 +334,7 @@ onMounted(async () => {
           </VBtn>
           <!-- <VBtn variant="outlined"> Lihat Draft Sertif </VBtn> -->
           <VBtn
+            variant="outlined"
             @click="
               navigateTo({
                 path: `/sh-domestic/submission/reguler/${id}/edit`,
@@ -341,7 +343,6 @@ onMounted(async () => {
                 },
               })
             "
-            variant="outlined"
           >
             Cek Data
           </VBtn>
@@ -514,7 +515,7 @@ onMounted(async () => {
                   {{ (item as any).Auditor.nama }}
                 </template>
                 <template #item.tanggal_lahir="{ item }">
-                  {{ (item as any).Auditor.tgl_lahir }}
+                  {{ formatDateId((item as any).Auditor.tgl_lahir) }}
                 </template>
                 <template #item.jk="{ item }">
                   {{ (item as any).Auditor.jenkel }}
@@ -597,7 +598,9 @@ onMounted(async () => {
               Biaya Pemeriksaan
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
-              <p class="font-weight-bold text-black">{{ totalBiaya }}</p>
+              <p class="font-weight-bold text-black">
+                {{ totalBiaya }}
+              </p>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -700,7 +703,9 @@ onMounted(async () => {
                 :key="idx"
                 align="center"
               >
-                <VCol cols="5" class="text-h6"> {{ item.ref_desc }} </VCol>
+                <VCol cols="5" class="text-h6">
+                  {{ item.ref_desc }}
+                </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn

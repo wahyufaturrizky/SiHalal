@@ -12,6 +12,11 @@ const props = defineProps({
     default: () => { },
     required: false,
   },
+  namaPj: {
+    type: String,
+    default: 'Ketua Tim Manajemen Halal kosong',
+    required: false,
+  },
 })
 
 const agreed = ref(false)
@@ -21,7 +26,7 @@ const loadingPutFlagProcess = ref(false)
 
 const penanggungJawabProfile = ref({
   namaPerusahaan: null,
-  namaPenanggungJawab: 'Ketua Tim Manajemen Halal kosong',
+  namaPenanggungJawab: props?.namaPj,
   jabatan: 'Tim managemen Halal',
   nib: 'NIB tidak ditemukan',
 })
@@ -60,7 +65,7 @@ const getTimHalal = async () => {
 
     if (response.code === 2000) {
       const defaultValue = {
-        nama: 'Ketua Tim Manajemen Halal kosong',
+        nama: props?.namaPj,
       }
 
       const ketua = response?.data?.find(a => a.posisi === 'Ketua')

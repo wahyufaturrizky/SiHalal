@@ -95,6 +95,7 @@ const handleUpdateStatus = async () => {
 
         if (response?.code === 2000) {
           useSnackbar().sendSnackbar("Berhasil menambah auditor", "success");
+
           return response?.data;
         } else {
           useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -118,6 +119,7 @@ const getSjphDocument = async () => {
 
     if (response?.code === 2000) {
       sjphFile.value = response.data;
+
       return response?.data;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
@@ -128,16 +130,14 @@ const getSjphDocument = async () => {
 };
 
 const getSuratPermohonan = async () => {
-  const result: any = await $api(`/reguler/lph/generate-surat-permohonan`, {
+  const result: any = await $api("/reguler/lph/generate-surat-permohonan", {
     method: "get",
     query: {
       id,
     },
   });
 
-  if (result?.code === 2000) {
-    suratMohonFile.value = result?.data?.file;
-  }
+  if (result?.code === 2000) suratMohonFile.value = result?.data?.file;
 };
 
 const getDetailData = async (type: string) => {
@@ -152,19 +152,19 @@ const getDetailData = async (type: string) => {
 
       if (type === "pemeriksaanproduk") {
         const noDaftar = data?.no_pendaftaran?.no_daftar;
-        if (noDaftar) {
-          await OldDoc(noDaftar);
-        } else {
-          console.error("noDaftar tidak ditemukan dalam response API");
-        }
+        if (noDaftar) await OldDoc(noDaftar);
+        else console.error("noDaftar tidak ditemukan dalam response API");
       }
+
       return data;
     } else {
       const snackbar = useSnackbar();
+
       snackbar.sendSnackbar("Ada Kesalahan", "error");
     }
   } catch (error) {
     const snackbar = useSnackbar();
+
     snackbar.sendSnackbar(`Ada Kesalahan: ${error.message || error}`, "error");
   }
 };
@@ -182,8 +182,11 @@ const getDetailProductData = async (pg: number, sz) => {
 
     if (response?.code === 2000) {
       dataProduk.value = response;
+
       return response?.data;
-    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -191,7 +194,8 @@ const getDetailProductData = async (pg: number, sz) => {
 
 const OldDoc = async (noDaftar: string) => {
   const url = `https://prod-api.halal.go.id/v1/referensi/dokumen_reguler?no_daftar=${noDaftar}`;
-  //console.log("berhasil");
+
+  // console.log("berhasil");
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -199,16 +203,17 @@ const OldDoc = async (noDaftar: string) => {
         "Content-Type": "application/json",
       },
     });
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
+
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
     const data = await response.json();
 
     dokumenLama.value = data.data;
+
     return data;
   } catch (error) {
     console.error("Terjadi kesalahan saat mengambil data:", error);
+
     return null;
   }
 };
@@ -229,6 +234,7 @@ const getListAuditor = async (type?: string) => {
         url: `api/v1/halal-certificate-reguler/lph/pemeriksaan/${id}/auditor`,
       },
     });
+
     if (response?.code === 2000) {
       lovAuditor.value = response.data;
 
@@ -261,6 +267,7 @@ const handleInputAuditor = async (val: any) => {
         keyword: val,
       },
     });
+
     if (response?.code === 2000) {
       lovAuditor.value = response.data;
 
@@ -366,9 +373,9 @@ const productNameHeader: any[] = [
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <VDataTableServer
-                :items-per-page-options="[10, 25, 50, 100]"
                 v-model:page="page"
                 v-model:items-per-page="size"
+                :items-per-page-options="[10, 25, 50, 100]"
                 :items-per-page="size"
                 :items-length="dataProduk.totalItems"
                 :items="dataProduk.data"
@@ -456,11 +463,13 @@ const productNameHeader: any[] = [
                 <VCol cols="5" class="text-h6"> File KH </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
-                  <!-- <VBtn rounded="xl" density="compact" class="px-2">
+                  <!--
+                    <VBtn rounded="xl" density="compact" class="px-2">
                     <template #default>
-                      <VIcon icon="fa-download" />
+                    <VIcon icon="fa-download" />
                     </template>
-                  </VBtn> -->
+                    </VBtn>
+                  -->
                   <VBtn
                     :color="downloadForms.file_kh ? 'primary' : '#A09BA1'"
                     density="compact"
@@ -481,11 +490,13 @@ const productNameHeader: any[] = [
                 <VCol cols="5" class="text-h6"> File Laporan LPH </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
-                  <!-- <VBtn rounded="xl" density="compact" class="px-2">
+                  <!--
+                    <VBtn rounded="xl" density="compact" class="px-2">
                     <template #default>
-                      <VIcon icon="fa-download" />
+                    <VIcon icon="fa-download" />
                     </template>
-                  </VBtn> -->
+                    </VBtn>
+                  -->
                   <VBtn
                     :color="downloadForms.file_laporan ? 'primary' : '#A09BA1'"
                     density="compact"
@@ -506,7 +517,7 @@ const productNameHeader: any[] = [
                 </VCol>
               </VRow>
               <VRow align="center">
-                <VCol cols="5" class="text-h6">Dokumen SJPH </VCol>
+                <VCol cols="5" class="text-h6"> Dokumen SJPH </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
@@ -522,7 +533,7 @@ const productNameHeader: any[] = [
                 </VCol>
               </VRow>
               <VRow align="center">
-                <VCol cols="5" class="text-h6">Surat Permohonan </VCol>
+                <VCol cols="5" class="text-h6"> Surat Permohonan </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
@@ -556,9 +567,9 @@ const productNameHeader: any[] = [
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <VRow>
-                <VCol>{{
-                  formatToIDR(dataPemeriksaanProduk?.total_biaya)
-                }}</VCol>
+                <VCol>
+                  {{ formatToIDR(dataPemeriksaanProduk?.total_biaya) }}
+                </VCol>
               </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -578,7 +589,9 @@ const productNameHeader: any[] = [
                 :key="idx"
                 align="center"
               >
-                <VCol cols="5" class="text-h6"> {{ item.ref_desc }} </VCol>
+                <VCol cols="5" class="text-h6">
+                  {{ item.ref_desc }}
+                </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
@@ -623,10 +636,10 @@ const productNameHeader: any[] = [
                 density="compact"
                 placeholder="Cari auditor"
                 :loading="loadingAuditor"
-                @input="handleInputAuditor"
-                @update:model-value="(v) => (assignedAuditor = v)"
                 return-object
                 class="mb-5"
+                @input="handleInputAuditor"
+                @update:model-value="(v) => (assignedAuditor = v)"
               >
                 <template #item="{ props, item }">
                   <VListItem v-bind="props" :title="(item.raw as any).nama" />
@@ -652,6 +665,9 @@ const productNameHeader: any[] = [
                 <template #item.index="{ index }">
                   {{ index + 1 }}
                 </template>
+                <template #item.tanggal_lahir="{ item }">
+                  {{ formatDateId(item.tanggal_lahir) }}
+                </template>
                 <template #item.actions>
                   <VIcon
                     icon="mdi-delete"
@@ -668,8 +684,9 @@ const productNameHeader: any[] = [
             variant="outlined"
             class="px-4 me-3"
             @click="handleOpenAssignModal"
-            >Batal</VBtn
           >
+            Batal
+          </VBtn>
           <VBtn
             variant="flat"
             class="px-4"
@@ -697,8 +714,9 @@ const productNameHeader: any[] = [
             variant="outlined"
             class="px-4 me-3"
             @click="handleOpenUpdateModal"
-            >Batal</VBtn
           >
+            Batal
+          </VBtn>
           <VBtn
             variant="flat"
             class="px-4"
@@ -718,21 +736,22 @@ const productNameHeader: any[] = [
     .v-expansion-panel--active:not(:first-child),
     .v-expansion-panel--active + .v-expansion-panel
   ) {
-  margin-top: 40px !important;
+  margin-block-start: 40px !important;
 }
 
 :deep(.v-data-table.auditor-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }

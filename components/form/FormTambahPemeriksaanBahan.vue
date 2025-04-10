@@ -48,10 +48,10 @@ const dialogMaxWidth = computed(() => {
 <template>
   <div class="mb-2" color="primary">
     <VBtn
+      v-if="props.isEditable"
       variant="outlined"
       append-icon="ri-add-line"
       @click="openDialog"
-      v-if="props.isEditable"
     >
       Tambah
     </VBtn>
@@ -136,29 +136,30 @@ const dialogMaxWidth = computed(() => {
               <VLabel for="nama"> Isi Nama </VLabel>
               <VTextField
                 id="nama"
+                v-model="formTambahPemeriksaanManual.nama"
                 density="compact"
                 placeholder="Isi Nama "
                 class="mb-4"
-                v-model="formTambahPemeriksaanManual.nama"
               />
 
               <VLabel for="lokasi"> Isi lokasi </VLabel>
               <VTextField
                 id="lokasi"
+                v-model="formTambahPemeriksaanManual.lokasi"
                 density="compact"
                 placeholder="Isi lokasi "
                 class="mb-4"
-                v-model="formTambahPemeriksaanManual.lokasi"
               />
               <VLabel for="tanggalPemeriksaan">
                 Isi Tanggal Pemeriksaan
               </VLabel>
               <VueDatePicker
-                class="mb-4"
-                teleport-center
                 id="tanggalPemeriksaan"
                 v-model="formTambahPemeriksaanManual.tanggal"
+                class="mb-4"
+                teleport-center
                 :enable-time-picker="false"
+                format="dd/MM/yyyy"
               />
 
               <VCardActions class="d-flex justify-end ga-2 mt-4">

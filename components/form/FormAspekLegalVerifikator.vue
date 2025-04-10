@@ -7,6 +7,7 @@ const aspectLegalHeader = [
   { title: "Masa Berlaku", key: "masa_berlaku", nowrap: true },
   { title: "Instansi Penerbit", key: "instansi_penerbit", nowrap: true },
 ];
+
 const store = useMyVerifikatorRegulerStore();
 const { aspek_legal } = storeToRefs(store);
 </script>
@@ -24,6 +25,10 @@ const { aspek_legal } = storeToRefs(store);
       >
         <template #item.no="{ index }">
           {{ index + 1 }}
+        </template>
+
+        <template #item.tanggal_surat="{ item }">
+          {{ formatDateId(item.tanggal_surat) }}
         </template>
       </VDataTable>
     </VCardItem>
