@@ -210,6 +210,10 @@
     "title": "Halal Certificate Submission",
     "detail": "Check Submission Data"
   },
+  "sh-domestic": {
+    "success-update-kbli-message": "KBLI Berhasil Diperbarui",
+    "failed-update-kbli-message": "KBLI Gagal Diperbarui"
+  },
   "validation": {
     "fill": "Kolom ini wajib diisi"
   },
