@@ -1,16 +1,16 @@
 <script setup lang="ts">
-const router = useRouter();
-const route = useRoute();
-const submissionId = route.params.id as string;
-
-const isPanelOpen = ref(0);
-
 const props = defineProps({
   idDetail: {
     required: true,
     type: String,
   },
 });
+
+const router = useRouter();
+const route = useRoute();
+const submissionId = route.params.id as string;
+
+const isPanelOpen = ref(0);
 
 const submissionData = ref({
   nama_pu: null,
@@ -19,6 +19,7 @@ const submissionData = ref({
   skala_usaha: null,
   nama_pj: null,
 });
+
 const guarantorData = ref({
   nama_pj: null,
   nomor_kontak_pj: null,
@@ -34,6 +35,7 @@ const legalAspectHeader: any[] = [
   { title: "Instansi Penerbit", key: "instansi_penerbit", nowrap: true },
   { title: "Action", key: "action", align: "center", sortable: false },
 ];
+
 const legalAspectData = ref([]);
 
 const halalSupervisorHeader: any[] = [
@@ -49,6 +51,7 @@ const halalSupervisorHeader: any[] = [
   { title: "No/Tanggal SK", key: "no_sk", nowrap: true },
   { title: "Action", key: "action", align: "center", sortable: false },
 ];
+
 const halalSupervisorData = ref([]);
 
 const documentHeader = [
@@ -56,6 +59,7 @@ const documentHeader = [
   { title: "Nama", value: "name" },
   { title: "Dokumen", value: "document" },
 ];
+
 const documentData = ref([
   {
     name: "Izin Edar",
@@ -78,10 +82,12 @@ const handleOpenModal = (type: string, index: number) => {
   selectedItem.value = index;
   isModalOpen.value = !isModalOpen.value;
 };
+
 const confirmDeleteItem = () => {
   const itemIndex = legalAspectData.value.findIndex(
     (_, idx) => idx === selectedItem.value
   );
+
   legalAspectData.value.splice(itemIndex, 1);
   selectedItem.value = null;
   useSnackbar().sendSnackbar("Berhasil menghapus data", "success");
@@ -113,6 +119,7 @@ const handleDetailPelakuUsaha = async () => {
       legalAspectData.value = response.data.aspek_legal;
       halalSupervisorData.value = response.data.penyelia_halal;
     }
+
     return response;
   } catch (error) {
     console.log(error);
@@ -126,7 +133,7 @@ const refresh = async () => {
 const handleAddLegal = async (selectedLegal: string[]) => {
   try {
     const response: any = await $api(
-      `/self-declare/business-actor/legal/create`,
+      "/self-declare/business-actor/legal/create",
       {
         method: "post",
         body: {
@@ -135,9 +142,8 @@ const handleAddLegal = async (selectedLegal: string[]) => {
         },
       }
     );
-    if (response.code === 2000) {
-      refresh();
-    }
+
+    if (response.code === 2000) refresh();
   } catch (error) {
     console.log(error);
   }
@@ -146,7 +152,7 @@ const handleAddLegal = async (selectedLegal: string[]) => {
 const handleAddSupervisor = async (selectedSupervisor: string[]) => {
   try {
     const response: any = await $api(
-      `/self-declare/business-actor/supervisor/create`,
+      "/self-declare/business-actor/supervisor/create",
       {
         method: "post",
         body: {
@@ -155,9 +161,8 @@ const handleAddSupervisor = async (selectedSupervisor: string[]) => {
         },
       }
     );
-    if (response.code === 2000) {
-      refresh();
-    }
+
+    if (response.code === 2000) refresh();
   } catch (error) {
     console.log(error);
   }
@@ -180,25 +185,25 @@ onMounted(async () => {
       </VExpansionPanelTitle>
       <VExpansionPanelText class="mt-5">
         <VRow>
-          <VCol cols="3" class="font-weight-bold">Nama</VCol>
-          <VCol cols="9">: {{ submissionData.nama_pu }}</VCol>
+          <VCol cols="3" class="font-weight-bold"> Nama </VCol>
+          <VCol cols="9"> : {{ submissionData.nama_pu }} </VCol>
         </VRow>
         <VRow>
-          <VCol cols="3" class="font-weight-bold">Alamat</VCol>
-          <VCol cols="9">: {{ submissionData.alamat_pu }}</VCol>
+          <VCol cols="3" class="font-weight-bold"> Alamat </VCol>
+          <VCol cols="9"> : {{ submissionData.alamat_pu }} </VCol>
         </VRow>
         <VRow>
           <VCol cols="3" class="font-weight-bold"> Jenis Badan Usaha </VCol>
-          <VCol cols="9">: {{ submissionData.jenis_badan_usaha }}</VCol>
+          <VCol cols="9"> : {{ submissionData.jenis_badan_usaha }} </VCol>
         </VRow>
         <VRow>
-          <VCol cols="3" class="font-weight-bold">Sekala Usaha</VCol>
-          <VCol cols="9">: {{ submissionData.skala_usaha }}</VCol>
+          <VCol cols="3" class="font-weight-bold"> Sekala Usaha </VCol>
+          <VCol cols="9"> : {{ submissionData.skala_usaha }} </VCol>
         </VRow>
         <VDivider class="my-5" />
         <VRow>
-          <VCol cols="3" class="font-weight-bold">Penanggung Jawab</VCol>
-          <VCol cols="9">: {{ submissionData.nama_pj }}</VCol>
+          <VCol cols="3" class="font-weight-bold"> Penanggung Jawab </VCol>
+          <VCol cols="9"> : {{ submissionData.nama_pj }} </VCol>
         </VRow>
       </VExpansionPanelText>
     </VExpansionPanel>
@@ -253,6 +258,11 @@ onMounted(async () => {
         <template #item.index="{ index }">
           {{ index + 1 }}
         </template>
+
+        <template #item.tanggal_surat="{ item }">
+          {{ formatDateId(item.tanggal_surat) }}
+        </template>
+
         <template #item.actions="{ index }">
           <div>
             <VIcon
@@ -288,70 +298,72 @@ onMounted(async () => {
     </VCardText>
   </VCard>
   <!-- dokumen belom -->
-  <!-- <VCard>
+  <!--
+    <VCard>
     <VCardTitle class="my-3 d-flex justify-space-between align-center">
-      <div class="font-weight-bold text-h4">Dokumen Persyaratan Fasilitas</div>
+    <div class="font-weight-bold text-h4">Dokumen Persyaratan Fasilitas</div>
     </VCardTitle>
     <VCardText>
-      <VAlert
-        class="mb-5"
-        color="primary"
-        variant="tonal"
-        density="compact"
-        prominent
-      >
-        <div>
-          File yang digunakan dengan extension XLSX, PDF, PNG dan Maksimal 50mb
-        </div>
-        <template #prepend>
-          <VIcon icon="fa-exclamation-circle" />
-        </template>
-      </VAlert>
-      <VDataTable
-        :headers="documentHeader"
-        :items="documentData"
-        hide-default-footer
-      >
-        <template #item.index="{ index }">
-          {{ index + 1 }}
-        </template>
-        <template #item.document="{ item, index }">
-          <VTextField
-            v-if="item.document"
-            density="compact"
-            :model-value="item.filename"
-            placeholder="No file choosen"
-            rounded="xl"
-            max-width="400"
-          >
-            <template #append-inner>
-              <VIcon
-                icon="fa-trash"
-                color="error"
-                class="cursor-pointer"
-                @click="handleOpenModal('DOC', index)"
-              />
-            </template>
-          </VTextField>
-          <VFileInput
-            v-else
-            :model-value="item.document"
-            class="custom-file-input"
-            density="compact"
-            rounded="xl"
-            label="No file choosen"
-            max-width="400"
-            prepend-icon=""
-            @change="(e: Event) => handleUploadFile(e, index)"
-          >
-            <template #append-inner>
-              <VBtn rounded="s-0 e-xl" text="Choose" />
-            </template>
-          </VFileInput>
-        </template>
-      </VDataTable>
+    <VAlert
+    class="mb-5"
+    color="primary"
+    variant="tonal"
+    density="compact"
+    prominent
+    >
+    <div>
+    File yang digunakan dengan extension XLSX, PDF, PNG dan Maksimal 50mb
+    </div>
+    <template #prepend>
+    <VIcon icon="fa-exclamation-circle" />
+    </template>
+    </VAlert>
+    <VDataTable
+    :headers="documentHeader"
+    :items="documentData"
+    hide-default-footer
+    >
+    <template #item.index="{ index }">
+    {{ index + 1 }}
+    </template>
+    <template #item.document="{ item, index }">
+    <VTextField
+    v-if="item.document"
+    density="compact"
+    :model-value="item.filename"
+    placeholder="No file choosen"
+    rounded="xl"
+    max-width="400"
+    >
+    <template #append-inner>
+    <VIcon
+    icon="fa-trash"
+    color="error"
+    class="cursor-pointer"
+    @click="handleOpenModal('DOC', index)"
+    />
+    </template>
+    </VTextField>
+    <VFileInput
+    v-else
+    :model-value="item.document"
+    class="custom-file-input"
+    density="compact"
+    rounded="xl"
+    label="No file choosen"
+    max-width="400"
+    prepend-icon=""
+    @change="(e: Event) => handleUploadFile(e, index)"
+    >
+    <template #append-inner>
+    <VBtn rounded="s-0 e-xl" text="Choose" />
+    </template>
+    </VFileInput>
+    </template>
+    </VDataTable>
     </VCardText>
-  </VCard> -->
+    </VCard>
+  -->
   <ShSubmissionDetailFormModal
     dialog-title="Menghapus Data"
     :dialog-visible="isModalOpen"
@@ -379,15 +391,16 @@ onMounted(async () => {
 :deep(.v-data-table.legal-aspect-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }

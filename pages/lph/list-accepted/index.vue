@@ -88,11 +88,13 @@ watch([page, size], () => {
 
 <template>
   <div v-if="!loading">
-    <!-- <VRow>
+    <!--
+      <VRow>
       <VCol cols="12">
-        <KembaliButton></KembaliButton>
+      <KembaliButton></KembaliButton>
       </VCol>
-    </VRow> -->
+      </VRow>
+    -->
     <VRow>
       <VCol cols="12">
         <h1 style="font-size: 32px">Daftar Ajuan Diterima</h1>
@@ -121,9 +123,9 @@ watch([page, size], () => {
               <VCol cols="12">
                 <VDataTableServer
                   v-if="dataTable"
-                  :items-per-page-options="[10, 25, 50, 100]"
                   v-model:items-per-page="size"
                   v-model:page="page"
+                  :items-per-page-options="[10, 25, 50, 100]"
                   :items-length="totalItems"
                   :loading="loading"
                   :headers="tableHeader"
@@ -145,6 +147,9 @@ watch([page, size], () => {
                   </template>
                   <template #item.no="{ index }">
                     {{ index + 1 + (page - 1) * size }}
+                  </template>
+                  <template #item.tanggal="{ item }">
+                    {{ formatDateId(item.tanggal) }}
                   </template>
                   <template #item.status="{ item }">
                     <VChip
@@ -177,13 +182,14 @@ watch([page, size], () => {
                   </template>
                   <template #item.action="{ item }">
                     <VIcon
-                      @click="navigateToDetail((item as any).id_reg)"
                       color="primary"
                       icon="mdi-arrow-right"
-                    ></VIcon>
+                      @click="navigateToDetail((item as any).id_reg)"
+                    />
                   </template>
-                </VDataTableServer> </VCol
-            ></VRow>
+                </VDataTableServer>
+              </VCol>
+            </VRow>
           </VCardItem>
         </VCard>
       </VCol>

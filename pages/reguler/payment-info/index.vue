@@ -67,7 +67,9 @@ const loadItem = async (
     if (response?.code === 2000) {
       totalItems.value = response.total_item;
       dataTable.value = response?.data;
-    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -103,19 +105,21 @@ watch([page, size], () => {
 </script>
 
 <template>
-  <!-- <div
+  <!--
+    <div
     class="d-flex align-center cursor-pointer"
     @click="router.go(-1)"
-  >
+    >
     <VIcon
-      icon="mdi-chevron-left"
-      size="40px"
-      color="primary"
+    icon="mdi-chevron-left"
+    size="40px"
+    color="primary"
     />
     <div class="text-primary">
-      Kembali
+    Kembali
     </div>
-  </div> -->
+    </div>
+  -->
   <VRow no-gutters>
     <VCol>
       <h1 style="font-size: 32px">Informasi Pembayaran</h1>
@@ -141,9 +145,9 @@ watch([page, size], () => {
             />
           </div>
           <VDataTableServer
-            :items-per-page-options="[10, 25, 50, 100]"
             v-model:items-per-page="size"
             v-model:page="page"
+            :items-per-page-options="[10, 25, 50, 100]"
             :items-length="totalItems"
             :loading="loading"
             class="border rounded"
@@ -161,6 +165,15 @@ watch([page, size], () => {
             </template>
             <template #item.index="{ index }">
               {{ index + 1 + (page - 1) * size }}
+            </template>
+            <template #item.tanggal_tagihan="{ item }">
+              {{ formatDateId(item.tanggal_tagihan) }}
+            </template>
+            <template #item.tanggal_jatuh_tempo="{ item }">
+              {{ formatDateId(item.tanggal_jatuh_tempo) }}
+            </template>
+            <template #item.tanggal_bayar="{ item }">
+              {{ formatDateId(item.tanggal_bayar) }}
             </template>
             <template #item.actions="{ item }">
               <VIcon

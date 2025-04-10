@@ -190,6 +190,7 @@ watch([page, size], async () => {
     searchQuery.value,
     UPLOAD_LAPORAN_AUDIT
   );
+
   dataTable.value = refreshData;
 });
 
@@ -214,10 +215,12 @@ watch(dataTable, () => {
 </script>
 
 <template>
-  <!-- <div class="d-flex align-center cursor-pointer" @click="router.go(-1)">
+  <!--
+    <div class="d-flex align-center cursor-pointer" @click="router.go(-1)">
     <VIcon icon="mdi-chevron-left" size="40px" color="primary" />
     <div class="text-primary">Kembali</div>
-  </div> -->
+    </div>
+  -->
   <VRow no-gutters>
     <VCol>
       <h1 style="font-size: 32px">Upload Laporan Audit</h1>
@@ -295,9 +298,9 @@ watch(dataTable, () => {
             </VCol>
           </VRow>
           <VDataTableServer
-            :items-per-page-options="[10, 25, 50, 100]"
             v-model:items-per-page="size"
             v-model:page="page"
+            :items-per-page-options="[10, 25, 50, 100]"
             :items-length="totalItems"
             :loading="loading"
             class="border rounded"
@@ -316,6 +319,9 @@ watch(dataTable, () => {
             </template>
             <template #item.index="{ index }">
               {{ index + 1 + (page - 1) * size }}
+            </template>
+            <template #item.tanggal_daftar="{ item }">
+              {{ formatDateId(item.tanggal_daftar) }}
             </template>
             <template #item.businessType="{ item }">
               <div class="d-flex">
@@ -360,9 +366,9 @@ watch(dataTable, () => {
         </VRow>
       </VCardText>
       <VCardActions class="px-4">
-        <VBtn variant="outlined" class="px-4 me-3" @click="handleOpenInfoModal"
-          >Tutup</VBtn
-        >
+        <VBtn variant="outlined" class="px-4 me-3" @click="handleOpenInfoModal">
+          Tutup
+        </VBtn>
       </VCardActions>
     </VCard>
   </VDialog>
@@ -372,15 +378,16 @@ watch(dataTable, () => {
 :deep(.v-data-table.examination-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }
@@ -392,18 +399,18 @@ watch(dataTable, () => {
 }
 
 .green-box {
-  color: #49a84c;
-  background-color: #edf6ed;
   border: 1px solid #49a84c;
   border-radius: 8px;
+  background-color: #edf6ed;
+  color: #49a84c;
   font-size: 12px;
 }
 
 .status-box {
-  color: #652672;
-  background-color: #f0e9f1;
   border: 1px solid #652672;
   border-radius: 8px;
+  background-color: #f0e9f1;
+  color: #652672;
   font-size: 12px;
 }
 </style>

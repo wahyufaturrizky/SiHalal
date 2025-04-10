@@ -51,8 +51,10 @@ const getBahan = async () => {
         size: sizeBahan.value,
       },
     });
+
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan", "error");
+
       return;
     }
     catatanBahanItems.value = response.data;
@@ -79,8 +81,10 @@ const getProduk = async () => {
         id_reg: route.params.id,
       },
     });
+
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan", "error");
+
       return;
     }
     catatanProdukItems.value = response.data;
@@ -88,6 +92,7 @@ const getProduk = async () => {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
 };
+
 // TODO -> LOGIC TO DONWLOAD FILE
 const downloadCatatanBahan = async (item) =>
   await downloadDocument(item, "FILES");
@@ -121,7 +126,7 @@ onMounted(async () => {
           {{ (pageBahan - 1) * sizeBahan + index + 1 }}
         </template>
         <template #item.file="{ item }">
-          <v-btn
+          <VBtn
             :disabled="item.file_dok == ''"
             color="primary"
             variant="plain"
@@ -129,14 +134,21 @@ onMounted(async () => {
             @click="downloadCatatanBahan(item.file_dok)"
           >
             File
-          </v-btn>
+          </VBtn>
+        </template>
+
+        <template #item.tanggal_masuk="{ item }">
+          {{ formatDateId(item.tanggal_masuk) }}
+        </template>
+
+        <template #item.tanggal_keluar="{ item }">
+          {{ formatDateId(item.tanggal_keluar) }}
         </template>
       </VDataTableServer>
     </VCardItem>
 
     <VCardItem>
-      <VCardTitle class="d-flex justify-space-between align-center">
-      </VCardTitle>
+      <VCardTitle class="d-flex justify-space-between align-center" />
       <VDataTable
         :items-per-page-options="[10, 25, 50, 100]"
         :headers="catatanProdukHeaders"
@@ -146,7 +158,7 @@ onMounted(async () => {
           {{ index + 1 }}
         </template>
         <template #item.file="{ item }">
-          <v-btn
+          <VBtn
             :disabled="item.file_dok == ''"
             color="primary"
             variant="plain"
@@ -154,7 +166,15 @@ onMounted(async () => {
             @click="downloadCatatanProduk(item.file_dok)"
           >
             File
-          </v-btn>
+          </VBtn>
+        </template>
+
+        <template #item.tanggal_masuk="{ item }">
+          {{ formatDateId(item.tanggal_masuk) }}
+        </template>
+
+        <template #item.tanggal_keluar="{ item }">
+          {{ formatDateId(item.tanggal_keluar) }}
         </template>
       </VDataTable>
     </VCardItem>

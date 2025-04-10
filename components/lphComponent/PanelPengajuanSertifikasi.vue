@@ -16,7 +16,7 @@ const detail = props?.dataPengajuan;
         </div>
       </VCol>
       <VCol cols="7">
-        {{ (detail as any)?.tanggal_buat }}
+        {{ formatDateId((detail as any)?.tanggal_buat) }}
       </VCol>
     </VRow>
     <VRow no-gutters>

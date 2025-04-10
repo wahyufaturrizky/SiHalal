@@ -196,6 +196,7 @@ const loadPemeriksaanProduk = async (): void => {
 
     if (response.code === 2000) {
       const data = response.data;
+
       biayaPemeriksaanItems.value = data.biaya;
       totalBiaya.value = data.total_biaya;
       jadwalAudit.value = data.jadwal_audit;
@@ -229,16 +230,14 @@ const send = async () => {
   };
 
   try {
-    const response: any = await $api(`/reguler/auditor/send`, {
+    const response: any = await $api("/reguler/auditor/send", {
       method: "post",
-      body: body,
+      body,
     });
 
-    if (response?.code === 2000) {
+    if (response?.code === 2000)
       useSnackbar().sendSnackbar("Sukses send", "success");
-    } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    }
+    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -314,7 +313,7 @@ onMounted(async () => {
                 cols-value="6"
                 name="Tanggal Buat"
               >
-                {{ detailPengajuan.tanggal_buat }}
+                {{ formatDateId(detailPengajuan.tanggal_buat) }}
               </InfoRow>
               <ThinLine :thickness="1" />
               <InfoRow
@@ -470,12 +469,12 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTableServer
+                v-model:page="pageProduk"
                 :items-length="totalItemProduk"
                 :headers="daftarProdukHeader"
                 :items-per-page="itemPerPageUncertified"
                 :items="daftarProdukItems"
                 :items-per-page-options="[10]"
-                v-model:page="pageProduk"
                 @update:options="
                   {
                     loadDaftarProduk(pageProduk, itemPerPageUncertified);
@@ -498,9 +497,11 @@ onMounted(async () => {
                 <template #item.publication="{ item }">
                   <VCheckbox true-value="true" />
                 </template>
-                <!-- <template #[`item.no`]="{ index }">
+                <!--
+                  <template #[`item.no`]="{ index }">
                   <span>{{ index + 1 }}</span>
-                </template> -->
+                  </template>
+                -->
               </VDataTableServer>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -538,7 +539,7 @@ onMounted(async () => {
                 cols-value="6"
                 name="Tanggal Mulai"
               >
-                {{ jadwalAudit.tanggal_mulai }}
+                {{ formatDateId(jadwalAudit.tanggal_mulai) }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -546,7 +547,7 @@ onMounted(async () => {
                 cols-value="6"
                 name="Tanggal Selesai"
               >
-                {{ jadwalAudit.tanggal_selesai }}
+                {{ formatDateId(jadwalAudit.tanggal_selesai) }}
               </InfoRow>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -567,6 +568,10 @@ onMounted(async () => {
                 <template #[`item.no`]="{ index }">
                   <span>{{ index + 1 }}</span>
                 </template>
+
+                <template #item.tanggal_lahir="{ item }">
+                  {{ formatDateId(item.tanggal_lahir) }}
+                </template>
               </VDataTable>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -584,7 +589,7 @@ onMounted(async () => {
                 cols-value="6"
                 name="Tanggal Selesai LPH"
               >
-                {{ hasilPemeriksaan.tanggal_selesai }}
+                {{ formatDateId(hasilPemeriksaan.tanggal_selesai) }}
               </InfoRow>
               <InfoRow
                 cols-name="5"
@@ -617,7 +622,7 @@ onMounted(async () => {
                 {{ nomorPendaftaran.no_daftar }}
               </p>
               <p class="font-weight-bold text-black">
-                {{ nomorPendaftaran.tanggal_daftar }}
+                {{ formatDateId(nomorPendaftaran.tanggal_daftar) }}
               </p>
               <p class="font-weight-bold text-black">
                 {{ nomorPendaftaran.provinsi }}
@@ -656,9 +661,9 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .mw-170 {
-  max-width: 170px;
   overflow: hidden;
-  white-space: nowrap;
+  max-inline-size: 170px;
   text-wrap: wrap;
+  white-space: nowrap;
 }
 </style>
