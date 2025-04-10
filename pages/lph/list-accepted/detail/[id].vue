@@ -189,6 +189,23 @@ const downloadInvoice = async (el: any) => {
   }
 };
 
+const downloadFileInvoice = async (el: any) => {
+  try {
+    const response: any = await $api("/reguler/lph/download-invoice", {
+      method: "post",
+      body: {
+        id_reg: el,
+      },
+    });
+
+    if (response?.code === 2000) return response?.data?.file;
+
+    return null;
+  } catch (error) {
+    return null;
+  }
+};
+
 const handleDownloadForm = async (fileName: string, param?: string) => {
   return await downloadDocument(fileName, param);
 };
@@ -219,7 +236,7 @@ onMounted(async () => {
 
   regNumber.value = noDaftar;
 
-  const fetchedInvoiceFile = (await downloadInvoice(noDaftar)) || "";
+  const fetchedInvoiceFile = (await downloadFileInvoice(id)) || "";
 
   if (fetchedInvoiceFile) invoiceFile.value = fetchedInvoiceFile;
 
