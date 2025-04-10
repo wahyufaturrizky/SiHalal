@@ -49,6 +49,8 @@ const payloadHasilProduksi = ref({
   tanggal_produksi: "",
   tanggal_kadaluarsa: "",
   file_dok: "",
+  id_hasil_produksi: "",
+  id: "",
 });
 
 const payloadHasilDistribusi = ref({
@@ -57,6 +59,7 @@ const payloadHasilDistribusi = ref({
   tanggal: "",
   tujuan: "",
   file_dok: "",
+  id_reg_prod: "",
 });
 
 const uploadedFile = ref({
@@ -76,6 +79,7 @@ const resetForm = () => {
     tanggal_produksi: "",
     tanggal_kadaluarsa: "",
     file_dok: "",
+    id_hasil_produksi: "",
   };
   payloadHasilDistribusi.value = {
     nama_produk: "",
@@ -90,6 +94,13 @@ const resetForm = () => {
     file: null,
   };
   selectedProduct.value = {};
+  catatan.value = {
+    name: null,
+    type: null,
+    process: "",
+    diagramProcess: [],
+    file: null,
+  };
 };
 
 const handleRemoveFile = () => {
@@ -234,8 +245,19 @@ const toggleAdd = (type: string) => {
   titleDialog.value = `Tambah ${type}`;
 };
 
+const typeAdd = ref("");
+const editAddtype = ref(false);
+
 const toggleEdit = (item: any, type: string) => {
+  typeAdd.value = item?.tipe_penambahan;
+  editAddtype.value = true;
+  if (typeAdd.value === "Manual") tabs.value = 2;
+
   if (type === "Diagram Alur Proses") {
+    console.log(item, " ???");
+    if (item?.tipe_penambahan !== "Unggah") tabs.value = "2";
+    else tabs.value = "1";
+
     catatan.value = {
       name: item?.nama_produk,
       type: null,
@@ -249,6 +271,9 @@ const toggleEdit = (item: any, type: string) => {
     };
     detailItem.value = item;
   } else if (type === "Catatan Hasil Produksi") {
+    if (item?.tipe_penambahan !== "Unggah") tabs.value = "2";
+    else tabs.value = "1";
+
     payloadHasilProduksi.value = {
       nama_produk: item?.nama_produk,
       jumlah: item?.jumlah,
@@ -256,6 +281,7 @@ const toggleEdit = (item: any, type: string) => {
       tanggal_kadaluarsa: item?.tanggal_kadaluarsa,
       file_dok: item?.file_dok,
       id_hasil_produksi: item?.id_hasil_produksi,
+      id_reg_prod: item?.id_reg_prod,
     };
     uploadedFile.value = {
       file: item?.file_dok,
@@ -263,12 +289,16 @@ const toggleEdit = (item: any, type: string) => {
     };
     detailItem.value = item;
   } else if (type === "Catatan Distribusi") {
+    if (item?.tipe_penambahan !== "Unggah") tabs.value = "2";
+    else tabs.value = "1";
+
     payloadHasilDistribusi.value = {
       nama_produk: item?.nama_produk,
       jumlah: item?.jumlah,
       tanggal: item?.tanggal,
       tujuan: item?.tujuan,
       file_dok: item?.file_dok,
+      id_reg_prod: item?.id_reg_prod,
     };
     uploadedFile.value = {
       file: item?.file_dok,
@@ -280,7 +310,7 @@ const toggleEdit = (item: any, type: string) => {
       tanggal: item?.tanggal,
       tujuan: item?.tujuan,
       file_dok: item?.file_dok,
-      id_reg_prod: item?.id_reg_prod,
+      id_reg_prod: item?.id_prod_distribusi,
     };
     detailItem.value = item;
   } else {
@@ -290,14 +320,11 @@ const toggleEdit = (item: any, type: string) => {
   titleDialog.value = `Ubah ${type}`;
 };
 
-const typeAdd = ref("");
-const editAddtype = ref(false);
 const toggleEdit2Table = (item: any, index: number) => {
   typeAdd.value = item?.tipe_penambahan;
   editAddtype.value = true;
-  if (typeAdd.value === "Manual") {
-    tabs.value = 2;
-  }
+  if (typeAdd.value === "Manual") tabs.value = 2;
+
   selectedProduct.value = {
     nama_produk: item?.nama_produk,
     jumlah: item?.jumlah,
@@ -306,7 +333,7 @@ const toggleEdit2Table = (item: any, index: number) => {
     file_dok: item?.file_dok,
     id_reg_prod: item?.id_reg_prod,
   };
-  console.log(typeAdd.value, "ini typenya di value");
+
   detailItem.value = item;
   addDialog.value = true;
   labelSaveBtn.value = "Ubah";
@@ -352,11 +379,12 @@ const handleSelectFile = (newFile: any, type: string) => {
   if (!newFile) return;
 
   const validFileTypes = ["image/jpeg", "image/png"].includes(newFile.type);
-  if (!validFileTypes)
+  if (!validFileTypes) {
     useSnackbar().sendSnackbar(
       `Upload ${type} dalam bentuk gambar berformat png/jpg/jpeg`,
       "error"
     );
+  }
 };
 
 const handleUploadFile = async (event: any) => {
@@ -517,12 +545,6 @@ const getListProduct = async () => {
   return response || [];
 };
 
-const getCatatanBahanOrProduk = async (page, size, type) => {
-  if (type == 0) await getListCatatanBahan(page, size);
-
-  await getListCatatanProduk(page, size);
-};
-
 const getListCatatanBahan = async (page, size) => {
   const response: any = await $api(
     "/reguler/pelaku-usaha/tab-proses/list-catatan-bahan",
@@ -541,15 +563,15 @@ const getListCatatanBahan = async (page, size) => {
   return response || [];
 };
 
-const getListCatatanProduk = async () => {
+const getListCatatanProduk = async (page: number, size: number) => {
   const response: any = await $api(
     "/reguler/pelaku-usaha/tab-proses/list-catatan-produk",
     {
       method: "get",
       query: {
         id,
-        page: pageCatatanProduk.value,
-        size: sizeCatatanProduk.value,
+        page,
+        size,
       },
     }
   );
@@ -561,6 +583,14 @@ const getListCatatanProduk = async () => {
   }
 
   return response || [];
+};
+
+const getCatatanBahanOrProduk = async (page, size, type) => {
+  console.log("page, size, type ", page, size, type);
+
+  if (type == 0) await getListCatatanBahan(page, size);
+
+  await getListCatatanProduk(page, size);
 };
 
 const addProcess = () => {
@@ -618,7 +648,7 @@ const handleAddOrEdit = async () => {
         getListLayout();
         getListFactory();
         getListCatatanBahan(pageCatatanBahan.value, sizeCatatanBahan.value);
-        useSnackbar().sendSnackbar("Sukses menambah data", "success");
+        useSnackbar().sendSnackbar("Sukses ubah data", "success");
       }
     } else {
       const response: any = await $api(
@@ -672,8 +702,8 @@ const handleAddOrEdit = async () => {
         getListLayout();
         getListFactory();
         getListCatatanBahan(pageCatatanBahan.value, sizeCatatanBahan.value);
-        getListCatatanProduk();
-        useSnackbar().sendSnackbar("Sukses menambah data", "success");
+        getListCatatanProduk(pageCatatanProduk.value, sizeCatatanProduk.value);
+        useSnackbar().sendSnackbar("Sukses ubah data", "success");
       }
     } else {
       const response: any = await $api(
@@ -691,7 +721,7 @@ const handleAddOrEdit = async () => {
         getListLayout();
         getListFactory();
         getListCatatanBahan(pageCatatanBahan.value, sizeCatatanBahan.value);
-        getListCatatanProduk();
+        getListCatatanProduk(pageCatatanProduk.value, sizeCatatanProduk.value);
         useSnackbar().sendSnackbar("Sukses menambah data", "success");
       }
     }
@@ -734,7 +764,7 @@ const handleAddOrEdit = async () => {
     } else {
       body = {
         nama_produk: catatan.value.name,
-        file_dok: formAddLayout.value.file_layout,
+        file_dok: uploadedFile.value.file,
       };
     }
 
@@ -751,23 +781,27 @@ const handleAddOrEdit = async () => {
       resetForm();
       addDialog.value = false;
       getListDigaramAlur(pageDiagramAlur.value, itemsPerPageDiagramAlur.value);
-      useSnackbar().sendSnackbar("Sukses menambah data", "success");
+      useSnackbar().sendSnackbar("Sukses ubah data", "success");
     }
   } else if (titleDialog.value === "Tambah Catatan Hasil Produksi") {
     let body: any = {};
     if (tabs.value === "2") {
       body = {
-        id_produk: selectedProduct.value.id,
-        jumlah: +selectedProduct.value?.jumlah,
-        tanggal_produksi: formatDateId(selectedProduct.value?.tanggal_masuk),
-        tanggal_kadaluarsa: formatDateId(selectedProduct.value?.tanggal_keluar),
+        id_produk: payloadHasilProduksi.value.nama_produk?.id,
+        jumlah: +payloadHasilProduksi.value?.jumlah,
+        tanggal_produksi: formatDateId(
+          payloadHasilProduksi.value?.tanggal_produksi
+        ),
+        tanggal_kadaluarsa: formatDateId(
+          payloadHasilProduksi.value?.tanggal_kadaluarsa
+        ),
 
         // nama_produk: payloadHasilProduksi.value?.nama_produk,
       };
     } else {
       body = {
         nama_produk: payloadHasilProduksi.value?.nama_produk,
-        file_dok: formAddLayout.value.file_layout,
+        file_dok: formAddLayout.value.file_layout || uploadedFile.value?.file,
       };
     }
 
@@ -795,10 +829,14 @@ const handleAddOrEdit = async () => {
     let body: any = {};
     if (tabs.value === "2") {
       body = {
-        id_produk: selectedProduct?.value?.id_reg_prod,
-        jumlah: +selectedProduct.value?.jumlah,
-        tanggal_produksi: formatDateId(selectedProduct.value?.tanggal_masuk),
-        tanggal_kadaluarsa: formatDateId(selectedProduct.value?.tanggal_keluar),
+        id_produk: payloadHasilProduksi.value.id_reg_prod,
+        jumlah: +payloadHasilProduksi.value?.jumlah,
+        tanggal_produksi: formatDateId(
+          payloadHasilProduksi.value?.tanggal_produksi
+        ),
+        tanggal_kadaluarsa: formatDateId(
+          payloadHasilProduksi.value?.tanggal_kadaluarsa
+        ),
 
         // nama_produk: payloadHasilProduksi.value?.nama_produk,
       };
@@ -822,13 +860,14 @@ const handleAddOrEdit = async () => {
       resetForm();
       addDialog.value = false;
       getListHasilProduksi();
-      useSnackbar().sendSnackbar("Sukses menambah data", "success");
+      useSnackbar().sendSnackbar("Sukses ubah data", "success");
     }
   } else if (titleDialog.value === "Tambah Catatan Distribusi") {
     let body: any = {};
+
     if (tabs.value === "2") {
       body = {
-        id_produk: selectedProduct.value.id_reg_prod,
+        id_produk: payloadHasilDistribusi.value.nama_produk,
         jumlah: +selectedProduct.value?.jumlah,
         tanggal: formatDateId(selectedProduct.value?.tanggal),
         tujuan: selectedProduct.value?.tujuan,
@@ -838,7 +877,7 @@ const handleAddOrEdit = async () => {
     } else {
       body = {
         nama_produk: payloadHasilDistribusi.value?.nama_produk,
-        file_dok: formAddLayout.value.file_layout,
+        file_dok: uploadedFile.value.file?.name,
       };
     }
 
@@ -861,7 +900,7 @@ const handleAddOrEdit = async () => {
     let body: any = {};
     if (tabs.value === "2") {
       body = {
-        id_produk: selectedProduct.value.id,
+        id_produk: payloadHasilDistribusi.value.id_reg_prod,
         jumlah: +selectedProduct.value?.jumlah,
         tanggal: formatDateId(selectedProduct.value?.tanggal),
         tujuan: selectedProduct.value?.tujuan,
@@ -871,8 +910,7 @@ const handleAddOrEdit = async () => {
     } else {
       body = {
         nama_produk: payloadHasilDistribusi.value?.nama_produk,
-        file_dok:
-          formAddLayout.value.file_layout || payloadHasilDistribusi.value?.file,
+        file_dok: uploadedFile.value.file,
       };
     }
 
@@ -889,7 +927,7 @@ const handleAddOrEdit = async () => {
       resetForm();
       addDialog.value = false;
       getListCatatanDistribusi();
-      useSnackbar().sendSnackbar("Sukses menambah data", "success");
+      useSnackbar().sendSnackbar("Sukses ubah data", "success");
     }
   } else {
     const response: any = await $api(
@@ -938,7 +976,7 @@ onMounted(async () => {
     getListLayout(),
     getListFactory(),
     getListCatatanBahan(pageCatatanBahan.value, sizeCatatanBahan.value),
-    getListCatatanProduk(),
+    getListCatatanProduk(pageCatatanProduk.value, sizeCatatanProduk.value),
     getListDigaramAlur(pageDiagramAlur.value, itemsPerPageDiagramAlur.value),
     getListHasilProduksi(),
     getListCatatanDistribusi(),
@@ -968,7 +1006,12 @@ watch(selectedFactory, () => {
       :title="titleDialog"
       :is-open="addDialog"
       :label-save-btn="labelSaveBtn"
-      :toggle="() => (addDialog = false)"
+      :toggle="
+        () => {
+          addDialog = false;
+          resetForm();
+        }
+      "
       :on-save="handleAddOrEdit"
     >
       <template #content>
@@ -1045,19 +1088,19 @@ watch(selectedFactory, () => {
             <!-- batas add -->
 
             <VTabs
-              v-model="tabs"
               v-if="editAddtype === false"
+              v-model="tabs"
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1069,7 +1112,7 @@ watch(selectedFactory, () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
@@ -1079,36 +1122,36 @@ watch(selectedFactory, () => {
             </VTabs>
             <!-- batas edit -->
             <VTabs
-              v-model="tabs"
               v-if="editAddtype"
+              v-model="tabs"
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
+                v-if="typeAdd === 'Unggah'"
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
                 height="40px"
-                v-if="typeAdd === 'Unggah'"
               >
                 <span>Unggah File </span>
               </VTab>
               <VTab
+                v-if="typeAdd === 'Manual'"
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
-                v-if="typeAdd === 'Manual'"
               >
                 <span> Tambah Manual </span>
               </VTab>
@@ -1228,19 +1271,19 @@ watch(selectedFactory, () => {
           <div class="d-flex justify-center">
             <!-- batas add -->
             <VTabs
-              v-model="tabs"
               v-if="editAddtype === false"
+              v-model="tabs"
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1252,7 +1295,7 @@ watch(selectedFactory, () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
@@ -1262,36 +1305,36 @@ watch(selectedFactory, () => {
             </VTabs>
             <!-- batas edit -->
             <VTabs
-              v-model="tabs"
               v-if="editAddtype"
+              v-model="tabs"
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
+                v-if="typeAdd === 'Unggah'"
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
                 height="40px"
-                v-if="typeAdd === 'Unggah'"
               >
                 <span>Unggah File </span>
               </VTab>
               <VTab
+                v-if="typeAdd === 'Manual'"
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
-                v-if="typeAdd === 'Manual'"
               >
                 <span> Tambah Manual </span>
               </VTab>
@@ -1417,19 +1460,19 @@ watch(selectedFactory, () => {
             <!-- batas add -->
             <!-- {{editAddtype}} -->
             <VTabs
-              v-model="tabs"
               v-if="editAddtype === false"
+              v-model="tabs"
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1441,7 +1484,7 @@ watch(selectedFactory, () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
@@ -1451,36 +1494,36 @@ watch(selectedFactory, () => {
             </VTabs>
             <!-- batas edit -->
             <VTabs
-              v-model="tabs"
               v-if="editAddtype"
+              v-model="tabs"
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
+                v-if="typeAdd === 'Unggah'"
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
                 height="40px"
-                v-if="typeAdd === 'Unggah'"
               >
                 <span>Unggah File </span>
               </VTab>
               <VTab
+                v-if="typeAdd === 'Manual'"
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
-                v-if="typeAdd === 'Manual'"
               >
                 <span> Tambah Manual </span>
               </VTab>
@@ -1599,19 +1642,19 @@ watch(selectedFactory, () => {
           <div class="d-flex justify-center">
             <!-- batas add -->
             <VTabs
-              v-model="tabs"
               v-if="editAddtype === false"
+              v-model="tabs"
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1623,7 +1666,7 @@ watch(selectedFactory, () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
@@ -1633,36 +1676,36 @@ watch(selectedFactory, () => {
             </VTabs>
             <!-- batas edit -->
             <VTabs
-              v-model="tabs"
               v-if="editAddtype"
+              v-model="tabs"
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
+                v-if="typeAdd === 'Unggah'"
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
                 height="40px"
-                v-if="typeAdd === 'Unggah'"
               >
                 <span>Unggah File </span>
               </VTab>
               <VTab
+                v-if="typeAdd === 'Manual'"
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
-                v-if="typeAdd === 'Manual'"
               >
                 <span> Tambah Manual </span>
               </VTab>
@@ -1688,16 +1731,16 @@ watch(selectedFactory, () => {
                   <br />
                   <label>Jumlah</label>
                   <VTextField
-                    v-model="selectedProduct.jumlah"
+                    v-model="payloadHasilProduksi.jumlah"
                     class="-mt-10"
-                    placeholder="isi judul"
+                    placeholder="isi jumlah"
                   />
                   <VRow class="mt-2">
                     <VCol>
                       <label>Tanggal Produksi</label>
                       <VueDatePicker
                         id="tanggalDocument"
-                        v-model="selectedProduct.tanggal_masuk"
+                        v-model="payloadHasilProduksi.tanggal_produksi"
                         teleport-center
                         :enable-time-picker="false"
                         placeholder="tanggal masuk"
@@ -1709,7 +1752,7 @@ watch(selectedFactory, () => {
                       <label>Tanggal Kadaluarsa</label>
                       <VueDatePicker
                         id="tanggalDocument"
-                        v-model="selectedProduct.tanggal_keluar"
+                        v-model="payloadHasilProduksi.tanggal_kadaluarsa"
                         teleport-center
                         :enable-time-picker="false"
                         placeholder="tanggal masuk"
@@ -1726,7 +1769,6 @@ watch(selectedFactory, () => {
                   v-model="payloadHasilProduksi.nama_produk"
                   class="-mt-10"
                   placeholder="isi judul"
-                  :disabled="titleDialog === 'Ubah Catatan Hasil Produksi'"
                 />
                 <br />
                 <VRow class="mb-3" align="center">
@@ -1797,19 +1839,19 @@ watch(selectedFactory, () => {
           <div class="d-flex justify-center">
             <!-- batas add -->
             <VTabs
+              v-if="!editAddtype"
               v-model="tabs"
-              v-if="editAddtype"
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
@@ -1821,7 +1863,7 @@ watch(selectedFactory, () => {
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
@@ -1831,36 +1873,36 @@ watch(selectedFactory, () => {
             </VTabs>
             <!-- batas edit -->
             <VTabs
-              v-model="tabs"
               v-if="editAddtype"
+              v-model="tabs"
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px;"
+              style="border-radius: 40px"
               height="auto"
             >
               <VTab
+                v-if="typeAdd === 'Unggah'"
                 value="1"
                 base-color="#f0dcf5"
                 active-color="primary"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 color="primary"
                 variant="flat"
                 height="40px"
-                v-if="typeAdd === 'Unggah'"
               >
                 <span>Unggah File </span>
               </VTab>
               <VTab
+                v-if="typeAdd === 'Manual'"
                 value="2"
                 active-color="primary"
                 base-color="#f0dcf5"
-                style="border-radius: 40px;"
+                style="border-radius: 40px"
                 hide-slider
                 variant="flat"
                 height="40px"
-                v-if="typeAdd === 'Manual'"
               >
                 <span> Tambah Manual </span>
               </VTab>
@@ -1915,7 +1957,6 @@ watch(selectedFactory, () => {
                   v-model="payloadHasilDistribusi.nama_produk"
                   class="-mt-10"
                   placeholder="isi judul"
-                  :disabled="titleDialog === 'Ubah Catatan Distribusi'"
                 />
                 <br />
                 <VRow class="mb-3" align="center">
