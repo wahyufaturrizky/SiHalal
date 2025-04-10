@@ -25,7 +25,7 @@ const handleInvoice = async (
   id: string,
   invoiceType: string
 ) => {
-  if (fileName == "") {
+  if (fileName == "" || fileName == undefined || fileName == null) {
     const response = await $api(`/certificate/regenerate`, {
       method: "post",
       body: {
