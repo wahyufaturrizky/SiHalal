@@ -11,7 +11,8 @@ const loadingAll = ref<boolean>(true);
 
 const activeTab = ref(-1);
 const approveRequirements = ref(false);
-const approveRequirementsProses = ref(false);
+const approveRequirementsProses = ref<boolean>(false)
+const namaPj = ref<string>('')
 const listLegal = ref<any>(null);
 const listFactory = ref<any>(null);
 const listOutlet = ref<any>(null);
@@ -71,9 +72,13 @@ const getFlagProcess = async () => {
       params: { id },
     })
 
-    if (response?.code === 2000)
+    if (response?.code === 2000) {
       approveRequirementsProses.value = response?.data?.is_proses
-    else useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      namaPj.value = response?.data?.nama_pj
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
   }
   catch (err) {
     useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
@@ -354,6 +359,7 @@ const valid = ref(false);
               <ProsesLayanan
                 :id="id"
                 :on-complete="() => (approveRequirementsProses = true)"
+                :nama-pj="namaPj"
               />
             </div>
             <div v-else>
