@@ -545,12 +545,6 @@ const getListProduct = async () => {
   return response || [];
 };
 
-const getCatatanBahanOrProduk = async (page, size, type) => {
-  if (type == 0) await getListCatatanBahan(page, size);
-
-  await getListCatatanProduk(page, size);
-};
-
 const getListCatatanBahan = async (page, size) => {
   const response: any = await $api(
     "/reguler/pelaku-usaha/tab-proses/list-catatan-bahan",
@@ -569,15 +563,15 @@ const getListCatatanBahan = async (page, size) => {
   return response || [];
 };
 
-const getListCatatanProduk = async () => {
+const getListCatatanProduk = async (page: number, size: number) => {
   const response: any = await $api(
     "/reguler/pelaku-usaha/tab-proses/list-catatan-produk",
     {
       method: "get",
       query: {
         id,
-        page: pageCatatanProduk.value,
-        size: sizeCatatanProduk.value,
+        page,
+        size,
       },
     }
   );
@@ -589,6 +583,14 @@ const getListCatatanProduk = async () => {
   }
 
   return response || [];
+};
+
+const getCatatanBahanOrProduk = async (page, size, type) => {
+  console.log("page, size, type ", page, size, type);
+
+  if (type == 0) await getListCatatanBahan(page, size);
+
+  await getListCatatanProduk(page, size);
 };
 
 const addProcess = () => {
@@ -700,7 +702,7 @@ const handleAddOrEdit = async () => {
         getListLayout();
         getListFactory();
         getListCatatanBahan(pageCatatanBahan.value, sizeCatatanBahan.value);
-        getListCatatanProduk();
+        getListCatatanProduk(pageCatatanProduk.value, sizeCatatanProduk.value);
         useSnackbar().sendSnackbar("Sukses ubah data", "success");
       }
     } else {
@@ -719,7 +721,7 @@ const handleAddOrEdit = async () => {
         getListLayout();
         getListFactory();
         getListCatatanBahan(pageCatatanBahan.value, sizeCatatanBahan.value);
-        getListCatatanProduk();
+        getListCatatanProduk(pageCatatanProduk.value, sizeCatatanProduk.value);
         useSnackbar().sendSnackbar("Sukses menambah data", "success");
       }
     }
@@ -974,7 +976,7 @@ onMounted(async () => {
     getListLayout(),
     getListFactory(),
     getListCatatanBahan(pageCatatanBahan.value, sizeCatatanBahan.value),
-    getListCatatanProduk(),
+    getListCatatanProduk(pageCatatanProduk.value, sizeCatatanProduk.value),
     getListDigaramAlur(pageDiagramAlur.value, itemsPerPageDiagramAlur.value),
     getListHasilProduksi(),
     getListCatatanDistribusi(),
