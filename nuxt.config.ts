@@ -154,7 +154,12 @@ export default defineNuxtConfig({
   ],
 
   imports: {
-    dirs: ["./@core/utils", "./@core/composable/", "./plugins/*/composables/*"],
+    dirs: [
+      "./@core/utils",
+      "./@core/composable/",
+      "./plugins/*/composables/*",
+      "./constants",
+    ],
   },
 
   hooks: {},
