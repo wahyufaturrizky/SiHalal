@@ -55,7 +55,6 @@ const saveReqDocument = async () => {
     }
 
     const { type, no } = item || {};
-    console.log(item);
 
     const response: any = await $api(
       "/shln/submission/document/add-requirement",
