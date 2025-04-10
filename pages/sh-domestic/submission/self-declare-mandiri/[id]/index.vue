@@ -32,6 +32,8 @@ const statusItem = new Proxy(
   }
 );
 
+const { t } = useI18n()
+
 const skalaUsaha = ref([]);
 
 const router = useRouter();
@@ -101,20 +103,19 @@ const itemPerPages = reactive({
   bahan: 10,
 });
 
-const kbliDropdown = ref<any>([]);
+const kbliDropdown = ref<any>([])
+const selectedKbli = ref(null)
 
 const getExistKbli = () => {
   const result = kbliDropdown.value.find((el: any) => {
-    return el.uraian_usaha === submissionDetail.nama_kbli;
-  });
+    return el.judul_kbli === submissionDetail.nama_kbli
+  })
 
-  return result ? result.id : null;
-};
-
-const selectedKbli = ref(null);
+  return result || null
+}
 
 const kbliData = computed(() => {
-  return selectedKbli.value ? selectedKbli.value : getExistKbli();
+  return selectedKbli.value ? selectedKbli.value : getExistKbli()
 });
 
 const isEditButtonDisabled = computed(() => {
@@ -229,21 +230,24 @@ const trackingDetail = ref([]);
 const handleUpdateKbli = async () => {
   try {
     const result: any = await $api(
-      `/self-declare/submission/${submissionId}/update-kbli`,
+      '/self-declare/submission/update-kbli',
       {
-        method: "put",
+        method: 'put',
         body: {
-          kbli_id: selectedKbli.value,
+          id_reg: submissionId,
+          kbli: selectedKbli.value.kbli,
+          kbli_name: selectedKbli.value.judul_kbli,
         },
-      }
-    );
+      },
+    )
 
     if (result.code === 2000)
-      snackbar.sendSnackbar("KBLI Successfully Updated", "success");
-  } catch (error) {
-    snackbar.sendSnackbar("Update KBLI Failed", "error");
+      snackbar.sendSnackbar(t('sh-domestic.success-update-kbli-message'), 'success')
   }
-};
+  catch (error) {
+    snackbar.sendSnackbar(t('sh-domestic.failed-update-kbli-message'), 'error')
+  }
+}
 
 const handleDeleteSubmission = async () => {
   try {
@@ -305,12 +309,35 @@ const loadBahan = async () => {
   }
 };
 
+const getKbliList = async () => {
+  try {
+    const response3: MasterBadanUsaha[] = await $api('/master/kbli', {
+      method: 'get',
+    })
+
+    const seen = new Set()
+
+    const arrRes = Array.isArray(response3) ? response3 : []
+
+    kbliDropdown.value = arrRes.filter(item => {
+      if (seen.has(item.kbli))
+        return false
+      seen.add(item.kbli)
+
+      return true
+    })
+  }
+  catch (err) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
+
 onMounted(async () => {
   await Promise.all([
     loadBahan(),
     getSkalaUsaha(),
     getSubmissionDetail(),
-    getKbli(),
+    getKbliList(),
     getExistKbli(),
     handleGetNarration(),
     getDownloadForm("surat-permohonan", "surat_permohonan"),
@@ -366,14 +393,6 @@ const getSubmissionDetail = async () => {
   } catch (error) {
     router.push("/sh-domestic/submission/self-declare-mandiri");
   }
-};
-
-const getKbli = async () => {
-  const response3: any = await $api("/master/list-oss", {
-    method: "get",
-  });
-
-  kbliDropdown.value = response3;
 };
 
 const getIkrarFile = async () => {
@@ -600,9 +619,35 @@ const isCanEdit = () => {
                 class="d-flex align-center"
                 :name-style="{ fontWeight: '600' }"
               >
-                {{
-                  submissionDetail.nama_kbli ? submissionDetail.nama_kbli : "-"
-                }}
+              <VRow class="align-center" no-gutters>
+                  <VCol cols="9">
+                    <VSelect
+                      item-title="judul_kbli"
+                      item-value="kbli"
+                      return-object
+                      dense
+                      hide-details
+                      variant="outlined"
+                      placeholder="Pilih KBLI"
+                      style="min-height: 40px"
+                      :model-value="kbliData"
+                      :items="kbliDropdown"
+                      @update:model-value="selectedKbli = $event"
+                    />
+                  </VCol>
+                  <VCol cols="3" class="pl-2">
+                    <VBtn
+                      color="primary"
+                      variant="outlined"
+                      block
+                      style="min-height: 40px"
+                      @click="handleUpdateKbli"
+                      :disabled="!kbliData"
+                    >
+                      Update
+                    </VBtn>
+                  </VCol>
+                </VRow>
               </InfoRow>
               <ThinLine :thickness="1" />
               <InfoRow

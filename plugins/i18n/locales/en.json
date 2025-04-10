@@ -210,6 +210,10 @@
     "title": "Halal Certificate Submission",
     "detail": "Check Submission Data"
   },
+  "sh-domestic": {
+    "success-update-kbli-message": "KBLI Successfully Updated",
+    "failed-update-kbli-message": "Update KBLI Failed"
+  },
   "validation": {
     "fill": "This column is mandatory"
   },
