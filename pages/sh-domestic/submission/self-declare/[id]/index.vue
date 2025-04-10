@@ -106,7 +106,7 @@ const selectedKbli = ref(null)
 
 const getExistKbli = () => {
   const result = kbliDropdown.value.find((el: any) => {
-    return el.judul_kbli === submissionDetail.nama_kbli
+    return el.uraian_usaha === submissionDetail.nama_kbli
   })
 
   return result || null
@@ -235,7 +235,7 @@ const handleUpdateKbli = async () => {
         body: {
           id_reg: submissionId,
           kbli: selectedKbli.value.kbli,
-          kbli_name: selectedKbli.value.judul_kbli,
+          kbli_name: selectedKbli.value.uraian_usaha,
         },
       },
     )
@@ -333,21 +333,11 @@ const getSjphDocument = async () => {
 
 const getKbliList = async () => {
   try {
-    const response3: MasterBadanUsaha[] = await $api('/master/kbli', {
+    const response3: MasterBadanUsaha[] = await $api('/master/list-oss', {
       method: 'get',
     })
 
-    const seen = new Set()
-
-    const arrRes = Array.isArray(response3) ? response3 : []
-
-    kbliDropdown.value = arrRes.filter(item => {
-      if (seen.has(item.kbli))
-        return false
-      seen.add(item.kbli)
-
-      return true
-    })
+    kbliDropdown.value = response3
   }
   catch (err) {
     useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
@@ -645,7 +635,7 @@ const isCanEdit = () => {
                       :model-value="kbliData"
                       @update:model-value="selectedKbli = $event"
                       :items="kbliDropdown"
-                      item-title="judul_kbli"
+                      item-title="uraian_usaha"
                       item-value="kbli"
                       return-object
                       dense
