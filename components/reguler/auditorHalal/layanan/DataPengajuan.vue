@@ -6,8 +6,6 @@
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-const emit = defineEmits(["certificateDataChanged"]);
-
 const props = defineProps({
   id: {
     type: String,
@@ -43,6 +41,8 @@ const props = defineProps({
     default: false,
   },
 });
+
+const emit = defineEmits(["certificateDataChanged"]);
 
 const { t } = useI18n();
 
@@ -256,6 +256,7 @@ const emitRequestCertificateData = () => {
   emit("certificateDataChanged", requestCertificateData);
 
   storeDataPengajuan.setCertData(requestCertificateData.value);
+
   // requestCertificateData.value;
 };
 
@@ -311,7 +312,7 @@ const getDetailData = async () => {
         },
         {
           title: "pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsprod",
-          value: certificateHalal.jenis_produk || "",
+          value: certificateHalal?.id_produk || "",
           type: "select",
           disabled: certificateHalal.jenis_pengajuan == "Pengembangan",
           required: certificateHalal.jenis_pengajuan != "Pengembangan",
