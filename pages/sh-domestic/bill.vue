@@ -28,8 +28,8 @@ const handleInvoice = async (
   id: string,
   invoiceType: string
 ) => {
-  if (fileName == "") {
-    const response = await $api("/certificate/regenerate", {
+  if (fileName == "" || fileName == undefined || fileName == null) {
+    const response = await $api(`/certificate/regenerate`, {
       method: "post",
       body: {
         document_type: typeInvoice[invoiceType],
