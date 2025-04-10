@@ -129,7 +129,7 @@ onMounted(async () => {
             <VDataTableServer
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
-              :items-per-page-options="[10, 25, 50, 100]"
+              :items-per-page-options="ITEMS_PER_PAGE_OPTIONS_HUGE"
               :items-length="totalItems"
               :loading="loading"
               loading-text="Loading..."
