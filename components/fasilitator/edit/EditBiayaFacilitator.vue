@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { MasterDistrict } from "@/server/interface/master.iface";
-import { computed, ref } from "vue";
-import { useDisplay } from "vuetify";
+import { computed, ref } from 'vue'
+import { useDisplay } from 'vuetify'
+import type { MasterDistrict } from '@/server/interface/master.iface'
 
 const props = defineProps({
   type: {
@@ -10,87 +10,87 @@ const props = defineProps({
   islockedlembaga: {
     type: Boolean,
   },
-});
+})
 
-const { type, islockedlembaga } = props || {};
+const { type, islockedlembaga } = props || {}
 
 // State untuk checkbox
-const province = ref();
-const district = ref();
-const kunciLembaga = ref(false);
-const route = useRoute();
-const loadingDelete = ref(false);
-const loadingLock = ref(false);
-const loadingAdd = ref(false);
-const loadingItemsInstitutionName = ref(false);
-const loadingJenisLayanan = ref(false);
-const loadingJenisProduk = ref(false);
-const loadingLembagaPemeriksaHalal = ref(false);
-const totalItems = ref(0);
-const statusFilter = ref("OF1,OF10,OF12,OF15,OF2,OF290,OF5,OF320,OF11");
-const detailBiaya = ref<any>({});
-const biayaDialog = ref<boolean>(false);
+const province = ref()
+const district = ref()
+const kunciLembaga = ref(false)
+const route = useRoute()
+const loadingDelete = ref(false)
+const loadingLock = ref(false)
+const loadingAdd = ref(false)
+const loadingItemsInstitutionName = ref(false)
+const loadingJenisLayanan = ref(false)
+const loadingJenisProduk = ref(false)
+const loadingLembagaPemeriksaHalal = ref(false)
+const totalItems = ref(0)
+const statusFilter = ref('OF1,OF10,OF12,OF15,OF2,OF290,OF5,OF320,OF11')
+const detailBiaya = ref<any>({})
+const biayaDialog = ref<boolean>(false)
 
-const facilitateId = route.params.id;
-const loading = ref(false);
-const page = ref<number>(1);
-const size = ref<number>(10);
+const facilitateId = route.params.id
+const loading = ref(false)
+const page = ref<number>(1)
+const size = ref<number>(10)
 
 // Data tabel
-const detailBiayaitems = ref([]);
-const itemsInstitutionName = ref([]);
-const itemsJenisLayanan = ref([]);
-const itemsJenisProduk = ref([]);
-const itemsLembagaPemeriksaHalal = ref([]);
-const totalBiayaDetail = ref(0);
+const detailBiayaitems = ref([])
+const itemsInstitutionName = ref([])
+const itemsJenisLayanan = ref([])
+const itemsJenisProduk = ref([])
+const itemsLembagaPemeriksaHalal = ref([])
+const totalBiayaDetail = ref(0)
 
 // Form data dan dialog
-const formRef = ref(null);
-const selectedItem = ref(null);
-const addDialog = ref(false);
-const deleteDialog = ref(false);
+const formRef = ref(null)
+const selectedItem = ref(null)
+const addDialog = ref(false)
+const deleteDialog = ref(false)
 
 // Data untuk form tambah lembaga
 const formData = ref({
-  ruangLingkup: "",
-  provinsiId: "",
-  kabupatenId: "",
-  jenisLayanan: "",
-  jenisProduk: "",
-  kuota: "",
-  jumlahProduk: "",
-  lphId: "",
-});
+  ruangLingkup: '',
+  provinsiId: '',
+  kabupatenId: '',
+  jenisLayanan: '',
+  jenisProduk: '',
+  kuota: '',
+  jumlahProduk: '',
+  lphId: '',
+})
 
-kunciLembaga.value = islockedlembaga;
+kunciLembaga.value = islockedlembaga
 
 const loadItemById = async (options?: {
-  page: number;
-  itemsPerPage: number;
+  page: number
+  itemsPerPage: number
 }) => {
   try {
-    loading.value = true;
+    loading.value = true
 
     if (options) {
-      page.value = options.page;
-      size.value = options.itemsPerPage;
+      page.value = options.page
+      size.value = options.itemsPerPage
     }
 
     const response = await $api(
       `/facilitate/biaya-reguler/list/${facilitateId}`,
       {
-        method: "get",
+        method: 'get',
         params: {
           page: page.value,
           size: size.value,
           status: statusFilter.value,
         },
-      }
-    );
+      },
+    )
 
     if (response.code === 2000) {
-      totalBiayaDetail.value = 0;
-      detailBiayaitems.value = response.data?.map((item) => {
+      totalBiayaDetail.value = 0
+      detailBiayaitems.value = response.data?.map(item => {
         const {
           id,
           lph_nama,
@@ -132,13 +132,14 @@ const loadItemById = async (options?: {
           biaya_bpjph,
           biaya_mui,
           total_biaya_satuan,
-        } = item;
+        } = item
 
-        totalBiayaDetail.value += total_biaya;
+        totalBiayaDetail.value += total_biaya
 
-        totalItems.value = response?.total_item;
+        totalItems.value = response?.total_item
 
-        loading.value = false;
+        loading.value = false
+
         return {
           lph_nama,
           jenis_layanan,
@@ -179,180 +180,194 @@ const loadItemById = async (options?: {
           biaya_bpjph,
           biaya_mui,
           total_biaya_satuan,
-        };
-      });
-    } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-      loading.value = false;
+        }
+      })
     }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loading.value = false;
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      loading.value = false
+    }
   }
-};
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    loading.value = false
+  }
+}
 
 const getProvince = async () => {
-  const response = await $api("/master/province", {
-    method: "get",
-  });
-  province.value = response;
+  const response = await $api('/master/province', {
+    method: 'get',
+  })
 
-  loadLembagaPemeriksaHalal();
-};
+  province.value = response
+
+  loadLembagaPemeriksaHalal()
+}
 
 const getDistrict = async (kode: string) => {
-  const response: MasterDistrict[] = await $api("/master/district", {
-    method: "post",
+  const response: MasterDistrict[] = await $api('/master/district', {
+    method: 'post',
     body: {
       province: kode,
     },
-  });
-  district.value = response;
+  })
 
-  loadLembagaPemeriksaHalal();
-};
+  district.value = response
+
+  loadLembagaPemeriksaHalal()
+}
 
 const loadItemLembagaPendamping = async () => {
   try {
-    loadingItemsInstitutionName.value = true;
+    loadingItemsInstitutionName.value = true
 
     const response = await $api(
       `/master/${
-        type === "Reguler" ? "lembaga-pemeriksa-halal" : "lembaga-pendamping"
+        type === 'Reguler' ? 'lembaga-pemeriksa-halal' : 'lembaga-pendamping'
       }`,
       {
-        method: "get",
-      }
-    );
+        method: 'get',
+      },
+    )
 
     if (response) {
-      itemsInstitutionName.value = response;
+      itemsInstitutionName.value = response
 
-      loadingItemsInstitutionName.value = false;
-    } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-      loadingItemsInstitutionName.value = false;
+      loadingItemsInstitutionName.value = false
     }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingItemsInstitutionName.value = false;
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+      loadingItemsInstitutionName.value = false
+    }
   }
-};
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    loadingItemsInstitutionName.value = false
+  }
+}
 
 const loadJenisLayanan = async () => {
   try {
-    loadingJenisLayanan.value = true;
+    loadingJenisLayanan.value = true
 
-    const response = await $api(`/facilitate/jenis-layanan/list`, {
-      method: "get",
-    });
+    const response = await $api('/facilitate/jenis-layanan/list', {
+      method: 'get',
+    })
 
     if (response) {
-      itemsJenisLayanan.value = response;
+      itemsJenisLayanan.value = response
 
-      loadingJenisLayanan.value = false;
-    } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-
-      loadingJenisLayanan.value = false;
+      loadingJenisLayanan.value = false
     }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
 
-    loadingJenisLayanan.value = false;
+      loadingJenisLayanan.value = false
+    }
   }
-};
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+
+    loadingJenisLayanan.value = false
+  }
+}
 
 const loadJenisProduk = async (parent: string) => {
   try {
-    loadingJenisProduk.value = true;
+    loadingJenisProduk.value = true
 
-    const response = await $api(`/facilitate/jenis-produk/list`, {
-      method: "get",
+    const response = await $api('/facilitate/jenis-produk/list', {
+      method: 'get',
       params: {
-        parent: parent,
+        parent,
       },
-    });
+    })
 
     if (response) {
-      itemsJenisProduk.value = response;
+      itemsJenisProduk.value = response
 
-      loadingJenisProduk.value = false;
+      loadingJenisProduk.value = false
 
-      loadLembagaPemeriksaHalal();
-    } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-
-      loadingJenisProduk.value = false;
+      loadLembagaPemeriksaHalal()
     }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
 
-    loadingJenisProduk.value = false;
+      loadingJenisProduk.value = false
+    }
   }
-};
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+
+    loadingJenisProduk.value = false
+  }
+}
 
 const loadLembagaPemeriksaHalal = async () => {
   try {
-    const { jenisLayanan, ruangLingkup, provinsiId, kabupatenId } =
-      formData.value;
+    const { jenisLayanan, ruangLingkup, provinsiId, kabupatenId }
+      = formData.value
 
     if (jenisLayanan && ruangLingkup && provinsiId && kabupatenId) {
-      loadingLembagaPemeriksaHalal.value = true;
+      loadingLembagaPemeriksaHalal.value = true
 
-      const response = await $api(`/facilitate/lph/list`, {
-        method: "get",
+      const response = await $api('/facilitate/lph/list', {
+        method: 'get',
         params: {
           jenis_layanan: jenisLayanan,
           area_pemasaran: ruangLingkup,
           prov: provinsiId,
           kab: kabupatenId,
         },
-      });
+      })
 
       if (response) {
-        itemsLembagaPemeriksaHalal.value = response;
+        itemsLembagaPemeriksaHalal.value = response
 
-        loadingLembagaPemeriksaHalal.value = false;
-      } else {
-        useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+        loadingLembagaPemeriksaHalal.value = false
+      }
+      else {
+        useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
 
-        loadingLembagaPemeriksaHalal.value = false;
+        loadingLembagaPemeriksaHalal.value = false
       }
     }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-
-    loadingLembagaPemeriksaHalal.value = false;
   }
-};
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+
+    loadingLembagaPemeriksaHalal.value = false
+  }
+}
 
 const deleteFacilitateBiaya = async (id: string) => {
   try {
-    loadingDelete.value = true;
+    loadingDelete.value = true
 
     const res = await $api(`/facilitate/biaya-reguler/delete/${id}`, {
-      method: "delete",
-    });
+      method: 'delete',
+    })
 
     if (res?.code === 2000) {
-      loadingDelete.value = false;
-      addDialog.value = false;
-      page.value = 1;
-      await loadItemById();
-    } else {
-      useSnackbar().sendSnackbar("Gagal update data", "error");
-      loadingDelete.value = false;
-      addDialog.value = false;
+      loadingDelete.value = false
+      addDialog.value = false
+      page.value = 1
+      await loadItemById()
     }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingDelete.value = false;
+    else {
+      useSnackbar().sendSnackbar('Gagal update data', 'error')
+      loadingDelete.value = false
+      addDialog.value = false
+    }
   }
-};
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    loadingDelete.value = false
+  }
+}
 
 const openModalBiayaDetail = (item: any) => {
-  const dataItem = item;
+  const dataItem = item
 
   // dataItem.unit_cost_awal = formatToIDR(item.unit_cost_awal);
   // dataItem.unit_cost_akhir = formatToIDR(item.unit_cost_akhir);
@@ -367,36 +382,37 @@ const openModalBiayaDetail = (item: any) => {
   // dataItem.tiket_pesawat_akhir = formatToIDR(item.tiket_pesawat_akhir);
   // dataItem.subtotal = formatToIDR(item.subtotal);
 
-  detailBiaya.value = dataItem;
-  biayaDialog.value = true;
-};
+  detailBiaya.value = dataItem
+  biayaDialog.value = true
+}
 
 // Reset form
 const resetForm = () => {
   formData.value = {
-    ruangLingkup: "",
-    provinsiId: "",
-    kabupatenId: "",
-    jenisLayanan: "",
-    jenisProduk: "",
-    kuota: "",
-    jumlahProduk: "",
-    lphId: "",
-  };
-};
+    ruangLingkup: '',
+    provinsiId: '',
+    kabupatenId: '',
+    jenisLayanan: '',
+    jenisProduk: '',
+    kuota: '',
+    jumlahProduk: '',
+    lphId: '',
+  }
+}
 
 const addFacilitateLembaga = async () => {
   try {
-    loadingAdd.value = true;
+    loadingAdd.value = true
 
-    if (formData.value.jenisProduk !== "A0016") {
-      formData.value.jumlahProduk = 50;
-    }
+    if (formData.value.jenisProduk !== 'A0016')
+      formData.value.jumlahProduk = 50
+    else
+      formData.value.jumlahProduk = Number.parseInt(formData.value.jumlahProduk)
 
-    formData.value.kuota = parseInt(formData.value.kuota);
+    formData.value.kuota = Number.parseInt(formData.value.kuota)
 
-    const res = await $api("/facilitate/biaya-reguler/add", {
-      method: "post",
+    const res = await $api('/facilitate/biaya-reguler/add', {
+      method: 'post',
       body: {
         fac_id: facilitateId,
         ruang_lingkup: formData.value.ruangLingkup,
@@ -407,115 +423,120 @@ const addFacilitateLembaga = async () => {
         kuota: formData.value.kuota,
         jumlah_produk: formData.value.jumlahProduk,
         lph_id: formData.value.lphId,
+
         // "fac_status": "Active",
         // "is_taken": true,
         // "created_by": "Admin"
       },
-    });
+    })
 
     if (res?.code === 2000) {
-      loadingAdd.value = false;
-      resetForm();
-      addDialog.value = false;
-      useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
-      page.value = 1;
-      await loadItemById();
-    } else {
-      useSnackbar().sendSnackbar("Gagal update data", "error");
-      loadingAdd.value = false;
-      resetForm();
-      addDialog.value = false;
+      loadingAdd.value = false
+      resetForm()
+      addDialog.value = false
+      useSnackbar().sendSnackbar('Berhasil menambahkan data', 'success')
+      page.value = 1
+      await loadItemById()
     }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingAdd.value = false;
-    resetForm();
-    addDialog.value = false;
+    else {
+      useSnackbar().sendSnackbar('Gagal update data', 'error')
+      loadingAdd.value = false
+      resetForm()
+      addDialog.value = false
+    }
   }
-};
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    loadingAdd.value = false
+    resetForm()
+    addDialog.value = false
+  }
+}
 
 const updateLockFacilitateLembaga = async () => {
   try {
-    loadingLock.value = true;
+    loadingLock.value = true
 
-    const res = await $api("/facilitate/lembaga/lock", {
-      method: "put",
+    const res = await $api('/facilitate/lembaga/lock', {
+      method: 'put',
       body: {
         fac_id: facilitateId,
         is_locked_lembaga: kunciLembaga.value,
       },
-    });
+    })
 
     if (res?.code === 2000) {
-      loadingLock.value = false;
-    } else {
-      useSnackbar().sendSnackbar("Gagal update data", "error");
-      loadingLock.value = false;
+      loadingLock.value = false
     }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    loadingLock.value = false;
+    else {
+      useSnackbar().sendSnackbar('Gagal update data', 'error')
+      loadingLock.value = false
+    }
   }
-};
+  catch (error) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    loadingLock.value = false
+  }
+}
 
 onMounted(async () => {
-  await loadItemLembagaPendamping();
-  await getProvince();
-  await loadJenisLayanan();
-});
+  await loadItemLembagaPendamping()
+  await getProvince()
+  await loadJenisLayanan()
+})
 
 const domesticAuditHeader: any[] = [
-  { title: "No", key: "no" },
-  { title: "Lembaga Pemeriksa Halal (LPH)", key: "lph_nama", nowrap: true },
-  { title: "Man Days", key: "mandays", nowrap: true },
-  { title: "Unit Cost Awal", key: "unit_cost_awal", nowrap: true },
-  { title: "Diskon (%)", key: "unit_cost_diskon", nowrap: true },
-  { title: "Unit Cost Akhir", key: "unit_cost_akhir", nowrap: true },
-  { title: "UHPD Awal", key: "uhpd_awal", nowrap: true },
-  { title: "Diskon (%)", key: "uhpd_diskon", nowrap: true },
-  { title: "UHPD Akhir", key: "uhpd_akhir", nowrap: true },
-  { title: "Operasional", key: "operasional", nowrap: true },
-  { title: "Akomodasi Awal", key: "akomodasi_awal", nowrap: true },
-  { title: "Diskon (%)", key: "akomodasi_diskon", nowrap: true },
-  { title: "Akomodasi Akhir", key: "akomodasi_akhir", nowrap: true },
-  { title: "Transportasi Awal", key: "transport_awal", nowrap: true },
-  { title: "Diskon (%)", key: "transport_diskon", nowrap: true },
-  { title: "Transportasi Akhir", key: "transport_akhir", nowrap: true },
-  { title: "Tiket Pesawat Awal", key: "tiket_pesawat_awal", nowrap: true },
-  { title: "Diskon (%)", key: "tiket_pesawat_diskon", nowrap: true },
-  { title: "Tiket Pesawat Akhir", key: "tiket_pesawat_akhir", nowrap: true },
-  { title: "Pemeriksaan dan Penerbitan SH", key: "biaya_bpjph", nowrap: true },
-  { title: "Penetapan", key: "biaya_mui", nowrap: true },
-  { title: "Sub Tot", key: "total_biaya_satuan", nowrap: true },
-  { title: "Kuota", key: "kuota", nowrap: true },
-  { title: "Total", key: "total_biaya", nowrap: true },
-  { title: "Action", key: "actions", align: "center", nowrap: true },
-];
+  { title: 'No', key: 'no' },
+  { title: 'Lembaga Pemeriksa Halal (LPH)', key: 'lph_nama', nowrap: true },
+  { title: 'Man Days', key: 'mandays', nowrap: true },
+  { title: 'Unit Cost Awal', key: 'unit_cost_awal', nowrap: true },
+  { title: 'Diskon (%)', key: 'unit_cost_diskon', nowrap: true },
+  { title: 'Unit Cost Akhir', key: 'unit_cost_akhir', nowrap: true },
+  { title: 'UHPD Awal', key: 'uhpd_awal', nowrap: true },
+  { title: 'Diskon (%)', key: 'uhpd_diskon', nowrap: true },
+  { title: 'UHPD Akhir', key: 'uhpd_akhir', nowrap: true },
+  { title: 'Operasional', key: 'operasional', nowrap: true },
+  { title: 'Akomodasi Awal', key: 'akomodasi_awal', nowrap: true },
+  { title: 'Diskon (%)', key: 'akomodasi_diskon', nowrap: true },
+  { title: 'Akomodasi Akhir', key: 'akomodasi_akhir', nowrap: true },
+  { title: 'Transportasi Awal', key: 'transport_awal', nowrap: true },
+  { title: 'Diskon (%)', key: 'transport_diskon', nowrap: true },
+  { title: 'Transportasi Akhir', key: 'transport_akhir', nowrap: true },
+  { title: 'Tiket Pesawat Awal', key: 'tiket_pesawat_awal', nowrap: true },
+  { title: 'Diskon (%)', key: 'tiket_pesawat_diskon', nowrap: true },
+  { title: 'Tiket Pesawat Akhir', key: 'tiket_pesawat_akhir', nowrap: true },
+  { title: 'Pemeriksaan dan Penerbitan SH', key: 'biaya_bpjph', nowrap: true },
+  { title: 'Penetapan', key: 'biaya_mui', nowrap: true },
+  { title: 'Sub Tot', key: 'total_biaya_satuan', nowrap: true },
+  { title: 'Kuota', key: 'kuota', nowrap: true },
+  { title: 'Total', key: 'total_biaya', nowrap: true },
+  { title: 'Action', key: 'actions', align: 'center', nowrap: true },
+]
 
 // Fungsi tambah data
 const tambahData = () => {
-  addFacilitateLembaga();
-};
+  addFacilitateLembaga()
+}
 
 const confirmDelete = (item: any) => {
-  selectedItem.value = item;
-  deleteDialog.value = true;
-};
+  selectedItem.value = item
+  deleteDialog.value = true
+}
 
 const hapusData = () => {
-  const index = selectedItem.value;
+  const index = selectedItem.value
 
-  deleteFacilitateBiaya(index.fac_id_detail);
+  deleteFacilitateBiaya(index.fac_id_detail)
 
-  deleteDialog.value = false;
-};
+  deleteDialog.value = false
+}
 
-const { mdAndUp } = useDisplay();
-const dialogMaxWidth = computed(() => (mdAndUp ? 700 : "90%"));
+const { mdAndUp } = useDisplay()
+const dialogMaxWidth = computed(() => (mdAndUp ? 700 : '90%'))
 
 const checkIsFieldEmpty = (data: any) => {
-  return Object.keys(data)?.find((key) => key !== "jumlahProduk" && !data[key]);
-};
+  return Object.keys(data)?.find(key => key !== 'jumlahProduk' && !data[key])
+}
 </script>
 
 <template>
@@ -525,7 +546,9 @@ const checkIsFieldEmpty = (data: any) => {
         <VExpansionPanel>
           <VCard class="pa-4">
             <VCardText class="d-flex justify-space-between align-center">
-              <p class="text-h4">List Detail Biaya</p>
+              <p class="text-h4">
+                List Detail Biaya
+              </p>
               <VBtn
                 color="primary"
                 class="mb-4"
@@ -549,14 +572,25 @@ const checkIsFieldEmpty = (data: any) => {
               >
                 <template #body="{ items }">
                   <tr v-if="items.length === 0">
-                    <td colspan="7" class="text-center">
+                    <td
+                      colspan="7"
+                      class="text-center"
+                    >
                       <div class="pt-2">
-                        <img src="~/assets/images/empty-data.png" alt="" />
-                        <div class="pt-2 font-weight-bold">Data Kosong</div>
+                        <img
+                          src="~/assets/images/empty-data.png"
+                          alt=""
+                        >
+                        <div class="pt-2 font-weight-bold">
+                          Data Kosong
+                        </div>
                       </div>
                     </td>
                   </tr>
-                  <tr v-for="(item, idx) in detailBiayaitems" :key="idx">
+                  <tr
+                    v-for="(item, idx) in detailBiayaitems"
+                    :key="idx"
+                  >
                     <td>{{ idx + 1 }}</td>
                     <td>{{ item.lph_nama }}</td>
                     <td>{{ item.mandays }}</td>
@@ -608,7 +642,7 @@ const checkIsFieldEmpty = (data: any) => {
                     </td>
                   </tr>
                   <tr>
-                    <td colspan="23"></td>
+                    <td colspan="23" />
                     <td v-if="items.length">
                       <div class="d-flex gap-5">
                         <div class="d-flex align-center font-weight-bold">
@@ -625,15 +659,20 @@ const checkIsFieldEmpty = (data: any) => {
       </VExpansionPanels>
     </VCol>
 
-    <VDialog v-model="addDialog" :max-width="dialogMaxWidth">
+    <VDialog
+      v-model="addDialog"
+      :max-width="dialogMaxWidth"
+    >
       <VCard class="pa-4">
-        <VCardTitle class="text-h4"> Tambah Biaya </VCardTitle>
+        <VCardTitle class="text-h4">
+          Tambah Biaya
+        </VCardTitle>
         <VCardText>
           <VForm ref="formRef">
             <VRow>
               <VCol :cols="12">
                 <VItemGroup>
-                  <VLabel text="Lingkup Wilayah Fasilitasi"></VLabel>
+                  <VLabel text="Lingkup Wilayah Fasilitasi" />
                   <VAutocomplete
                     id="ruangLingkup"
                     v-model="formData.ruangLingkup"
@@ -650,16 +689,16 @@ const checkIsFieldEmpty = (data: any) => {
             <VRow>
               <VCol :cols="12">
                 <VItemGroup>
-                  <VLabel text="Provinsi"></VLabel>
+                  <VLabel text="Provinsi" />
                   <VAutocomplete
+                    v-model="formData.provinsiId"
                     :rules="[requiredValidator]"
                     require
-                    v-on:update:model-value="getDistrict"
                     placeholder="Pilih Provinsi"
-                    v-model="formData.provinsiId"
                     :items="province"
                     item-value="code"
                     item-title="name"
+                    @update:model-value="getDistrict"
                   />
                 </VItemGroup>
               </VCol>
@@ -668,16 +707,16 @@ const checkIsFieldEmpty = (data: any) => {
             <VRow>
               <VCol :cols="12">
                 <VItemGroup>
-                  <VLabel text="Kabupaten/Kota"></VLabel>
+                  <VLabel text="Kabupaten/Kota" />
                   <VAutocomplete
+                    v-model="formData.kabupatenId"
                     :items="district"
                     item-value="code"
                     item-title="name"
-                    v-model="formData.kabupatenId"
                     :rules="[requiredValidator]"
                     require
                     placeholder="Pilih Kabupaten/Kota"
-                    v-on:update:model-value="loadLembagaPemeriksaHalal"
+                    @update:model-value="loadLembagaPemeriksaHalal"
                   />
                 </VItemGroup>
               </VCol>
@@ -686,7 +725,7 @@ const checkIsFieldEmpty = (data: any) => {
             <VRow>
               <VCol :cols="12">
                 <VItemGroup>
-                  <VLabel text="Jenis Layanan"></VLabel>
+                  <VLabel text="Jenis Layanan" />
                   <VSelect
                     id="jenisLayanan"
                     v-model="formData.jenisLayanan"
@@ -698,7 +737,7 @@ const checkIsFieldEmpty = (data: any) => {
                     :disabled="loadingJenisLayanan"
                     :loading="loadingJenisLayanan"
                     :rules="[requiredValidator]"
-                    v-on:update:model-value="loadJenisProduk"
+                    @update:model-value="loadJenisProduk"
                   />
                 </VItemGroup>
               </VCol>
@@ -707,7 +746,7 @@ const checkIsFieldEmpty = (data: any) => {
             <VRow>
               <VCol :cols="12">
                 <VItemGroup>
-                  <VLabel text="Jenis Produk"></VLabel>
+                  <VLabel text="Jenis Produk" />
                   <VSelect
                     id="jenisProduk"
                     v-model="formData.jenisProduk"
@@ -724,9 +763,9 @@ const checkIsFieldEmpty = (data: any) => {
               </VCol>
             </VRow>
 
-            <VRow v-if="formData.jenisLayanan == 'A0016'">
+            <VRow v-if="formData.jenisProduk == 'A0016'">
               <VCol cols="12">
-                <VLabel text="Jumlah Produk"></VLabel>
+                <VLabel text="Jumlah Produk" />
                 <VTextField
                   id="jumlahProduk"
                   v-model="formData.jumlahProduk"
@@ -740,7 +779,7 @@ const checkIsFieldEmpty = (data: any) => {
 
             <VRow>
               <VCol cols="12">
-                <VLabel text="Kuota"></VLabel>
+                <VLabel text="Kuota" />
                 <VTextField
                   id="kuota"
                   v-model="formData.kuota"
@@ -755,7 +794,7 @@ const checkIsFieldEmpty = (data: any) => {
             <VRow>
               <VCol :cols="12">
                 <VItemGroup>
-                  <VLabel text="Lembaga Pemeriksa Halal"></VLabel>
+                  <VLabel text="Lembaga Pemeriksa Halal" />
                   <VSelect
                     id="lembagaPemeriksaHalal"
                     v-model="formData.lphId"
@@ -772,33 +811,39 @@ const checkIsFieldEmpty = (data: any) => {
               </VCol>
             </VRow>
 
-            <!-- <label class="text-h6" for="picName">
+            <!--
+              <label class="text-h6" for="picName">
               Nama Penanggung Jawab Program LPH
-            </label>
-            <VTextField
+              </label>
+              <VTextField
               id="picName"
               v-model="formData.picName"
               placeholder="Isi Nama Penanggung Jawab Program LPH / LP3H "
               required
               class="mb-4"
               :rules="[requiredValidator]"
-            />
-            <label class="text-h6" for="picName">
+              />
+              <label class="text-h6" for="picName">
               Nomor Kontak Penanggung Jawab Program LPH / LP3H
-            </label>
-            <VTextField
+              </label>
+              <VTextField
               v-model="formData.picPhoneNumber"
               placeholder="Isi Nomor Kontak Penanggung Jawab Program LPH / LP3H "
               required
               class="mb-4"
               :rules="[requiredValidator]"
               type="number"
-            /> -->
+              />
+            -->
           </VForm>
         </VCardText>
         <VCardActions>
           <VSpacer />
-          <VBtn text variant="outlined" @click="addDialog = false">
+          <VBtn
+            text
+            variant="outlined"
+            @click="addDialog = false"
+          >
             Batal
           </VBtn>
           <VBtn
@@ -814,10 +859,16 @@ const checkIsFieldEmpty = (data: any) => {
       </VCard>
     </VDialog>
 
-    <VDialog v-model="biayaDialog" max-width="840px" persistent>
+    <VDialog
+      v-model="biayaDialog"
+      max-width="840px"
+      persistent
+    >
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
-          <div class="text-h3 font-weight-bold">Biaya Fasilitasi</div>
+          <div class="text-h3 font-weight-bold">
+            Biaya Fasilitasi
+          </div>
           <VIcon
             @click="
               () => {
@@ -831,7 +882,9 @@ const checkIsFieldEmpty = (data: any) => {
         <VCardText>
           <VRow>
             <VCol>
-              <div class="text-h6">Lembaga Pemeriksa Halal (LPH)</div>
+              <div class="text-h6">
+                Lembaga Pemeriksa Halal (LPH)
+              </div>
               <VTextField
                 v-model="detailBiaya.lph_nama"
                 rounded="xl"
@@ -842,7 +895,9 @@ const checkIsFieldEmpty = (data: any) => {
           </VRow>
           <VRow>
             <VCol>
-              <div class="text-h6">Unit Cost Awal</div>
+              <div class="text-h6">
+                Unit Cost Awal
+              </div>
               <VTextField
                 v-model="detailBiaya.unit_cost_awal"
                 rounded="xl"
@@ -851,10 +906,12 @@ const checkIsFieldEmpty = (data: any) => {
               />
             </VCol>
             <VCol>
-              <div class="text-h6">Diskon (%)</div>
+              <div class="text-h6">
+                Diskon (%)
+              </div>
               <VTextField
-                disabled
                 v-model="detailBiaya.unit_cost_diskon"
+                disabled
                 type="number"
                 rounded="xl"
                 density="compact"
@@ -867,16 +924,17 @@ const checkIsFieldEmpty = (data: any) => {
                     validateInput(e);
                     if (+e.target.value) {
                       const initialCost = idrToNumber(
-                        detailBiaya.unit_cost_awal
+                        detailBiaya.unit_cost_awal,
                       );
-                      detailBiaya.unit_cost_akhir =
-                        initialCost - initialCost * (+e.target.value / 100);
+                      detailBiaya.unit_cost_akhir
+                        = initialCost - initialCost * (+e.target.value / 100);
                       if (detailBiaya.unit_cost_akhir) {
                         detailBiaya.unit_cost_akhir = formatToIDR(
-                          detailBiaya.unit_cost_akhir
+                          detailBiaya.unit_cost_akhir,
                         );
                       }
-                    } else {
+                    }
+                    else {
                       detailBiaya.unit_cost_akhir = detailBiaya.unit_cost_awal;
                     }
                   }
@@ -884,7 +942,9 @@ const checkIsFieldEmpty = (data: any) => {
               />
             </VCol>
             <VCol>
-              <div class="text-h6">Unit Cost Akhir</div>
+              <div class="text-h6">
+                Unit Cost Akhir
+              </div>
               <VTextField
                 v-model="detailBiaya.unit_cost_akhir"
                 rounded="xl"
@@ -895,7 +955,9 @@ const checkIsFieldEmpty = (data: any) => {
           </VRow>
           <VRow>
             <VCol>
-              <div class="text-h6">UHPD Awal</div>
+              <div class="text-h6">
+                UHPD Awal
+              </div>
               <VTextField
                 v-model="detailBiaya.uhpd_awal"
                 rounded="xl"
@@ -904,10 +966,12 @@ const checkIsFieldEmpty = (data: any) => {
               />
             </VCol>
             <VCol>
-              <div class="text-h6">Diskon (%)</div>
+              <div class="text-h6">
+                Diskon (%)
+              </div>
               <VTextField
-                disabled
                 v-model="detailBiaya.uhpd_diskon"
+                disabled
                 rounded="xl"
                 density="compact"
                 placeholder="Masukkan Diskon"
@@ -919,14 +983,15 @@ const checkIsFieldEmpty = (data: any) => {
                     validateInput(e);
                     if (+e.target.value) {
                       const initialCost = idrToNumber(detailBiaya.uhpd_awal);
-                      detailBiaya.uhpd_akhir =
-                        initialCost - initialCost * (+e.target.value / 100);
+                      detailBiaya.uhpd_akhir
+                        = initialCost - initialCost * (+e.target.value / 100);
                       if (detailBiaya.uhpd_akhir) {
                         detailBiaya.uhpd_akhir = formatToIDR(
-                          detailBiaya.uhpd_akhir
+                          detailBiaya.uhpd_akhir,
                         );
                       }
-                    } else {
+                    }
+                    else {
                       detailBiaya.uhpd_akhir = detailBiaya.uhpd_awal;
                     }
                   }
@@ -934,7 +999,9 @@ const checkIsFieldEmpty = (data: any) => {
               />
             </VCol>
             <VCol>
-              <div class="text-h6">UHPD Akhir</div>
+              <div class="text-h6">
+                UHPD Akhir
+              </div>
               <VTextField
                 v-model="detailBiaya.uhpd_akhir"
                 rounded="xl"
@@ -945,7 +1012,9 @@ const checkIsFieldEmpty = (data: any) => {
           </VRow>
           <VRow>
             <VCol>
-              <div class="text-h6">Operasional</div>
+              <div class="text-h6">
+                Operasional
+              </div>
               <VTextField
                 v-model="detailBiaya.operasional"
                 rounded="xl"
@@ -956,7 +1025,9 @@ const checkIsFieldEmpty = (data: any) => {
           </VRow>
           <VRow>
             <VCol>
-              <div class="text-h6">Transportasi Awal</div>
+              <div class="text-h6">
+                Transportasi Awal
+              </div>
               <VTextField
                 v-model="detailBiaya.transport_awal"
                 rounded="xl"
@@ -965,10 +1036,12 @@ const checkIsFieldEmpty = (data: any) => {
               />
             </VCol>
             <VCol>
-              <div class="text-h6">Diskon (%)</div>
+              <div class="text-h6">
+                Diskon (%)
+              </div>
               <VTextField
-                disabled
                 v-model="detailBiaya.transport_diskon"
+                disabled
                 rounded="xl"
                 density="compact"
                 placeholder="Masukkan Diskon"
@@ -980,16 +1053,17 @@ const checkIsFieldEmpty = (data: any) => {
                     validateInput(e);
                     if (+e.target.value) {
                       const initialCost = idrToNumber(
-                        detailBiaya.transport_awal
+                        detailBiaya.transport_awal,
                       );
-                      detailBiaya.transport_akhir =
-                        initialCost - initialCost * (+e.target.value / 100);
+                      detailBiaya.transport_akhir
+                        = initialCost - initialCost * (+e.target.value / 100);
                       if (detailBiaya.transport_akhir) {
                         detailBiaya.transport_akhir = formatToIDR(
-                          detailBiaya.transport_akhir
+                          detailBiaya.transport_akhir,
                         );
                       }
-                    } else {
+                    }
+                    else {
                       detailBiaya.transport_akhir = detailBiaya.transport_awal;
                     }
                   }
@@ -997,7 +1071,9 @@ const checkIsFieldEmpty = (data: any) => {
               />
             </VCol>
             <VCol>
-              <div class="text-h6">Transportasi Akhir</div>
+              <div class="text-h6">
+                Transportasi Akhir
+              </div>
               <VTextField
                 v-model="detailBiaya.transport_akhir"
                 rounded="xl"
@@ -1008,7 +1084,9 @@ const checkIsFieldEmpty = (data: any) => {
           </VRow>
           <VRow>
             <VCol>
-              <div class="text-h6">Akomodasi Awal</div>
+              <div class="text-h6">
+                Akomodasi Awal
+              </div>
               <VTextField
                 v-model="detailBiaya.akomodasi_awal"
                 rounded="xl"
@@ -1017,10 +1095,12 @@ const checkIsFieldEmpty = (data: any) => {
               />
             </VCol>
             <VCol>
-              <div class="text-h6">Diskon (%)</div>
+              <div class="text-h6">
+                Diskon (%)
+              </div>
               <VTextField
-                disabled
                 v-model="detailBiaya.akomodasi_diskon"
+                disabled
                 rounded="xl"
                 density="compact"
                 placeholder="Masukkan Diskon"
@@ -1032,16 +1112,17 @@ const checkIsFieldEmpty = (data: any) => {
                     validateInput(e);
                     if (+e.target.value) {
                       const initialCost = idrToNumber(
-                        detailBiaya.akomodasi_awal
+                        detailBiaya.akomodasi_awal,
                       );
-                      detailBiaya.akomodasi_akhir =
-                        initialCost - initialCost * (+e.target.value / 100);
+                      detailBiaya.akomodasi_akhir
+                        = initialCost - initialCost * (+e.target.value / 100);
                       if (detailBiaya.akomodasi_akhir) {
                         detailBiaya.akomodasi_akhir = formatToIDR(
-                          detailBiaya.akomodasi_akhir
+                          detailBiaya.akomodasi_akhir,
                         );
                       }
-                    } else {
+                    }
+                    else {
                       detailBiaya.akomodasi_akhir = detailBiaya.akomodasi_awal;
                     }
                   }
@@ -1049,7 +1130,9 @@ const checkIsFieldEmpty = (data: any) => {
               />
             </VCol>
             <VCol>
-              <div class="text-h6">Akomodasi Akhir</div>
+              <div class="text-h6">
+                Akomodasi Akhir
+              </div>
               <VTextField
                 v-model="detailBiaya.akomodasi_akhir"
                 rounded="xl"
@@ -1060,7 +1143,9 @@ const checkIsFieldEmpty = (data: any) => {
           </VRow>
           <VRow>
             <VCol>
-              <div class="text-h6">Tiket Pesawat Awal</div>
+              <div class="text-h6">
+                Tiket Pesawat Awal
+              </div>
               <VTextField
                 v-model="detailBiaya.tiket_pesawat_awal"
                 rounded="xl"
@@ -1069,10 +1154,12 @@ const checkIsFieldEmpty = (data: any) => {
               />
             </VCol>
             <VCol>
-              <div class="text-h6">Diskon (%)</div>
+              <div class="text-h6">
+                Diskon (%)
+              </div>
               <VTextField
-                disabled
                 v-model="detailBiaya.tiket_pesawat_diskon"
+                disabled
                 rounded="xl"
                 density="compact"
                 placeholder="Masukkan Diskon"
@@ -1084,25 +1171,28 @@ const checkIsFieldEmpty = (data: any) => {
                     validateInput(e);
                     if (+e.target.value) {
                       const initialCost = idrToNumber(
-                        detailBiaya.tiket_pesawat_awal
+                        detailBiaya.tiket_pesawat_awal,
                       );
-                      detailBiaya.tiket_pesawat_akhir =
-                        initialCost - initialCost * (+e.target.value / 100);
+                      detailBiaya.tiket_pesawat_akhir
+                        = initialCost - initialCost * (+e.target.value / 100);
                       if (detailBiaya.tiket_pesawat_akhir) {
                         detailBiaya.tiket_pesawat_akhir = formatToIDR(
-                          detailBiaya.tiket_pesawat_akhir
+                          detailBiaya.tiket_pesawat_akhir,
                         );
                       }
-                    } else {
-                      detailBiaya.tiket_pesawat_akhir =
-                        detailBiaya.tiket_pesawat_awal;
+                    }
+                    else {
+                      detailBiaya.tiket_pesawat_akhir
+                        = detailBiaya.tiket_pesawat_awal;
                     }
                   }
                 "
               />
             </VCol>
             <VCol>
-              <div class="text-h6">Tiket Pesawat Akhir</div>
+              <div class="text-h6">
+                Tiket Pesawat Akhir
+              </div>
               <VTextField
                 v-model="detailBiaya.tiket_pesawat_akhir"
                 rounded="xl"
@@ -1114,7 +1204,9 @@ const checkIsFieldEmpty = (data: any) => {
 
           <VRow>
             <VCol>
-              <div class="text-h6">Pemeriksaan dan Penerbitan SH</div>
+              <div class="text-h6">
+                Pemeriksaan dan Penerbitan SH
+              </div>
               <VTextField
                 v-model="detailBiaya.biaya_bpjph"
                 rounded="xl"
@@ -1126,7 +1218,9 @@ const checkIsFieldEmpty = (data: any) => {
 
           <VRow>
             <VCol>
-              <div class="text-h6">Penetapan</div>
+              <div class="text-h6">
+                Penetapan
+              </div>
               <VTextField
                 v-model="detailBiaya.biaya_mui"
                 rounded="xl"
@@ -1138,7 +1232,9 @@ const checkIsFieldEmpty = (data: any) => {
 
           <VRow>
             <VCol>
-              <div class="text-h6">Total Biaya Satuan</div>
+              <div class="text-h6">
+                Total Biaya Satuan
+              </div>
               <VTextField
                 v-model="detailBiaya.total_biaya_satuan"
                 rounded="xl"
@@ -1150,7 +1246,9 @@ const checkIsFieldEmpty = (data: any) => {
 
           <VRow>
             <VCol>
-              <div class="text-h6">Total Biaya</div>
+              <div class="text-h6">
+                Total Biaya
+              </div>
               <VTextField
                 v-model="detailBiaya.total_biaya"
                 rounded="xl"
@@ -1172,15 +1270,21 @@ const checkIsFieldEmpty = (data: any) => {
                 biayaDialog = false;
               }
             "
-            >Batal</VBtn
           >
+            Batal
+          </VBtn>
         </VCardActions>
       </VCard>
     </VDialog>
 
-    <VDialog v-model="deleteDialog" :max-width="dialogMaxWidth">
+    <VDialog
+      v-model="deleteDialog"
+      :max-width="dialogMaxWidth"
+    >
       <VCard class="pa-4">
-        <VCardTitle class="text-h4"> Hapus Biaya </VCardTitle>
+        <VCardTitle class="text-h4">
+          Hapus Biaya
+        </VCardTitle>
         <VCardText>Yakin ingin menghapus data biaya? </VCardText>
         <VCardActions>
           <VSpacer />
