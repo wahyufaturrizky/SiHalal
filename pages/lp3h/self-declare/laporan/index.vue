@@ -290,9 +290,9 @@ onMounted(async () => {
           </VCardItem>
           <VCardItem>
             <VDataTableServer
-              :items-per-page-options="[10, 25, 50, 100]"
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
+              :items-per-page-options="[10, 25, 50, 100]"
               :headers="daftarLaporanHeader"
               :items="daftarLaporanItem"
               :items-length="totalItems"
@@ -310,6 +310,10 @@ onMounted(async () => {
             >
               <template #item.no="{ index }">
                 {{ index + 1 }}
+              </template>
+
+              <template #item.tanggalDaftar="{ item }">
+                {{ formatDateId(item.tanggalDaftar) }}
               </template>
 
               <template #item.action="{ item }">

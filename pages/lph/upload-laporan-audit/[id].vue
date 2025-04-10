@@ -3,9 +3,6 @@ import LPHDetailLayout from "@/layouts/LPHDetailLayout.vue";
 import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
-const route = useRoute();
-const { t } = useI18n();
-const isViewOnly = (route?.query as any)?.isViewOnly;
 const props = defineProps({
   onComplete: {
     type: Function,
@@ -20,6 +17,9 @@ const props = defineProps({
   },
 });
 
+const route = useRoute();
+const { t } = useI18n();
+const isViewOnly = (route?.query as any)?.isViewOnly;
 const store = useMyTabEditRegulerStore();
 const id = route?.params?.id;
 const openedLeftPanels = ref([0, 1, 2, 3, 4, 5]);
@@ -64,37 +64,37 @@ const draftCertif = ref("");
 
 const listFactory = ref({
   label: [
-    { title: 'No.', key: 'no', nowrap: true },
-    { title: 'Nama', key: 'nama', nowrap: true },
-    { title: 'Alamat', key: 'alamat', nowrap: true },
-    { title: 'Status', key: 'status_milik', nowrap: true },
-    { title: 'Action', key: 'publication', sortable: false, nowrap: true },
+    { title: "No.", key: "no", nowrap: true },
+    { title: "Nama", key: "nama", nowrap: true },
+    { title: "Alamat", key: "alamat", nowrap: true },
+    { title: "Status", key: "status_milik", nowrap: true },
+    { title: "Action", key: "publication", sortable: false, nowrap: true },
   ],
   value: props?.listFactory || [],
-})
+});
 
 const listFactoryNoTaken = ref({
   label: [
-    { title: 'No.', key: 'no', nowrap: true },
-    { title: 'Nama', key: 'nama', nowrap: true },
-    { title: 'Alamat', key: 'alamat', nowrap: true },
-    { title: 'Status', key: 'status_milik', nowrap: true },
-    { title: 'Action', key: 'actions', sortable: false, nowrap: true },
+    { title: "No.", key: "no", nowrap: true },
+    { title: "Nama", key: "nama", nowrap: true },
+    { title: "Alamat", key: "alamat", nowrap: true },
+    { title: "Status", key: "status_milik", nowrap: true },
+    { title: "Action", key: "actions", sortable: false, nowrap: true },
   ],
   value: props?.listFactoryNoTaken || [],
-})
+});
 
 const EditProdukModalOpen = ref(false);
 
 const { refresh } = await useAsyncData("list-product", async () => {
   return store.getProduct(id);
 });
+
 const itemDetail = ref<any>({});
 const itemDetailFasilitas = ref<any>({});
 
 const tanggalMulai = ref("");
 const tanggalSelesai = ref("");
-
 
 // const openInputBahan = (id) => {
 //   (isUpdateDataProdukModalOpen.value = false), (selectedIdProd.value = id);
@@ -131,7 +131,7 @@ const formDataPU = ref({
   negara: "",
   kodepos: "",
   skala_usaha: "",
-})
+});
 
 const toggle = () => {
   addDialog.value = false;
@@ -205,7 +205,9 @@ const laporanAudit = ref({
   ],
   value: [],
 });
+
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
+
 const uploadedFile = ref<{ name: string; file: File | null }>({
   name: "",
   file: null,
@@ -272,7 +274,6 @@ const handleSubmit = () => {
   confirmSaveDialog.value = false;
 };
 
-
 const dataPengajuanRef = ref();
 
 const dataPengajuanEmitted = ref();
@@ -322,34 +323,34 @@ const openEditProduk = () => {
 const openEditPabrik = () => {
   modalTitle.value = "Update Pabrik";
   isUpdateDataPabrikModalOpen.value = true;
-  getFactoryAndOutlet('FAPAB');
+  getFactoryAndOutlet("FAPAB");
 };
 
 const openModalAddFactory = () => {
   isAddFactoryModalOpen.value = !isAddFactoryModalOpen.value;
-  getListFacNotTaken('FAPAB');
-}
+  getListFacNotTaken("FAPAB");
+};
 
 const HandleEditPabrik = async (fasId) => {
   await getDetailFasilitasi(fasId);
   isEditFactoryModalOpen.value = !isEditFactoryModalOpen.value;
-}
+};
 
 const openEditProfile = () => {
-  getDetailData('pengajuan');
+  getDetailData("pengajuan");
   isUpdateDataPuModalOpen.value = !isUpdateDataPuModalOpen.value;
 };
 
 const handleEditProduct = async (productId) => {
-  await getDetailProduk(productId, "edit"); 
-  EditProdukModalOpen.value = true; 
+  await getDetailProduk(productId, "edit");
+  EditProdukModalOpen.value = true;
 };
-
 
 const handleRemoveFile = async (uploadedFile: any) => {
   try {
     if (!uploadedFile.id_hasil_doc) {
       useSnackbar().sendSnackbar("Data tidak valid", "error");
+
       return;
     }
 
@@ -387,9 +388,7 @@ const getTemplateFileProduct = async (productId: string, type: string) => {
     }
   );
 
-  if (response.code === 2000) {
-    fileTemplateProduct.value = response.data.file;
-  }
+  if (response.code === 2000) fileTemplateProduct.value = response.data.file;
 };
 
 const handleUploadFileProduct = async (event: any) => {
@@ -400,6 +399,7 @@ const handleUploadFileProduct = async (event: any) => {
     uploadedFile.value.file = fileData;
     try {
       loading.value = true;
+
       const response = await uploadDocumentProduct(fileData);
       if (response.code === 2000) {
         addDialog.value = false;
@@ -425,6 +425,7 @@ const handleUploadFileProduct = async (event: any) => {
 const uploadDocumentProduct = async (file: any) => {
   try {
     const formData = new FormData();
+
     formData.append("file", file);
 
     return await $api(
@@ -471,6 +472,7 @@ const getDraftSertif = async () => {
 
     if (response?.code === 2000) {
       draftCertif.value = response?.data?.file;
+
       return response?.data;
     }
   } catch (error) {
@@ -498,7 +500,7 @@ const bulkInsert = async () => {
     const response: any = await $api(endpoint, {
       method: "put",
       params: { id_reg: id },
-      body: body,
+      body,
     });
 
     if (response.code === 2000) {
@@ -535,6 +537,7 @@ const handleUploadFileFoto = async (event: any) => {
 const uploadDocument = async (file: File) => {
   try {
     const formData = new FormData();
+
     formData.append("id", String(id));
     formData.append("file", file);
     formData.append("type", "produk");
@@ -545,7 +548,7 @@ const uploadDocument = async (file: File) => {
     });
 
     if (response.code === 2000) {
-      return response.data.file_url; 
+      return response.data.file_url;
     } else {
       useSnackbar().sendSnackbar("Gagal mengunggah file!", "error");
       throw new Error("File upload failed");
@@ -569,10 +572,12 @@ const handleUploadFile = async (event: Event) => {
   // 🔹 Validasi format & ukuran file
   if (fileData.type !== "application/pdf") {
     useSnackbar().sendSnackbar("File harus dalam format PDF!", "error");
+
     return;
   }
   if (fileData.size > MAX_FILE_SIZE) {
     useSnackbar().sendSnackbar("Ukuran file maksimal 20MB!", "error");
+
     return;
   }
 
@@ -580,6 +585,7 @@ const handleUploadFile = async (event: Event) => {
 
   try {
     const fileUrl = await uploadDocument(fileData);
+
     formUploadLaporan.value.filename = fileUrl;
     useSnackbar().sendSnackbar("File berhasil diunggah!", "success");
   } catch (error) {
@@ -593,17 +599,20 @@ const handleSaveFileUpload = async () => {
       "Harap unggah file sebelum menyimpan!",
       "warning"
     );
+
     return;
   }
 
   if (!id) {
     useSnackbar().sendSnackbar("ID tidak valid!", "error");
     console.error("Error: ID is undefined or null");
+
     return;
   }
 
   if (!selectedAuditResult.value) {
     useSnackbar().sendSnackbar("Harap pilih hasil audit!", "warning");
+
     return;
   }
 
@@ -623,6 +632,7 @@ const handleSaveFileUpload = async () => {
     if (fileResponse.code !== 2000) {
       useSnackbar().sendSnackbar("Gagal menyimpan laporan audit!", "error");
       console.error("API Error:", fileResponse);
+
       return;
     }
 
@@ -672,6 +682,7 @@ const handleInputBahan = async (selected, idProduk) => {
       getListProducts();
       await refresh();
     }
+
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
@@ -740,9 +751,9 @@ const handleUpdateStatus = async () => {
       body: { id_auditor: ids },
     });
 
-    if (responseAuditor.code !== 2000) {
+    if (responseAuditor.code !== 2000)
       return useSnackbar().sendSnackbar("Gagal menyimpan auditor", "error");
-    }
+
     useSnackbar().sendSnackbar("Berhasil menambah auditor", "success");
 
     const responseTanggal = await $api("/reguler/auditor/assign-dates", {
@@ -773,6 +784,7 @@ const handleUpdateStatus = async () => {
 
     if (response?.code === 2000) {
       useSnackbar().sendSnackbar("Sukses kirim data", "success");
+
       return response?.data;
     } else {
       useSnackbar().sendSnackbar(
@@ -823,8 +835,7 @@ const deleteProduct = async (productId: string) => {
   );
 
   if (response.code === 2000) {
-    getListProducts(),
-    reRender.value = !reRender.value;
+    getListProducts(), (reRender.value = !reRender.value);
     useSnackbar().sendSnackbar("Sukses menghapus data", "success");
   } else {
     useSnackbar().sendSnackbar("Bahan tidak dapat dihapus", "error");
@@ -836,19 +847,18 @@ const deleteProduct = async (productId: string) => {
 //     "/reguler/pelaku-usaha/delete-factory",
 //     {
 //       method: "DELETE",
-//       body: { id: pabrikId } 
+//       body: { id: pabrikId }
 //     }
 //   );
 
 //   if (response.code === 2000) {
-//     await getFactoryAndOutlet('FAPAB'); 
+//     await getFactoryAndOutlet('FAPAB');
 //     reRender.value = !reRender.value;
 //     useSnackbar().sendSnackbar("Sukses menghapus data", "success");
 //   } else {
 //     useSnackbar().sendSnackbar("Data tidak dapat dihapus", "error");
 //   }
 // };
-
 
 const loadItemProductRincian = async (kode_rincian: string) => {
   loadingRincian.value = true;
@@ -883,10 +893,11 @@ const addProduct = async () => {
       {
         method: "post",
         params: { id_reg: id },
-        body: {kode_rincian: formData.value.kode_rincian,
-              nama_produk: formData.value.nama_produk, 
-              foto_produk: formData.value.foto_produk || uploadedFile.value.name,
-        }
+        body: {
+          kode_rincian: formData.value.kode_rincian,
+          nama_produk: formData.value.nama_produk,
+          foto_produk: formData.value.foto_produk || uploadedFile.value.name,
+        },
       }
     );
 
@@ -900,8 +911,7 @@ const addProduct = async () => {
         name: "",
         file: "",
       };
-      getListProducts(),
-      addDialog.value = false;
+      getListProducts(), (addDialog.value = false);
       reRender.value = !reRender.value;
       useSnackbar().sendSnackbar("Sukses menambah data", "success");
     }
@@ -911,14 +921,14 @@ const addProduct = async () => {
 const addPabrik = async (item) => {
   console.log("Menambahkan pabrik:", item);
 
-  let body = {
-    id_reg: id, 
-    id_pabrik: [item.id], 
+  const body = {
+    id_reg: id,
+    id_pabrik: [item.id],
   };
 
   const response: any = await $api("/reguler/pelaku-usaha/add-factory", {
     method: "post",
-    body: body,
+    body,
   });
 
   console.log("Response API:", response);
@@ -934,7 +944,6 @@ const addPabrik = async (item) => {
   }
 };
 
-
 const updateProduct = async () => {
   try {
     const response = await $api(
@@ -944,15 +953,15 @@ const updateProduct = async () => {
         params: { id_reg: id, product_id: itemDetail.value.id },
         body: {
           kode_rincian: formData.value.kode_rincian,
-          nama_produk: formData.value.nama_produk, 
-          foto_produk: formData.value.foto_produk || uploadedFile.value.name, 
+          nama_produk: formData.value.nama_produk,
+          foto_produk: formData.value.foto_produk || uploadedFile.value.name,
         },
       }
     );
 
     if (response.code === 2000) {
       console.log("Berhasil update, mengambil data terbaru...");
-      await getListProducts(); 
+      await getListProducts();
 
       formData.value = {
         kode_rincian: "",
@@ -975,16 +984,19 @@ const updateProduct = async () => {
     }
   } catch (error) {
     console.error("Terjadi kesalahan saat memperbarui produk:", error);
-    useSnackbar().sendSnackbar("Terjadi kesalahan saat memperbarui produk", "error");
+    useSnackbar().sendSnackbar(
+      "Terjadi kesalahan saat memperbarui produk",
+      "error"
+    );
   }
 };
 
 const updateDataPU = async () => {
   try {
-    const response = await $api("/reguler/lph/update-pu", {  
+    const response = await $api("/reguler/lph/update-pu", {
       method: "PUT",
-      params: {id_reg: id},
-      body: { 
+      params: { id_reg: id },
+      body: {
         nama_pu_sh: formDataPU.value.nama_pu_sh,
       },
       headers: {
@@ -1016,12 +1028,14 @@ const updateDataPU = async () => {
   }
 };
 
-
 const getDetailProduk = async (productId, type) => {
-  const response = await $api("/reguler/pelaku-usaha/tab-bahan/products/detail", {
-    method: "get",
-    params: { id_reg: id, product_id: productId },
-  });
+  const response = await $api(
+    "/reguler/pelaku-usaha/tab-bahan/products/detail",
+    {
+      method: "get",
+      params: { id_reg: id, product_id: productId },
+    }
+  );
 
   if (response.code === 2000) {
     itemDetail.value = response.data || {};
@@ -1040,10 +1054,13 @@ const getDetailProduk = async (productId, type) => {
 };
 
 const getDetailFasilitasi = async (fasId) => {
-  const response = await $api("/reguler/lph/update-fasilitas/detail-fasilitas", {
-    method: "get",
-    params: { id_reg: id, id_pabrik: fasId },
-  });
+  const response = await $api(
+    "/reguler/lph/update-fasilitas/detail-fasilitas",
+    {
+      method: "get",
+      params: { id_reg: id, id_pabrik: fasId },
+    }
+  );
 
   if (response.code === 2000) {
     itemDetailFasilitas.value = response.data || {};
@@ -1064,7 +1081,6 @@ const getDetailFasilitasi = async (fasId) => {
   }
 };
 
-
 const getDetailData = async (type: string) => {
   try {
     const response: any = await $api("/reguler/lph/detail-payment", {
@@ -1075,28 +1091,25 @@ const getDetailData = async (type: string) => {
     if (response.code === 2000) {
       const data = response?.data;
 
-      if (type === "pengajuan")
-      {
+      if (type === "pengajuan") {
         formDataPU.value = data;
         console.log("Wqdwdqwdwq:", formDataPU);
-        
       }
       if (type === "pemeriksaanproduk") {
-
         const noDaftar = data?.no_pendaftaran?.no_daftar;
-        if (noDaftar) {
-          await OldDoc(noDaftar);
-        } else {
-          console.error("noDaftar tidak ditemukan dalam response API");
-        }
+        if (noDaftar) await OldDoc(noDaftar);
+        else console.error("noDaftar tidak ditemukan dalam response API");
       }
+
       return data;
     } else {
       const snackbar = useSnackbar();
+
       snackbar.sendSnackbar("Ada Kesalahan", "error");
     }
   } catch (error) {
     const snackbar = useSnackbar();
+
     snackbar.sendSnackbar(`Ada Kesalahan: ${error.message || error}`, "error");
   }
 };
@@ -1126,14 +1139,17 @@ const getListProducts = async () => {
 
       console.log("Total Items:", totalItems.value); // Debugging
     }
+
     return response;
   } catch (error) {
     console.log(error);
   }
 };
+
 const OldDoc = async (noDaftar: string) => {
   const url = `https://prod-api.halal.go.id/v1/referensi/dokumen_reguler?no_daftar=${noDaftar}`;
-  //console.log("berhasil");
+
+  // console.log("berhasil");
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -1141,40 +1157,39 @@ const OldDoc = async (noDaftar: string) => {
         "Content-Type": "application/json",
       },
     });
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
+
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
     const data = await response.json();
 
     dokumenLama.value = data.data;
+
     return data;
   } catch (error) {
     console.error("Terjadi kesalahan saat mengambil data:", error);
+
     return null;
   }
 };
 
 const getFactoryAndOutlet = async (type: string) => {
   try {
-    const response: any = await $api(
-      "/reguler/pelaku-usaha/list-fac-out",
-      {
-        method: "get",
-        params: { id_reg: id, type }, 
-      }
-    );
+    const response: any = await $api("/reguler/pelaku-usaha/list-fac-out", {
+      method: "get",
+      params: { id_reg: id, type },
+    });
 
     if (response?.code === 2000) {
       if (type === "FAPAB") {
         if (response.data.length > 0) {
           response.data.forEach((el: any) => (el.checked = false));
           listFactory.value.value = response.data;
-          console.log('Response data:', response);
+          console.log("Response data:", response);
         }
       } else {
         response.data.forEach((el: any) => (el.checked = false));
-        //listOutlet.value = response?.data;
+
+        // listOutlet.value = response?.data;
       }
 
       return response;
@@ -1193,7 +1208,7 @@ const getListFacNotTaken = async (type: string) => {
       "/reguler/pelaku-usaha/list-fasilitas-not-taken",
       {
         method: "get",
-        params: { id_reg: id, type }, 
+        params: { id_reg: id, type },
       }
     );
 
@@ -1202,11 +1217,12 @@ const getListFacNotTaken = async (type: string) => {
         if (response.data.length > 0) {
           response.data.forEach((el: any) => (el.checked = false));
           listFactoryNoTaken.value.value = response.data;
-          console.log('Response data:', response);
+          console.log("Response data:", response);
         }
       } else {
         response.data.forEach((el: any) => (el.checked = false));
-        //listOutlet.value = response?.data;
+
+        // listOutlet.value = response?.data;
       }
 
       return response;
@@ -1218,7 +1234,6 @@ const getListFacNotTaken = async (type: string) => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
-
 
 const handleDownloadForm = async (fileName: string, param: string) => {
   return await downloadDocument(fileName, param);
@@ -1236,6 +1251,7 @@ const getListAuditor = async (type?: string) => {
         url: `api/v1/halal-certificate-reguler/lph/pemeriksaan/${id}/auditor`,
       },
     });
+
     if (response?.code === 2000) {
       lovAuditor.value = response.data;
 
@@ -1253,6 +1269,7 @@ const getListLaporan = async () => {
     ...laporanAudit.value,
     value: [],
   };
+
   const response: any = await $api(
     "/reguler/lph/laporan-audit/list-laporan-audit",
     {
@@ -1295,6 +1312,7 @@ const handleInputAuditor = async (val: any) => {
         keyword: val,
       },
     });
+
     if (response?.code === 2000) {
       lovAuditor.value = response.data;
 
@@ -1317,9 +1335,8 @@ const fetchHasilAudit = async () => {
     console.log("Response hasil audit:", response);
 
     if (response.code == 2000) {
-      if (response.data.length > 0) {
+      if (response.data.length > 0)
         selectedAuditResult.value = response.data[0].hasil_audit;
-      }
     }
   } catch (error) {
     console.error("Gagal mengambil hasil audit:", error);
@@ -1344,6 +1361,7 @@ onMounted(async () => {
     getTemplateFileProduct(),
     loadItemProductClasifications(),
     getDraftSertif(),
+
     // getDownloadForm("file_laporan", "file_laporan"),
     // getDownloadForm("file_kh", "file_kh"),
   ]);
@@ -1373,26 +1391,28 @@ onMounted(async () => {
       :toggle="() => (visiblePreview = false)"
       :label-save-btn="`Unggah (${
         titleDialog === 'Preview Bahan'
-        ? `${listPreview.filter((a: any) => a.Passed).length} Bahan`
-        : `${listPreview.filter((a: any) => a.Passed).length} Produk`
+          ? `${listPreview.filter((a: any) => a.Passed).length} Bahan`
+          : `${listPreview.filter((a: any) => a.Passed).length} Produk`
       })`"
-      :label-back-btn="'Batal'"
+      label-back-btn="Batal"
       :on-save="bulkInsert"
       hide-footer
     >
       <template #content>
         <div v-if="titleDialog === 'Preview Produk'">
           <PreviewBahanTable
-            :previewHeader="previewProductHeader"
-            :listPreview="listPreview"
+            :preview-header="previewProductHeader"
+            :list-preview="listPreview"
           />
         </div>
-        <!-- <div v-else>
+        <!--
+          <div v-else>
           <PreviewBahanTable
-            :previewHeader="previewHeader"
-            :listPreview="listPreview"
+          :previewHeader="previewHeader"
+          :listPreview="listPreview"
           />
-        </div> -->
+          </div>
+        -->
       </template>
     </DialogPreviewBahan>
     <DialogWithAction
@@ -1405,7 +1425,7 @@ onMounted(async () => {
       "
       :on-save="addProduct"
       :hide-footer="hideFooterBtn"
-    ></DialogWithAction>
+    />
     <LPHDetailLayout>
       <template #page-title>
         <VRow no-gutters>
@@ -1413,11 +1433,15 @@ onMounted(async () => {
             <h1>Detail Pemeriksaan</h1>
           </VCol>
           <VCol cols="auto" class="d-flex align-center">
-            <VBtn @click="downloadDocument(draftCertif,'FILES')" variant="outlined" class="me-2">
-                Lihat Draft Sertif
-              </VBtn>
+            <VBtn
+              variant="outlined"
+              class="me-2"
+              @click="downloadDocument(draftCertif, 'FILES')"
+            >
+              Lihat Draft Sertif
+            </VBtn>
             <VMenu open-on-hover>
-              <template v-slot:activator="{ props }">
+              <template #activator="{ props }">
                 <VBtn v-bind="props" variant="outlined" class="me-2">
                   Update Data
                 </VBtn>
@@ -1533,11 +1557,13 @@ onMounted(async () => {
                 <VCol cols="5" class="text-h6"> Hasil Audit </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
-                  <!-- <VBtn rounded="xl" density="compact" class="px-2">
+                  <!--
+                    <VBtn rounded="xl" density="compact" class="px-2">
                     <template #default>
-                      <VIcon icon="fa-download" />
+                    <VIcon icon="fa-download" />
                     </template>
-                  </VBtn> -->
+                    </VBtn>
+                  -->
                   <VBtn
                     :color="downloadForms.hasil_audit ? 'primary' : '#A09BA1'"
                     density="compact"
@@ -1572,9 +1598,9 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <VRow>
-                <VCol>{{
-                  formatToIDR(dataPemeriksaanProduk?.total_biaya)
-                }}</VCol>
+                <VCol>
+                  {{ formatToIDR(dataPemeriksaanProduk?.total_biaya) }}
+                </VCol>
               </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
@@ -1594,7 +1620,9 @@ onMounted(async () => {
                 :key="idx"
                 align="center"
               >
-                <VCol cols="5" class="text-h6"> {{ item.ref_desc }} </VCol>
+                <VCol cols="5" class="text-h6">
+                  {{ item.ref_desc }}
+                </VCol>
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
@@ -1626,7 +1654,7 @@ onMounted(async () => {
       <VCard class="pa-4">
         <VCardTitle class="d-flex justify-space-between align-center">
           <div class="text-h3 font-weight-bold">Upload Laporan Audit</div>
-          <VIcon @click="handleOpenUploadModal">fa-times</VIcon>
+          <VIcon @click="handleOpenUploadModal"> fa-times </VIcon>
         </VCardTitle>
 
         <VCardText>
@@ -1744,9 +1772,9 @@ onMounted(async () => {
         </VCardText>
         <VCardActions>
           <VSpacer />
-          <VBtn @click="isUpdateDataModalOpen = false" color="primary"
-            >Tutup</VBtn
-          >
+          <VBtn color="primary" @click="isUpdateDataModalOpen = false">
+            Tutup
+          </VBtn>
         </VCardActions>
       </VCard>
     </VDialog>
@@ -1769,10 +1797,10 @@ onMounted(async () => {
                 density="compact"
                 placeholder="Cari auditor"
                 :loading="loadingAuditor"
-                @input="handleInputAuditor"
-                @update:model-value="(v) => (assignedAuditor = v)"
                 return-object
                 class="mb-5"
+                @input="handleInputAuditor"
+                @update:model-value="(v) => (assignedAuditor = v)"
               >
                 <template #item="{ props, item }">
                   <VListItem v-bind="props" :title="(item.raw as any).nama" />
@@ -1797,6 +1825,9 @@ onMounted(async () => {
               >
                 <template #item.index="{ index }">
                   {{ index + 1 }}
+                </template>
+                <template #item.tanggal_lahir="{ item }">
+                  {{ formatDateId(item.tanggal_lahir) }}
                 </template>
                 <template #item.actions>
                   <VIcon
@@ -1834,8 +1865,9 @@ onMounted(async () => {
             variant="outlined"
             class="px-4 me-3"
             @click="handleOpenAssignModal"
-            >Batal</VBtn
           >
+            Batal
+          </VBtn>
           <VBtn
             variant="flat"
             class="px-4"
@@ -1854,13 +1886,14 @@ onMounted(async () => {
       persistent
     >
       <VCard>
-        <VCardTitle class="d-flex justify-space-between align-center">
-        </VCardTitle>
+        <VCardTitle class="d-flex justify-space-between align-center" />
         <ProdukRegulerEdit
           v-if="modalContent === 'mapping_pabrik'"
           :isviewonly="isViewOnly"
         />
-        <p v-else>{{ modalContent }}</p>
+        <p v-else>
+          {{ modalContent }}
+        </p>
         <VCardActions>
           <VSpacer />
           <VBtn color="primary" @click="isUpdateDataMappingModalOpen = false">
@@ -1889,8 +1922,9 @@ onMounted(async () => {
             variant="outlined"
             class="px-4 me-3"
             @click="handleOpenUpdateModal"
-            >Batal</VBtn
           >
+            Batal
+          </VBtn>
           <VBtn
             variant="flat"
             class="px-4"
@@ -2088,11 +2122,11 @@ onMounted(async () => {
         </div>
 
         <VDataTable
+          v-model:page="page"
           class="domestic-table border rounded mt-5"
           :headers="productName"
           :items="productItems || []"
           :items-per-page="10"
-          v-model:page="page"
           :items-length="totalItems"
           show-current-page
         >
@@ -2135,14 +2169,22 @@ onMounted(async () => {
                   </template>
                   <VList>
                     <LPHInputBahan
-                        :product-name="item.nama"
-                        :product-id="item.id"
-                        :bahan-selected="item.bahan_selected"
-                        @submit="handleInputBahan"
-                        :embedded-in-module="'pelakuSelfDec'"
-                      />
-                    <VListItem prepend-icon="mdi-pen" title="Edit" @click="handleEditProduct(item.id)" />
-                    <VListItem prepend-icon="fa-trash" title="Hapus" @click="deleteProduct(item.id)" />
+                      :product-name="item.nama"
+                      :product-id="item.id"
+                      :bahan-selected="item.bahan_selected"
+                      embedded-in-module="pelakuSelfDec"
+                      @submit="handleInputBahan"
+                    />
+                    <VListItem
+                      prepend-icon="mdi-pen"
+                      title="Edit"
+                      @click="handleEditProduct(item.id)"
+                    />
+                    <VListItem
+                      prepend-icon="fa-trash"
+                      title="Hapus"
+                      @click="deleteProduct(item.id)"
+                    />
                   </VList>
                 </VMenu>
               </td>
@@ -2150,7 +2192,11 @@ onMounted(async () => {
           </template>
         </VDataTable>
         <div class="d-flex justify-end">
-          <VBtn color="primary" class="mt-2" @click="isUpdateDataProdukModalOpen = false">
+          <VBtn
+            color="primary"
+            class="mt-2"
+            @click="isUpdateDataProdukModalOpen = false"
+          >
             Tutup
           </VBtn>
         </div>
@@ -2170,109 +2216,110 @@ onMounted(async () => {
             style="border-radius: 40px"
             height="auto"
           >
-              <span> Tambah Manual </span>
+            <span> Tambah Manual </span>
           </VTabs>
         </div>
 
-          <div class="mt-10">
-            <div>
-              <label>Klasifikasi Produk</label>
-              <VSelect
-                outlined
-                placeholder="pilih klasifikasi produk"
-                density="compact"
-                :loading="loadingRincian"
-                item-title="name"
-                item-value="code"
-                :items="dataProductClasification"
-                @update:model-value="loadItemProductRincian"
-              />
-              <br />
-              <label>Rincian Produk</label>
-              <VSelect
-                v-model="formData.kode_rincian_desc"
-                outlined
-                placeholder="pilih rincian produk"
-                density="compact"
-                :loading="loadingRincian"
-                item-title="name"
-                item-value="code"
-                :items="listRincian"
-              />
-              <br />
-              <label>Nama Produk</label>
-              <VTextField
-                v-model="formData.nama_produk"
-                class="-mt-10"
-                density="compact"
-                placeholder="Isi Nama Produk"
-              />
-              <div class="d-flex justify-space-between mt-5">
-                <label> Upload Foto </label>
-                <VCol cols="6">
-                  <VTextField
-                    v-if="uploadedFile.file"
-                    :model-value="uploadedFile.name"
-                    density="compact"
-                    placeholder="No file choosen"
-                    rounded="xl"
-                    max-width="400"
-                  >
-                    <template #append-inner>
-                      <VIcon
-                        icon="fa-trash"
-                        color="error"
-                        class="cursor-pointer"
-                        @click="handleRemoveFiles"
-                      />
-                    </template>
-                  </VTextField>
-                  <VFileInput
-                    v-else
-                    :model-value="uploadedFile.file"
-                    class="custom-file-input"
-                    density="compact"
-                    rounded="xl"
-                    label="No file choosen"
-                    max-width="400"
-                    prepend-icon=""
-                    @change="handleUploadFileFoto"
-                  >
-                    <template #append-inner>
-                      <VBtn rounded="s-0 e-xl" text="Choose" />
-                    </template>
-                  </VFileInput>
-                </VCol>
-              </div>
+        <div class="mt-10">
+          <div>
+            <label>Klasifikasi Produk</label>
+            <VSelect
+              outlined
+              placeholder="pilih klasifikasi produk"
+              density="compact"
+              :loading="loadingRincian"
+              item-title="name"
+              item-value="code"
+              :items="dataProductClasification"
+              @update:model-value="loadItemProductRincian"
+            />
+            <br />
+            <label>Rincian Produk</label>
+            <VSelect
+              v-model="formData.kode_rincian_desc"
+              outlined
+              placeholder="pilih rincian produk"
+              density="compact"
+              :loading="loadingRincian"
+              item-title="name"
+              item-value="code"
+              :items="listRincian"
+            />
+            <br />
+            <label>Nama Produk</label>
+            <VTextField
+              v-model="formData.nama_produk"
+              class="-mt-10"
+              density="compact"
+              placeholder="Isi Nama Produk"
+            />
+            <div class="d-flex justify-space-between mt-5">
+              <label> Upload Foto </label>
+              <VCol cols="6">
+                <VTextField
+                  v-if="uploadedFile.file"
+                  :model-value="uploadedFile.name"
+                  density="compact"
+                  placeholder="No file choosen"
+                  rounded="xl"
+                  max-width="400"
+                >
+                  <template #append-inner>
+                    <VIcon
+                      icon="fa-trash"
+                      color="error"
+                      class="cursor-pointer"
+                      @click="handleRemoveFiles"
+                    />
+                  </template>
+                </VTextField>
+                <VFileInput
+                  v-else
+                  :model-value="uploadedFile.file"
+                  class="custom-file-input"
+                  density="compact"
+                  rounded="xl"
+                  label="No file choosen"
+                  max-width="400"
+                  prepend-icon=""
+                  @change="handleUploadFileFoto"
+                >
+                  <template #append-inner>
+                    <VBtn rounded="s-0 e-xl" text="Choose" />
+                  </template>
+                </VFileInput>
+              </VCol>
+            </div>
+            <div class="d-flex justify-end mt-5">
               <div class="d-flex justify-end mt-5">
-                <div class="d-flex justify-end mt-5">
-                  <VBtn color="grey" variant="outlined" class="mr-2" @click="EditProdukModalOpen = false">
-                    Tutup
-                  </VBtn>
-                  <VBtn
-                    color="primary"
-                    @click="
-                      () => {
-                        updateProduct();
-                        EditProdukModalOpen = false; 
-                      }
-                    "
-                  >
-                    Simpan
-                  </VBtn>
-                </div>
+                <VBtn
+                  color="grey"
+                  variant="outlined"
+                  class="mr-2"
+                  @click="EditProdukModalOpen = false"
+                >
+                  Tutup
+                </VBtn>
+                <VBtn
+                  color="primary"
+                  @click="
+                    () => {
+                      updateProduct();
+                      EditProdukModalOpen = false;
+                    }
+                  "
+                >
+                  Simpan
+                </VBtn>
               </div>
             </div>
           </div>
         </div>
+      </div>
     </VCard>
   </VDialog>
 
-  <VDialog
-    v-model="isUpdateDataPabrikModalOpen"
-    max-width="840px"
-    persistent
-  >
+  <VDialog v-model="isUpdateDataPabrikModalOpen" max-width="840px" persistent>
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
         {{ modalTitle }}
@@ -2281,19 +2328,19 @@ onMounted(async () => {
         </VBtn>
       </VCardTitle>
       <VCardText>
-        <div class="d-flex justify-end"> 
-          <VBtn @click="openModalAddFactory" color="primary" variant="outlined">
-            <VIcon class="mr-2">fa-plus</VIcon>
+        <div class="d-flex justify-end">
+          <VBtn color="primary" variant="outlined" @click="openModalAddFactory">
+            <VIcon class="mr-2"> fa-plus </VIcon>
             Tambah
           </VBtn>
         </div>
         <VDataTable
-          class="domestic-table border rounded mt-5"
           :id="id"
+          v-model:page="page"
+          class="domestic-table border rounded mt-5"
           :headers="listFactory.label"
           :items="listFactory.value || []"
           :items-per-page="10"
-          v-model:page="page"
         >
           <template #body="{ items }">
             <tr v-if="items.length === 0">
@@ -2320,7 +2367,11 @@ onMounted(async () => {
                     />
                   </template>
                   <VList>
-                    <VListItem prepend-icon="mdi-pen" title="Edit" @click="HandleEditPabrik(item.id)" />
+                    <VListItem
+                      prepend-icon="mdi-pen"
+                      title="Edit"
+                      @click="HandleEditPabrik(item.id)"
+                    />
                     <!-- <VListItem prepend-icon="fa-trash" title="Hapus" @click="deletePabrik(item.id)" /> -->
                   </VList>
                 </VMenu>
@@ -2329,18 +2380,16 @@ onMounted(async () => {
           </template>
         </VDataTable>
       </VCardText>
-      
+
       <VCardActions class="d-flex justify-end">
-        <VBtn color="primary" @click="isUpdateDataPabrikModalOpen = false">Tutup</VBtn>
+        <VBtn color="primary" @click="isUpdateDataPabrikModalOpen = false">
+          Tutup
+        </VBtn>
       </VCardActions>
     </VCard>
   </VDialog>
 
-  <VDialog
-    v-model="isAddFactoryModalOpen"
-    max-width="840px"
-    persistent
-  >
+  <VDialog v-model="isAddFactoryModalOpen" max-width="840px" persistent>
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
         {{ modalTitle }}
@@ -2349,15 +2398,14 @@ onMounted(async () => {
         </VBtn>
       </VCardTitle>
       <VCardText>
-        <div class="d-flex justify-end">
-        </div>
+        <div class="d-flex justify-end" />
         <VDataTable
-          class="domestic-table border rounded mt-5"
           :id="id"
+          v-model:page="page"
+          class="domestic-table border rounded mt-5"
           :headers="listFactoryNoTaken.label"
           :items="listFactoryNoTaken.value || []"
           :items-per-page="10"
-          v-model:page="page"
         >
           <template #body="{ items }">
             <tr v-if="items.length === 0">
@@ -2385,68 +2433,95 @@ onMounted(async () => {
           </template>
         </VDataTable>
       </VCardText>
-      
+
       <VCardActions class="d-flex justify-end">
-        <VBtn color="primary" @click="isAddFactoryModalOpen = false">Tutup</VBtn>
+        <VBtn color="primary" @click="isAddFactoryModalOpen = false">
+          Tutup
+        </VBtn>
       </VCardActions>
     </VCard>
   </VDialog>
 
-  <VDialog
-    v-model="isEditFactoryModalOpen"
-    max-width="840px"
-    persistent
-  >
+  <VDialog v-model="isEditFactoryModalOpen" max-width="840px" persistent>
     <VCard>
       <VCardText>
-        <FormEditPabrikLPH 
-        :initialData = "formDataPabrik"
-        @close="isEditFactoryModalOpen = false"
+        <FormEditPabrikLPH
+          :initial-data="formDataPabrik"
+          @close="isEditFactoryModalOpen = false"
         />
       </VCardText>
     </VCard>
   </VDialog>
 
-  <VDialog
-      v-model="isUpdateDataPuModalOpen"
-      max-width="840px"
-      persistent
-    >
-      <VCard>
-        <VCardTitle class="d-flex justify-space-between align-center">
-          Update Data Perusahaan
-        </VCardTitle>
-        <VCardText>
-          <VForm>
-            <div class="form-group">
-              <VTextField v-model="formDataPU.nama_pu" label="Nama Perusahaan" disabled class="mb-3" />
-              <VTextField v-model="formDataPU.nama_pu_sh" label="Nama Perusahaan (tampil di sertifikat)"  class="mb-3" />
-              <VTextField v-model="formDataPU.alamat" label="Alamat" disabled class="mb-3" />
-              <VTextField v-model="formDataPU.kota" label="Kota/Kabupaten" disabled class="mb-3" />
-              <VTextField v-model="formDataPU.provinsi" label="Provinsi" disabled class="mb-3" />
-              <VTextField v-model="formDataPU.negara" label="Negara" disabled class="mb-3" />
-              <VTextField v-model="formDataPU.kodepos" label="Kode Pos" disabled class="mb-3" />
-              <VTextField v-model="formDataPU.skala_usaha" label="Skala Usaha" disabled class="mb-3" />
-            </div>
-          </VForm>
-        </VCardText>
-        <VCardActions>
-            <VSpacer />
-              <VBtn color="primary" @click="isUpdateDataPuModalOpen = false">
-                Tutup
-              </VBtn>
-              <VBtn
-                variant="flat"
-                class="px-4"
-                color="primary"
-                @click="updateDataPU"
-              >
-                Simpan
-              </VBtn>
-          </VCardActions>
-      </VCard>
+  <VDialog v-model="isUpdateDataPuModalOpen" max-width="840px" persistent>
+    <VCard>
+      <VCardTitle class="d-flex justify-space-between align-center">
+        Update Data Perusahaan
+      </VCardTitle>
+      <VCardText>
+        <VForm>
+          <div class="form-group">
+            <VTextField
+              v-model="formDataPU.nama_pu"
+              label="Nama Perusahaan"
+              disabled
+              class="mb-3"
+            />
+            <VTextField
+              v-model="formDataPU.nama_pu_sh"
+              label="Nama Perusahaan (tampil di sertifikat)"
+              class="mb-3"
+            />
+            <VTextField
+              v-model="formDataPU.alamat"
+              label="Alamat"
+              disabled
+              class="mb-3"
+            />
+            <VTextField
+              v-model="formDataPU.kota"
+              label="Kota/Kabupaten"
+              disabled
+              class="mb-3"
+            />
+            <VTextField
+              v-model="formDataPU.provinsi"
+              label="Provinsi"
+              disabled
+              class="mb-3"
+            />
+            <VTextField
+              v-model="formDataPU.negara"
+              label="Negara"
+              disabled
+              class="mb-3"
+            />
+            <VTextField
+              v-model="formDataPU.kodepos"
+              label="Kode Pos"
+              disabled
+              class="mb-3"
+            />
+            <VTextField
+              v-model="formDataPU.skala_usaha"
+              label="Skala Usaha"
+              disabled
+              class="mb-3"
+            />
+          </div>
+        </VForm>
+      </VCardText>
+      <VCardActions>
+        <VSpacer />
+        <VBtn color="primary" @click="isUpdateDataPuModalOpen = false">
+          Tutup
+        </VBtn>
+        <VBtn variant="flat" class="px-4" color="primary" @click="updateDataPU">
+          Simpan
+        </VBtn>
+      </VCardActions>
+    </VCard>
   </VDialog>
-
 </template>
 
 <style scoped lang="scss">
@@ -2454,21 +2529,22 @@ onMounted(async () => {
     .v-expansion-panel--active:not(:first-child),
     .v-expansion-panel--active + .v-expansion-panel
   ) {
-  margin-top: 40px !important;
+  margin-block-start: 40px !important;
 }
 
 :deep(.v-data-table.auditor-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }

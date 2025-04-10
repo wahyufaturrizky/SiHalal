@@ -32,12 +32,13 @@ const regisTypeList = ref([
     value: "CH002",
   },
 ]);
+
 const yearList = ref<string[]>([]);
+
 const loadYearList = () => {
   const currentYear = new Date().getFullYear();
-  for (let year = 2021; year <= currentYear; year++) {
+  for (let year = 2021; year <= currentYear; year++)
     yearList.value.push(`${year}`);
-  }
 };
 
 const selectedRegType = ref();
@@ -68,6 +69,7 @@ const loadItem = async () => {
       totalItems.value = 0;
     }
     isLoading.value = false;
+
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar(
@@ -103,6 +105,7 @@ const handleFilterRegType = useDebounceFn((val: string) => {
 
   refresh();
 }, 350);
+
 const handleFilterYear = useDebounceFn((val: string) => {
   selectedYear.value = val;
   currentPage.value = 1;
@@ -125,27 +128,27 @@ const handleChooseNumbers = () => {
   const startIndex = firstIndex.value ? firstIndex.value - 1 : 0;
   let endIndex = 0;
   if (lastIndex.value) {
-    if (lastIndex.value - 1 > tableItems.value.length - 1) {
+    if (lastIndex.value - 1 > tableItems.value.length - 1)
       endIndex = tableItems.value.length - 1;
-    } else if (lastIndex.value - 1 < startIndex) {
-      endIndex = startIndex;
-    } else {
-      endIndex = lastIndex.value - 1;
-    }
+    else if (lastIndex.value - 1 < startIndex) endIndex = startIndex;
+    else endIndex = lastIndex.value - 1;
   }
 
   firstIndex.value = null;
   lastIndex.value = null;
   for (let index = startIndex; index <= endIndex; index++) {
     const docs = tableItems.value[index];
+
     selectedDoc.value.push(docs.id_reg);
   }
 };
 
 const isOpenModal = ref(false);
+
 const handleOpenModal = () => {
   isOpenModal.value = !isOpenModal.value;
 };
+
 const handleConfirmCreate = async () => {
   try {
     const response: any = await $api("/reguler/lph/bpjph-bill/create", {
@@ -213,15 +216,15 @@ onMounted(() => {
                       <VCol>
                         <div class="text-h6 mb-1">Jenis Layanan</div>
                         <VSelect
-                          placeholder="Cari Jenis Layanan"
-                          @update:model-value="handleFilterRegType"
                           v-model="selectedRegType"
+                          placeholder="Cari Jenis Layanan"
                           :items="regisTypeList"
                           item
                           density="compact"
                           menu-icon="fa-chevron-down"
                           rounded="lg"
                           clearable
+                          @update:model-value="handleFilterRegType"
                         />
                       </VCol>
                     </VRow>
@@ -229,14 +232,14 @@ onMounted(() => {
                       <VCol>
                         <div class="text-h6 mb-1">Tahun</div>
                         <VSelect
-                          placeholder="Semua"
-                          @update:model-value="handleFilterYear"
                           v-model="selectedYear"
+                          placeholder="Semua"
                           :items="yearList"
                           density="compact"
                           menu-icon="fa-chevron-down"
                           rounded="lg"
                           clearable
+                          @update:model-value="handleFilterYear"
                         />
                       </VCol>
                     </VRow>
@@ -246,13 +249,13 @@ onMounted(() => {
             </VCol>
             <VCol cols="3">
               <VTextField
-                @update:model-value="handleSearchDoc"
                 v-model="searchQuery"
                 placeholder="Cari No. Daftar / Nama PU"
                 density="compact"
                 append-inner-icon="mdi-magnify"
                 rounded="xl"
                 clearable
+                @update:model-value="handleSearchDoc"
               />
             </VCol>
             <VCol cols="1">
@@ -290,16 +293,16 @@ onMounted(() => {
         </VCardItem>
         <VCardText>
           <VDataTableServer
+            v-model:items-per-page="itemPerPage"
+            v-model:page="currentPage"
+            v-model="selectedDoc"
             :items-per-page-options="[10, 25, 50, 100]"
             class="border rounded mt-5"
             :headers="invoiceHeader"
             :items="tableItems"
             :items-length="totalData"
-            v-model:items-per-page="itemPerPage"
-            v-model:page="currentPage"
             :loading="isLoading"
             loading-text="Loading..."
-            v-model="selectedDoc"
             show-select
             item-value="id_reg"
             :hide-default-footer="tableItems.length === 0"
@@ -314,6 +317,9 @@ onMounted(() => {
             </template>
             <template #item.index="{ index }">
               {{ index + 1 + (currentPage - 1) * itemPerPage }}
+            </template>
+            <template #item.tanggal_daftar="{ item }">
+              {{ formatDateId(item.tanggal_daftar) }}
             </template>
             <template #item.jenis_produk="{ item }">
               <div>{{ `${item.jenis_produk} & ${item.merek_dagang}` }}</div>
@@ -338,9 +344,9 @@ onMounted(() => {
       Yakin akan membuat tagihan untuk data-data yang dicontreng tersebut?
     </VCardText>
     <VCardActions class="px-4">
-      <VBtn variant="outlined" class="px-4 me-3" @click="handleOpenModal"
-        >Batal</VBtn
-      >
+      <VBtn variant="outlined" class="px-4 me-3" @click="handleOpenModal">
+        Batal
+      </VBtn>
       <VBtn
         variant="flat"
         class="px-4"

@@ -1184,6 +1184,7 @@ watch(selectedFactory, () => {
                       :enable-time-picker="false"
                       placeholder="tanggal masuk"
                       required
+                      format="dd/MM/yyyy"
                     />
                   </VCol>
                   <VCol>
@@ -1195,6 +1196,7 @@ watch(selectedFactory, () => {
                       :enable-time-picker="false"
                       placeholder="tanggal masuk"
                       required
+                      format="dd/MM/yyyy"
                     />
                   </VCol>
                 </VRow>
@@ -1367,6 +1369,7 @@ watch(selectedFactory, () => {
                       :enable-time-picker="false"
                       placeholder="tanggal masuk"
                       required
+                      format="dd/MM/yyyy"
                     />
                   </VCol>
                   <VCol>
@@ -1378,6 +1381,7 @@ watch(selectedFactory, () => {
                       :enable-time-picker="false"
                       placeholder="tanggal masuk"
                       required
+                      format="dd/MM/yyyy"
                     />
                   </VCol>
                 </VRow>

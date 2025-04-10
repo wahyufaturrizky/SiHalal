@@ -21,6 +21,7 @@ const page = ref(1);
 const totalData = ref(0);
 
 const route = useRoute();
+
 const getCatatanProduksi = async () => {
   try {
     const response = await $api(
@@ -36,8 +37,10 @@ const getCatatanProduksi = async () => {
         },
       }
     );
+
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan", "error");
+
       return;
     }
     catatanItems.value = response.data;
@@ -60,9 +63,9 @@ const download = async (item) => {
     </VCardTitle>
     <VCardItem>
       <VDataTableServer
-        :items-per-page-options="[10, 25, 50, 100]"
         v-model:items-per-page="size"
         v-model:page="page"
+        :items-per-page-options="[10, 25, 50, 100]"
         :headers="catatanHeaders"
         :items="catatanItems"
         :items-length="totalData"
@@ -72,7 +75,7 @@ const download = async (item) => {
           {{ index + 1 }}
         </template>
         <template #item.file="{ item }">
-          <v-btn
+          <VBtn
             :disabled="item.file_dok == ''"
             color="primary"
             variant="plain"
@@ -80,7 +83,15 @@ const download = async (item) => {
             @click="download(item)"
           >
             File
-          </v-btn>
+          </VBtn>
+        </template>
+
+        <template #item.tanggal_produksi="{ item }">
+          {{ formatDateId(item.tanggal_produksi) }}
+        </template>
+
+        <template #item.tanggal_kadaluarsa="{ item }">
+          {{ formatDateId(item.tanggal_kadaluarsa) }}
         </template>
       </VDataTableServer>
     </VCardItem>

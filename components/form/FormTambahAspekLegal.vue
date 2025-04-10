@@ -136,6 +136,7 @@ const documentTypes = ["SIUP", "ANOTHER"];
                 v-model="form.validDate"
                 teleport-center
                 :enable-time-picker="false"
+                format="dd/MM/yyyy"
               />
             </VCol>
           </VRow>

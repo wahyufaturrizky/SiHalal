@@ -4,7 +4,7 @@ import "@vuepic/vue-datepicker/dist/main.css";
 import { useDisplay } from "vuetify";
 
 const props = defineProps({
-  initialData: { type : Object, default: null},
+  initialData: { type: Object, default: null },
   isEditable: { type: Boolean, default: true },
 });
 
@@ -20,14 +20,13 @@ onMounted(() => {
 });
 
 const isVisible = ref(false);
-const openDialog = () => isVisible.value = true
-const closeDialog = () => isVisible.value = false
+const openDialog = () => (isVisible.value = true);
+const closeDialog = () => (isVisible.value = false);
 
-
-const catatan = ref(props.initialData)
+const catatan = ref(props.initialData);
 
 const unggahData = () => {
-  console.log("FILE CATATAN {}", file.value)
+  console.log("FILE CATATAN {}", file.value);
   emit("upload", file.value);
   closeDialog();
   file.value = null;
@@ -35,9 +34,9 @@ const unggahData = () => {
 };
 
 const confirm = () => {
-  console.log("MANUAL CATATAN ", catatan.value)
+  console.log("MANUAL CATATAN ", catatan.value);
   emit("confirm", catatan.value);
-  closeDialog()
+  closeDialog();
   snackbar.sendSnackbar("Berhasil menambahkan data", "success");
 };
 
@@ -46,17 +45,15 @@ const { mdAndUp } = useDisplay();
 const dialogMaxWidth = computed(() => {
   return mdAndUp.value ? 700 : "90%";
 });
-
-
 </script>
 
 <template>
   <VBtn
     variant="text"
     prepend-icon="ri-edit-line"
-    @click="openDialog"
     block
     :disabled="!props.isEditable"
+    @click="openDialog"
   >
     Ubah
   </VBtn>
@@ -139,34 +136,37 @@ const dialogMaxWidth = computed(() => {
 
           <VTabsWindowItem value="2">
             <VLabel for="nama"> Nama Produk </VLabel>
-            <VTextField id="nama"
-                        placeholder="Isi Nama Produk"
-                        v-model="catatan.name"
-                        class="mb-2"
+            <VTextField
+              id="nama"
+              v-model="catatan.name"
+              placeholder="Isi Nama Produk"
+              class="mb-2"
             />
             <VLabel for="total"> Jumlah </VLabel>
-            <VTextField id="total"
-                        placeholder="Isi Jumlah"
-                        v-model="catatan.total"
-                        class="mb-2"
+            <VTextField
+              id="total"
+              v-model="catatan.total"
+              placeholder="Isi Jumlah"
+              class="mb-2"
             />
             <VRow>
               <VCol cols="6">
-                <VLabel for="distributionDate"> Tanggal Distribusi</VLabel>
+                <VLabel for="distributionDate"> Tanggal Distribusi </VLabel>
                 <VueDatePicker
-                  class="mb-4"
-                  teleport-center
                   id="distributionDate"
                   v-model="catatan.productionDate"
+                  class="mb-4"
+                  teleport-center
                   :enable-time-picker="false"
+                  format="dd/MM/yyyy"
                 />
               </VCol>
               <VCol cols="6">
                 <VLabel for="destination"> Tujuan </VLabel>
                 <VTextField
-                  class="mb-4"
                   id="destination"
                   v-model="catatan.outDated"
+                  class="mb-4"
                 />
               </VCol>
             </VRow>

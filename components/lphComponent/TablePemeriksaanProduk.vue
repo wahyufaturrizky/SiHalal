@@ -1,24 +1,25 @@
 <script setup lang="ts">
 const props = defineProps<{
-  detailPath: string
-  data: array
-}>()
-const emit = defineEmits(['show:modal-info', 'tes']);
+  detailPath: string;
+  data: array;
+}>();
+
+const emit = defineEmits(["show:modal-info", "tes"]);
 
 const router = useRouter();
 
 const invoiceHeader: any[] = [
-  { title: 'No', value: 'index' },
-  { title: 'Nomor Daftar', value: 'no_daftar', nowrap: true },
-  { title: 'Tanggal', value: 'tanggal_daftar', nowrap: true },
-  { title: 'Nama PU', value: 'nama_pu', nowrap: true },
-  { title: 'Jenis Daftar', value: 'jenis_daftar', nowrap: true },
-  { title: 'Jenis Produk', value: 'jenis_produk', nowrap: true },
-  { title: 'Jenis Usaha dan Jumlah', value: 'businessType', nowrap: true },
-  { title: 'Status', value: 'status', nowrap: true },
-  { title: 'Tanggal Dikirim Oleh BPJPH', value: 'tgl_dikirim', nowrap: true },
-  { title: 'Action', value: 'actions', align: 'center' },
-]
+  { title: "No", value: "index" },
+  { title: "Nomor Daftar", value: "no_daftar", nowrap: true },
+  { title: "Tanggal", value: "tanggal_daftar", nowrap: true },
+  { title: "Nama PU", value: "nama_pu", nowrap: true },
+  { title: "Jenis Daftar", value: "jenis_daftar", nowrap: true },
+  { title: "Jenis Produk", value: "jenis_produk", nowrap: true },
+  { title: "Jenis Usaha dan Jumlah", value: "businessType", nowrap: true },
+  { title: "Status", value: "status", nowrap: true },
+  { title: "Tanggal Dikirim Oleh BPJPH", value: "tgl_dikirim", nowrap: true },
+  { title: "Action", value: "actions", align: "center" },
+];
 </script>
 
 <template>
@@ -31,6 +32,9 @@ const invoiceHeader: any[] = [
   >
     <template #item.index="{ index }">
       {{ index + 1 }}
+    </template>
+    <template #item.tanggal_daftar="{ item }">
+      {{ formatDateId(item.tanggal_daftar) }}
     </template>
     <template #item.businessType="{ item }">
       <div class="d-flex">
@@ -71,18 +75,20 @@ const invoiceHeader: any[] = [
   :deep(.v-table__wrapper) {
     table {
       thead > tr > th:last-of-type {
-        right: 0;
         position: sticky;
-        border-left: 1px solid rgba(#000000, 0.12);
+        border-inline-start: 1px solid rgba(#000, 0.12);
+        inset-inline-end: 0;
       }
+
       tbody > tr > td:last-of-type {
-        right: 0;
         position: sticky;
-        border-left: 1px solid rgba(#000000, 0.12);
         background: white;
+        border-inline-start: 1px solid rgba(#000, 0.12);
+        inset-inline-end: 0;
       }
     }
   }
+
   :deep(.v-data-table-footer) {
     justify-content: space-between;
 
@@ -93,18 +99,18 @@ const invoiceHeader: any[] = [
 }
 
 .green-box {
-  color: #49a84c;
-  background-color: #edf6ed;
   border: 1px solid #49a84c;
   border-radius: 8px;
+  background-color: #edf6ed;
+  color: #49a84c;
   font-size: 12px;
 }
 
 .status-box {
-  color: #652672;
-  background-color: #f0e9f1;
   border: 1px solid #652672;
   border-radius: 8px;
+  background-color: #f0e9f1;
+  color: #652672;
   font-size: 12px;
 }
 </style>

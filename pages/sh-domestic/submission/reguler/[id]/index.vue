@@ -198,11 +198,14 @@ const currentPageAspek = ref(1);
 const halamanAspek = computed(() =>
   Math.ceil(totalPageAspek.value / itemsPerPage.value)
 );
+
 const paginatedAspek = computed(() => {
   const start = (currentPageAspek.value - 1) * itemsPerPage.value;
   const end = start + itemsPerPage.value;
+
   return allPagesAspek.value.slice(start, end);
 });
+
 const changePageAspek = (page: number) => {
   currentPageAspek.value = page;
 };
@@ -212,11 +215,14 @@ const currentPagePabrik = ref(1);
 const halamanPabrik = computed(() =>
   Math.ceil(totalPagePabrik.value / itemsPerPage.value)
 );
+
 const paginatedPabrik = computed(() => {
   const start = (currentPagePabrik.value - 1) * itemsPerPage.value;
   const end = start + itemsPerPage.value;
+
   return allPagesPabrik.value.slice(start, end);
 });
+
 const changePagePabrik = (page: number) => {
   currentPagePabrik.value = page;
 };
@@ -226,11 +232,14 @@ const currentPageOutlet = ref(1);
 const halamanOutlet = computed(() =>
   Math.ceil(totalPageOutlet.value / itemsPerPage.value)
 );
+
 const paginatedOutlet = computed(() => {
   const start = (currentPageOutlet.value - 1) * itemsPerPage.value;
   const end = start + itemsPerPage.value;
+
   return allPagesOutlet.value.slice(start, end);
 });
+
 const changePageOutlet = (page: number) => {
   currentPageOutlet.value = page;
 };
@@ -240,11 +249,14 @@ const currentPagePenyelia = ref(1);
 const halamanPenyelia = computed(() =>
   Math.ceil(totalPagePenyelia.value / itemsPerPage.value)
 );
+
 const paginatedPenyelia = computed(() => {
   const start = (currentPagePenyelia.value - 1) * itemsPerPage.value;
   const end = start + itemsPerPage.value;
+
   return allPagesPenyelia.value.slice(start, end);
 });
+
 const changePagePenyelia = (page: number) => {
   currentPagePenyelia.value = page;
 };
@@ -254,11 +266,14 @@ const currentPageProduk = ref(1);
 const halamanProduk = computed(() =>
   Math.ceil(totalPageProduk.value / itemsPerPage.value)
 );
+
 const paginatedProduk = computed(() => {
   const start = (currentPageProduk.value - 1) * itemsPerPage.value;
   const end = start + itemsPerPage.value;
+
   return allPagesProduk.value.slice(start, end);
 });
+
 const changePageProduk = (page: number) => {
   currentPageProduk.value = page;
 };
@@ -356,16 +371,21 @@ onMounted(async () => {
         <VCardText>
           <div
             v-if="dialogData.title === 'Mengirim Pengajuan'"
-            style="color: black; text-wrap: wrap;"
+            style="color: black; text-wrap: wrap"
           >
-            <p style="font-weight: bolder;">Disclaimer</p>
+            <p style="font-weight: bolder">Disclaimer</p>
             <p>Dengan sungguh-sungguh menyatakan bahwa:</p>
-            <ul style="padding-left: 20px;">
+            <ul style="padding-inline-start: 20px">
               <li>
-                Seluruh pernyataan data dan informasi beserta seluruh dokumen yang saya lampirkan dalam berkas pendaftaran adalah benar.
+                Seluruh pernyataan data dan informasi beserta seluruh dokumen
+                yang saya lampirkan dalam berkas pendaftaran adalah benar.
               </li>
               <li>
-                Apabila dikemudian ditemukan bahwa data/dokumen yang saya sampaikan tidak benar dan/atau ada pemalsuan, maka seluruh keputusan yang telah ditetapkan berdasarkan berkas batal berdasarkan hukum dan saya bersedia dikenakan sanksi sesuai ketentuan peraturan perundang-undangan yang berlaku.
+                Apabila dikemudian ditemukan bahwa data/dokumen yang saya
+                sampaikan tidak benar dan/atau ada pemalsuan, maka seluruh
+                keputusan yang telah ditetapkan berdasarkan berkas batal
+                berdasarkan hukum dan saya bersedia dikenakan sanksi sesuai
+                ketentuan peraturan perundang-undangan yang berlaku.
               </li>
             </ul>
           </div>
@@ -773,12 +793,15 @@ onMounted(async () => {
                       {{ item.productName }}
                     </div>
                   </template>
+                  <template #item.tanggal_surat="{ item }">
+                    {{ formatDateId(item.tanggal_surat) }}
+                  </template>
                 </VDataTable>
                 <VPagination
                   v-model="currentPageAspek"
                   :length="halamanAspek"
                   :style="{ marginTop: '20px' }"
-                  @update:modelValue="changePageAspek"
+                  @update:model-value="changePageAspek"
                 />
               </VExpansionPanelText>
             </VExpansionPanel>
@@ -825,7 +848,7 @@ onMounted(async () => {
                   v-model="currentPagePabrik"
                   :length="halamanPabrik"
                   :style="{ marginTop: '20px' }"
-                  @update:modelValue="changePagePabrik"
+                  @update:model-value="changePagePabrik"
                 />
               </VExpansionPanelText>
             </VExpansionPanel>
@@ -838,7 +861,7 @@ onMounted(async () => {
                 {{ t("pengajuan-reguler.reguler-detail-out-title") }}
               </VExpansionPanelTitle>
               <VExpansionPanelText>
-                <div class="border rounded w-100" style="justify-items: center;">
+                <div class="border rounded w-100" style="justify-items: center">
                   <!--                  <div -->
                   <!--                    v-if="data?.outlet?.length === 0" -->
                   <!--                    class="pt-2" -->
@@ -885,7 +908,7 @@ onMounted(async () => {
                     v-model="currentPageOutlet"
                     :length="halamanOutlet"
                     :style="{ marginTop: '20px' }"
-                    @update:modelValue="changePageOutlet"
+                    @update:model-value="changePageOutlet"
                   />
                 </div>
               </VExpansionPanelText>
@@ -937,13 +960,16 @@ onMounted(async () => {
                       {{ (currentPagePenyelia - 1) * itemsPerPage + index + 1 }}
                     </div>
                   </template>
+                  <template #item.tanggal_sk="{ item }">
+                    {{ formatDateId(item.tanggal_sk) }}
+                  </template>
                 </VDataTable>
                 <VPagination
-                v-model="currentPagePenyelia"
-                :length="halamanPenyelia"
-                :style="{ marginTop: '20px' }"
-                @update:modelValue="changePagePenyelia"
-              />
+                  v-model="currentPagePenyelia"
+                  :length="halamanPenyelia"
+                  :style="{ marginTop: '20px' }"
+                  @update:model-value="changePagePenyelia"
+                />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -996,11 +1022,11 @@ onMounted(async () => {
                 <!--                  </div> -->
                 <!--                </div> -->
                 <VPagination
-                v-model="currentPageProduk"
-                :length="halamanProduk"
-                :style="{ marginTop: '20px' }"
-                @update:modelValue="changePageProduk"
-              />
+                  v-model="currentPageProduk"
+                  :length="halamanProduk"
+                  :style="{ marginTop: '20px' }"
+                  @update:model-value="changePageProduk"
+                />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
