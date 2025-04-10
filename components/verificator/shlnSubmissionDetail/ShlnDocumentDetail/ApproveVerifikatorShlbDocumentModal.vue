@@ -55,6 +55,7 @@ const saveReqDocument = async () => {
     }
 
     const { type, no } = item || {};
+    console.log(item);
 
     const response: any = await $api(
       "/shln/submission/document/add-requirement",
@@ -62,10 +63,14 @@ const saveReqDocument = async () => {
         method: "post",
         body: {
           id: shlnId,
-          id_loa: type == "LOA" ? no : "",
+          id_loa: type == "Letter of Application / LoA" ? no : "",
           id_nib: type == "NIB" ? no : "",
           file_url_loa:
-            type == "LOA" ? (fileDoc ? fileDoc.data.file_url : "") : "",
+            type == "Letter of Application / LoA"
+              ? fileDoc
+                ? fileDoc.data.file_url
+                : ""
+              : "",
           file_url_nib:
             type == "NIB" ? (fileDoc ? fileDoc.data.file_url : "") : "",
           comment_loa: "",
@@ -77,10 +82,7 @@ const saveReqDocument = async () => {
     );
 
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar(
-        "ada kesalahan, gagal menyimpan!",
-        "error"
-      );
+      useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
       loading.value = false;
       isVisible.value = false;
     } else {
