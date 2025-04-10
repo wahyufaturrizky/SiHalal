@@ -64,7 +64,7 @@ const loadItemListDocumentById = async () => {
       const resData = [
         {
           no: loa.id,
-          type: "LOA",
+          type: "Letter of Application / LoA",
           file: loa.file,
           tracking: loa.tracking,
           comment: loa.comment,
