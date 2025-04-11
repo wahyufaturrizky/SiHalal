@@ -47,7 +47,7 @@ const statusItem: any = new Proxy(
 
 const registData = [
   { id: 1, key: "Status", value: status_code },
-  { id: 2, key: "Registration No.", value: registration_number },
+  { id: 2, key: "Submission No.", value: registration_number },
   {
     id: 3,
     key: "Date",
