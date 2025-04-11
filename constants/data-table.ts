@@ -1,0 +1,2 @@
+export const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50, 100];
+export const ITEMS_PER_PAGE_OPTIONS_HUGE = [10, 20, 50, 100, 250, 500, 1000];

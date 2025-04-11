@@ -4,6 +4,7 @@ import { ref } from "vue";
 const searchQuery = ref("");
 const loadingAll = ref(true);
 const { t } = useI18n();
+
 const headers: any = [
   { title: "No", key: "no", nowrap: true },
   { title: "ID Reg", key: "id_reg", nowrap: true },
@@ -32,6 +33,7 @@ const headers: any = [
     key: "status",
     nowrap: true,
   },
+
   // { title: "Merk Dagang", key: "merk_dagang", nowrap: true },
   {
     title: "status-permohoanan.permohonan-list-action",
@@ -48,24 +50,24 @@ const itemPerPage = ref(10);
 const totalItems = ref(0);
 
 const questions = [
-  'self-declare.questionnaire.1',
-  'self-declare.questionnaire.2',
-  'self-declare.questionnaire.3',
-  'self-declare.questionnaire.4',
-  'self-declare.questionnaire.5',
-  'self-declare.questionnaire.6',
-  'self-declare.questionnaire.7',
-]
+  "self-declare.questionnaire.1",
+  "self-declare.questionnaire.2",
+  "self-declare.questionnaire.3",
+  "self-declare.questionnaire.4",
+  "self-declare.questionnaire.5",
+  "self-declare.questionnaire.6",
+  "self-declare.questionnaire.7",
+];
 
 const questionResponse = [
-  'self-declare.questionnaire-response.1',
-  'self-declare.questionnaire-response.2',
-  'self-declare.questionnaire-response.3',
-  'self-declare.questionnaire-response.4',
-  'self-declare.questionnaire-response.5',
-  'self-declare.questionnaire-response.6',
-  'self-declare.questionnaire-response.7',
-]
+  "self-declare.questionnaire-response.1",
+  "self-declare.questionnaire-response.2",
+  "self-declare.questionnaire-response.3",
+  "self-declare.questionnaire-response.4",
+  "self-declare.questionnaire-response.5",
+  "self-declare.questionnaire-response.6",
+  "self-declare.questionnaire-response.7",
+];
 
 const questionareDialogVisible = ref(false);
 const infoDialogVisible = ref(false);
@@ -76,6 +78,7 @@ const openModalsQuestionare = () => {
 };
 
 const isUnfulfilled = ref<Array<string>>([]);
+
 const handleSubmitQuestionare = (answers: Array<string>) => {
   let unfulfilledCount = 0;
   answers.map((item, idx) => {
@@ -88,11 +91,8 @@ const handleSubmitQuestionare = (answers: Array<string>) => {
     }
   });
 
-  if (unfulfilledCount > 0) {
-    infoDialogVisible.value = true;
-  } else {
-    requestDialogVisible.value = true;
-  }
+  if (unfulfilledCount > 0) infoDialogVisible.value = true;
+  else requestDialogVisible.value = true;
 };
 
 const router = useRouter();
@@ -110,9 +110,8 @@ const handleCreate = async (answer: string) => {
       },
     });
 
-    if (result.code === 2000) {
+    if (result.code === 2000)
       router.push(`/sh-domestic/submission/self-declare/${result.data.id_reg}`);
-    }
   } catch (error) {
     useSnackbar().sendSnackbar(
       "KBLI tidak bisa digunakan untuk pengajuan Self Declare",
@@ -125,6 +124,7 @@ const alertData = ref({
   isValid: true,
   text: "",
 });
+
 const loadValidation = async () => {
   const response: any = await $api("/self-declare/submission/validation", {
     method: "get",
@@ -133,6 +133,7 @@ const loadValidation = async () => {
   if (response.code === 2000) {
     alertData.value.isValid = response.data.is_allow_submission;
     alertData.value.text = response.data.keterangan;
+
     return response;
   }
 };
@@ -154,6 +155,7 @@ const handleLoadList = async () => {
       submission.value = response.data;
       currentPage.value = response.current_page;
       totalItems.value = response.total_item;
+
       return response;
     }
   } catch (error) {}
@@ -185,20 +187,19 @@ onMounted(async () => {
     return item !== undefined;
   });
 
-  if (checkResIfUndefined) {
-    loadingAll.value = false;
-  } else {
-    loadingAll.value = false;
-  }
+  if (checkResIfUndefined) loadingAll.value = false;
+  else loadingAll.value = false;
 });
 </script>
 
 <template>
   <div>
-    <di>
-      <h1 style="font-size: 32px">{{ t("self-declare.title") }}</h1>
+    <Di>
+      <h1 style="font-size: 32px">
+        {{ t("self-declare.title") }}
+      </h1>
       <br />
-    </di>
+    </Di>
 
     <VCard v-if="!loadingAll" rounded class="bg-surface pa-4">
       <VRow>
@@ -244,26 +245,26 @@ onMounted(async () => {
         <VCol cols="7" class="d-flex justify-sm-space-between align-center">
           <VTextField
             v-model="searchQuery"
-            @update:model-value="handleSearchSubmission"
             density="compact"
             :placeholder="t('self-declare-mandiri.search')"
             append-inner-icon="fa-search"
-            style="max-width: 100%"
+            style="max-inline-size: 100%"
+            @update:model-value="handleSearchSubmission"
           />
         </VCol>
       </VRow>
       <VRow>
         <VCol>
           <VDataTableServer
+            v-model:page="currentPage"
+            v-model:items-per-page="itemPerPage"
             class="elevation-1 custom-table"
             :headers="headers"
             :items="submission"
             :items-length="totalItems"
-            v-model:page="currentPage"
-            v-model:items-per-page="itemPerPage"
             :items-per-page-options="[5, 25, 50, 100]"
-            @update:options="handleLoadList"
             :hide-default-footer="!submission.length"
+            @update:options="handleLoadList"
           >
             <template #item.no="{ index }">
               {{ index + 1 + (currentPage - 1) * itemPerPage }}
@@ -277,11 +278,7 @@ onMounted(async () => {
               </div>
             </template>
             <template #item.tgl_daftar="{ item }: any">
-              {{
-                item.tgl_daftar
-                  ? new Date(item.tgl_daftar).toISOString().substring(0, 10)
-                  : "-"
-              }}
+              {{ item.tgl_daftar ? formatDateId(item.tgl_daftar) : "-" }}
             </template>
             <template #header.tgl_daftar="{ column }">
               <div>
@@ -296,9 +293,11 @@ onMounted(async () => {
                 {{ t(column.title) }}
               </div>
             </template>
-            <!-- <template #item.merk_dagang="{ item }: any">
+            <!--
+              <template #item.merk_dagang="{ item }: any">
               {{ item.merk_dagang ? item.merk_dagang : "-" }}
-            </template> -->
+              </template>
+            -->
             <template #item.action="{ item }: any">
               <VIcon
                 color="success"
@@ -343,8 +342,8 @@ onMounted(async () => {
     </VCard>
 
     <VSkeletonLoader
-      type="table-heading, list-item-two-line, image, table-tfoot"
       v-else
+      type="table-heading, list-item-two-line, image, table-tfoot"
     />
 
     <Questionnaire
@@ -355,8 +354,8 @@ onMounted(async () => {
     />
     <InfoDialogue
       :dialog-visible="infoDialogVisible"
-      @update:dialog-visible="infoDialogVisible = $event"
       :data="isUnfulfilled"
+      @update:dialog-visible="infoDialogVisible = $event"
     />
     <RequestDialogue
       :dialog-visible="requestDialogVisible"
@@ -368,30 +367,34 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 .table-width-5 {
-  width: 5%;
+  inline-size: 5%;
 }
+
 .table-width-10 {
-  width: 10%;
+  inline-size: 10%;
 }
+
 .table-width-15 {
-  width: 15%;
+  inline-size: 15%;
 }
+
 .table-width-20 {
-  width: 20%;
+  inline-size: 20%;
 }
 
 :deep(.v-data-table.custom-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }

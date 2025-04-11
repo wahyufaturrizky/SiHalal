@@ -26,6 +26,7 @@ interface SertifikasiHalal {
 }
 const props = defineProps<{ data: SertifikasiHalal }>();
 const dataHalal = ref(props.data);
+
 watchEffect(() => {
   dataHalal.value = props.data;
 });
@@ -52,7 +53,9 @@ watchEffect(() => {
                 Tanggal
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{ dataHalal.tanggal }}</VListItemSubtitle>
+            <VListItemSubtitle
+              >: {{ formatDateId(dataHalal.tanggal) }}</VListItemSubtitle
+            >
           </VListItem>
 
           <!-- Address Information -->
@@ -81,9 +84,9 @@ watchEffect(() => {
                 Jenis Layanan
               </VListItemTitle>
             </template>
-            <VListItemSubtitle
-              >: {{ dataHalal.jenis_layanan }}</VListItemSubtitle
-            >
+            <VListItemSubtitle>
+              : {{ dataHalal.jenis_layanan }}
+            </VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -92,9 +95,9 @@ watchEffect(() => {
                 Jenis Produk
               </VListItemTitle>
             </template>
-            <VListItemSubtitle
-              >: {{ dataHalal.jenis_produk }}</VListItemSubtitle
-            >
+            <VListItemSubtitle>
+              : {{ dataHalal.jenis_produk }}
+            </VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -103,7 +106,9 @@ watchEffect(() => {
                 Merek Dagang
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{dataHalal.merek_dagang}}</VListItemSubtitle>
+            <VListItemSubtitle
+              >: {{ dataHalal.merek_dagang }}</VListItemSubtitle
+            >
           </VListItem>
 
           <VListItem>
@@ -112,7 +117,9 @@ watchEffect(() => {
                 Area Pemasaran
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>: {{dataHalal.area_pemasaran}}</VListItemSubtitle>
+            <VListItemSubtitle
+              >: {{ dataHalal.area_pemasaran }}</VListItemSubtitle
+            >
           </VListItem>
           <!-- Company Information -->
           <VDivider class="my-2" />
@@ -131,9 +138,7 @@ watchEffect(() => {
                 Nama Perusahaan tertera di SH
               </VListItemTitle>
             </template>
-            <VListItemSubtitle
-              >: {{ dataHalal.nama_pu }}</VListItemSubtitle
-            >
+            <VListItemSubtitle> : {{ dataHalal.nama_pu }} </VListItemSubtitle>
           </VListItem>
 
           <VListItem>
@@ -142,7 +147,7 @@ watchEffect(() => {
                 Nama KBLI
               </VListItemTitle>
             </template>
-            <VListItemSubtitle>:{{dataHalal.nama_kbli}}</VListItemSubtitle>
+            <VListItemSubtitle>:{{ dataHalal.nama_kbli }}</VListItemSubtitle>
           </VListItem>
 
           <VListItem>

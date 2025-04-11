@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { useDisplay } from "vuetify";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
+import { useDisplay } from "vuetify";
 
 const props = defineProps({
   invoiceInformation: { type: Object, default: () => ({}) },
 });
+
+const emit = defineEmits(["confirm"]);
 
 const form = ref({
   tanggalPembayaran: null,
@@ -16,9 +18,8 @@ const form = ref({
   bankPengirim: null,
   noRekeningPengirim: null,
   namaRekeningPengirim: null,
-  file: null
+  file: null,
 });
-
 
 const reset = () => {
   form.value = {
@@ -30,11 +31,9 @@ const reset = () => {
     BankPengirim: null,
     NoRekeningPengirim: null,
     NamaRekeningPengirim: null,
-    file: null
-  }
-}
-
-const emit = defineEmits(["confirm"]);
+    file: null,
+  };
+};
 
 const isVisible = ref(false);
 
@@ -48,7 +47,7 @@ const closeDialog = () => {
 
 const confirm = () => {
   emit("confirm", form.value);
-  reset()
+  reset();
   closeDialog();
 };
 
@@ -67,10 +66,10 @@ const dialogMaxWidth = computed(() => {
   <VBtn
     variant="text"
     prepend-icon="mdi-check-all"
-    @click="openDialog"
     block
     class="text-left"
-    style="width: 100%; justify-content: flex-start;"
+    style="justify-content: flex-start; inline-size: 100%"
+    @click="openDialog"
   >
     konfirmasi Pembayaran
   </VBtn>
@@ -87,22 +86,22 @@ const dialogMaxWidth = computed(() => {
           elevation="0"
           @click="closeDialog"
         >
-          <VIcon color="black">ri-close-line</VIcon>
+          <VIcon color="black"> ri-close-line </VIcon>
         </VBtn>
       </VCardTitle>
       <VCardText>
-        <VRow class="border rounded pa-4" no-gutters >
+        <VRow class="border rounded pa-4" no-gutters>
           <VCol cols="12" md="4" class="d-flex flex-column">
             <span class="font-weight-bold">No. Invoice </span>
-            <span>{{props.invoiceInformation.noInvoice}}</span>
+            <span>{{ props.invoiceInformation.noInvoice }}</span>
           </VCol>
           <VCol cols="12" md="4" class="d-flex flex-column">
             <span class="font-weight-bold">Tanggal Pembayaran </span>
-            <span>{{props.invoiceInformation.tanggalPembayaran}}</span>
+            <span>{{ props.invoiceInformation.tanggalPembayaran }}</span>
           </VCol>
           <VCol cols="12" md="4" class="d-flex flex-column">
             <span class="font-weight-bold">Jumlah </span>
-            <span>{{props.invoiceInformation.jumlahPembayaran}}</span>
+            <span>{{ props.invoiceInformation.jumlahPembayaran }}</span>
           </VCol>
         </VRow>
       </VCardText>
@@ -112,13 +111,13 @@ const dialogMaxWidth = computed(() => {
           <VCol cols="12" md="6">
             <VLabel for="tanggalPembayaran"> Tanggal Pembayaran </VLabel>
             <VueDatePicker
-              class="mb-4"
-              teleport-center
               id="tanggalPembayaran"
               v-model="form.tanggalPembayaran"
+              class="mb-4"
+              teleport-center
               :enable-time-picker="false"
+              format="dd/MM/yyyy"
             />
-
           </VCol>
           <VCol cols="12" md="6">
             <VLabel for="jumlah"> Jumlah Pembayaran </VLabel>
@@ -209,7 +208,7 @@ const dialogMaxWidth = computed(() => {
             />
           </VCol>
         </VRow>
-        <VRow >
+        <VRow>
           <VCol cols="6" class="d-flex align-center">
             <span> Unggah Bukti Transaksi </span>
           </VCol>
@@ -219,21 +218,23 @@ const dialogMaxWidth = computed(() => {
         </VRow>
       </VCardText>
       <VCardText>
-        <v-row align="center" class="info-box pa-3" no-gutters>
+        <VRow align="center" class="info-box pa-3" no-gutters>
           <VCol cols="1">
-            <v-icon class="mr-2" color="primary">mdi-information</v-icon>
+            <VIcon class="mr-2" color="primary"> mdi-information </VIcon>
           </VCol>
           <VCol>
-              <span class="text-body-2">
-        Apabila sebelumnya terjadi kurang bayar dan ingin mengupload bukti transfer kekurangannya maka harap mengupload
-        kedua bukti bayar (bukti bayar sebelumnya + kekurangannya) dijadikan dalam 1 file upload.
-      </span>
+            <span class="text-body-2">
+              Apabila sebelumnya terjadi kurang bayar dan ingin mengupload bukti
+              transfer kekurangannya maka harap mengupload kedua bukti bayar
+              (bukti bayar sebelumnya + kekurangannya) dijadikan dalam 1 file
+              upload.
+            </span>
           </VCol>
-        </v-row>
+        </VRow>
       </VCardText>
 
       <div class="d-flex justify-end ga-2">
-        <VBtn @click="cancel" variant="outlined"> Batal </VBtn>
+        <VBtn variant="outlined" @click="cancel"> Batal </VBtn>
         <VBtn @click="confirm"> Konfirmasi </VBtn>
       </div>
     </VCard>

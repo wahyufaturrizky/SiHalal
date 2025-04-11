@@ -35,4 +35,14 @@
       }
     }
   }
+
+  .v-data-table-footer {
+    .v-data-table-footer__items-per-page {
+      margin-inline-end: 20px !important;
+
+      .v-input__control {
+        inline-size: 110px !important;
+      }
+    }
+  }
 }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
+
 const { t } = useI18n();
 
 const tableHeaders: any[] = [
@@ -240,11 +241,11 @@ const onApprove = async () => {
         id_reg: selectedItem.value,
       },
     });
+
     if (response.code === 2000) {
       useSnackbar().sendSnackbar(response.message, "success");
       selectedItem.value = [];
       handleLoadList(filterData.value);
-      return;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan submit penetapan", "error");
     }
@@ -422,19 +423,19 @@ const onApprove = async () => {
                 </VCard>
               </VMenu>
             </div>
-            <div class="d-flex gap-5" style="max-height: 40px">
+            <div class="d-flex gap-5" style="max-block-size: 40px">
               <VTextField
                 v-model="bulkCheck.start"
                 density="compact"
                 placeholder="pilih no"
-                style="min-width: 110px; max-height: 40px"
+                style="max-block-size: 40px; min-inline-size: 110px"
                 @input="onlyAcceptNumber"
               />
               <VTextField
                 v-model="bulkCheck.end"
                 density="compact"
                 placeholder="sampai"
-                style="min-width: 110px; max-height: 40px"
+                style="max-block-size: 40px; min-inline-size: 110px"
                 @input="onlyAcceptNumber"
               />
               <VBtn
@@ -450,7 +451,7 @@ const onApprove = async () => {
             </div>
             <CreateInvoice
               :disabled="selectedItem.length === 0"
-              :onApprove="onApprove"
+              :on-approve="onApprove"
             >
               <template #content>
                 <label
@@ -462,10 +463,10 @@ const onApprove = async () => {
           </div>
           <VCard variant="outlined">
             <VDataTableServer
-              :items-per-page-options="[10, 25, 50, 100]"
               v-model:items-per-page="itemPerPage"
               v-model:page="currentPage"
               v-model="selectedItem"
+              :items-per-page-options="[10, 25, 50, 100]"
               :items-length="totalItems"
               class="custom-table"
               :headers="tableHeaders"
@@ -489,6 +490,9 @@ const onApprove = async () => {
               <template #item.no="{ index }">
                 {{ index + 1 + (currentPage - 1) * itemPerPage }}
               </template>
+              <template #item.tanggal_daftar="{ item }">
+                {{ formatDateId(item.tanggal_daftar) }}
+              </template>
               <template #item.penetapan.tgl_penetapan="{ item }">
                 <label v-if="item.penetapan.tgl_penetapan">
                   {{ formatDateIntl(new Date(item.penetapan.tgl_penetapan)) }}
@@ -504,10 +508,10 @@ const onApprove = async () => {
 
 <style scoped lang="scss">
 .common-text {
-  font-weight: 600;
-  font-size: 16px;
-  line-height: 24px;
   color: "#2C222E";
-  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  margin-block-start: 10px;
 }
 </style>

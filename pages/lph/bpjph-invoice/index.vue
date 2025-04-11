@@ -17,6 +17,7 @@ const tableHeaders: any[] = [
   { title: "Bukti Bayar", value: "bukti_url", nowrap: true },
   { title: "Invoice", value: "invoice_url", nowrap: true },
 ];
+
 const loadItem = async () => {
   isLoading.value = true;
   try {
@@ -38,12 +39,14 @@ const loadItem = async () => {
       totalItems.value = 0;
     }
     isLoading.value = false;
+
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     isLoading.value = false;
   }
 };
+
 useAsyncData("bpjph-bill-list", async () => await loadItem(), {
   server: false,
   watch: [currentPage, itemPerPage],
@@ -57,6 +60,7 @@ const setChipColor = (status: string) => {
       return "success-chip";
   }
 };
+
 const formatNumber = (value: number) => {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -86,13 +90,13 @@ const handleDownload = async (filename: string, param: string) => {
         </VCardTitle>
         <VCardText>
           <VDataTableServer
+            v-model:items-per-page="itemPerPage"
+            v-model:page="currentPage"
             :items-per-page-options="[10, 25, 50, 100]"
             class="bill-table border rounded mt-5"
             :headers="tableHeaders"
             :items="tableItems"
             :items-length="totalItems"
-            v-model:items-per-page="itemPerPage"
-            v-model:page="currentPage"
             :loading="isLoading"
             :hide-default-footer="tableItems.length === 0"
           >
@@ -106,6 +110,9 @@ const handleDownload = async (filename: string, param: string) => {
             </template>
             <template #item.index="{ index }">
               {{ index + 1 + (currentPage - 1) * itemPerPage }}
+            </template>
+            <template #item.tanggal="{ item }">
+              {{ formatDateId(item.tanggal) }}
             </template>
             <template #item.total="{ item }">
               {{ item.total ? formatNumber(item.total) : 0 }}
@@ -166,6 +173,7 @@ const handleDownload = async (filename: string, param: string) => {
     color: #652672;
   }
 }
+
 .success-chip {
   border: 1px solid #49a84c !important;
   border-radius: 8px;

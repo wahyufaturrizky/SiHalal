@@ -1,3 +1,518 @@
+<script setup lang="ts">
+import { formatCurrencyIntl } from "@/utils/conversionIntl";
+
+const defaultStatus = { color: "error", desc: "Unknown Status" };
+
+const statusItem = new Proxy(
+  {
+    OF1: { color: "primary", desc: "Draft" },
+
+    OF10: { color: "success", desc: "Submitted" },
+
+    OF11: { color: "success", desc: "Verification" },
+
+    OF15: { color: "success", desc: "Verified" },
+
+    OF2: { color: "error", desc: "Returned" },
+
+    OF280: { color: "error", desc: "Returned to PU" },
+
+    OF285: { color: "error", desc: "Returned By KF" },
+
+    OF290: { color: "error", desc: "Rejected" },
+
+    OF5: { color: "success", desc: "Invoice issued" },
+
+    OF300: { color: "success", desc: "Halal Certified Issued" },
+
+    OF320: { color: "success", desc: "Code Issued" },
+
+    OF50: { color: "success", desc: "Dikirim ke LPH" },
+
+    OF74: { color: "success", desc: "Sent to Komite Fatwa" },
+
+    OF100: { color: "success", desc: "Selesai Sidang Fatwa" },
+
+    OF120: { color: "success", desc: "Certificate Issued" },
+
+    OF900: { color: "error", desc: "Dibatalkan" },
+
+    OF71: { color: "success", desc: "Selesai P3H" },
+
+    OF56: { color: "success", desc: "Pembayaran" },
+
+    OF72: { color: "success", desc: "Verifikasi LP3H" },
+  },
+  {
+    get(target: any, prop: string) {
+      return prop in target ? target[prop] : defaultStatus;
+    },
+  }
+);
+
+const skalaUsaha = ref([]);
+
+const router = useRouter();
+const route = useRoute<"">();
+const submissionId = route.params?.id as string;
+
+const snackbar = useSnackbar();
+
+const isDeleteModalOpen = ref(false);
+const isSendModalOpen = ref(false);
+
+const panelSubmission = ref([0, 1]);
+const panelPic = ref([0, 1]);
+const panelAspectLegal = ref([0, 1]);
+const panelFactory = ref([0, 1]);
+const panelOutlet = ref([0, 1]);
+const panelSupervisor = ref([0, 1]);
+const panelSubstance = ref([0, 1]);
+const panelProduct = ref([0, 1]);
+const panelProductionProcess = ref([0, 1]);
+const panelDownloadFormulir = ref([0, 1]);
+const panelRegistration = ref([0, 1]);
+const panelFatwaHearing = ref([0, 1]);
+const panelHalalCertificate = ref([0, 1]);
+const panelTracking = ref([]);
+
+const submissionDetail = reactive({
+  id_reg: "",
+  tanggal_buat: "",
+  no_mohon: "",
+  tgl_mohon: "",
+  jenis_layanan: "",
+  jenis_produk: "",
+  merk_dagang: "",
+  area_pemasaran: "",
+  pendamping: "",
+  lembaga_pendamping: "",
+  nama_kbli: "",
+  nama_pu: "",
+  alamat_pu: "",
+  kota_pu: "",
+  provinsi_pu: "",
+  kode_pos_pu: "",
+  negara_pu: "",
+  telp_pu: "",
+  email: "",
+  jenis_badan_usaha: "",
+  skala_usaha: "",
+  tingkat_usaha: "",
+  modal_usaha: 0,
+  asal_usaha: "",
+  narasi: "",
+  url_sample_penyelia_sk: "",
+});
+
+const picDetail = reactive({
+  nama_pj: "",
+  nomor_kontak_pj: "",
+  email_pj: "",
+});
+
+const pages = reactive({
+  bahan: 1,
+});
+
+const itemPerPages = reactive({
+  bahan: 10,
+});
+
+const kbliDropdown = ref<any>([]);
+
+const getExistKbli = () => {
+  const result = kbliDropdown.value.find((el: any) => {
+    return el.uraian_usaha === submissionDetail.nama_kbli;
+  });
+
+  return result ? result.id : null;
+};
+
+const selectedKbli = ref(null);
+
+const kbliData = computed(() => {
+  return selectedKbli.value ? selectedKbli.value : getExistKbli();
+});
+
+const isEditButtonDisabled = computed(() => {
+  if (selectedKbli.value) return getExistKbli() == selectedKbli.value;
+  else return getExistKbli() !== selectedKbli.value;
+});
+
+const aspectLegalHeader = [
+  { title: "No", key: "no", nowrap: true, sortable: false },
+  { title: "Jenis", key: "jenis_surat", nowrap: true },
+  { title: "No. Dokumen", key: "no_surat", nowrap: true },
+  { title: "Tanggal", key: "tgl_surat", nowrap: true },
+  { title: "Masa Berlaku", key: "masa_berlaku", nowrap: true },
+  { title: "Instansi Penerbit", key: "instansi_penerbit", nowrap: true },
+];
+
+const aspectLegalItems = ref([]);
+
+const factoryHeader = [
+  { title: "No", key: "no", nowrap: true, sortable: false },
+  { title: "Nama", key: "nama_pabrik", nowrap: true },
+  { title: "Alamat", key: "alamat_pabrik" },
+];
+
+const factoryItems = ref([]);
+
+const outletHeader = [
+  { title: "No", key: "no", nowrap: true, sortable: false },
+  { title: "Nama", key: "nama_outlet", nowrap: true },
+  { title: "Alamat", key: "alamat_outlet" },
+];
+
+const outletItems = ref([]);
+
+const supervisorHeader = [
+  { title: "No", key: "no", nowrap: true, sortable: false },
+  { title: "Nama", key: "penyelia_nama", nowrap: true },
+  { title: "No. KTP", key: "no_ktp", nowrap: true },
+  { title: "No. Kontak", key: "no_kontak", nowrap: true },
+  {
+    title: "No/Tgl Sertif Penyelia Halal",
+    key: "no_penyelia_halal",
+    nowrap: true,
+  },
+  { title: "No/Tgl SK", key: "no_sk", nowrap: true },
+];
+
+const supervisorItems = ref([]);
+
+const substanceHeader = [
+  { title: "No", key: "no", nowrap: true, sortable: false },
+  { title: "Jenis Bahan ", key: "type", nowrap: true },
+  { title: "Nama Bahan", key: "name", nowrap: true },
+  { title: "Produsen", key: "produsen", nowrap: true },
+  { title: "Kelompok", key: "kelompok", nowrap: true },
+  { title: "No. Sertifikat Halal", key: "sertificateNumber", nowrap: true },
+];
+
+const substanceItems = ref([]);
+
+const productHeader = [
+  { title: "No.", key: "no", nowrap: true, sortable: false },
+  { title: "Nama Produk ", key: "nama_produk", nowrap: true },
+
+  // { title: "Merk ", key: "brand", nowrap: true },
+  { title: "Foto", key: "photo", sortable: false, nowrap: true },
+  { title: "Jumlah Bahan Digunakan", key: "jumlah_bahan", nowrap: true },
+];
+
+const productItems = ref([]);
+
+const downloadForms = reactive({
+  surat_permohonan: "",
+  surat_pernyataan: "",
+  ikrar: "",
+  hasil_verval: "",
+  rekomendasi: "",
+  sjph: "",
+  laporan: "",
+  sttd: "",
+  sertifikasi_halal: "",
+  lembaga_pendamping: "",
+}) as Record<string, string>;
+
+const isComplete = computed(() => {
+  return ["", "Draf"].includes(registrationDetail.status);
+});
+
+const registrationDetail = reactive({
+  no_daftar: "",
+  tgl_daftar: "",
+  nama_provinsi: "",
+  jenis_pengajuan: "",
+  status: "",
+  channel: "",
+  fasilitator_name: "",
+});
+
+const fatwaSessionDetail = reactive({
+  nomor_penetapan: "",
+  tanggal_penetapan: "",
+  ketetapan: "",
+  dokumen: "",
+});
+
+const halalCertificateDetail = reactive({
+  nomor_sertifikat: "",
+  tanggal_sertifikat: "",
+});
+
+const trackingDetail = ref([]);
+
+const handleUpdateKbli = async () => {
+  try {
+    const result: any = await $api(
+      `/self-declare/submission/${submissionId}/update-kbli`,
+      {
+        method: "put",
+        body: {
+          kbli_id: selectedKbli.value,
+        },
+      }
+    );
+
+    if (result.code === 2000)
+      snackbar.sendSnackbar("KBLI Successfully Updated", "success");
+  } catch (error) {
+    snackbar.sendSnackbar("Update KBLI Failed", "error");
+  }
+};
+
+const handleDeleteSubmission = async () => {
+  try {
+    const result: any = await $api(
+      `/self-declare/submission/${submissionId}/remove`,
+      {
+        method: "delete",
+      }
+    );
+
+    if (result.code === 2000) {
+      snackbar.sendSnackbar("Berhasil menghapus data", "success");
+      router.push("/sh-domestic/submission/self-declare");
+    }
+  } catch (error) {
+    snackbar.sendSnackbar("Gagal menghapus data", "error");
+  }
+};
+
+const productionProcesss = ref("");
+
+const handleGetNarration = async () => {
+  try {
+    const response: any = await $api("/self-declare/business-actor/narration", {
+      method: "get",
+      query: {
+        id_reg: submissionId,
+      },
+    });
+
+    if (response.code === 2000) productionProcesss.value = response.data.narasi;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getSkalaUsaha = async () => {
+  const response = await $api("/master/business-entity-scale", {
+    method: "get",
+  });
+
+  skalaUsaha.value = response;
+};
+
+const loadBahan = async () => {
+  try {
+    const options = {
+      method: "get",
+    };
+
+    const response = await $api(
+      `/self-declare/submission/bahan/${submissionId}/list`,
+      options
+    );
+
+    substanceItems.value = response.data;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+onMounted(async () => {
+  await Promise.all([
+    loadBahan(),
+    getSkalaUsaha(),
+    getSubmissionDetail(),
+    getKbli(),
+    getExistKbli(),
+    handleGetNarration(),
+    getDownloadForm("surat-permohonan", "surat_permohonan"),
+    getDownloadForm("surat-pernyataan", "surat_pernyataan"),
+
+    // getDownloadForm("ikrar", "ikrar"),
+    getIkrarFile(),
+
+    // getDownloadForm("surat-verval", "surat_verval"),
+    getDownloadForm("laporan", "hasil_verval"),
+    getDownloadForm("rekomendasi", "rekomendasi"),
+    getDownloadForm("sjph", "sjph"),
+
+    // getDownloadForm("laporan", "laporan"),
+    getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
+    getDownloadForm("laporan-pendamping", "laporan_pendamping"),
+  ]);
+  if (registrationDetail.status == "") return;
+
+  if (Number(registrationDetail.status.split("OF")[1]) >= 71)
+    getDownloadForm("sttd", "sttd");
+});
+
+const handleCertificate = async (fileName: string, type: string) => {
+  if (fileName == "") {
+    const response = await $api("/certificate/regenerate", {
+      method: "post",
+      body: {
+        document_type: "certificate-self-declare",
+        ref_id: submissionId,
+      },
+    });
+
+    if (response) {
+      if (response.code == 4001) {
+        useSnackbar().sendSnackbar(
+          "Ada kesalahan saat TTE sertifikat, silahkan coba beberapa saat lag",
+          "error"
+        );
+
+        return;
+      }
+      fileName = response.filename;
+      await getSubmissionDetail();
+    }
+  }
+
+  return await downloadDocument(fileName, type);
+};
+
+const getSubmissionDetail = async () => {
+  try {
+    const response: any = await $api(
+      `/self-declare/submission/${submissionId}/detail`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) {
+      // data for left side
+      Object.assign(submissionDetail, response.data.certificate_halal);
+      Object.assign(picDetail, response.data.penanggung_jawab);
+      aspectLegalItems.value = response.data.aspek_legal;
+      factoryItems.value = response.data.pabrik;
+      outletItems.value = response.data.outlet;
+      supervisorItems.value = response.data.penyelia_halal;
+      productItems.value = response.data.produk;
+
+      // data for right side
+      Object.assign(registrationDetail, response.data.certificate_halal);
+      Object.assign(fatwaSessionDetail, response.data.sidang_fatwa);
+      Object.assign(
+        halalCertificateDetail,
+        response.data.sertifikat_halal_info
+      );
+      trackingDetail.value = response.data.tracking;
+      Object.assign(panelTracking.value, [0, 1]);
+    }
+  } catch (error) {
+    router.push("/sh-domestic/submission/self-declare");
+  }
+};
+
+const getKbli = async () => {
+  const response3: any = await $api("/master/list-oss", {
+    method: "get",
+  });
+
+  kbliDropdown.value = response3;
+};
+
+const getIkrarFile = async () => {
+  try {
+    const response: any = await $api("/self-declare/business-actor/statement", {
+      method: "get",
+      query: {
+        id_reg: submissionId,
+      },
+    });
+
+    if (response.code === 2000) downloadForms.ikrar = response.data.file;
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getDownloadForm = async (docName: string, propName: string) => {
+  const result: any = await $api(
+    `/self-declare/submission/${submissionId}/file`,
+    {
+      method: "get",
+      query: {
+        document: docName,
+      },
+    }
+  );
+
+  if (result.code === 2000) downloadForms[propName] = result.data.file;
+};
+
+const handleDownloadForm = async (fileName: string, type: string) => {
+  return await downloadDocument(fileName, type);
+};
+
+const handleDownload = async (productId: string, type: string) => {
+  return await downloadDocument(productId, type);
+};
+
+const handleDownloadSk = async (id: string) => {
+  try {
+    const response = await $api("download-sk-selfdeclare", {
+      method: "post",
+      body: {
+        id,
+      },
+    });
+
+    if (response.data.file) await handleDownload(response.data?.file, "FILES");
+    else useSnackbar().sendSnackbar("Download gagal", "error");
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const handleOpenBlankWindow = (fileUri: string) => {
+  window.open(fileUri, "_blank", "noopener,noreferrer");
+};
+
+const handleSentSubmission = async () => {
+  try {
+    const response: any = await $api("/self-declare/submission/send", {
+      method: "post",
+      body: {
+        id_reg: submissionId,
+      },
+    });
+
+    if (response.code === 2000) {
+      snackbar.sendSnackbar("Berhasil mengirim pengajuan", "success");
+      navigateTo("/sh-domestic/submission/self-declare");
+    } else {
+      if (response.errors.list_error.length > 0) {
+        for (const element of response.errors.list_error)
+          snackbar.sendSnackbar(element, "error");
+      }
+    }
+  } catch (error) {
+    snackbar.sendSnackbar("Gagal mengirim pengajuan", "error");
+  }
+};
+
+const isCanEdit = () => {
+  return (
+    registrationDetail.status == "OF1" ||
+    registrationDetail.status == "OF280" ||
+    registrationDetail.status == "OF285"
+  );
+};
+</script>
+
 <template>
   <VContainer>
     <div
@@ -11,7 +526,7 @@
       <VCol :cols="isCanEdit() ? 8 : 12">
         <h3 class="text-h3 font-weight-bold">Detail Pengajuan Self Declare</h3>
       </VCol>
-      <VCol cols="4" v-if="isCanEdit()">
+      <VCol v-if="isCanEdit()" cols="4">
         <div class="d-flex justify-end align-center ga-2">
           <VBtn
             variant="outlined"
@@ -29,9 +544,10 @@
                 `/sh-domestic/submission/self-declare/${submissionId}/edit`
               )
             "
-            >Ubah</VBtn
           >
-          <VBtn @click="isSendModalOpen = true">Kirim</VBtn>
+            Ubah
+          </VBtn>
+          <VBtn @click="isSendModalOpen = true"> Kirim </VBtn>
         </div>
       </VCol>
     </VRow>
@@ -48,9 +564,9 @@
               Pengajuan Sertifikasi Halal
             </VExpansionPanelTitle>
             <VExpansionPanelText>
-              <InfoRow name="No. ID" :name-style="{ fontWeight: '600' }">{{
-                submissionDetail.id_reg ? submissionDetail.id_reg : "-"
-              }}</InfoRow>
+              <InfoRow name="No. ID" :name-style="{ fontWeight: '600' }">
+                {{ submissionDetail.id_reg ? submissionDetail.id_reg : "-" }}
+              </InfoRow>
               <InfoRow name="Tanggal" :name-style="{ fontWeight: '600' }">
                 {{
                   submissionDetail.tanggal_buat
@@ -293,9 +809,9 @@
           collapse-icon="fa-chevron-up"
         >
           <VExpansionPanel class="py-2">
-            <VExpansionPanelTitle class="text-h4 font-weight-bold mb-3"
-              >Pabrik</VExpansionPanelTitle
-            >
+            <VExpansionPanelTitle class="text-h4 font-weight-bold mb-3">
+              Pabrik
+            </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
                 v-if="factoryItems.length"
@@ -414,10 +930,10 @@
             <VExpansionPanelText>
               <VDataTable
                 v-if="substanceItems.length"
-                :headers="substanceHeader"
-                :items="substanceItems"
                 v-model:page="pages.bahan"
                 v-model:items-per-page="itemPerPages.bahan"
+                :headers="substanceHeader"
+                :items="substanceItems"
                 :hide-default-footer="substanceItems.length < 10"
               >
                 <template #item.no="{ index }">
@@ -528,6 +1044,11 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  :color="
+                    downloadForms.surat_permohonan ? 'primary' : '#A09BA1'
+                  "
+                  density="compact"
+                  class="px-2"
                   @click="
                     downloadForms.surat_permohonan
                       ? handleDownloadForm(
@@ -536,11 +1057,6 @@
                         )
                       : null
                   "
-                  :color="
-                    downloadForms.surat_permohonan ? 'primary' : '#A09BA1'
-                  "
-                  density="compact"
-                  class="px-2"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -553,6 +1069,11 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  :color="
+                    downloadForms.surat_pernyataan ? 'primary' : '#A09BA1'
+                  "
+                  density="compact"
+                  class="px-2"
                   @click="
                     downloadForms.surat_pernyataan
                       ? handleDownloadForm(
@@ -561,11 +1082,6 @@
                         )
                       : null
                   "
-                  :color="
-                    downloadForms.surat_pernyataan ? 'primary' : '#A09BA1'
-                  "
-                  density="compact"
-                  class="px-2"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -578,14 +1094,14 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  :color="downloadForms.ikrar ? 'primary' : '#A09BA1'"
+                  density="compact"
+                  class="px-2"
                   @click="
                     downloadForms.ikrar
                       ? handleDownload(downloadForms.ikrar, 'DOC')
                       : null
                   "
-                  :color="downloadForms.ikrar ? 'primary' : '#A09BA1'"
-                  density="compact"
-                  class="px-2"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -598,14 +1114,14 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  :color="downloadForms.hasil_verval ? 'primary' : '#A09BA1'"
+                  density="compact"
+                  class="px-2"
                   @click="
                     downloadForms.hasil_verval
                       ? handleDownloadForm(downloadForms.hasil_verval, 'DOC')
                       : null
                   "
-                  :color="downloadForms.hasil_verval ? 'primary' : '#A09BA1'"
-                  density="compact"
-                  class="px-2"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -618,74 +1134,76 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  :color="downloadForms.rekomendasi ? 'primary' : '#A09BA1'"
+                  density="compact"
+                  class="px-2"
                   @click="
                     downloadForms.rekomendasi
                       ? handleDownloadForm(downloadForms.rekomendasi, 'DOC')
                       : null
                   "
-                  :color="downloadForms.rekomendasi ? 'primary' : '#A09BA1'"
-                  density="compact"
-                  class="px-2"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
                   </template>
                 </VBtn>
               </InfoRowV2>
-              <!-- <InfoRowV2
+              <!--
+                <InfoRowV2
                 class="d-flex align-center"
                 name="SJPH"
                 :style="{ fontWeight: '600' }"
-              >
-                <VBtn
-                  @click="
-                    downloadForms.sjph
-                      ? handleDownloadForm(downloadForms.sjph)
-                      : null
-                  "
-                  :color="downloadForms.sjph ? 'primary' : '#A09BA1'"
-                  density="compact"
-                  class="px-2"
                 >
-                  <template #default>
-                    <VIcon icon="fa-download" />
-                  </template>
+                <VBtn
+                @click="
+                downloadForms.sjph
+                ? handleDownloadForm(downloadForms.sjph)
+                : null
+                "
+                :color="downloadForms.sjph ? 'primary' : '#A09BA1'"
+                density="compact"
+                class="px-2"
+                >
+                <template #default>
+                <VIcon icon="fa-download" />
+                </template>
                 </VBtn>
-              </InfoRowV2>
-              <InfoRowV2
+                </InfoRowV2>
+                <InfoRowV2
                 class="d-flex align-center"
                 name="Laporan"
                 :style="{ fontWeight: '600' }"
-              >
-                <VBtn
-                  @click="
-                    downloadForms.laporan
-                      ? handleDownloadForm(downloadForms.laporan)
-                      : null
-                  "
-                  :color="downloadForms.laporan ? 'primary' : '#A09BA1'"
-                  density="compact"
-                  class="px-2"
                 >
-                  <template #default>
-                    <VIcon icon="fa-download" />
-                  </template>
+                <VBtn
+                @click="
+                downloadForms.laporan
+                ? handleDownloadForm(downloadForms.laporan)
+                : null
+                "
+                :color="downloadForms.laporan ? 'primary' : '#A09BA1'"
+                density="compact"
+                class="px-2"
+                >
+                <template #default>
+                <VIcon icon="fa-download" />
+                </template>
                 </VBtn>
-              </InfoRowV2> -->
+                </InfoRowV2>
+              -->
               <InfoRowV2
                 class="d-flex align-center"
                 name="STTD"
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  :color="downloadForms.sttd ? 'primary' : '#A09BA1'"
+                  density="compact"
+                  class="px-2"
                   @click="
                     downloadForms.sttd
                       ? handleDownloadForm(downloadForms.sttd, 'FILES')
                       : null
                   "
-                  :color="downloadForms.sttd ? 'primary' : '#A09BA1'"
-                  density="compact"
-                  class="px-2"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -698,6 +1216,17 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  color="primary"
+                  :disabled="
+                    !trackingDetail.some(
+                      (track) =>
+                        track.status == 'OF100' ||
+                        track.status == 'OF120' ||
+                        track.status == 'OF300'
+                    )
+                  "
+                  density="compact"
+                  class="px-2"
                   @click="
                     trackingDetail.some(
                       (track) =>
@@ -711,17 +1240,6 @@
                         )
                       : null
                   "
-                  :color="'primary'"
-                  :disabled="
-                    !trackingDetail.some(
-                      (track) =>
-                        track.status == 'OF100' ||
-                        track.status == 'OF120' ||
-                        track.status == 'OF300'
-                    )
-                  "
-                  density="compact"
-                  class="px-2"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -756,6 +1274,11 @@
                 :style="{ fontWeight: '600' }"
               >
                 <VBtn
+                  :color="
+                    downloadForms.laporan_pendamping ? 'primary' : '#A09BA1'
+                  "
+                  density="compact"
+                  class="px-2"
                   @click="
                     downloadForms.laporan_pendamping
                       ? handleDownloadForm(
@@ -764,11 +1287,6 @@
                         )
                       : null
                   "
-                  :color="
-                    downloadForms.laporan_pendamping ? 'primary' : '#A09BA1'
-                  "
-                  density="compact"
-                  class="px-2"
                 >
                   <template #default>
                     <VIcon icon="fa-download" />
@@ -840,9 +1358,9 @@
                 name="Status"
                 :style="{ fontWeight: '600' }"
               >
-                <v-tooltip :text="statusItem[registrationDetail.status].desc">
-                  <template v-slot:activator="{ props }">
-                    <v-chip
+                <VTooltip :text="statusItem[registrationDetail.status].desc">
+                  <template #activator="{ props }">
+                    <VChip
                       style="background: #f0e9f1"
                       :color="statusItem[registrationDetail.status].color"
                       variant="outlined"
@@ -850,9 +1368,9 @@
                       v-bind="props"
                     >
                       {{ statusItem[registrationDetail.status].desc }}
-                    </v-chip>
+                    </VChip>
                   </template>
-                </v-tooltip>
+                </VTooltip>
               </InfoRowV2>
               <InfoRowV2
                 class="d-flex align-top"
@@ -907,9 +1425,7 @@
               >
                 {{
                   fatwaSessionDetail.tanggal_penetapan
-                    ? new Date(fatwaSessionDetail.tanggal_penetapan)
-                        .toISOString()
-                        .substring(0, 10)
+                    ? formatDateId(fatwaSessionDetail.tanggal_penetapan)
                     : "-"
                 }}
               </InfoRowV2>
@@ -949,49 +1465,55 @@
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
               <VRow :style="{ fontWeight: '600' }">
-                <VCol cols="3">Nomor Sertifikat</VCol>
-                <VCol cols="1">:</VCol>
-                <VCol cols="8">{{
-                  halalCertificateDetail.nomor_sertifikat
-                    ? halalCertificateDetail.nomor_sertifikat
-                    : "-"
-                }}</VCol>
-              </VRow>
-              <VRow :style="{ fontWeight: '600' }">
-                <VCol cols="3">Tanggal Sertifikat</VCol>
-                <VCol cols="1">:</VCol>
-                <VCol cols="8">{{
-                  halalCertificateDetail.tanggal_sertifikat
-                    ? new Date(halalCertificateDetail.tanggal_sertifikat)
-                        .toISOString()
-                        .substring(0, 10)
-                    : "-"
-                }}</VCol>
-              </VRow>
-              <!-- <InfoRowV2
-                class="d-flex align-center"
-                name="Nomor Sertifikat"
-                :style="{ fontWeight: '600' }"
-              >
-                <p>
+                <VCol cols="3"> Nomor Sertifikat </VCol>
+                <VCol cols="1"> : </VCol>
+                <VCol cols="8">
                   {{
                     halalCertificateDetail.nomor_sertifikat
                       ? halalCertificateDetail.nomor_sertifikat
                       : "-"
                   }}
+                </VCol>
+              </VRow>
+              <VRow :style="{ fontWeight: '600' }">
+                <VCol cols="3"> Tanggal Sertifikat </VCol>
+                <VCol cols="1"> : </VCol>
+                <VCol cols="8">
+                  {{
+                    halalCertificateDetail.tanggal_sertifikat
+                      ? formatDateId(halalCertificateDetail.tanggal_sertifikat)
+                      : "-"
+                  }}
+                </VCol>
+              </VRow>
+              <!--
+                <InfoRowV2
+                class="d-flex align-center"
+                name="Nomor Sertifikat"
+                :style="{ fontWeight: '600' }"
+                >
+                <p>
+                {{
+                halalCertificateDetail.nomor_sertifikat
+                ? halalCertificateDetail.nomor_sertifikat
+                : "-"
+                }}
                 </p>
-              </InfoRowV2> -->
-              <!-- <InfoRowV2
+                </InfoRowV2>
+              -->
+              <!--
+                <InfoRowV2
                 class="d-flex align-center"
                 name="Tanggal Sertifikat"
                 :style="{ fontWeight: '600' }"
-              >
+                >
                 {{
-                  halalCertificateDetail.nomor_sertifikat
-                    ? halalCertificateDetail.nomor_sertifikat
-                    : "-"
+                halalCertificateDetail.nomor_sertifikat
+                ? halalCertificateDetail.nomor_sertifikat
+                : "-"
                 }}
-              </InfoRowV2> -->
+                </InfoRowV2>
+              -->
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -1003,9 +1525,9 @@
           collapse-icon="fa-chevron-up"
         >
           <VExpansionPanel class="py-2">
-            <VExpansionPanelTitle class="text-h4 font-weight-bold"
-              >Melacak</VExpansionPanelTitle
-            >
+            <VExpansionPanelTitle class="text-h4 font-weight-bold">
+              Melacak
+            </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
               <Tracking :data="trackingDetail" />
             </VExpansionPanelText>
@@ -1037,488 +1559,3 @@
     </VCardText>
   </ShSubmissionDetailFormModal>
 </template>
-
-<script setup lang="ts">
-import { formatCurrencyIntl } from "@/utils/conversionIntl";
-const defaultStatus = { color: "error", desc: "Unknown Status" };
-const statusItem = new Proxy(
-  {
-    OF1: { color: "primary", desc: "Draft" },
-
-    OF10: { color: "success", desc: "Submitted" },
-
-    OF11: { color: "success", desc: "Verification" },
-
-    OF15: { color: "success", desc: "Verified" },
-
-    OF2: { color: "error", desc: "Returned" },
-
-    OF280: { color: "error", desc: "Returned to PU" },
-
-    OF285: { color: "error", desc: "Returned By KF" },
-
-    OF290: { color: "error", desc: "Rejected" },
-
-    OF5: { color: "success", desc: "Invoice issued" },
-
-    OF300: { color: "success", desc: "Halal Certified Issued" },
-
-    OF320: { color: "success", desc: "Code Issued" },
-
-    OF50: { color: "success", desc: "Dikirim ke LPH" },
-
-    OF74: { color: "success", desc: "Sent to Komite Fatwa" },
-
-    OF100: { color: "success", desc: "Selesai Sidang Fatwa" },
-
-    OF120: { color: "success", desc: "Certificate Issued" },
-
-    OF900: { color: "error", desc: "Dibatalkan" },
-
-    OF71: { color: "success", desc: "Selesai P3H" },
-
-    OF56: { color: "success", desc: "Pembayaran" },
-
-    OF72: { color: "success", desc: "Verifikasi LP3H" },
-  },
-  {
-    get(target: any, prop: string) {
-      return prop in target ? target[prop] : defaultStatus;
-    },
-  }
-);
-const skalaUsaha = ref([]);
-
-const router = useRouter();
-const route = useRoute<"">();
-const submissionId = route.params?.id as string;
-
-const snackbar = useSnackbar();
-
-const isDeleteModalOpen = ref(false);
-const isSendModalOpen = ref(false);
-
-const panelSubmission = ref([0, 1]);
-const panelPic = ref([0, 1]);
-const panelAspectLegal = ref([0, 1]);
-const panelFactory = ref([0, 1]);
-const panelOutlet = ref([0, 1]);
-const panelSupervisor = ref([0, 1]);
-const panelSubstance = ref([0, 1]);
-const panelProduct = ref([0, 1]);
-const panelProductionProcess = ref([0, 1]);
-const panelDownloadFormulir = ref([0, 1]);
-const panelRegistration = ref([0, 1]);
-const panelFatwaHearing = ref([0, 1]);
-const panelHalalCertificate = ref([0, 1]);
-const panelTracking = ref([]);
-
-const submissionDetail = reactive({
-  id_reg: "",
-  tanggal_buat: "",
-  no_mohon: "",
-  tgl_mohon: "",
-  jenis_layanan: "",
-  jenis_produk: "",
-  merk_dagang: "",
-  area_pemasaran: "",
-  pendamping: "",
-  lembaga_pendamping: "",
-  nama_kbli: "",
-  nama_pu: "",
-  alamat_pu: "",
-  kota_pu: "",
-  provinsi_pu: "",
-  kode_pos_pu: "",
-  negara_pu: "",
-  telp_pu: "",
-  email: "",
-  jenis_badan_usaha: "",
-  skala_usaha: "",
-  tingkat_usaha: "",
-  modal_usaha: 0,
-  asal_usaha: "",
-  narasi: "",
-  url_sample_penyelia_sk: "",
-});
-const picDetail = reactive({
-  nama_pj: "",
-  nomor_kontak_pj: "",
-  email_pj: "",
-});
-const pages = reactive({
-  bahan: 1,
-});
-const itemPerPages = reactive({
-  bahan: 10,
-});
-const kbliDropdown = ref<any>([]);
-const getExistKbli = () => {
-  const result = kbliDropdown.value.find((el: any) => {
-    return el.uraian_usaha === submissionDetail.nama_kbli;
-  });
-  return result ? result.id : null;
-};
-
-const selectedKbli = ref(null);
-const kbliData = computed(() => {
-  return selectedKbli.value ? selectedKbli.value : getExistKbli();
-});
-const isEditButtonDisabled = computed(() => {
-  if (selectedKbli.value) {
-    return getExistKbli() == selectedKbli.value;
-  } else {
-    return getExistKbli() !== selectedKbli.value;
-  }
-});
-const aspectLegalHeader = [
-  { title: "No", key: "no", nowrap: true, sortable: false },
-  { title: "Jenis", key: "jenis_surat", nowrap: true },
-  { title: "No. Dokumen", key: "no_surat", nowrap: true },
-  { title: "Tanggal", key: "tgl_surat", nowrap: true },
-  { title: "Masa Berlaku", key: "masa_berlaku", nowrap: true },
-  { title: "Instansi Penerbit", key: "instansi_penerbit", nowrap: true },
-];
-const aspectLegalItems = ref([]);
-
-const factoryHeader = [
-  { title: "No", key: "no", nowrap: true, sortable: false },
-  { title: "Nama", key: "nama_pabrik", nowrap: true },
-  { title: "Alamat", key: "alamat_pabrik" },
-];
-const factoryItems = ref([]);
-
-const outletHeader = [
-  { title: "No", key: "no", nowrap: true, sortable: false },
-  { title: "Nama", key: "nama_outlet", nowrap: true },
-  { title: "Alamat", key: "alamat_outlet" },
-];
-const outletItems = ref([]);
-
-const supervisorHeader = [
-  { title: "No", key: "no", nowrap: true, sortable: false },
-  { title: "Nama", key: "penyelia_nama", nowrap: true },
-  { title: "No. KTP", key: "no_ktp", nowrap: true },
-  { title: "No. Kontak", key: "no_kontak", nowrap: true },
-  {
-    title: "No/Tgl Sertif Penyelia Halal",
-    key: "no_penyelia_halal",
-    nowrap: true,
-  },
-  { title: "No/Tgl SK", key: "no_sk", nowrap: true },
-];
-const supervisorItems = ref([]);
-
-const substanceHeader = [
-  { title: "No", key: "no", nowrap: true, sortable: false },
-  { title: "Jenis Bahan ", key: "type", nowrap: true },
-  { title: "Nama Bahan", key: "name", nowrap: true },
-  { title: "Produsen", key: "produsen", nowrap: true },
-  { title: "Kelompok", key: "kelompok", nowrap: true },
-  { title: "No. Sertifikat Halal", key: "sertificateNumber", nowrap: true },
-];
-const substanceItems = ref([]);
-
-const productHeader = [
-  { title: "No.", key: "no", nowrap: true, sortable: false },
-  { title: "Nama Produk ", key: "nama_produk", nowrap: true },
-  // { title: "Merk ", key: "brand", nowrap: true },
-  { title: "Foto", key: "photo", sortable: false, nowrap: true },
-  { title: "Jumlah Bahan Digunakan", key: "jumlah_bahan", nowrap: true },
-];
-const productItems = ref([]);
-
-const downloadForms = reactive({
-  surat_permohonan: "",
-  surat_pernyataan: "",
-  ikrar: "",
-  hasil_verval: "",
-  rekomendasi: "",
-  sjph: "",
-  laporan: "",
-  sttd: "",
-  sertifikasi_halal: "",
-  lembaga_pendamping: "",
-}) as Record<string, string>;
-
-const isComplete = computed(() => {
-  return ["", "Draf"].includes(registrationDetail.status);
-});
-const registrationDetail = reactive({
-  no_daftar: "",
-  tgl_daftar: "",
-  nama_provinsi: "",
-  jenis_pengajuan: "",
-  status: "",
-  channel: "",
-  fasilitator_name: "",
-});
-const fatwaSessionDetail = reactive({
-  nomor_penetapan: "",
-  tanggal_penetapan: "",
-  ketetapan: "",
-  dokumen: "",
-});
-const halalCertificateDetail = reactive({
-  nomor_sertifikat: "",
-  tanggal_sertifikat: "",
-});
-const trackingDetail = ref([]);
-
-const handleUpdateKbli = async () => {
-  try {
-    const result: any = await $api(
-      `/self-declare/submission/${submissionId}/update-kbli`,
-      {
-        method: "put",
-        body: {
-          kbli_id: selectedKbli.value,
-        },
-      }
-    );
-    if (result.code === 2000) {
-      snackbar.sendSnackbar("KBLI Successfully Updated", "success");
-    }
-  } catch (error) {
-    snackbar.sendSnackbar("Update KBLI Failed", "error");
-  }
-};
-const handleDeleteSubmission = async () => {
-  try {
-    const result: any = await $api(
-      `/self-declare/submission/${submissionId}/remove`,
-      {
-        method: "delete",
-      }
-    );
-    if (result.code === 2000) {
-      snackbar.sendSnackbar("Berhasil menghapus data", "success");
-      router.push("/sh-domestic/submission/self-declare");
-    }
-  } catch (error) {
-    snackbar.sendSnackbar("Gagal menghapus data", "error");
-  }
-};
-const productionProcesss = ref("");
-const handleGetNarration = async () => {
-  try {
-    const response: any = await $api(`/self-declare/business-actor/narration`, {
-      method: "get",
-      query: {
-        id_reg: submissionId,
-      },
-    });
-    if (response.code === 2000) {
-      productionProcesss.value = response.data.narasi;
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
-const getSkalaUsaha = async () => {
-  const response = await $api("/master/business-entity-scale", {
-    method: "get",
-  });
-  skalaUsaha.value = response;
-};
-const loadBahan = async () => {
-  try {
-    const options = {
-      method: "get",
-    };
-    const response = await $api(
-      `/self-declare/submission/bahan/${submissionId}/list`,
-      options
-    );
-    substanceItems.value = response.data;
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
-onMounted(async () => {
-  await Promise.all([
-    loadBahan(),
-    getSkalaUsaha(),
-    getSubmissionDetail(),
-    getKbli(),
-    getExistKbli(),
-    handleGetNarration(),
-    getDownloadForm("surat-permohonan", "surat_permohonan"),
-    getDownloadForm("surat-pernyataan", "surat_pernyataan"),
-    // getDownloadForm("ikrar", "ikrar"),
-    getIkrarFile(),
-    // getDownloadForm("surat-verval", "surat_verval"),
-    getDownloadForm("laporan", "hasil_verval"),
-    getDownloadForm("rekomendasi", "rekomendasi"),
-    getDownloadForm("sjph", "sjph"),
-    // getDownloadForm("laporan", "laporan"),
-    getDownloadForm("setifikasi-halal", "sertifikasi_halal"),
-    getDownloadForm("laporan-pendamping", "laporan_pendamping"),
-  ]);
-  if (registrationDetail.status == "") {
-    return;
-  }
-  if (Number(registrationDetail.status.split("OF")[1]) >= 71) {
-    getDownloadForm("sttd", "sttd");
-  }
-});
-
-const handleCertificate = async (fileName: string, type: string) => {
-  if (fileName == "") {
-    const response = await $api(`/certificate/regenerate`, {
-      method: "post",
-      body: {
-        document_type: "certificate-self-declare",
-        ref_id: submissionId,
-      },
-    });
-    if (response) {
-      if (response.code == 4001) {
-        useSnackbar().sendSnackbar(
-          "Ada kesalahan saat TTE sertifikat, silahkan coba beberapa saat lag",
-          "error"
-        );
-        return;
-      }
-      fileName = response.filename;
-      await getSubmissionDetail();
-    }
-  }
-  return await downloadDocument(fileName, type);
-};
-
-const getSubmissionDetail = async () => {
-  try {
-    const response: any = await $api(
-      `/self-declare/submission/${submissionId}/detail`,
-      {
-        method: "get",
-      }
-    );
-
-    if (response.code === 2000) {
-      // data for left side
-      Object.assign(submissionDetail, response.data.certificate_halal);
-      Object.assign(picDetail, response.data.penanggung_jawab);
-      aspectLegalItems.value = response.data.aspek_legal;
-      factoryItems.value = response.data.pabrik;
-      outletItems.value = response.data.outlet;
-      supervisorItems.value = response.data.penyelia_halal;
-      productItems.value = response.data.produk;
-
-      // data for right side
-      Object.assign(registrationDetail, response.data.certificate_halal);
-      Object.assign(fatwaSessionDetail, response.data.sidang_fatwa);
-      Object.assign(
-        halalCertificateDetail,
-        response.data.sertifikat_halal_info
-      );
-      trackingDetail.value = response.data.tracking;
-      Object.assign(panelTracking.value, [0, 1]);
-    }
-  } catch (error) {
-    router.push("/sh-domestic/submission/self-declare");
-  }
-};
-
-const getKbli = async () => {
-  const response3: any = await $api("/master/list-oss", {
-    method: "get",
-  });
-  kbliDropdown.value = response3;
-};
-
-const getIkrarFile = async () => {
-  try {
-    const response: any = await $api(`/self-declare/business-actor/statement`, {
-      method: "get",
-      query: {
-        id_reg: submissionId,
-      },
-    });
-
-    if (response.code === 2000) {
-      downloadForms.ikrar = response.data.file;
-    }
-    return response;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const getDownloadForm = async (docName: string, propName: string) => {
-  const result: any = await $api(
-    `/self-declare/submission/${submissionId}/file`,
-    {
-      method: "get",
-      query: {
-        document: docName,
-      },
-    }
-  );
-
-  if (result.code === 2000) {
-    downloadForms[propName] = result.data.file;
-  }
-};
-
-const handleDownloadForm = async (fileName: string, type: string) => {
-  return await downloadDocument(fileName, type);
-};
-const handleDownload = async (productId: string, type: string) => {
-  return await downloadDocument(productId, type);
-};
-
-const handleDownloadSk = async (id: string) => {
-  try {
-    const response = await $api("download-sk-selfdeclare", {
-      method: "post",
-      body: {
-        id,
-      },
-    });
-
-    if (response.data.file) {
-      await handleDownload(response.data?.file, "FILES");
-    } else {
-      useSnackbar().sendSnackbar("Download gagal", "error");
-    }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
-
-const handleOpenBlankWindow = (fileUri: string) => {
-  window.open(fileUri, "_blank", "noopener,noreferrer");
-};
-
-const handleSentSubmission = async () => {
-  try {
-    const response: any = await $api(`/self-declare/submission/send`, {
-      method: "post",
-      body: {
-        id_reg: submissionId,
-      },
-    });
-    if (response.code === 2000) {
-      snackbar.sendSnackbar("Berhasil mengirim pengajuan", "success");
-      navigateTo("/sh-domestic/submission/self-declare");
-    } else {
-      if (response.errors.list_error.length > 0) {
-        for (const element of response.errors.list_error) {
-          snackbar.sendSnackbar(element, "error");
-        }
-      }
-    }
-  } catch (error) {
-    snackbar.sendSnackbar("Gagal mengirim pengajuan", "error");
-  }
-};
-const isCanEdit = () => {
-  return (
-    registrationDetail.status == "OF1" ||
-    registrationDetail.status == "OF280" ||
-    registrationDetail.status == "OF285"
-  );
-};
-</script>
