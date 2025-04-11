@@ -446,9 +446,10 @@ const onRefresh = (type: string) => {
                 </div>
                 <div v-if="item.comment" class="app-timeline-text mt-1">
                   {{
-                    item.comment.length > 38
-                      ? `${item.comment.slice(0, 38)}...`
-                      : item.comment
+                    item.comment
+                    // item.comment.length > 38
+                    //   ? `${item.comment.slice(0, 38)}...`
+                    //   : item.comment
                   }}
                 </div>
               </VTimelineItem>
