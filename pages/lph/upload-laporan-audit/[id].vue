@@ -998,6 +998,7 @@ const updateDataPU = async () => {
       params: { id_reg: id },
       body: {
         nama_pu_sh: formDataPU.value.nama_pu_sh,
+        alamat: formDataPU.value.alamat
       },
       headers: {
         "Content-Type": "application/json",
@@ -2475,7 +2476,6 @@ onMounted(async () => {
             <VTextField
               v-model="formDataPU.alamat"
               label="Alamat"
-              disabled
               class="mb-3"
             />
             <VTextField
