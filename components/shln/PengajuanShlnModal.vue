@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const headerTable = [
   { title: "No", key: "no" },
-  { title: "Registration No", key: "registration_no" },
+  { title: "Submission No", key: "registration_no" },
   { title: "Importer Name", key: "importer_name" },
   { title: "NIB / Business Id No", key: "nib" },
   { title: "HCB", key: "hcb" },
