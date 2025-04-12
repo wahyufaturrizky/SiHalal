@@ -47,7 +47,7 @@ const props = defineProps({
     required: true,
   },
 });
-console.log(props.dataproduk, "ini props databahan");
+// console.log(props.dataproduk, "ini props databahan");
 const tableHeader = [
   { title: "No", key: "no" },
   { title: "Nama Produk", key: "nama_produk" },
@@ -73,13 +73,13 @@ const processedDataProduk = ref([]);
 watch(
   () => props.dataproduk,
   (newDataProduk) => {
-    console.log(newDataProduk, "Updated dataproduk");
+    // console.log(newDataProduk, "Updated dataproduk");
 
     if (newDataProduk && Array.isArray(newDataProduk)) {
       processedDataProduk.value = newDataProduk;
       totalItems.value = newDataProduk.length;
     }
-    console.log(processedDataProduk.value, "Processed Data Produk");
+    // console.log(processedDataProduk.value, "Processed Data Produk");
   },
   { immediate: true }
 );

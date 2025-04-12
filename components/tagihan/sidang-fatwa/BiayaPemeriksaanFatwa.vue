@@ -9,7 +9,7 @@ const props = defineProps({
     required: true,
   },
 });
-console.log(props.databahan, "ini props databahan");
+// console.log(props.databahan, "ini props databahan");
 const tableHeader = [
   { title: "No", key: "no" },
   {
@@ -50,13 +50,13 @@ const processedDataBahan = ref([]);
 watch(
   () => props.databahan,
   (newDataBahan) => {
-    console.log(newDataBahan, "Updated databahan");
+    // console.log(newDataBahan, "Updated databahan");
 
     if (newDataBahan && Array.isArray(newDataBahan)) {
       processedDataBahan.value = newDataBahan;
       totalItems.value = newDataBahan.length;
     }
-    console.log(processedDataBahan.value, "Processed Data Bahan");
+    // console.log(processedDataBahan.value, "Processed Data Bahan");
   },
   { immediate: true }
 );
