@@ -52,7 +52,7 @@ const props = defineProps({
 const tableHeader = [
   { title: "No", key: "no" },
   { title: "Nama Produk", key: "nama_produk" },
-  { title: "Foto Produk", key: "photo" },
+  { title: "Foto Produk", key: "photo", width: "200px" },
   { title: "Jumlah Bahan", key: "jumlah_bahan" },
   { title: "Daftar Bahan", key: "daftar_bahan" },
   { title: "Publish", key: "reg_publish" },

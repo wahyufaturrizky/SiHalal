@@ -102,6 +102,7 @@
 const props = defineProps({
   namabahan: {
     required: true,
+    type: String,
   },
   cardTitle: {
     type: String,
@@ -123,12 +124,6 @@ const props = defineProps({
   },
 });
 
-onMounted(() => {
-  if (props.inlineImage) {
-    preview(props.namabahan);
-  }
-});
-
 const progressLocal = ref(true);
 const failedFetch = ref(false);
 
@@ -146,4 +141,22 @@ const preview = async (filename: string) => {
   }
   progressLocal.value = false;
 };
+
+onMounted(() => {
+  if (props.inlineImage) {
+    console.log("nama bahan = ", props.namabahan);
+    preview(props.namabahan);
+  }
+});
+
+// watch(
+//   props.namabahan,
+//   (newData) => {
+//     if (props.inlineImage) {
+//       console.log("nama bahan 2 = ", newData);
+//       preview(newData);
+//     }
+//   },
+//   { immediate: true }
+// );
 </script>
