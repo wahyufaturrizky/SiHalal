@@ -1,20 +1,19 @@
 <script lang="ts" setup>
 interface Penyelia {
-  nama: string
-  no_kontak: string
-  no_ktp: string
-  no_sertifikat: string
-  no_sk: string
-  tgl_sertifikat: string
-  tgl_sk: string
+  nama: string;
+  no_kontak: string;
+  no_ktp: string;
+  no_sertifikat: string;
+  no_sk: string;
+  tgl_sertifikat: string;
+  tgl_sk: string;
 }
-const props = defineProps<{data : Penyelia[]}>();
+const props = defineProps<{ data: Penyelia[] }>();
 
 const penyeliaTableData = ref<Penyelia[]>(props.data);
 watchEffect(() => {
-  penyeliaTableData.value = props.data
-})
-
+  penyeliaTableData.value = props.data;
+});
 
 const penyeliaTableHeader = [
   { title: "No", key: "index" },
@@ -24,7 +23,7 @@ const penyeliaTableHeader = [
   { title: "No/Tgl Sertif Penyelia Halal", key: "no_sertifikat" },
   { title: "No/Tgl SK", key: "no_sk" },
   { title: "No. Kontak", key: "no_kontak" },
-]
+];
 </script>
 
 <template>
@@ -32,6 +31,7 @@ const penyeliaTableHeader = [
     <VRow>
       <VCol cols="12">
         <VDataTable
+          disable-sort
           :headers="penyeliaTableHeader"
           :items="penyeliaTableData"
         >

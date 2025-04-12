@@ -61,6 +61,7 @@ onMounted(() => {
       </VExpansionPanelTitle>
       <VExpansionPanelText>
         <VDataTable
+          disable-sort
           :headers="legalHeader"
           :items="props.aspekLegalData ?? props.aspekLegalData"
           :hide-default-footer="false"

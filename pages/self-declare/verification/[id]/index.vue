@@ -1128,6 +1128,7 @@ const onSelectFasilitator = (selectedId: string) => {
             <VRow>
               <VCol>
                 <VDataTableServer
+                  disable-sort
                   v-model:items-per-page="itemPerPageAspekLegal"
                   v-model:page="pageAspekLegal"
                   :items-per-page-options="[10, 25, 50, 100]"
@@ -1183,6 +1184,7 @@ const onSelectFasilitator = (selectedId: string) => {
             <VRow>
               <VCol>
                 <VDataTableServer
+                  disable-sort
                   v-model:items-per-page="itemPerPagePenyelia"
                   v-model:page="pagePenyelia"
                   :items-per-page-options="[10, 25, 50, 100]"
@@ -1257,7 +1259,7 @@ const onSelectFasilitator = (selectedId: string) => {
         </VRow>
         <VRow>
         <VCol>
-        <VDataTableServer :items-per-page-options="[10, 25, 50, 100]"
+        <VDataTableServer disable-sort  :items-per-page-options="[10, 25, 50, 100]"
         :headers="headersDokumenPersyaratanFasilitas"
         :items="itemsDokumenPersyaratanFasilitas"
         :loading="loading"
@@ -1311,6 +1313,7 @@ const onSelectFasilitator = (selectedId: string) => {
             <VRow>
               <VCol>
                 <VDataTableServer
+                  disable-sort
                   v-model:items-per-page="itemPerPagePabrik"
                   v-model:page="pagePabrik"
                   :items-per-page-options="[10, 25, 50, 100]"
@@ -1361,6 +1364,7 @@ const onSelectFasilitator = (selectedId: string) => {
             <VRow>
               <VCol>
                 <VDataTableServer
+                  disable-sort
                   v-model:items-per-page="itemPerPageOutlet"
                   v-model:page="pageOutlet"
                   :items-per-page-options="[10, 25, 50, 100]"
@@ -1455,6 +1459,7 @@ const onSelectFasilitator = (selectedId: string) => {
           <VRow>
             <VCol>
               <VDataTableServer
+                disable-sort
                 v-model:items-per-page="itemPerPageBahan"
                 v-model:page="pageBahan"
                 :items-per-page-options="[10, 25, 50, 100]"
@@ -1525,6 +1530,7 @@ const onSelectFasilitator = (selectedId: string) => {
           <VRow>
             <VCol>
               <VDataTableServer
+                disable-sort
                 v-model:items-per-page="itemPerPageTableProduk"
                 v-model:page="pageTableProduk"
                 :items-per-page-options="[10, 25, 50, 100]"

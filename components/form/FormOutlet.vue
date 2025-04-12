@@ -49,6 +49,7 @@ const save = (form) => {
     </VCardTitle>
     <VCardItem>
       <VDataTable
+        disable-sort
         :items-per-page-options="[10, 25, 50, 100]"
         :headers="headers"
         :items="items"

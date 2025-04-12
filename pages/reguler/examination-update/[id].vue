@@ -373,6 +373,7 @@ const productNameHeader: any[] = [
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <VDataTableServer
+                disable-sort
                 v-model:page="page"
                 v-model:items-per-page="size"
                 :items-per-page-options="[10, 25, 50, 100]"
@@ -657,6 +658,7 @@ const productNameHeader: any[] = [
           <VRow class="mb-5">
             <VCol>
               <VDataTable
+                disable-sort
                 class="auditor-table"
                 :headers="assignAuditorHeader"
                 :items="dataPemeriksaanProduk?.auditor"

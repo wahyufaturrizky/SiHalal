@@ -221,6 +221,7 @@ onMounted(async () => {
           </VCardTitle>
           <VCardText>
             <VDataTable
+              disable-sort
               :items-per-page-options="[10, 25, 50, 100]"
               :items="itemsPabrik"
               :headers="tableHeader"
@@ -260,6 +261,7 @@ onMounted(async () => {
           </VCardTitle>
           <VCardText>
             <VDataTable
+              disable-sort
               :items-per-page-options="[10, 25, 50, 100]"
               :items="itemsOutlet"
               :headers="tableHeader"

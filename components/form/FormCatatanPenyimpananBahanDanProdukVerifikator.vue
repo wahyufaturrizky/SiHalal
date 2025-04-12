@@ -114,6 +114,7 @@ onMounted(async () => {
     </VCardTitle>
     <VCardItem>
       <VDataTableServer
+        disable-sort
         :items-per-page-options="[10, 25, 50, 100]"
         :headers="catatanBahanHeaders"
         :items="catatanBahanItems"
@@ -150,6 +151,7 @@ onMounted(async () => {
     <VCardItem>
       <VCardTitle class="d-flex justify-space-between align-center" />
       <VDataTable
+        disable-sort
         :items-per-page-options="[10, 25, 50, 100]"
         :headers="catatanProdukHeaders"
         :items="catatanProdukItems"

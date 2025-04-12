@@ -1,63 +1,63 @@
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits } from 'vue';
+import { computed, defineEmits, defineProps, ref } from "vue";
 
 // Props and Emits
-defineProps({ mode: String })
+defineProps({ mode: String });
 
-const emit = defineEmits(['confirm-add', 'cancel']);
+const emit = defineEmits(["confirm-add", "cancel"]);
 
 // State variables
-const isModalOpen = ref(false)
+const isModalOpen = ref(false);
 interface DataItem {
-  id: number
-  nama: string
-  total: number
-  status: string
-};
+  id: number;
+  nama: string;
+  total: number;
+  status: string;
+}
 
-const selectedItems = ref<DataItem[]>([])
+const selectedItems = ref<DataItem[]>([]);
 
 // Dummy data for table
 const dataItems = ref([
   // { id: 1, nama: 'Item A', total: 10, status: 'Aktif' },
   // { id: 2, nama: 'Item B', total: 5, status: 'Non-Aktif' },
   // { id: 3, nama: 'Item C', total: 8, status: 'Aktif' },
-])
+]);
 
 // Table headers
 const tableHeaders = [
-  { title: 'No', key: 'id', align: 'center' }, // Map "no" to a template for the "id"
-  { title: 'Nama', key: 'nama' },
-  { title: 'Total', key: 'total' },
-  { title: 'Status', key: 'status' },
-]
+  { title: "No", key: "id", align: "center" }, // Map "no" to a template for the "id"
+  { title: "Nama", key: "nama" },
+  { title: "Total", key: "total" },
+  { title: "Status", key: "status" },
+];
 
 // Computed property for enabling the Tambah button
-const isAddButtonEnabled = computed(() => selectedItems.value.length > 0)
+const isAddButtonEnabled = computed(() => selectedItems.value.length > 0);
 
 // Methods
 const openModal = () => {
-  isModalOpen.value = true
-}
+  isModalOpen.value = true;
+};
 
 const closeModal = () => {
-  isModalOpen.value = false
-  emit('cancel')
-}
+  isModalOpen.value = false;
+  emit("cancel");
+};
 
 const confirmSelection = () => {
-  emit('confirm-add', selectedItems.value)
-  closeModal()
-}
+  emit("confirm-add", selectedItems.value);
+  closeModal();
+};
 
 const getStatusClass = (status: string) => {
-  return status === 'Aktif' ? 'text-success' : 'text-error'
-}
+  return status === "Aktif" ? "text-success" : "text-error";
+};
 
 const onSelectedItemsChange = (newSelectedItems: DataItem[]) => {
-  selectedItems.value = newSelectedItems
-  console.log(selectedItems, "ini selected items")
-}
+  selectedItems.value = newSelectedItems;
+  console.log(selectedItems, "ini selected items");
+};
 </script>
 
 <template>
@@ -79,12 +79,7 @@ const onSelectedItemsChange = (newSelectedItems: DataItem[]) => {
       <VCardTitle>
         <div class="d-flex justify-space-between align-center w-100">
           <span class="text-h4">Tambah Outlet</span>
-          <VBtn
-            icon
-            variant="text"
-            elevation="0"
-            @click="closeModal"
-          >
+          <VBtn icon variant="text" elevation="0" @click="closeModal">
             <VIcon>mdi-close</VIcon>
           </VBtn>
         </div>
@@ -111,6 +106,7 @@ const onSelectedItemsChange = (newSelectedItems: DataItem[]) => {
           </p>
         </div>
         <VDataTable
+          disable-sort
           v-else
           :headers="tableHeaders"
           :items="dataItems"

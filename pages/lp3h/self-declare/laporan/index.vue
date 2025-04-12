@@ -290,6 +290,7 @@ onMounted(async () => {
           </VCardItem>
           <VCardItem>
             <VDataTableServer
+              disable-sort
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
               :items-per-page-options="ITEMS_PER_PAGE_OPTIONS_HUGE"

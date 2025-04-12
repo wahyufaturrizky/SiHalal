@@ -52,6 +52,7 @@ const paneSwitcher = [0];
       <br />
       <VExpansionPanelText>
         <VDataTable
+          disable-sort
           height="45svh"
           :headers="tableHeader"
           :items="processedDataBahan"

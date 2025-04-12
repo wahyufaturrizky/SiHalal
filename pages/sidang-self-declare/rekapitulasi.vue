@@ -230,6 +230,7 @@ const changeData = (item) => {
       </VCardItem>
       <VCardItem>
         <VDataTableServer
+          disable-sort
           :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPage"
           v-model:page="page"

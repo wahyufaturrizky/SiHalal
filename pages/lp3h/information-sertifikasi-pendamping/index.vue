@@ -311,6 +311,7 @@ watch([status, outDated, page], () => {
 
       <VCardItem>
         <VDataTable
+          disable-sort
           :headers="headers"
           :items="data"
           item-value="no"

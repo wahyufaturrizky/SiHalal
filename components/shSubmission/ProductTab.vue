@@ -338,6 +338,7 @@ const changePage = (page: number) => {
     </VCardTitle>
     <VCardText>
       <VDataTable
+        disable-sort
         class="product-table"
         :headers="productHeader"
         :items="productData"

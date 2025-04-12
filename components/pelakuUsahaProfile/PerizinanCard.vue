@@ -166,6 +166,7 @@ const closeModal = ref(false);
                     <VRow>
                       <VCol cols="12">
                         <VDataTable
+                          disable-sort
                           :headers="tablePerizinanHeader"
                           :items="store.perizinan ?? store.perizinan"
                         >

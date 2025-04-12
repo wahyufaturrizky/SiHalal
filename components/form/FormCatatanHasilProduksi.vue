@@ -86,6 +86,7 @@ const download = (item) => console.log("download ", item);
     </VCardTitle>
     <VCardItem>
       <VDataTable
+        disable-sort
         :items-per-page-options="[10, 25, 50, 100]"
         :headers="catatanHeaders"
         :items="catatanItems"

@@ -2,7 +2,7 @@
 const props = defineProps({
   onAdd: {
     type: Function,
-    default: () => { },
+    default: () => {},
     required: false,
   },
   title: {
@@ -37,77 +37,75 @@ const props = defineProps({
     type: Array,
     required: false,
   },
-})
+});
 
-const route = useRoute()
-const id = route?.params?.id
-const emit = defineEmits()
+const route = useRoute();
+const id = route?.params?.id;
+const emit = defineEmits();
 
 const emptyBahan = {
-  namaBahan: '',
-  statusKeraguan: '',
-  kriteriaBahan: '',
-  keterangan: '',
-}
-const bahanData = ref(emptyBahan)
+  namaBahan: "",
+  statusKeraguan: "",
+  kriteriaBahan: "",
+  keterangan: "",
+};
+const bahanData = ref(emptyBahan);
 
 const emptyProsesProduk = {
-  persyaratan: '',
-  penjelasan: '',
-}
-const addProsesProduk = ref(emptyProsesProduk)
+  persyaratan: "",
+  penjelasan: "",
+};
+const addProsesProduk = ref(emptyProsesProduk);
 
 const emptyKriteria = {
-  kriteria: '',
-  kesesuaian: '',
-  keterangan: '',
-}
-const addKriteria = ref(emptyKriteria)
+  kriteria: "",
+  kesesuaian: "",
+  keterangan: "",
+};
+const addKriteria = ref(emptyKriteria);
 
-const updateBahanData = ref(props.bahanData)
+const updateBahanData = ref(props.bahanData);
 
 const file = ref(null);
 
-
 const submitData = () => {
-  if (props.title === 'Bahan'){
-    emit('submit', bahanData)
-    bahanData.value = emptyBahan
+  if (props.title === "Bahan") {
+    emit("submit", bahanData);
+    bahanData.value = emptyBahan;
+  } else if (props.title === "Proses Produk Halal") {
+    emit("submit", addProsesProduk);
+    addProsesProduk.value = emptyProsesProduk;
+  } else if (
+    props.title === "Kesimpulan Pemenuhan Kriteria Sistem Jaminan Produk Halal"
+  ) {
+    emit("submit", addKriteria);
+    addKriteria.value = emptyKriteria;
   }
-  else if (props.title === 'Proses Produk Halal'){
-    emit('submit', addProsesProduk)
-    addProsesProduk.value = emptyProsesProduk
-  }
-  else if (props.title === 'Kesimpulan Pemenuhan Kriteria Sistem Jaminan Produk Halal'){
-    emit('submit', addKriteria)
-    addKriteria.value = emptyKriteria
-  }
-}
+};
 
 const uploadBahan = () => {
-  emit('upload', file)
-}
+  emit("upload", file);
+};
 
-const updateBahan = items => {
-  emit('update', items)
-}
+const updateBahan = (items) => {
+  emit("update", items);
+};
 
-const remove = items => {
-  emit('remove', items)
-}
+const remove = (items) => {
+  emit("remove", items);
+};
 
-const downloadButton = ref(false)
+const downloadButton = ref(false);
 
 const enableDownloadButton = () => {
-  setTimeout(()=>{
-    downloadButton.value = false
-  }, 1000)
-}
+  setTimeout(() => {
+    downloadButton.value = false;
+  }, 1000);
+};
 
 const disableDownloadButton = () => {
-  downloadButton.value = true
-}
-
+  downloadButton.value = true;
+};
 
 const handleDownloadV2 = async (filename: string) => {
   try {
@@ -125,42 +123,37 @@ const handleDownloadV2 = async (filename: string) => {
   }
 };
 
-
 const downloadBahanDukung = async () => {
-  disableDownloadButton()
+  disableDownloadButton();
   try {
-    const response = await $api(
-      `/reguler/auditor/${id}/download-bahan`,
-      {
-        method: 'get',
-      },
-    )
+    const response = await $api(`/reguler/auditor/${id}/download-bahan`, {
+      method: "get",
+    });
 
     if (response.code === 2000) {
-      enableDownloadButton()
-      await handleDownloadV2(response.data)
-      return
-    }
-    else {
+      enableDownloadButton();
+      await handleDownloadV2(response.data);
+      return;
+    } else {
       useSnackbar().sendSnackbar(
-        response.errors.list_error.join(', '),
-        'error',
-      )
+        response.errors.list_error.join(", "),
+        "error"
+      );
     }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    enableDownloadButton();
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    enableDownloadButton()
-  }
-  enableDownloadButton()
-}
-
+  enableDownloadButton();
+};
 </script>
 
 <template>
   <VCard>
     <VCardTitle class="text-h4 font-weight-bold">
-      <VRow class="d-flex flex-wrap justify-space-between align-center pt-5 pb-2 pr-5">
+      <VRow
+        class="d-flex flex-wrap justify-space-between align-center pt-5 pb-2 pr-5"
+      >
         <VCol class="pl-4">
           <h3 class="text-h3">
             {{ title }}
@@ -180,16 +173,20 @@ const downloadBahanDukung = async () => {
               <template #content>
                 <VRow>
                   <VCol cols="12" md="6">
-                    <VLabel > Download List Bahan Dukung </VLabel>
+                    <VLabel> Download List Bahan Dukung </VLabel>
                   </VCol>
                   <VCol cols="12" md="6">
-                    <VBtn :disabled="downloadButton" @click="downloadBahanDukung">Download</VBtn>
+                    <VBtn
+                      :disabled="downloadButton"
+                      @click="downloadBahanDukung"
+                      >Download</VBtn
+                    >
                   </VCol>
                 </VRow>
                 <br />
                 <VRow>
                   <VCol cols="12" md="6">
-                    <VLabel > Upload </VLabel>
+                    <VLabel> Upload </VLabel>
                   </VCol>
                   <VCol cols="12" md="6">
                     <HalalFileInput v-model="file" label="Pilih File" />
@@ -204,9 +201,7 @@ const downloadBahanDukung = async () => {
               @submit="submitData"
             >
               <template #content>
-                <p class="label-pengajuan">
-                  Nama Bahan
-                </p>
+                <p class="label-pengajuan">Nama Bahan</p>
                 <VSelect
                   v-model="bahanData.namaBahan"
                   :items="props.opsiBahan"
@@ -214,10 +209,8 @@ const downloadBahanDukung = async () => {
                   class="-mt-5"
                   bg-color="#F6F6F6"
                 />
-                <br>
-                <p class="label-pengajuan">
-                  Status Keraguan
-                </p>
+                <br />
+                <p class="label-pengajuan">Status Keraguan</p>
                 <VSelect
                   v-model="bahanData.statusKeraguan"
                   :items="['Diragukan', 'Tidak Diragukan']"
@@ -225,10 +218,8 @@ const downloadBahanDukung = async () => {
                   class="-mt-5"
                   bg-color="#F6F6F6"
                 />
-                <br>
-                <p class="label-pengajuan">
-                  Kriteria Bahan
-                </p>
+                <br />
+                <p class="label-pengajuan">Kriteria Bahan</p>
                 <VSelect
                   v-model="bahanData.kriteriaBahan"
                   :items="['Kritis', 'Tidak Kritis']"
@@ -236,10 +227,8 @@ const downloadBahanDukung = async () => {
                   class="-mt-5"
                   bg-color="#F6F6F6"
                 />
-                <br>
-                <p class="label-pengajuan">
-                  Keterangan
-                </p>
+                <br />
+                <p class="label-pengajuan">Keterangan</p>
                 <VSelect
                   v-model="bahanData.keterangan"
                   :items="props.opsiKeterangan"
@@ -256,9 +245,7 @@ const downloadBahanDukung = async () => {
               @submit="submitData"
             >
               <template #content>
-                <p class="label-pengajuan">
-                  Persyaratan
-                </p>
+                <p class="label-pengajuan">Persyaratan</p>
                 <VSelect
                   v-model="addProsesProduk.persyaratan"
                   :items="['Proses', 'Kriteria SJPH']"
@@ -266,37 +253,37 @@ const downloadBahanDukung = async () => {
                   class="-mt-5"
                   bg-color="#F6F6F6"
                 />
-                <br>
-                <p class="label-pengajuan">
-                  Penjelasan
-                </p>
-                <VTextarea
-                  v-model="addProsesProduk.penjelasan"
-                  class="-mt-5"
-                />
+                <br />
+                <p class="label-pengajuan">Penjelasan</p>
+                <VTextarea v-model="addProsesProduk.penjelasan" class="-mt-5" />
               </template>
             </DialogAuditPengajuan>
             <DialogAuditPengajuan
-              v-if="title === 'Kesimpulan Pemenuhan Kriteria Sistem Jaminan Produk Halal'"
+              v-if="
+                title ===
+                'Kesimpulan Pemenuhan Kriteria Sistem Jaminan Produk Halal'
+              "
               title="Kesimpulan Pemenuhan Kriteria"
               button-text="Tambah"
               @submit="submitData"
             >
               <template #content>
-                <p class="label-pengajuan">
-                  Kriteria
-                </p>
+                <p class="label-pengajuan">Kriteria</p>
                 <VSelect
                   v-model="addKriteria.kriteria"
-                  :items="['Bahan', 'Produk', 'Proses produk halal', 'Komitmen dan Tanggung Jawab', 'Pemantauan dan evaluasi']"
+                  :items="[
+                    'Bahan',
+                    'Produk',
+                    'Proses produk halal',
+                    'Komitmen dan Tanggung Jawab',
+                    'Pemantauan dan evaluasi',
+                  ]"
                   outlined
                   class="-mt-5"
                   bg-color="#F6F6F6"
                 />
-                <br>
-                <p class="label-pengajuan">
-                  Kesesuaian
-                </p>
+                <br />
+                <p class="label-pengajuan">Kesesuaian</p>
                 <VSelect
                   v-model="addKriteria.kesesuaian"
                   :items="['Sesuai', 'Tidak Sesuai']"
@@ -304,14 +291,9 @@ const downloadBahanDukung = async () => {
                   class="-mt-5"
                   bg-color="#F6F6F6"
                 />
-                <br>
-                <p class="label-pengajuan">
-                  Penjelasan
-                </p>
-                <VTextarea
-                  v-model="addKriteria.keterangan"
-                  class="-mt-5"
-                />
+                <br />
+                <p class="label-pengajuan">Penjelasan</p>
+                <VTextarea v-model="addKriteria.keterangan" class="-mt-5" />
               </template>
             </DialogAuditPengajuan>
           </VRow>
@@ -320,6 +302,7 @@ const downloadBahanDukung = async () => {
     </VCardTitle>
     <VCardItem>
       <VDataTable
+        disable-sort
         class="border rounded"
         :items-per-page="-1"
         hide-default-footer=""
@@ -346,13 +329,8 @@ const downloadBahanDukung = async () => {
             button-text="Tambah"
             @submit="() => updateBahan(item)"
           >
-            <template
-              v-if="title === 'Bahan'"
-              #content
-            >
-              <p class="label-pengajuan">
-                Nama Bahan
-              </p>
+            <template v-if="title === 'Bahan'" #content>
+              <p class="label-pengajuan">Nama Bahan</p>
               <VSelect
                 v-model="item.materialName"
                 :items="props.opsiBahan"
@@ -361,10 +339,8 @@ const downloadBahanDukung = async () => {
                 class="-mt-5"
                 bg-color="#F6F6F6"
               />
-              <br>
-              <p class="label-pengajuan">
-                Status Keraguan
-              </p>
+              <br />
+              <p class="label-pengajuan">Status Keraguan</p>
               <VSelect
                 v-model="item.diragukan"
                 :items="['Diragukan', 'Tidak Diragukan']"
@@ -372,10 +348,8 @@ const downloadBahanDukung = async () => {
                 class="-mt-5"
                 bg-color="#F6F6F6"
               />
-              <br>
-              <p class="label-pengajuan">
-                Kriteria Bahan
-              </p>
+              <br />
+              <p class="label-pengajuan">Kriteria Bahan</p>
               <VSelect
                 v-model="item.priority"
                 :items="['Kritis', 'Tidak Kritis']"
@@ -383,10 +357,8 @@ const downloadBahanDukung = async () => {
                 class="-mt-5"
                 bg-color="#F6F6F6"
               />
-              <br>
-              <p class="label-pengajuan">
-                Keterangan
-              </p>
+              <br />
+              <p class="label-pengajuan">Keterangan</p>
               <VSelect
                 v-model="item.information"
                 :items="props.opsiKeterangan"
@@ -410,10 +382,10 @@ const downloadBahanDukung = async () => {
 
 <style lang="scss" scoped>
 .ic-center {
-    place-self: center;
-    display: flex;
+  place-self: center;
+  display: flex;
 }
 .-mt-5 {
-    margin-top: -5px;
+  margin-top: -5px;
 }
 </style>

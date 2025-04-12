@@ -163,6 +163,7 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
               <VDataTable
+                disable-sort
                 :headers="checkingCostHeader"
                 :items="dataPemeriksaanProduk?.biaya"
                 hide-default-footer

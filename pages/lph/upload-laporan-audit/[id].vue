@@ -998,7 +998,7 @@ const updateDataPU = async () => {
       params: { id_reg: id },
       body: {
         nama_pu_sh: formDataPU.value.nama_pu_sh,
-        alamat: formDataPU.value.alamat
+        alamat: formDataPU.value.alamat,
       },
       headers: {
         "Content-Type": "application/json",
@@ -1727,6 +1727,7 @@ onMounted(async () => {
           <!-- Tabel Data Laporan Audit -->
           <div class="text-h5 font-weight-bold mb-3">Data Laporan Audit</div>
           <VDataTable
+            disable-sort
             :headers="laporanAudit.label"
             :items="laporanAudit.value"
             hide-default-footer
@@ -1819,6 +1820,7 @@ onMounted(async () => {
           <VRow class="mb-5">
             <VCol>
               <VDataTable
+                disable-sort
                 class="auditor-table"
                 :headers="assignAuditorHeader"
                 :items="dataPemeriksaanProduk?.auditor"
@@ -2123,6 +2125,7 @@ onMounted(async () => {
         </div>
 
         <VDataTable
+          disable-sort
           v-model:page="page"
           class="domestic-table border rounded mt-5"
           :headers="productName"
@@ -2336,6 +2339,7 @@ onMounted(async () => {
           </VBtn>
         </div>
         <VDataTable
+          disable-sort
           :id="id"
           v-model:page="page"
           class="domestic-table border rounded mt-5"
@@ -2401,6 +2405,7 @@ onMounted(async () => {
       <VCardText>
         <div class="d-flex justify-end" />
         <VDataTable
+          disable-sort
           :id="id"
           v-model:page="page"
           class="domestic-table border rounded mt-5"

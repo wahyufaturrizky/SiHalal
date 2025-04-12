@@ -37,6 +37,7 @@ const items = [
     </VCardTitle>
     <VCardItem>
       <VDataTable
+        disable-sort
         :items-per-page-options="[10, 25, 50, 100]"
         :headers="tableHeader"
         :items="items"

@@ -331,23 +331,23 @@ const timelineEvents = ref([
 
 const getDocShln = async (pathname: string) => {
   try {
-    const response = await $api(
-      "/shln/submission/document/doc-shln",
-      {
-        method: "get",
-        query: {
-          filename: pathname,
-          param: 'dirName=SERT',
-        },
-      }
-    );
+    const response = await $api("/shln/submission/document/doc-shln", {
+      method: "get",
+      query: {
+        filename: pathname,
+        param: "dirName=SERT",
+      },
+    });
     if (response?.url) {
       window.open(response?.url, "_blank", "noopener,noreferrer");
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("NIB tidak ditemukan, silahkan perbaharui data NIB Pelaku Usaha", "error");
+    useSnackbar().sendSnackbar(
+      "NIB tidak ditemukan, silahkan perbaharui data NIB Pelaku Usaha",
+      "error"
+    );
   }
-}
+};
 </script>
 
 <template>
@@ -485,6 +485,7 @@ const getDocShln = async (pathname: string) => {
 
         <ExpandCard title="Products" class="mb-6">
           <VDataTable
+            disable-sort
             :headers="headersProduct"
             :items="item?.products != null ? item.products : []"
           >
@@ -495,6 +496,7 @@ const getDocShln = async (pathname: string) => {
         </ExpandCard>
         <ExpandCard title="Requirement Document" class="mb-6">
           <VDataTable
+            disable-sort
             :items="requirementDocArray"
             :headers="tableRequirementDocumentHeader"
           >

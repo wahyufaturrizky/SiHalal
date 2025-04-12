@@ -63,6 +63,7 @@ const download = async (item) => {
     </VCardTitle>
     <VCardItem>
       <VDataTableServer
+        disable-sort
         v-model:items-per-page="size"
         v-model:page="page"
         :items-per-page-options="[10, 25, 50, 100]"

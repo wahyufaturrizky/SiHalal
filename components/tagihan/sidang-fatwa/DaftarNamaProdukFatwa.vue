@@ -74,6 +74,7 @@ const paneSwitcher = ref([0, 1]);
       <br />
       <VExpansionPanelText>
         <VDataTableServer
+          disable-sort
           :items-per-page-options="[10, 25, 50, 100]"
           :headers="tableHeader"
           :items="processedDataBahan"

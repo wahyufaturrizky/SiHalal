@@ -484,6 +484,7 @@ const insertBahan = async () => {
       </VCardText>
       <VCardItem>
         <VDataTableServer
+          disable-sort
           :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPageUncertified"
           v-model:page="pageUncertified"
@@ -563,6 +564,7 @@ const insertBahan = async () => {
       </VCardText>
       <VCardItem>
         <VDataTableServer
+          disable-sort
           :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPageCertified"
           v-model:page="pageCertified"

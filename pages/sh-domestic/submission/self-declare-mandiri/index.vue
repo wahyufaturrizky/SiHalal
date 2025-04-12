@@ -285,6 +285,7 @@ onMounted(async () => {
       <VRow>
         <VCol>
           <VDataTableServer
+            disable-sort
             v-model:page="currentPage"
             v-model:items-per-page="itemPerPage"
             class="elevation-1 custom-table"

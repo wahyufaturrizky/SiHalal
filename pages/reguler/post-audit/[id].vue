@@ -100,7 +100,7 @@ const getSjphDocument = async () => {
     });
 
     if (response?.code === 2000) {
-      sjphFile.value = response.data
+      sjphFile.value = response.data;
       return response?.data;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
@@ -119,7 +119,7 @@ const getSuratPermohonan = async () => {
   });
 
   if (result?.code === 2000) {
-    suratMohonFile.value = result?.data?.file
+    suratMohonFile.value = result?.data?.file;
   }
 };
 
@@ -266,41 +266,41 @@ onMounted(async () => {
           <VIcon @click="handleOpenSendModal"> fa-times </VIcon>
         </VCardTitle>
         <VCardText>
-          <p class="text-h4 font-weight-bold" style="justify-self: center;">
+          <p class="text-h4 font-weight-bold" style="justify-self: center">
             Pernyataan Lembaga Pemeriksa Halal
           </p>
           <VRow class="mt-5">
             <p>Yang bertanda tangan dibawah ini:</p>
           </VRow>
-          <VRow style="margin-block-start: -20px;">
+          <VRow style="margin-block-start: -20px">
             <VCol sm="2"> Nama </VCol>
             <VCol>
               {{ detailLph?.nama_pimpinan }}
             </VCol>
           </VRow>
-          <VRow style="margin-block-start: -20px;">
+          <VRow style="margin-block-start: -20px">
             <VCol sm="2"> Jabatan </VCol>
             <VCol> Pemimpin </VCol>
           </VRow>
-          <VRow style="margin-block-start: -20px;">
+          <VRow style="margin-block-start: -20px">
             <VCol sm="2"> Nama LPH </VCol>
             <VCol>
               {{ detailLph?.nama_lph }}
             </VCol>
           </VRow>
-          <VRow style="margin-block-start: -20px;">
+          <VRow style="margin-block-start: -20px">
             <VCol sm="2"> Alamat LPH </VCol>
             <VCol>
               {{ detailLph?.alamat }}
             </VCol>
           </VRow>
-          <VRow style="margin-block-start: -20px;">
+          <VRow style="margin-block-start: -20px">
             <VCol sm="2"> No. Telepon </VCol>
             <VCol>
               {{ detailLph?.no_hp }}
             </VCol>
           </VRow>
-          <VRow style="margin-block-start: -20px;">
+          <VRow style="margin-block-start: -20px">
             <VCol sm="2"> Email </VCol>
             <VCol>
               {{ detailLph?.email }}
@@ -349,12 +349,12 @@ onMounted(async () => {
           <VCardTitle class="font-weight-bold d-flex justify-space-between"
             ><h3>Pengembalian Dokumen</h3>
             <VBtn icon variant="plain" @click="closeReturn">
-              <VIcon style="color: black;">mdi-close</VIcon>
+              <VIcon style="color: black">mdi-close</VIcon>
             </VBtn>
           </VCardTitle>
           <VCardText>
             <div class="mb-3 font-weight-medium text-caption text-grey">
-              <span style="color: black;"
+              <span style="color: black"
                 ><b>Masukan Keterangan Pengembalian</b></span
               >(Max. 1000 Karakter)
             </div>
@@ -386,12 +386,15 @@ onMounted(async () => {
               <VBtn
                 variant="outlined"
                 color="#E1442E"
-                style="border-color: #e1442e;"
+                style="border-color: #e1442e"
                 @click="() => openReturn()"
               >
                 Pengembalian
               </VBtn>
-              <VBtn @click="downloadDocument(draftCertif,'FILES')" variant="outlined">
+              <VBtn
+                @click="downloadDocument(draftCertif, 'FILES')"
+                variant="outlined"
+              >
                 Lihat Draft Sertif
               </VBtn>
               <VBtn
@@ -510,11 +513,7 @@ onMounted(async () => {
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
-                    :color="
-                      sjphFile?.file
-                        ? 'primary'
-                        : '#A09BA1'
-                    "
+                    :color="sjphFile?.file ? 'primary' : '#A09BA1'"
                     density="compact"
                     class="px-2"
                     @click="downloadDocument(sjphFile?.file, 'FILES')"
@@ -530,11 +529,7 @@ onMounted(async () => {
                 <VCol class="d-flex align-center">
                   <div class="me-1">:</div>
                   <VBtn
-                    :color="
-                      suratMohonFile
-                        ? 'primary'
-                        : '#A09BA1'
-                    "
+                    :color="suratMohonFile ? 'primary' : '#A09BA1'"
                     density="compact"
                     class="px-2"
                     :disabled="suratMohonFile ? false : true"
@@ -602,6 +597,7 @@ onMounted(async () => {
           <VRow class="mb-5">
             <VCol>
               <VDataTable
+                disable-sort
                 class="auditor-table"
                 :headers="assignAuditorHeader"
                 :items="assignAuditorData"
@@ -677,9 +673,9 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 :deep(
-.v-expansion-panel--active:not(:first-child),
-.v-expansion-panel--active + .v-expansion-panel
-) {
+    .v-expansion-panel--active:not(:first-child),
+    .v-expansion-panel--active + .v-expansion-panel
+  ) {
   margin-block-start: 40px !important;
 }
 

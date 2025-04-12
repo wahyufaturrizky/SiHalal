@@ -5,6 +5,7 @@
       <br />
       <VExpansionPanelText>
         <VDataTable
+          disable-sort
           height="45svh"
           :headers="tableHeader"
           :items="processedDataProduk"
@@ -50,12 +51,12 @@ const props = defineProps({
 });
 // console.log(props.dataproduk, "ini props databahan");
 const tableHeader = [
-  { title: "No", key: "no" },
-  { title: "Nama Produk", key: "nama_produk" },
-  { title: "Foto Produk", key: "photo", width: "200px" },
-  { title: "Jumlah Bahan", key: "jumlah_bahan" },
-  { title: "Daftar Bahan", key: "daftar_bahan" },
-  { title: "Publish", key: "reg_publish" },
+  { title: "No", key: "no", width: "5%", height: "100%" },
+  { title: "Nama Produk", key: "nama_produk", width: "10%", height: "100%" },
+  { title: "Foto Produk", key: "photo", width: "55%", height: "100%" },
+  { title: "Jumlah Bahan", key: "jumlah_bahan", width: "10%", height: "100%" },
+  { title: "Daftar Bahan", key: "daftar_bahan", width: "10%", height: "100%" },
+  { title: "Publish", key: "reg_publish", width: "10%", height: "100%" },
 ];
 
 // Helper function to get value or return a dash
