@@ -232,6 +232,7 @@ onMounted(async () => {
       <VRow>
         <VCol>
           <VDataTableServer
+            disable-sort
             class="elevation-1 custom-table"
             :headers="headers"
             :items="submission"

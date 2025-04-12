@@ -221,6 +221,8 @@ watch(
               <ImagePreviewModal
                 :card-title="'Foto Pendampingan'"
                 :inline-image="true"
+                :inline-image-width="300"
+                :inline-image-height="200"
                 :namabahan="
                   newDataSertifikatHalal?.sertifikatHalal?.photo_pendampingan
                 "

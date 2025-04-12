@@ -272,6 +272,7 @@ const IDRupiah = new Intl.NumberFormat("id-ID", {
         </p>
         <VRow>
           <VDataTable
+            disable-sort
             :headers="headers"
             :items="daftarUsaha"
             :items-per-page="5"

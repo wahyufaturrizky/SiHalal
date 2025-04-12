@@ -452,6 +452,7 @@ const ingredientData = [
   >
     <VCardText>
       <VDataTable
+        disable-sort
         :headers="previewHeader"
         :items="previewData"
         hide-default-footer
@@ -499,6 +500,7 @@ const ingredientData = [
       </VCardTitle>
       <VCardText>
         <VDataTable
+          disable-sort
           :headers="ingredientHeader"
           :items="ingredientData"
           hide-default-footer

@@ -460,6 +460,7 @@ const onRefresh = (type: string) => {
         <VCardTitle>Requirement Document</VCardTitle>
         <VCardText>
           <VDataTableServer
+            disable-sort
             v-model:items-per-page="itemPerPage"
             v-model:page="page"
             :items-per-page-options="[10, 25, 50, 100]"

@@ -1,22 +1,22 @@
 <!-- eslint-disable vue/attribute-hyphenation -->
 <!-- eslint-disable array-callback-return -->
 <script setup lang="ts">
-import '@vueup/vue-quill/dist/vue-quill.snow.css'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import "@vueup/vue-quill/dist/vue-quill.snow.css";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 
-const router = useRouter()
-let QuillEditor
-const searchQuery = ref('')
-const loading = ref<boolean>(false)
-const isVisible = ref<boolean>(false)
-const page = ref<number>(1)
-const size = ref<number>(10)
-const totalItems = ref<number>(0)
-const data = ref<any[]>([])
-const listRole = ref<any[]>([])
-const roleDropdown = ref([])
-const selectedItem = ref('')
+const router = useRouter();
+let QuillEditor;
+const searchQuery = ref("");
+const loading = ref<boolean>(false);
+const isVisible = ref<boolean>(false);
+const page = ref<number>(1);
+const size = ref<number>(10);
+const totalItems = ref<number>(0);
+const data = ref<any[]>([]);
+const listRole = ref<any[]>([]);
+const roleDropdown = ref([]);
+const selectedItem = ref("");
 
 const detailData = ref({
   announcement: null,
@@ -108,9 +108,9 @@ const onEdit = (item: any) => {
     id: item.id,
     is_active: item.is_active,
     role: item.role.map((el: any) => el.id_role || null),
-  }
-  isVisible.value = true
-}
+  };
+  isVisible.value = true;
+};
 
 const onDelete = async (item: any) => {
   try {
@@ -136,7 +136,7 @@ const onSubmitEdit = async () => {
     announcement: detailData.value.announcement,
     is_active: detailData.value.is_active,
     id_role: detailData.value.role,
-  }
+  };
 
   try {
     const response: any = await $api("/announcement/edit", {
@@ -158,37 +158,37 @@ const onSubmitEdit = async () => {
 };
 
 onMounted(async () => {
-  loading.value = true
-  QuillEditor = (await import('@vueup/vue-quill')).QuillEditor
+  loading.value = true;
+  QuillEditor = (await import("@vueup/vue-quill")).QuillEditor;
   await Promise.allSettled([
     loadItem(page.value, size.value, searchQuery.value),
     getListRole(),
     handleLoadRoles(),
-  ])
-  loading.value = false
-})
+  ]);
+  loading.value = false;
+});
 
 const formRules = reactive({
   role: [(v: string) => !!v || "Role is required!"],
 });
 
 const editorOptions = {
-  theme: 'snow', // Choose a theme: snow, bubble, or core
-  placeholder: 'Deskripsi...',
+  theme: "snow", // Choose a theme: snow, bubble, or core
+  placeholder: "Deskripsi...",
   modules: {
     toolbar: [
-      ['bold', 'italic', 'underline'],
-      ['link'],
-      [{ list: 'ordered' }, { list: 'bullet' }],
+      ["bold", "italic", "underline"],
+      ["link"],
+      [{ list: "ordered" }, { list: "bullet" }],
       [{ align: [] }], // Alignment
-      ['clean'], // Clear formatting
+      ["clean"], // Clear formatting
     ],
   },
-}
+};
 
 const onTextChange = (newValue: any) => {
-  detailData.value.announcement = newValue
-}
+  detailData.value.announcement = newValue;
+};
 </script>
 
 <template>
@@ -271,6 +271,7 @@ const onTextChange = (newValue: any) => {
       </VCardItem>
       <VCardItem>
         <VDataTable
+          disable-sort
           :headers="headers"
           :items="data"
           item-value="no"
@@ -291,7 +292,9 @@ const onTextChange = (newValue: any) => {
               <td>
                 <div v-html="item.announcement" />
               </td>
-              <td>{{ item.role.map((element: any) => element.name).join(', ') }}</td>
+              <td>
+                {{ item.role.map((element: any) => element.name).join(", ") }}
+              </td>
               <td>
                 {{ item.role.map((element: any) => element.name).join(", ") }}
               </td>

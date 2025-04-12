@@ -358,6 +358,7 @@ const itemsPerPageServer = ref(10);
       <br />
       <VRow>
         <VDataTable
+          disable-sort
           v-if="props.tableType == 'base'"
           class="border rounded"
           :items-per-page="itemPerPageTable"
@@ -1080,6 +1081,7 @@ const itemsPerPageServer = ref(10);
           </template>
         </VDataTable>
         <VDataTableServer
+          disable-sort
           v-else
           :items-per-page-options="[10, 25, 50, 100]"
           class="border rounded"

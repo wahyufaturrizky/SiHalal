@@ -283,7 +283,7 @@ const getDetailData = async () => {
       requestCertificateData.value = [
         {
           title: "pengajuan-reguler.reguler-form--pengajuan-pengajuan-namapu",
-          value: certificateHalal.nama_pu_sh || certificateHalal.nama_pu || '',
+          value: certificateHalal.nama_pu_sh || certificateHalal.nama_pu || "",
           type: "text",
           required: true,
           key: "nama_pu",
@@ -878,6 +878,7 @@ onMounted(async () => {
         "
       >
         <VDataTable
+          disable-sort
           hide-default-footer
           class="border rounded"
           :items-per-page="-1"
@@ -932,6 +933,7 @@ onMounted(async () => {
         "
       >
         <VDataTable
+          disable-sort
           hide-default-footer
           class="border rounded"
           :items-per-page="-1"
@@ -986,6 +988,7 @@ onMounted(async () => {
         "
       >
         <VDataTable
+          disable-sort
           hide-default-footer
           class="border rounded"
           :items-per-page="-1"

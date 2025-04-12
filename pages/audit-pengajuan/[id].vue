@@ -469,6 +469,7 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTableServer
+                disable-sort
                 v-model:page="pageProduk"
                 :items-length="totalItemProduk"
                 :headers="daftarProdukHeader"
@@ -515,6 +516,7 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 :headers="biayaPemeriksaanHeader"
                 :items="biayaPemeriksaanItems"
               >
@@ -561,6 +563,7 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 :items-per-page-options="[10, 25, 50, 100]"
                 :headers="auditHeader"
                 :items="auditItems"

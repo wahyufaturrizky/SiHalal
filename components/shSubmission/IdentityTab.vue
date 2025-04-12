@@ -250,6 +250,7 @@ onMounted(async () => {
     </VCardTitle>
     <VCardText>
       <VDataTable
+        disable-sort
         class="legal-aspect-table"
         :headers="legalAspectHeader"
         :items="legalAspectData"
@@ -287,6 +288,7 @@ onMounted(async () => {
     </VCardTitle>
     <VCardText>
       <VDataTable
+        disable-sort
         :headers="halalSupervisorHeader"
         :items="halalSupervisorData"
         hide-default-footer
@@ -318,8 +320,7 @@ onMounted(async () => {
     <VIcon icon="fa-exclamation-circle" />
     </template>
     </VAlert>
-    <VDataTable
-    :headers="documentHeader"
+    <VDataTable disable-sort     :headers="documentHeader"
     :items="documentData"
     hide-default-footer
     >

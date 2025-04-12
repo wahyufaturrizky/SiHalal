@@ -44,6 +44,7 @@ const panelOpen = ref(0);
             <BasicDataPopup parent-btn-label="Lihat Data">
               <template #content>
                 <VDataTable
+                  disable-sort
                   :items-per-page-options="[10, 25, 50, 100]"
                   :headers="tableBussinessUnitHeader"
                 />

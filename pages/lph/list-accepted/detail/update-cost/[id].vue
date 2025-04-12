@@ -571,6 +571,7 @@ onMounted(async () => {
           </VCardTitle>
           <VCardText>
             <VDataTable
+              disable-sort
               class="domestic-table border rounded"
               :headers="domesticAuditHeader"
               :items="data?.biaya_indo?.list || []"
@@ -695,6 +696,7 @@ onMounted(async () => {
           </VCardTitle>
           <VCardText>
             <VDataTable
+              disable-sort
               :headers="overseaAuditHeader"
               :items="dataLn"
               hide-default-footer
@@ -821,6 +823,7 @@ onMounted(async () => {
           </VCardTitle>
           <VCardText>
             <VDataTable
+              disable-sort
               :headers="totalAuditHeader"
               :items="dataAudit"
               hide-default-footer

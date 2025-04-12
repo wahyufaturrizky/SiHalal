@@ -103,6 +103,7 @@ onMounted(() => {
 
               <VExpansionPanelText>
                 <VDataTable
+                  disable-sort
                   :headers="tablePabrikHeader"
                   :items="store.factory || []"
                 >
@@ -145,6 +146,7 @@ onMounted(() => {
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
+                  disable-sort
                   :headers="tableOutletHeader"
                   :items="store.outlet ? store.outlet : []"
                 >
@@ -181,6 +183,7 @@ onMounted(() => {
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
+                  disable-sort
                   :headers="penyeliaHeader"
                   :items="store.supervisorData || []"
                 >

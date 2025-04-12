@@ -92,6 +92,7 @@ onMounted(() => {
         </VCardTitle>
         <VCardItem>
           <VDataTable
+            disable-sort
             class="custom-table"
             :headers="tableHeader"
             :items="supervisorData"

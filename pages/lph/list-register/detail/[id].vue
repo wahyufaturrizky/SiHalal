@@ -432,6 +432,7 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 :headers="aspectLegalHeader"
                 :items="detailSubmission.produk.map(({
                   id_reg_prod,
@@ -500,6 +501,7 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTableServer
+                disable-sort
                 :items-per-page-options="[10, 25, 50, 100]"
                 :headers="supervisorHeader"
                 :items="supervisorItems"

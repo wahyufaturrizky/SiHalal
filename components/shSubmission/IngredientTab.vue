@@ -213,6 +213,7 @@ onMounted(async () => {
     </VCardTitle>
     <VCardText>
       <VDataTable
+        disable-sort
         class="ingredient-table"
         :headers="ingredientHeader"
         :items="ingredientData"

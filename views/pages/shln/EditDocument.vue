@@ -634,6 +634,7 @@ watch(loaFile, (newValue, oldValue) => {
       <ExpandCard title="Requirement Document ">
         <VForm ref="refReqDocForm" @submit.prevent="openReqDialog">
           <VDataTable
+            disable-sort
             :items="requirementDocArray"
             :headers="tableRequirementDocumentHeader"
           >

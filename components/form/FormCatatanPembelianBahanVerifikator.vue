@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import FormEditCatatan from "@/components/form/FormEditCatatan.vue";
-
 const headers = [
   { title: "No", key: "no" },
   { title: "Nama", key: "nama" },
@@ -41,8 +39,8 @@ onMounted(async () => {
   await getBahan();
 });
 // TODO -> LOGIc DOWNLOAD
-const download =async (item) => {
-  await downloadDocument(item,'FILES')
+const download = async (item) => {
+  await downloadDocument(item, "FILES");
 };
 </script>
 
@@ -53,26 +51,31 @@ const download =async (item) => {
     </VCardTitle>
     <VCardItem>
       <VDataTable
+        disable-sort
         :headers="headers"
         :items="items"
         :items-per-page="itemsPerPage"
         :page="page"
-        @update:page="newPage => page = newPage"
-        @update:items-per-page="newSize => itemsPerPage = newSize"
+        @update:page="(newPage) => (page = newPage)"
+        @update:items-per-page="(newSize) => (itemsPerPage = newSize)"
       >
-      <template v-slot:item.no="{ index }">
-        {{ (page - 1) * itemsPerPage + index + 1 }}
-      </template>
-        <template #item.type="{item}"> 
-          {{item.FileDok == '' ? 'Manual' : 'Unggah Foto'}}
+        <template v-slot:item.no="{ index }">
+          {{ (page - 1) * itemsPerPage + index + 1 }}
+        </template>
+        <template #item.type="{ item }">
+          {{ item.FileDok == "" ? "Manual" : "Unggah Foto" }}
         </template>
         <template #item.file="{ item }">
-          <v-btn :disabled="item.FileDok == ''" color="primary" variant="plain" @click="download(item.FileDok)">
+          <v-btn
+            :disabled="item.FileDok == ''"
+            color="primary"
+            variant="plain"
+            @click="download(item.FileDok)"
+          >
             <VIcon>mdi-download</VIcon>
             File
           </v-btn>
         </template>
-
       </VDataTable>
     </VCardItem>
   </VCard>

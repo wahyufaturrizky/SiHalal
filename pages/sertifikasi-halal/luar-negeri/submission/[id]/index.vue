@@ -487,6 +487,7 @@ const getDocShln = async (pathname: string) => {
 
         <ExpandCard title="Products" class="mb-6">
           <VDataTable
+            disable-sort
             :headers="headersProduct"
             v-model:page="pageProduct"
             v-model:items-per-page="itemPerPageProduct"
@@ -499,6 +500,7 @@ const getDocShln = async (pathname: string) => {
         </ExpandCard>
         <ExpandCard title="Requirement Document" class="mb-6">
           <VDataTable
+            disable-sort
             :items="requirementDocArray"
             :headers="tableRequirementDocumentHeader"
           >

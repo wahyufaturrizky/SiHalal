@@ -27,16 +27,16 @@ const getKomitmen = async () => {
     });
     if (response.code != 2000) {
       userSnackbar().sendSnackbar("ada kesalahan", "error");
-      return
+      return;
     }
-    items.value = response.data
+    items.value = response.data;
   } catch (error) {
     userSnackbar().sendSnackbar("ada kesalahan", "error");
   }
 };
-onMounted(async ()=> {
-  await getKomitmen()
-})
+onMounted(async () => {
+  await getKomitmen();
+});
 </script>
 
 <template>
@@ -46,12 +46,13 @@ onMounted(async ()=> {
     </VCardTitle>
     <VCardItem>
       <VDataTable
+        disable-sort
         :headers="headers"
         :items="items"
         :items-per-page="itemsPerPage"
         :page="page"
-        @update:page="newPage => page = newPage"
-        @update:items-per-page="newSize => itemsPerPage = newSize"
+        @update:page="(newPage) => (page = newPage)"
+        @update:items-per-page="(newSize) => (itemsPerPage = newSize)"
       >
         <template v-slot:item.no="{ index }">
           {{ (page - 1) * itemsPerPage + index + 1 }}

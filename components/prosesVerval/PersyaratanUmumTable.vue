@@ -125,6 +125,7 @@ defineExpose({
       </VRow>
       <br />
       <VDataTable
+        disable-sort
         :headers="tableHeader"
         :items="content"
         :hide-default-footer="true"
@@ -147,7 +148,7 @@ defineExpose({
       </VDataTable>
     </VCardItem>
 
-    <VCardActions style="display: flex; justify-content: end;">
+    <VCardActions style="display: flex; justify-content: end">
       <VBtn @click="onSubmit" variant="flat"
         >Simpan Pengecekan Persyaratan</VBtn
       >
