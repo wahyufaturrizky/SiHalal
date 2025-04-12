@@ -27,6 +27,7 @@
               :card-title="'Foto Produk'"
               :namabahan="item.photo"
               :doc-query="'PRODUCT'"
+              :inline-image="true"
             ></ImagePreviewModal>
           </template>
           <template #item.reg_publish="{ item }">
@@ -51,9 +52,9 @@ const props = defineProps({
 const tableHeader = [
   { title: "No", key: "no" },
   { title: "Nama Produk", key: "nama_produk" },
+  { title: "Foto Produk", key: "photo" },
   { title: "Jumlah Bahan", key: "jumlah_bahan" },
   { title: "Daftar Bahan", key: "daftar_bahan" },
-  { title: "Foto Produk", key: "photo" },
   { title: "Publish", key: "reg_publish" },
 ];
 
