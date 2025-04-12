@@ -54,6 +54,7 @@ async function ditetapkan() {
       {
         method: "put",
         body,
+        server: false,
       }
     );
 
@@ -132,6 +133,7 @@ const getDownloadForm = async (docName: string, propName: string) => {
       `/self-declare/verificator/lihat-laporan-download/${route.params?.id}`,
       {
         method: "get",
+        server: false,
       }
     );
 
@@ -143,6 +145,7 @@ const getDownloadForm = async (docName: string, propName: string) => {
       query: {
         filename: newLaporanPendampingFileName,
       },
+      server: false,
     } as any);
   } else {
     result = await $api(`/self-declare/submission/${submissionId}/file`, {
@@ -150,6 +153,7 @@ const getDownloadForm = async (docName: string, propName: string) => {
       query: {
         document: docName,
       },
+      server: false,
     });
   }
 

@@ -2,6 +2,10 @@
 import { onMounted, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
+definePageMeta({
+  ssr: false,
+});
+
 const route = useRoute();
 const loading = ref(true);
 const submissionId = (route.params as any).id;
@@ -32,7 +36,10 @@ const loadItemById = async () => {
   try {
     const response: any = await $api(
       `/self-declare/komite-fatwa/proses-sidang/${submissionId}/detail`,
-      { method: "get" }
+      {
+        method: "get",
+        server: false,
+      }
     );
 
     if (response.code === 2000) {

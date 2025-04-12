@@ -37,6 +37,7 @@ export const previewAsModal = async (filename: string, param?: string) => {
         filename,
         param: param && `dirName=${param}`,
       },
+      server: false,
     });
     const response = await fetch(minio.url);
     const type = getMimeType(minio.url.split("?")[0].split(".").at(-1));
