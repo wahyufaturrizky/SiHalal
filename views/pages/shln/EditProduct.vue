@@ -304,7 +304,7 @@ const loadItem = async (page: number, size: number) => {
     });
 
     items.value = response.data;
-    totalItems.value = response.total_item;
+    totalItems.value = response.total_item ?? 0;
     loading.value = false;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -421,7 +421,7 @@ const formatItemTitle = (item) => {
                 class="text-no-wrap"
               >
                 <template #item.index="{ index }">
-                  {{ index + 1 }}
+                  {{ index + 1 + (page - 1) * itemPerPage }}
                 </template>
                 <template #item.manufacture_name="{ item }">
                   {{ item.manufaktur }}
