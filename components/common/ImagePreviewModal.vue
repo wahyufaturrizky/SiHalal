@@ -1,5 +1,34 @@
 <template>
-  <VDialog>
+  <div v-if="props.inlineImage">
+    <v-row
+      v-if="progressLocal"
+      align-content="center"
+      class="fill-height"
+      justify="center"
+    >
+      <v-col cols="6">
+        <v-progress-circular
+          color="primary"
+          height="6"
+          indeterminate
+        ></v-progress-circular>
+      </v-col>
+    </v-row>
+    <VIcon
+      v-if="failedFetch"
+      color="primary"
+      size="large"
+      icon="fa-picture-o"
+    ></VIcon>
+    <VImg
+      v-if="props.namabahan && !progressLocal && !failedFetch"
+      :src="uriPreview"
+      contain
+      max-height="300"
+      max-width="200"
+    ></VImg>
+  </div>
+  <VDialog v-if="!props.inlineImage">
     <template v-slot:activator="{ props: activatorProps }">
       <v-btn
         v-if="props.namabahan"
@@ -88,9 +117,20 @@ const props = defineProps({
   stringBtnActivator: {
     type: String,
   },
+  inlineImage: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+onMounted(() => {
+  if (props.inlineImage) {
+    preview(props.namabahan);
+  }
 });
 
 const progressLocal = ref(true);
+const failedFetch = ref(false);
 
 const uriPreview = ref();
 
@@ -101,6 +141,7 @@ const preview = async (filename: string) => {
   if (blobUri?.status == 200) {
     uriPreview.value = blobUri?.uri;
   } else {
+    failedFetch.value = true;
     useSnackbar().sendSnackbar("Tidak bisa mendapatkan file", "error");
   }
   progressLocal.value = false;
