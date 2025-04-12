@@ -24,8 +24,8 @@
       v-if="props.namabahan && !progressLocal && !failedFetch"
       :src="uriPreview"
       contain
-      max-height="300"
-      max-width="200"
+      :width="props.inlineImageWidth"
+      :height="props.inlineImageHeight"
     ></VImg>
   </div>
   <VDialog v-if="!props.inlineImage">
@@ -121,6 +121,14 @@ const props = defineProps({
   inlineImage: {
     type: Boolean,
     default: false,
+  },
+  inlineImageWidth: {
+    type: Number,
+    default: 300,
+  },
+  inlineImageHeight: {
+    type: Number,
+    default: 200,
   },
 });
 
