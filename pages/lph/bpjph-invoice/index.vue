@@ -90,6 +90,7 @@ const handleDownload = async (filename: string, param: string) => {
         </VCardTitle>
         <VCardText>
           <VDataTableServer
+            disable-sort
             v-model:items-per-page="itemPerPage"
             v-model:page="currentPage"
             :items-per-page-options="[10, 25, 50, 100]"

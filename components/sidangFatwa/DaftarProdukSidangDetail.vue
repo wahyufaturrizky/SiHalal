@@ -5,6 +5,7 @@
       <br />
       <VExpansionPanelText>
         <VDataTable
+          disable-sort
           height="45svh"
           :headers="tableHeader"
           :items="processedDataProduk"
@@ -27,6 +28,7 @@
               :card-title="'Foto Produk'"
               :namabahan="item.photo"
               :doc-query="'PRODUCT'"
+              :inline-image="true"
             ></ImagePreviewModal>
           </template>
           <template #item.reg_publish="{ item }">
@@ -47,14 +49,14 @@ const props = defineProps({
     required: true,
   },
 });
-console.log(props.dataproduk, "ini props databahan");
+// console.log(props.dataproduk, "ini props databahan");
 const tableHeader = [
-  { title: "No", key: "no" },
-  { title: "Nama Produk", key: "nama_produk" },
-  { title: "Jumlah Bahan", key: "jumlah_bahan" },
-  { title: "Daftar Bahan", key: "daftar_bahan" },
-  { title: "Foto Produk", key: "photo" },
-  { title: "Publish", key: "reg_publish" },
+  { title: "No", key: "no", width: "5%", height: "100%" },
+  { title: "Nama Produk", key: "nama_produk", width: "10%", height: "100%" },
+  { title: "Foto Produk", key: "photo", width: "55%", height: "100%" },
+  { title: "Jumlah Bahan", key: "jumlah_bahan", width: "10%", height: "100%" },
+  { title: "Daftar Bahan", key: "daftar_bahan", width: "10%", height: "100%" },
+  { title: "Publish", key: "reg_publish", width: "10%", height: "100%" },
 ];
 
 // Helper function to get value or return a dash
@@ -73,13 +75,13 @@ const processedDataProduk = ref([]);
 watch(
   () => props.dataproduk,
   (newDataProduk) => {
-    console.log(newDataProduk, "Updated dataproduk");
+    // console.log(newDataProduk, "Updated dataproduk");
 
     if (newDataProduk && Array.isArray(newDataProduk)) {
       processedDataProduk.value = newDataProduk;
       totalItems.value = newDataProduk.length;
     }
-    console.log(processedDataProduk.value, "Processed Data Produk");
+    // console.log(processedDataProduk.value, "Processed Data Produk");
   },
   { immediate: true }
 );

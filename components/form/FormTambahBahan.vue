@@ -553,6 +553,7 @@ const ajukanBahan = () => {
         <VCardTitle>
           <span class="text-h3">Preview Bahan</span>
           <VDataTable
+            disable-sort
             :items-per-page-options="[10, 25, 50, 100]"
             :headers="uploadFileHeader"
             :items="previewData"
@@ -588,6 +589,7 @@ const ajukanBahan = () => {
         <VCardTitle>
           <span class="text-h3">Cari Bahan </span>
           <VDataTable
+            disable-sort
             :headers="
               selectedTypeBahan == '1'
                 ? bahanTidakBersertifikatHeader

@@ -58,6 +58,7 @@ const id = route.params.id;
   </div>
   <slot name="headerDialog" />
   <VDataTable
+    disable-sort
     :headers="props?.headers"
     :items="data"
     class="border rounded"

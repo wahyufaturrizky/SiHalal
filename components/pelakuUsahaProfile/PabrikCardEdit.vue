@@ -148,6 +148,7 @@ const initialDataForEdit = (item: any) => ({
     </VCardTitle>
     <VCardItem>
       <VDataTable
+        disable-sort
         :headers="tablePabrikHeader"
         :items="props.pabrikData"
         item-value="no"

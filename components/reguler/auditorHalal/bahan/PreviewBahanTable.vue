@@ -20,7 +20,8 @@ const itemPerPage = ref(5);
 
 <template>
   <VDataTable
-  items-per-page="5"
+    disable-sort
+    items-per-page="5"
     class="custom-table"
     :headers="props?.previewHeader"
     :items="props?.listPreview"

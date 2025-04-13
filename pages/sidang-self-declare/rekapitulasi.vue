@@ -230,6 +230,7 @@ const changeData = (item) => {
       </VCardItem>
       <VCardItem>
         <VDataTableServer
+          disable-sort
           :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
@@ -242,6 +243,24 @@ const changeData = (item) => {
         >
           <template #item.no="{ index }">
             {{ index + 1 + (page - 1) * itemPerPage }}
+          </template>
+          <template #item.ditetapkan="{ item }">
+            {{ parseInt(item.ditetapkan).toLocaleString("id") }}
+          </template>
+          <template #item.dikembalikan="{ item }">
+            {{ parseInt(item.dikembalikan).toLocaleString("id") }}
+          </template>
+          <template #item.ditolak="{ item }">
+            {{ parseInt(item.ditolak).toLocaleString("id") }}
+          </template>
+          <template #item.sub_total="{ item }">
+            {{ parseInt(item.sub_total).toLocaleString("id") }}
+          </template>
+          <template #item.belum_ditetapkan="{ item }">
+            {{ parseInt(item.belum_ditetapkan).toLocaleString("id") }}
+          </template>
+          <template #item.total="{ item }">
+            {{ parseInt(item.total).toLocaleString("id") }}
           </template>
         </VDataTableServer>
       </VCardItem>

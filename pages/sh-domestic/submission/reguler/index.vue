@@ -123,12 +123,12 @@ const newRegister = async (type: string, id: string, isLn: boolean) => {
     let body: any = {
       type,
       id,
-    }
+    };
     if (isLn) {
       body = {
         ...body,
-        Id_prov: '00',
-      }
+        Id_prov: "00",
+      };
     }
 
     const response: any = await $api("/reguler/pelaku-usaha/draft", {
@@ -168,7 +168,14 @@ onMounted(async () => {
           {{ t("pengajuan-reguler.reguler-list-subtitle") }}
         </div>
         <NewRegulerSertificationHalalDialog
-          :new-register="(type, id) => newRegister(type, id, store?.profileData?.asal_usaha === 'Luar Negeri')"
+          :new-register="
+            (type, id) =>
+              newRegister(
+                type,
+                id,
+                store?.profileData?.asal_usaha === 'Luar Negeri'
+              )
+          "
           :additional-register="additionalRegister"
           :data="listOss"
         />
@@ -185,6 +192,7 @@ onMounted(async () => {
       </VCardItem>
       <VCardItem>
         <VDataTableServer
+          disable-sort
           :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="size"
           v-model:page="page"

@@ -73,6 +73,7 @@ const selected = ref([]);
           <VRow>
             <VCol cols="12">
               <VDataTable
+                disable-sort
                 :items-per-page-options="[10, 25, 50, 100]"
                 :headers="tableHeader"
                 :items="items"

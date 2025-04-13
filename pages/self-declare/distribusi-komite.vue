@@ -429,6 +429,7 @@ onMounted(() => {
       </VRow>
       <VRow>
         <VDataTableServer
+          disable-sort
           :items-per-page-options="[10, 25, 50, 100]"
           class="custom-table"
           v-model:items-per-page="itemPerPage"

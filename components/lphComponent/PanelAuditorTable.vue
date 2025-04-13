@@ -14,6 +14,7 @@ const auditorHeader: any[] = [
 
 <template>
   <VDataTable
+    disable-sort
     :headers="auditorHeader"
     :items="props?.data"
     hide-default-footer

@@ -618,6 +618,7 @@ const onGetTiketPesawat = async () => {
           </VExpansionPanelTitle>
           <VExpansionPanelText>
             <VDataTableServer
+              disable-sort
               :items-per-page-options="[10, 25, 50, 100]"
               class="domestic-table border rounded mt-5"
               :headers="domesticAuditHeader"

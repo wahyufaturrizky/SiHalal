@@ -307,6 +307,7 @@ watch([start, end], () => {
             <VRow>
               <VCol cols="12">
                 <VDataTable
+                  disable-sort
                   :headers="tableHeader"
                   :items="lovProduct"
                   class="border rounded"

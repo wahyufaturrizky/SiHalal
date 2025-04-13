@@ -445,12 +445,7 @@ const onRefresh = (type: string) => {
                   {{ item.value }}
                 </div>
                 <div v-if="item.comment" class="app-timeline-text mt-1">
-                  {{
-                    item.comment
-                    // item.comment.length > 38
-                    //   ? `${item.comment.slice(0, 38)}...`
-                    //   : item.comment
-                  }}
+                  {{ item.comment }}
                 </div>
               </VTimelineItem>
             </VTimeline>
@@ -465,6 +460,7 @@ const onRefresh = (type: string) => {
         <VCardTitle>Requirement Document</VCardTitle>
         <VCardText>
           <VDataTableServer
+            disable-sort
             v-model:items-per-page="itemPerPage"
             v-model:page="page"
             :items-per-page-options="[10, 25, 50, 100]"

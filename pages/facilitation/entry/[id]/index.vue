@@ -583,6 +583,7 @@ const formatLembaga = (val: string) => {
           </VExpansionPanelTitle>
           <VExpansionPanelText>
             <VDataTable
+              disable-sort
               :items-per-page-options="[10, 25, 50, 100]"
               :headers="institutionHeader"
               :items="detail.lembaga"
@@ -611,6 +612,7 @@ const formatLembaga = (val: string) => {
           </VExpansionPanelTitle>
           <VExpansionPanelText>
             <VDataTable
+              disable-sort
               class="domestic-table border rounded"
               :headers="biayaFasilitasiHeader"
               :items="detail.fasilitasi_detail || []"

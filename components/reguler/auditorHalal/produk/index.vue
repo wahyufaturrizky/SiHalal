@@ -28,8 +28,16 @@ const formData = ref({
 const comitmentData = ref({
   label: [
     { title: "No.", key: "no", nowrap: true },
-    { title: "pengajuan-reguler.reguler-form-produk-prodname", key: "nama_produk", nowrap: true },
-    { title: "pengajuan-reguler.reguler-form-produk-pabrikname", key: "nama_pabrik", nowrap: true },
+    {
+      title: "pengajuan-reguler.reguler-form-produk-prodname",
+      key: "nama_produk",
+      nowrap: true,
+    },
+    {
+      title: "pengajuan-reguler.reguler-form-produk-pabrikname",
+      key: "nama_pabrik",
+      nowrap: true,
+    },
     {
       title: "pengajuan-reguler.reguler-form-produk-aksi",
       value: "action",
@@ -43,8 +51,14 @@ const comitmentData = ref({
 
 const tableHeader = [
   { title: "No", value: "no" },
-  { title: "pengajuan-reguler.reguler-form-produk-prodname", value: "nama_produk" },
-  { title: "pengajuan-reguler.reguler-form-produk-pabrikname", value: "nama_pabrik" },
+  {
+    title: "pengajuan-reguler.reguler-form-produk-prodname",
+    value: "nama_produk",
+  },
+  {
+    title: "pengajuan-reguler.reguler-form-produk-pabrikname",
+    value: "nama_pabrik",
+  },
   { title: "pengajuan-reguler.reguler-form-produk-aksi", value: "action" },
 ];
 
@@ -263,20 +277,20 @@ watch([start, end], () => {
             <VRow>
               <VCol cols="12">
                 <VDataTable
+                  disable-sort
                   :headers="tableHeader"
                   :items="lovProduct"
                   hide-default-footer
                   class="border rounded"
                 >
-
-                <template #header.nama_produk="{column }">
+                  <template #header.nama_produk="{ column }">
                     <label>{{ t(column.title) }}</label>
                   </template>
-                  <template #header.nama_pabrik="{column }">
+                  <template #header.nama_pabrik="{ column }">
                     <label>{{ t(column.title) }}</label>
                   </template>
 
-                  <template #header.action="{column }">
+                  <template #header.action="{ column }">
                     <label>{{ t(column.title) }}</label>
                   </template>
 

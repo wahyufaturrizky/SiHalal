@@ -299,6 +299,7 @@ const isPengembangan = () => {
         </VCardTitle>
         <VCardText>
           <VDataTable
+            disable-sort
             class="custom-table"
             :headers="legalHeader"
             :items="legalData"
@@ -343,6 +344,7 @@ const isPengembangan = () => {
         </VCardTitle>
         <VCardText>
           <VDataTable
+            disable-sort
             class="custom-table"
             :headers="halalSupervisorHeader"
             :items="halalSupervisorData"

@@ -47,13 +47,14 @@ async function ditetapkan() {
       notes: notes.value.trim() || "No notes provided",
     };
 
-    console.log(body, "ini bodynya");
+    // console.log(body, "ini bodynya");
 
     const response: any = await $api(
       `/self-declare/komite-fatwa/proses-sidang/${submissionId}/ditetapkan`,
       {
         method: "put",
         body,
+        server: false,
       }
     );
 
@@ -64,7 +65,7 @@ async function ditetapkan() {
     }
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
-    console.log(error, "ini error");
+    // console.log(error, "ini error");
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } finally {
     dialogOpen.value = false;
@@ -75,7 +76,7 @@ async function ditetapkan() {
 watch(
   combinedProps,
   (newData) => {
-    console.log(newData, "Updated props");
+    // console.log(newData, "Updated props");
 
     // Example of using `newData` to update a derived reactive variable
     if (newData) {
@@ -98,7 +99,7 @@ watch(
       ];
     }
 
-    console.log(data, "Derived data");
+    // console.log(data, "Derived data");
   },
   { immediate: true, deep: true }
 );
@@ -126,22 +127,42 @@ async function onClickDownload(filename: string) {
 }
 
 const getDownloadForm = async (docName: string, propName: string) => {
-  const result: any = await $api(
-    `/self-declare/submission/${submissionId}/file`,
-    {
-      method: "get",
-      query: {
-        document: docName,
-      },
-    }
-  );
-  if (result.code === 2000) {
-    downloadForms[propName] = result.data.file;
+  const result = await $api(`/self-declare/submission/${submissionId}/file`, {
+    method: "get",
+    query: {
+      document: docName,
+    },
+    server: false,
+  });
+
+  if (result?.code === 2000) {
+    downloadForms[propName] = result?.data.file;
   }
 };
 
-const handleDownloadForm = async (fileName: string) => {
-  return await previewDocument(fileName);
+const handleDownloadForm = async (fileName: string, propName: string) => {
+  let result: any;
+  if (propName == "laporan_pendamping") {
+    result = await $api(
+      `/self-declare/verificator/lihat-laporan-download/${route.params?.id}`,
+      {
+        method: "get",
+        server: false,
+      }
+    );
+
+    const newLaporanPendampingFileName = result?.data?.file;
+
+    // regenerate hit minio
+    await $api("/admin/images/download", {
+      method: "post",
+      query: {
+        filename: newLaporanPendampingFileName,
+      },
+      server: false,
+    } as any);
+  }
+  return await previewDocument(fileName || result?.data?.file);
 };
 
 onMounted(async () => {
@@ -176,7 +197,7 @@ onMounted(async () => {
             <VBtn
               @click="
                 downloadForms.laporan_pendamping
-                  ? handleDownloadForm(downloadForms.laporan_pendamping)
+                  ? handleDownloadForm('', 'laporan_pendamping')
                   : null
               "
               :color="downloadForms.laporan_pendamping ? 'primary' : '#A09BA1'"

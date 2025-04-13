@@ -213,6 +213,7 @@ const openDialog = () => {
       <VRow>
         <VCol>
           <VDataTableServer
+            disable-sort
             v-model:items-per-page="itemPerPageSubmission"
             v-model:page="pageSubmission"
             :items-per-page-options="[10, 25, 50, 100]"

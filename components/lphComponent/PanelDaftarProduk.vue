@@ -31,6 +31,7 @@ const itemPerPage = ref(10);
 
 <template>
   <VDataTable
+    disable-sort
     v-model:page="currentPage"
     :items-per-page="itemPerPage"
     :items="props?.data"

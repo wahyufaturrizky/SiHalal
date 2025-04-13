@@ -24,6 +24,7 @@ const invoiceHeader: any[] = [
 
 <template>
   <VDataTable
+    disable-sort
     class="examination-table"
     :headers="invoiceHeader"
     :items="props?.data"

@@ -278,6 +278,8 @@ const downloadFile = async (filename: string) => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+const pageProduct = ref(1);
+const itemPerPageProduct = ref(10);
 onMounted(() => {
   Promise.allSettled([
     loadItem(),
@@ -331,23 +333,23 @@ const timelineEvents = ref([
 
 const getDocShln = async (pathname: string) => {
   try {
-    const response = await $api(
-      "/shln/submission/document/doc-shln",
-      {
-        method: "get",
-        query: {
-          filename: pathname,
-          param: 'dirName=SERT',
-        },
-      }
-    );
+    const response = await $api("/shln/submission/document/doc-shln", {
+      method: "get",
+      query: {
+        filename: pathname,
+        param: "dirName=SERT",
+      },
+    });
     if (response?.url) {
       window.open(response?.url, "_blank", "noopener,noreferrer");
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("NIB tidak ditemukan, silahkan perbaharui data NIB Pelaku Usaha", "error");
+    useSnackbar().sendSnackbar(
+      "NIB tidak ditemukan, silahkan perbaharui data NIB Pelaku Usaha",
+      "error"
+    );
   }
-}
+};
 </script>
 
 <template>
@@ -485,16 +487,20 @@ const getDocShln = async (pathname: string) => {
 
         <ExpandCard title="Products" class="mb-6">
           <VDataTable
+            disable-sort
             :headers="headersProduct"
+            v-model:page="pageProduct"
+            v-model:items-per-page="itemPerPageProduct"
             :items="item?.products != null ? item.products : []"
           >
             <template #item.index="{ index }">
-              {{ index + 1 }}
+              {{ index + 1 + (pageProduct - 1) * itemPerPageProduct }}
             </template>
           </VDataTable>
         </ExpandCard>
         <ExpandCard title="Requirement Document" class="mb-6">
           <VDataTable
+            disable-sort
             :items="requirementDocArray"
             :headers="tableRequirementDocumentHeader"
           >

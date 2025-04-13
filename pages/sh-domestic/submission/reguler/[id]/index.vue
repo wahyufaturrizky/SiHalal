@@ -743,6 +743,7 @@ onMounted(async () => {
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
+                  disable-sort
                   :headers="aspectLegalHeader"
                   :items="paginatedAspek"
                   class="border rounded"
@@ -815,6 +816,7 @@ onMounted(async () => {
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
+                  disable-sort
                   :headers="factoryHeader"
                   :items="paginatedPabrik"
                   hide-default-footer
@@ -875,6 +877,7 @@ onMounted(async () => {
                   <!--                    </div> -->
                   <!--                  </div> -->
                   <VDataTable
+                    disable-sort
                     :headers="outletHeader"
                     :items="paginatedOutlet"
                     hide-default-footer
@@ -923,6 +926,7 @@ onMounted(async () => {
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
+                  disable-sort
                   :headers="penyeliaHalalHeaders"
                   :items="paginatedPenyelia"
                   hide-default-footer
@@ -981,6 +985,7 @@ onMounted(async () => {
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
+                  disable-sort
                   :headers="produkHeader"
                   :items="data?.produk"
                   hide-default-footer

@@ -1,17 +1,16 @@
 <script lang="ts" setup>
-
 interface Outlet {
-  id_pabrik: string
-  id_reg: string
-  id_fas: string
-  fasil_id: string
-  nama: string
-  kab_kota: string
-  provinsi: string
-  negara: string
-  kode_pos: string
-  alamat: string
-  status_milik: string
+  id_pabrik: string;
+  id_reg: string;
+  id_fas: string;
+  fasil_id: string;
+  nama: string;
+  kab_kota: string;
+  provinsi: string;
+  negara: string;
+  kode_pos: string;
+  alamat: string;
+  status_milik: string;
 }
 
 const outletTableHeader = [
@@ -19,14 +18,14 @@ const outletTableHeader = [
   { title: "Nama Outlet", key: "nama" },
   { title: "Alamat", key: "alamat" },
   { title: "Status", key: "status_milik" },
-]
+];
 
-const props = defineProps<{data : Outlet[]}>();
+const props = defineProps<{ data: Outlet[] }>();
 
 const outletTableData = ref<Outlet[]>(props.data);
 watchEffect(() => {
-  outletTableData.value = props.data
-})
+  outletTableData.value = props.data;
+});
 </script>
 
 <template>
@@ -34,9 +33,9 @@ watchEffect(() => {
     <VRow>
       <VCol cols="12">
         <VDataTable
+          disable-sort
           :headers="outletTableHeader"
           :items="outletTableData"
-
         >
           <template #item.id="{ index }">
             {{ index + 1 }}

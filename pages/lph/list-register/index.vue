@@ -130,6 +130,7 @@ watch([page, size], () => {
             <VRow>
               <VCol cols="12">
                 <VDataTableServer
+                  disable-sort
                   v-model:items-per-page="size"
                   v-model:page="page"
                   :items-per-page-options="[10, 25, 50, 100]"

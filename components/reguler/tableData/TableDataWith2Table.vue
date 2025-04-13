@@ -99,6 +99,7 @@ const handleDownload = async (item: any) => {
           <VRow class="mt-2">
             <slot :name="`subTitle${indexColum + 1}`" />
             <VDataTableServer
+              disable-sort
               :items-per-page-options="[10, 25, 50, 100]"
               class="border rounded"
               v-model:items-per-page="itemsPerPage[indexColum]"
@@ -316,6 +317,7 @@ const handleDownload = async (item: any) => {
           <VRow class="mt-2">
             <slot :name="`subTitle${index + 1}`" />
             <VDataTable
+              disable-sort
               class="border rounded"
               :items-per-page="-1"
               hide-default-footer=""

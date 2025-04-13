@@ -163,6 +163,7 @@ onMounted(() => {
     </VCardTitle>
     <VCardItem>
       <VDataTable
+        disable-sort
         :headers="legalHeader"
         :items="props.aspekLegalData"
         class="elevation-1"

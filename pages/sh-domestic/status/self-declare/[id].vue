@@ -775,6 +775,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 v-if="aspectLegalItems.length"
                 :headers="aspectLegalHeader"
                 :items="aspectLegalItems"
@@ -814,6 +815,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 v-if="factoryItems.length"
                 :headers="factoryHeader"
                 :items="factoryItems"
@@ -847,6 +849,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 v-if="outletItems.length"
                 :headers="outletHeader"
                 :items="outletItems"
@@ -880,6 +883,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 v-if="supervisorItems.length"
                 :headers="supervisorHeader"
                 :items="supervisorItems"
@@ -929,6 +933,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 v-if="substanceItems.length"
                 v-model:page="pages.bahan"
                 v-model:items-per-page="itemPerPages.bahan"
@@ -973,6 +978,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
               <VDataTable
+                disable-sort
                 v-if="productItems.length"
                 :headers="productHeader"
                 :items="productItems"
