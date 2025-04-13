@@ -689,7 +689,7 @@ watch(loaFile, (newValue, oldValue) => {
               append-icon="ri-download-line"
               @click="
                 downloadDocument(
-                  '7b6c4e03-9ae0-4ee2-b045-53882314443d_sample_template_surat_permohonan_dan_perpanjangan_rshln (3).docx'
+                  'Template_Surat_Permohonan_RSHLN_e0d7393e9f.docx'
                 )
               "
             >

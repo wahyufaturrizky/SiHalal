@@ -51,7 +51,7 @@ const props = defineProps<{
           "
           class="app-timeline-text mt-1"
         >
-          {{ item.keterangan }}
+          <span style="overflow-wrap: anywhere;">{{ item.keterangan }}</span>
         </div>
       </VTimelineItem>
     </VTimeline>
