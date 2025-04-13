@@ -127,7 +127,7 @@ const newRegister = async (type: string, id: string, isLn: boolean) => {
     if (isLn) {
       body = {
         ...body,
-        Id_prov: "00",
+        id_prov: "00",
       };
     }
 
@@ -173,7 +173,7 @@ onMounted(async () => {
               newRegister(
                 type,
                 id,
-                store?.profileData?.asal_usaha === 'Luar Negeri'
+                store?.profileData?.asal_usaha === 'Luar Negeri' || store?.profileData?.asal_usaha === 'Instansi Pemerintah',
               )
           "
           :additional-register="additionalRegister"
