@@ -451,7 +451,11 @@ const handleSentSubmission = async () => {
       }
     }
   } catch (error) {
-    snackbar.sendSnackbar("Gagal mengirim pengajuan", "error");
+    // snackbar.sendSnackbar("Gagal mengirim pengajuan", "error");
+    useSnackbar().sendSnackbar(
+      error?.errors?.list_error[0] || "Ada kesalahan",
+      "error"
+    );
   }
 };
 
