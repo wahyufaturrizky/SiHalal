@@ -278,6 +278,8 @@ const downloadFile = async (filename: string) => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+const pageProduct = ref(1);
+const itemPerPageProduct = ref(10);
 onMounted(() => {
   Promise.allSettled([
     loadItem(),
@@ -487,10 +489,12 @@ const getDocShln = async (pathname: string) => {
           <VDataTable
             disable-sort
             :headers="headersProduct"
+            v-model:page="pageProduct"
+            v-model:items-per-page="itemPerPageProduct"
             :items="item?.products != null ? item.products : []"
           >
             <template #item.index="{ index }">
-              {{ index + 1 }}
+              {{ index + 1 + (pageProduct - 1) * itemPerPageProduct }}
             </template>
           </VDataTable>
         </ExpandCard>
