@@ -88,6 +88,7 @@ const deleteSubmission = async () => {
     if (response.code != 2000) {
       deleteDialog.value = false;
       useSnackbar().sendSnackbar("gagal menghapus data", "error");
+
       return;
     }
     deleteDialog.value = false;
@@ -98,6 +99,7 @@ const deleteSubmission = async () => {
     useSnackbar().sendSnackbar("Ada Kecsalahan", "error");
   }
 };
+
 const submitShln = async () => {
   try {
     const response = await $api("/shln/submission/submit", {
@@ -106,6 +108,7 @@ const submitShln = async () => {
         id: shlnId,
       },
     });
+
     if (response.code != 2000) {
       submitDialog.value = false;
       if (response.code == 500) {
@@ -113,6 +116,7 @@ const submitShln = async () => {
           response.errors.list_error.join(", "),
           "error"
         );
+
         return;
       }
       useSnackbar().sendSnackbar("gagal submit data", "error");
@@ -161,9 +165,11 @@ const loadItem = async () => {
         id: shlnId,
       },
     });
+
     console.log("ini data item ", response);
     if (response.code == 500) {
       navigateTo("/sertifikasi-halal/luar-negeri/submission");
+
       return;
     }
     item.value = response.data;
@@ -203,7 +209,9 @@ const loadRegistration = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+
 const requirementDocument = ref<RequirementDocument>();
+
 const requirementDocArray = ref([
   {
     documentTypes: "Business License Number (NIB)",
@@ -220,6 +228,7 @@ const requirementDocArray = ref([
     tracking: "",
   },
 ]);
+
 const tableRequirementDocumentHeader = [
   { title: "No", key: "index" },
   { title: "Document Types", key: "documentTypes" },
@@ -228,8 +237,10 @@ const tableRequirementDocumentHeader = [
   { title: "status", key: "status" },
   { title: "Tracking", key: "action" },
 ];
+
 const reqTracking = ref(null);
 const reqTrackingModal = ref(false);
+
 const getRequirementDocument = async () => {
   try {
     const response = await $api(
@@ -261,10 +272,12 @@ const getRequirementDocument = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+
 const getReqTrackingModal = (data) => {
   reqTracking.value = data;
   reqTrackingModal.value = true;
 };
+
 const downloadFile = async (filename: string) => {
   try {
     const response = await $api("/shln/submission/document/download", {
@@ -273,13 +286,16 @@ const downloadFile = async (filename: string) => {
         filename,
       },
     });
+
     window.open(response.url, "_blank", "noopener,noreferrer");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+
 const pageProduct = ref(1);
 const itemPerPageProduct = ref(10);
+
 onMounted(() => {
   Promise.allSettled([
     loadItem(),
@@ -340,9 +356,9 @@ const getDocShln = async (pathname: string) => {
         param: "dirName=SERT",
       },
     });
-    if (response?.url) {
+
+    if (response?.url)
       window.open(response?.url, "_blank", "noopener,noreferrer");
-    }
   } catch (error) {
     useSnackbar().sendSnackbar(
       "NIB tidak ditemukan, silahkan perbaharui data NIB Pelaku Usaha",
@@ -362,22 +378,22 @@ const getDocShln = async (pathname: string) => {
       <VCol cols="4">
         <VRow justify="end" class="gap-1">
           <VCol
-            cols="auto"
             v-if="
               registration?.status_code == 'OF1' ||
               registration?.status_code == 'OF2'
             "
+            cols="auto"
           >
             <VBtn variant="outlined" color="error" @click="deleteItem">
               <VIcon icon="ri-delete-bin-6-line" />
             </VBtn>
           </VCol>
           <VCol
-            cols="auto"
             v-if="
               registration?.status_code == 'OF1' ||
               registration?.status_code == 'OF2'
             "
+            cols="auto"
           >
             <VBtn
               variant="outlined"
@@ -389,11 +405,11 @@ const getDocShln = async (pathname: string) => {
             </VBtn>
           </VCol>
           <VCol
-            cols="auto"
             v-if="
               registration?.status_code == 'OF1' ||
               registration?.status_code == 'OF2'
             "
+            cols="auto"
           >
             <VBtn
               variant="outlined"
@@ -457,10 +473,10 @@ const getDocShln = async (pathname: string) => {
             {{ item?.hcn.hcn_number }}
           </InfoRow>
           <InfoRow name="Issued Date">
-            {{ item?.hcn.issued_date }}
+            {{ formatDateId(item?.hcn.issued_date) }}
           </InfoRow>
           <InfoRow name="Expired Date">
-            {{ item?.hcn.expired_date }}
+            {{ formatDateId(item?.hcn.expired_date) }}
           </InfoRow>
           <InfoRow name="Scope">
             {{ item?.hcn.scope }}
@@ -487,10 +503,10 @@ const getDocShln = async (pathname: string) => {
 
         <ExpandCard title="Products" class="mb-6">
           <VDataTable
-            disable-sort
-            :headers="headersProduct"
             v-model:page="pageProduct"
             v-model:items-per-page="itemPerPageProduct"
+            disable-sort
+            :headers="headersProduct"
             :items="item?.products != null ? item.products : []"
           >
             <template #item.index="{ index }">
@@ -510,9 +526,9 @@ const getDocShln = async (pathname: string) => {
             <template #item.file="{ item, index }">
               <div class="d-flex align-center justify-center py-3 gap-2">
                 <VBtn
-                  @click="downloadDocument(item.file, 'SHLN_DOC')"
                   v-if="item.file != ''"
                   color="primary"
+                  @click="downloadDocument(item.file, 'SHLN_DOC')"
                 >
                   <VIcon icon="fa-download" />
                 </VBtn>
@@ -539,13 +555,21 @@ const getDocShln = async (pathname: string) => {
             {{ registration?.submission_number }}
           </InfoRow>
           <InfoRow name="Halal Registration Number">
-            {{ registration?.registration_number }}
+            {{ registration?.registration_number || "-" }}
           </InfoRow>
-          <InfoRow name="IssuedDate">
-            {{ registration?.issued_date }}
+          <InfoRow name="Issued Date">
+            {{
+              registration?.issued_date
+                ? formatDateId(registration?.issued_date)
+                : "-"
+            }}
           </InfoRow>
           <InfoRow name="Expired Date">
-            {{ registration?.expired_date }}
+            {{
+              registration?.expired_date
+                ? formatDateId(registration?.expired_date)
+                : "-"
+            }}
           </InfoRow>
           <InfoRow name="Status">
             <VChip
@@ -556,24 +580,24 @@ const getDocShln = async (pathname: string) => {
           </InfoRow>
           <InfoRow name="Download Halal Registration Number">
             <VBtn
+              target="_blank"
               @click="
                 registration?.file_tte !== ''
                   ? getDocShln(registration?.file_tte)
                   : () => {}
               "
-              target="_blank"
             >
               <VIcon icon="ri-download-line" />
             </VBtn>
           </InfoRow>
           <InfoRow name="Download QR Label">
             <VBtn
+              target="_blank"
               @click="
                 registration?.status_code == 'OF300'
                   ? downloadCert(registration?.registration_number)
                   : () => {}
               "
-              target="_blank"
             >
               <VIcon icon="ri-download-line" />
             </VBtn>
@@ -645,12 +669,12 @@ const getDocShln = async (pathname: string) => {
     </VDialog>
 
     <VDialog v-model="reqTrackingModal" width="auto">
-      <v-card>
-        <v-card-text>
+      <VCard>
+        <VCardText>
           <p class="text-h5 font-weight-bold">Tracking</p>
           <HalalTimeLine v-if="reqTracking" :event="reqTracking" />
-        </v-card-text>
-      </v-card>
+        </VCardText>
+      </VCard>
     </VDialog>
   </div>
 </template>

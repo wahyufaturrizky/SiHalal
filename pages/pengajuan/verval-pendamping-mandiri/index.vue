@@ -36,6 +36,7 @@ const questions = [
   "Proses pengawetan produk sederhana dan tidak menggunakan kombinasi lebih dari 1 metode pengawetan ",
   "Proses produksi menggunakan peralatan manual/ semi otomatis",
 ];
+
 const questionResponse = [
   "Anda sudah pernah mendapatkan fasilitas self declare",
   "Aktivitas produksi yang dilakukan bukan merupakan usaha rumahan",
@@ -55,6 +56,7 @@ const openModalsQuestionare = () => {
 };
 
 const isUnfulfilled = ref<Array<string>>([]);
+
 const handleSubmitQuestionare = (answers: Array<string>) => {
   let unfulfilledCount = 0;
   answers.map((item, idx) => {
@@ -67,11 +69,8 @@ const handleSubmitQuestionare = (answers: Array<string>) => {
     }
   });
 
-  if (unfulfilledCount > 0) {
-    infoDialogVisible.value = true;
-  } else {
-    requestDialogVisible.value = true;
-  }
+  if (unfulfilledCount > 0) infoDialogVisible.value = true;
+  else requestDialogVisible.value = true;
 };
 
 const router = useRouter();
@@ -92,9 +91,8 @@ const handleCreate = async (answer: string) => {
       }
     );
 
-    if (result.code === 2000) {
+    if (result.code === 2000)
       router.push(`/pengajuan/verval-pendamping-mandiri/${result.data.id_reg}`);
-    }
   } catch (error) {}
 };
 
@@ -102,6 +100,7 @@ const alertData = ref({
   isValid: true,
   text: "",
 });
+
 const loadValidation = async () => {
   const response: any = await $api("/self-declare/submission/validation", {
     method: "get",
@@ -110,6 +109,7 @@ const loadValidation = async () => {
   if (response.code === 2000) {
     alertData.value.isValid = response.data.is_allow_submission;
     alertData.value.text = response.data.keterangan;
+
     return response;
   }
 };
@@ -131,6 +131,7 @@ const handleLoadList = async () => {
       submission.value = response.data;
       currentPage.value = response.current_page;
       totalItems.value = response.total_item;
+
       return response;
     }
   } catch (error) {}
@@ -162,20 +163,17 @@ onMounted(async () => {
     return item !== undefined;
   });
 
-  if (checkResIfUndefined) {
-    loadingAll.value = false;
-  } else {
-    loadingAll.value = false;
-  }
+  if (checkResIfUndefined) loadingAll.value = false;
+  else loadingAll.value = false;
 });
 </script>
 
 <template>
   <div>
-    <di>
+    <Di>
       <h1 style="font-size: 32px">Pengajuan Self Declare Mandiri</h1>
       <br />
-    </di>
+    </Di>
 
     <VCard v-if="!loadingAll" rounded class="bg-surface pa-4">
       <VRow>
@@ -184,19 +182,21 @@ onMounted(async () => {
             Data Pengajuan Self Declare Mandiri
           </div>
         </VCol>
-        <!-- <VCol class="d-flex justify-end align-center">
+        <!--
+          <VCol class="d-flex justify-end align-center">
           <VBtn
-            v-if="alertData.isValid"
-            color="primary"
-            append-icon="fa-plus"
-            @click="openModalsQuestionare"
+          v-if="alertData.isValid"
+          color="primary"
+          append-icon="fa-plus"
+          @click="openModalsQuestionare"
           >
-            Buat Pengajuan
+          Buat Pengajuan
           </VBtn>
           <VBtn v-else color="#A09BA1" append-icon="fa-plus">
-            Buat Pengajuan
+          Buat Pengajuan
           </VBtn>
-        </VCol> -->
+          </VCol>
+        -->
       </VRow>
       <VRow v-if="!alertData.isValid">
         <VCol>
@@ -217,31 +217,33 @@ onMounted(async () => {
           </VAlert>
         </VCol>
       </VRow>
-      <!-- <VRow>
+      <!--
+        <VRow>
         <VCol cols="7" class="d-flex justify-sm-space-between align-center">
-          <VTextField
-            v-model="searchQuery"
-            @update:model-value="handleSearchSubmission"
-            density="compact"
-            placeholder="Cari Data"
-            append-inner-icon="fa-search"
-            style="max-width: 100%"
-          />
+        <VTextField
+        v-model="searchQuery"
+        @update:model-value="handleSearchSubmission"
+        density="compact"
+        placeholder="Cari Data"
+        append-inner-icon="fa-search"
+        style="max-width: 100%"
+        />
         </VCol>
-      </VRow> -->
+        </VRow>
+      -->
       <VRow>
         <VCol>
           <VDataTableServer
+            v-model:page="currentPage"
+            v-model:items-per-page="itemPerPage"
             disable-sort
             class="elevation-1 custom-table"
             :headers="headers"
             :items="submission"
             :items-length="totalItems"
-            v-model:page="currentPage"
-            v-model:items-per-page="itemPerPage"
             :items-per-page-options="[5, 25, 50, 100]"
-            @update:options="handleLoadList"
             :hide-default-footer="!submission.length"
+            @update:options="handleLoadList"
           >
             <template #item.no="{ index }">
               {{ index + 1 + (currentPage - 1) * itemPerPage }}
@@ -250,11 +252,7 @@ onMounted(async () => {
               {{ item.no_daftar ? item.no_daftar : "-" }}
             </template>
             <template #item.tgl_daftar="{ item }: any">
-              {{
-                item.tgl_daftar
-                  ? new Date(item.tgl_daftar).toISOString().substring(0, 10)
-                  : "-"
-              }}
+              {{ item.tgl_daftar ? formatDateId(item.tgl_daftar) : "-" }}
             </template>
             <template #item.jenis_produk="{ item }: any">
               {{ item.jenis_produk ? item.jenis_produk : "-" }}
@@ -287,8 +285,8 @@ onMounted(async () => {
     </VCard>
 
     <VSkeletonLoader
-      type="table-heading, list-item-two-line, image, table-tfoot"
       v-else
+      type="table-heading, list-item-two-line, image, table-tfoot"
     />
 
     <Questionnaire
@@ -299,8 +297,8 @@ onMounted(async () => {
     />
     <InfoDialogue
       :dialog-visible="infoDialogVisible"
-      @update:dialog-visible="infoDialogVisible = $event"
       :data="isUnfulfilled"
+      @update:dialog-visible="infoDialogVisible = $event"
     />
     <RequestDialogue
       :dialog-visible="requestDialogVisible"
@@ -312,30 +310,34 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 .table-width-5 {
-  width: 5%;
+  inline-size: 5%;
 }
+
 .table-width-10 {
-  width: 10%;
+  inline-size: 10%;
 }
+
 .table-width-15 {
-  width: 15%;
+  inline-size: 15%;
 }
+
 .table-width-20 {
-  width: 20%;
+  inline-size: 20%;
 }
 
 :deep(.v-data-table.custom-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }

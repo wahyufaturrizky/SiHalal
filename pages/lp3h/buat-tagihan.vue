@@ -172,7 +172,7 @@ const loadListDokumen = async (
       method: "get",
       params: {
         page,
-        limit,
+        limit: limit === -1 ? totalItems.value : limit,
         fac_id,
         tahun,
         search,
@@ -401,10 +401,10 @@ onMounted(async () => {
           </VCardItem>
           <VCardItem>
             <VDataTableServer
-              disable-sort
               v-model="selected"
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
+              disable-sort
               :items-per-page-options="ITEMS_PER_PAGE_OPTIONS_HUGE"
               :headers="headers"
               :items="items"
