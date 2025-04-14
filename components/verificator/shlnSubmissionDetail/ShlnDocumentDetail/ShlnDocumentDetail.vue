@@ -97,6 +97,7 @@ const { hcb, hcn } = props.data || {};
 const { hcb_name } = hcb || {};
 
 const {
+  hcn_number: hcnNumberFHC,
   issued_date: issuedDateFHC,
   expired_date: expiredDateFHC,
   scope: scopeFHC,
@@ -347,6 +348,13 @@ const onRefresh = (type: string) => {
             </VCol>
           </VRow>
           <VRow>
+            <VCol cols="3"> Halal Certification Number </VCol>
+            <VCol cols="1"> : </VCol>
+            <VCol cols="8">
+              <p>{{ hcnNumberFHC }}</p>
+            </VCol>
+          </VRow>
+          <VRow>
             <VCol cols="3"> Issued Date </VCol>
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
@@ -460,9 +468,9 @@ const onRefresh = (type: string) => {
         <VCardTitle>Requirement Document</VCardTitle>
         <VCardText>
           <VDataTableServer
-            disable-sort
             v-model:items-per-page="itemPerPage"
             v-model:page="page"
+            disable-sort
             :items-per-page-options="[10, 25, 50, 100]"
             :headers="headers"
             :items="dataListDocument"
