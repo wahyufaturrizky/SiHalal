@@ -61,13 +61,16 @@ const saveReqDocument = async () => {
         method: "post",
         body: {
           id: shlnId,
-          id_loa: type == "LOA" ? no : "",
+          id_loa: type?.toLowerCase().includes("loa") ? no : "",
           id_nib: type == "NIB" ? no : "",
-          file_url_loa:
-            type == "LOA" ? (fileDoc ? fileDoc.data.file_url : "") : "",
+          file_url_loa: type?.toLowerCase().includes("loa")
+            ? fileDoc
+              ? fileDoc.data.file_url
+              : ""
+            : "",
           file_url_nib:
             type == "NIB" ? (fileDoc ? fileDoc.data.file_url : "") : "",
-          comment_loa: type == "LOA" ? comment.value : "",
+          comment_loa: type?.toLowerCase().includes("loa") ? comment.value : "",
           comment_nib: type == "NIB" ? comment.value : "",
           is_return: true,
           is_accept: false,
