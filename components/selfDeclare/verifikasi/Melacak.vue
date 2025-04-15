@@ -35,15 +35,20 @@ watchEffect(() => {
           </template>
           <div class="d-flex justify-space-between align-start">
             <div>
-              <div class="text-subtitle-2 font-weight-bold">
-                {{ item.status }}
+              <div class="d-flex justify-space-between align-center gap-2">
+                <span class="text-subtitle-2 font-weight-bold">
+                  {{ item.status }}
+                </span>
+                <span class="text-caption text-grey">
+                  {{ formatDateId(item.date) }}
+                </span>
               </div>
               <div class="text-caption text-grey">
                 {{ item.username }}
               </div>
-            </div>
-            <div class="text-caption text-grey">
-              {{ formatDateId(item.date) }}
+              <div class="text-caption text-grey">
+                {{ item.comment }}
+              </div>
             </div>
           </div>
         </VTimelineItem>
