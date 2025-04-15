@@ -30,11 +30,7 @@ const props = defineProps<{
             class="d-flex justify-space-between align-center gap-2 flex-wrap mb-2"
           >
             <span class="app-timeline-title">
-              {{
-                (item.comment as any).length > 38
-                  ? `${(item.comment as any).slice(0, 38)}...`
-                  : (item.comment as any)
-              }}
+              {{ item.comment }}
             </span>
             <span class="app-timeline-meta">{{
               formatDateId((item as any).date)
