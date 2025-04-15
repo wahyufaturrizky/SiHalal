@@ -1,4 +1,11 @@
 <script setup lang="ts">
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true,
+  },
+});
+
 const dataPelakuUsaha = ref([
   { id: 1, key: "Nomor ID", value: "", api_key: "id_reg" },
   { id: 2, key: "Tanggal", value: "", api_key: "tgl_daftar" },
@@ -43,20 +50,13 @@ const expanded = [0];
 
 const storeMaster = dataMasterStore();
 
-const props = defineProps({
-  data: {
-    type: Object,
-    required: true,
-  },
-});
-
 const variableMapper = (key: string, data: any) => {
   const jnlayData = storeMaster.masterJnlay;
   const jnproData = storeMaster.masterJnpro;
 
   switch (key) {
     case "tgl_daftar":
-      return new Date(data).toISOString().substring(0, 10);
+      return formatDateId(data);
     case "skala_usaha":
       return data === 0 ? "Besar" : data === 1 ? "UMK" : "-";
     case "asal_usaha":
@@ -80,24 +80,29 @@ watch(
       dataPelakuUsaha.value.forEach((val) => {
         const tmp = variableMapper(val.api_key, newData[val.api_key]);
 
-        val.value = tmp ? tmp : "-";
+        val.value = tmp || "-";
       });
     }
   },
   { immediate: true }
 );
 </script>
+
 <template>
   <VExpansionPanels v-model="expanded">
     <VExpansionPanel>
       <VExpansionPanelTitle><h3>Data Pelaku Usaha</h3></VExpansionPanelTitle>
       <VExpansionPanelText>
-        <VRow gutters="0.5svh" v-for="item in dataPelakuUsaha" :key="item.id">
-          <VCol cols="3" v-if="item.key !== 'divider'">{{ item.key }}</VCol>
-          <VCol cols="1" v-if="item.key !== 'divider'">:</VCol>
-          <VCol cols="8" v-if="item.key !== 'divider'">{{ item.value }}</VCol>
-          <VCol cols="12" v-else-if="item.key === 'divider' && item.value">
-            <VDivider></VDivider>
+        <VRow v-for="item in dataPelakuUsaha" :key="item.id" gutters="0.5svh">
+          <VCol v-if="item.key !== 'divider'" cols="3">
+            {{ item.key }}
+          </VCol>
+          <VCol v-if="item.key !== 'divider'" cols="1"> : </VCol>
+          <VCol v-if="item.key !== 'divider'" cols="8">
+            {{ item.value }}
+          </VCol>
+          <VCol v-else-if="item.key === 'divider' && item.value" cols="12">
+            <VDivider />
           </VCol>
         </VRow>
       </VExpansionPanelText>

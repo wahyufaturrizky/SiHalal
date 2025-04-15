@@ -64,7 +64,7 @@ const loadItemListDocumentById = async () => {
       const resData = [
         {
           no: loa.id,
-          type: "Letter of Application / LoA",
+          type: "Letter of Application",
           file: loa.file,
           tracking: loa.tracking,
           comment: loa.comment,
@@ -97,6 +97,7 @@ const { hcb, hcn } = props.data || {};
 const { hcb_name } = hcb || {};
 
 const {
+  hcn_number: hcnNumberFHC,
   issued_date: issuedDateFHC,
   expired_date: expiredDateFHC,
   scope: scopeFHC,
@@ -319,11 +320,7 @@ const onRefresh = (type: string) => {
                   {{ item.value }}
                 </div>
                 <div v-if="item.comment" class="app-timeline-text mt-1">
-                  {{
-                    item.comment.length > 38
-                      ? `${item.comment.slice(0, 38)}...`
-                      : item.comment
-                  }}
+                  {{ item.comment }}
                 </div>
               </VTimelineItem>
             </VTimeline>
@@ -344,6 +341,13 @@ const onRefresh = (type: string) => {
             <VCol cols="1"> : </VCol>
             <VCol cols="8">
               <p>{{ hcb_name }}</p>
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol cols="3"> Halal Certification Number </VCol>
+            <VCol cols="1"> : </VCol>
+            <VCol cols="8">
+              <p>{{ hcnNumberFHC }}</p>
             </VCol>
           </VRow>
           <VRow>
@@ -460,9 +464,9 @@ const onRefresh = (type: string) => {
         <VCardTitle>Requirement Document</VCardTitle>
         <VCardText>
           <VDataTableServer
-            disable-sort
             v-model:items-per-page="itemPerPage"
             v-model:page="page"
+            disable-sort
             :items-per-page-options="[10, 25, 50, 100]"
             :headers="headers"
             :items="dataListDocument"

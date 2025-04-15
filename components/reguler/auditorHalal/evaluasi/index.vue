@@ -85,7 +85,7 @@ const dokumenLainnya = ref({
   label: [
     { title: "No.", key: "no", nowrap: true },
     { title: "Nama Dokumen", key: "nama_dokumen", nowrap: true },
-    { title: "File Dokumen", value: "foto2", nowrap: true },
+    { title: "File Dokumen", value: "foto6", nowrap: true },
     { title: "Dokumen Pendukung ", key: "nama_file", nowrap: true },
     {
       title: "Action",
@@ -388,7 +388,7 @@ const getDokumenLainnya = async () => {
           id_reg_dok: i.id_reg_dok,
           id_reg: i.id_reg,
           nama_dokumen: i.nama_dokumen,
-          nama_file: removeUUID(i.file_dok),
+          nama_file: i.file_dok,
         })),
       };
 

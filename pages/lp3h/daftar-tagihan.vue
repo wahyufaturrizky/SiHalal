@@ -74,7 +74,7 @@ const loadItem = async () => {
       method: "get",
       params: {
         page: page.value,
-        limit: itemPerPage.value,
+        limit: itemPerPage.value === -1 ? totalItems.value : itemPerPage.value,
         ref_unik: idUser,
       },
     });
@@ -127,9 +127,9 @@ onMounted(async () => {
           <VCardTitle class="text-h4 mx-0"> Daftar Tagihan </VCardTitle>
           <VCardItem>
             <VDataTableServer
-              disable-sort
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
+              disable-sort
               :items-per-page-options="ITEMS_PER_PAGE_OPTIONS_HUGE"
               :items-length="totalItems"
               :loading="loading"

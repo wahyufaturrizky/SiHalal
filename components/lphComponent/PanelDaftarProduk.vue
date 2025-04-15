@@ -12,9 +12,19 @@ const props = defineProps({
     type: Number,
     required: false,
   },
+  perPage: {
+    type: Number,
+    required: false,
+  },
+  total: {
+    type: Number,
+    required: false,
+  },
 });
 
 const currentPage = ref(props.page);
+const itemPerPage = ref(props.perPage);
+const totalItems = ref(props.total);
 
 const productNameHeader: any[] = [
   { title: "No", key: "index" },
@@ -26,28 +36,27 @@ const productNameHeader: any[] = [
   { title: "Publikasi", key: "publikasi_produk" },
 ];
 
-const itemPerPage = ref(10);
 </script>
 
 <template>
-  <VDataTable
-    disable-sort
+  <VDataTableServer
+    v-model:items-per-page="itemPerPage"
     v-model:page="currentPage"
-    :items-per-page="itemPerPage"
+    :items-length="totalItems"
     :items="props?.data"
     :headers="productNameHeader"
-    :page="props.page"
     class="custom-table"
     hover
-    @update:page="handlePageChange"
+    disable-sort
+    @update:options="props.handlePageChange"
   >
     <template #item.index="{ index }">
-      {{ index + 1 }}
+      {{ index + 1 + (+currentPage - 1) * +itemPerPage }}
     </template>
     <template #item.publikasi_produk="{ item }">
       <VCheckbox :model-value="item.publikasi_produk" class="non-clickable" />
     </template>
-  </VDataTable>
+  </VDataTableServer>
 </template>
 
 <style scoped lang="scss">
