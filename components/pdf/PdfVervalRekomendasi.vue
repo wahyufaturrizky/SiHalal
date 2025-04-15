@@ -1,105 +1,3 @@
-<template>
-  <div class="pdf-object">
-    <object class="pdf" :data="pdfBlob"></object>
-  </div>
-  <pdfFrame
-    type="pdf-blob"
-    id="pdf-blob-id"
-    :width="pdfCfg.width"
-    :height="pdfCfg.height"
-    :config="pdfConfig"
-    :needOnUpdated="true"
-    @on-updated="getBlob"
-  >
-    <i-page>
-      <i-group>
-        <i-text
-          :x="50"
-          :y="5"
-          text="REKOMENDASI HASIL VERIFIKASI DAN VALIDASI"
-          :width="530"
-          :style="{ fill: 'grad(grad1)', align: 'center', font: '13px' }"
-          class="text_123"
-        />
-        <i-text
-          :x="60"
-          :y="25"
-          text="PENDAMPING PPH"
-          :width="530"
-          :style="{ fill: 'grad(grad1)', align: 'center', font: '10px' }"
-          class="text_123"
-        />
-      </i-group>
-      <i-group>
-        <i-text
-          :x="60"
-          :y="50"
-          :width="530"
-          :style="{ fill: 'grad(grad1)', align: 'left' }"
-          text="Nama Pendamping:"
-        />
-        <i-text
-          :x="60"
-          :y="70"
-          :width="530"
-          :style="{ fill: 'grad(grad1)', align: 'left' }"
-          :text="dataRefPu?.nama_pendamping"
-        />
-        <i-text
-          :x="60"
-          :y="95"
-          :width="530"
-          :style="{ fill: 'grad(grad1)', align: 'left' }"
-          text="Nomor Registrasi:"
-        />
-        <i-text
-          :x="60"
-          :y="115"
-          :width="530"
-          :style="{ fill: 'grad(grad1)', align: 'left' }"
-          :text="dataRefDaftar?.no_daftar || '-'"
-        />
-        <i-text
-          :x="60"
-          :y="140"
-          :width="530"
-          :style="{ fill: 'grad(grad1)', align: 'left' }"
-          text="Lembaga Pendamping:"
-        />
-        <i-text
-          :x="60"
-          :y="155"
-          :width="530"
-          :style="{ fill: 'grad(grad1)', align: 'left' }"
-          :text="dataRefPu?.lembaga_pendamping || '-'"
-        />
-      </i-group>
-      <i-group>
-        <i-text
-          v-for="(item, index) in listPdfElement"
-          :key="index"
-          :x="item.spacesX"
-          :y="calculateRelativeCoordY(item.spacesY)"
-          :style="{ fill: 'grad(grad1)', align: 'left' }"
-          :text="
-            item.type === 'numbered-list'
-              ? `${index}. ${item.value}`
-              : item.value
-          "
-        />
-      </i-group>
-    </i-page>
-  </pdfFrame>
-</template>
-
-<style scoped>
-.pdf-object,
-.pdf {
-  height: 100%;
-  width: 100%;
-}
-</style>
-
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
 
@@ -108,10 +6,12 @@ const props = defineProps({
   dataDaftar: Object,
 });
 
+const emit = defineEmits(["skPenyeliaDownloadHandler"]);
 const dataRefPu = ref();
 const dataRefDaftar = ref();
 
 const pdfBlob = ref("");
+
 const pdfConfig = {
   margins: {
     top: 30,
@@ -124,8 +24,6 @@ const pdfCfg = {
   width: 620,
 };
 
-const emit = defineEmits(["skPenyeliaDownloadHandler"]);
-
 function getBlob(blob) {
   pdfBlob.value = blob;
   emit("skPenyeliaDownloadHandler", blob);
@@ -135,6 +33,7 @@ let baseCoordY = 140;
 
 const calculateRelativeCoordY = (currCoordY: number) => {
   baseCoordY += currCoordY;
+
   return baseCoordY;
 };
 
@@ -177,9 +76,7 @@ const refreshPdf = () => {
     {
       value: `${dataRefPu.value?.kota || "-"}, ${
         dataRefDaftar.value?.tgl_daftar
-          ? new Date(dataRefDaftar.value.tgl_daftar)
-              .toISOString()
-              .substring(0, 10)
+          ? formatDateId(dataRefDaftar.value.tgl_daftar)
           : "-"
       }`,
       spacesY: 40,
@@ -212,3 +109,105 @@ onMounted(() => {
   refreshPdf();
 });
 </script>
+
+<template>
+  <div class="pdf-object">
+    <object class="pdf" :data="pdfBlob" />
+  </div>
+  <PdfFrame
+    id="pdf-blob-id"
+    type="pdf-blob"
+    :width="pdfCfg.width"
+    :height="pdfCfg.height"
+    :config="pdfConfig"
+    :need-on-updated="true"
+    @on-updated="getBlob"
+  >
+    <IPage>
+      <IGroup>
+        <IText
+          :x="50"
+          :y="5"
+          text="REKOMENDASI HASIL VERIFIKASI DAN VALIDASI"
+          :width="530"
+          :style="{ fill: 'grad(grad1)', align: 'center', font: '13px' }"
+          class="text_123"
+        />
+        <IText
+          :x="60"
+          :y="25"
+          text="PENDAMPING PPH"
+          :width="530"
+          :style="{ fill: 'grad(grad1)', align: 'center', font: '10px' }"
+          class="text_123"
+        />
+      </IGroup>
+      <IGroup>
+        <IText
+          :x="60"
+          :y="50"
+          :width="530"
+          :style="{ fill: 'grad(grad1)', align: 'left' }"
+          text="Nama Pendamping:"
+        />
+        <IText
+          :x="60"
+          :y="70"
+          :width="530"
+          :style="{ fill: 'grad(grad1)', align: 'left' }"
+          :text="dataRefPu?.nama_pendamping"
+        />
+        <IText
+          :x="60"
+          :y="95"
+          :width="530"
+          :style="{ fill: 'grad(grad1)', align: 'left' }"
+          text="Nomor Registrasi:"
+        />
+        <IText
+          :x="60"
+          :y="115"
+          :width="530"
+          :style="{ fill: 'grad(grad1)', align: 'left' }"
+          :text="dataRefDaftar?.no_daftar || '-'"
+        />
+        <IText
+          :x="60"
+          :y="140"
+          :width="530"
+          :style="{ fill: 'grad(grad1)', align: 'left' }"
+          text="Lembaga Pendamping:"
+        />
+        <IText
+          :x="60"
+          :y="155"
+          :width="530"
+          :style="{ fill: 'grad(grad1)', align: 'left' }"
+          :text="dataRefPu?.lembaga_pendamping || '-'"
+        />
+      </IGroup>
+      <IGroup>
+        <IText
+          v-for="(item, index) in listPdfElement"
+          :key="index"
+          :x="item.spacesX"
+          :y="calculateRelativeCoordY(item.spacesY)"
+          :style="{ fill: 'grad(grad1)', align: 'left' }"
+          :text="
+            item.type === 'numbered-list'
+              ? `${index}. ${item.value}`
+              : item.value
+          "
+        />
+      </IGroup>
+    </IPage>
+  </PdfFrame>
+</template>
+
+<style scoped>
+.pdf-object,
+.pdf {
+  block-size: 100%;
+  inline-size: 100%;
+}
+</style>

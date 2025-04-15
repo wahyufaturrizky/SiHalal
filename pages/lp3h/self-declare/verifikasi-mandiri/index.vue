@@ -127,7 +127,7 @@ const handleLoadList = async () => {
         method: "get",
         params: {
           page: currentPage.value,
-          size: itemPerPage.value,
+          size: itemPerPage.value === -1 ? totalItems.value : itemPerPage.value,
           keyword: searchQuery.value,
           status: "OF10",
           channel_id: "CH004",
@@ -242,9 +242,9 @@ onMounted(async () => {
       <VRow>
         <VCol>
           <VDataTableServer
-            disable-sort
             v-model:page="currentPage"
             v-model:items-per-page="itemPerPage"
+            disable-sort
             class="elevation-1 custom-table"
             :headers="headers"
             :items="submission"
@@ -260,11 +260,7 @@ onMounted(async () => {
               {{ item.no_daftar ? item.no_daftar : "-" }}
             </template>
             <template #item.tgl_daftar="{ item }: any">
-              {{
-                item.tgl_daftar
-                  ? new Date(item.tgl_daftar).toISOString().substring(0, 10)
-                  : "-"
-              }}
+              {{ item.tgl_daftar ? formatDateId(item.tgl_daftar) : "-" }}
             </template>
             <!--
               <template #item.jenis_produk="{ item }: any">

@@ -405,7 +405,7 @@ onMounted(async () => {
   loaForm.value.authorized_name = loa.value?.authorized_company;
   loaForm.value.authorizer_name = loa.value?.authorizer_company;
   loaForm.value.letter_number = loa.value?.letter_no;
-  loaForm.value.date = loa.value?.date;
+  loaForm.value.date = formatDateId(loa.value?.date);
   loaForm.value.file_url = loa.value?.loa_document;
 });
 watch(loaFile, (newValue, oldValue) => {
@@ -456,7 +456,7 @@ watch(loaFile, (newValue, oldValue) => {
             />
           </VCol>
           <VCol cols="12">
-            <Vuepicdatepicker>
+            <Vuepicdatepicker model-type="dd/MM/yyyy">
               <template #trigger>
                 <Vuepicdatepicker
                   v-model:model-value="loaForm.date"

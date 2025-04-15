@@ -5,6 +5,7 @@ import type {
 } from "@/pages/sertifikasi-halal/luar-negeri/submission/[id]/index.vue";
 import type { MasterCountry } from "@/server/interface/master.iface";
 import type { VForm } from "vuetify/components/VForm";
+
 export interface IdentityRequest {
   profile: Profile;
   hcb: Hcb;
@@ -58,6 +59,7 @@ const parseISO = (date: Date) => {
     date.getSeconds()
   ).padStart(2, "0")}Z`;
 };
+
 function isValidddmmyyy(dateString) {
   // Regular expression to match 'dd-mm-yyyy' format
   const datePattern = /^\d{2}-\d{2}-\d{4}$/;
@@ -65,17 +67,22 @@ function isValidddmmyyy(dateString) {
   // Test the string against the pattern
   return datePattern.test(dateString);
 }
+
 const formatToISO = (isoDate: string) => {
   if (isValidddmmyyy(isoDate)) {
     const [day, month, year] = isoDate.split("-").map(Number);
     const date = new Date(year, month - 1, day);
+
     return date.toISOString();
   }
   const date = new Date(isoDate);
+
   return date.toISOString();
 };
+
 const country = ref();
 const hcbCountry = ref("");
+
 const formIdentity = ref<IdentityRequest>({
   profile: {
     api_type:
@@ -112,12 +119,14 @@ const formIdentity = ref<IdentityRequest>({
     position: props.event.importer.position,
   },
 });
+
 const route = useRoute();
 const shlnId = route.params.id;
 const importerPocDialog = ref(false);
 const importerDialog = ref(false);
 const importerPOCButton = ref(false);
 const importerButton = ref(false);
+
 const getCountry = async () => {
   const response: MasterCountry[] = await $api("/master/country", {
     method: "get",
@@ -125,7 +134,9 @@ const getCountry = async () => {
 
   country.value = response.map((item) => item.name);
 };
+
 const scope = ref<{ id: string; name: string }[]>();
+
 const getScope = async (hcb_id) => {
   const response: { id: string; name: string }[] = await $api(
     "shln/submission/identity/scope",
@@ -135,17 +146,19 @@ const getScope = async (hcb_id) => {
     }
   );
 
-  if (response.code != 2000) {
-    return;
-  }
+  if (response.code != 2000) return;
+
   scope.value = response.data;
 };
+
 const refImporterPocForm = ref<VForm>();
+
 const openImporterPOCDialog = () => {
   refImporterPocForm.value?.validate().then(({ valid: isValid }) => {
     if (isValid) importerPocDialog.value = true;
   });
 };
+
 const saveImporterPOC = async () => {
   importerPOCButton.value = true;
   try {
@@ -153,10 +166,12 @@ const saveImporterPOC = async () => {
       method: "put",
       body: { ...formIdentity.value.importer, id: shlnId },
     });
+
     importerPocDialog.value = false;
     importerPOCButton.value = false;
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
+
       return;
     }
     useMyUpdateSubmissionEditStore().setData("identity");
@@ -168,11 +183,13 @@ const saveImporterPOC = async () => {
 };
 
 const refImporterForm = ref<VForm>();
+
 const openImporterDialog = () => {
   refImporterForm.value?.validate().then(({ valid: isValid }) => {
     if (isValid) importerDialog.value = true;
   });
 };
+
 const saveImporter = async () => {
   importerPOCButton.value = true;
 
@@ -191,6 +208,7 @@ const saveImporter = async () => {
         },
       },
     });
+
     importerDialog.value = false;
     importerPOCButton.value = false;
     await loadTracking();
@@ -200,9 +218,11 @@ const saveImporter = async () => {
           "Update failed, The validity period of the halal certificate is only 1 day remaining !",
           "error"
         );
+
         return;
       }
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
+
       return;
     }
     useMyUpdateSubmissionEditStore().setData("identity");
@@ -214,6 +234,7 @@ const saveImporter = async () => {
 };
 
 const tracking = ref<ShlnTracking[]>();
+
 // const hcb = ref<{ country: string; id: string; name: string }[]>();
 
 const loadTracking = async () => {
@@ -230,6 +251,7 @@ const loadTracking = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+
 // const getHcb = async () => {
 //   try {
 //     const response = await $api("/shln/submission/identity/hcb", {
@@ -243,15 +265,19 @@ const loadTracking = async () => {
 // };
 const loadHcb = async (item: string) => {
   const country = props.hcb.find((body) => body.id == item)?.country;
+
   await getScope(item);
   hcbCountry.value = country;
 };
+
 const changeHcb = async (item: string) => {
   const country = props.hcb.find((body) => body.id == item).country;
+
   formIdentity.value.hcn.scope = "";
   await getScope(item);
   hcbCountry.value = country;
 };
+
 const province = ref();
 const district = ref();
 const subDistrict = ref();
@@ -265,8 +291,10 @@ const getDistrict = async (item: string) => {
       province: item,
     },
   });
+
   district.value = response;
 };
+
 const getSubDistrict = async (item: string) => {
   // formIdentity.value.profile= null;
   const response: MasterSubDistrict[] = await $api("/master/subdistrict", {
@@ -275,17 +303,20 @@ const getSubDistrict = async (item: string) => {
       district: item,
     },
   });
+
   subDistrict.value = response;
 };
 
 onMounted(async () => {
   await Promise.allSettled([getCountry(), loadTracking()]);
+
   // if (formIdentity.value.hcb.hcb_id != '') {
   //   await getScope(formIdentity.value.hcb.hcb_id);
   // }
   const response: MasterProvince[] = await $api("/master/province", {
     method: "get",
   });
+
   province.value = response;
   await loadHcb(props.event.hcb.hcb_id == "" ? null : props.event.hcb.hcb_id);
   if (props.event.profile.province != "")
@@ -296,12 +327,15 @@ onMounted(async () => {
 
 const saveForm = () => {};
 const now = new Date();
-now.setDate(now.getDate()+1)
+
+now.setDate(now.getDate() + 1);
+
 const currentMonth = now.toLocaleString("default", { month: "2-digit" });
 const currentYear = now.getFullYear();
 const currentDay = now.getDate();
 const date = ref("");
 const expiredKey = ref(0);
+
 const changeExpired = (item) => {
   formIdentity.value.hcn.expired_date = "";
   expiredKey.value += 1;
@@ -313,8 +347,8 @@ const changeExpired = (item) => {
     <VCol cols="8">
       <ExpandCard title="Importer" class="mb-6">
         <VForm
-          class="mt-6"
           ref="refImporterForm"
+          class="mt-6"
           @submit.prevent="openImporterDialog"
         >
           <VRow>
@@ -361,28 +395,28 @@ const changeExpired = (item) => {
             <!-- Province -->
             <VCol cols="12">
               <VSelect
+                v-model="formIdentity.profile.province"
                 :items="province"
                 item-value="code"
                 item-title="name"
-                v-model="formIdentity.profile.province"
                 :rules="[requiredValidator]"
                 require
-                v-on:update:model-value="getDistrict"
                 label="Province"
+                @update:model-value="getDistrict"
               />
             </VCol>
 
             <!-- Regency -->
             <VCol cols="12">
               <VSelect
+                v-model="formIdentity.profile.district"
                 :items="district"
                 item-value="code"
                 item-title="name"
-                v-model="formIdentity.profile.district"
                 :rules="[requiredValidator]"
-                v-on:update:model-value="getSubDistrict"
                 require
                 label="Regency"
+                @update:model-value="getSubDistrict"
               />
             </VCol>
 
@@ -408,10 +442,10 @@ const changeExpired = (item) => {
                 item-title="name"
                 item-value="id"
                 label="Halal Certification Body"
-                @update:model-value="changeHcb"
                 placeholder="Halal Certification Body"
                 required
                 :rules="[requiredValidator]"
+                @update:model-value="changeHcb"
               />
             </VCol>
 
@@ -496,8 +530,8 @@ const changeExpired = (item) => {
             <!-- Expired Date -->
             <VCol cols="12">
               <AppDateTimePicker
-                v-model="formIdentity.hcn.expired_date"
                 :key="expiredKey"
+                v-model="formIdentity.hcn.expired_date"
                 label="Expired Date"
                 placeholder="Expired Date"
                 required
@@ -539,8 +573,8 @@ const changeExpired = (item) => {
       <ExpandCard title="Importer's Point of Contact" class="mb-6">
         <VForm
           ref="refImporterPocForm"
-          @submit.prevent="openImporterPOCDialog"
           class="mt-6"
+          @submit.prevent="openImporterPOCDialog"
         >
           <VRow>
             <VCol cols="12">
@@ -642,7 +676,7 @@ const changeExpired = (item) => {
     </VCard>
   </VDialog>
 
-  <!-- update dialog importer Poc-->
+  <!-- update dialog importer Poc -->
   <VDialog v-model="importerPocDialog" width="auto">
     <VCard>
       <VCardText>
@@ -683,10 +717,10 @@ const changeExpired = (item) => {
 }
 
 .custom-date-input input[type="date"] {
-  padding-right: 40px; /* Ensure there is space on the right for the icon */
+  padding-inline-end: 40px; /* Ensure there is space on the right for the icon */
 }
 
 .custom-date-input .v-input__icon--append {
-  right: 0;
+  inset-inline-end: 0;
 }
 </style>
