@@ -2,17 +2,17 @@
 const props = defineProps({
   onSubmit: {
     type: Function,
-    default: () => { },
+    default: () => {},
     required: false,
   },
   onAdd: {
     type: Function,
-    default: () => { },
+    default: () => {},
     required: false,
   },
   onEdit: {
     type: Function,
-    default: () => { },
+    default: () => {},
     required: false,
   },
   title: {
@@ -31,14 +31,15 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
-})
+});
 </script>
 
 <template>
   <slot name="headerDialog" />
-  <br>
+  <br />
   <div class="border rounded">
     <VDataTable
+      disable-sort
       :items-per-page="-1"
       hide-default-footer=""
       :headers="props.data.label"
@@ -63,12 +64,12 @@ const props = defineProps({
 }
 .p0 {
   padding-left: 2px !important;
-};
+}
 .ml5 {
   margin-left: 5px;
 }
 .textRed {
-  color: #E1442E;
+  color: #e1442e;
 }
 .h-20 {
   height: 20px;

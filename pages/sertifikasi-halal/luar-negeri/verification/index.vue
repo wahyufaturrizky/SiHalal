@@ -77,7 +77,7 @@ const refresh = async () => {
 
 const verifikatorTableHeader = [
   { title: "No", key: "id", sortable: false },
-  { title: "Registration Number", key: "no_daftar", sortable: false },
+  { title: "Submission Number", key: "no_daftar", sortable: false },
   { title: "Importer's Name", key: "nama_importir", sortable: false },
   { title: "NIB / Bu  siness ID No", key: "nib", sortable: false },
   { title: "NPWP / Taxpayer ID No", key: "npwp", sortable: false },
@@ -139,6 +139,7 @@ const navigateAction = (id: string) => {
       <VRow>
         <VCol>
           <VDataTableServer
+            disable-sort
             :items-per-page-options="[10, 25, 50, 100]"
             v-model:items-per-page="itemPerPage"
             v-model:page="page"

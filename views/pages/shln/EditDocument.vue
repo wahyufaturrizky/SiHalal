@@ -405,7 +405,7 @@ onMounted(async () => {
   loaForm.value.authorized_name = loa.value?.authorized_company;
   loaForm.value.authorizer_name = loa.value?.authorizer_company;
   loaForm.value.letter_number = loa.value?.letter_no;
-  loaForm.value.date = loa.value?.date;
+  loaForm.value.date = formatDateId(loa.value?.date);
   loaForm.value.file_url = loa.value?.loa_document;
 });
 watch(loaFile, (newValue, oldValue) => {
@@ -456,7 +456,7 @@ watch(loaFile, (newValue, oldValue) => {
             />
           </VCol>
           <VCol cols="12">
-            <Vuepicdatepicker>
+            <Vuepicdatepicker model-type="dd/MM/yyyy">
               <template #trigger>
                 <Vuepicdatepicker
                   v-model:model-value="loaForm.date"
@@ -634,6 +634,7 @@ watch(loaFile, (newValue, oldValue) => {
       <ExpandCard title="Requirement Document ">
         <VForm ref="refReqDocForm" @submit.prevent="openReqDialog">
           <VDataTable
+            disable-sort
             :items="requirementDocArray"
             :headers="tableRequirementDocumentHeader"
           >
@@ -688,7 +689,7 @@ watch(loaFile, (newValue, oldValue) => {
               append-icon="ri-download-line"
               @click="
                 downloadDocument(
-                  '7b6c4e03-9ae0-4ee2-b045-53882314443d_sample_template_surat_permohonan_dan_perpanjangan_rshln (3).docx'
+                  'Template_Surat_Permohonan_RSHLN_e0d7393e9f.docx'
                 )
               "
             >

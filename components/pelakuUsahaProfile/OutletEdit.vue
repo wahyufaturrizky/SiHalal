@@ -137,6 +137,7 @@ function handleDelete(item) {
     </VCardTitle>
     <VCardItem>
       <VDataTable
+        disable-sort
         :headers="tableOutletHeader"
         :items="props.outletData ? props.outletData : []"
       >

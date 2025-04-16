@@ -202,6 +202,22 @@ const handleDownloadV2 = async (filename: string, param: string = "") => {
     console.log(error);
   }
 };
+const handleDownloadV6 = async (filename: string, param: string = "") => {
+  try {
+    const response = await $api("/shln/submission/document/downloadV6", {
+      method: "post",
+      body: {
+        filename: filename,
+        param: 'dirName=FILES'
+      },
+    });
+
+    if (response.url)
+      window.open(response.url, "_blank", "noopener,noreferrer");
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const editDaftarBahan = async () => {
   const payload = {
@@ -358,6 +374,7 @@ const itemsPerPageServer = ref(10);
       <br />
       <VRow>
         <VDataTable
+          disable-sort
           v-if="props.tableType == 'base'"
           class="border rounded"
           :items-per-page="itemPerPageTable"
@@ -963,6 +980,22 @@ const itemsPerPageServer = ref(10);
               <label>Kosong</label>
             </div>
           </template>
+          <template #item.foto6="{ item }">
+            <Vbtn
+              v-if="item.id_reg"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-inline-start: -10px"
+              @click="() => handleDownloadV6(item)"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>Kosong</label>
+            </div>
+          </template>
           <template #item.foto3="{ item }">
             <Vbtn
               v-if="item.file_dok"
@@ -1080,6 +1113,7 @@ const itemsPerPageServer = ref(10);
           </template>
         </VDataTable>
         <VDataTableServer
+          disable-sort
           v-else
           :items-per-page-options="[10, 25, 50, 100]"
           class="border rounded"

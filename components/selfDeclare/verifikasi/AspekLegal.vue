@@ -27,6 +27,7 @@ const legalTableHeader = [
     <VRow>
       <VCol cols="12">
         <VDataTable
+          disable-sort
           :items-per-page-options="[10, 25, 50, 100]"
           :items="dataHalal"
         >

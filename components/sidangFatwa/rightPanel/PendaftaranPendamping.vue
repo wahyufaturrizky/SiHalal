@@ -127,7 +127,21 @@ async function onClickDownload(filename: string) {
 }
 
 const getDownloadForm = async (docName: string, propName: string) => {
-  let result: any = "";
+  const result = await $api(`/self-declare/submission/${submissionId}/file`, {
+    method: "get",
+    query: {
+      document: docName,
+    },
+    server: false,
+  });
+
+  if (result?.code === 2000) {
+    downloadForms[propName] = result?.data.file;
+  }
+};
+
+const handleDownloadForm = async (fileName: string, propName: string) => {
+  let result: any;
   if (propName == "laporan_pendamping") {
     result = await $api(
       `/self-declare/verificator/lihat-laporan-download/${route.params?.id}`,
@@ -147,23 +161,8 @@ const getDownloadForm = async (docName: string, propName: string) => {
       },
       server: false,
     } as any);
-  } else {
-    result = await $api(`/self-declare/submission/${submissionId}/file`, {
-      method: "get",
-      query: {
-        document: docName,
-      },
-      server: false,
-    });
   }
-
-  if (result.code === 2000) {
-    downloadForms[propName] = result.data.file;
-  }
-};
-
-const handleDownloadForm = async (fileName: string) => {
-  return await previewDocument(fileName);
+  return await previewDocument(fileName || result?.data?.file);
 };
 
 onMounted(async () => {
@@ -198,7 +197,7 @@ onMounted(async () => {
             <VBtn
               @click="
                 downloadForms.laporan_pendamping
-                  ? handleDownloadForm(downloadForms.laporan_pendamping)
+                  ? handleDownloadForm('', 'laporan_pendamping')
                   : null
               "
               :color="downloadForms.laporan_pendamping ? 'primary' : '#A09BA1'"

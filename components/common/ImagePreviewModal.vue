@@ -24,8 +24,8 @@
       v-if="props.namabahan && !progressLocal && !failedFetch"
       :src="uriPreview"
       contain
-      max-height="300"
-      max-width="200"
+      :width="props.inlineImageWidth"
+      :height="props.inlineImageHeight"
     ></VImg>
   </div>
   <VDialog v-if="!props.inlineImage">
@@ -102,6 +102,7 @@
 const props = defineProps({
   namabahan: {
     required: true,
+    type: String,
   },
   cardTitle: {
     type: String,
@@ -121,12 +122,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-});
-
-onMounted(() => {
-  if (props.inlineImage) {
-    preview(props.namabahan);
-  }
+  inlineImageWidth: {
+    type: Number,
+    default: 300,
+  },
+  inlineImageHeight: {
+    type: Number,
+    default: 200,
+  },
 });
 
 const progressLocal = ref(true);
@@ -146,4 +149,22 @@ const preview = async (filename: string) => {
   }
   progressLocal.value = false;
 };
+
+onMounted(() => {
+  if (props.inlineImage) {
+    console.log("nama bahan = ", props.namabahan);
+    preview(props.namabahan);
+  }
+});
+
+// watch(
+//   props.namabahan,
+//   (newData) => {
+//     if (props.inlineImage) {
+//       console.log("nama bahan 2 = ", newData);
+//       preview(newData);
+//     }
+//   },
+//   { immediate: true }
+// );
 </script>

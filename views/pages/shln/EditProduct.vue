@@ -43,13 +43,15 @@ const uploadDocument = async (file) => {
       body: formData,
     });
 
-    if (response.code !== "2000") {
+    if (response.code !== 2000) {
       useSnackbar().sendSnackbar("HSCode tidak ditemukan!!", "error");
       emit("upload-bulk", false);
       bulkingDialog.value = false;
       return;
     }
+    loadItem(1, 10);
     emit("upload-bulk", true);
+    useSnackbar().sendSnackbar("Berhasil mengunggah produk", "success");
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar(

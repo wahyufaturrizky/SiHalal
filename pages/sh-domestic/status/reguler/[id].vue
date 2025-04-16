@@ -220,7 +220,11 @@ const getDownloadForm = async (docName: string, propName: string) => {
     },
   });
 
-  if (result?.code === 2000) downloadForms[propName] = result?.data?.file || "";
+  if (result?.code === 2000) {
+    downloadForms[propName] = result?.data?.file;
+  } else {
+    downloadForms[propName] = "";
+  }
 };
 
 const handleDownloadForm = async (fileName: string, type: string) => {
@@ -1000,6 +1004,7 @@ onMounted(async () => {
           <VRow class="mb-5">
             <VCol>
               <VDataTable
+                disable-sort
                 class="auditor-table"
                 :headers="assignAuditorHeader"
                 :items="assignAuditorData"

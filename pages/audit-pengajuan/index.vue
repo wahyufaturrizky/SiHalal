@@ -104,6 +104,7 @@ const handleInput = () => debouncedFetch(1, size.value, searchQuery.value);
       </VCardItem>
       <VCardItem>
         <VDataTableServer
+          disable-sort
           v-model:items-per-page="size"
           v-model:page="currentPage"
           :items-per-page-options="[10, 25, 50, 100]"

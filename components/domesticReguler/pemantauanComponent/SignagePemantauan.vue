@@ -46,6 +46,7 @@ const items = [
       </VAlert>
       <br />
       <VDataTable
+        disable-sort
         :items-per-page-options="[10, 25, 50, 100]"
         :headers="tableHeader"
         :items="items"

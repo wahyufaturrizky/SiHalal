@@ -85,7 +85,7 @@ const dokumenLainnya = ref({
   label: [
     { title: "No.", key: "no", nowrap: true },
     { title: "Nama Dokumen", key: "nama_dokumen", nowrap: true },
-    { title: "File Dokumen", value: "foto2", nowrap: true },
+    { title: "File Dokumen", value: "foto6", nowrap: true },
     { title: "Dokumen Pendukung ", key: "nama_file", nowrap: true },
     {
       title: "Action",
@@ -388,7 +388,7 @@ const getDokumenLainnya = async () => {
           id_reg_dok: i.id_reg_dok,
           id_reg: i.id_reg,
           nama_dokumen: i.nama_dokumen,
-          nama_file: removeUUID(i.file_dok),
+          nama_file: i.file_dok,
         })),
       };
 
@@ -653,9 +653,7 @@ onMounted(async () => {
                 <template #prepend>
                   <VIcon size="24px" icon="ri-information-2-fill" />
                 </template>
-                <template #text>
-                  File dokumen harus berformat PDF
-                </template>
+                <template #text> File dokumen harus berformat PDF </template>
               </VAlert>
             </VCol>
           </VRow>
@@ -673,7 +671,8 @@ onMounted(async () => {
                 <VIcon size="24px" icon="ri-information-2-fill" />
               </template>
               <template #text>
-                File tanda tangan harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                File tanda tangan harus dalam bentuk gambar berformat
+                (jpeg/jpg/png)
               </template>
             </VAlert>
           </div>
@@ -783,9 +782,7 @@ onMounted(async () => {
                 <template #prepend>
                   <VIcon size="24px" icon="ri-information-2-fill" />
                 </template>
-                <template #text>
-                  File dokumen harus berformat PDF
-                </template>
+                <template #text> File dokumen harus berformat PDF </template>
               </VAlert>
             </VCol>
           </VRow>
@@ -803,7 +800,8 @@ onMounted(async () => {
                 <VIcon size="24px" icon="ri-information-2-fill" />
               </template>
               <template #text>
-                File tanda tangan harus dalam bentuk gambar berformat (jpeg/jpg/png)
+                File tanda tangan harus dalam bentuk gambar berformat
+                (jpeg/jpg/png)
               </template>
             </VAlert>
           </div>
@@ -989,6 +987,7 @@ onMounted(async () => {
 
       <VCardText>
         <VDataTable
+          disable-sort
           :headers="risalahKajiUlang.label"
           :items="risalahKajiUlang.value"
           hide-default-footer

@@ -106,6 +106,7 @@ const deleteItem = (item) => {
         />
 
         <VDataTable
+          disable-sort
           :headers="headers"
           :items="tagihan"
           :search="search"

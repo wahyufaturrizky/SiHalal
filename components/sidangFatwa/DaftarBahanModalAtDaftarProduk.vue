@@ -35,6 +35,7 @@
         </VCardTitle>
         <VCardItem>
           <VDataTable
+            disable-sort
             height="45svh"
             :headers="headers"
             :items="processedDataProduk"

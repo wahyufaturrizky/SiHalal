@@ -61,11 +61,7 @@ timelineItems.value = props.data?.map((item: any) => {
             {{ item.user }}
           </div>
           <div v-if="item.comment" class="app-timeline-text mt-1">
-            {{
-              item.comment.length > 38
-                ? `${item.comment.slice(0, 38)}...`
-                : item.comment
-            }}
+            {{ item.comment }}
           </div>
         </VTimelineItem>
       </VTimeline>

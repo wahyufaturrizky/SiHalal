@@ -11,13 +11,21 @@ export default defineEventHandler(async (event: any) => {
     });
   }
 
-  const { url } = (await getQuery(event)) as {
+  const { url, page, size } = (await getQuery(event)) as {
     url: string;
+    page: string;
+    size: number;
   };
+
+  const params = {
+    page,
+    size: +size,
+  }
 
   const data = await $fetch<any>(`${runtimeConfig.coreBaseUrl}/${url}`, {
     method: "get",
     headers: { Authorization: authorizationHeader },
+    params,
   }).catch((err: NuxtError) => {
     return err.data;
   });

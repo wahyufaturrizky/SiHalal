@@ -244,6 +244,7 @@ const bahanType = ref(null);
         </VRow>
         <VRow>
           <VDataTableServer
+            disable-sort
             :items-per-page-options="[10, 25, 50, 100]"
             :headers="permohonanHeaders"
             v-model:items-per-page="itemPerPage"

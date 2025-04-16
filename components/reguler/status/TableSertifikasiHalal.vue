@@ -5,7 +5,7 @@ const props = defineProps<{
     required: false;
   };
   withUnduh: {
-    type: Boolean;
+    type: boolean;
     required: false;
     default: false;
   };
@@ -58,6 +58,7 @@ const id = route.params.id;
   </div>
   <slot name="headerDialog" />
   <VDataTable
+    disable-sort
     :headers="props?.headers"
     :items="data"
     class="border rounded"
@@ -137,6 +138,18 @@ const id = route.params.id;
     </template>
     <template #item.publication="{ item }">
       <VCheckbox :checked="item.reg_publish" />
+    </template>
+    <template #item.tgl_penyelia_halal="{ item }">
+      {{ formatDateId(item.tgl_penyelia_halal) }}
+    </template>
+    <template #item.tanggal_sk="{ item }">
+      {{ formatDateId(item.tanggal_sk) }}
+    </template>
+    <template #item.tanggal_surat="{ item }">
+      {{ formatDateId(item.tanggal_surat) }}
+    </template>
+    <template #item.masa_berlaku="{ item }">
+      {{ formatDateId(item.masa_berlaku) }}
     </template>
   </VDataTable>
 </template>

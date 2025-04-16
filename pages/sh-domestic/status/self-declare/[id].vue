@@ -450,7 +450,11 @@ const getDownloadForm = async (docName: string, propName: string) => {
     }
   );
 
-  if (result.code === 2000) downloadForms[propName] = result.data.file;
+  if (result.code === 2000) {
+    downloadForms[propName] = result.data.file;
+  } else {
+    downloadForms[propName] = "";
+  }
 };
 
 const handleDownloadForm = async (fileName: string, type: string) => {
@@ -500,7 +504,11 @@ const handleSentSubmission = async () => {
       }
     }
   } catch (error) {
-    snackbar.sendSnackbar("Gagal mengirim pengajuan", "error");
+    // snackbar.sendSnackbar("Gagal mengirim pengajuan", "error");
+    useSnackbar().sendSnackbar(
+      error?.errors?.list_error[0] || "Ada kesalahan",
+      "error"
+    );
   }
 };
 
@@ -775,6 +783,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 v-if="aspectLegalItems.length"
                 :headers="aspectLegalHeader"
                 :items="aspectLegalItems"
@@ -814,6 +823,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 v-if="factoryItems.length"
                 :headers="factoryHeader"
                 :items="factoryItems"
@@ -847,6 +857,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 v-if="outletItems.length"
                 :headers="outletHeader"
                 :items="outletItems"
@@ -880,6 +891,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 v-if="supervisorItems.length"
                 :headers="supervisorHeader"
                 :items="supervisorItems"
@@ -929,6 +941,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 v-if="substanceItems.length"
                 v-model:page="pages.bahan"
                 v-model:items-per-page="itemPerPages.bahan"
@@ -973,6 +986,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
               <VDataTable
+                disable-sort
                 v-if="productItems.length"
                 :headers="productHeader"
                 :items="productItems"

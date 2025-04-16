@@ -157,6 +157,7 @@ const downloadCatatanProduk = (item) =>
     <VCardItem>
       <span class="text-h5">Tambah Catatan Bahan</span>
       <VDataTable
+        disable-sort
         :items-per-page-options="[10, 25, 50, 100]"
         :headers="catatanBahanHeaders"
         :items="catatanBahanItems"
@@ -208,6 +209,7 @@ const downloadCatatanProduk = (item) =>
         />
       </VCardTitle>
       <VDataTable
+        disable-sort
         :items-per-page-options="[10, 25, 50, 100]"
         :headers="catatanProdukHeaders"
         :items="catatanProdukItems"

@@ -90,7 +90,7 @@ const loadItem = async (
       method: "get",
       params: {
         page,
-        size,
+        size: size === -1 ? totalItems.value : size,
         status_reg,
         tgl_daftar: tahun,
         fac_id,
@@ -292,6 +292,7 @@ onMounted(async () => {
             <VDataTableServer
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
+              disable-sort
               :items-per-page-options="ITEMS_PER_PAGE_OPTIONS_HUGE"
               :headers="daftarLaporanHeader"
               :items="daftarLaporanItem"

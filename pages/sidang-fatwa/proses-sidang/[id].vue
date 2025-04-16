@@ -159,7 +159,7 @@ watch(
     <VCol cols="8">
       <h2>Laporan Hasil Pendampingan</h2>
     </VCol>
-    <VCol style="display: flex; justify-content: end" cols="4">
+    <!-- <VCol style="display: flex; justify-content: end" cols="4">
       <VBtn color="primary" text="Lihat Foto Pendampingan">
         <template #default>
           <ImagePreviewModal
@@ -181,7 +181,7 @@ watch(
           ></ImagePreviewModal>
         </template>
       </VBtn>
-    </VCol>
+    </VCol> -->
   </VRow>
   <VRow>
     <VCol cols="8">
@@ -211,6 +211,33 @@ watch(
           <DaftarProdukSidangDetail
             :dataproduk="newDataSertifikatHalal.listProduk"
           ></DaftarProdukSidangDetail>
+        </VCol>
+      </VRow>
+      <VRow v-if="!loading">
+        <VCol cols="12">
+          <VCard>
+            <VCardTitle><h3>Foto Pendampingan</h3></VCardTitle>
+            <VCardItem>
+              <ImagePreviewModal
+                :card-title="'Foto Pendampingan'"
+                :inline-image="true"
+                :inline-image-width="300"
+                :inline-image-height="200"
+                :namabahan="
+                  newDataSertifikatHalal?.sertifikatHalal?.photo_pendampingan
+                "
+                :doc-query="
+                  newDataSertifikatHalal.sertifikatHalal.photo_pendampingan
+                    ? newDataSertifikatHalal?.sertifikatHalal?.photo_pendampingan.includes(
+                        'lembaga.halal.go.id'
+                      )
+                      ? 'PRODUCT'
+                      : ''
+                    : ''
+                "
+              ></ImagePreviewModal>
+            </VCardItem>
+          </VCard>
         </VCol>
       </VRow>
     </VCol>

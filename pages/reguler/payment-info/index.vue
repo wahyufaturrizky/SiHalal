@@ -147,6 +147,7 @@ watch([page, size], () => {
           <VDataTableServer
             v-model:items-per-page="size"
             v-model:page="page"
+            disable-sort
             :items-per-page-options="[10, 25, 50, 100]"
             :items-length="totalItems"
             :loading="loading"
@@ -167,13 +168,19 @@ watch([page, size], () => {
               {{ index + 1 + (page - 1) * size }}
             </template>
             <template #item.tanggal_tagihan="{ item }">
-              {{ formatDateId(item.tanggal_tagihan) }}
+              {{
+                item.tanggal_tagihan ? formatDateId(item.tanggal_tagihan) : "-"
+              }}
             </template>
             <template #item.tanggal_jatuh_tempo="{ item }">
-              {{ formatDateId(item.tanggal_jatuh_tempo) }}
+              {{
+                item.tanggal_jatuh_tempo
+                  ? formatDateId(item.tanggal_jatuh_tempo)
+                  : "-"
+              }}
             </template>
             <template #item.tanggal_bayar="{ item }">
-              {{ formatDateId(item.tanggal_bayar) }}
+              {{ item.tanggal_bayar ? formatDateId(item.tanggal_bayar) : "-" }}
             </template>
             <template #item.actions="{ item }">
               <VIcon

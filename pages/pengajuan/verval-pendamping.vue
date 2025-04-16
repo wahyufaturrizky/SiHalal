@@ -115,6 +115,7 @@ onMounted(async () => {
           <VRow>
             <VCol cols="12">
               <VDataTable
+                disable-sort
                 v-model:items-per-page="size"
                 v-model:page="page"
                 :headers="headers"

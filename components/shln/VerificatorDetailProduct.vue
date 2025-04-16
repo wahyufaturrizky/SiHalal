@@ -79,6 +79,7 @@ const headers = [
           </VCol>
         </VRow>
         <VDataTableServer
+          disable-sort
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
           :headers="headers"

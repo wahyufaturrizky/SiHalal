@@ -30,7 +30,7 @@ const statusItem = new Proxy(
   }
 );
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 const skalaUsaha = ref([]);
 
@@ -101,20 +101,20 @@ const itemPerPages = reactive({
   bahan: 10,
 });
 
-const kbliDropdown = ref<any>([])
-const selectedKbli = ref(null)
+const kbliDropdown = ref<any>([]);
+const selectedKbli = ref(null);
 
 const getExistKbli = () => {
   const result = kbliDropdown.value.find((el: any) => {
-    return el.uraian_usaha === submissionDetail.nama_kbli
-  })
+    return el.uraian_usaha === submissionDetail.nama_kbli;
+  });
 
-  return result || null
-}
+  return result || null;
+};
 
 const kbliData = computed(() => {
-  return selectedKbli.value ? selectedKbli.value : getExistKbli()
-})
+  return selectedKbli.value ? selectedKbli.value : getExistKbli();
+});
 
 const isEditButtonDisabled = computed(() => {
   if (selectedKbli.value) return getExistKbli() == selectedKbli.value;
@@ -228,25 +228,24 @@ const trackingDetail = ref([]);
 
 const handleUpdateKbli = async () => {
   try {
-    const result: any = await $api(
-      '/self-declare/submission/update-kbli',
-      {
-        method: 'put',
-        body: {
-          id_reg: submissionId,
-          kbli: selectedKbli.value.kbli,
-          kbli_name: selectedKbli.value.uraian_usaha,
-        },
+    const result: any = await $api("/self-declare/submission/update-kbli", {
+      method: "put",
+      body: {
+        id_reg: submissionId,
+        kbli: selectedKbli.value.kbli,
+        kbli_name: selectedKbli.value.uraian_usaha,
       },
-    )
+    });
 
     if (result.code === 2000)
-      snackbar.sendSnackbar(t('sh-domestic.success-update-kbli-message'), 'success')
+      snackbar.sendSnackbar(
+        t("sh-domestic.success-update-kbli-message"),
+        "success"
+      );
+  } catch (error) {
+    snackbar.sendSnackbar(t("sh-domestic.failed-update-kbli-message"), "error");
   }
-  catch (error) {
-    snackbar.sendSnackbar(t('sh-domestic.failed-update-kbli-message'), 'error')
-  }
-}
+};
 
 const handleDeleteSubmission = async () => {
   try {
@@ -333,16 +332,15 @@ const getSjphDocument = async () => {
 
 const getKbliList = async () => {
   try {
-    const response3: MasterBadanUsaha[] = await $api('/master/list-oss', {
-      method: 'get',
-    })
+    const response3: MasterBadanUsaha[] = await $api("/master/list-oss", {
+      method: "get",
+    });
 
-    kbliDropdown.value = response3
+    kbliDropdown.value = response3;
+  } catch (err) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (err) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 onMounted(async () => {
   await Promise.all([
@@ -486,7 +484,11 @@ const handleSentSubmission = async () => {
       }
     }
   } catch (error) {
-    snackbar.sendSnackbar("Gagal mengirim pengajuan", "error");
+    // snackbar.sendSnackbar("Gagal mengirim pengajuan", "error");
+    useSnackbar().sendSnackbar(
+      error?.errors?.list_error[0] || "Ada kesalahan",
+      "error"
+    );
   }
 };
 
@@ -788,6 +790,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 v-if="aspectLegalItems.length"
                 :headers="aspectLegalHeader"
                 :items="aspectLegalItems"
@@ -831,6 +834,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 v-if="factoryItems.length"
                 :headers="factoryHeader"
                 :items="factoryItems"
@@ -864,6 +868,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 v-if="outletItems.length"
                 :headers="outletHeader"
                 :items="outletItems"
@@ -897,6 +902,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 v-if="supervisorItems.length"
                 :headers="supervisorHeader"
                 :items="supervisorItems"
@@ -946,6 +952,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 v-if="substanceItems.length"
                 v-model:page="pages.bahan"
                 v-model:items-per-page="itemPerPages.bahan"
@@ -989,6 +996,7 @@ const isCanEdit = () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
               <VDataTable
+                disable-sort
                 v-if="productItems.length"
                 :headers="productHeader"
                 :items="productItems"

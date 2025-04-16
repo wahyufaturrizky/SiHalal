@@ -64,6 +64,10 @@ const isEditFactoryModalOpen = ref(false);
 const isEditOutletModalOpen = ref(false);
 const isUpdateDataPuModalOpen = ref(false);
 const draftCertif = ref("");
+const pageProduct = ref(1)
+const pageSizeProduct = ref(10)
+const totalProduct = ref(0);
+const totalPagePageProduct = ref(1);
 
 const listFactory = ref({
   label: [
@@ -553,7 +557,6 @@ const handleUploadFileFoto = async (event: any) => {
     try {
       const response = await uploadDocument(fileData);
       if (response.code === 2000) {
-        console.log(response);
         formData.value.foto_produk = response.data.file_url;
       }
     } catch (error) {
@@ -947,6 +950,7 @@ const addProduct = async () => {
 };
 
 const addPabrik = async (item) => {
+
   const body = {
     id_reg: id,
     id_pabrik: [item.id],
@@ -956,6 +960,7 @@ const addPabrik = async (item) => {
     method: "post",
     body,
   });
+
   if (response.code === 2000) {
     isAddFactoryModalOpen.value = false;
     addDialog.value = false;
@@ -983,7 +988,6 @@ const updateProduct = async () => {
     );
 
     if (response.code === 2000) {
-      console.log("Berhasil update, mengambil data terbaru...");
       await getListProducts();
 
       formData.value = {
@@ -1021,7 +1025,7 @@ const updateDataPU = async () => {
       params: { id_reg: id },
       body: {
         nama_pu_sh: formDataPU.value.nama_pu_sh,
-        alamat: formDataPU.value.alamat
+        alamat: formDataPU.value.alamat,
       },
       headers: {
         "Content-Type": "application/json",
@@ -1136,29 +1140,48 @@ const getDetailFasilitasOutlet = async (fasId) => {
 
 const getDetailData = async (type: string) => {
   try {
-    const response: any = await $api("/reguler/lph/detail-payment", {
-      method: "get",
-      params: { url: `${LIST_INFORMASI_PEMBAYARAN}/${id}/${type}` },
-    });
-
-    if (response.code === 2000) {
-      const data = response?.data;
-
-      if (type === "pengajuan") {
-        formDataPU.value = data;
-        console.log("Wqdwdqwdwq:", formDataPU);
-      }
-      if (type === "pemeriksaanproduk") {
-        const noDaftar = data?.no_pendaftaran?.no_daftar;
-        if (noDaftar) await OldDoc(noDaftar);
-        else console.error("noDaftar tidak ditemukan dalam response API");
-      }
-
-      return data;
+    if (type === 'produk') {
+        const response: any = await $api("/reguler/lph/detail-payment", {
+          method: "get",
+          params: {
+            url: `${LIST_INFORMASI_PEMBAYARAN}/${id}/${type}`,
+            page: pageProduct.value,
+            size: pageSizeProduct.value
+          },
+        });
+        if (response.code === 2000) {
+          totalProduct.value = response?.totalItems;
+          totalPagePageProduct.value = response?.totalPages;
+          return response.data;
+        } else {
+          const snackbar = useSnackbar();
+  
+          snackbar.sendSnackbar("Ada Kesalahan", "error");
+        }
     } else {
-      const snackbar = useSnackbar();
-
-      snackbar.sendSnackbar("Ada Kesalahan", "error");
+      const response: any = await $api("/reguler/lph/detail-payment", {
+        method: "get",
+        params: { url: `${LIST_INFORMASI_PEMBAYARAN}/${id}/${type}` },
+      });
+  
+      if (response.code === 2000) {
+        const data = response?.data;
+  
+        if (type === "pengajuan") {
+          formDataPU.value = data;
+        }
+        if (type === "pemeriksaanproduk") {
+          const noDaftar = data?.no_pendaftaran?.no_daftar;
+          if (noDaftar) await OldDoc(noDaftar);
+          else console.error("noDaftar tidak ditemukan dalam response API");
+        }
+  
+        return data;
+      } else {
+        const snackbar = useSnackbar();
+  
+        snackbar.sendSnackbar("Ada Kesalahan", "error");
+      }
     }
   } catch (error) {
     const snackbar = useSnackbar();
@@ -1189,8 +1212,6 @@ const getListProducts = async () => {
 
       productItems.value = response.data || [];
       totalItems.value = productItems.value.length; // 🔥 Hitung total item
-
-      console.log("Total Items:", totalItems.value); // Debugging
     }
 
     return response;
@@ -1268,7 +1289,6 @@ const getListFacNotTaken = async (type: string) => {
         if (response.data.length > 0) {
           response.data.forEach((el: any) => (el.checked = false));
           listFactoryNoTaken.value.value = response.data;
-          console.log("Response data:", response);
         }
       } else {
         response.data.forEach((el: any) => (el.checked = false));
@@ -1383,8 +1403,6 @@ const fetchHasilAudit = async () => {
       query: { id },
     });
 
-    console.log("Response hasil audit:", response);
-
     if (response.code == 2000) {
       if (response.data.length > 0)
         selectedAuditResult.value = response.data[0].hasil_audit;
@@ -1419,6 +1437,7 @@ onMounted(async () => {
 
   dataPengajuan.value = responseData?.[0]?.value || {};
   dataProduk.value = responseData?.[1]?.value || [];
+  
   dataPemeriksaanProduk.value = responseData?.[2]?.value || {};
   localStorage.setItem(
     "lovAuditor",
@@ -1426,6 +1445,14 @@ onMounted(async () => {
   );
   loading.value = false;
 });
+
+const handlePageChange = async (payload: any) => {
+  pageProduct.value = payload?.page;
+  pageSizeProduct.value = payload?.itemsPerPage;
+  const response = await getDetailData("produk")
+  if (response)
+    dataProduk.value = response;
+}
 </script>
 
 <template>
@@ -1563,7 +1590,7 @@ onMounted(async () => {
               Daftar Nama Produk
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelDaftarProduk :data="dataProduk" />
+              <PanelDaftarProduk :data="dataProduk" :page="pageProduct" :per-page="pageSizeProduct" :total="totalProduct" :handlePageChange="handlePageChange" />
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="3" class="pt-3">
@@ -1780,6 +1807,7 @@ onMounted(async () => {
           <!-- Tabel Data Laporan Audit -->
           <div class="text-h5 font-weight-bold mb-3">Data Laporan Audit</div>
           <VDataTable
+            disable-sort
             :headers="laporanAudit.label"
             :items="laporanAudit.value"
             hide-default-footer
@@ -1872,6 +1900,7 @@ onMounted(async () => {
           <VRow class="mb-5">
             <VCol>
               <VDataTable
+                disable-sort
                 class="auditor-table"
                 :headers="assignAuditorHeader"
                 :items="dataPemeriksaanProduk?.auditor"
@@ -2176,6 +2205,7 @@ onMounted(async () => {
         </div>
 
         <VDataTable
+          disable-sort
           v-model:page="page"
           class="domestic-table border rounded mt-5"
           :headers="productName"
@@ -2389,6 +2419,7 @@ onMounted(async () => {
           </VBtn>
         </div>
         <VDataTable
+          disable-sort
           :id="id"
           v-model:page="page"
           class="domestic-table border rounded mt-5"
@@ -2454,6 +2485,7 @@ onMounted(async () => {
       <VCardText>
         <div class="d-flex justify-end" />
         <VDataTable
+          disable-sort
           :id="id"
           v-model:page="page"
           class="domestic-table border rounded mt-5"
