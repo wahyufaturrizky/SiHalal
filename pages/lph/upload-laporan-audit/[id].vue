@@ -40,6 +40,7 @@ const modalContent = ref("");
 const isUpdateDataMappingModalOpen = ref(false);
 const isUpdateDataProdukModalOpen = ref(false);
 const isUpdateDataPabrikModalOpen = ref(false);
+const isUpdateDataOutletModalOpen = ref(false);
 const productItems = ref<any>([]);
 const bahanSelected = ref([]);
 const tabAddBahan = ref("1");
@@ -58,7 +59,9 @@ const hideFooterBtn = ref(false);
 const totalItems = ref(0);
 const page = ref(1);
 const isAddFactoryModalOpen = ref(false);
+const isAddOutletModalOpen = ref(false);
 const isEditFactoryModalOpen = ref(false);
+const isEditOutletModalOpen = ref(false);
 const isUpdateDataPuModalOpen = ref(false);
 const draftCertif = ref("");
 
@@ -82,6 +85,16 @@ const listFactoryNoTaken = ref({
     { title: "Action", key: "actions", sortable: false, nowrap: true },
   ],
   value: props?.listFactoryNoTaken || [],
+});
+
+const listOutlet = ref({
+  label: [
+    { title: "No.", key: "no", nowrap: true },
+    { title: "Nama", key: "nama", nowrap: true },
+    { title: "Alamat", key: "alamat", nowrap: true },
+    { title: "Action", key: "publication", sortable: false, nowrap: true },
+  ],
+  value: props?.listOutlet || [],
 });
 
 const EditProdukModalOpen = ref(false);
@@ -326,14 +339,25 @@ const openEditPabrik = () => {
   getFactoryAndOutlet("FAPAB");
 };
 
+const openEditOutlet = () => {
+  modalTitle.value = "Update Outlet";
+  isUpdateDataOutletModalOpen.value = true;
+  getFactoryAndOutlet("FAOUT");
+};
+
 const openModalAddFactory = () => {
   isAddFactoryModalOpen.value = !isAddFactoryModalOpen.value;
   getListFacNotTaken("FAPAB");
 };
 
 const HandleEditPabrik = async (fasId) => {
-  await getDetailFasilitasi(fasId);
+  await getDetailFasilitasPabrik(fasId);
   isEditFactoryModalOpen.value = !isEditFactoryModalOpen.value;
+};
+
+const HandleEditOutlet = async (fasId) => {
+  await getDetailFasilitasOutlet(fasId);
+  isEditOutletModalOpen.value = !isEditOutletModalOpen.value;
 };
 
 const openEditProfile = () => {
@@ -344,6 +368,10 @@ const openEditProfile = () => {
 const handleEditProduct = async (productId) => {
   await getDetailProduk(productId, "edit");
   EditProdukModalOpen.value = true;
+};
+
+const openModalAddOutlet = () => {
+  isAddOutletModalOpen.value = !isAddOutletModalOpen.value;
 };
 
 const handleRemoveFile = async (uploadedFile: any) => {
@@ -919,8 +947,6 @@ const addProduct = async () => {
 };
 
 const addPabrik = async (item) => {
-  console.log("Menambahkan pabrik:", item);
-
   const body = {
     id_reg: id,
     id_pabrik: [item.id],
@@ -930,9 +956,6 @@ const addPabrik = async (item) => {
     method: "post",
     body,
   });
-
-  console.log("Response API:", response);
-
   if (response.code === 2000) {
     isAddFactoryModalOpen.value = false;
     addDialog.value = false;
@@ -1054,9 +1077,9 @@ const getDetailProduk = async (productId, type) => {
   }
 };
 
-const getDetailFasilitasi = async (fasId) => {
+const getDetailFasilitasPabrik = async (fasId) => {
   const response = await $api(
-    "/reguler/lph/update-fasilitas/detail-fasilitas",
+    "/reguler/lph/update-fasilitas/detail-fasilitas-pabrik",
     {
       method: "get",
       params: { id_reg: id, id_pabrik: fasId },
@@ -1081,6 +1104,35 @@ const getDetailFasilitasi = async (fasId) => {
     };
   }
 };
+
+const getDetailFasilitasOutlet = async (fasId) => {
+  const response = await $api(
+    "/reguler/lph/update-fasilitas/detail-fasilitas-outlet",
+    {
+      method: "get",
+      params: { id_reg: id, id_pabrik: fasId },
+    }
+  );
+
+  if (response.code === 2000) {
+    itemDetailFasilitas.value = response.data || {};
+
+    formDataPabrik.value = {
+      name: response.data.nama,
+      address: response.data.alamat,
+      country: response.data.negara,
+      provinsi: response.data.provinsi,
+      regency: response.data.kab_kota,
+      zipCode: response.data.kode_pos,
+      status: response.data.status_milik,
+      fasilId: response.data.fasil_id,
+      idReg: response.data.id_reg,
+      idPabrik: response.data.id_pabrik,
+      idFas: response.data.id_fas,
+    };
+  }
+};
+
 
 const getDetailData = async (type: string) => {
   try {
@@ -1185,12 +1237,10 @@ const getFactoryAndOutlet = async (type: string) => {
         if (response.data.length > 0) {
           response.data.forEach((el: any) => (el.checked = false));
           listFactory.value.value = response.data;
-          console.log("Response data:", response);
         }
       } else {
         response.data.forEach((el: any) => (el.checked = false));
-
-        // listOutlet.value = response?.data;
+        listOutlet.value.value = response?.data;
       }
 
       return response;
@@ -1456,6 +1506,9 @@ onMounted(async () => {
                 </VListItem>
                 <VListItem @click="openEditPabrik">
                   <VListItemTitle>Update Pabrik</VListItemTitle>
+                </VListItem>
+                <VListItem @click="openEditOutlet">
+                  <VListItemTitle>Update Outlet</VListItemTitle>
                 </VListItem>
                 <VListItem @click="openEditProfile">
                   <VListItemTitle>Edit Data Pengajuan</VListItemTitle>
@@ -2522,6 +2575,98 @@ onMounted(async () => {
       </VCardActions>
     </VCard>
   </VDialog>
+
+  <VDialog v-model="isUpdateDataOutletModalOpen" max-width="840px" persistent>
+    <VCard>
+      <VCardTitle class="d-flex justify-space-between align-center">
+        {{ modalTitle }}
+        <VBtn icon @click="isUpdateDataOutletModalOpen = false">
+          <VIcon>mdi-close</VIcon>
+        </VBtn>
+      </VCardTitle>
+      <VCardText>
+        <div class="d-flex justify-end">
+          <VBtn color="primary" variant="outlined" @click="openModalAddOutlet">
+            <VIcon class="mr-2"> fa-plus </VIcon>
+            Tambah
+          </VBtn>
+        </div>
+        <VDataTable
+          :id="id"
+          v-model:page="page"
+          class="domestic-table border rounded mt-5"
+          :headers="listOutlet.label"
+          :items="listOutlet.value || []"
+          :items-per-page="10"
+        >
+          <template #body="{ items }">
+            <tr v-if="items.length === 0">
+              <td colspan="7" class="text-center">
+                <div class="pt-2">
+                  <img src="~/assets/images/empty-data.png" alt="Data Kosong" />
+                  <div class="pt-2 font-weight-bold">Data Kosong</div>
+                </div>
+              </td>
+            </tr>
+            <tr v-for="(item, idx) in items" :key="idx">
+              <td>{{ (page - 1) * 10 + idx + 1 }}</td>
+              <td>{{ item.nama }}</td>
+              <td>{{ item.alamat }}</td>
+              <td class="text-center">
+                <VMenu>
+                  <template #activator="{ props }">
+                    <VIcon
+                      icon="fa-ellipsis-v"
+                      color="primary"
+                      class="cursor-pointer"
+                      v-bind="props"
+                    />
+                  </template>
+                  <VList>
+                    <VListItem
+                      prepend-icon="mdi-pen"
+                      title="Edit"
+                      @click="HandleEditOutlet(item.id)"
+                    />
+                    <!-- <VListItem prepend-icon="fa-trash" title="Hapus" @click="deletePabrik(item.id)" /> -->
+                  </VList>
+                </VMenu>
+              </td>
+            </tr>
+          </template>
+        </VDataTable>
+      </VCardText>
+
+      <VCardActions class="d-flex justify-end">
+        <VBtn color="primary" @click="isUpdateDataOutletModalOpen = false">
+          Tutup
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
+
+  <VDialog v-model="isEditOutletModalOpen" max-width="840px" persistent>
+    <VCard>
+      <VCardText>
+        <FormEditOutletLPH
+          :initial-data="formDataPabrik"
+          @close="isEditOutletModalOpen = false"
+        />
+      </VCardText>
+    </VCard>
+  </VDialog>
+
+  <VDialog v-model="  isAddOutletModalOpen" max-width="840px" persistent>
+    <VCard>
+      <VCardText>
+        <FormTambahOutletLPH
+          :initial-data="{ idReg: id }"
+          @close="  isAddOutletModalOpen = false"
+        />
+      </VCardText>
+    </VCard>
+  </VDialog>
+
 </template>
 
 <style scoped lang="scss">
