@@ -6,12 +6,17 @@ const route = useRoute();
 const id = route?.params?.id;
 const loadingAll = ref(true);
 
+const downloadForms = reactive({
+  sjph: "",
+  permohonan: "",
+});
+
 const handleDownloadV2 = async (filename: string, param?: string) => {
   try {
     const response: any = await $api("/shln/submission/document/download", {
       method: "post",
       body: {
-        filename: filename,
+        filename,
         param: param && `dirName=${param}`,
       },
     });
@@ -34,24 +39,69 @@ const getDetailData = async () => {
       data.value = response.data;
 
       return response;
-    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
+const getSjphDocument = async () => {
+  try {
+    const response: any = await $api("/reguler/lph/generate-sjph", {
+      method: "post",
+      body: {
+        id_reg: id,
+      },
+    });
+
+    if (response?.code === 2000) {
+      downloadForms.sjph = response.data?.file;
+
+      return response?.data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
+  }
+};
+
+const getPermohonanDocument = async () => {
+  try {
+    const response: any = await $api("/reguler/lph/generate-permohonan", {
+      method: "post",
+      body: {
+        id_reg: id,
+      },
+    });
+
+    if (response?.code === 2000) {
+      downloadForms.permohonan = response.data?.file;
+
+      return response?.data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
+  }
+};
+
 onMounted(async () => {
-  const res: any = await Promise.all([getDetailData()]);
+  const res: any = await Promise.all([
+    getDetailData(),
+    getSjphDocument(),
+    getPermohonanDocument(),
+  ]);
 
   const checkResIfUndefined = res.every((item: any) => {
     return item !== undefined;
   });
 
-  if (checkResIfUndefined) {
-    loadingAll.value = false;
-  } else {
-    loadingAll.value = false;
-  }
+  if (checkResIfUndefined) loadingAll.value = false;
+  else loadingAll.value = false;
 });
 </script>
 
@@ -67,9 +117,7 @@ onMounted(async () => {
             <VBtn
               append-icon="fa-download"
               variant="flat"
-              @click="
-                () => handleDownloadV2(data?.dokumen?.permohonan, 'FILES')
-              "
+              @click="() => handleDownloadV2(downloadForms.permohonan, 'FILES')"
             >
               Unduh
             </VBtn>
@@ -82,7 +130,7 @@ onMounted(async () => {
             <VBtn
               append-icon="fa-download"
               variant="flat"
-              @click="() => handleDownloadV2(data?.dokumen?.sjph, 'FILES')"
+              @click="() => handleDownloadV2(downloadForms.sjph, 'FILES')"
             >
               Unduh
             </VBtn>
