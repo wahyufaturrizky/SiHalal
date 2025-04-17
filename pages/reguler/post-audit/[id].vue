@@ -392,7 +392,7 @@ onMounted(async () => {
                 Pengembalian
               </VBtn>
               <VBtn
-                @click="downloadDocument(draftCertif, 'FILES')"
+                @click="previewDocument(draftCertif, 'FILES')"
                 variant="outlined"
               >
                 Lihat Draft Sertif
