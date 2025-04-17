@@ -1514,7 +1514,7 @@ const handlePageChange = async (payload: any) => {
             <VBtn
               variant="outlined"
               class="me-2"
-              @click="downloadDocument(draftCertif, 'FILES')"
+              @click="previewDocument(draftCertif, 'FILES')"
             >
               Lihat Draft Sertif
             </VBtn>
