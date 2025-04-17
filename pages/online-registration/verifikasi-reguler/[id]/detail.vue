@@ -257,6 +257,8 @@ const dataDetail = ref<DetailVerifikatorReguler>({
 const route = useRoute();
 
 const isViewOnly = (route?.query as any)?.isViewOnly;
+const suratPermohonan = ref({})
+const suratSjph = ref({})
 
 const getDetail = async () => {
   try {
@@ -269,6 +271,7 @@ const getDetail = async () => {
     if (response.code != 2000) {
       navigateTo("/online-registration/verifikasi-reguler");
       useSnackbar().sendSnackbar("ada kesalahan", "error");
+      
       return;
     }
     // dataDetail.value = response.data;
@@ -280,12 +283,52 @@ const getDetail = async () => {
   } catch (error) {
     navigateTo("/online-registration/verifikasi-reguler");
     useSnackbar().sendSnackbar("ada kesalahan", "error");
+
     return;
   }
 };
+
+const getSuratPermohonan = async () => {
+  try {
+    const response: any = await $api("/reguler/pelaku-usaha/generate-permohonan", {
+      method: "post",
+      body: {
+        id_reg: route.params.id,
+      },
+    });
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      return;
+    }
+    suratPermohonan.value = response?.data
+    useMyVerifikatorRegulerStore().setData(response.data);
+  } catch (error) {
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    return;
+  }
+}
+const getSuratSjph = async () => {
+  try {
+    const response: any = await $api("/reguler/pelaku-usaha/generate-sjph", {
+      method: "post",
+      body: {
+        id_reg: route.params.id,
+      },
+    });
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      return;
+    }
+    suratSjph.value = response?.data
+  } catch (error) {
+    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    return;
+  }
+}
+
 onMounted(async () => {
   tabs.value = 0;
-  await getDetail();
+  await Promise.allSettled([getDetail(), getSuratPermohonan(), getSuratSjph()])
 });
 </script>
 <template>
@@ -327,7 +370,7 @@ onMounted(async () => {
     </VTabsWindowItem>
 
     <VTabsWindowItem value="7">
-      <EditDokumenRegulerVerifikator />
+      <EditDokumenRegulerVerifikator :permohonan="suratPermohonan" :sjph="suratSjph" />
     </VTabsWindowItem>
   </VTabsWindow>
 </template>
