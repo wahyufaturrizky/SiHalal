@@ -41,15 +41,7 @@ const updatePabrik = async () => {
       }
     }
     
-    let statusNama = form.value.status;
-    if (statusOptions.value && statusOptions.value.length) {
-      const selectedStatus = statusOptions.value.find(
-        item => item.code === form.value.status
-      );
-    }
-    
-    
-    const response = await $api("/reguler/lph/update-fasilitas/update-fasilitas-pabrik", {
+    const response = await $api("/reguler/lph/update-fasilitas/update-fasilitas-outlet", {
       method: "PUT",
       params: { id_reg: form.value.idReg, id_pabrik: form.value.idPabrik },
       headers: { "Content-Type": "application/json" },
@@ -178,7 +170,7 @@ async function getMasterStatusPabrik() {
       <VCardTitle
         class="text-h5 font-weight-bold d-flex justify-space-between align-center"
       >
-        <span>Edit Data Pabrik</span>
+        <span>Edit Data Outlet</span>
         <VBtn
           icon
           color="transparent"
@@ -194,7 +186,7 @@ async function getMasterStatusPabrik() {
 
         <VRow class="mb-1">
           <VCol cols="12">
-            <VLabel>Nama Pabrik</VLabel>
+            <VLabel>Nama Outlet</VLabel>
             <VTextField
               v-model="form.name"
               placeholder="Isi Nama Pabrik"
@@ -208,7 +200,7 @@ async function getMasterStatusPabrik() {
 
         <VRow class="mb-1">
           <VCol cols="12">
-            <VLabel>Alamat Pabrik</VLabel>
+            <VLabel>Alamat Outlet</VLabel>
             <VTextField
               v-model="form.address"
               placeholder="Isi Alamat Pabrik"
@@ -306,23 +298,6 @@ async function getMasterStatusPabrik() {
           </VCol>
         </VRow>
 
-        <!-- Status Pabrik -->
-        <VRow class="mb-1">
-          <VCol cols="12">
-            <VLabel>Status Pabrik</VLabel>
-            <VAutocomplete
-              v-model="form.status"
-              :items="statusOptions"
-              item-title="name"
-              item-value="code"
-              laceholder="Pilih Status Pabrik"
-              outlined
-              dense
-              required
-              class="input-field"
-            />
-          </VCol>
-        </VRow>
         <div class="d-flex justify-end ga-2">
           <VBtn @click="cancel" variant="outlined"> Batal </VBtn>
           <VBtn @click="updatePabrik"> Simpan </VBtn>
