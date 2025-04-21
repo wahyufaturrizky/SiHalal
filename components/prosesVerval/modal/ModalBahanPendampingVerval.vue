@@ -52,7 +52,8 @@ const getIngredientListDropdown = async () => {
       return;
     }
 
-    dataBahanList.value = response.data;
+    console.log("response = ", response.data);
+    dataBahanList.value = response.data ? response.data : [];
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
@@ -63,17 +64,23 @@ const hardcodeDiragukan = [
   { name: "Tidak Diragukan", value: 1 },
 ];
 
-const onClickBahan = () => {
-  dataBahanList.value.filter((val) => {
-    if (val.id_bahan == form.value.id_bahan) {
-      form.value.id = val.id;
-      if (val.tgl_berlaku_sertifikat) {
-        form.value.temuan = `"SH/KH No ${val.no_sertifikat}, berlaku s.d ${tgl_berlaku_sertifikat} (Merek ${val.nama_bahan} dari produsen ${val.produsen})`;
-      } else {
-        form.value.temuan = null;
-      }
+const onClickBahan = (value: any) => {
+  const tmp = JSON.parse(JSON.stringify(dataBahanList.value));
+  const result = tmp.filter((val) => val.id == value);
+
+  console.log("result = ", result);
+
+  if (result.length > 0) {
+    if (result[0].no_sertifikat) {
+      form.value.diragukan = hardcodeDiragukan[0].value;
+      form.value.temuan = `"SH/KH No ${result[0].no_sertifikat}, berlaku s.d ${result[0].tgl_berlaku_sertifikat} (Merek ${result[0].nama_bahan} dari produsen ${result[0].produsen})`;
+      form.value.keterangan = null;
+    } else {
+      form.value.diragukan = hardcodeDiragukan[1].value;
+      form.value.temuan = null;
+      form.value.keterangan = result[0].kelompok;
     }
-  });
+  }
 };
 
 const onSubmit = async () => {
@@ -122,6 +129,7 @@ const editBahan = async () => {
           idBahan: form.value.id_bahan,
           status: form.value.diragukan,
           notes: form.value.keterangan,
+          temuan: form.value.temuan,
         },
       }
     );
@@ -138,10 +146,11 @@ const editBahan = async () => {
   }
 };
 
-const getDetailBahan = async () => {
+const getDetailBahan = async (idBahan: string | null) => {
   try {
+    const param = idBahan ? idBahan : props.idBahan;
     const response = await $api(
-      `/self-declare/proses-verval/${route.params?.id}/ingredient-detail/${props.idBahan}`,
+      `/self-declare/proses-verval/${route.params?.id}/ingredient-detail/${param}`,
       {
         method: "get",
       }
@@ -160,8 +169,23 @@ const getDetailBahan = async () => {
         : parseInt(response.data?.status) === parseInt(1)
         ? parseInt(1)
         : "";
-    form.value.temuan = response.data?.temuan;
-    form.value.keterangan = response.data?.notes;
+
+    if (props.modalType === modalTypeEnum.EDIT) {
+      dataBahanList.value = [
+        { id: response.data?.id_bahan, nama_bahan: response.data?.nama_bahan },
+      ];
+
+      if (props.listBahan) {
+        const listBahanTmp = JSON.parse(JSON.stringify(props.listBahan));
+        const bahanTmp = listBahanTmp?.filter(
+          (val) => val.id_bahan === param
+        )[0];
+        console.log("list bahan tmp = ", bahanTmp);
+
+        form.value.temuan = bahanTmp.temuan;
+        form.value.keterangan = bahanTmp.keterangan;
+      }
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
@@ -181,17 +205,18 @@ watch(
 
 const onOpenModal = async () => {
   await getIngredientListDropdown();
-  if (tmpList) {
-    tmpList.value.forEach((val) => {
-      const tmpIdx = dataBahanList.value.findIndex(
-        (val2) => val2.id == val.id_bahan
-      );
-      dataBahanList.value.splice(tmpIdx, 1);
-    });
-  }
+  console.log("modal type = ", props.modalType);
+  // if (tmpList) {
+  //   tmpList.value.forEach((val) => {
+  //     const tmpIdx = dataBahanList.value.findIndex(
+  //       (val2) => val2.id == val.id_bahan
+  //     );
+  //     dataBahanList.value.splice(tmpIdx, 1);
+  //   });
+  // }
   if (props.modalType === modalTypeEnum.EDIT) {
-    console.log("edit");
-    await getDetailBahan();
+    await getDetailBahan(form.value.id_bahan);
+    // onClickBahan(form.value.id_bahan);
   } else {
     form.value = {
       id: null,
@@ -203,6 +228,12 @@ const onOpenModal = async () => {
     };
   }
 };
+onMounted(async () => {
+  if (props.modalType === modalTypeEnum.EDIT && props.idBahan) {
+    console.log("Memuat detail bahan untuk ID:", props.idBahan);
+    await getDetailBahan(null);
+  }
+});
 </script>
 <template>
   <VDialog v-model="isVisible">
@@ -257,6 +288,7 @@ const onOpenModal = async () => {
                     v-model="form.id_bahan"
                     v-on:update:model-value="onClickBahan"
                     :rules="[requiredValidator]"
+                    :disabled="modalType === modalTypeEnum.EDIT"
                   ></VSelect>
                 </VItemGroup>
                 <br />
@@ -272,8 +304,8 @@ const onOpenModal = async () => {
                     :rules="[requiredValidator]"
                   ></VSelect>
                 </VItemGroup>
-                <br v-if="modalType === modalTypeEnum.ADD" />
-                <VItemGroup v-if="modalType === modalTypeEnum.ADD">
+                <br />
+                <VItemGroup>
                   <VLabel>Temuan</VLabel>
                   <VTextField
                     density="compact"
@@ -282,12 +314,13 @@ const onOpenModal = async () => {
                   ></VTextField>
                 </VItemGroup>
                 <br />
-                <VItemGroup v-if="modalType === modalTypeEnum.EDIT">
+                <VItemGroup>
                   <VLabel>Keterangan</VLabel>
                   <VTextField
                     density="compact"
                     placeholder="Data otomatis terisi apabila nama bahan telah dipilih"
                     v-model="form.keterangan"
+                    :disabled="modalType === modalTypeEnum.ADD"
                   ></VTextField>
                 </VItemGroup>
               </VCol>

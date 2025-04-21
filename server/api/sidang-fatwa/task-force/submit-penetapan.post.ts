@@ -13,14 +13,18 @@ export default defineEventHandler(async (event) => {
   return await $fetch(
     `${runtimeConfig.coreBaseUrl}/api/v1/komisi-fatwa/proses-sidang-submit`,
     {
-      method: "POST",
-      headers: { Authorization: authorizationHeader },
+      method: "post",
+      headers: {
+        Authorization: authorizationHeader,
+        "Content-Type": "application/json",
+      },
       body: payload,
     }
   ).catch((err: NuxtError) => {
-    throw createError({
-      statusCode: 500,
-      statusMessage: "register gagal otp",
-    });
+    return err
+    // throw createError({
+    //   statusCode: 500,
+    //   statusMessage: err,
+    // });
   });
 });

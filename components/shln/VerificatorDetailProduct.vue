@@ -49,7 +49,7 @@ const loadItemListProductById = async (page: number, size: number) => {
 
 const headers = [
   { title: "No", key: "no" },
-  { title: "Manufacture", key: "name" },
+  { title: "Manufacture", key: "manufactur" },
   { title: "Product Name", key: "name" },
   { title: "HS Code", key: "hc_code" },
 ];
@@ -79,6 +79,7 @@ const headers = [
           </VCol>
         </VRow>
         <VDataTableServer
+          disable-sort
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
           :headers="headers"
@@ -90,6 +91,9 @@ const headers = [
         >
           <template #item.no="{ index }">
             {{ index + 1 + (page - 1) * itemPerPage }}
+          </template>
+          <template #item.hc_code="{ item }">
+            {{ item.hc_code }} ({{ item.hc_code_description }})
           </template>
         </VDataTableServer>
       </VCard>

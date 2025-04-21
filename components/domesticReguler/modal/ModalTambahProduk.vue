@@ -72,7 +72,12 @@ const selected = ref([]);
           </VRow>
           <VRow>
             <VCol cols="12">
-              <VDataTable :headers="tableHeader" :items="items">
+              <VDataTable
+                disable-sort
+                :items-per-page-options="[10, 25, 50, 100]"
+                :headers="tableHeader"
+                :items="items"
+              >
                 <template #item.action="{ item }">
                   <VCheckbox v-model="selected" :value="item.id"></VCheckbox>
                 </template>

@@ -42,9 +42,9 @@ const dialogMaxWidth = computed(() => {
   <VBtn
     variant="text"
     prepend-icon="ri-edit-line"
-    @click="openDialog"
     block
     :disabled="!props.isEditable"
+    @click="openDialog"
   >
     Ubah
   </VBtn>
@@ -133,6 +133,7 @@ const dialogMaxWidth = computed(() => {
               placeholder="Isi Tanggal Sertifikat"
               teleport-center
               :enable-time-picker="false"
+              format="dd/MM/yyyy"
             />
           </VCol>
         </VRow>

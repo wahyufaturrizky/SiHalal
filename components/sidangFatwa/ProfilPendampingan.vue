@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { isAny } from '@sindresorhus/is';
-import { defineProps, ref, watch } from 'vue';
+import { defineProps, ref, watch } from "vue";
 
 const props = defineProps({
   sertifikat: {
@@ -27,7 +26,7 @@ const props = defineProps({
     type: String,
     required: true,
   },
-})
+});
 
 // Combine props into a single reactive object
 const combinedProps = ref({
@@ -37,121 +36,103 @@ const combinedProps = ref({
   produk: props.produk,
   cleaning: props.cleaning,
   kemasan: props.kemasan,
-})
+});
 
-const profil = ref([])
+const profil = ref([]);
 
 function getValueOrDash(value) {
-  return value && value.trim() !== '' ? value : '-'
+  return value && value.trim() !== "" ? value : "-";
 }
 
 watch(
   combinedProps,
-  newData => {
+  (newData) => {
     // Example of using `newData` to update a derived reactive variable
     if (newData) {
       profil.value = [
         {
           id: 1,
-          key: 'Nomor STTD',
+          key: "Nomor STTD",
           value: getValueOrDash(newData?.sertifikat?.no_daftar),
         },
         {
           id: 2,
-          key: 'Nama Perusahaan',
+          key: "Nama Perusahaan",
           value: getValueOrDash(newData?.sertifikat?.nama_pu),
         },
         {
           id: 3,
-          key: 'Alamat',
+          key: "Alamat",
           value: getValueOrDash(newData?.sertifikat?.alamat_pu),
         },
         {
           id: 4,
-          key: 'Kota/Kab',
+          key: "Kota/Kab",
           value: getValueOrDash(newData?.sertifikat?.kota_pu),
         },
         {
           id: 5,
-          key: 'Nama Personel',
+          key: "Nama Personel",
           value: getValueOrDash(newData?.penanggungjawab?.nama_pj),
         },
-        { id: 6, key: 'divider', value: true },
+        { id: 6, key: "divider", value: true },
         {
           id: 7,
-          key: 'Jenis Layanan',
+          key: "Jenis Layanan",
           value: getValueOrDash(newData?.sertifikat?.jenis_layanan),
         },
         {
           id: 8,
-          key: 'Jenis Produk',
+          key: "Jenis Produk",
           value: getValueOrDash(newData?.sertifikat?.jenis_produk),
         },
         {
           id: 9,
-          key: 'Pendampingan',
+          key: "Pendampingan",
           value: getValueOrDash(formatDate(newData?.sertifikat?.tgl_daftar)),
         },
         {
           id: 10,
-          key: 'Pendamping',
+          key: "Pendamping",
           value: getValueOrDash(newData?.sertifikat?.pendamping),
         },
         {
           id: 11,
-          key: 'Lembaga',
+          key: "Lembaga",
           value: getValueOrDash(newData?.sertifikat?.lembaga_pendamping),
         },
         {
           id: 12,
-          key: 'Nama Produk',
+          key: "Nama Produk",
           value: getValueOrDash(newData?.produk),
         },
-        { id: 13, key: 'divider', value: true },
-      ]
+        { id: 13, key: "divider", value: true },
+      ];
     }
 
-    console.log(profil, 'Derived Profil')
+    // console.log(profil, 'Derived Profil')
   },
-  { immediate: true, deep: true },
-)
+  { immediate: true, deep: true }
+);
 
-const paneSwitcher = [0]
+const paneSwitcher = [0];
 </script>
 
 <template>
   <VExpansionPanels v-model="paneSwitcher">
     <VExpansionPanel>
       <VExpansionPanelTitle><h2>Profil</h2></VExpansionPanelTitle>
-      <br>
+      <br />
       <VExpansionPanelText>
-        <VRow
-          v-for="item in profil"
-          :key="item.id"
-          gutters="0.5svh"
-        >
-          <VCol
-            v-if="item.key !== 'divider'"
-            cols="3"
-          >
+        <VRow v-for="item in profil" :key="item.id" gutters="0.5svh">
+          <VCol v-if="item.key !== 'divider'" cols="3">
             {{ item.key }}
           </VCol>
-          <VCol
-            v-if="item.key !== 'divider'"
-            cols="1"
-          >
-            :
-          </VCol>
-          <VCol
-            v-if="item.key !== 'divider'"
-            cols="8"
-          >
+          <VCol v-if="item.key !== 'divider'" cols="1"> : </VCol>
+          <VCol v-if="item.key !== 'divider'" cols="8">
             {{ item.value }}
           </VCol>
-          <VCol
-            v-else
-            cols="12"
-          >
+          <VCol v-else cols="12">
             <VDivider />
           </VCol>
         </VRow>
@@ -160,17 +141,13 @@ const paneSwitcher = [0]
             <h4>Daftar Bahan</h4>
           </VCol>
         </VRow>
-        <VRow style="padding-inline-start: 2svw;">
+        <VRow style="padding-inline-start: 2svw">
           <VCol cols="12">
             <ol type="1">
               <li>
                 <VRow>
-                  <VCol cols="4">
-                    Bahan
-                  </VCol>
-                  <VCol cols="1">
-                    :
-                  </VCol>
+                  <VCol cols="4"> Bahan </VCol>
+                  <VCol cols="1"> : </VCol>
                   <VCol cols="7">
                     {{ bahan }}
                   </VCol>
@@ -178,12 +155,8 @@ const paneSwitcher = [0]
               </li>
               <li>
                 <VRow>
-                  <VCol cols="4">
-                    Cleaning Agent
-                  </VCol>
-                  <VCol cols="1">
-                    :
-                  </VCol>
+                  <VCol cols="4"> Cleaning Agent </VCol>
+                  <VCol cols="1"> : </VCol>
                   <VCol cols="7">
                     {{ cleaning }}
                   </VCol>
@@ -191,12 +164,8 @@ const paneSwitcher = [0]
               </li>
               <li>
                 <VRow>
-                  <VCol cols="4">
-                    Kemasan
-                  </VCol>
-                  <VCol cols="1">
-                    :
-                  </VCol>
+                  <VCol cols="4"> Kemasan </VCol>
+                  <VCol cols="1"> : </VCol>
                   <VCol cols="7">
                     {{ kemasan }}
                   </VCol>

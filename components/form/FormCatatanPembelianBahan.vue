@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import FormEditCatatan from "@/components/form/FormEditCatatan.vue";
 
-const snackBar = useSnackbar();
-
 const props = defineProps({
   isEditable: {
     type: Boolean,
     default: true,
   },
 });
+
+const snackBar = useSnackbar();
 
 const headers = [
   { title: "No", key: "no" },
@@ -75,16 +75,25 @@ const download = (item) => {
       <FormTambahCatatan :is-editable="props.isEditable" @confirm="save" />
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="headers" :items="items">
+      <VDataTable
+        disable-sort
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="headers"
+        :items="items"
+      >
         <template #item.file="{ item }">
-          <v-btn color="primary" variant="plain" @click="download(item)">
+          <VBtn color="primary" variant="plain" @click="download(item)">
             <VIcon>mdi-download</VIcon>
             File
-          </v-btn>
+          </VBtn>
+        </template>
+
+        <template #item.tanggal="{ item }">
+          {{ formatDateId(item.tanggal) }}
         </template>
 
         <template #item.action="{ item }">
-          <v-btn color="primary" variant="plain">
+          <VBtn color="primary" variant="plain">
             <VIcon>mdi-dots-vertical</VIcon>
             <VMenu activator="parent" :close-on-content-click="false">
               <VCard>
@@ -98,14 +107,14 @@ const download = (item) => {
                   variant="text"
                   color="error"
                   prepend-icon="ri-delete-bin-6-line"
-                  @click="remove(item.no)"
                   block
+                  @click="remove(item.no)"
                 >
                   Hapus
                 </VBtn>
               </VCard>
             </VMenu>
-          </v-btn>
+          </VBtn>
         </template>
       </VDataTable>
     </VCardItem>

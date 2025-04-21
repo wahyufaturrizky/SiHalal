@@ -48,7 +48,7 @@ function handleEdit(item, idPabrik) {
     .then((val: any) => {
       if (val.code == 2000) {
         // store.updateFactory(item.id, item);
-        store.fetchProfile();
+        store.fetchProfile(null);
         snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
         editPabrikRef.value.hideErrorProhbName();
         editPabrikRef.value.closeDialog();
@@ -74,7 +74,7 @@ function handleDelete(item) {
   )
     .then((val: any) => {
       if (val.code == 2000) {
-        store.fetchProfile();
+        store.fetchProfile(null);
         snackbar.sendSnackbar("Berhasil Menghapus Data ", "success");
       } else {
         snackbar.sendSnackbar("Gagal Menghapus Data ", "error");
@@ -106,7 +106,7 @@ const handleAddAspekLegalConfirm = (formData) => {
   )
     .then((val: any) => {
       if (val.code == 2000) {
-        store.fetchProfile();
+        store.fetchProfile(null);
         snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
         addPabrikRef.value.hideErrorProhbName();
         addPabrikRef.value.closeDialog();
@@ -136,7 +136,7 @@ const initialDataForEdit = (item: any) => ({
             {{ t("detail-pu.pu-fac-title") }}
           </div>
         </VCol>
-        <VCol cols="6" style="display: flex; justify-content: end;">
+        <VCol cols="6" style="display: flex; justify-content: end">
           <DataPabrikModal
             ref="addPabrikRef"
             mode="add"
@@ -148,6 +148,7 @@ const initialDataForEdit = (item: any) => ({
     </VCardTitle>
     <VCardItem>
       <VDataTable
+        disable-sort
         :headers="tablePabrikHeader"
         :items="props.pabrikData"
         item-value="no"
@@ -192,7 +193,7 @@ const initialDataForEdit = (item: any) => ({
               <VListItem @click="handleDelete(item)">
                 <VListItemTitle class="text-red">
                   <VIcon color="red" class="mr-2"> mdi-delete </VIcon>
-                    {{t('detail-pu.pu-legal-modal-hapus')}}
+                  {{ t("detail-pu.pu-legal-modal-hapus") }}
                 </VListItemTitle>
               </VListItem>
             </VList>

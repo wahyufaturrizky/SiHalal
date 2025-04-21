@@ -11,5 +11,13 @@ const legalHeader = [
 </script>
 
 <template>
-  <VDataTable :headers="legalHeader" />
+  <VDataTable
+    disable-sort
+    :items-per-page-options="[10, 25, 50, 100]"
+    :headers="legalHeader"
+  >
+    <template #item.date="{ item }">
+      {{ item.date ? formatDateId(item.date) : "NA" }}
+    </template>
+  </VDataTable>
 </template>

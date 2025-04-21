@@ -157,6 +157,8 @@ const debouncedFetch = debounce(loadItem, 500);
         <VRow>
           <VCol>
             <VDataTableServer
+              disable-sort
+              :items-per-page-options="[10, 25, 50, 100]"
               v-model:items-per-page="size"
               v-model:page="page"
               :headers="headers"

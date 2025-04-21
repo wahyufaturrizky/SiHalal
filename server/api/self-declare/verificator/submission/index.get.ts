@@ -22,6 +22,7 @@ export default defineEventHandler(async (event) => {
     pendamping,
     kabupaten,
     status,
+    channel_id,
   } = (await getQuery(event)) as {
     page: string;
     size: string;
@@ -33,6 +34,7 @@ export default defineEventHandler(async (event) => {
     pendamping: string;
     kabupaten: string;
     status: string;
+    channel_id: string;
   };
 
   const params: any = {
@@ -41,7 +43,7 @@ export default defineEventHandler(async (event) => {
   };
 
   if (keyword != "") {
-    params["keyword"] = keyword;
+    params["keywords"] = keyword;
   }
 
   if (fasilitas != "") {
@@ -70,7 +72,10 @@ export default defineEventHandler(async (event) => {
   if (status != "") {
     params["status"] = status;
   }
-
+  if (channel_id != "") {
+    params["channel_id"] = channel_id;
+  }
+  console.log(params);
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/verificator/halal-certificate-reguler/self-declare/search`,
     {

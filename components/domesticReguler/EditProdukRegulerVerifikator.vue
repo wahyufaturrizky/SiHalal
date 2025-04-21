@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 const tableHeader = [
@@ -8,19 +7,16 @@ const tableHeader = [
   { title: "Nama Pabrik", value: "nama_pabrik" },
 ];
 
-const items = ref([])
+const items = ref([]);
 const route = useRoute();
 const getProduct = async () => {
   try {
-    const response = await $api(
-      "/reguler/verifikator/detail/produk",
-      {
-        method: "post",
-        body: {
-          id_reg: route.params.id,
-        },
-      }
-    );
+    const response = await $api("/reguler/verifikator/detail/produk", {
+      method: "post",
+      body: {
+        id_reg: route.params.id,
+      },
+    });
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan", "error");
       return;
@@ -39,11 +35,18 @@ onMounted(async () => {
   <VCard>
     <VCardTitle>
       <VRow>
-        <VCol cols="6"><h3>{{ t('pengajuan-reguler.reguler-form-produk-title') }}</h3></VCol>
+        <VCol cols="6"
+          ><h3>{{ t("pengajuan-reguler.reguler-form-produk-title") }}</h3></VCol
+        >
       </VRow>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="tableHeader" :items="items">
+      <VDataTable
+        disable-sort
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="tableHeader"
+        :items="items"
+      >
         <template #item.no="{ index }">
           {{ index + 1 }}
         </template>

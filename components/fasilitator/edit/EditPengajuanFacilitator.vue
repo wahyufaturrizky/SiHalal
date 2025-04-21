@@ -2,6 +2,10 @@
 import { ref } from "vue";
 import { useDisplay } from "vuetify";
 
+import type {
+  MasterDistrict
+} from "@/server/interface/master.iface";
+
 const props = defineProps({
   dataform: {
     type: Object,
@@ -27,6 +31,9 @@ const isVisible = ref(false);
 const loadingUpdate = ref(false);
 const route = useRoute();
 
+const province = ref();
+const district = ref();
+
 const facilitateId = route.params.id;
 
 const form = ref({
@@ -42,6 +49,8 @@ const form = ref({
   kuota: "",
   picName: "",
   picPhoneNumber: "",
+  provinsi_id: "",
+  kabupaten_id: ""
 });
 
 const isFormError = ref(false);
@@ -51,10 +60,29 @@ const openPanelRegisterData = ref(0);
 
 const onInitData = () => {
   form.value = { ...dataform };
+
+  getDistrict(form.value.provinsi_id)
 };
 
-onMounted(() => {
-  onInitData();
+const getProvince = async () => {
+  const response = await $api("/master/province", {
+    method: "get",
+  });
+  province.value = response;
+};
+
+const getDistrict = async (kode: string) => {
+  const response: MasterDistrict[] = await $api("/master/district", {
+    method: "post",
+    body: {
+      province: kode,
+    },
+  });
+  district.value = response;
+};
+
+onMounted( async () => {
+  await Promise.allSettled([onInitData(), getProvince()]);
 });
 
 const closeDialog = () => {
@@ -85,6 +113,8 @@ const putFacilitate = async () => {
       kuota,
       picName,
       picPhoneNumber,
+      provinsi_id,
+      kabupaten_id
     } = form.value;
 
     const res = await $api(`/facilitate/update/${facilitateId}`, {
@@ -101,6 +131,8 @@ const putFacilitate = async () => {
         kuota: Number(kuota),
         nama_pic_program: picName,
         no_hp_pic_program: picPhoneNumber,
+        provinsi_id: provinsi_id,
+        kabupaten_id: kabupaten_id
       },
     });
 
@@ -130,7 +162,7 @@ const cancel = () => {
 
 const checkIsFieldEMpty = (data: any) => {
   return Object.keys(data)?.find((key: any) => {
-    if (key !== "facilitatorName") return !data[key];
+    if (key !== "facilitatorName" && key !== "kuota") return !data[key];
   });
 };
 
@@ -199,7 +231,7 @@ const limitCharProgramNameFacilitate = (v: string) => {
 
 <template>
   <VRow>
-    <VCol cols="8">
+    <VCol cols="">
       <ExpandCard title="Data Fasilitasi" class="mb-6 pa-8">
         <VForm>
           <VRow>
@@ -253,7 +285,7 @@ const limitCharProgramNameFacilitate = (v: string) => {
                 :rules="[requiredValidator, yearMustBeSameWithSelectedDate]"
                 :items="
                   Array.from(
-                    { length: 6 },
+                    { length: 1 },
                     (_, i) => new Date().getFullYear() + i
                   )
                 "
@@ -261,19 +293,52 @@ const limitCharProgramNameFacilitate = (v: string) => {
             </VCol>
           </VRow>
           <VRow>
-            <VCol cols="12">
-              <label class="text-h6" for="year">
-                Lingkup Wilayah Fasilitasi
-              </label>
-              <VAutocomplete
-                id="regionalScope"
-                v-model="form.regionalScope"
-                :rules="[requiredValidator]"
-                :items="['Nasional', 'Provinsi', 'Kota/Kab.']"
-                placeholder="Pilih lingkup wilayah"
-                solo
-                clearable
-              />
+             <VCol :cols="12">
+              <VItemGroup>
+                <VLabel text="Lingkup Wilayah Fasilitasi"></VLabel>
+                <VAutocomplete
+                  id="regionalScope"
+                  v-model="form.regionalScope"
+                  :rules="[requiredValidator]"
+                  :items="['Nasional', 'Provinsi', 'Kota/Kab.']"
+                  placeholder="Pilih lingkup wilayah"
+                  solo
+                  clearable
+                />
+              </VItemGroup>
+            </VCol>
+          </VRow>
+          <VRow>
+            <VCol :cols="12">
+              <VItemGroup>
+                <VLabel text="Provinsi"></VLabel>
+                <VAutocomplete
+                  :rules="[requiredValidator]"
+                  require
+                  v-on:update:model-value="getDistrict"
+                  placeholder="Pilih Provinsi"
+                  v-model="form.provinsi_id"
+                  :items="province"
+                  item-value="code"
+                  item-title="name"
+                />  
+              </VItemGroup>
+            </VCol>
+          </VRow>
+           <VRow>
+            <VCol :cols="12">
+              <VItemGroup>
+                <VLabel text="Kabupaten/Kota"></VLabel>
+                <VAutocomplete
+                  :items="district"
+                  item-value="code"
+                  item-title="name"
+                  v-model="form.kabupaten_id"
+                  :rules="[requiredValidator]"
+                  require
+                  placeholder="Pilih Kabupaten/Kota"
+                />
+              </VItemGroup>
             </VCol>
           </VRow>
           <VRow>
@@ -339,7 +404,7 @@ const limitCharProgramNameFacilitate = (v: string) => {
             </VCol>
           </VRow>
 
-          <VRow>
+          <VRow v-if="form.type == 'Self Declare'">
             <VCol cols="12">
               <label class="text-h6" for="kuota"> Kuota </label>
               <VTextField
@@ -404,7 +469,7 @@ const limitCharProgramNameFacilitate = (v: string) => {
                       <VBtn
                         icon
                         color="transparent"
-                        style="border: none"
+                        style="border: none;"
                         elevation="0"
                         @click="closeDialog"
                       >
@@ -459,10 +524,10 @@ const limitCharProgramNameFacilitate = (v: string) => {
 }
 
 .custom-date-input input[type="date"] {
-  padding-right: 40px;
+  padding-inline-end: 40px;
 }
 
 .custom-date-input .v-input__icon--append {
-  right: 0;
+  inset-inline-end: 0;
 }
 </style>

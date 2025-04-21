@@ -6,6 +6,7 @@ const loading = ref<boolean>(false);
 const page = ref<number>(1);
 const size = ref<number>(10);
 const searchQuery = ref<string>("");
+const totalItems = ref<number>(0);
 
 const invoiceHeader: any[] = [
   { title: "No", value: "index" },
@@ -56,15 +57,19 @@ const loadItem = async (
     const response: any = await $api("/reguler/payment", {
       method: "get",
       params: {
-        pageNumber,
-        sizeData,
-        search,
+        page: pageNumber,
+        size: sizeData,
+        keyword: search,
         url: path,
       },
     });
 
-    if (response?.code === 2000) dataTable.value = response?.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (response?.code === 2000) {
+      totalItems.value = response.total_item;
+      dataTable.value = response?.data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -89,22 +94,32 @@ onMounted(async () => {
   );
   loading.value = false;
 });
+watch([page, size], () => {
+  loadItem(
+    page.value,
+    size.value,
+    searchQuery.value,
+    LIST_INFORMASI_PEMBAYARAN
+  );
+});
 </script>
 
 <template>
-  <!-- <div
+  <!--
+    <div
     class="d-flex align-center cursor-pointer"
     @click="router.go(-1)"
-  >
+    >
     <VIcon
-      icon="mdi-chevron-left"
-      size="40px"
-      color="primary"
+    icon="mdi-chevron-left"
+    size="40px"
+    color="primary"
     />
     <div class="text-primary">
-      Kembali
+    Kembali
     </div>
-  </div> -->
+    </div>
+  -->
   <VRow no-gutters>
     <VCol>
       <h1 style="font-size: 32px">Informasi Pembayaran</h1>
@@ -129,10 +144,17 @@ onMounted(async () => {
               @input="handleInput"
             />
           </div>
-          <VDataTable
-            class="invoice-table border rounded mt-5"
+          <VDataTableServer
+            v-model:items-per-page="size"
+            v-model:page="page"
+            disable-sort
+            :items-per-page-options="[10, 25, 50, 100]"
+            :items-length="totalItems"
+            :loading="loading"
+            class="border rounded"
             :headers="invoiceHeader"
             :items="dataTable"
+            :hide-default-footer="dataTable.length === 0"
           >
             <template #no-data>
               <div class="w-full mt-2">
@@ -143,7 +165,22 @@ onMounted(async () => {
               </div>
             </template>
             <template #item.index="{ index }">
-              {{ index + 1 }}
+              {{ index + 1 + (page - 1) * size }}
+            </template>
+            <template #item.tanggal_tagihan="{ item }">
+              {{
+                item.tanggal_tagihan ? formatDateId(item.tanggal_tagihan) : "-"
+              }}
+            </template>
+            <template #item.tanggal_jatuh_tempo="{ item }">
+              {{
+                item.tanggal_jatuh_tempo
+                  ? formatDateId(item.tanggal_jatuh_tempo)
+                  : "-"
+              }}
+            </template>
+            <template #item.tanggal_bayar="{ item }">
+              {{ item.tanggal_bayar ? formatDateId(item.tanggal_bayar) : "-" }}
             </template>
             <template #item.actions="{ item }">
               <VIcon
@@ -153,41 +190,11 @@ onMounted(async () => {
                 @click="router.push(`/reguler/payment-info/${item.id_reg}`)"
               />
             </template>
-            <template #bottom>
-              <VDataTableFooter
-                v-if="invoiceData.length > 5"
-                first-icon="mdi-chevron-double-left"
-                last-icon="mdi-chevron-double-right"
-                show-current-page
-              />
-            </template>
-          </VDataTable>
+          </VDataTableServer>
         </VCardText>
       </VCard>
     </VCol>
   </VRow>
 </template>
 
-<style scoped lang="scss">
-:deep(.v-data-table.invoice-table > .v-table__wrapper) {
-  table {
-    thead > tr > th:last-of-type {
-      right: 0;
-      position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
-    }
-    tbody > tr > td:last-of-type {
-      right: 0;
-      position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
-      background: white;
-    }
-  }
-}
-
-:deep(.v-data-table.invoice-table > .v-data-table-footer) {
-  .v-data-table-footer__info {
-    display: none;
-  }
-}
-</style>
+<style scoped lang="scss"></style>

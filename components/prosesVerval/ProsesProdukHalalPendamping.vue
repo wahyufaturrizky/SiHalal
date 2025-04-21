@@ -23,6 +23,14 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  itemsPerPage: {
+    type: Number,
+    default: 10,
+  },
+  currentPage: {
+    type: Number,
+    default: 1,
+  },
 });
 
 const countPersyaratan = ref({
@@ -138,9 +146,21 @@ const onOpenModal = async () => {
         </VCol>
       </VRow>
       <br />
-      <VDataTable :headers="tableHeader" :items="content" hide-default-footer>
+      <VDataTable
+        disable-sort
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="tableHeader"
+        :items="content"
+        hide-default-footer
+      >
         <template #item.no="{ index }">
-          {{ index + 1 }}
+          <div>
+            {{
+              ((props.currentPage || 1) - 1) * (props.itemsPerPage || 10) +
+              index +
+              1
+            }}
+          </div>
         </template>
         <template #item.persyaratan="{ item }">
           {{

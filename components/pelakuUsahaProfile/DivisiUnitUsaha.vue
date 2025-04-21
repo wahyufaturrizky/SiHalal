@@ -43,7 +43,11 @@ const panelOpen = ref(0);
           <VCol cols="12">
             <BasicDataPopup parent-btn-label="Lihat Data">
               <template #content>
-                <VDataTable :headers="tableBussinessUnitHeader" />
+                <VDataTable
+                  disable-sort
+                  :items-per-page-options="[10, 25, 50, 100]"
+                  :headers="tableBussinessUnitHeader"
+                />
               </template>
             </BasicDataPopup>
           </VCol>

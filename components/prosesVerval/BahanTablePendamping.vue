@@ -6,7 +6,7 @@ const tableHeader = [
   { title: "Nama Bahan", value: "nama_bahan" },
   { title: "Diragukan / Tidak Diragukan", value: "status" },
   { title: "Temuan", value: "temuan" },
-  { title: "Catatan", value: "keterangan" },
+  { title: "Keterangan", value: "keterangan" },
   { title: "Action", value: "action" },
 ];
 
@@ -23,6 +23,14 @@ const props = defineProps({
   },
   isTemuanCanEdit: {
     type: Boolean,
+  },
+  itemsPerPage: {
+    type: Number,
+    default: 10,
+  },
+  currentPage: {
+    type: Number,
+    default: 1,
   },
 });
 
@@ -108,9 +116,21 @@ watch(
         </VCol>
       </VRow>
       <br />
-      <VDataTable :headers="tableHeader" :items="content" hide-default-footer>
+      <VDataTable
+        disable-sort
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="tableHeader"
+        :items="content"
+        hide-default-footer
+      >
         <template #item.no="{ index }">
-          {{ index + 1 }}
+          <div>
+            {{
+              ((props.currentPage || 1) - 1) * (props.itemsPerPage || 10) +
+              index +
+              1
+            }}
+          </div>
         </template>
         <template #item.status="{ item }">
           {{
@@ -131,6 +151,7 @@ watch(
               <ModalBahanPendampingVerval
                 :modal-type="modalTypeEnum.EDIT"
                 :id-bahan="item.id_bahan"
+                :list-bahan="content"
                 @emit-add="handleAddBahan"
                 :is-temuan-can-edit="props.isTemuanCanEdit"
               ></ModalBahanPendampingVerval>

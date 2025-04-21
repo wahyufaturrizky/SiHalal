@@ -45,27 +45,32 @@ const download = async (item, param?: string) => {
       </VRow>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="tableHeader" :items="items">
+      <VDataTable
+        disable-sort
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="tableHeader"
+        :items="items"
+      >
         <template #item.no="{ index }">
           {{ index + 1 }}
         </template>
         <template
           #item.signage_responsible="{ item }"
-          style="display: flex; align-items: center; align-content: center"
+          style="display: flex; align-content: center; align-items: center"
         >
           <v-btn
             :disabled="item.ttd_pj == ''"
             color="primary"
             variant="plain"
             prepend-icon="mdi-file-download"
-            @click="download(item.ttd_pj)"
+            @click="download(item.ttd_pj, 'FILES')"
           >
             File
           </v-btn>
         </template>
         <template
           #item.signage_penyelia="{ item }"
-          style="display: flex; align-items: center; align-content: center"
+          style="display: flex; align-content: center; align-items: center"
         >
           <v-btn
             :disabled="item.ttd_ph == ''"

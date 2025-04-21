@@ -2,7 +2,7 @@
 const tableHeader = [
   { title: "No", value: "index" },
   { title: "Tanggal Daftar", value: "tgl_daftar" },
-  { title: "Kode Fasilitasi", value: "kode_fac" },
+  // { title: "Kode Fasilitasi", value: "kode_fac" },
   { title: "Tahun", value: "tahun" },
   { title: "Nama Fasilitasi", value: "fac_name" },
   { title: "Sumber Pembiayaan", value: "sumber_biaya" },
@@ -101,6 +101,8 @@ const maxWidthSearch = computed(() => (mdAndUp ? 700 : "90%"));
       </VRow>
       <VRow>
         <VDataTableServer
+          disable-sort
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
           :headers="tableHeader"

@@ -104,6 +104,7 @@ onMounted(() => {
         </VCardTitle>
         <VCardItem>
           <VDataTable
+            disable-sort
             :headers="tableHeader"
             :items="legalData"
             class="custom-table"

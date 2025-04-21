@@ -17,12 +17,12 @@ const items = ref<
 
 const tableHeader = [
   { title: "No", key: "no" },
-  { title: "Jenis Produk", key: "jenis_produk" },
-  { title: "Nama PU", key: "nama_pu" },
-  { title: "Alamat", key: "alamat" },
-  // { title: "Merk Dagang", key: "merek_dagang" },
   { title: "No. Daftar", key: "no_daftar" },
   { title: "Tanggal Daftar", key: "tgl_daftar" },
+  { title: "Nama PU", key: "nama_pu" },
+  { title: "Alamat", key: "alamat" },
+  { title: "Jenis Produk", key: "jenis_produk" },
+  // { title: "Merk Dagang", key: "merek_dagang" },
   { title: "Action", key: "action" },
 ];
 
@@ -263,6 +263,19 @@ const changeFilterBy = (item) => {
     searchQuery.value
   );
 };
+
+const routeStore = useCommonRoutingStore();
+const route = useRoute();
+
+const navigateAction = (id: string) => {
+  routeStore.setPreviousRoute(route.fullPath);
+  routeStore.setCurrentRoute(`/sidang-fatwa/proses-sidang/${id}`);
+  navigateTo(`/sidang-fatwa/proses-sidang/${id}`, {
+    open: {
+      target: "_blank",
+    },
+  });
+};
 </script>
 
 <template>
@@ -279,7 +292,14 @@ const changeFilterBy = (item) => {
         </VCardTitle>
         <VCardItem>
           <VRow>
-            <VCol cols="3">
+            <VCol
+              cols="3"
+              style="
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+              "
+            >
               <VMenu v-model="showFilterMenu" :close-on-content-click="false">
                 <template #activator="{ props: openMenu }">
                   <VBtn
@@ -369,18 +389,34 @@ const changeFilterBy = (item) => {
                 </VCard>
               </VMenu>
             </VCol>
-            <VCol cols="12">
-              <VLabel>Cari Berdasarkan : </VLabel>
-              <VRadioGroup
-                v-model="selectedFilterBy"
-                inline
-                @update:model-value="changeFilterBy"
-              >
-                <VRadio :label="`Nama PU`" value="nama_pu" />
-                <VRadio :label="`Nomor Daftar`" value="no_daftar" />
-              </VRadioGroup>
+            <VCol cols="9">
+              <VRow>
+                <VCol>
+                  <VLabel>Cari Berdasarkan : </VLabel>
+                  <VRadioGroup
+                    v-model="selectedFilterBy"
+                    inline
+                    @update:model-value="changeFilterBy"
+                  >
+                    <VRadio :label="`Nama PU`" value="nama_pu" />
+                    <VRadio :label="`Nomor Daftar`" value="no_daftar" />
+                  </VRadioGroup>
+                </VCol>
+              </VRow>
+              <VRow>
+                <VCol>
+                  <VTextField
+                    v-model="searchQuery"
+                    density="compact"
+                    placeholder="Search Data"
+                    append-inner-icon="ri-search-line"
+                    style="max-inline-size: 100%"
+                    @input="handleInput"
+                  />
+                </VCol>
+              </VRow>
             </VCol>
-            <VCol cols="12">
+            <!-- <VCol cols="12">
               <VTextField
                 v-model="searchQuery"
                 density="compact"
@@ -389,11 +425,13 @@ const changeFilterBy = (item) => {
                 style="max-inline-size: 100%"
                 @input="handleInput"
               />
-            </VCol>
+            </VCol> -->
           </VRow>
           <VRow>
             <VCol>
               <VDataTableServer
+                disable-sort
+                :items-per-page-options="[10, 25, 50, 100]"
                 v-model:items-per-page="itemPerPage"
                 v-model:page="page"
                 :headers="tableHeader"
@@ -422,6 +460,18 @@ const changeFilterBy = (item) => {
                 </template>
                 <template #item.tgl_daftar="{ item }">
                   {{ formatToISOString(item.tgl_daftar) }}
+                </template>
+                <template #item.action="{ item }">
+                  <div class="d-flex gap-1">
+                    <IconBtn size="small">
+                      <VIcon
+                        icon="ri-arrow-right-line"
+                        color="primary"
+                        @click="navigateAction((item as any).id_daftar)"
+                      />
+                    </IconBtn>
+                    <!-- Right arrow icon for action -->
+                  </div>
                 </template>
               </VDataTableServer>
             </VCol>

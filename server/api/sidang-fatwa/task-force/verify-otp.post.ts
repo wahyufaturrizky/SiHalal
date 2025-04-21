@@ -1,14 +1,20 @@
 const runtimeConfig = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
-  const payload = await readBody(event);  
+  const authorizationHeader = getRequestHeader(event, "Authorization");
+  if (typeof authorizationHeader === "undefined") {
+    throw createError({
+      statusCode: 403,
+      statusMessage:
+        "Need to pass valid Bearer-authorization header to access this endpoint",
+    });
+  }
+  const payload = await readBody(event);
 
   return await $fetch(
-    `${runtimeConfig.authBaseUrl}/api/v1/users/verify-otp`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/komisi-fatwa/verify-otp`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: authorizationHeader },
       body: payload,
     }
   ).catch((err: NuxtError) => {

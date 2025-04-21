@@ -11,11 +11,13 @@ const tableHeader = [
   { title: "Jatuh Tempo", key: "tanggal_jatuh_tempo" },
   { title: "Status", key: "status" },
   { title: "Tanggal Bayar", key: "tanggal_bayar" },
-  { title: "Download Invoice", key: "invoice_uri" },
-  { title: "Download Bukti Bayar", key: "bukti_url" },
+  { title: "Download Invoice", key: "invoice_url" },
+
+  // { title: "Download Bukti Bayar", key: "bukti_url" },
 ];
 
 const defaultStatus = { color: "error", desc: "Unknown Status" };
+
 const statusFinance = new Proxy(
   {
     SB001: { color: "warning", desc: "Menunggu Pembayaran" },
@@ -31,15 +33,17 @@ const statusFinance = new Proxy(
     },
   }
 );
+
 const statusBayar = ref([]);
+
 const getStatusBayar = async () => {
   try {
     const response = await $api("/master/status-bayar", {
       method: "get",
     });
-    if (response.code != 2000) {
-      return;
-    }
+
+    if (response.code != 2000) return;
+
     statusBayar.value = response.data;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -51,24 +55,36 @@ const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(true);
 const page = ref(1);
+
 const loadItem = async (page: number, size: number) => {
   try {
+    console.log("jatuh_tempo = ", filter.value.tgl_jatuh_tempo);
+
     loading.value = true;
+
+    const params = {
+      page,
+      size,
+    };
+
+    if (filter.value?.nama_pengajuan)
+      params.nama_pengajuan = filter.value.nama_pengajuan;
+
+    if (filter.value?.status) params.status = filter.value?.status;
+
+    if (filter.value?.tgl_jatuh_tempo) {
+      params.start_tgl_jatuh_tempo = filter.value?.tgl_jatuh_tempo[0];
+      params.end_tgl_jatuh_tempo = filter.value?.tgl_jatuh_tempo[1];
+    }
 
     const response = await $api("/facilitate/finance/invoice", {
       method: "get",
-      params: {
-        page,
-        size,
-        nama_pengajuan: filter.value.nama_pengajuan,
-        tgl_jatuh_tempo: filter.value.tgl_jatuh_tempo,
-        tgl_tagihan: filter.value.tgl_tagihan,
-        status: filter.value.status,
-      },
+      params,
     });
 
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
       return;
     }
     items.value = response.data;
@@ -79,19 +95,68 @@ const loadItem = async (page: number, size: number) => {
     loading.value = false;
   }
 };
+
 const filter = ref({
   nama_pengajuan: "",
   tgl_tagihan: "",
   tgl_jatuh_tempo: "",
   status: null,
 });
+
 const navigateAction = (id: string) => {
   navigateTo(`/facilitator/verifikasi/${id}`);
 };
+
+const downloadRekap = async (page: number, size: number) => {
+  try {
+    loading.value = true;
+
+    const body = {
+      page,
+      size,
+    };
+
+    // if (filter.value?.nama_pengajuan) {
+    //   params["nama_pengajuan"] = filter.value.nama_pengajuan;
+    // }
+
+    // if (filter.value?.tgl_jatuh_tempo) {
+    //   params["start_tgl_jatuh_tempo"] = filter.value?.tgl_jatuh_tempo[0];
+    //   params["end_tgl_jatuh_tempo"] = filter.value?.tgl_jatuh_tempo[1];
+    // }
+
+    if (filter.value?.status) body.status = filter.value?.status;
+
+    const response: any = await $api("/facilitate/finance/download-rekap", {
+      method: "post",
+      body,
+    });
+
+    const url = URL.createObjectURL(response);
+
+    // Create a temporary <a> tag to trigger the download
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = `excel-rekap-${new Date()}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+
+    // Cleanup
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    loadItem(page, size);
+  } catch (err: any) {
+    useSnackbar().sendSnackbar(err.data || "Ada kesalahan", "error");
+    console.log(err);
+  }
+};
+
 onMounted(async () => {
   await getStatusBayar();
 });
 </script>
+
 <template>
   <VRow>
     <VCol cols="12">
@@ -114,72 +179,80 @@ onMounted(async () => {
         </VCardTitle>
         <VCardItem>
           <VRow>
-            <VCol cols="3">
+            <!--
+              <VCol cols="3">
               <Vuepicdatepicker
-                auto-apply
-                model-type="dd-MM-yyyy"
-                :enable-time-picker="false"
-                :teleport="true"
-                range
-                clearable
-                v-model:model-value="filter.tgl_tagihan"
-                @change="loadItem(page, itemPerPage)"
+              auto-apply
+              model-type="dd/MM/yyyy"
+              :enable-time-picker="false"
+              :teleport="true"
+              range
+              clearable
+              v-model:model-value="filter.tgl_tagihan"
+              @update:model-value="loadItem(page, itemPerPage)"
               >
-                <template #trigger>
-                  <VTextField
-                    label="Tanggal Tagihan"
-                    density="compact"
-                    disabled
-                    prepend-inner-icon="fa-calendar"
-                    v-model:model-value="filter.tgl_tagihan"
-                  ></VTextField>
-                </template>
+              <template #trigger>
+              <VTextField
+              label="Tanggal Tagihan"
+              density="compact"
+              disabled
+              prepend-inner-icon="fa-calendar"
+              v-model:model-value="filter.tgl_tagihan"
+              ></VTextField>
+              </template>
               </Vuepicdatepicker>
-            </VCol>
+              </VCol>
+            -->
             <VCol cols="3">
               <Vuepicdatepicker
+                v-model:model-value="filter.tgl_jatuh_tempo"
                 :teleport="true"
                 :enable-time-picker="false"
                 auto-apply
-                model-type="dd-MM-yyyy"
+                model-type="dd/MM/yyyy"
                 range
-                clearable
-                v-model:model-value="filter.tgl_jatuh_tempo"
-                @change="loadItem(page, itemPerPage)"
+                :clearable="true"
+                @update:model-value="loadItem(page, itemPerPage)"
               >
                 <template #trigger>
                   <VTextField
+                    v-model:model-value="filter.tgl_jatuh_tempo"
                     label="Due Date"
                     density="compact"
                     disabled
                     prepend-inner-icon="fa-calendar"
-                    v-model:model-value="filter.tgl_jatuh_tempo"
-                  ></VTextField>
+                  />
                 </template>
               </Vuepicdatepicker>
             </VCol>
             <VCol cols="3">
               <VSelect
+                v-model="filter.status"
                 placeholder="Status"
                 density="compact"
                 item-value="code"
                 item-title="name"
-                v-model="filter.status"
                 :items="statusBayar"
-                v-on:update:model-value="loadItem(page, itemPerPage)"
-              ></VSelect>
+                @update:model-value="loadItem(page, itemPerPage)"
+              />
             </VCol>
-            <VCol cols="3" style="display: flex; justify-content: end"
-              ><VBtn variant="flat" append-icon="fa-download"
-                >Download Rekap</VBtn
-              ></VCol
-            >
+            <VCol cols="6" style="display: flex; justify-content: end">
+              <VBtn
+                variant="flat"
+                append-icon="fa-download"
+                @click="downloadRekap(page, itemPerPage)"
+              >
+                Download Rekap
+              </VBtn>
+            </VCol>
           </VRow>
           <VRow>
             <VCol cols="12">
               <VDataTableServer
+                disable-sort
                 v-model:items-per-page="itemPerPage"
                 v-model:page="page"
+                :items-per-page-options="[10, 25, 50, 100]"
                 :headers="tableHeader"
                 :items-length="totalItems"
                 :loading="loading"
@@ -220,26 +293,28 @@ onMounted(async () => {
                       : ""
                   }}
                 </template>
-                <template #item.invoice_uri="{ item }">
+                <template #item.invoice_url="{ item }">
                   <VIcon
+                    color="primary"
                     icon="fa-download"
+                    :disabled="item.invoice_url == false"
                     @click="
-                      item.invoice_url != ''
-                        ? downloadDocument(item.invoice_url)
-                        : () => {}
+                      downloadDocument((item as any).invoice_url, 'INVOICE')
                     "
-                  ></VIcon>
+                  />
                 </template>
-                <template #item.bukti_url="{ item }">
+                <!--
+                  <template #item.bukti_url="{ item }">
                   <VIcon
-                    icon="fa-download"
-                    @click="
-                      item.bukti_url != ''
-                        ? downloadDocument(item.bukti_url)
-                        : () => {}
-                    "
+                  color="primary"
+                  icon="fa-download"
+                  :disabled="item.bukti_url == false"
+                  @click="
+                  downloadDocument((item as any).bukti_url, 'FILE')
+                  "
                   ></VIcon>
-                </template>
+                  </template>
+                -->
               </VDataTableServer>
             </VCol>
           </VRow>

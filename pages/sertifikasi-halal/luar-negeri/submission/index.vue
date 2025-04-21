@@ -135,6 +135,8 @@ const openModalsRequest = () => {
       <VRow>
         <VCol>
           <VDataTableServer
+            disable-sort
+            :items-per-page-options="[10, 25, 50, 100]"
             v-model:items-per-page="itemPerPage"
             v-model:page="page"
             :headers="headers"
@@ -148,7 +150,7 @@ const openModalsRequest = () => {
               {{ index + 1 + (page - 1) * itemPerPage }}
             </template>
             <template #item.tgl_daftar="{ item }">
-              {{ formatDateIntl(new Date(item.tgl_daftar)) }}
+              {{ formatDateIntl(new Date(item.tgl_daftar)) || "-" }}
             </template>
             <template #item.status="{ item }">
               <VChip :color="statusItemPelakuUsaha[item?.status_reg].color">

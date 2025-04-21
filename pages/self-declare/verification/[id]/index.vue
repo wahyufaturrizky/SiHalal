@@ -38,6 +38,7 @@ const handleGetFasilitator = async () => {
         id: "Lainnya",
         name: "Lainnya",
       });
+
       return response;
     }
   } catch (error) {}
@@ -55,14 +56,6 @@ const tabs = ref([
 ]);
 
 const tab = ref("pelaku_usaha"); // Default selected tab
-
-const formatDate = (date: string): string => {
-  return new Date(date).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-};
 
 const showTimeline = ref(true);
 const showDetail = ref(true);
@@ -204,6 +197,7 @@ const loadItemPabrik = async (
       itemsPabrik.value = response?.data || [];
       totalItemsPabrik.value = response?.total_item || 0;
       loadingPabrik.value = false;
+
       return response;
     } else {
       useSnackbar().sendSnackbar(
@@ -211,6 +205,7 @@ const loadItemPabrik = async (
         "error"
       );
       loadingPabrik.value = false;
+
       return response;
     }
   } catch (error) {
@@ -237,12 +232,14 @@ const loadItemOutlet = async (
         },
       }
     );
+
     console.log("@response", response);
 
     if (response.code === 2000) {
       itemsOutlet.value = response.data || [];
       totalItemsOutlet.value = response.total_item || 0;
       loadingOutlet.value = false;
+
       return response;
     } else {
       useSnackbar().sendSnackbar(
@@ -250,6 +247,7 @@ const loadItemOutlet = async (
         "error"
       );
       loadingOutlet.value = false;
+
       return response;
     }
   } catch (error) {
@@ -280,8 +278,9 @@ const loadItemAspekLegalById = async ({
 
     if (response.code === 2000) {
       aspekLegal.value = response.data || [];
-      totalItemsAspekLegal.value = response.total || 0;
+      totalItemsAspekLegal.value = response.total_page || 0;
       loadingAspekLegal.value = false;
+
       return response;
     } else {
       useSnackbar().sendSnackbar(
@@ -292,7 +291,7 @@ const loadItemAspekLegalById = async ({
     }
   } catch (error) {
     loadingAspekLegal.value = false;
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 7", "error");
   }
 };
 
@@ -318,8 +317,9 @@ const loadItemPenyeliaById = async ({
 
     if (response.code === 2000) {
       penyeliaHalal.value = response.data || [];
-      totalItemsPenyelia.value = response.total || 0;
+      totalItemsPenyelia.value = response.total_page || 0;
       loadingPenyelia.value = false;
+
       return response;
     } else {
       useSnackbar().sendSnackbar(
@@ -330,7 +330,7 @@ const loadItemPenyeliaById = async ({
     }
   } catch (error) {
     loadingPenyelia.value = false;
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 8", "error");
   }
 };
 
@@ -356,8 +356,9 @@ const loadItemProdukById = async ({
 
     if (response.code === 2000) {
       listTableProduk.value = response.data || [];
-      totalItemsTableProduk.value = response.total || 0;
+      totalItemsTableProduk.value = response.total_page || 0;
       loadingTableProduk.value = false;
+
       return response;
     } else {
       loadingTableProduk.value = false;
@@ -393,6 +394,7 @@ const loadItemBahanById = async ({
       listBahan.value = response.data || [];
       totalItemsBahan.value = response.total || 0;
       loadingBahan.value = false;
+
       return response;
     } else {
       loadingBahan.value = false;
@@ -415,6 +417,7 @@ const loadItemById = async () => {
 
     if (response.code === 2000) {
       const { data } = response || {};
+
       const {
         certificate_halal,
         penanggung_jawab,
@@ -423,7 +426,9 @@ const loadItemById = async () => {
         outlet,
         pabrik,
       } = data || {};
+
       const { nama_pj, nomor_kontak_pj, email_pj } = penanggung_jawab || {};
+
       const {
         nama_pu,
         alamat_pu,
@@ -456,7 +461,7 @@ const loadItemById = async () => {
         areaPemasaran: area_pemasaran,
         lokasiPendamping: "",
         lembagaPendamping: lembaga_pendamping,
-        pendamping: pendamping,
+        pendamping,
         namaPenanggungJawab: nama_pj,
         tanggalSuratPermohon: formatToISOString(
           tgl_mohon || new Date(new Date().setDate(new Date().getDate() + 1))
@@ -470,7 +475,7 @@ const loadItemById = async () => {
         // },
         {
           label: "Tanggal",
-          value: formatDate(tgl_mohon),
+          value: formatDateId(tgl_mohon),
         },
         {
           label: "Jenis Pengajuan",
@@ -516,12 +521,12 @@ const loadItemById = async () => {
 
       detailData.value = response.data;
     } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      useSnackbar().sendSnackbar("Ada Kesalahan 9", "error");
     }
   } catch (error) {
     console.log("@error", error);
 
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 10", "error");
   }
 };
 
@@ -533,10 +538,11 @@ const loadDocument = async () => {
 
     if (response.length > 0) {
       dokumen.value = response;
+
       return response;
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 1", "error");
   }
 };
 
@@ -548,10 +554,11 @@ const loadAgama = async () => {
 
     if (response.length > 0) {
       listAgama.value = response;
+
       return response;
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 2", "error");
   }
 };
 
@@ -563,10 +570,11 @@ const loadJenisPendaftaran = async () => {
 
     if (response.length > 0) {
       listJenisPendaftaran.value = response;
+
       return response;
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 4", "error");
   }
 };
 
@@ -578,10 +586,11 @@ const loadJenisLayanan = async () => {
 
     if (response.length > 0) {
       listJenisLayanan.value = response;
+
       return response;
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 5", "error");
   }
 };
 
@@ -593,10 +602,11 @@ const loadJenisProduk = async () => {
 
     if (response.length > 0) {
       listProduk.value = response;
+
       return response;
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 6", "error");
   }
 };
 
@@ -611,10 +621,11 @@ const loadListFasilitasi = async () => {
 
     if (response.code === 2000) {
       listKodeDaftarFasilitasi.value = response.data || [];
+
       return response;
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    useSnackbar().sendSnackbar("Ada Kesalahan 3", "error");
   }
 };
 
@@ -625,7 +636,7 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
       {
         method: "get",
         query: {
-          id_reg: self,
+          id_reg: selfDeclareId,
           lokasi,
         },
       }
@@ -633,9 +644,15 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
 
     if (response.code === 2000) {
       lembagaPendamping.value = response.data;
+
       return response;
     }
-  } catch (error) {}
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      error.data?.errors?.list_error[0] || "Ada kesalahan",
+      "error"
+    );
+  }
 };
 
 const handleGetPendamping = async (idLembaga: string | null) => {
@@ -647,6 +664,8 @@ const handleGetPendamping = async (idLembaga: string | null) => {
         method: "get",
         query: {
           id_lembaga: idLembaga,
+          lokasi: formData.lokasi_pendamping,
+          id_reg: submissionId,
         },
       }
     );
@@ -663,6 +682,7 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
   try {
     formData.id_lembaga_pendamping = null;
     lembagaPendamping.value = [];
+
     const response: any = await $api(
       "/self-declare/business-actor/submission/list-lembaga-pendamping",
       {
@@ -679,7 +699,12 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
     }
 
     return response;
-  } catch (error) {}
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      error.data?.errors?.list_error[0] || "Ada kesalahan",
+      "error"
+    );
+  }
 };
 
 const loadDataPendamping = async (lokasi: string | null) => {
@@ -717,11 +742,8 @@ onMounted(async () => {
     return item !== undefined;
   });
 
-  if (checkResIfUndefined) {
-    loadingAll.value = false;
-  } else {
-    loadingAll.value = false;
-  }
+  if (checkResIfUndefined) loadingAll.value = false;
+  else loadingAll.value = false;
 });
 
 const headersProduk = [
@@ -730,6 +752,7 @@ const headersProduk = [
   { title: "Jumlah Bahan", key: "jumlah_bahan" },
   { title: "Merek", key: "merek" },
   { title: "Verified", key: "verified" },
+
   // { title: "Action", key: "action" },
 ];
 
@@ -739,14 +762,17 @@ const bahanTableHeader = [
   { title: "Nama Bahan", key: "nama_bahan" },
   { title: "Produsen", key: "produsen" },
   { title: "Tanggal Berlaku", key: "tanggal_berlaku" },
+
   // { title: "Action", key: "action" },
 ];
 
 const outletTableHeader = [
   { title: "No", key: "no" },
+
   // { title: "Jenis Bahan", key: "jenis_outlet" },
   { title: "Nama Bahan", key: "nama" },
   { title: "Alamat", key: "alamat" },
+
   // { title: "Status", key: "status_milik" },
   // { title: "Action", key: "action" },
 ];
@@ -755,6 +781,7 @@ const pabrikTableHeader = [
   { title: "No", key: "no" },
   { title: "Nama", key: "nama" },
   { title: "Alamat", key: "alamat" },
+
   // { title: "Status", key: "status_milik" },
   // { title: "Action", key: "action" },
 ];
@@ -790,11 +817,11 @@ const tandaiOK = async () => {
     );
 
     if (res?.code === 2000) {
-      useSnackbar().sendSnackbar("Success", "success");
+      router.push("/self-declare/verification");
       loadingTandaiOK.value = false;
 
       setTimeout(() => {
-        router.go(-1);
+        useSnackbar().sendSnackbar("Tandai OK Success", "success");
       }, 1000);
     } else {
       useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
@@ -822,7 +849,8 @@ const lihatLaporan = async () => {
       loadingLihatLaporan.value = false;
 
       setTimeout(async () => {
-        await downloadDocument(res?.data?.file);
+        // await downloadDocument(res?.data?.file);
+        await previewDocument(res?.data?.file);
       }, 1000);
     } else {
       useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
@@ -877,6 +905,7 @@ const responseId = ref("");
 const onSearchFasilitator = async () => {
   try {
     facName.value = "";
+
     const kode = querySearch.value;
 
     const response: any = await $api("/self-declare/submission/kode", {
@@ -895,6 +924,7 @@ const onSearchFasilitator = async () => {
       facName.value = response.data[0].name;
       console.log("ressponde id", response.data[0].id);
       console.log("responseId ", responseId);
+
       // formData.id_fasilitator = responseId.value;
       console.log("id fasilitator ", formData.id_fasilitator);
     } else {
@@ -902,6 +932,7 @@ const onSearchFasilitator = async () => {
       isKodeFound.value = false;
       isKodeNotFound.value = true;
     }
+
     return response;
   } catch (error) {}
 };
@@ -909,6 +940,7 @@ const onSearchFasilitator = async () => {
 const onSelectFasilitator = (selectedId: string) => {
   if ((isFasilitator.value = selectedId === "Lainnya")) {
     onSearchFasilitator();
+
     return;
   }
   isKodeFound.value = false;
@@ -926,51 +958,53 @@ const onSelectFasilitator = (selectedId: string) => {
       <VCol class="d-flex justify-end align-center" cols="4" md="5">
         <VBtn
           :loading="loadingLihatLaporan"
-          @click="lihatLaporan"
           variant="outlined"
           class="mx-2"
+          @click="lihatLaporan"
         >
           Lihat Laporan
         </VBtn>
         <VBtn
           :loading="loadingTandaiOK"
-          @click="tandaiOK"
           color="#49A84C"
           class="mx-2"
+          @click="tandaiOK"
         >
           Tandai OK
         </VBtn>
-        <VBtn
+        <!--
+          <VBtn
           :loading="loadingTandaiNotOK"
-          @click="batalkanStatusHijau"
           variant="outlined"
           color="error"
           class="mx-2"
-        >
+          @click="batalkanStatusHijau"
+          >
           Batalkan Status Hijau
-        </VBtn>
-        <!-- <VBtn
+          </VBtn>
+        -->
+        <!--
+          <VBtn
           :loading="loadingPengembalian"
           @click="pengembalian"
           variant="outlined"
           class="mx-2"
-        >
+          >
           Pengembalian
-        </VBtn> -->
-        <ModalPengembalianSelfDecVer
-          :modal-type="'return'"
-        ></ModalPengembalianSelfDecVer>
-        <ModalPengembalianSelfDecVer
-          :modal-type="'reject'"
-        ></ModalPengembalianSelfDecVer>
-        <!-- <VBtn
+          </VBtn>
+        -->
+        <ModalPengembalianSelfDecVer modal-type="return" />
+        <ModalPengembalianSelfDecVer modal-type="reject" />
+        <!--
+          <VBtn
           :loading="loadingDibatalkan"
           @click="dibatalkan"
           color="#E1442E"
           class="mx-2"
-        >
+          >
           Dibatalkan
-        </VBtn> -->
+          </VBtn>
+        -->
       </VCol>
     </VRow>
 
@@ -1031,14 +1065,16 @@ const onSelectFasilitator = (selectedId: string) => {
           <VCard variant="flat" class="pa-4">
             <p class="text-h4" style="font-weight: bold">Penanggung Jawab</p>
             <!-- Nama Usaha -->
-            <!-- <VCol cols="12">
+            <!--
+              <VCol cols="12">
               <VLabel class="required"> Jenis Badan Usaha </VLabel>
               <VTextField
-                v-model="jenisBadanUsahaPenanggungJawab"
-                required
-                placeholder="Jenis Badan Usaha"
+              v-model="jenisBadanUsahaPenanggungJawab"
+              required
+              placeholder="Jenis Badan Usaha"
               />
-            </VCol> -->
+              </VCol>
+            -->
             <VCol cols="12">
               <VLabel class="required"> Nama </VLabel>
               <VTextField
@@ -1076,24 +1112,28 @@ const onSelectFasilitator = (selectedId: string) => {
               <VCol>
                 <p class="text-h3">Aspek Legal</p>
               </VCol>
-              <!-- <VCol class="d-flex justify-end align-center" cols="6" md="2">
+              <!--
+                <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahDataAspekLegal
-                  mode="add"
-                  :dokumen="dokumen"
-                  @refresh="
-                    loadItemAspekLegalById({
-                      page: pageAspekLegal,
-                      size: itemPerPageAspekLegal,
-                    })
-                  "
+                mode="add"
+                :dokumen="dokumen"
+                @refresh="
+                loadItemAspekLegalById({
+                page: pageAspekLegal,
+                size: itemPerPageAspekLegal,
+                })
+                "
                 />
-              </VCol> -->
+                </VCol>
+              -->
             </VRow>
             <VRow>
               <VCol>
                 <VDataTableServer
                   v-model:items-per-page="itemPerPageAspekLegal"
                   v-model:page="pageAspekLegal"
+                  disable-sort
+                  :items-per-page-options="[10, 25, 50, 100]"
                   :headers="legalTableHeader"
                   :items="aspekLegal"
                   :loading="loadingAspekLegal"
@@ -1112,7 +1152,7 @@ const onSelectFasilitator = (selectedId: string) => {
                     }}
                   </template>
                   <template #item.tanggal_surat="{ item }">
-                    {{ formatDate((item as any).tanggal_surat) }}
+                    {{ formatDateId((item as any).tanggal_surat) }}
                   </template>
                 </VDataTableServer>
               </VCol>
@@ -1129,16 +1169,18 @@ const onSelectFasilitator = (selectedId: string) => {
                 <p class="text-h3">Penyelia Halal</p>
               </VCol>
               <VCol class="d-flex justify-end align-center" cols="6" md="2">
-                <!-- <TambahDataPenyeliaHalal
+                <!--
+                  <TambahDataPenyeliaHalal
                   @refresh="
-                    loadItemPenyeliaById({
-                      page: pagePenyelia,
-                      size: itemPerPagePenyelia,
-                    })
+                  loadItemPenyeliaById({
+                  page: pagePenyelia,
+                  size: itemPerPagePenyelia,
+                  })
                   "
                   mode="add"
                   :listagama="listAgama"
-                /> -->
+                  />
+                -->
               </VCol>
             </VRow>
             <VRow>
@@ -1146,6 +1188,8 @@ const onSelectFasilitator = (selectedId: string) => {
                 <VDataTableServer
                   v-model:items-per-page="itemPerPagePenyelia"
                   v-model:page="pagePenyelia"
+                  disable-sort
+                  :items-per-page-options="[10, 25, 50, 100]"
                   :headers="penyeliaTableHeader"
                   :items="penyeliaHalal"
                   :loading="loadingPenyelia"
@@ -1162,89 +1206,95 @@ const onSelectFasilitator = (selectedId: string) => {
                     {{ index + 1 + (pagePenyelia - 1) * itemPerPagePenyelia }}
                   </template>
                   <template #item.tgl_sk="{ item }">
-                    {{ formatDate((item as any).tgl_sk) }}
-                  </template>
-                  <!-- <template #item.action="{ item }">
-                    <div class="d-flex gap-1">
-                      <VBtn variant="text" elevation="0">
-                        <VIcon
-                          mode="edit"
-                          icon="ri-delete-bin-fill"
-                          color="#E1442E"
-                        />
-                      </VBtn>
+                    <div v-if="item.tgl_sk">
+                      {{ formatDateId((item as any).tgl_sk) }}
                     </div>
-                  </template> -->
+                  </template>
+                  <!--
+                    <template #item.action="{ item }">
+                    <div class="d-flex gap-1">
+                    <VBtn variant="text" elevation="0">
+                    <VIcon
+                    mode="edit"
+                    icon="ri-delete-bin-fill"
+                    color="#E1442E"
+                    />
+                    </VBtn>
+                    </div>
+                    </template>
+                  -->
                 </VDataTableServer>
               </VCol>
             </VRow>
           </VCard>
         </VCol>
       </VRow>
-      <!-- <VRow>
+      <!--
+        <VRow>
         <VCol>
-          <VCard variant="flat" class="pa-4">
-            <VRow>
-              <VCol>
-                <h3 class="text-h4 font-weight-bold">
-                  Dokumen Persyaratan Fasilitas
-                </h3>
-              </VCol>
-            </VRow>
-            <VRow>
-              <VCol>
-                <VRow>
-                  <VCol>
-                    <VAlert
-                      type="warning"
-                      variant="tonal"
-                      color="#652672"
-                      density="compact"
-                    >
-                      <p>
-                        File yang digunakan dengan extention XLSX, PDF, PNG dan
-                        Maksimal 50mb
-                      </p>
-                    </VAlert>
-                  </VCol>
-                </VRow>
-              </VCol>
-            </VRow>
-            <VRow>
-              <VCol>
-                <VDataTableServer
-                  :headers="headersDokumenPersyaratanFasilitas"
-                  :items="itemsDokumenPersyaratanFasilitas"
-                  :loading="loading"
-                  :hide-default-footer="true"
-                  loading-text="Loading..."
-                  items-per-page="2"
-                  page="1"
-                  :items-length="2"
-                >
-                  <template #item.id="{ index }">
-                    {{ index + 1 + (page - 1) * itemPerPage }}
-                  </template>
-                  <template #item.nama="{ item }">
-                    {{ item.nama }}
-                  </template>
-                  <template #item.doc="{ item }">
-                    <div>
-                      <HalalFileInput />
-                    </div>
-                  </template>
-                </VDataTableServer>
-              </VCol>
-            </VRow>
-          </VCard>
+        <VCard variant="flat" class="pa-4">
+        <VRow>
+        <VCol>
+        <h3 class="text-h4 font-weight-bold">
+        Dokumen Persyaratan Fasilitas
+        </h3>
         </VCol>
-      </VRow> -->
+        </VRow>
+        <VRow>
+        <VCol>
+        <VRow>
+        <VCol>
+        <VAlert
+        type="warning"
+        variant="tonal"
+        color="#652672"
+        density="compact"
+        >
+        <p>
+        File yang digunakan dengan extention XLSX, PDF, PNG dan
+        Maksimal 50mb
+        </p>
+        </VAlert>
+        </VCol>
+        </VRow>
+        </VCol>
+        </VRow>
+        <VRow>
+        <VCol>
+        <VDataTableServer disable-sort  :items-per-page-options="[10, 25, 50, 100]"
+        :headers="headersDokumenPersyaratanFasilitas"
+        :items="itemsDokumenPersyaratanFasilitas"
+        :loading="loading"
+        :hide-default-footer="true"
+        loading-text="Loading..."
+        items-per-page="2"
+        page="1"
+        :items-length="2"
+        >
+        <template #item.id="{ index }">
+        {{ index + 1 + (page - 1) * itemPerPage }}
+        </template>
+        <template #item.nama="{ item }">
+        {{ item.nama }}
+        </template>
+        <template #item.doc="{ item }">
+        <div>
+        <HalalFileInput />
+        </div>
+        </template>
+        </VDataTableServer>
+        </VCol>
+        </VRow>
+        </VCard>
+        </VCol>
+        </VRow>
+      -->
     </VContainer>
 
     <!-- Tab Content Pengajuan -->
     <PengajuanMainSelfDeclareVerifikator
-      :hide-kode-fasilitasi="dataFormPengajuan?.idChannel === 'CH004'"
       v-if="tab === 'pengajuan'"
+      :hide-kode-fasilitasi="dataFormPengajuan?.idChannel === 'CH004'"
     />
 
     <!-- Tab Content Pabrik dan Outlet -->
@@ -1256,15 +1306,19 @@ const onSelectFasilitator = (selectedId: string) => {
               <VCol>
                 <p class="text-h3">Pabrik</p>
               </VCol>
-              <!-- <VCol class="d-flex justify-end align-center" cols="6" md="2">
+              <!--
+                <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahPabrikOutlet mode="add" />
-              </VCol> -->
+                </VCol>
+              -->
             </VRow>
             <VRow>
               <VCol>
                 <VDataTableServer
                   v-model:items-per-page="itemPerPagePabrik"
                   v-model:page="pagePabrik"
+                  disable-sort
+                  :items-per-page-options="[10, 25, 50, 100]"
                   :headers="pabrikTableHeader"
                   :items="itemsPabrik"
                   :items-length="totalItemsPabrik"
@@ -1303,24 +1357,28 @@ const onSelectFasilitator = (selectedId: string) => {
               <VCol>
                 <p class="text-h3">Outlet</p>
               </VCol>
-              <!-- <VCol class="d-flex justify-end align-center" cols="6" md="2">
+              <!--
+                <VCol class="d-flex justify-end align-center" cols="6" md="2">
                 <TambahOutlet mode="add" />
-              </VCol> -->
+                </VCol>
+              -->
             </VRow>
             <VRow>
               <VCol>
                 <VDataTableServer
                   v-model:items-per-page="itemPerPageOutlet"
                   v-model:page="pageOutlet"
+                  disable-sort
+                  :items-per-page-options="[10, 25, 50, 100]"
                   :headers="outletTableHeader"
                   :items="itemsOutlet"
                   :items-length="totalItemsOutlet"
                   :hide-default-footer="true"
+                  loading-text="Loading..."
+                  :loading="loadingOutlet"
                   @update:options="
                     loadItemOutlet(pageOutlet, itemPerPageOutlet)
                   "
-                  loading-text="Loading..."
-                  :loading="loadingOutlet"
                 >
                   <template #item.no="{ index }">
                     {{ index + 1 + (pageOutlet - 1) * totalItemsOutlet }}
@@ -1353,31 +1411,35 @@ const onSelectFasilitator = (selectedId: string) => {
               <p class="text-h3">Daftar Nama Bahan dan Kemasan</p>
             </VCol>
             <VCol class="d-flex justify-end align-center" cols="0" md="2">
-              <!-- <TambahBahanModalHalal
+              <!--
+                <TambahBahanModalHalal
                 @refresh="
-                  loadItemBahanById({ page: pageBahan, size: itemPerPageBahan })
+                loadItemBahanById({ page: pageBahan, size: itemPerPageBahan })
                 "
                 mode="add"
-              /> -->
-              <!-- <VContainer>
+                />
+              -->
+              <!--
+                <VContainer>
                 <VBtn
-                  color="primary"
-                  variant="outlined"
-                  class="d-flex align-center"
-                  @click="triggerFileInputClick"
+                color="primary"
+                variant="outlined"
+                class="d-flex align-center"
+                @click="triggerFileInputClick"
                 >
-                  <VIcon size="20"> ri-upload-line </VIcon>
-                  <span class="ml-2">Upload File</span>
+                <VIcon size="20"> ri-upload-line </VIcon>
+                <span class="ml-2">Upload File</span>
                 </VBtn>
 
                 <input
-                  ref="fileInputRef"
-                  type="file"
-                  style="display: none"
-                  accept=".pdf,.doc,.docx"
-                  @change="handleFileUpload"
+                ref="fileInputRef"
+                type="file"
+                style="display: none"
+                accept=".pdf,.doc,.docx"
+                @change="handleFileUpload"
                 />
-              </VContainer> -->
+                </VContainer>
+              -->
             </VCol>
           </VRow>
           <VRow>
@@ -1401,6 +1463,8 @@ const onSelectFasilitator = (selectedId: string) => {
               <VDataTableServer
                 v-model:items-per-page="itemPerPageBahan"
                 v-model:page="pageBahan"
+                disable-sort
+                :items-per-page-options="[10, 25, 50, 100]"
                 :headers="bahanTableHeader"
                 :items="listBahan"
                 :loading="loadingBahan"
@@ -1451,23 +1515,27 @@ const onSelectFasilitator = (selectedId: string) => {
                 </li>
               </ol>
             </VCol>
-            <!-- <VCol class="d-flex justify-end align-center" cols="6" md="2">
+            <!--
+              <VCol class="d-flex justify-end align-center" cols="6" md="2">
               <TambahProdukSelfDeclareVerifikator
-                @refresh="
-                  loadItemProdukById({
-                    page: pageTableProduk,
-                    size: itemPerPageTableProduk,
-                  })
-                "
-                mode="add"
+              @refresh="
+              loadItemProdukById({
+              page: pageTableProduk,
+              size: itemPerPageTableProduk,
+              })
+              "
+              mode="add"
               />
-            </VCol> -->
+              </VCol>
+            -->
           </VRow>
           <VRow>
             <VCol>
               <VDataTableServer
                 v-model:items-per-page="itemPerPageTableProduk"
                 v-model:page="pageTableProduk"
+                disable-sort
+                :items-per-page-options="[10, 25, 50, 100]"
                 :headers="headersProduk"
                 :items="listTableProduk"
                 :loading="loadingTableProduk"
@@ -1546,18 +1614,14 @@ const onSelectFasilitator = (selectedId: string) => {
                       {{ statusItem[status].desc }}
                     </span>
                     <span class="app-timeline-meta">{{
-                      formatDate(tanggal)
+                      formatDateId(tanggal)
                     }}</span>
                   </div>
                   <div class="app-timeline-text mt-1">
                     {{ username }}
                   </div>
                   <div v-if="comment" class="app-timeline-text mt-1">
-                    {{
-                      (comment as any).length > 38
-                        ? (comment as any).slice(0, 38) + "..."
-                        : (comment as any)
-                    }}
+                    {{ comment }}
                   </div>
                 </VTimelineItem>
               </VTimeline>
@@ -1577,8 +1641,8 @@ const onSelectFasilitator = (selectedId: string) => {
   </VContainer>
 
   <VSkeletonLoader
-    type="table-heading, list-item-two-line, image, table-tfoot"
     v-else
+    type="table-heading, list-item-two-line, image, table-tfoot"
   />
 </template>
 
@@ -1615,17 +1679,18 @@ const onSelectFasilitator = (selectedId: string) => {
 }
 
 .label {
-  min-width: 300px; /* Adjust this value based on the longest label */
   font-weight: 500;
+  min-inline-size: 300px; /* Adjust this value based on the longest label */
 }
 
 .colon {
-  margin: 0 8px; /* Space between colon and value */
+  margin-block: 0;
+  margin-inline: 8px; /* Space between colon and value */
 }
 
 .value {
   flex: 1;
-  text-align: left;
+  text-align: start;
 }
 
 .required::after {
@@ -1634,9 +1699,9 @@ const onSelectFasilitator = (selectedId: string) => {
 }
 
 :deep .choose-file {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  margin-right: 0;
+  border-end-start-radius: 0;
+  border-start-start-radius: 0;
+  margin-inline-end: 0;
   scroll-margin-inline-end: 0;
 }
 </style>

@@ -38,7 +38,7 @@ watch(
           selected.value.add(index);
         }
       });
-      console.log("Initial selected items:", Array.from(selected.value));
+      // console.log("Initial selected items:", Array.from(selected.value));
     }
   },
   { immediate: true }
@@ -123,7 +123,12 @@ defineExpose({
         </VCol>
       </VRow>
       <br />
-      <VDataTable :headers="tableHeader" :items="content">
+      <VDataTable
+        disable-sort
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="tableHeader"
+        :items="content"
+      >
         <!-- Row number -->
         <template #item.nomor="{ index }">
           {{ index + 1 }}

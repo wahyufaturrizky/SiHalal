@@ -114,6 +114,7 @@ const querySearch = ref("");
 const onSelectFasilitator = (selectedId: string) => {
   if ((isFasilitator.value = selectedId === "Lainnya")) {
     onSearchFasilitator(querySearch.value);
+
     return;
   }
   isKodeFound.value = false;
@@ -126,6 +127,7 @@ const facName = ref("");
 const onSearchFasilitator = async () => {
   try {
     facName.value = "";
+
     const kode = querySearch.value;
 
     const response: any = await $api("/self-declare/submission/kode", {
@@ -184,6 +186,7 @@ const handleGetJenisProduk = async () => {
     console.log(error);
   }
 };
+
 const handleGetJenisProdukFilter = async (item) => {
   try {
     formData.id_jenis_produk = null;
@@ -197,6 +200,7 @@ const handleGetJenisProdukFilter = async (item) => {
     console.log(error);
   }
 };
+
 const handleGetLembagaPendampingInitial = async (lokasi: string) => {
   try {
     const response: any = await $api(
@@ -216,13 +220,31 @@ const handleGetLembagaPendampingInitial = async (lokasi: string) => {
 
     return response;
   } catch (error) {
-    console.log(error);
+    if (
+      error.data.code === 4006 ||
+      error.data.code === 4001 ||
+      error.data.code === 400
+    ) {
+      useSnackbar().sendSnackbar(
+        "Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet",
+        "error"
+      );
+      formData.id_lembaga_pendamping =
+        "Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet";
+    } else {
+      useSnackbar().sendSnackbar(
+        error.data?.errors?.list_error[0] || "Ada kesalahan 1",
+        "error"
+      );
+    }
   }
 };
+
 const handleGetLembagaPendamping = async (lokasi: string) => {
   try {
     formData.id_lembaga_pendamping = null;
     lembagaPendamping.value = [];
+
     const response: any = await $api(
       "/self-declare/business-actor/submission/list-lembaga-pendamping",
       {
@@ -240,7 +262,25 @@ const handleGetLembagaPendamping = async (lokasi: string) => {
 
     return response;
   } catch (error) {
-    console.log(error);
+    if (
+      error.data.code === 4006 ||
+      error.data.code === 4001 ||
+      error.data.code === 400
+    ) {
+      useSnackbar().sendSnackbar(
+        "Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet",
+        "error"
+      );
+      formData.id_lembaga_pendamping =
+        "Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet";
+    } else {
+      useSnackbar().sendSnackbar(
+        error.data?.errors?.list_error[0] || "Ada kesalahan 1",
+        "error"
+      );
+    }
+
+    // console.log(error);
   }
 };
 
@@ -253,6 +293,8 @@ const handleGetPendamping = async (idLembaga: string | null) => {
         method: "get",
         query: {
           id_lembaga: idLembaga,
+          lokasi: formData.lokasi_pendamping,
+          id_reg: submissionId,
         },
       }
     );
@@ -264,7 +306,23 @@ const handleGetPendamping = async (idLembaga: string | null) => {
 
     return response;
   } catch (error) {
-    console.log(error);
+    if (
+      error.data.code === 4006 ||
+      error.data.code === 4001 ||
+      error.data.code === 400
+    ) {
+      useSnackbar().sendSnackbar(
+        "Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet",
+        "error"
+      );
+      formData.id_lembaga_pendamping =
+        "Silahkan lengkapi data Pabrik terlebih dahulu dan tambah tab Pabrik & Outlet";
+    } else {
+      useSnackbar().sendSnackbar(
+        error.data?.errors?.list_error[0] || "Ada kesalahan 1",
+        "error"
+      );
+    }
   }
 };
 
@@ -283,15 +341,16 @@ const getDetail = async () => {
     console.log("response pengajuan list layanan", listLayanan.value);
 
     if (response.code == 2000) {
-      submissionDetail.tanggal_buat = response.data.tgl_daftar.split("T")[0];
+      submissionDetail.tanggal_buat = formatDateId(response.data.tgl_daftar);
       submissionDetail.status = response.data.status_reg;
       submissionDetail.id_jenis_pengajuan = response.data.jenis_pendaftaran;
       submissionDetail.nama_pj = response.data.nama_pj;
       submissionDetail.alamat_pu = response.data.alamat_pu;
       submissionDetail.nomor_kontak_pj = response.data.no_kontak_pj;
       submissionDetail.nama_pu = response.data.nama_pu;
-      formData.tgl_surat_permohonan =
-        response.data.tgl_surat_permohonan.split("T")[0];
+      formData.tgl_surat_permohonan = formatDateId(
+        response.data.tgl_surat_permohonan
+      );
       formData.id_jenis_pengajuan = response.data.jenis_pendaftaran;
       formData.id_fasilitator = response.data.fac_id;
       querySearch.value = response.data.kode_fac;
@@ -305,9 +364,8 @@ const getDetail = async () => {
 
       formData.id_lembaga_pendamping = response.data.id_lembaga_pendamping;
       formData.id_pendamping = response.data.id_pendamping;
-      if (formData.id_fasilitator == "00000000-0000-0000-0000-000000000000") {
+      if (formData.id_fasilitator == "00000000-0000-0000-0000-000000000000")
         formData.id_fasilitator = null;
-      }
     }
   } catch (error: any) {
     // Tangani error
@@ -407,6 +465,7 @@ const handleUpdateSubmission = async () => {
     useSnackbar().sendSnackbar("Gagal mengubah data", "error");
   }
 };
+
 const findListDaftar = (kode: string) => {
   const data = listPendaftaran.value.find((code) => kode == code.code);
   if (data == undefined) return { code: null, name: "-" };
@@ -421,6 +480,7 @@ onMounted(async () => {
   await handleGetJenisLayanan();
   await handleGetJenisProduk();
   handleGetLembagaPendampingInitial(formData.lokasi_pendamping);
+
   // handleDetailPengajuan();
   // await loadDataPendamping(formData.lokasi_pendamping);
   await handleGetFasilitator();
@@ -443,18 +503,20 @@ onMounted(async () => {
   <VCard class="pa-3" variant="elevated" elevation="9">
     <VForm ref="refVForm" @submit.prevent="() => {}">
       <!-- @submit.prevent="onSubmitSubmission" -->
-      <!-- <VCardTitle
+      <!--
+        <VCardTitle
         class="d-flex justify-space-between align-center font-weight-bold text-h4 mb-5"
-      >
+        >
         <div>Data Pengajuan</div>
         <VBtn
-          type="submit"
-          color="primary"
-          variant="flat"
-          text="Simpan Perubahan"
-          @click="onSubmitSubmission"
+        type="submit"
+        color="primary"
+        variant="flat"
+        text="Simpan Perubahan"
+        @click="onSubmitSubmission"
         />
-      </VCardTitle> -->
+        </VCardTitle>
+      -->
       <VCardTitle>
         <VRow>
           <VCol cols="2"> Tanggal </VCol>
@@ -508,8 +570,8 @@ onMounted(async () => {
                   :rules="[requiredValidator]"
                   item-value="id"
                   placeholder="Pilih Fasilitator"
-                  @update:model-value="onSelectFasilitator"
                   disabled
+                  @update:model-value="onSelectFasilitator"
                 />
               </VCol>
             </VRow>
@@ -604,7 +666,7 @@ onMounted(async () => {
                   <Vuepicdatepicker
                     v-model:model-value="formData.tgl_surat_permohonan"
                     auto-apply
-                    model-type="yyyy-MM-dd"
+                    model-type="dd/MM/yyyy"
                     :enable-time-picker="false"
                     :rules="[requiredValidator]"
                     teleport
@@ -637,8 +699,8 @@ onMounted(async () => {
                 item-title="name"
                 :rules="[requiredValidator]"
                 item-value="code"
-                @update:model-value="handleGetJenisProdukFilter"
                 disabled
+                @update:model-value="handleGetJenisProdukFilter"
               />
             </VItemGroup>
             <br />
@@ -687,8 +749,8 @@ onMounted(async () => {
                 density="compact"
                 :rules="[requiredValidator]"
                 :items="lokasiPendamping"
-                @update:model-value="loadDataPendamping"
                 disabled
+                @update:model-value="loadDataPendamping"
               />
             </VItemGroup>
             <br />
@@ -703,8 +765,8 @@ onMounted(async () => {
                 :rules="[requiredValidator]"
                 item-value="id"
                 disabled
-                @update:model-value="handleGetPendamping"
                 readonly
+                @update:model-value="handleGetPendamping"
               />
             </VItemGroup>
             <br />

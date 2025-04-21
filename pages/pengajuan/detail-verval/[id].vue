@@ -7,17 +7,21 @@ const route = useRoute();
 const dataPelakuUsaha = ref();
 const dataPenanggungJawab = ref();
 const dataPendaftaran = ref();
-const dataRequirementGeneral = ref();
-const dataRequirementSpecific = ref();
-const dataBahanList = ref();
-const dataProdukList = ref();
-const dataProsesList = ref();
-const dataTracking = ref();
+const dataRequirementGeneral = ref<any[]>([]);
+const dataRequirementSpecific = ref<any[]>([]);
+const dataBahanList = ref<any[]>([]);
+const dataProdukList = ref<any[]>([]);
+const dataProsesList = ref<any[]>([]);
+const dataTracking = ref<any[]>([]);
 const generalReqRef = ref();
 const specificReqRef = ref();
 const ingredientTableRef = ref();
 const productRef = ref();
 const prodProcessRef = ref();
+const fileImage = ref<File | null>(null);
+const imageData = ref(null);
+
+const itemsPerPage = ref(10);
 
 const getDetail = async () => {
   try {
@@ -27,8 +31,9 @@ const getDetail = async () => {
         method: "get",
       }
     );
+
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 1", "error");
       return;
     }
 
@@ -36,11 +41,12 @@ const getDetail = async () => {
     dataPenanggungJawab.value = response.data?.penanggung_jawab;
     dataPendaftaran.value = response.data?.pendaftaran;
     dataTracking.value = response.data?.tracking;
+    imageData.value = response?.data?.lembaga_pendamping?.foto_pendampingan;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 2", "error");
   }
 };
-
+const totalGeneralQuestion = ref(0);
 const getGeneralQuestion = async () => {
   try {
     const response = await $api(
@@ -50,14 +56,27 @@ const getGeneralQuestion = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 3", "error");
       return;
     }
 
-    dataRequirementGeneral.value = response.data;
+    dataRequirementGeneral.value = response.data || [];
+    totalGeneralQuestion.value = response.data.length;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 4", "error");
   }
+};
+const currentPageGeneralQuestion = ref(1);
+const halamanGeneralQuestion = computed(() =>
+  Math.ceil(totalGeneralQuestion.value / itemsPerPage.value)
+);
+const paginatedGeneralQuestion = computed(() => {
+  const start = (currentPageGeneralQuestion.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return dataRequirementGeneral.value.slice(start, end);
+});
+const changePageGeneralQuestion = (page: number) => {
+  currentPageGeneralQuestion.value = page;
 };
 
 const getSpecificQuestion = async () => {
@@ -69,16 +88,16 @@ const getSpecificQuestion = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 5", "error");
       return;
     }
 
     dataRequirementSpecific.value = response.data;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 6", "error");
   }
 };
-
+const totalIngredients = ref(0);
 const getIngredientList = async () => {
   try {
     const response = await $api(
@@ -88,16 +107,31 @@ const getIngredientList = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 7", "error");
       return;
     }
-
-    dataBahanList.value = response.data;
+    dataBahanList.value = response.data || [];
+    totalIngredients.value = response?.data?.length || 0;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 8", "error");
   }
 };
 
+const currentPageIngredients = ref(1);
+
+const halamanIngredients = computed(() =>
+  Math.ceil(totalIngredients.value / itemsPerPage.value)
+);
+const paginatedIngredients = computed(() => {
+  const start = (currentPageIngredients.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return dataBahanList.value.slice(start, end);
+});
+const changePagekIngredients = (page: number) => {
+  currentPageIngredients.value = page;
+};
+
+const totalProductList = ref(0);
 const getProductList = async () => {
   try {
     const response = await $api(
@@ -107,8 +141,8 @@ const getProductList = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
-      return;
+      useSnackbar().sendSnackbar("ada kesalahan 9", "error");
+      return "";
     }
 
     if (response.data) {
@@ -116,11 +150,26 @@ const getProductList = async () => {
     } else {
       dataProdukList.value = [];
     }
+    totalProductList.value = response?.data?.length || 0;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 10", "error");
   }
 };
+const currentPageProductList = ref(1);
 
+const halamanProductList = computed(() =>
+  Math.ceil(totalProductList.value / itemsPerPage.value)
+);
+const paginatedProductList = computed(() => {
+  const start = (currentPageProductList.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return dataProdukList.value.slice(start, end);
+});
+const changePagekProductList = (page: number) => {
+  currentPageProductList.value = page;
+};
+
+const totalProductProcessList = ref(0);
 const getProductProcessList = async () => {
   try {
     const response = await $api(
@@ -130,14 +179,28 @@ const getProductProcessList = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 11", "error");
       return;
     }
 
-    dataProsesList.value = response.data;
+    dataProsesList.value = response.data || [];
+    totalProductProcessList.value = response?.data?.length || 0;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 12", "error");
   }
+};
+const currentPageProductProcessList = ref(1);
+
+const halamanProductProcessList = computed(() =>
+  Math.ceil(totalProductProcessList.value / itemsPerPage.value)
+);
+const paginatedProductProcessList = computed(() => {
+  const start = (currentPageProductProcessList.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return dataProsesList.value.slice(start, end);
+});
+const changePageProductProcessList = (page: number) => {
+  currentPageProductProcessList.value = page;
 };
 
 const handleBahanAdd = async (result: boolean) => {
@@ -193,75 +256,77 @@ const getIngredientListDropdown = async () => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 13", "error");
       return;
     }
 
     dataBahanListOption.value = response.data;
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 14", "error");
   }
 };
 
 const goToComponent = useGoTo();
 
 const validateVerval = async () => {
-  let scrollTo = null;
-  let countValidation = 5;
+  // let scrollTo = null;
+  // let countValidation = 5;
 
-  const countGeneralReqRefSelected = generalReqRef.value.selected.size;
-  const countSpecificReqRefSelected = specificReqRef.value.selected.size;
-  await getIngredientListDropdown();
+  // const countGeneralReqRefSelected = generalReqRef.value.selected.size;
+  // const countSpecificReqRefSelected = specificReqRef.value.selected.size;
+  // await getIngredientListDropdown();
 
-  if (countGeneralReqRefSelected < dataRequirementGeneral.value?.length) {
-    countValidation -= 1;
-    generalReqRef.value.openValidationErrorRibbon();
-    if (!scrollTo) {
-      scrollTo = "#generalReqTableId";
-    }
-  }
-  if (countSpecificReqRefSelected < dataRequirementSpecific.value?.length) {
-    countValidation -= 1;
-    specificReqRef.value.openValidationErrorRibbon();
-    if (!scrollTo) {
-      scrollTo = "#specificReqTableId";
-    }
-  }
-  if (dataBahanList.value?.length != dataBahanListOption.value?.length) {
-    countValidation -= 1;
-    ingredientTableRef.value.openValidationErrorRibbon();
-    if (!scrollTo) {
-      scrollTo = "#ingredientTableId";
-    }
-  }
-  if (dataProsesList.value?.length < 2) {
-    countValidation -= 1;
-    prodProcessRef.value.openValidationErrorRibbon();
-    if (!scrollTo) {
-      scrollTo = "#processProductReqTableId";
-    }
-  }
-  if (dataProdukList.value?.length < 1) {
-    countValidation -= 1;
-    productRef.value.openValidationErrorRibbon();
-    if (!scrollTo) {
-      scrollTo = "#productReqTableId";
-    }
-  }
+  // if (countGeneralReqRefSelected < dataRequirementGeneral.value?.length) {
+  //   countValidation -= 1;
+  //   generalReqRef.value.openValidationErrorRibbon();
+  //   if (!scrollTo) {
+  //     scrollTo = "#generalReqTableId";
+  //   }
+  // }
+  // if (countSpecificReqRefSelected < dataRequirementSpecific.value?.length) {
+  //   countValidation -= 1;
+  //   specificReqRef.value.openValidationErrorRibbon();
+  //   if (!scrollTo) {
+  //     scrollTo = "#specificReqTableId";
+  //   }
+  // }
+  // if (dataBahanList.value?.length != dataBahanListOption.value?.length) {
+  //   countValidation -= 1;
+  //   ingredientTableRef.value.openValidationErrorRibbon();
+  //   if (!scrollTo) {
+  //     scrollTo = "#ingredientTableId";
+  //   }
+  // }
+  // if (dataProsesList.value?.length < 2) {
+  //   countValidation -= 1;
+  //   prodProcessRef.value.openValidationErrorRibbon();
+  //   if (!scrollTo) {
+  //     scrollTo = "#processProductReqTableId";
+  //   }
+  // }
+  // if (dataProdukList.value?.length < 1) {
+  //   countValidation -= 1;
+  //   productRef.value.openValidationErrorRibbon();
+  //   if (!scrollTo) {
+  //     scrollTo = "#productReqTableId";
+  //   }
+  // }
 
-  if (countValidation == 5) {
-    await vervalSend();
-  } else {
-    if (scrollTo) {
-      goToComponent(scrollTo, {
-        duration: 500,
-        easing: "easeInOutCubic",
-        offset: -10,
-      });
-    }
+  // if (countValidation == 5) {
+  //   await vervalSend();
+  // } else {
+  //   if (scrollTo) {
+  //     goToComponent(scrollTo, {
+  //       duration: 500,
+  //       easing: "easeInOutCubic",
+  //       offset: -10,
+  //     });
+  //   }
 
-    useSnackbar().sendSnackbar("Data Verval belum terisi sepenuhnya", "error");
-  }
+  //   useSnackbar().sendSnackbar("Data Verval belum terisi sepenuhnya", "error");
+  // }
+
+  await vervalSend();
 };
 
 const vervalReturn = async (notesPengembalian: string) => {
@@ -276,13 +341,13 @@ const vervalReturn = async (notesPengembalian: string) => {
       }
     );
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan", "error");
+      useSnackbar().sendSnackbar("ada kesalahan 15", "error");
       return;
     }
     useSnackbar().sendSnackbar("Kembalikan data sukses", "success");
     navigateTo("/pengajuan/verval-pendamping");
   } catch (error) {
-    useSnackbar().sendSnackbar("ada kesalahan", "error");
+    useSnackbar().sendSnackbar("ada kesalahan 16", "error");
   }
 };
 
@@ -308,6 +373,37 @@ const vervalSend = async () => {
   }
 };
 
+const triggerFileInput = () => {
+  fileImage.value.click();
+};
+
+const handleFileSelect = async (event) => {
+  try {
+    const formData = new FormData();
+    formData.append("id", route.params?.id);
+    formData.append("file", event.target.files?.[0]);
+    const response = await $api(
+      `/self-declare/proses-verval/${route.params?.id}/upload-image`,
+      {
+        method: "post",
+        body: formData,
+      }
+    );
+    if (response.code != 2000) {
+      useSnackbar().sendSnackbar("ada kesalahan 17", "error");
+      return;
+    }
+    useSnackbar().sendSnackbar("Upload Image Success", "success");
+    getDetail();
+  } catch (error) {
+    useSnackbar().sendSnackbar("ada kesalahan 18", "error");
+  }
+};
+
+async function onClickDownload(filename: string) {
+  return await downloadDocument(filename, "FILES");
+}
+
 onMounted(async () => {
   await getDetail();
   await getGeneralQuestion();
@@ -326,24 +422,43 @@ onMounted(async () => {
     ><VCol><h2>Detail Proses Verval</h2></VCol></VRow
   >
   <VRow>
-    <VCol cols="7">
-      <!-- <VBtn style="margin-right: 1svw" color="warning" variant="outlined"
-        >Formulir Rekomendasi</VBtn
-      > -->
+    <VCol cols="8">
       <VBtn
         append-icon="fa-download"
         variant="outlined"
         @click="downloadFileRekomendasi"
         >Download Rekomendasi</VBtn
       >
+      <VBtn
+        style="margin-inline-start: 1svw"
+        variant="flat"
+        append-icon="fa-plus"
+        @click="triggerFileInput"
+        >Upload Foto Pendampingan</VBtn
+      >
+      <input
+        type="file"
+        ref="fileImage"
+        class="d-none"
+        @change="handleFileSelect"
+      />
+      <VBtn
+        v-if="imageData"
+        style="margin-inline-start: 1svw"
+        variant="flat"
+        title="Download Foto Pendampingan"
+        @click="onClickDownload(imageData)"
+        ><VIcon icon="fa-download"></VIcon
+      ></VBtn>
     </VCol>
-    <VCol cols="5" style="display: flex; justify-content: end">
+    <VCol cols="4" style="display: flex; justify-content: end">
       <ModalPengembalianDanKirim
         :modal-type="modalTypeEnum.KEMBALI"
         @verval-return="vervalReturn"
       ></ModalPengembalianDanKirim>
       <ModalPengembalianDanKirim
         :modal-type="modalTypeEnum.KIRIM"
+        :imageData="imageData"
         @verval-submit="validateVerval"
       ></ModalPengembalianDanKirim>
     </VCol>
@@ -378,9 +493,17 @@ onMounted(async () => {
       <PersyaratanUmumTable
         id="generalReqTableId"
         ref="generalReqRef"
-        :data-persyaratan="dataRequirementGeneral"
+        :data-persyaratan="paginatedGeneralQuestion"
         v-if="dataRequirementGeneral"
+        :itemsPerPage="itemsPerPage"
+        :currentPage="currentPageGeneralQuestion"
       ></PersyaratanUmumTable>
+      <VPagination
+        v-model="currentPageGeneralQuestion"
+        :length="halamanGeneralQuestion"
+        :style="{ marginTop: '20px' }"
+        @update:modelValue="changePageGeneralQuestion"
+      />
     </VCol>
   </VRow>
   <VRow>
@@ -397,11 +520,20 @@ onMounted(async () => {
       <BahanTablePendamping
         id="ingredientTableId"
         ref="ingredientTableRef"
-        :data="dataBahanList"
+        :data="paginatedIngredients"
         :id-reg="route.params?.id"
         @confirm-add="handleBahanAdd"
         :is-temuan-can-edit="true"
+        :itemsPerPage="itemsPerPage"
+        :currentPage="currentPageIngredients"
       ></BahanTablePendamping>
+
+      <VPagination
+        v-model="currentPageIngredients"
+        :length="halamanIngredients"
+        :style="{ marginTop: '20px' }"
+        @update:modelValue="changePagekIngredients"
+      />
     </VCol>
   </VRow>
   <VRow>
@@ -409,10 +541,19 @@ onMounted(async () => {
       <ProsesProdukHalalPendamping
         id="processProductReqTableId"
         ref="prodProcessRef"
-        :data="dataProsesList"
+        :data="paginatedProductProcessList"
         @confirm-add="handleProsesProdukAdd"
         @confirm-delete="handleProsesProdukDelete"
+        :itemsPerPage="itemsPerPage"
+        :currentPage="currentPageProductProcessList"
       ></ProsesProdukHalalPendamping>
+
+      <VPagination
+        v-model="currentPageProductProcessList"
+        :length="halamanProductProcessList"
+        :style="{ marginTop: '20px' }"
+        @update:modelValue="changePageProductProcessList"
+      />
     </VCol>
   </VRow>
   <VRow>
@@ -420,10 +561,19 @@ onMounted(async () => {
       <ProdukHalalPendamping
         id="productReqTableId"
         ref="productRef"
-        :data="dataProdukList"
+        :data="paginatedProductList"
         @confirm-add="handleProdukAdd"
         @confirm-delete="handleProdukDelete"
+        :itemsPerPage="itemsPerPage"
+        :currentPage="currentPageProductList"
       ></ProdukHalalPendamping>
+
+      <VPagination
+        v-model="currentPageProductList"
+        :length="halamanProductList"
+        :style="{ marginTop: '20px' }"
+        @update:modelValue="changePagekProductList"
+      />
     </VCol>
   </VRow>
   <VRow style="display: none">

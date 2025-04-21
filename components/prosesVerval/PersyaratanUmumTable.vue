@@ -18,6 +18,14 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  itemsPerPage: {
+    type: Number,
+    default: 10,
+  },
+  currentPage: {
+    type: Number,
+    default: 1,
+  },
 });
 
 const selected = ref(new Set<number>()); // Use a Set for efficient selection management
@@ -117,12 +125,19 @@ defineExpose({
       </VRow>
       <br />
       <VDataTable
+        disable-sort
         :headers="tableHeader"
         :items="content"
         :hide-default-footer="true"
       >
         <template #item.nomor="{ index }">
-          {{ index + 1 }}
+          <div>
+            {{
+              ((props.currentPage || 1) - 1) * (props.itemsPerPage || 10) +
+              index +
+              1
+            }}
+          </div>
         </template>
         <template #item.memenuhi="{ index }">
           <VCheckbox

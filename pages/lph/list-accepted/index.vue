@@ -4,6 +4,7 @@ const page = ref<number>(1);
 const size = ref<number>(10);
 const searchQuery = ref<string>("");
 const dataTable = ref<any>(null);
+const totalItems = ref<number>(0);
 
 const tableHeader = [
   { title: "No", value: "no" },
@@ -28,8 +29,8 @@ const loadItem = async (
 ) => {
   try {
     const params = {
-      pageNumber,
-      sizeData,
+      page: pageNumber,
+      size: sizeData,
       search,
       url: path,
     };
@@ -40,6 +41,7 @@ const loadItem = async (
     });
 
     if (response?.code === 2000) {
+      totalItems.value = response.total_item;
       dataTable.value = response?.data;
       loading.value = false;
 
@@ -74,15 +76,25 @@ onMounted(() => {
   );
   loading.value = false;
 });
+watch([page, size], () => {
+  loadItem(
+    page.value,
+    size.value,
+    searchQuery.value,
+    LIST_DAFTAR_AJUAN_DITERIMA
+  );
+});
 </script>
 
 <template>
   <div v-if="!loading">
-    <!-- <VRow>
+    <!--
+      <VRow>
       <VCol cols="12">
-        <KembaliButton></KembaliButton>
+      <KembaliButton></KembaliButton>
       </VCol>
-    </VRow> -->
+      </VRow>
+    -->
     <VRow>
       <VCol cols="12">
         <h1 style="font-size: 32px">Daftar Ajuan Diterima</h1>
@@ -109,11 +121,16 @@ onMounted(() => {
             </VRow>
             <VRow>
               <VCol cols="12">
-                <VDataTable
+                <VDataTableServer
+                  disable-sort
                   v-if="dataTable"
+                  v-model:items-per-page="size"
+                  v-model:page="page"
+                  :items-per-page-options="[10, 25, 50, 100]"
+                  :items-length="totalItems"
+                  :loading="loading"
                   :headers="tableHeader"
                   :items="dataTable"
-                  :hide-default-footer="dataTable.length === 0"
                   class="border rounded"
                 >
                   <template #no-data>
@@ -130,7 +147,10 @@ onMounted(() => {
                     </div>
                   </template>
                   <template #item.no="{ index }">
-                    {{ index + 1 }}
+                    {{ index + 1 + (page - 1) * size }}
+                  </template>
+                  <template #item.tanggal="{ item }">
+                    {{ formatDateId(item.tanggal) }}
                   </template>
                   <template #item.status="{ item }">
                     <VChip
@@ -138,7 +158,7 @@ onMounted(() => {
                       text-color="white"
                       small
                       variant="outlined"
-                      style="margin-right: 1svw; background-color: #edf6ed"
+                      style="background-color: #edf6ed; margin-inline-end: 1svw"
                     >
                       1
                     </VChip>
@@ -147,7 +167,7 @@ onMounted(() => {
                       text-color="white"
                       small
                       variant="outlined"
-                      style="margin-right: 1svw; background-color: #edf6ed"
+                      style="background-color: #edf6ed; margin-inline-end: 1svw"
                     >
                       3
                     </VChip>
@@ -156,20 +176,21 @@ onMounted(() => {
                       text-color="white"
                       small
                       variant="outlined"
-                      style="margin-right: 1svw; background-color: #f0e9f1"
+                      style="background-color: #f0e9f1; margin-inline-end: 1svw"
                     >
                       {{ (item as any).status }}
                     </VChip>
                   </template>
                   <template #item.action="{ item }">
                     <VIcon
-                      @click="navigateToDetail((item as any).id_reg)"
                       color="primary"
                       icon="mdi-arrow-right"
-                    ></VIcon>
+                      @click="navigateToDetail((item as any).id_reg)"
+                    />
                   </template>
-                </VDataTable> </VCol
-            ></VRow>
+                </VDataTableServer>
+              </VCol>
+            </VRow>
           </VCardItem>
         </VCard>
       </VCol>

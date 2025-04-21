@@ -47,13 +47,14 @@ async function ditetapkan() {
       notes: notes.value.trim() || "No notes provided",
     };
 
-    console.log(body, "ini bodynya");
+    // console.log(body, "ini bodynya");
 
     const response: any = await $api(
       `/self-declare/komite-fatwa/proses-sidang/${submissionId}/ditetapkan`,
       {
         method: "put",
         body,
+        server: false,
       }
     );
 
@@ -64,7 +65,7 @@ async function ditetapkan() {
     }
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
-    console.log(error, "ini error");
+    // console.log(error, "ini error");
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } finally {
     dialogOpen.value = false;
@@ -75,7 +76,7 @@ async function ditetapkan() {
 watch(
   combinedProps,
   (newData) => {
-    console.log(newData, "Updated props");
+    // console.log(newData, "Updated props");
 
     // Example of using `newData` to update a derived reactive variable
     if (newData) {
@@ -98,7 +99,7 @@ watch(
       ];
     }
 
-    console.log(data, "Derived data");
+    // console.log(data, "Derived data");
   },
   { immediate: true, deep: true }
 );
@@ -116,6 +117,57 @@ function handleButtonClick() {
   else if (selectedStatus.value === "OF290") dialogOpen.value = true;
   else alert("Please select a valid option!");
 }
+
+const downloadForms = reactive({
+  laporan_pendamping: "",
+}) as Record<string, string>;
+
+async function onClickDownload(filename: string) {
+  return await downloadDocument(filename);
+}
+
+const getDownloadForm = async (docName: string, propName: string) => {
+  const result = await $api(`/self-declare/submission/${submissionId}/file`, {
+    method: "get",
+    query: {
+      document: docName,
+    },
+    server: false,
+  });
+
+  if (result?.code === 2000) {
+    downloadForms[propName] = result?.data.file;
+  }
+};
+
+const handleDownloadForm = async (fileName: string, propName: string) => {
+  let result: any;
+  if (propName == "laporan_pendamping") {
+    result = await $api(
+      `/self-declare/verificator/lihat-laporan-download/${route.params?.id}`,
+      {
+        method: "get",
+        server: false,
+      }
+    );
+
+    const newLaporanPendampingFileName = result?.data?.file;
+
+    // regenerate hit minio
+    await $api("/admin/images/download", {
+      method: "post",
+      query: {
+        filename: newLaporanPendampingFileName,
+      },
+      server: false,
+    } as any);
+  }
+  return await previewDocument(fileName || result?.data?.file);
+};
+
+onMounted(async () => {
+  await getDownloadForm("laporan-pendamping", "laporan_pendamping");
+});
 </script>
 
 <template>
@@ -132,6 +184,30 @@ function handleButtonClick() {
           </VCol>
           <VCol cols="8">
             <p>{{ item.value }}</p>
+          </VCol>
+        </VRow>
+        <VRow style="display: flex; align-items: stretch">
+          <VCol cols="3">
+            <p>Laporan Pendamping</p>
+          </VCol>
+          <VCol cols="1">
+            <p>:</p>
+          </VCol>
+          <VCol cols="8">
+            <VBtn
+              @click="
+                downloadForms.laporan_pendamping
+                  ? handleDownloadForm('', 'laporan_pendamping')
+                  : null
+              "
+              :color="downloadForms.laporan_pendamping ? 'primary' : '#A09BA1'"
+              density="compact"
+              class="px-2"
+            >
+              <template #default>
+                <VIcon icon="fa-download" />
+              </template>
+            </VBtn>
           </VCol>
         </VRow>
         <VRow style="display: flex; align-items: center">

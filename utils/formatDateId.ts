@@ -1,13 +1,23 @@
-export const formatDateId = (date: any) => {
-  if (date) {
-    const tempDate = new Date(date);
+export const formatDateId = (paramsDate: any) => {
+  if (!paramsDate) return "";
 
-    return tempDate.toLocaleDateString('id-ID', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    })
+  let isoString = "";
+
+  // for handle format paramsDate if like this 21-03-2025 12:27
+  if (paramsDate.length === 16) {
+    const [date, time] = paramsDate.split(" ");
+    const [day, month, year] = date.split("-");
+
+    isoString = `${year}-${month}-${day}T${time}`;
+  } else {
+    isoString = paramsDate;
   }
 
-  return "";
-}
+  const result = new Date(isoString);
+
+  return result.toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};

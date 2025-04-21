@@ -12,6 +12,9 @@ const props = defineProps({
   idReg: {
     type: String,
   },
+  phoneNumber: {
+    type: String
+  }
 });
 
 const panelOpen = ref(0);
@@ -56,13 +59,18 @@ const loadMasterLov = async () => {
 
 const onRequestOtp = async () => {
   try {
+    if (!props.phoneNumber) {
+      throw {
+        message: 'No HP Komisi Fatwa belum ada'
+      }
+    }
     const response: any = await $api(
       "/sidang-fatwa/task-force/request-otp",
       {
         method: "post",
         body: {
           channel: "phone_number",
-          destination: sessionData.value?.phone_number,
+          destination: props.phoneNumber,
         }
       }
     );
@@ -71,7 +79,11 @@ const onRequestOtp = async () => {
       return;
     }
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (error.message === 'No HP belum ada') {
+      useSnackbar().sendSnackbar(error.message, "error");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   } finally {
     // loadingPendamping.value = false;
   }
@@ -95,6 +107,8 @@ const reRequestOtp = async () => {
   onRequestOtp()
 }
 
+const emits = defineEmits(["refresh"])
+
 const onSubmitPenetapan = async () => {
   try {
     const response: any = await $api(
@@ -110,6 +124,9 @@ const onSubmitPenetapan = async () => {
     );
     if (response.code === 2000) {
       useSnackbar().sendSnackbar(response.message, "success");
+      visibleOtp.value = false
+      otpNumber.value = ""
+      emits('refresh')
       return;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan submit penetapan", "error");
@@ -137,7 +154,7 @@ const onVerifyOtp = async () => {
       useSnackbar().sendSnackbar("Verifikasi OTP berhasil", "success");
       visibleDialogVerification.value = false
       setTimeout(async () => {
-        await onSubmitPenetapan()
+        const result = await onSubmitPenetapan()
       }, 500);
       return;
     } else {
@@ -190,36 +207,6 @@ watch(countdown, (newValue) => {
 
       <!-- Konten Panel -->
       <VExpansionPanelText>
-        <div>
-          <label>
-            {{ t('task-force.proses-sidang.detail.section-informasi-penetapan.no-sttd') }}
-          </label>
-          <VTextField
-            v-model="data.no_sttd"
-            placeholder="1, New Street"
-            readonly
-          />
-        </div>
-        <div class="mt-5">
-          <label>
-            {{ t('task-force.proses-sidang.detail.section-informasi-penetapan.pu-name') }}
-          </label>
-          <VTextField
-            v-model="data.nama_pu"
-            placeholder="1, New Street"
-            readonly
-          />
-        </div>
-        <div class="mt-5">
-          <label>
-            {{ t('task-force.proses-sidang.detail.section-informasi-penetapan.product-type') }}
-          </label>
-          <VTextarea
-            v-model="data.jenis_produk"
-            placeholder="1, New Street"
-            readonly
-          />
-        </div>
         <div class="mt-5">
           <label>
             {{ t('task-force.proses-sidang.detail.section-informasi-penetapan.ketetapan') }}
@@ -227,7 +214,7 @@ watch(countdown, (newValue) => {
           <VSelect
             v-model="data.penetapan"
             :items="lov"
-            placeholder="Pilih Jenis Bahan"
+            placeholder="Pilih Penetapan"
             density="compact"
             item-title="name"
             item-value="code"

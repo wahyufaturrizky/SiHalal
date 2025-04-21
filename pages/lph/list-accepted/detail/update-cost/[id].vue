@@ -24,7 +24,7 @@ const totalDomestic = ref(0);
 
 const detailDataLn = ref<any>({
   keterangan: "",
-  qty: 0,
+  qty: 1,
   harga: 0,
   total: 0,
 });
@@ -39,7 +39,7 @@ const domesticAuditHeader: any[] = [
   { title: "UHPD Awal", key: "uhpd_awal", nowrap: true },
   { title: "Diskon (%)", key: "uhpd_diskon", nowrap: true },
   { title: "UHPD Akhir", key: "uhpd_akhir", nowrap: true },
-  { title: "Operasional", key: "operasional", nowrap: true },
+  //{ title: "Operasional", key: "operasional", nowrap: true },
   { title: "Akomodasi Awal", key: "akomodasi_awal", nowrap: true },
   { title: "Diskon (%)", key: "akomodasi_diskon", nowrap: true },
   { title: "Akomodasi Akhir", key: "akomodasi_akhir", nowrap: true },
@@ -219,7 +219,7 @@ const openModalEditDalamNegri = (item: any) => {
     item.unit_cost_akhir = formatToIDR(item.unit_cost_akhir);
     item.uhpd_awal = formatToIDR(item.uhpd_awal);
     item.uhpd_akhir = formatToIDR(item.uhpd_akhir);
-    item.operasional = formatToIDR(item.operasional);
+    //item.operasional = formatToIDR(item.operasional);
     item.transport_awal = formatToIDR(item.transport_awal);
     item.transport_akhir = formatToIDR(item.transport_akhir);
     item.akomodasi_awal = formatToIDR(item.akomodasi_awal);
@@ -250,7 +250,7 @@ const getDetailBiaya = async () => {
         item.unit_cost_akhir = formatToIDR(item.unit_cost_akhir);
         item.uhpd_awal = formatToIDR(item.uhpd_awal);
         item.uhpd_akhir = formatToIDR(item.uhpd_akhir);
-        item.operasional = formatToIDR(item.operasional);
+        //item.operasional = formatToIDR(item.operasional);
         item.transport_awal = formatToIDR(item.transport_awal);
         item.transport_akhir = formatToIDR(item.transport_akhir);
         item.akomodasi_awal = formatToIDR(item.akomodasi_awal);
@@ -387,7 +387,7 @@ const onAddDataLn = async () => {
       query: { id },
       body: {
         ...detailDataLn.value,
-        qty: +detailDataLn.value.qty,
+        qty: detailDataLn.value.qty,
         harga: +detailDataLn.value.harga,
         total: +detailDataLn.value.total,
       },
@@ -407,9 +407,9 @@ const onEditDataLn = async () => {
   const body = {
     id_biaya: editDataLn.value?.id,
     keterangan: editDataLn.value?.keterangan,
-    qty: +editDataLn.value?.jumlah,
+    qty: 1,
     harga: editDataLn.value?.harga,
-    total: editDataLn.value?.sub_total,
+    total: +editDataLn.value?.sub_total,
   };
 
   try {
@@ -571,6 +571,7 @@ onMounted(async () => {
           </VCardTitle>
           <VCardText>
             <VDataTable
+              disable-sort
               class="domestic-table border rounded"
               :headers="domesticAuditHeader"
               :items="data?.biaya_indo?.list || []"
@@ -595,7 +596,7 @@ onMounted(async () => {
                   <td>{{ item.uhpd_awal }}</td>
                   <td>{{ item.uhpd_diskon }}</td>
                   <td>{{ item.uhpd_akhir }}</td>
-                  <td>{{ item.operasional }}</td>
+                  <!-- <td>{{ item.operasional }}</td> -->
                   <td>{{ item.akomodasi_awal }}</td>
                   <td>{{ item.akomodasi_diskon }}</td>
                   <td>{{ item.akomodasi_akhir }}</td>
@@ -695,6 +696,7 @@ onMounted(async () => {
           </VCardTitle>
           <VCardText>
             <VDataTable
+              disable-sort
               :headers="overseaAuditHeader"
               :items="dataLn"
               hide-default-footer
@@ -821,6 +823,7 @@ onMounted(async () => {
           </VCardTitle>
           <VCardText>
             <VDataTable
+              disable-sort
               :headers="totalAuditHeader"
               :items="dataAudit"
               hide-default-footer
@@ -1003,7 +1006,7 @@ onMounted(async () => {
                 placeholder="Biaya Admin"
               />
             </VCol>
-            <VCol>
+            <!-- <VCol>
               <div class="text-h6">Jumlah</div>
               <VTextField
                 v-model="editDataLn.jumlah"
@@ -1011,7 +1014,7 @@ onMounted(async () => {
                 density="compact"
                 placeholder="2"
               />
-            </VCol>
+            </VCol> -->
             <VCol>
               <div class="text-h6">Harga</div>
               <VTextField
@@ -1021,7 +1024,7 @@ onMounted(async () => {
                 placeholder="Rp 400.000"
               />
             </VCol>
-            <VCol>
+            <!-- <VCol>
               <div class="text-h6">Sub Total</div>
               <VTextField
                 v-model="editDataLn.sub_total"
@@ -1029,7 +1032,7 @@ onMounted(async () => {
                 density="compact"
                 placeholder="Rp 800.000"
               />
-            </VCol>
+            </VCol> -->
           </VRow>
         </VCardText>
         <VCardActions class="pt-2 px-4">
@@ -1174,7 +1177,7 @@ onMounted(async () => {
               />
             </VCol>
           </VRow>
-          <VRow>
+          <!-- <VRow>
             <VCol>
               <div class="text-h6">Operasional</div>
               <VTextField
@@ -1184,7 +1187,7 @@ onMounted(async () => {
                 disabled
               />
             </VCol>
-          </VRow>
+          </VRow> -->
           <VRow>
             <VCol>
               <div class="text-h6">Transportasi Awal</div>

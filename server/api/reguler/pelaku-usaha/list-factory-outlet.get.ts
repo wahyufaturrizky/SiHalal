@@ -11,21 +11,24 @@ export default defineEventHandler(async (event: any) => {
     })
   }
 
-  const { id, type } = (await getQuery(event)) as {
-    id: string
+  const { id_reg, type } = (await getQuery(event)) as {
+    id_reg: string,
+    type: string
   }
 
+  console.log('Server received params:', { id_reg, type });
+
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/${id}/list-fasilitas?page=1&size=10&fas_id=${type}`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/pelaku-usaha/${id_reg}/list-fasilitas?page=1&size=10&fas_id=${type}&id_reg=${id_reg}`,
     {
       method: 'get',
       headers: { Authorization: authorizationHeader },
     },
   ).catch((err: NuxtError) => {
-    setResponseStatus(event, 400)
-
-    return err.data
+    console.error('API Error:', err);
+    setResponseStatus(event, 400);
+    return err.data;
   })
 
-  return data || null
+  return data || null;
 })

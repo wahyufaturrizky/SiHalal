@@ -6,6 +6,7 @@ const route = useRoute();
 const id = (route?.params as any)?.id;
 const notFound = ref(false);
 const totalBiaya = ref(0);
+const dokumenLama = ref<any>([]);
 
 const defaultStatus = { color: "error", desc: "Unknown Status" };
 
@@ -52,6 +53,7 @@ const panelSupervisor = ref([0, 1]);
 const panelDownloadFormulir = ref([0, 1]);
 const panelRegistration = ref([0, 1]);
 const panelTracking = ref([0, 1]);
+const panelDocLama = ref([0, 1]);
 const panelPayment = ref([0, 1]);
 
 const detailSubmission = ref();
@@ -92,7 +94,7 @@ const toggle = (type: string) => {
 const handleReturn = async () => {
   loadingModal.value = true;
   try {
-    const response: any = await $api(`/reguler/lph/return`, {
+    const response: any = await $api("/reguler/lph/return", {
       method: "put",
       body: {
         keterangan: inputValueReturn.value,
@@ -121,7 +123,7 @@ const handleReturn = async () => {
 const handleSend = async () => {
   loadingModal.value = true;
   try {
-    const response: any = await $api(`/reguler/lph/kirim`, {
+    const response: any = await $api("/reguler/lph/kirim", {
       method: "put",
       body: {
         keterangan: "Kirim",
@@ -155,6 +157,7 @@ const loadItemById = async () => {
 
     if (response.code === 2000) {
       notFound.value = false;
+
       const { certificate_halal, produk, auditor } = response.data || {};
 
       const {
@@ -234,6 +237,11 @@ const loadItemById = async () => {
       ];
 
       detailSubmission.value = response.data;
+
+      const noDaftar = response?.data?.certificate_halal?.no_daftar;
+      if (noDaftar) await OldDoc(noDaftar);
+      else console.error("no daftar tidak ditemukan");
+
       return response;
     } else {
       notFound.value = true;
@@ -242,6 +250,10 @@ const loadItemById = async () => {
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
+};
+
+const handleDownloadFormDokumenLama = async (fileName: string) => {
+  window.open(fileName, "_blank");
 };
 
 const getTotalBiaya = async () => {
@@ -260,6 +272,32 @@ const getTotalBiaya = async () => {
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const OldDoc = async (noDaftar: string) => {
+  const url = `https://prod-api.halal.go.id/v1/referensi/dokumen_reguler?no_daftar=${noDaftar}`;
+
+  // console.log("berhasil");
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+    const data = await response.json();
+
+    dokumenLama.value = data.data;
+
+    return data;
+  } catch (error) {
+    console.error("Terjadi kesalahan saat mengambil data:", error);
+
+    return null;
   }
 };
 
@@ -296,6 +334,7 @@ onMounted(async () => {
           </VBtn>
           <!-- <VBtn variant="outlined"> Lihat Draft Sertif </VBtn> -->
           <VBtn
+            variant="outlined"
             @click="
               navigateTo({
                 path: `/sh-domestic/submission/reguler/${id}/edit`,
@@ -304,7 +343,6 @@ onMounted(async () => {
                 },
               })
             "
-            variant="outlined"
           >
             Cek Data
           </VBtn>
@@ -394,6 +432,7 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTable
+                disable-sort
                 :headers="aspectLegalHeader"
                 :items="detailSubmission.produk.map(({
                   id_reg_prod,
@@ -462,6 +501,8 @@ onMounted(async () => {
             </VExpansionPanelTitle>
             <VExpansionPanelText>
               <VDataTableServer
+                disable-sort
+                :items-per-page-options="[10, 25, 50, 100]"
                 :headers="supervisorHeader"
                 :items="supervisorItems"
                 :items-per-page="itemPerPageAuditor"
@@ -476,7 +517,7 @@ onMounted(async () => {
                   {{ (item as any).Auditor.nama }}
                 </template>
                 <template #item.tanggal_lahir="{ item }">
-                  {{ (item as any).Auditor.tgl_lahir }}
+                  {{ formatDateId((item as any).Auditor.tgl_lahir) }}
                 </template>
                 <template #item.jk="{ item }">
                   {{ (item as any).Auditor.jenkel }}
@@ -559,7 +600,9 @@ onMounted(async () => {
               Biaya Pemeriksaan
             </VExpansionPanelTitle>
             <VExpansionPanelText class="d-flex align-center">
-              <p class="font-weight-bold text-black">{{ totalBiaya }}</p>
+              <p class="font-weight-bold text-black">
+                {{ totalBiaya }}
+              </p>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -580,9 +623,109 @@ onMounted(async () => {
                   append-icon="fa-download"
                   variant="plain"
                   style="align-content: start"
-                  @click="downloadDocument(detailSubmission.dokumen.sjph)"
+                  density="compact"
+                  :color="
+                    detailSubmission?.certificate_halal?.lph?.file_sertifikat
+                      ? 'primary'
+                      : '#A09BA1'
+                  "
+                  :disabled="
+                    detailSubmission?.certificate_halal?.lph?.file_sertifikat
+                      ? false
+                      : true
+                  "
+                  @click="
+                    downloadDocument(
+                      detailSubmission?.certificate_halal?.lph?.file_sertifikat,
+                      'SERT_LPH'
+                    )
+                  "
                 />
               </InfoRow>
+              <InfoRow
+                cols-name="8"
+                cols-separator="1"
+                cols-value="3"
+                name="Unduh SJPH"
+              >
+                <VBtn
+                  append-icon="fa-download"
+                  variant="plain"
+                  style="align-content: start"
+                  density="compact"
+                  :color="
+                    detailSubmission?.dokumen?.sjph ? 'primary' : '#A09BA1'
+                  "
+                  :disabled="detailSubmission?.dokumen?.sjph ? false : true"
+                  @click="
+                    downloadDocument(detailSubmission?.dokumen?.sjph, 'FILES')
+                  "
+                />
+              </InfoRow>
+              <InfoRow
+                cols-name="8"
+                cols-separator="1"
+                cols-value="3"
+                name="Unduh Surat Permohonan"
+              >
+                <VBtn
+                  append-icon="fa-download"
+                  variant="plain"
+                  style="align-content: start"
+                  density="compact"
+                  :color="
+                    detailSubmission?.dokumen?.permohonan
+                      ? 'primary'
+                      : '#A09BA1'
+                  "
+                  :disabled="
+                    detailSubmission?.dokumen?.permohonan ? false : true
+                  "
+                  @click="
+                    downloadDocument(
+                      detailSubmission?.dokumen?.permohonan,
+                      'FILES'
+                    )
+                  "
+                />
+              </InfoRow>
+            </VExpansionPanelText>
+          </VExpansionPanel>
+        </VExpansionPanels>
+        <br />
+
+        <VExpansionPanels v-model="panelDocLama">
+          <VExpansionPanel v-if="dokumenLama.length > 0" class="pt-3">
+            <VExpansionPanelTitle class="font-weight-bold text-h4">
+              Dokumen Lama
+            </VExpansionPanelTitle>
+            <VExpansionPanelText class="mt-5">
+              <VRow
+                v-for="(item, idx) in dokumenLama"
+                :key="idx"
+                align="center"
+              >
+                <VCol cols="5" class="text-h6">
+                  {{ item.ref_desc }}
+                </VCol>
+                <VCol class="d-flex align-center">
+                  <div class="me-1">:</div>
+                  <VBtn
+                    :color="item?.file_dok ? 'primary' : '#A09BA1'"
+                    density="compact"
+                    class="px-2"
+                    @click="
+                      item?.file_dok
+                        ? handleDownloadFormDokumenLama(item.file_download)
+                        : null
+                    "
+                  >
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn>
+                </VCol>
+              </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
         </VExpansionPanels>
@@ -657,9 +800,9 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .mw-170 {
-  max-width: 170px;
   overflow: hidden;
-  white-space: nowrap;
+  max-inline-size: 170px;
   text-wrap: wrap;
+  white-space: nowrap;
 }
 </style>

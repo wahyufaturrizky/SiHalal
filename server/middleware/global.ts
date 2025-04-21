@@ -1,7 +1,7 @@
 export default defineEventHandler(async (event) => {
   const cookies = parseCookies(event);
   for (const [key, value] of Object.entries(cookies)) {
-    if (key != "accessToken") {
+    if (key != "app_version" && key != "accessToken") {
       setCookie(event, key, value, {
         httpOnly: true, // Prevent client-side access
         secure: true, // Secure flag (only for HTTPS)

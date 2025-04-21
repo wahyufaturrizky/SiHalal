@@ -6,15 +6,6 @@
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-const { t } = useI18n();
-
-interface PayloadPenanggungJawab {
-  id_reg: string;
-  nama_pj: string;
-  no_kontak_pj: string;
-  email_pj: string;
-}
-
 const props = defineProps({
   id: {
     type: String,
@@ -44,7 +35,23 @@ const props = defineProps({
   isviewonly: {
     type: Boolean,
   },
+  isDisabled: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
+
+const emit = defineEmits(["certificateDataChanged"]);
+
+const { t } = useI18n();
+
+interface PayloadPenanggungJawab {
+  id_reg: string;
+  nama_pj: string;
+  no_kontak_pj: string;
+  email_pj: string;
+}
 
 const itemsProduct = ref<any>(null);
 const confirmSaveDialog = ref(false);
@@ -66,6 +73,7 @@ const outletData = ref({});
 const halalData = ref({});
 const payloadData = ref({});
 const facId = ref("");
+const facMessage = ref("");
 const inputFacId = ref("");
 
 const listFactory = ref<any>({
@@ -205,7 +213,6 @@ const uploadFile = (event: Event, index: string | number) => {
 };
 
 const triggerSaveModal = (payload: any, type: string) => {
-  console.log(payload);
   submitContentType.value = type;
   payloadData.value = payload;
   confirmSaveDialog.value = true;
@@ -218,10 +225,11 @@ const triggerAddModal = (type: any) => {
   titleAddDialog.value = `${t(
     "pengajuan-reguler.reguler-form--pengajuan-fac-add"
   )} ${t(type)}`;
+
   // titleAddDialog.value = `Tambah Data ${type}`;
   labelSaveBtn.value = t("pengajuan-reguler.reguler-form--pengajuan-legal-add");
   labelBackBtn.value = t(
-    `pengajuan-reguler.reguler-form--pengajuan-legal-popup-cancel`
+    "pengajuan-reguler.reguler-form--pengajuan-legal-popup-cancel"
   );
 };
 
@@ -243,6 +251,15 @@ const loadItemProduct = async () => {
   }
 };
 
+const emitRequestCertificateData = () => {
+  console.log("emitted cert data");
+  emit("certificateDataChanged", requestCertificateData);
+
+  storeDataPengajuan.setCertData(requestCertificateData.value);
+
+  // requestCertificateData.value;
+};
+
 const getDetailData = async () => {
   try {
     const response: any = await $api("/reguler/pelaku-usaha/detail", {
@@ -259,11 +276,14 @@ const getDetailData = async () => {
       const penyelia = response?.data?.penyelia_halal;
 
       facId.value = certificateHalal?.kode_fac;
+      facMessage.value = `${certificateHalal?.kode_fac ?? ""} - ${
+        certificateHalal?.fasilitator_name ?? ""
+      }`;
 
       requestCertificateData.value = [
         {
           title: "pengajuan-reguler.reguler-form--pengajuan-pengajuan-namapu",
-          value: certificateHalal.nama_pu || "",
+          value: certificateHalal.nama_pu_sh || certificateHalal.nama_pu || "",
           type: "text",
           required: true,
           key: "nama_pu",
@@ -277,7 +297,7 @@ const getDetailData = async () => {
         },
         {
           title: "pengajuan-reguler.reguler-form--pengajuan-pengajuan-tglmohon",
-          value: certificateHalal.tgl_daftar || "",
+          value: certificateHalal.tgl_mohon || "",
           type: "text",
           required: true,
           key: "tgl_mohon",
@@ -286,21 +306,18 @@ const getDetailData = async () => {
           title: "pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnslay",
           value: certificateHalal.jenis_layanan || "",
           type: "select",
-          disabled:
-            certificateHalal.jenis_pengajuan == "Pengembangan" ? true : false,
-          required:
-            certificateHalal.jenis_pengajuan == "Pengembangan" ? false : true,
+          disabled: certificateHalal.jenis_pengajuan == "Pengembangan",
+          required: certificateHalal.jenis_pengajuan != "Pengembangan",
           key: "jenis_layanan",
         },
         {
           title: "pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsprod",
-          value: certificateHalal.jenis_produk || "",
+          value: certificateHalal?.id_produk || "",
           type: "select",
-          disabled:
-            certificateHalal.jenis_pengajuan == "Pengembangan" ? true : false,
-          required:
-            certificateHalal.jenis_pengajuan == "Pengembangan" ? false : true,
+          disabled: certificateHalal.jenis_pengajuan == "Pengembangan",
+          required: certificateHalal.jenis_pengajuan != "Pengembangan",
           key: "jenis_produk",
+          code: certificateHalal?.id_produk,
         },
         {
           title: "pengajuan-reguler.reguler-form--pengajuan-pengajuan-merek",
@@ -322,11 +339,10 @@ const getDetailData = async () => {
           title: "pengajuan-reguler.reguler-form--pengajuan-pengajuan-lph",
           value: certificateHalal.nama_lph || "",
           type: "select",
-          disabled:
-            certificateHalal.jenis_pengajuan == "Pengembangan" ? true : false,
-          required:
-            certificateHalal.jenis_pengajuan == "Pengembangan" ? false : true,
+          disabled: certificateHalal.jenis_pengajuan == "Pengembangan",
+          required: certificateHalal.jenis_pengajuan != "Pengembangan",
           key: "lembaga_pendamping",
+          id: certificateHalal?.lph_id,
         },
         {
           title:
@@ -516,13 +532,15 @@ const getDetailData = async () => {
   }
 };
 
+const storeDataPengajuan = useMyRegulerPelakuUsahaStore();
+
 const editResponsibility = async (body: PayloadPenanggungJawab) => {
   try {
     let url = "";
-  
+
     if (
       submitContentType.value ===
-      t(`pengajuan-reguler.reguler-form--pengajuan-pengajuan-title`)
+      t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-title")
     )
       url = "/reguler/pelaku-usaha/certificate";
     else url = "/reguler/pelaku-usaha/penanggung-jawab";
@@ -534,11 +552,14 @@ const editResponsibility = async (body: PayloadPenanggungJawab) => {
 
     if (response?.code === 2000) {
       useSnackbar().sendSnackbar("Sukses add data", "success");
+      storeDataPengajuan.setCertData(requestCertificateData.value);
       getDetailData();
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
   } catch (error) {
+    console.log(error);
+
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
@@ -560,7 +581,26 @@ const handleAddOrEdit = async () => {
       url = "/reguler/pelaku-usaha/add-legal";
       method = "post";
       break;
+    case "Tambah Aspek Legal":
+      body = {
+        ...body,
+        id_legal: [selectedLegalToAdd?.value?.id_legal],
+      };
+      url = "/reguler/pelaku-usaha/add-legal";
+      method = "post";
+      break;
     case t("pengajuan-reguler.reguler-form--pengajuan-fac-popup-title"):
+      listFactory?.value?.value?.map((el: any) => {
+        if (el.checked) idPabrik.push(el.id);
+      });
+      body = {
+        ...body,
+        id_pabrik: idPabrik,
+      };
+      url = "/reguler/pelaku-usaha/add-factory";
+      method = "post";
+      break;
+    case "Tambah Data Pabrik":
       listFactory?.value?.value?.map((el: any) => {
         if (el.checked) idPabrik.push(el.id);
       });
@@ -582,7 +622,28 @@ const handleAddOrEdit = async () => {
       url = "/reguler/pelaku-usaha/add-factory";
       method = "post";
       break;
+    case "Tambah Outlet":
+      listOutlet?.value?.value?.map((el: any) => {
+        if (el.checked) idPabrik.push(el.id);
+      });
+      body = {
+        ...body,
+        id_pabrik: idPabrik,
+      };
+      url = "/reguler/pelaku-usaha/add-factory";
+      method = "post";
+      break;
     case t("pengajuan-reguler.reguler-detail-ph-title"):
+      url = "/self-declare/business-actor/supervisor/create";
+      body = {
+        ...body,
+        id_penyelia: listPenyelia.value.value
+          .filter((item) => item.checked)
+          .map((i) => i.id_penyelia),
+      };
+      method = "post";
+      break;
+    case "Tambah Penyelia Halal":
       url = "/self-declare/business-actor/supervisor/create";
       body = {
         ...body,
@@ -653,17 +714,15 @@ const withFacilitator = async (idData: string) => {
 
 const handleSubmit = () => {
   let payload: any = {};
- 
+
   if (
     submitContentType.value ===
-    t(`pengajuan-reguler.reguler-form--pengajuan-pengajuan-title`)
+    t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-title")
   ) {
-  
     if (payloadData.value === "error") {
       confirmSaveDialog.value = false;
       useSnackbar().sendSnackbar("Lengkapi semua data", "error");
     } else {
-   
       if (
         requestCertificateData.value?.[9].value ===
           "Pendaftaran Melalui Fasilitasi" ||
@@ -680,7 +739,6 @@ const handleSubmit = () => {
           channel_id: "CH001",
           fac_id: "",
         };
-      
       }
       editResponsibility({
         ...payload,
@@ -701,6 +759,8 @@ const handleSubmit = () => {
   confirmSaveDialog.value = false;
 };
 
+defineExpose({ emitRequestCertificateData });
+
 onMounted(async () => {
   // await getDetailData()
   await Promise.allSettled([getDetailData(), loadItemProduct()]);
@@ -713,17 +773,14 @@ onMounted(async () => {
     return item !== undefined;
   });
 
-  if (checkResIfUndefined) {
-    loadingAll.value = false;
-  } else {
-    loadingAll.value = false;
-  }
+  if (checkResIfUndefined) loadingAll.value = false;
+  else loadingAll.value = false;
 });
 </script>
 
 <template>
   <DialogSaveDataPengajuan
-    :title=" t('pengajuan-reguler.reguler-form-head-simpan')"
+    :title="t('pengajuan-reguler.reguler-form-head-simpan')"
     :is-open="confirmSaveDialog"
     :toggle="() => (confirmSaveDialog = false)"
     :on-save="() => handleSubmit()"
@@ -821,6 +878,7 @@ onMounted(async () => {
         "
       >
         <VDataTable
+          disable-sort
           hide-default-footer
           class="border rounded"
           :items-per-page="-1"
@@ -828,18 +886,26 @@ onMounted(async () => {
           :items="listFactory.value"
         >
           <template #header.nama="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="text-blue font-bold">
+              {{ t(column.title) }}
+            </div>
           </template>
 
           <template #header.alamat="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="text-blue font-bold">
+              {{ t(column.title) }}
+            </div>
           </template>
 
           <template #header.status_milik="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="text-blue font-bold">
+              {{ t(column.title) }}
+            </div>
           </template>
           <template #header.publication="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="text-blue font-bold">
+              {{ t(column.title) }}
+            </div>
           </template>
 
           <template #item.no="{ index }">
@@ -867,6 +933,7 @@ onMounted(async () => {
         "
       >
         <VDataTable
+          disable-sort
           hide-default-footer
           class="border rounded"
           :items-per-page="-1"
@@ -874,18 +941,26 @@ onMounted(async () => {
           :items="listOutlet.value"
         >
           <template #header.nama="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="text-blue font-bold">
+              {{ t(column.title) }}
+            </div>
           </template>
 
           <template #header.alamat="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="text-blue font-bold">
+              {{ t(column.title) }}
+            </div>
           </template>
 
           <template #header.status_milik="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="text-blue font-bold">
+              {{ t(column.title) }}
+            </div>
           </template>
           <template #header.publication="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="text-blue font-bold">
+              {{ t(column.title) }}
+            </div>
           </template>
 
           <template #item.no="{ index }">
@@ -913,6 +988,7 @@ onMounted(async () => {
         "
       >
         <VDataTable
+          disable-sort
           hide-default-footer
           class="border rounded"
           :items-per-page="-1"
@@ -920,19 +996,29 @@ onMounted(async () => {
           :items="listPenyelia.value"
         >
           <template #header.nama="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="text-blue font-bold">
+              {{ t(column.title) }}
+            </div>
           </template>
           <template #header.no_ktp="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="text-blue font-bold">
+              {{ t(column.title) }}
+            </div>
           </template>
           <template #header.agama="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="text-blue font-bold">
+              {{ t(column.title) }}
+            </div>
           </template>
           <template #header.tgl_penyelia_halal="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="text-blue font-bold">
+              {{ t(column.title) }}
+            </div>
           </template>
           <template #header.publication="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="text-blue font-bold">
+              {{ t(column.title) }}
+            </div>
           </template>
 
           <template #item.no="{ index }">
@@ -963,7 +1049,9 @@ onMounted(async () => {
       :service_type="props?.list_channel"
       :title="t(`pengajuan-reguler.reguler-form--pengajuan-pengajuan-title`)"
       :isviewonly="props?.isviewonly"
-      :facId="facId"
+      :fac-id="facId"
+      :fac-message="facMessage"
+      :is-disabled="props?.isDisabled"
       @complete="withFacilitator"
     />
     <br />
@@ -972,6 +1060,7 @@ onMounted(async () => {
       :data="responsibility"
       :title="t(`pengajuan-reguler.reguler-form--pengajuan-pic-title`)"
       :isviewonly="props?.isviewonly"
+      :is-disabled="props?.isDisabled"
     />
     <br />
     <TableData
@@ -984,6 +1073,7 @@ onMounted(async () => {
       :title="t('pengajuan-reguler.reguler-form--pengajuan-legal-title')"
       with-add-button
       :isviewonly="props?.isviewonly"
+      :is-disabled="props?.isDisabled"
     />
     <br />
 
@@ -1000,6 +1090,7 @@ onMounted(async () => {
       :title="t('pengajuan-reguler.reguler-form--pengajuan-fac-title')"
       with-add-button
       :isviewonly="props?.isviewonly"
+      :is-disabled="props?.isDisabled"
     />
     <br />
     <TableData
@@ -1015,6 +1106,7 @@ onMounted(async () => {
       :title="t('pengajuan-reguler.reguler-form--pengajuan-out-title')"
       with-add-button
       :isviewonly="props?.isviewonly"
+      :is-disabled="props?.isDisabled"
     />
     <br />
     <TableData
@@ -1027,6 +1119,7 @@ onMounted(async () => {
       :title="t('pengajuan-reguler.reguler-form--pengajuan-ph-title')"
       with-add-button
       :isviewonly="props?.isviewonly"
+      :is-disabled="props?.isDisabled"
     />
   </div>
   <div v-else>

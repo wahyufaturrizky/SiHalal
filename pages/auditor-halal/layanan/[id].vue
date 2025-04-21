@@ -82,7 +82,7 @@ const getFactoryAndOutlet = async (type: string) => {
       "/reguler/pelaku-usaha/list-factory-outlet",
       {
         method: "get",
-        params: { id, type },
+        params: { id_reg:id, type },
       }
     );
 
@@ -162,6 +162,7 @@ onMounted(async () => {
               :list_outlet="listOutlet"
               :list_penyelia="listPenyelia"
               :list_channel="itemsChannel"
+              is-disabled
             />
           </div>
           <div v-if="activeTab === 1">

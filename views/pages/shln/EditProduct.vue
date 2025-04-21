@@ -32,6 +32,7 @@ const addBulking = () => {
 };
 const refVForm = ref<VForm>();
 const bulkingForm = ref<VForm>();
+const emit = defineEmits(["upload-bulk"]);
 const uploadDocument = async (file) => {
   try {
     const formData = new FormData();
@@ -41,6 +42,16 @@ const uploadDocument = async (file) => {
       method: "post",
       body: formData,
     });
+
+    if (response.code !== 2000) {
+      useSnackbar().sendSnackbar("HSCode tidak ditemukan!!", "error");
+      emit("upload-bulk", false);
+      bulkingDialog.value = false;
+      return;
+    }
+    loadItem(1, 10);
+    emit("upload-bulk", true);
+    useSnackbar().sendSnackbar("Berhasil mengunggah produk", "success");
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar(
@@ -295,7 +306,7 @@ const loadItem = async (page: number, size: number) => {
     });
 
     items.value = response.data;
-    totalItems.value = response.total_item;
+    totalItems.value = response.total_item ?? 0;
     loading.value = false;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -349,7 +360,7 @@ const formatItemTitle = (item) => {
                   variant="outlined"
                   class="ma-1"
                   @click="addBulking"
-                  >Tambah Bulking <v-icon end icon="fa-plus" />
+                  >Upload Product List <v-icon end icon="fa-plus" />
                 </v-btn>
                 <v-btn
                   color="primary"
@@ -412,7 +423,7 @@ const formatItemTitle = (item) => {
                 class="text-no-wrap"
               >
                 <template #item.index="{ index }">
-                  {{ index + 1 }}
+                  {{ index + 1 + (page - 1) * itemPerPage }}
                 </template>
                 <template #item.manufacture_name="{ item }">
                   {{ item.manufaktur }}
@@ -421,7 +432,7 @@ const formatItemTitle = (item) => {
                   {{ item.name }}
                 </template>
                 <template #item.hs_code="{ item }">
-                  {{ item.hc_code }}
+                  {{ item.hc_code }} ({{ item.hc_code_description }})
                 </template>
                 <template #item.action="{ item }">
                   <div class="d-flex gap-1">

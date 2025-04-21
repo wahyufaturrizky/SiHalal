@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps({
+const props = defineProps({
   canNotEdit: {
     type: Boolean,
   },
@@ -23,18 +23,33 @@ const tableHeader: any[] = [
 
 const selectedIngredient = ref([]);
 const store = useMyTabEditRegulerStore();
+const certHalalData = ref();
 const route = useRoute<"">();
 const { produk, produkAllBahan } = storeToRefs(store);
 const submissionId = route.params?.id as string;
 const { refresh } = await useAsyncData("list-product", async () => {
   return store.getProduct(submissionId);
 });
+
 const handleSubmit = async (payload: any) => {
   if (modalUse.value === "CREATE") await handleAddProduct(payload);
   // if (modalUse.value === "UPDATE") await handleUpdateProduct(payload);
 };
 const handleAddProduct = async (payload: any) => {
   try {
+    const { foto_produk, kode_rincian, merek, nama_produk, product_grade } =
+      payload;
+    if (
+      !foto_produk ||
+      !kode_rincian ||
+      !merek ||
+      !nama_produk ||
+      !product_grade
+    ) {
+      throw {
+        message: "Isi semua form",
+      };
+    }
     const response: any = await $api(
       `/self-declare/business-actor/product/create`,
       {
@@ -45,15 +60,21 @@ const handleAddProduct = async (payload: any) => {
         },
       } as any
     );
-
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+      handleDetailProduct(submissionId);
       await refresh();
     }
     return response;
   } catch (error) {
-    useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
-    console.log(error);
+    if (error.message === "Isi semua form") {
+      useSnackbar().sendSnackbar(error.message, "error");
+    } else {
+      useSnackbar().sendSnackbar(
+        "Maaf, Merek yang Anda pilih dilarang.",
+        "error"
+      );
+    }
   } finally {
     store.isAllBahanSelected();
   }
@@ -75,6 +96,7 @@ const handleUpdateProduct = async (payload: any, productId: string) => {
 
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil mengubah data", "success");
+      handleDetailProduct(submissionId);
       await refresh();
     }
     return response;
@@ -102,6 +124,7 @@ const handleAddIngredient = async (payload: any, idProduct: string) => {
 
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+      handleDetailProduct(submissionId);
       await refresh();
     }
     return response;
@@ -148,22 +171,25 @@ const detailProduct = ref({
   merek: null,
   nama: null,
 });
+const totalProduct = ref(0);
+const statusSelf = ref<string>("");
 const handleDetailProduct = async (id: string) => {
-  selectedProduct.value = id;
+  // selectedProduct.value = id;
   try {
-    const response: any = await $api(
-      `/self-declare/business-actor/product/detail`,
-      {
-        method: "get",
-        query: {
-          id_reg: submissionId,
-          product_id: id,
-        },
-      } as any
-    );
+    const response: any = await $api(`/self-declare/submission/${id}/detail`, {
+      method: "get",
+    } as any);
 
     if (response.code === 2000) {
-      detailProduct.value = response.data;
+      console.log(response.data.produk.length, "ini data");
+
+      const tracking = response.data.tracking ?? [];
+      const lastIndex = tracking.length - 1;
+      totalProduct.value = response.data.produk.length;
+      // console.log("result", tracking[lastIndex]?.status);
+
+      statusSelf.value = tracking[lastIndex]?.status || "";
+      // console.log(statusSelf.value, "ini status self");
     }
     return response;
   } catch (error) {
@@ -185,6 +211,7 @@ const handleDeleteProduct = async () => {
 
     if (response.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil menghapus data", "success");
+      handleDetailProduct(submissionId);
       await refresh();
     }
     return response;
@@ -195,6 +222,58 @@ const handleDeleteProduct = async () => {
     store.isAllBahanSelected();
   }
 };
+const setCertificateHalalData = () => {
+  certHalalData.value = store.getCertificateHalal();
+};
+
+const disableTambahProduk = () => {
+  const produkLength = JSON.parse(JSON.stringify(produk.value));
+  if (!certHalalData.value?.id_jenis_produk) {
+    return false;
+  } else {
+    if (!props.canNotEdit) {
+      return true;
+    }
+    if (produkLength >= 10) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+onMounted(() => {
+  setCertificateHalalData();
+  handleDetailProduct(submissionId);
+});
+
+watch(
+  () => store.certificateHalal,
+  (newData) => {
+    if (newData) {
+      setCertificateHalalData();
+    }
+  },
+  { immediate: true, deep: true }
+);
+
+const itemsPerPage = ref(10);
+const currentPage = ref(1);
+// Hitung total halaman
+const totalPages = computed(() =>
+  Math.ceil(produk.value.length / itemsPerPage.value)
+);
+
+// Filter data berdasarkan halaman aktif
+const paginatedItems = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  return produk.value.slice(start, start + itemsPerPage.value);
+});
+
+// Ganti halaman
+const changePage = (page: number) => {
+  currentPage.value = page;
+};
 </script>
 
 <template>
@@ -204,11 +283,12 @@ const handleDeleteProduct = async () => {
         <VCol cols="6"><h3>Daftar Produk</h3></VCol>
         <VCol cols="6" style="display: flex; justify-content: end">
           <VBtn
-            v-if="!canNotEdit"
+            v-if="disableTambahProduk()"
             @click="handleOpenModal('CREATE')"
             variant="outlined"
             append-icon="fa-plus"
-            style="margin-right: 1svw"
+            style="margin-inline-end: 1svw"
+            :disabled="totalProduct === 10"
             >Tambah</VBtn
           >
           <!-- <VBtn variant="flat">Simpan Perubahan</VBtn> -->
@@ -223,10 +303,34 @@ const handleDeleteProduct = async () => {
           >
         </div>
       </div>
+      <br />
+      <div>
+        <v-alert
+          v-if="!disableTambahProduk()"
+          text="Harap isi jenis produk di tab 'Pengajuan'"
+          type="error"
+          variant="tonal"
+          class="mt-5"
+        ></v-alert>
+
+        <v-alert
+          v-if="totalProduct === 10"
+          text="Maksimal Produk 10"
+          type="error"
+          variant="tonal"
+          class="mt-5"
+        ></v-alert>
+      </div>
     </VCardTitle>
 
     <VCardItem>
-      <VDataTable :headers="tableHeader" :items="produk" class="custom-table">
+      <VDataTable
+        disable-sort
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="tableHeader"
+        :items="produk"
+        class="custom-table"
+      >
         <template #item.no="{ index }">
           {{ index + 1 }}
         </template>
@@ -244,7 +348,15 @@ const handleDeleteProduct = async () => {
           }}</v-chip>
         </template>
         <template v-if="!canNotEdit" #item.action="{ item }: any">
-          <VMenu v-if="!item.verified">
+          <VMenu
+            v-if="
+              !item.verified ||
+              statusSelf === 'OF1' ||
+              statusSelf === 'OF10' ||
+              statusSelf === 'OF280' ||
+              statusSelf === 'OF285'
+            "
+          >
             <template #activator="{ props }">
               <!-- <VIcon
                 @click="handleDetailProduct(item.id)"
@@ -294,6 +406,14 @@ const handleDeleteProduct = async () => {
           </VMenu>
         </template>
       </VDataTable>
+
+      <!-- <VPagination
+        v-model="currentPage"
+        :length="totalPages"
+        total-visible="5"
+        :style="{ marginTop: '20px' }"
+        @update:modelValue="changePage"
+      /> -->
     </VCardItem>
   </VCard>
   <TambahProduk
@@ -321,23 +441,32 @@ const handleDeleteProduct = async () => {
 :deep(.v-data-table.custom-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }
+
 .bgContent {
   border-radius: 10px;
   background-color: #f0e9f1;
   padding-inline-start: 10px;
 }
+
+.bgContent-error {
+  border-radius: 10px;
+  background-color: #da5739;
+  padding-inline-start: 10px;
+}
+
 .subText {
   align-content: center;
   color: #652672 !important;

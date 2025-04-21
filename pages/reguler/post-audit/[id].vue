@@ -19,6 +19,8 @@ const showReturn = ref(false);
 const returnNote = ref("");
 const draftCertif = ref("");
 const detailLph = ref("");
+const sjphFile = ref<any>(null);
+const suratMohonFile = ref<any>(null);
 
 const assignAuditorHeader: any[] = [
   { title: "No", key: "index" },
@@ -84,6 +86,40 @@ const returnDocument = async () => {
     useSnackbar().sendSnackbar("Berhasil mengembalikan data", "success");
   } catch (error) {
     useSnackbar().sendSnackbar("Ada kesalahan", "error");
+  }
+};
+
+const getSjphDocument = async () => {
+  // useSnackbar().sendSnackbar('Berhasil mengirim pengajuan data', 'success')
+  try {
+    const response: any = await $api("/reguler/lph/generate-sjph", {
+      method: "post",
+      body: {
+        id_reg: id,
+      },
+    });
+
+    if (response?.code === 2000) {
+      sjphFile.value = response.data;
+      return response?.data;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan File SJPH", "error");
+  }
+};
+
+const getSuratPermohonan = async () => {
+  const result: any = await $api(`/reguler/lph/generate-surat-permohonan`, {
+    method: "get",
+    query: {
+      id,
+    },
+  });
+
+  if (result?.code === 2000) {
+    suratMohonFile.value = result?.data?.file;
   }
 };
 
@@ -208,6 +244,8 @@ onMounted(async () => {
     getDownloadForm("surat-permohonan"),
     getDraftSertif(),
     getDetailLph(),
+    getSjphDocument(),
+    getSuratPermohonan(),
   ]);
 
   if (dataPengajuan) {
@@ -234,35 +272,35 @@ onMounted(async () => {
           <VRow class="mt-5">
             <p>Yang bertanda tangan dibawah ini:</p>
           </VRow>
-          <VRow style="margin-top: -20px">
+          <VRow style="margin-block-start: -20px">
             <VCol sm="2"> Nama </VCol>
             <VCol>
               {{ detailLph?.nama_pimpinan }}
             </VCol>
           </VRow>
-          <VRow style="margin-top: -20px">
+          <VRow style="margin-block-start: -20px">
             <VCol sm="2"> Jabatan </VCol>
             <VCol> Pemimpin </VCol>
           </VRow>
-          <VRow style="margin-top: -20px">
+          <VRow style="margin-block-start: -20px">
             <VCol sm="2"> Nama LPH </VCol>
             <VCol>
               {{ detailLph?.nama_lph }}
             </VCol>
           </VRow>
-          <VRow style="margin-top: -20px">
+          <VRow style="margin-block-start: -20px">
             <VCol sm="2"> Alamat LPH </VCol>
             <VCol>
               {{ detailLph?.alamat }}
             </VCol>
           </VRow>
-          <VRow style="margin-top: -20px">
+          <VRow style="margin-block-start: -20px">
             <VCol sm="2"> No. Telepon </VCol>
             <VCol>
               {{ detailLph?.no_hp }}
             </VCol>
           </VRow>
-          <VRow style="margin-top: -20px">
+          <VRow style="margin-block-start: -20px">
             <VCol sm="2"> Email </VCol>
             <VCol>
               {{ detailLph?.email }}
@@ -353,7 +391,10 @@ onMounted(async () => {
               >
                 Pengembalian
               </VBtn>
-              <VBtn @click="downloadDocument(draftCertif)" variant="outlined">
+              <VBtn
+                @click="previewDocument(draftCertif, 'FILES')"
+                variant="outlined"
+              >
                 Lihat Draft Sertif
               </VBtn>
               <VBtn
@@ -467,6 +508,39 @@ onMounted(async () => {
                   </VBtn>
                 </VCol>
               </VRow>
+              <VRow align="center">
+                <VCol cols="5" class="text-h6">Dokumen SJPH </VCol>
+                <VCol class="d-flex align-center">
+                  <div class="me-1">:</div>
+                  <VBtn
+                    :color="sjphFile?.file ? 'primary' : '#A09BA1'"
+                    density="compact"
+                    class="px-2"
+                    @click="downloadDocument(sjphFile?.file, 'FILES')"
+                  >
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn>
+                </VCol>
+              </VRow>
+              <VRow align="center">
+                <VCol cols="5" class="text-h6">Surat Permohonan </VCol>
+                <VCol class="d-flex align-center">
+                  <div class="me-1">:</div>
+                  <VBtn
+                    :color="suratMohonFile ? 'primary' : '#A09BA1'"
+                    density="compact"
+                    class="px-2"
+                    :disabled="suratMohonFile ? false : true"
+                    @click="downloadDocument(suratMohonFile, 'FILES')"
+                  >
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn>
+                </VCol>
+              </VRow>
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="1" class="pt-3">
@@ -523,6 +597,7 @@ onMounted(async () => {
           <VRow class="mb-5">
             <VCol>
               <VDataTable
+                disable-sort
                 class="auditor-table"
                 :headers="assignAuditorHeader"
                 :items="assignAuditorData"
@@ -601,21 +676,22 @@ onMounted(async () => {
     .v-expansion-panel--active:not(:first-child),
     .v-expansion-panel--active + .v-expansion-panel
   ) {
-  margin-top: 40px !important;
+  margin-block-start: 40px !important;
 }
 
 :deep(.v-data-table.auditor-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }

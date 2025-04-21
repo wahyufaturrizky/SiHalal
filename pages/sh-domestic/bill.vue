@@ -15,7 +15,33 @@ const lovStatus = ref<any[]>([]);
 const loading = ref(false);
 const totalItems = ref(0);
 
+const typeInvoice = {
+  "Registrasi Self Declare": "invoice-self-declare-mandiri",
+  "Sertifikasi Halal": "invoice-reguler",
+};
+
 const { t } = useI18n();
+
+const handleInvoice = async (
+  fileName: string,
+  type: string,
+  id: string,
+  invoiceType: string
+) => {
+  if (fileName == "" || fileName == undefined || fileName == null) {
+    const response = await $api(`/certificate/regenerate`, {
+      method: "post",
+      body: {
+        document_type: typeInvoice[invoiceType],
+        ref_id: id,
+      },
+    });
+
+    if (response) fileName = response.filename;
+  }
+
+  return await downloadDocument(fileName, type);
+};
 
 const headers = [
   { title: "No", key: "no" },
@@ -36,7 +62,7 @@ const headers = [
   },
   {
     // title: `${t("reguler-invoice.invoice-list-noref")}`,
-    title: `No VA`,
+    title: "No VA",
     key: "va",
     nowrap: true,
   },
@@ -87,6 +113,7 @@ const dialogMaxWidth = computed(() => {
 // TODO -> BIKIN LOGIC BUAT SET CHIP COLOR
 const getChipColor = (stats: string) => {
   if (stats === "Lunas") return "success";
+
   return "primary";
 };
 
@@ -126,8 +153,9 @@ const loadItem = async (
       response?.data?.map((item: any) => {
         item.typeAndTotal = [item?.jenis_usaha, item?.jumlah_produk];
       });
-      totalItems.value = response.total_page;
+      totalItems.value = response.total_item;
       data.value = response.data;
+
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -147,6 +175,7 @@ const getListStatus = async () => {
     if (response?.code === 2000) {
       lovStatus.value = [{ code: "", name: "Semua" }, ...response.data];
       loading.value = false;
+
       return response;
     } else {
       loading.value = false;
@@ -166,33 +195,32 @@ const unduhFile = () => {
   window.open("/files/Cara Bayar.pdf", "_blank");
 };
 
+const debounceFetch = debounce(loadItem, 1500);
+
 const handleInput = (e: any) => {
-  debounce(
-    loadItem(
-      page.value,
-      size.value,
-      status.value,
-      outDated.value,
-      e.target.value
-    ),
-    500
+  debounceFetch(
+    page.value,
+    size.value,
+    status.value,
+    outDated.value,
+    e.target.value
   );
 };
 
-const downloadInvoice = async (item: any) => {
-  if (item.file_inv) await downloadDocument(item.file_inv);
-};
+// const downloadInvoice = async (item: any) => {
+//   if (item.file_inv) await downloadDocument(item.file_inv);
+// };
 
 onMounted(async () => {
   loading.value = true;
   await Promise.all([
-    loadItem(
-      page.value,
-      size.value,
-      status.value,
-      outDated.value,
-      searchQuery.value
-    ),
+    // loadItem(
+    //   page.value,
+    //   size.value,
+    //   status.value,
+    //   outDated.value,
+    //   searchQuery.value
+    // ),
     getListStatus(),
   ]);
   loading.value = false;
@@ -245,16 +273,16 @@ watch([status, outDated, page], () => {
               <VMenu
                 activator="parent"
                 :close-on-content-click="false"
-                @update:modelValue="onUpdate"
+                @update:model-value="onUpdate"
               >
                 <VCard :min-width="dialogMaxWidth">
                   <VCardItem>
                     <VLabel for="status">
-                      {{ t("reguler-invoice.invoice-list-status") }}</VLabel
-                    >
+                      {{ t("reguler-invoice.invoice-list-status") }}
+                    </VLabel>
                     <VSelect
-                      v-model="status"
                       id="status"
+                      v-model="status"
                       :items="lovStatus"
                       :placeholder="
                         t(`reguler-invoice.invoice-list-search-status`)
@@ -262,17 +290,18 @@ watch([status, outDated, page], () => {
                       class="mb-1"
                       item-value="code"
                       item-title="name"
-                      @update:modelValue="searchQuery = ''"
+                      @update:model-value="searchQuery = ''"
                     />
-                    <VLabel for="outDated">{{
-                      t("reguler-invoice.invoice-list-search-duedate")
-                    }}</VLabel>
+                    <VLabel for="outDated">
+                      {{ t("reguler-invoice.invoice-list-search-duedate") }}
+                    </VLabel>
                     <VueDatePicker
+                      id="outDated"
                       v-model="outDated"
                       teleport-center
-                      id="outDated"
                       :enable-time-picker="false"
-                      @update:modelValue="searchQuery = ''"
+                      format="dd/MM/yyyy"
+                      @update:model-value="searchQuery = ''"
                     />
                   </VCardItem>
                 </VCard>
@@ -291,14 +320,16 @@ watch([status, outDated, page], () => {
         </VRow>
       </VCardItem>
       <VCardItem>
-        <VDataTable
+        <VDataTableServer
+          disable-sort
+          v-model:items-per-page="size"
+          v-model:page="page"
+          :items-per-page-options="[10, 25, 50, 100]"
           :headers="headers"
           :items="data"
-          item-value="no"
           class="elevation-1 border rounded"
-          hide-default-footer
-          :items-per-page="size"
-          :server-items-length="totalItems"
+          :items-length="totalItems"
+          @update:options="loadItem(page, size, status, outDated, searchQuery)"
         >
           <template #no-data>
             <div class="pt-2">
@@ -320,9 +351,9 @@ watch([status, outDated, page], () => {
             {{ formatToIDR(item.total_inv) }}
           </template>
           <template #item.no="{ index }">
-            <label>{{ index + 1 }}</label>
+            {{ index + 1 + (page - 1) * size }}
           </template>
-          <template v-slot:[`item.status`]="{ item }">
+          <template #[`item.status`]="{ item }">
             <div class="d-flex flex-wrap">
               <VChip
                 :key="index"
@@ -335,6 +366,7 @@ watch([status, outDated, page], () => {
             </div>
           </template>
           <template #item.action="{ item }">
+            <!-- {{ item }} -->
             <VBtn color="primary" variant="plain">
               <VIcon>mdi-dots-vertical</VIcon>
               <VMenu activator="parent" :close-on-content-click="false">
@@ -342,10 +374,17 @@ watch([status, outDated, page], () => {
                   <VBtn
                     variant="text"
                     prepend-icon="mdi-download-box"
-                    @click="() => downloadInvoice(item)"
                     block
                     class="text-left"
                     style="justify-content: flex-start; inline-size: 100%"
+                    @click="
+                      handleInvoice(
+                        item.file_inv,
+                        'INVOICE',
+                        item.id_inv,
+                        item.jenis_transaksi
+                      )
+                    "
                   >
                     {{ t("reguler-invoice.invoice-list-action-downloadinv") }}
                   </VBtn>
@@ -353,13 +392,7 @@ watch([status, outDated, page], () => {
               </VMenu>
             </VBtn>
           </template>
-        </VDataTable>
-        <VPagination
-          v-model="page"
-          :length="totalItems"
-          class="mt-5"
-          @input="loadItem"
-        />
+        </VDataTableServer>
       </VCardItem>
     </VCard>
   </div>

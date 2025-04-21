@@ -11,6 +11,8 @@ const page = ref(1);
 const searchQuery = ref("");
 const status = ref("OF71");
 const itemsStatus = ref<any[]>([]);
+const sortBy = ref<any[]>([]);
+const sortDesc = ref<any[]>([]);
 
 // Table headers
 const headers: any = [
@@ -34,16 +36,30 @@ const handleInput = () => {
     status.value
   );
 };
+const changeFilterBy = (item) => {
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    searchQuery.value,
+    status.value
+  );
+};
 
 const navigateAction = (id: string) => {
-  navigateTo(`/self-declare/verification/${id}`);
+  navigateTo(`/self-declare/verification/${id}`, {
+    open: {
+      target: "_blank",
+    },
+  });
 };
 
 const loadItem = async (
   page: number,
   size: number,
   keyword: string = "",
-  status: string = ""
+  status: string = "",
+  shortBy: string = "",
+  shortByField: string = ""
 ) => {
   try {
     loading.value = true;
@@ -55,6 +71,9 @@ const loadItem = async (
         size,
         keyword,
         status,
+        filterBy: selectedFilterBy.value,
+        shortBy,
+        shortByField,
       },
     });
 
@@ -100,6 +119,7 @@ onMounted(async () => {
     loadingAll.value = false;
   }
 });
+const selectedFilterBy = ref("pelaku_usaha");
 </script>
 
 <template>
@@ -117,14 +137,24 @@ onMounted(async () => {
         </VCol>
         <VCol cols="6" align="end">
           <DataPermohonanSertifikasi
-            @refresh="loadItem(1, itemPerPage, searchQuery, status)"
+            @refresh="loadItem(1, itemPerPage, searchQuery, status, '', '')"
           />
         </VCol>
       </VRow>
     </VCardTitle>
     <VCardText v-if="!loadingAll">
       <VRow>
-        <VCol />
+        <VCol>
+          <VLabel>Cari Berdasarkan : </VLabel>
+          <VRadioGroup
+            v-model="selectedFilterBy"
+            inline
+            @update:model-value="changeFilterBy"
+          >
+            <VRadio :label="`Nama PU`" value="pelaku_usaha" />
+            <VRadio :label="`Nomor Daftar`" value="no_daftar" />
+          </VRadioGroup>
+        </VCol>
       </VRow>
       <VRow>
         <VCol cols="3">
@@ -134,7 +164,9 @@ onMounted(async () => {
             :items="itemsStatus"
             item-title="name"
             item-value="code"
-            @update:modelValue="loadItem(1, itemPerPage, searchQuery, $event)"
+            @update:model-value="
+              loadItem(1, itemPerPage, searchQuery, $event, '', '')
+            "
           />
         </VCol>
         <VCol class="d-flex justify-sm-space-between align-center" cols="9">
@@ -150,14 +182,28 @@ onMounted(async () => {
       </VRow>
       <VRow>
         <VDataTableServer
+          disable-sort
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
+          v-model:sort-by="sortBy"
+          v-model:sort-desc="sortDesc"
           :headers="headers"
           :items="items"
           :loading="loading"
           :items-length="totalItems"
           loading-text="Loading..."
-          @update:options="loadItem(page, itemPerPage, searchQuery, status)"
+          @update:options="
+            (newFilter) =>
+              loadItem(
+                page,
+                itemPerPage,
+                searchQuery,
+                status,
+                newFilter?.sortBy?.[0]?.order,
+                newFilter?.sortBy?.[0]?.key
+              )
+          "
         >
           <template #item.no="{ index }">
             {{ index + 1 + (page - 1) * itemPerPage }}

@@ -1,3 +1,34 @@
+<script lang="ts" setup>
+import { VNodeRenderer } from "@/@layouts/components/VNodeRenderer";
+import { themeConfig } from "@/themeConfig";
+import DalamNegeri from "@/views/pages/new-account/DalamNegeri.vue";
+import InstansiPemerintahan from "@/views/pages/new-account/InstansiPemerintahan.vue";
+import LuarNegeri from "@/views/pages/new-account/LuarNegeri.vue";
+import { useI18n } from "vue-i18n";
+
+definePageMeta({
+  layout: "blank",
+});
+
+const stepStore = useMyNewAccountStepStore();
+const radioGroup = ref(1);
+
+const { t } = useI18n();
+
+const { data: userData, signOut } = useAuth();
+
+async function logout() {
+  try {
+    await signOut({ redirect: false });
+    useMyAuthUserStore().resetUser();
+
+    navigateTo({ name: "login" });
+  } catch (error) {
+    throw createError(error);
+  }
+}
+</script>
+
 <template>
   <VRow no-gutters class="d-flex justify-center my-5">
     <NuxtLink to="/">
@@ -8,15 +39,15 @@
   </VRow>
   <VRow no-gutters>
     <VCol class="d-flex align-center justify-center">
-      <v-card class="mb-5">
+      <VCard class="mb-5">
         <VWindow
-          :touch="false"
           v-model="stepStore.step"
+          :touch="false"
           class="d-flex align-center justify-center"
           style="max-inline-size: 90dvw"
         >
           <VWindowItem :value="1">
-            <v-card-text>
+            <VCardText>
               <VCol>
                 <p class="text-h5 font-weight-bold">
                   {{ t("new-account.asal-attr-1") }}
@@ -36,12 +67,26 @@
                   />
                 </RadioButtonGroup>
               </VCol>
-              <VCol class="d-flex justify-end">
-                <VBtn @click="stepStore.goToStep(radioGroup + 1)"
-                  >Selanjutnya</VBtn
+              <div class="px-3 pb-4">
+                <VBtn
+                  class="w-100"
+                  append-icon="mdi-arrow-right"
+                  @click="stepStore.goToStep(radioGroup + 1)"
                 >
-              </VCol>
-            </v-card-text>
+                  Selanjutnya
+                </VBtn>
+              </div>
+              <div class="px-3">
+                <VBtn
+                  variant="outlined"
+                  class="w-100"
+                  prepend-icon="mdi-arrow-left"
+                  @click="logout"
+                >
+                  {{ t("new-account.back-login") }}
+                </VBtn>
+              </div>
+            </VCardText>
           </VWindowItem>
           <VWindowItem :value="2">
             <LuarNegeri />
@@ -53,28 +98,10 @@
             <InstansiPemerintahan />
           </VWindowItem>
         </VWindow>
-      </v-card>
+      </VCard>
     </VCol>
   </VRow>
 </template>
-
-<script lang="ts" setup>
-import { VNodeRenderer } from "@/@layouts/components/VNodeRenderer";
-import { themeConfig } from "@/themeConfig";
-import DalamNegeri from "@/views/pages/new-account/DalamNegeri.vue";
-import InstansiPemerintahan from "@/views/pages/new-account/InstansiPemerintahan.vue";
-import LuarNegeri from "@/views/pages/new-account/LuarNegeri.vue";
-import { useI18n } from "vue-i18n";
-
-definePageMeta({
-  layout: "blank",
-});
-
-const stepStore = useMyNewAccountStepStore();
-const radioGroup = ref(1);
-
-const { t } = useI18n();
-</script>
 
 <style lang="css" scoped>
 .auth-logo {

@@ -5,6 +5,7 @@ import svgLoader from "vite-svg-loader";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   app: {
+    // buildAssetsDir: `/nuxt-asset-${Date.now()}/`,
     head: {
       titleTemplate: "%s",
       title: "SiHalal",
@@ -13,7 +14,7 @@ export default defineNuxtConfig({
         {
           rel: "icon",
           type: "image/x-icon",
-          href: `/favicon.ico`,
+          href: "/favicon.ico",
         },
       ],
       script: [
@@ -52,6 +53,7 @@ export default defineNuxtConfig({
         maxAge: 60 * 60 * 24, // 1 day expiration
       },
     },
+
     // Private keys are only available on the server
     authSecret: process.env.NUXT_AUTH_SECRET || "",
     authBaseUrl: process.env.NUXT_AUTH_BASE_URL || "",
@@ -61,6 +63,7 @@ export default defineNuxtConfig({
 
     // Public keys that are exposed to the client.
     public: {
+      appVersion: process.env.NUXT_PUBLIC_APP_VERSION || "",
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || "",
       appBaseUrl: process.env.NUXT_PUBLIC_APP_BASE_URL || "",
       turnstile: {
@@ -71,6 +74,11 @@ export default defineNuxtConfig({
       },
       captcha: {
         active: process.env.NUXT_PUBLIC_CAPTCHA_ACTIVE || true,
+      },
+      freshChat: {
+        token: process.env.NUXT_PUBLIC_FRESH_CHAT_TOKEN || "",
+        host: process.env.NUXT_PUBLIC_FRESH_CHAT_HOST || "",
+        widgetUuid: process.env.NUXT_PUBLIC_FRESH_CHAT_WIDGET_UUID || "",
       },
     },
     turnstile: {
@@ -116,7 +124,7 @@ export default defineNuxtConfig({
         type: "bearer",
         cookieName: "accessToken",
         headerName: "Authorization",
-        maxAgeInSeconds: 18000,
+        maxAgeInSeconds: 86400,
         sameSiteAttribute: "lax",
         secureCookieAttribute: true,
         httpOnly: true,
@@ -146,7 +154,12 @@ export default defineNuxtConfig({
   ],
 
   imports: {
-    dirs: ["./@core/utils", "./@core/composable/", "./plugins/*/composables/*"],
+    dirs: [
+      "./@core/utils",
+      "./@core/composable/",
+      "./plugins/*/composables/*",
+      "./constants",
+    ],
   },
 
   hooks: {},
@@ -219,6 +232,7 @@ export default defineNuxtConfig({
     optimizeDeps: {
       exclude: ["vuetify"],
       include: ["vue", "vue-router", "pinia"],
+
       // entries: ["./**/*.vue"],
     },
 
@@ -254,6 +268,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@nuxtjs/turnstile",
     "@nuxt/scripts",
+
     // (_options, nuxt) => {
     //   nuxt.hooks.hook("vite:extendConfig", (config) => {
     //     // @ts-expect-error

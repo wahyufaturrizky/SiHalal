@@ -4,6 +4,7 @@ import { useDisplay } from "vuetify";
 import { VDataTableServer } from "vuetify/components";
 
 defineProps({ mode: String });
+
 const selectAll = ref([]);
 
 interface DataItem {
@@ -22,6 +23,7 @@ const currentPage = ref(1);
 const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
+
 const permohonanHeaders: any = [
   { title: "No", key: "id", sortable: false },
   { title: "Pilih", key: "pilih", maxWidth: 60 },
@@ -30,23 +32,22 @@ const permohonanHeaders: any = [
   { title: "Tanggal Daftar", key: "tgl_daftar", nowrap: true },
   { title: "Nama PU", key: "nama_pu", nowrap: true },
   { title: "Alamat", key: "alamat", nowrap: true },
+
   // { title: "Merk Dagang", key: "merek_dagang", nowrap: true },
   { title: "Status", key: "status" },
-  // { title: "Action", key: "action", align: "center" },
+
+  { title: "Action", key: "action", align: "center" },
 ];
+
 const listData = ref<Array<DataItem>>([]);
-const selectedItems = ref<String[]>([]);
+const selectedItems = ref<string[]>([]);
 
 const searchQuery = ref("");
 
 const handleSelectAll = () => {
-  if (selectAll.value.length === 1) {
-    for (const item of listData.value) {
-      selectedItems.value.push(item.id_daftar);
-    }
-  } else {
-    selectedItems.value = [];
-  }
+  if (selectAll.value.length === 1)
+    for (const item of listData.value) selectedItems.value.push(item.id_daftar);
+  else selectedItems.value = [];
 };
 
 const isVisible = ref(false);
@@ -58,6 +59,7 @@ const { mdAndUp } = useDisplay();
 const dialogMaxWidth = computed(() => (mdAndUp.value ? 700 : "90%"));
 
 const selectedComitee = ref(null);
+
 const onHandleDistribusi = async () => {
   try {
     const result: any = await $api(
@@ -70,6 +72,7 @@ const onHandleDistribusi = async () => {
         },
       } as any
     );
+
     if (result.code === 2000) {
       useSnackbar().sendSnackbar("Berhasil Mengdistribusikan Data", "success");
       refresh();
@@ -90,10 +93,11 @@ const onHandleDistribusi = async () => {
 const onFiltersUpdate = (filter: any) => {
   console.log("UPDATE FILTER : ", filter);
 };
+
 const distributeBtnText = computed(() => {
   return selectedItems.value.length
     ? `Distribusi (${selectedItems.value.length})`
-    : `Distribusi`;
+    : "Distribusi";
 });
 
 const listProduct = ref([]);
@@ -106,8 +110,11 @@ const selectedProductType = ref();
 const selectedFasilitas = ref();
 const selectedLembaga = ref();
 const selectedPendamping = ref();
-const searchBy: Ref<Number> = ref(1);
+const searchBy: Ref<number> = ref(1);
+
 const handleLoadList = async () => {
+  loading.value = true;
+
   try {
     const response: any = await $api(
       "/self-declare/verificator/submission/list",
@@ -137,11 +144,15 @@ const handleLoadList = async () => {
         totalItems.value = 0;
       }
     }
+
     return response;
   } catch (error) {
     console.log(error);
+  } finally {
+    loading.value = false;
   }
 };
+
 const loadItemProduct = async () => {
   try {
     const response: any = await $api("/master/products", {
@@ -159,6 +170,7 @@ const loadItemProduct = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+
 const loadItemFacility = async () => {
   try {
     const response: any = await $api("/master/facility", {
@@ -167,6 +179,7 @@ const loadItemFacility = async () => {
 
     if (response.length) {
       listFasilitas.value = response;
+
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -175,6 +188,7 @@ const loadItemFacility = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+
 const loadItemLembaga = async () => {
   try {
     const response: any = await $api("/master/lembaga", {
@@ -183,6 +197,7 @@ const loadItemLembaga = async () => {
 
     if (response.length) {
       listLembaga.value = response;
+
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -191,6 +206,7 @@ const loadItemLembaga = async () => {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
+
 const loadItemPendamping = async () => {
   try {
     const response: any = await $api("/master/pendamping", {
@@ -199,6 +215,7 @@ const loadItemPendamping = async () => {
 
     if (response.length) {
       listPendamping.value = response;
+
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -217,9 +234,9 @@ const handleLoadListComitee = async () => {
       } as any
     );
 
-    if (response.code === 2000 && response.data) {
+    if (response.code === 2000 && response.data)
       listComitee.value = response.data;
-    }
+
     return response;
   } catch (error) {
     console.log(error);
@@ -235,30 +252,49 @@ const { refresh } = await useAsyncData(
   }
 );
 
+const batalkanStatusHijau = async (selfDeclareId: string) => {
+  try {
+    await $api(`/self-declare/verificator/tandai-not-ok/${selfDeclareId}`, {
+      method: "put",
+    });
+
+    useSnackbar().sendSnackbar("Batalkan Status Hijau Success", "success");
+
+    handleLoadList();
+  } catch (error) {
+    console.error("error ", error);
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
 const handleSearchSubmission = useDebounceFn((val: string) => {
   searchQuery.value = val;
   currentPage.value = 1;
 
   refresh();
 }, 350);
+
 const handleFilterProductType = (val: string) => {
   selectedProductType.value = val;
   currentPage.value = 1;
 
   refresh();
 };
+
 const handleFilterFasilitas = (val: string) => {
   selectedFasilitas.value = val;
   currentPage.value = 1;
 
   refresh();
 };
+
 const handleFilterLembaga = (val: string) => {
   selectedLembaga.value = val;
   currentPage.value = 1;
 
   refresh();
 };
+
 const handleFilterPendamping = (val: string) => {
   selectedPendamping.value = val;
   currentPage.value = 1;
@@ -305,10 +341,7 @@ onMounted(() => {
             <div
               class="border rounded-lg d-flex justify-center align-center pa"
             >
-              <VCheckbox
-                v-model="selectAll"
-                @change="handleSelectAll"
-              ></VCheckbox>
+              <VCheckbox v-model="selectAll" @change="handleSelectAll" />
             </div>
             <VMenu :close-on-content-click="false">
               <template #activator="{ props }">
@@ -327,9 +360,8 @@ onMounted(() => {
                     <VCol>
                       <div class="text-h6 mb-1">Jenis Produk</div>
                       <VSelect
-                        density="compact"
-                        @update:model-value="handleFilterProductType"
                         v-model="selectedProductType"
+                        density="compact"
                         :items="listProduct"
                         item-title="name"
                         item-value="code"
@@ -337,6 +369,7 @@ onMounted(() => {
                         rounded="xl"
                         placeholder="Semua"
                         clearable
+                        @update:model-value="handleFilterProductType"
                       />
                     </VCol>
                   </VRow>
@@ -344,9 +377,8 @@ onMounted(() => {
                     <VCol>
                       <div class="text-h6 mb-1">Fasilitas</div>
                       <VSelect
-                        density="compact"
-                        @update:model-value="handleFilterFasilitas"
                         v-model="selectedFasilitas"
+                        density="compact"
                         :items="listFasilitas"
                         item-title="name"
                         item-value="id"
@@ -354,6 +386,7 @@ onMounted(() => {
                         rounded="xl"
                         placeholder="Semua"
                         clearable
+                        @update:model-value="handleFilterFasilitas"
                       />
                     </VCol>
                   </VRow>
@@ -361,9 +394,8 @@ onMounted(() => {
                     <VCol>
                       <div class="text-h6 mb-1">Lembaga</div>
                       <VSelect
-                        density="compact"
-                        @update:model-value="handleFilterLembaga"
                         v-model="selectedLembaga"
+                        density="compact"
                         :items="listLembaga"
                         item-title="name"
                         item-value="id"
@@ -371,6 +403,7 @@ onMounted(() => {
                         rounded="xl"
                         placeholder="Semua"
                         clearable
+                        @update:model-value="handleFilterLembaga"
                       />
                     </VCol>
                   </VRow>
@@ -378,42 +411,46 @@ onMounted(() => {
                     <VCol>
                       <div class="text-h6 mb-1">Pendamping</div>
                       <VSelect
-                        density="compact"
-                        @update:model-value="handleFilterPendamping"
                         v-model="selectedPendamping"
+                        density="compact"
                         :items="listPendamping"
                         menu-icon="fa-chevron-down"
                         rounded="xl"
                         placeholder="Semua"
                         clearable
+                        @update:model-value="handleFilterPendamping"
                       />
                     </VCol>
                   </VRow>
                 </VCardText>
               </VCard>
             </VMenu>
-            <!-- <DistribusiKomiteSelfDeclareTableFilter
+            <!--
+              <DistribusiKomiteSelfDeclareTableFilter
               @updateFilter="onFiltersUpdate"
-            /> -->
+              />
+            -->
           </VRow>
         </VCol>
-        <!-- <VCol class="d-flex justify-sm-space-between align-center" cols="9">
+        <!--
+          <VCol class="d-flex justify-sm-space-between align-center" cols="9">
           <VTextField
-            v-model="searchQuery"
-            density="compact"
-            placeholder="Cari Nama Pengajuan"
-            append-inner-icon="ri-search-line"
-            style="max-inline-size: 100%"
-            @update:model-value="handleSearchSubmission"
-            clearable
+          v-model="searchQuery"
+          density="compact"
+          placeholder="Cari Nama Pengajuan"
+          append-inner-icon="ri-search-line"
+          style="max-inline-size: 100%"
+          @update:model-value="handleSearchSubmission"
+          clearable
           />
-        </VCol> -->
+          </VCol>
+        -->
       </VRow>
       <VRow>
         <VCol cols="12">
           <VRadioGroup v-model="searchBy" inline label="Cari berdasarkan:">
-            <VRadio label="Nama PU" :value="1"></VRadio>
-            <VRadio label="No Daftar" :value="2"></VRadio>
+            <VRadio label="Nama PU" :value="1" />
+            <VRadio label="No Daftar" :value="2" />
           </VRadioGroup>
           <br />
           <VTextField
@@ -422,16 +459,18 @@ onMounted(() => {
             placeholder="Cari Nama Pengajuan"
             append-inner-icon="ri-search-line"
             style="max-inline-size: 100%"
-            @update:model-value="handleSearchSubmission"
             clearable
+            @update:model-value="handleSearchSubmission"
           />
         </VCol>
       </VRow>
       <VRow>
         <VDataTableServer
-          class="custom-table"
           v-model:items-per-page="itemPerPage"
           v-model:page="currentPage"
+          disable-sort
+          :items-per-page-options="[10, 25, 50, 100]"
+          class="custom-table"
           :headers="permohonanHeaders"
           :items="listData"
           :loading="loading"
@@ -445,14 +484,7 @@ onMounted(() => {
             {{ item.no_daftar ? item.no_daftar : "-" }}
           </template>
           <template #item.tgl_daftar="{ item }">
-            {{
-              item.tgl_daftar
-                ? new Date(item.tgl_daftar)
-                    .toISOString()
-                    .substring(0, 10)
-                    .replace(/-/g, "/")
-                : "-"
-            }}
+            {{ item.tgl_daftar ? formatDateId(item.tgl_daftar) : "-" }}
           </template>
           <template #item.nama_pu="{ item }">
             {{ item.nama_pu ? item.nama_pu : "-" }}
@@ -460,32 +492,38 @@ onMounted(() => {
           <template #item.alamat="{ item }">
             {{ item.alamat ? item.alamat : "-" }}
           </template>
-          <!-- <template #item.merek_dagang="{ item }">
+          <!--
+            <template #item.merek_dagang="{ item }">
             {{ item.merek_dagang ? item.merek_dagang : "-" }}
-          </template> -->
-          <!-- <template #item.status="{ item }">
+            </template>
+          -->
+          <!--
+            <template #item.status="{ item }">
             {{ item.status ? item.status : "-" }}
-          </template> -->
+            </template>
+          -->
           <template #item.pilih="{ item }">
             <VCheckbox v-model="selectedItems" :value="item.id_daftar" />
           </template>
           <template #item.status="{ item }">
-            <!-- <div v-if="item.status === 'OF74'">
+            <!--
+              <div v-if="item.status === 'OF74'">
               <div class="status-container">
-                <VChip
-                  variant="outlined"
-                  style="
-                    border-color: #49a84c;
-                    border-radius: 8px;
-                    background-color: #edf6ed;
-                  "
-                >
-                  <span style="color: #49a84c">
-                    {{ item.status_code }}
-                  </span>
-                </VChip>
+              <VChip
+              variant="outlined"
+              style="
+              border-color: #49a84c;
+              border-radius: 8px;
+              background-color: #edf6ed;
+              "
+              >
+              <span style="color: #49a84c">
+              {{ item.status_code }}
+              </span>
+              </VChip>
               </div>
-            </div> -->
+              </div>
+            -->
             <!-- <div> -->
             <div class="status-container">
               <VChip
@@ -503,6 +541,20 @@ onMounted(() => {
             </div>
             <!-- </div> -->
           </template>
+          <template #item.action="{ item }">
+            <div class="d-flex gap-1">
+              <IconBtn size="small">
+                <VIcon
+                  icon="mdi-close"
+                  color="danger"
+                  @click="batalkanStatusHijau((item as any).id_daftar)"
+                />
+                <VTooltip activator="parent" location="top">
+                  Batalkan Status Hijau
+                </VTooltip>
+              </IconBtn>
+            </div>
+          </template>
         </VDataTableServer>
       </VRow>
       <!-- <VPagination v-model="page" :total-visible="7" :length="totalPages" /> -->
@@ -518,30 +570,29 @@ onMounted(() => {
         </VLabel>
         <VSelect
           id="proses"
-          placeholder="Pilih Proses Distribusi"
           v-model="selectedComitee"
+          placeholder="Pilih Proses Distribusi"
           :items="listComitee"
           item-title="name"
           item-value="user_id"
         >
-          <template v-slot:item="{ props, item }">
-            <v-list-item
+          <template #item="{ props, item }">
+            <VListItem
               v-bind="props"
               :title="item.raw.name"
               :subtitle="item.raw.username"
-            >
-            </v-list-item>
+            />
           </template>
-          <template v-slot:selection="{ item }">
+          <template #selection="{ item }">
             <p>{{ `${item.raw.name} - ${item.raw.username}` }}</p>
           </template>
         </VSelect>
       </VCardItem>
       <VCardActions class="d-flex justify-end ga-4">
         <VBtn
-          @click="[closeDialog(), (selectedComitee = null)]"
           variant="outlined"
           min-width="100px"
+          @click="[closeDialog(), (selectedComitee = null)]"
         >
           Batal
         </VBtn>

@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import FormEditLayoutProduksi from "@/components/form/FormEditLayoutProduksi.vue";
-import FormTambahLayoutProduksi from "@/components/form/FormTambahLayoutProduksi.vue";
-
 const catatanHeaders = [
   { title: "No", key: "no" },
   { title: "Nama Produk", key: "nama_produk", nowrap: true },
@@ -19,31 +16,43 @@ const catatanHeaders = [
 ];
 
 const catatanItems = ref([]);
+const size = ref(10);
+const page = ref(1);
+const totalData = ref(0);
 
 const route = useRoute();
+
 const getCatatanProduksi = async () => {
   try {
-    const response = await $api("/reguler/verifikator/detail/proses/catatan-produksi", {
-      method: "post",
-      body: {
-        id_reg: route.params.id,
-      },
-    });
+    const response = await $api(
+      "/reguler/verifikator/detail/proses/catatan-produksi",
+      {
+        method: "post",
+        body: {
+          id_reg: route.params.id,
+        },
+        params: {
+          page: page.value,
+          size: size.value,
+        },
+      }
+    );
+
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan", "error");
+
       return;
     }
     catatanItems.value = response.data;
+    totalData.value = response.total_data;
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
 };
-onMounted(async () => {
-  await getCatatanProduksi();
-});
+
 // TODO -> LOGIc DOWNLOAD
 const download = async (item) => {
-  await downloadDocument(item);
+  await downloadDocument(item, "FILES");
 };
 </script>
 
@@ -53,22 +62,39 @@ const download = async (item) => {
       <span class="text-h3">Catatan Hasil Produksi </span>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="catatanHeaders" :items="catatanItems">
-        <template #item.no="{index}"> 
-          {{index + 1}}
+      <VDataTableServer
+        disable-sort
+        v-model:items-per-page="size"
+        v-model:page="page"
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="catatanHeaders"
+        :items="catatanItems"
+        :items-length="totalData"
+        @update:options="getCatatanProduksi"
+      >
+        <template #item.no="{ index }">
+          {{ index + 1 }}
         </template>
         <template #item.file="{ item }">
-          <v-btn
-          :disabled="item.file_dok == ''"
+          <VBtn
+            :disabled="item.file_dok == ''"
             color="primary"
             variant="plain"
             prepend-icon="mdi-download"
             @click="download(item)"
           >
             File
-          </v-btn>
+          </VBtn>
         </template>
-      </VDataTable>
+
+        <template #item.tanggal_produksi="{ item }">
+          {{ formatDateId(item.tanggal_produksi) }}
+        </template>
+
+        <template #item.tanggal_kadaluarsa="{ item }">
+          {{ formatDateId(item.tanggal_kadaluarsa) }}
+        </template>
+      </VDataTableServer>
     </VCardItem>
   </VCard>
 </template>

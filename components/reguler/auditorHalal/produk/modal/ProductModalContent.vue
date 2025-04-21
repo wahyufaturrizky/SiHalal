@@ -17,7 +17,7 @@ const props = defineProps({
     type: Number,
     required: false,
   },
-})
+});
 
 const tableHeader = [
   { title: "No", value: "no" },
@@ -55,10 +55,7 @@ const selected = ref([]);
       <VCol cols="6">
         <VItemGroup>
           <VLabel>Nomor</VLabel>
-          <VSelect
-            v-model="props?.start"
-            placeholder="Pilih Nomor"
-          />
+          <VSelect v-model="props?.start" placeholder="Pilih Nomor" />
         </VItemGroup>
       </VCol>
       <VCol cols="6">
@@ -71,14 +68,15 @@ const selected = ref([]);
     <VRow>
       <VCol cols="12">
         <VDataTable
-            :headers="tableHeader"
-            :items="items"
-            hide-default-footer
-            class="border rounded"
+          disable-sort
+          :headers="tableHeader"
+          :items="items"
+          hide-default-footer
+          class="border rounded"
         >
-            <template #item.no="{ index }">
-                <label>{{ index + 1 }}</label>
-            </template>
+          <template #item.no="{ index }">
+            <label>{{ index + 1 }}</label>
+          </template>
           <template #item.action="{ item }">
             <VCheckbox v-model="selected" :value="item.id"></VCheckbox>
           </template>

@@ -3,7 +3,7 @@ const loadingAll = ref(true);
 
 const ingredientHeader: any = [
   { title: "No", key: "index" },
-  { title: "ID", key: "id", nowrap: true },
+  // { title: "ID", key: "id", nowrap: true },
   { title: "Jenis Bahan", key: "jenis_bahan", nowrap: true },
   { title: "Nama Bahan", key: "nama_bahan", nowrap: true },
   { title: "Kelompok", key: "kelompok", nowrap: true },
@@ -14,11 +14,11 @@ const ingredientHeader: any = [
     key: "no_sertifikat",
     nowrap: true,
   },
-  {
-    title: "Tanggal Berlaku",
-    key: "tgl_berlaku_sertifikat",
-    nowrap: true,
-  },
+  // {
+  //   title: "Tanggal Berlaku",
+  //   key: "tgl_berlaku_sertifikat",
+  //   nowrap: true,
+  // },
   {
     title: "Verif Pendamping",
     key: "vefified",
@@ -30,6 +30,13 @@ const ingredientHeader: any = [
     align: "center",
   },
 ];
+
+const props = defineProps({
+  idDetail: {
+    required: true,
+    type: String,
+  },
+});
 const ingredientData = ref([]);
 
 const route = useRoute();
@@ -148,8 +155,35 @@ const handleDeleteIngredient = async () => {
   }
 };
 
+const statusPengajuan = ref<string>("");
+const handleDetail = async () => {
+  try {
+    const response: any = await $api(
+      `/self-declare/submission/${props.idDetail}/detail`,
+      {
+        method: "get",
+      }
+    );
+
+    if (response.code === 2000) {
+      // console.log(response.data, "ini data");
+
+      const tracking = response.data.tracking ?? [];
+      const lastIndex = tracking.length - 1;
+
+      console.log("result", tracking[lastIndex]?.status);
+
+      statusPengajuan.value = tracking[lastIndex]?.status || "";
+      // console.log(statusPengajuan.value, "ini status pengajuan");
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 onMounted(async () => {
-  const res: any = await Promise.all([loadBahan()]);
+  const res: any = await Promise.all([loadBahan(), handleDetail()]);
 
   const checkResIfUndefined = res.every((item: any) => {
     return item !== undefined;
@@ -179,11 +213,11 @@ onMounted(async () => {
     </VCardTitle>
     <VCardText>
       <VDataTable
+        disable-sort
         class="ingredient-table"
         :headers="ingredientHeader"
         :items="ingredientData"
         fixed-header
-        :hide-default-footer="ingredientData.length < 10"
       >
         <template #item.index="{ index }">
           {{ index + 1 }}
@@ -196,7 +230,13 @@ onMounted(async () => {
           />
         </template>
         <template #item.actions="{ item }">
-          <VMenu>
+          <VMenu
+            v-if="
+              statusPengajuan === 'OF1' ||
+              statusPengajuan === 'OF280' ||
+              statusPengajuan === 'OF285'
+            "
+          >
             <template #activator="{ props }">
               <VIcon
                 icon="fa-ellipsis-v"
@@ -259,15 +299,16 @@ onMounted(async () => {
 :deep(.v-data-table.ingredient-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }

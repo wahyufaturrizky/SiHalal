@@ -16,6 +16,8 @@ const totalItems = ref<number>(0);
 const data = ref<any[]>([]);
 const listOss = ref<any[]>([]);
 
+const store = pelakuUsahaProfile();
+
 const headers = [
   { title: "No", key: "no" },
   {
@@ -77,8 +79,8 @@ const loadItem = async (
     const response: any = await $api("/reguler/pelaku-usaha", {
       method: "get",
       params: {
-        pageNumber,
-        sizeData,
+        page: pageNumber,
+        size: sizeData,
         keyword,
       },
     });
@@ -116,14 +118,22 @@ const handleInput = (e: any) => {
   debouncedFetch(page.value, size.value, searchQuery.value);
 };
 
-const newRegister = async (type: string, id: string) => {
+const newRegister = async (type: string, id: string, isLn: boolean) => {
   try {
+    let body: any = {
+      type,
+      id,
+    };
+    if (isLn) {
+      body = {
+        ...body,
+        id_prov: "00",
+      };
+    }
+
     const response: any = await $api("/reguler/pelaku-usaha/draft", {
       method: "post",
-      body: {
-        type,
-        id,
-      },
+      body,
     });
 
     if (response?.code === 2000) {
@@ -141,7 +151,7 @@ const newRegister = async (type: string, id: string) => {
 const additionalRegister = () => {};
 
 onMounted(async () => {
-  await Promise.allSettled([getListOss()]);
+  await Promise.allSettled([getListOss(), store.fetchProfile(null)]);
 });
 </script>
 
@@ -152,14 +162,20 @@ onMounted(async () => {
       {{ t("pengajuan-reguler.reguler-list-title") }}
     </h1>
     <br />
-
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
         <div class="text-h4 font-weight-bold">
           {{ t("pengajuan-reguler.reguler-list-subtitle") }}
         </div>
         <NewRegulerSertificationHalalDialog
-          :new-register="newRegister"
+          :new-register="
+            (type, id) =>
+              newRegister(
+                type,
+                id,
+                store?.profileData?.asal_usaha === 'Luar Negeri' || store?.profileData?.asal_usaha === 'Instansi Pemerintah',
+              )
+          "
           :additional-register="additionalRegister"
           :data="listOss"
         />
@@ -176,6 +192,8 @@ onMounted(async () => {
       </VCardItem>
       <VCardItem>
         <VDataTableServer
+          disable-sort
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="size"
           v-model:page="page"
           :loading="loading"
@@ -183,35 +201,35 @@ onMounted(async () => {
           :headers="headers"
           :items="data"
           :items-length="totalItems"
-          class="elevation-1"
+          class="elevation-1 custom-table"
           @update:options="loadItem(page, size, searchQuery)"
         >
           <template #header.no_daftar="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="font-bold">{{ t(column.title) }}</div>
           </template>
 
           <template #header.tgl_daftar="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="font-bold">{{ t(column.title) }}</div>
           </template>
 
           <template #header.nama_pu="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="font-bold">{{ t(column.title) }}</div>
           </template>
 
           <template #header.jenis_daftar="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="font-bold">{{ t(column.title) }}</div>
           </template>
 
           <template #header.jenis_produk="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="font-bold">{{ t(column.title) }}</div>
           </template>
 
           <template #header.newStatus="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="font-bold">{{ t(column.title) }}</div>
           </template>
 
           <template #header.action="{ column }">
-            <div class="text-blue font-bold">{{ t(column.title) }}</div>
+            <div class="font-bold">{{ t(column.title) }}</div>
           </template>
           <template #item.no="{ index }">
             <label>{{ index + 1 }}</label>

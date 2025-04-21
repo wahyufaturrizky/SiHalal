@@ -17,7 +17,12 @@ const { formulir_data_periksa_audit_internal } = storeToRefs(store);
       </VRow>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="tableHeader" :items="formulir_data_periksa_audit_internal">
+      <VDataTable
+        disable-sort
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="tableHeader"
+        :items="formulir_data_periksa_audit_internal"
+      >
         <template #item.no="{ index }">
           {{ index + 1 }}
         </template>

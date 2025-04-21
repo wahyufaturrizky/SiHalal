@@ -69,7 +69,7 @@ const handleSearchUser = useDebounceFn((val: string) => {
 }, 350);
 
 const handleDownload = async (filename: string) => {
-  return await downloadDocument(filename);
+  return await downloadDocument(filename, "FILES");
 };
 
 const isOpenAddModal = ref(false);
@@ -172,6 +172,8 @@ const handleConfirmDelete = async () => {
           </VRow>
           <VCard variant="outlined">
             <VDataTableServer
+              disable-sort
+              :items-per-page-options="[10, 25, 50, 100]"
               class="custom-table"
               :headers="tableHeaders"
               :items="tableItems"
@@ -289,6 +291,7 @@ const handleConfirmDelete = async () => {
     color: #49a84c;
   }
 }
+
 .inactive-chip {
   border: 1px solid #e1442e !important;
   border-radius: 8px;
@@ -298,18 +301,20 @@ const handleConfirmDelete = async () => {
     color: #e1442e;
   }
 }
+
 :deep(.v-data-table.custom-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
 }

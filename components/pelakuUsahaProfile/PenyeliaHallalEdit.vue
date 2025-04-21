@@ -5,13 +5,28 @@ import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
+const props = defineProps({
+  fileSkBlob: {
+    type: String,
+    required: true,
+  },
+  dataProfile: {
+    type: Object,
+    required: false,
+  },
+});
+
+const isNoNeedValidation =
+  props?.dataProfile?.skala_usaha === "JU.4" ||
+  props?.dataProfile?.skala_usaha === "JU.3";
+
 const tableHeaders = [
   { title: "No", key: "no", align: "start", sortable: false },
-  { title: "Nama", key: "nama", align: "start", sortable: false },
-  { title: "Unduh SKPH", key: "unduh_skph", align: "start", sortable: false },
-  { title: "Unduh SPPH", key: "unduh_spph", align: "start", sortable: false },
-  { title: "Unduh KTP", key: "unduh_ktp", align: "start", sortable: false },
-  { title: "No. KTP", key: "no_ktp", align: "start", sortable: false },
+  { title: "detail-pu.pu-ph-nama", key: "nama", align: "start", sortable: false },
+  { title: "detail-pu.pu-ph-download-skph", key: "unduh_skph", align: "start", sortable: false },
+  { title: "detail-pu.pu-ph-download-skph", key: "unduh_spph", align: "start", sortable: false },
+  { title: "detail-pu.pu-ph-download-ktp", key: "unduh_ktp", align: "start", sortable: false },
+  { title: "detail-pu.pu-ph-ktp", key: "no_ktp", align: "start", sortable: false },
   { title: "Action", key: "actions", align: "end", sortable: false },
 ];
 
@@ -38,69 +53,166 @@ const uploadDocument = async (file, type: string) => {
   }
 };
 
-const downloadDOcument = async (filename: string) => {
-  try {
-    const response = await $api("/shln/submission/document/download", {
-      method: "post",
-      body: {
-        filename,
-      },
-    });
-    window.open(response.url, "_blank", "noopener,noreferrer");
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
+// const downloadDOcument = async (filename: string) => {
+//   try {
+//     const response = await $api("/shln/submission/document/download", {
+//       method: "post",
+//       body: {
+//         filename,
+//       },
+//     });
+//     window.open(response.url, "_blank", "noopener,noreferrer");
+//   } catch (error) {
+//     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+//   }
+// };
 
 async function handleAddAspekLegalConfirm(item) {
   // console.log("executed emit", item.namaPenyelia);
   try {
-    const skkFile = await uploadDocument(item.sertifikatKompetensi, "skk");
-    if (skkFile.code != 2000) {
-      return;
-    }
-    const skpFile = await uploadDocument(item.sertifikatPelatihan, "skp");
-    if (skpFile.code != 2000) {
-      return;
-    }
-    const ktpFile = await uploadDocument(item.ktpFile, "ktp");
-    if (ktpFile.code != 2000) {
-      return;
-    }
-
-    const response = await $api(
-      `/pelaku-usaha-profile/${store.profileData?.id}/add-supervisor`,
-      {
-        method: "post",
-        body: {
-          id_number: item.noKtp,
-          phone_number: item.noKontak,
-          name: item.namaPenyelia,
-          religion: item.agamaPenyelia,
-          certificate_number: item.nomorSertifikat,
+    if (isNoNeedValidation) {
+      // console.log("step 0", item);
+      let payload = {
+        id_number: item.noKtp,
+        phone_number: item.noKontak,
+        name: item.namaPenyelia,
+        religion: item.agamaPenyelia,
+        sk_number: item.nomorSk,
+        sk_date:
+          parseFlexibleDate(item.tanggalSk).toISOString().substring(0, 19) +
+          "Z",
+      };
+      if (item.certificate_date) {
+        payload = {
+          ...payload,
           certificate_date:
-            new Date(item.tanggalSertifikat).toISOString().substring(0, 19) +
-            "Z",
-          sk_number: item.nomorSk,
-          sk_date:
-            new Date(item.tanggalSk).toISOString().substring(0, 19) + "Z",
-          skph_file: skkFile.data.file_url,
-          spph_file: skpFile.data.file_url,
-          ktp_file: ktpFile.data.file_url,
-        },
+            parseFlexibleDate(item.tanggalSertifikat)
+              .toISOString()
+              .substring(0, 19) + "Z",
+        };
       }
-    );
-    // loadReqDialog.value = false;
-    if (response.code != 2000) {
-      useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
-      return;
+      if (item.certificate_number) {
+        payload = {
+          ...payload,
+          certificate_number: item.certificate_number,
+        };
+      }
+      if (item.sertifikatKompetensi) {
+        const skkFile = await uploadDocument(item.sertifikatKompetensi, "skk");
+        if (skkFile.code != 2000) {
+          return;
+        } else {
+          payload = {
+            ...payload,
+            skph_file: skkFile.data.file_url,
+          };
+        }
+      }
+      if (item.skpFile) {
+        const skpFile = await uploadDocument(item.sertifikatPelatihan, "skp");
+        if (skpFile.code != 2000) {
+          return;
+        } else {
+          payload = {
+            ...payload,
+            spph_file: skpFile.data.file_url,
+          };
+        }
+      }
+      if (item.ktpFile) {
+        const ktpFile = await uploadDocument(item.ktpFile, "ktp");
+        if (ktpFile.code != 2000) {
+          return;
+        } else {
+          payload = {
+            ...payload,
+            ktp_file: ktpFile.data.file_url,
+          };
+        }
+      }
+      const response = await $api(
+        `/pelaku-usaha-profile/${store.profileData?.id}/add-supervisor`,
+        {
+          method: "post",
+          body: payload,
+        }
+      );
+
+      // loadReqDialog.value = false;
+      if (response.code != 2000) {
+        useSnackbar().sendSnackbar(
+          "Silahkan hubungi BPJPH untuk menambahkan Penyelia",
+          "error"
+        );
+        return;
+      }
+      await store.fetchProfile(null);
+      // useMyUpdateSubmissionEditStore().setData("document");
+      useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
+    } else {
+      const skkFile = await uploadDocument(item.sertifikatKompetensi, "skk");
+      if (skkFile.code != 2000) {
+        return;
+      }
+      const skpFile = await uploadDocument(item.sertifikatPelatihan, "skp");
+      if (skpFile.code != 2000) {
+        return;
+      }
+      const ktpFile = await uploadDocument(item.ktpFile, "ktp");
+      if (ktpFile.code != 2000) {
+        return;
+      }
+
+      const response = await $api(
+        `/pelaku-usaha-profile/${store.profileData?.id}/add-supervisor`,
+        {
+          method: "post",
+          body: {
+            id_number: item.noKtp,
+            phone_number: item.noKontak,
+            name: item.namaPenyelia,
+            religion: item.agamaPenyelia,
+            certificate_number: item.nomorSertifikat,
+            certificate_date:
+              parseFlexibleDate(item.tanggalSertifikat)
+                .toISOString()
+                .substring(0, 19) + "Z",
+            sk_number: item.nomorSk,
+            sk_date:
+              parseFlexibleDate(item.tanggalSk).toISOString().substring(0, 19) +
+              "Z",
+            skph_file: skkFile.data.file_url,
+            spph_file: skpFile.data.file_url,
+            ktp_file: ktpFile.data.file_url,
+          },
+        }
+      );
+      // loadReqDialog.value = false;
+      if (response.code != 2000) {
+        useSnackbar().sendSnackbar(
+          "Silahkan hubungi BPJPH untuk menambahkan Penyelia",
+          "error"
+        );
+        return;
+      }
+      await store.fetchProfile(null);
+      // useMyUpdateSubmissionEditStore().setData("document");
+      useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
     }
-    await store.fetchProfile();
-    // useMyUpdateSubmissionEditStore().setData("document");
-    useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
   } catch (error) {
+    // console.log("ERROR : ", error)
     // loadReqDialog.value = false;
-    useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
+    if (error.data?.data?.code === 4001) {
+      useSnackbar().sendSnackbar(
+        "Silahkan hubungi BPJPH untuk menambahkan Penyelia",
+        "error"
+      );
+    } else {
+      useSnackbar().sendSnackbar(
+        "Silahkan hubungi BPJPH untuk menambahkan Penyelia",
+        "error"
+      );
+    }
   }
 }
 
@@ -131,11 +243,13 @@ const handleEditEmitted = async (item, idPenyelia) => {
           religion: item.agamaPenyelia,
           certificate_number: item.nomorSertifikat,
           certificate_date:
-            new Date(item.tanggalSertifikat).toISOString().substring(0, 19) +
-            "Z",
+            parseFlexibleDate(item.tanggalSertifikat)
+              .toISOString()
+              .substring(0, 19) + "Z",
           sk_number: item.nomorSk,
           sk_date:
-            new Date(item.tanggalSk).toISOString().substring(0, 19) + "Z",
+            parseFlexibleDate(item.tanggalSk).toISOString().substring(0, 19) +
+            "Z",
           skph_file: skkFile.data.file_url,
           spph_file: skpFile.data.file_url,
           ktp_file: ktpFile.data.file_url,
@@ -147,7 +261,7 @@ const handleEditEmitted = async (item, idPenyelia) => {
       useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
       return;
     }
-    await store.fetchProfile();
+    await store.fetchProfile(null);
     // useMyUpdateSubmissionEditStore().setData("document");
     useSnackbar().sendSnackbar("berhasil menyimpan data!", "success");
   } catch (error) {
@@ -157,7 +271,7 @@ const handleEditEmitted = async (item, idPenyelia) => {
 };
 
 function handleDelete(item) {
-  console.log("Delete item:", item);
+  // console.log("Delete item:", item);
 
   const submitApi = $api(
     `/pelaku-usaha-profile/${store.profileData?.id}/penyelia/${item.id}/delete`,
@@ -167,7 +281,7 @@ function handleDelete(item) {
   )
     .then((val: any) => {
       if (val.code == 2000) {
-        store.fetchProfile();
+        store.fetchProfile(null);
         snackbar.sendSnackbar("Berhasil Menghapus Data ", "success");
       } else {
         snackbar.sendSnackbar("Gagal Menghapus Data ", "error");
@@ -177,13 +291,6 @@ function handleDelete(item) {
       snackbar.sendSnackbar("Gagal Menghapus Data ", "error");
     });
 }
-
-const props = defineProps({
-  fileSkBlob: {
-    type: String,
-    required: true,
-  },
-});
 
 const downloadSkHandler = () => {
   if (props.fileSkBlob != null) {
@@ -197,7 +304,7 @@ const downloadSkHandler = () => {
     <VCardTitle>
       <VRow>
         <VCol cols="8" style="display: inline-flex; align-items: center">
-          <div class="text-h4 font-weight-bold mr-4">Penyelia Halal</div>
+          <div class="text-h4 font-weight-bold mr-4">{{ t("detail-pu.pu-ph-title") }}</div>
           <!-- <VChip
             color="primary"
             style="
@@ -224,6 +331,7 @@ const downloadSkHandler = () => {
             mode="add"
             @confirm-add="handleAddAspekLegalConfirm"
             @cancel="() => console.log('Add cancelled')"
+            :data="props.dataProfile"
           />
         </VCol>
       </VRow>
@@ -233,7 +341,7 @@ const downloadSkHandler = () => {
         <thead>
           <tr>
             <th v-for="header in tableHeaders" :key="header.key">
-              {{ header.title }}
+              {{ t(header.title) ? t(header.title) : header.title }}
             </th>
           </tr>
         </thead>
@@ -242,8 +350,10 @@ const downloadSkHandler = () => {
             <td>{{ idx + 1 }}</td>
             <td>{{ item.name }}</td>
             <td>
+              <div v-if="!item.file_skph">-</div>
               <VBtn
-                @click="downloadDOcument(item.file_skph)"
+                v-else
+                @click="downloadDocument(item.file_skph, 'FILES')"
                 variant="text"
                 color="purple"
                 class="px-0"
@@ -253,8 +363,10 @@ const downloadSkHandler = () => {
               </VBtn>
             </td>
             <td>
+              <div v-if="!item.file_spph">-</div>
               <VBtn
-                @click="downloadDOcument(item.file_spph)"
+                v-else
+                @click="downloadDocument(item.file_spph, 'FILES')"
                 variant="text"
                 color="purple"
                 class="px-0"
@@ -264,8 +376,10 @@ const downloadSkHandler = () => {
               </VBtn>
             </td>
             <td>
+              <div v-if="!item.file_ktp">-</div>
               <VBtn
-                @click="downloadDOcument(item.file_ktp)"
+                v-else
+                @click="downloadDocument(item.file_ktp, 'FILES')"
                 variant="text"
                 color="purple"
                 class="px-0"

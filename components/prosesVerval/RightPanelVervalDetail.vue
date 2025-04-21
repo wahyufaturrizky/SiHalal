@@ -1,4 +1,15 @@
 <script setup lang="ts">
+const props = defineProps({
+  dataPendaftaran: {
+    type: Object,
+    required: true,
+  },
+  dataTracking: {
+    type: Object as () => any,
+    required: true,
+  },
+});
+
 const unduhan = ref([
   { id: 1, key: "Surat Permohonan", filename: "", api_key: "surat_permohonan" },
   { id: 2, key: "Surat Pernyataan", filename: "", api_key: "surat_pernyataan" },
@@ -31,22 +42,36 @@ const tracking = ref([
   { id: 5, key: "Submitted", value: "fachrudin@panganlestari.com" },
 ]);
 
-async function onClickDownload(filename: string) {
-  return await downloadDocument(filename);
+const route = useRoute();
+
+async function onClickDownload(filename: string, apiKey: string) {
+  try {
+    if (apiKey === "laporan_pendamping") {
+      const resGetLaporanPendamping: any = await $api(
+        `/self-declare/verificator/lihat-laporan-download/${route.params?.id}`,
+        {
+          method: "get",
+        }
+      );
+
+      const newLaporanPendampingFileName = resGetLaporanPendamping?.data?.file;
+
+      // regenerate hit minio
+      await $api("/admin/images/download", {
+        method: "post",
+        query: {
+          filename: newLaporanPendampingFileName,
+        },
+      } as any);
+    }
+
+    return await downloadDocument(filename);
+  } catch (err) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
 }
 
 const expanded = [0, 1, 2];
-
-const props = defineProps({
-  dataPendaftaran: {
-    type: Object,
-    required: true,
-  },
-  dataTracking: {
-    type: Object as () => any,
-    required: true,
-  },
-});
 
 watch(
   () => props.dataPendaftaran,
@@ -60,8 +85,6 @@ watch(
   { immediate: true }
 );
 
-const route = useRoute();
-
 const downloadForms = reactive({
   sttd: "",
   sertifikasi_halal: "",
@@ -70,6 +93,7 @@ const downloadForms = reactive({
   surat_penyelia: "",
   surat_permohonan: "",
   surat_pernyataan: "",
+  cek_laporan: "",
 }) as Record<string, string>;
 
 const getDownloadForm = async (docName: string, propName: string) => {
@@ -87,6 +111,7 @@ const getDownloadForm = async (docName: string, propName: string) => {
   if (result?.code === 2000) {
     // downloadForms.value[propName] = result?.data?.file || "";
     const idx = unduhan.value.findIndex((val) => val.api_key === propName);
+
     unduhan.value[idx].filename = result?.data?.file || "";
   }
 };
@@ -98,9 +123,11 @@ onMounted(async () => {
     getDownloadForm("laporan-pendamping", "laporan_pendamping"),
     getDownloadForm("surat-permohonan", "surat_permohonan"),
     getDownloadForm("surat-pernyataan", "surat_pernyataan"),
+    getDownloadForm("laporan", "cek_laporan"),
   ]);
 });
 </script>
+
 <template>
   <VRow>
     <VCol cols="12">
@@ -109,15 +136,19 @@ onMounted(async () => {
           <VExpansionPanelTitle><h3>Formulir Unduhan</h3></VExpansionPanelTitle>
           <VExpansionPanelText>
             <VRow v-for="item in unduhan" :key="item.id">
-              <VCol cols="5">{{ item.key }}</VCol>
-              <VCol cols="1">:</VCol>
-              <VCol cols="6"
-                ><VBtn
+              <VCol cols="5">
+                {{ item.key }}
+              </VCol>
+              <VCol cols="1"> : </VCol>
+              <VCol cols="6">
+                <VBtn
                   :disabled="item.filename == ''"
                   variant="flat"
-                  @click="onClickDownload(item.filename)"
-                  ><VIcon icon="fa-download"></VIcon></VBtn
-              ></VCol>
+                  @click="onClickDownload(item.filename, item.api_key)"
+                >
+                  <VIcon icon="fa-download" />
+                </VBtn>
+              </VCol>
             </VRow>
           </VExpansionPanelText>
         </VExpansionPanel>
@@ -131,23 +162,22 @@ onMounted(async () => {
           <VExpansionPanelTitle><h3>Pendaftaran</h3></VExpansionPanelTitle>
           <VExpansionPanelText>
             <VRow v-for="item in pendaftaran" :key="item.id">
-              <VCol cols="5">{{ item.key }}</VCol>
-              <VCol cols="1">:</VCol>
+              <VCol cols="5">
+                {{ item.key }}
+              </VCol>
+              <VCol cols="1"> : </VCol>
               <VCol cols="6">
                 <VChip
                   v-if="item.key === 'Status' && item.value !== ''"
                   color="success"
-                  >{{ item.value }}</VChip
                 >
+                  {{ item.value }}
+                </VChip>
                 <p v-if="item.key !== 'Status' && item.key !== 'Tanggal'">
                   {{ item.value }}
                 </p>
                 <p v-if="item.key === 'Tanggal'">
-                  {{
-                    item.value
-                      ? new Date(item.value).toISOString().substring(0, 10)
-                      : "-"
-                  }}
+                  {{ item.value ? formatDateId(item.value) : "-" }}
                 </p>
               </VCol>
             </VRow>
@@ -161,9 +191,9 @@ onMounted(async () => {
       <VExpansionPanels v-model="expanded">
         <VExpansionPanel>
           <VExpansionPanelTitle><h3>Tracking</h3></VExpansionPanelTitle>
-          <VExpansionPanelText style="max-height: 50svh; overflow: auto">
+          <VExpansionPanelText style="overflow: auto; max-block-size: 50svh">
             <div>
-              <HalalTimeLine :event="props.dataTracking"></HalalTimeLine>
+              <HalalTimeLine :event="props.dataTracking" />
             </div>
           </VExpansionPanelText>
         </VExpansionPanel>

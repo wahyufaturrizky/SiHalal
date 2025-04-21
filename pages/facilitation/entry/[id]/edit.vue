@@ -19,6 +19,8 @@ const form = ref({
   kuota: "",
   picName: "",
   picPhoneNumber: "",
+  provinsi_id: "",
+  kabupaten_id: ""
 });
 
 const dataSOF = ref([]);
@@ -53,6 +55,8 @@ const loadItemById = async () => {
         jenis_fasilitasi,
         is_locked_lembaga,
         fac_description,
+        provinsi_id,
+        kabupaten_id
       } = fasilitasi || {};
 
       dataDetailRegistration.value = status_registrasi;
@@ -76,6 +80,8 @@ const loadItemById = async () => {
         kuota,
         picName: penanggung_jawab,
         picPhoneNumber: phone_penanggung_jawab,
+        provinsi_id: provinsi_id,
+        kabupaten_id: kabupaten_id
       };
 
       loadingLoadItemById.value = false;
@@ -141,15 +147,19 @@ onMounted(async () => {
       </VBtn>
     </VCol>
   </VRow>
-  <VRow v-if="!loading && !loadingLoadItemById">
-    <VCol cols="10">
-      <VTabs v-model="tabs" align-tabs="start">
-        <VTab value="1"> Pengajuan </VTab>
+ <VRow v-if="!loading && !loadingLoadItemById">
+  <VCol cols="10">
+    <VTabs v-model="tabs" align-tabs="start">
+      <VTab value="1">Pengajuan</VTab>
 
-        <VTab :disabled="!form.type" value="2"> Lembaga </VTab>
-      </VTabs>
-    </VCol>
-  </VRow>
+      <VTab :disabled="!form.type" value="2">Lembaga</VTab>
+
+      <!-- Only show this tab if form.type is 'Reguler' -->
+      <VTab v-if="form.type === 'Reguler'" value="3">Detail Biaya</VTab>
+
+    </VTabs>
+  </VCol>
+</VRow>
   <VRow v-if="!loading && !loadingLoadItemById">
     <VCol cols="12">
       <VTabsWindow v-model="tabs">
@@ -163,6 +173,12 @@ onMounted(async () => {
         </VTabsWindowItem>
         <VTabsWindowItem value="2">
           <EditLembagaFacilitator
+            :islockedlembaga="isLockedLembaga"
+            :type="form.type"
+          />
+        </VTabsWindowItem>
+        <VTabsWindowItem value="3">
+          <EditBiayaFacilitator
             :islockedlembaga="isLockedLembaga"
             :type="form.type"
           />

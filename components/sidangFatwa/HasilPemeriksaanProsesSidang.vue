@@ -3,13 +3,13 @@ const props = defineProps({
   detaildata: {
     type: Object,
   },
-});
+})
 
-const { detaildata } = props || {};
-const { hasil_audit } = detaildata || {};
-const { dokumen, tanggal_selesai, hasil } = hasil_audit || {};
+const { detaildata } = props || {}
+const { hasil_audit } = detaildata || {}
+const { dokumen, tanggal_selesai, hasil } = hasil_audit || {}
 
-const expanded = ref(0);
+const expanded = ref(0)
 </script>
 
 <template>
@@ -36,20 +36,22 @@ const expanded = ref(0);
             <p>:</p>
           </VCol>
           <VCol cols="8">
-            <p>{{ hasil || "-" }}</p>
+            <p>{{ hasil === "PR001" ? "Lulus" : "Tidak Lulus" }}</p>
           </VCol>
         </VRow>
-        <!-- <VRow>
+        <!--
+          <VRow>
           <VCol cols="3">
-            <p>Dokumen</p>
+          <p>Dokumen</p>
           </VCol>
           <VCol cols="1">
-            <p>:</p>
+          <p>:</p>
           </VCol>
           <VCol cols="8">
-            <p>{{ dokumen || "-" }}</p>
+          <p>{{ dokumen || "-" }}</p>
           </VCol>
-        </VRow> -->
+          </VRow>
+        -->
       </VExpansionPanelText>
     </VExpansionPanel>
   </VExpansionPanels>

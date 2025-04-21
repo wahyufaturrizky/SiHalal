@@ -24,7 +24,12 @@ const items = [
       </VRow>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="tableHeader" :items="items"></VDataTable>
+      <VDataTable
+        disable-sort
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="tableHeader"
+        :items="items"
+      ></VDataTable>
     </VCardItem>
   </VCard>
 </template>

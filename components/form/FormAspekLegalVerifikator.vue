@@ -7,9 +7,9 @@ const aspectLegalHeader = [
   { title: "Masa Berlaku", key: "masa_berlaku", nowrap: true },
   { title: "Instansi Penerbit", key: "instansi_penerbit", nowrap: true },
 ];
-const store = useMyVerifikatorRegulerStore()
-const { aspek_legal } = storeToRefs(store)
 
+const store = useMyVerifikatorRegulerStore();
+const { aspek_legal } = storeToRefs(store);
 </script>
 
 <template>
@@ -18,9 +18,18 @@ const { aspek_legal } = storeToRefs(store)
       <span class="text-h3">Aspek Legal</span>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="aspectLegalHeader" :items="aspek_legal">
-        <template #item.no="{index}">
-          {{index + 1}}
+      <VDataTable
+        disable-sort
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="aspectLegalHeader"
+        :items="aspek_legal"
+      >
+        <template #item.no="{ index }">
+          {{ index + 1 }}
+        </template>
+
+        <template #item.tanggal_surat="{ item }">
+          {{ formatDateId(item.tanggal_surat) }}
         </template>
       </VDataTable>
     </VCardItem>

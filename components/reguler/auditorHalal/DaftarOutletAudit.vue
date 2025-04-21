@@ -3,20 +3,20 @@
 <!-- eslint-disable indent -->
 <!-- eslint-disable vue/prop-name-casing -->
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
 
 interface PayloadPenanggungJawab {
-  id_reg: string
-  nama_pj: string
-  no_kontak_pj: string
-  email_pj: string
+  id_reg: string;
+  nama_pj: string;
+  no_kontak_pj: string;
+  email_pj: string;
 }
 
 const props = defineProps({
   id: {
     type: String,
     required: false,
-    default: '1',
+    default: "1",
   },
   list_legal: {
     type: Object,
@@ -38,59 +38,63 @@ const props = defineProps({
     type: Array,
     required: false,
   },
-})
+});
 
-const itemsProduct = ref<any>(null)
-const confirmSaveDialog = ref(false)
-const addDialog = ref(false)
-const titleAddDialog = ref('')
-const submitContentType = ref('')
-const addContentType = ref('')
-const labelSaveBtn = ref('')
-const file = ref<File | null>(null)
-const selectedLegalToAdd = ref<any>(null)
-const loading = ref<boolean>(false)
-const requestCertificateData = ref<any>([])
-const responsibility: any = ref<any>([])
-const aspectLegalData = ref<any>({})
-const factoryData = ref({})
-const outletData = ref({})
-const halalData = ref({})
-const payloadData = ref({})
+const itemsProduct = ref<any>(null);
+const confirmSaveDialog = ref(false);
+const addDialog = ref(false);
+const titleAddDialog = ref("");
+const submitContentType = ref("");
+const addContentType = ref("");
+const labelSaveBtn = ref("");
+const file = ref<File | null>(null);
+const selectedLegalToAdd = ref<any>(null);
+const loading = ref<boolean>(false);
+const requestCertificateData = ref<any>([]);
+const responsibility: any = ref<any>([]);
+const aspectLegalData = ref<any>({});
+const factoryData = ref({});
+const outletData = ref({});
+const halalData = ref({});
+const payloadData = ref({});
 
 const listFactory = ref<any>({
   label: [
-    { title: 'No.', key: 'no', nowrap: true },
-    { title: 'Nama', key: 'nama', nowrap: true },
-    { title: 'Alamat', key: 'alamat', nowrap: true },
-    { title: 'Status', key: 'status_milik', nowrap: true },
-    { title: 'Action', key: 'publication', sortable: false, nowrap: true },
+    { title: "No.", key: "no", nowrap: true },
+    { title: "Nama", key: "nama", nowrap: true },
+    { title: "Alamat", key: "alamat", nowrap: true },
+    { title: "Status", key: "status_milik", nowrap: true },
+    { title: "Action", key: "publication", sortable: false, nowrap: true },
   ],
   value: props?.list_factory || [],
-})
+});
 
 const listOutlet = ref<any>({
   label: [
-    { title: 'No.', key: 'no', nowrap: true },
-    { title: 'Nama', key: 'nama', nowrap: true },
-    { title: 'Alamat', key: 'alamat', nowrap: true },
-    { title: 'Status', key: 'status_milik', nowrap: true },
-    { title: 'Action', key: 'publication', sortable: false, nowrap: true },
+    { title: "No.", key: "no", nowrap: true },
+    { title: "Nama", key: "nama", nowrap: true },
+    { title: "Alamat", key: "alamat", nowrap: true },
+    { title: "Status", key: "status_milik", nowrap: true },
+    { title: "Action", key: "publication", sortable: false, nowrap: true },
   ],
   value: props?.list_outlet || [],
-})
+});
 
 const listPenyelia = ref<any>({
   label: [
-    { title: 'No.', key: 'no', nowrap: true },
-    { title: 'Nama', key: 'nama', nowrap: true },
-    { title: 'No. KTP', key: 'no_ktp', nowrap: true },
-    { title: 'Agama', key: 'agama', nowrap: true },
-    { title: 'No/Tgl Sertif Penyelia Halal', key: 'tgl_penyelia_halal', nowrap: true },
-    { title: 'Action', key: 'publication', sortable: false, nowrap: true },
+    { title: "No.", key: "no", nowrap: true },
+    { title: "Nama", key: "nama", nowrap: true },
+    { title: "No. KTP", key: "no_ktp", nowrap: true },
+    { title: "Agama", key: "agama", nowrap: true },
+    {
+      title: "No/Tgl Sertif Penyelia Halal",
+      key: "tgl_penyelia_halal",
+      nowrap: true,
+    },
+    { title: "Action", key: "publication", sortable: false, nowrap: true },
   ],
   value: props?.list_penyelia || [],
-})
+});
 
 // const factoryModel = ref({
 //   id_fas: 'ae661a8b-be9b-45a9-b6cc-e26ee63d374e',
@@ -105,71 +109,69 @@ const listPenyelia = ref<any>({
 // })
 
 const documentList = ref([
-  { nama: 'Izin Edar', fileName: 'Surat Izin Usaha.pdf', file: null },
-  { nama: 'Izin Masuk', fileName: '', file: null },
-])
+  { nama: "Izin Edar", fileName: "Surat Izin Usaha.pdf", file: null },
+  { nama: "Izin Masuk", fileName: "", file: null },
+]);
 
 const removeFile = (index: number) => {
-  documentList.value[0].fileName = ''
-  documentList.value[0].file = null
+  documentList.value[0].fileName = "";
+  documentList.value[0].file = null;
 
-  file.value = null
-}
+  file.value = null;
+};
 
 const uploadFile = (event: Event, index: string | number) => {
-  const fileUpload = event.target.files[0]
+  const fileUpload = event.target.files[0];
   if (fileUpload) {
-    documentList.value[0].fileName = fileUpload.name
-    documentList.value[0].file = fileUpload
+    documentList.value[0].fileName = fileUpload.name;
+    documentList.value[0].file = fileUpload;
   }
-}
+};
 
 const triggerSaveModal = (payload: any, type: string) => {
-  submitContentType.value = type
-  payloadData.value = payload
-  confirmSaveDialog.value = true
-}
+  submitContentType.value = type;
+  payloadData.value = payload;
+  confirmSaveDialog.value = true;
+};
 
 const triggerAddModal = (type: string) => {
-  addContentType.value = type
-  addDialog.value = true
-  titleAddDialog.value = `Tambah Data ${type}`
-  labelSaveBtn.value = 'Tambah'
-}
+  addContentType.value = type;
+  addDialog.value = true;
+  titleAddDialog.value = `Tambah Data ${type}`;
+  labelSaveBtn.value = "Tambah";
+};
 
 const loadItemProduct = async () => {
   try {
-    const response: any = await $api('/master/products', {
-      method: 'get',
-    })
+    const response: any = await $api("/master/products", {
+      method: "get",
+    });
 
     if (response.length) {
-      itemsProduct.value = response
+      itemsProduct.value = response;
 
-      return response
+      return response;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const getDetailData = async () => {
   try {
-    const response: any = await $api('/reguler/pelaku-usaha/detail', {
-      method: 'get',
+    const response: any = await $api("/reguler/pelaku-usaha/detail", {
+      method: "get",
       params: { id: props?.id },
-    })
+    });
 
     if (response?.code === 2000) {
       // const certificateHalal = response?.data?.certificate_halal
       // const responsibilityData = response?.data?.penanggung_jawab
       // const aspectLegal = response?.data?.aspek_legal
       // const factory = response?.data?.pabrik
-      const outlet = response?.data?.outlet
+      const outlet = response?.data?.outlet;
       // const penyelia = response?.data?.penyelia_halal
 
       // requestCertificateData.value = [
@@ -296,14 +298,14 @@ const getDetailData = async () => {
 
       outletData.value = {
         label: [
-          { title: 'No.', key: 'no', nowrap: true },
-          { title: 'Nama', key: 'nama_outlet', nowrap: true },
-          { title: 'Alamat', key: 'alamat_outlet', nowrap: true },
-          { title: 'Status', key: 'status_milik', nowrap: true },
-          { title: 'Action', value: 'action', sortable: false, nowrap: true },
+          { title: "No.", key: "no", nowrap: true },
+          { title: "Nama", key: "nama_outlet", nowrap: true },
+          { title: "Alamat", key: "alamat_outlet", nowrap: true },
+          { title: "Status", key: "status_milik", nowrap: true },
+          { title: "Action", value: "action", sortable: false, nowrap: true },
         ],
         value: outlet,
-      }
+      };
 
       // halalData.value = {
       //   label: [
@@ -319,186 +321,166 @@ const getDetailData = async () => {
       //   ],
       //   value: penyelia,
       // }
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const editResponsibility = async (body: PayloadPenanggungJawab) => {
   try {
-    let url = ''
-    if (submitContentType.value === 'Pengajuan Sertifikasi Halal')
-      url = '/reguler/pelaku-usaha/certificate'
-    else
-      url = '/reguler/pelaku-usaha/penanggung-jawab'
+    let url = "";
+    if (submitContentType.value === "Pengajuan Sertifikasi Halal")
+      url = "/reguler/pelaku-usaha/certificate";
+    else url = "/reguler/pelaku-usaha/penanggung-jawab";
 
     const response: any = await $api(url, {
-      method: 'put',
+      method: "put",
       body,
-    })
+    });
 
     if (response?.code === 2000) {
-      useSnackbar().sendSnackbar('Sukses add data', 'success')
-      getDetailData()
+      useSnackbar().sendSnackbar("Sukses add data", "success");
+      getDetailData();
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const handleAddOrEdit = async () => {
-  addDialog.value = false
+  addDialog.value = false;
   let body: any = {
     id_reg: props?.id,
-  }
-  const idPabrik: any = []
-  let url = ''
-  let method = ''
+  };
+  const idPabrik: any = [];
+  let url = "";
+  let method = "";
   switch (titleAddDialog.value) {
-  case 'Tambah Data Aspek Legal':
-    body = {
-      ...body,
-      id_legal: [selectedLegalToAdd?.value?.id_legal],
-    }
-    url = '/reguler/pelaku-usaha/add-legal'
-    method = 'post'
-    break
-  case 'Tambah Data Pabrik':
-    listFactory?.value?.value?.map((el: any) => {
-      if (el.checked)
-        idPabrik.push(el.id)
-    })
-    body = {
-      ...body,
-      id_pabrik: idPabrik,
-    }
-    url = '/reguler/pelaku-usaha/add-factory'
-    method = 'post'
-    break
-  case 'Tambah Data Outlet':
-    listOutlet?.value?.value?.map((el: any) => {
-      if (el.checked)
-        idPabrik.push(el.id)
-    })
-    body = {
-      ...body,
-      id_pabrik: idPabrik,
-    }
-    url = '/reguler/pelaku-usaha/add-factory'
-    method = 'post'
-    break
-  case 'Tambah Data Penyelia Halal':
-    //
-    url = '/self-declare/business-actor/supervisor/create'
-    body = {
-      ...body,
-      id_penyelia: [
-        '90b107ef-8c16-41e7-84ba-25339bf244ce',
-      ],
-    }
-    method = 'post'
-    break
+    case "Tambah Data Aspek Legal":
+      body = {
+        ...body,
+        id_legal: [selectedLegalToAdd?.value?.id_legal],
+      };
+      url = "/reguler/pelaku-usaha/add-legal";
+      method = "post";
+      break;
+    case "Tambah Data Pabrik":
+      listFactory?.value?.value?.map((el: any) => {
+        if (el.checked) idPabrik.push(el.id);
+      });
+      body = {
+        ...body,
+        id_pabrik: idPabrik,
+      };
+      url = "/reguler/pelaku-usaha/add-factory";
+      method = "post";
+      break;
+    case "Tambah Data Outlet":
+      listOutlet?.value?.value?.map((el: any) => {
+        if (el.checked) idPabrik.push(el.id);
+      });
+      body = {
+        ...body,
+        id_pabrik: idPabrik,
+      };
+      url = "/reguler/pelaku-usaha/add-factory";
+      method = "post";
+      break;
+    case "Tambah Data Penyelia Halal":
+      //
+      url = "/self-declare/business-actor/supervisor/create";
+      body = {
+        ...body,
+        id_penyelia: ["90b107ef-8c16-41e7-84ba-25339bf244ce"],
+      };
+      method = "post";
+      break;
 
-  default:
-    break
+    default:
+      break;
   }
   try {
     const response: any = await $api(url, {
       method,
       body,
-    })
+    });
 
     if (response?.code === 2000) {
-      useSnackbar().sendSnackbar('Sukses add data', 'success')
-      getDetailData()
-      selectedLegalToAdd.value = {}
+      useSnackbar().sendSnackbar("Sukses add data", "success");
+      getDetailData();
+      selectedLegalToAdd.value = {};
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const deleteFactoryOrOutlet = async (type: string, el: any) => {
-  let url: string = ''
-  let id: string = ''
-  if (type === 'pabrik') {
-    url = '/reguler/pelaku-usaha/delete-factory'
-    id = el.id_pabrik
-  }
-  else if (type === 'outlet') {
-    url = '/reguler/pelaku-usaha/delete-factory'
-    id = el.id_outlet
-  }
-  else if (type === 'aspek legal') {
-    url = '/reguler/pelaku-usaha/delete-legal'
-    id = el.id_reg_legal
-  }
-  else if (type === 'halal data') {
-    url = '/reguler/pelaku-usaha/delete-penyelia'
-    id = el.penyelia_id
+  let url: string = "";
+  let id: string = "";
+  if (type === "pabrik") {
+    url = "/reguler/pelaku-usaha/delete-factory";
+    id = el.id_pabrik;
+  } else if (type === "outlet") {
+    url = "/reguler/pelaku-usaha/delete-factory";
+    id = el.id_outlet;
+  } else if (type === "aspek legal") {
+    url = "/reguler/pelaku-usaha/delete-legal";
+    id = el.id_reg_legal;
+  } else if (type === "halal data") {
+    url = "/reguler/pelaku-usaha/delete-penyelia";
+    id = el.penyelia_id;
   }
   try {
     const response: any = await $api(url, {
-      method: 'delete',
+      method: "delete",
       body: { id },
-    })
+    });
 
     if (response?.code === 2000) {
-      useSnackbar().sendSnackbar('Sukses hapus data', 'success')
-      getDetailData()
+      useSnackbar().sendSnackbar("Sukses hapus data", "success");
+      getDetailData();
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const handleSubmit = () => {
-  let payload: any = {}
-  if (submitContentType.value === 'Pengajuan Sertifikasi Halal') {
-    payload = payloadData.value
+  let payload: any = {};
+  if (submitContentType.value === "Pengajuan Sertifikasi Halal") {
+    payload = payloadData.value;
     editResponsibility({
       ...payload,
-    })
-  }
-  else if (submitContentType.value === 'Penanggung Jawab') {
+    });
+  } else if (submitContentType.value === "Penanggung Jawab") {
     payload = {
       nama_pj: responsibility?.value?.[0]?.value,
       no_kontak_pj: responsibility?.value?.[1]?.value,
       email_pj: responsibility?.value?.[2]?.value,
-    }
+    };
 
     editResponsibility({
       ...payload,
       id_reg: props?.id,
-    })
+    });
   }
-  confirmSaveDialog.value = false
-}
+  confirmSaveDialog.value = false;
+};
 
 onMounted(async () => {
   // await getDetailData()
-  await Promise.allSettled([
-    getDetailData(),
-    loadItemProduct(),
-  ])
-})
+  await Promise.allSettled([getDetailData(), loadItemProduct()]);
+});
 </script>
 
 <template>
@@ -518,9 +500,7 @@ onMounted(async () => {
     <template #content>
       <!-- ADD MODAL DATA ASPEK LEGAL START -->
       <div v-if="addContentType === 'Aspek Legal'">
-        <p class="label-pengajuan">
-          Jenis Dokumen
-        </p>
+        <p class="label-pengajuan">Jenis Dokumen</p>
         <VSelect
           v-model="selectedLegalToAdd"
           :items="props?.list_legal"
@@ -531,23 +511,16 @@ onMounted(async () => {
           item-text="jenis_surat"
           return-object
         />
-        <br>
-        <p class="label-pengajuan">
-          Nomor Dokumen
-        </p>
+        <br />
+        <p class="label-pengajuan">Nomor Dokumen</p>
         <VTextField
           class="-mt-10"
           placeholder="isi nomor dokumen"
           :value="selectedLegalToAdd?.no_surat"
           disabled
         />
-        <br>
-        <p
-          class="text-h6"
-          for="startDate"
-        >
-          Tanggal Dokumen
-        </p>
+        <br />
+        <p class="text-h6" for="startDate">Tanggal Dokumen</p>
         <VTextField
           id="startDate"
           type="date"
@@ -556,13 +529,8 @@ onMounted(async () => {
           :value="selectedLegalToAdd?.tgl_surat"
           disabled
         />
-        <br>
-        <p
-          class="text-h6"
-          for="startDate"
-        >
-          Masa Berlaku
-        </p>
+        <br />
+        <p class="text-h6" for="startDate">Masa Berlaku</p>
         <VTextField
           id="startDate"
           type="date"
@@ -571,10 +539,8 @@ onMounted(async () => {
           :value="selectedLegalToAdd?.masa_berlaku"
           disabled
         />
-        <br>
-        <p class="label-pengajuan">
-          Instansi Penerbit
-        </p>
+        <br />
+        <p class="label-pengajuan">Instansi Penerbit</p>
         <VTextField
           class="-mt-10"
           placeholder="isi nomor dokumen"
@@ -586,6 +552,7 @@ onMounted(async () => {
       <!-- ADD MODAL DATA PABRIK START -->
       <div v-if="addContentType === 'Pabrik'">
         <VDataTable
+          disable-sort
           hide-default-footer
           class="border rounded"
           :items-per-page="-1"
@@ -604,10 +571,7 @@ onMounted(async () => {
           </template>
           <template #item.publication="{ item }">
             <!-- <VCheckbox true-value="true" /> -->
-            <VCheckbox
-              v-model="item.checked"
-              :checked="item.checked"
-            />
+            <VCheckbox v-model="item.checked" :checked="item.checked" />
           </template>
         </VDataTable>
       </div>
@@ -615,6 +579,7 @@ onMounted(async () => {
       <!-- ADD MODAL DATA OUTLET START -->
       <div v-if="addContentType === 'Outlet'">
         <VDataTable
+          disable-sort
           hide-default-footer
           class="border rounded"
           :items-per-page="-1"
@@ -633,10 +598,7 @@ onMounted(async () => {
           </template>
           <template #item.publication="{ item }">
             <!-- <VCheckbox true-value="true" /> -->
-            <VCheckbox
-              v-model="item.checked"
-              :checked="item.checked"
-            />
+            <VCheckbox v-model="item.checked" :checked="item.checked" />
           </template>
         </VDataTable>
       </div>
@@ -644,6 +606,7 @@ onMounted(async () => {
       <!-- ADD MODAL DATA PENYELIA HALAL START -->
       <div v-if="addContentType === 'Penyelia Halal'">
         <VDataTable
+          disable-sort
           hide-default-footer
           class="border rounded"
           :items-per-page="-1"
@@ -662,10 +625,7 @@ onMounted(async () => {
           </template>
           <template #item.publication="{ item }">
             <!-- <VCheckbox true-value="true" /> -->
-            <VCheckbox
-              v-model="item.checked"
-              :checked="item.checked"
-            />
+            <VCheckbox v-model="item.checked" :checked="item.checked" />
           </template>
         </VDataTable>
       </div>
@@ -673,40 +633,40 @@ onMounted(async () => {
     </template>
   </DialogWithAction>
   <div v-if="!loading">
-<!--    <FormData-->
-<!--      :id="props?.id"-->
-<!--      :on-submit="(payload: any) => triggerSaveModal(payload, 'Pengajuan Sertifikasi Halal')"-->
-<!--      :data="requestCertificateData"-->
-<!--      :product_type="itemsProduct"-->
-<!--      :service_type="props?.list_channel"-->
-<!--      title="Pengajuan Sertifikasi Halal"-->
-<!--    />-->
-<!--    <br>-->
-<!--    <FormData-->
-<!--      :on-submit="() => triggerSaveModal(null, 'Penanggung Jawab')"-->
-<!--      :data="responsibility"-->
-<!--      title="Penanggung Jawab"-->
-<!--    />-->
-<!--    <br>-->
-<!--    <TableData-->
-<!--      :on-submit="() => triggerSaveModal(null, 'Aspek Legal')"-->
-<!--      :on-add="() => triggerAddModal('Aspek Legal')"-->
-<!--      :on-delete="(el: any) => deleteFactoryOrOutlet('aspek legal', el)"-->
-<!--      :data="aspectLegalData"-->
-<!--      title="Aspek Legal"-->
-<!--      with-add-button-->
-<!--    />-->
-<!--    <br>-->
+    <!--    <FormData-->
+    <!--      :id="props?.id"-->
+    <!--      :on-submit="(payload: any) => triggerSaveModal(payload, 'Pengajuan Sertifikasi Halal')"-->
+    <!--      :data="requestCertificateData"-->
+    <!--      :product_type="itemsProduct"-->
+    <!--      :service_type="props?.list_channel"-->
+    <!--      title="Pengajuan Sertifikasi Halal"-->
+    <!--    />-->
+    <!--    <br>-->
+    <!--    <FormData-->
+    <!--      :on-submit="() => triggerSaveModal(null, 'Penanggung Jawab')"-->
+    <!--      :data="responsibility"-->
+    <!--      title="Penanggung Jawab"-->
+    <!--    />-->
+    <!--    <br>-->
+    <!--    <TableData-->
+    <!--      :on-submit="() => triggerSaveModal(null, 'Aspek Legal')"-->
+    <!--      :on-add="() => triggerAddModal('Aspek Legal')"-->
+    <!--      :on-delete="(el: any) => deleteFactoryOrOutlet('aspek legal', el)"-->
+    <!--      :data="aspectLegalData"-->
+    <!--      title="Aspek Legal"-->
+    <!--      with-add-button-->
+    <!--    />-->
+    <!--    <br>-->
 
-<!--    <TableData-->
-<!--      :on-submit="() => triggerSaveModal(null, 'Pabrik')"-->
-<!--      :on-add="() => triggerAddModal('Pabrik')"-->
-<!--      :on-delete="(el: any) => deleteFactoryOrOutlet('pabrik', el)"-->
-<!--      :data="factoryData"-->
-<!--      title="Pabrik"-->
-<!--      with-add-button-->
-<!--    />-->
-    <br>
+    <!--    <TableData-->
+    <!--      :on-submit="() => triggerSaveModal(null, 'Pabrik')"-->
+    <!--      :on-add="() => triggerAddModal('Pabrik')"-->
+    <!--      :on-delete="(el: any) => deleteFactoryOrOutlet('pabrik', el)"-->
+    <!--      :data="factoryData"-->
+    <!--      title="Pabrik"-->
+    <!--      with-add-button-->
+    <!--    />-->
+    <br />
     <TableData
       :on-submit="() => triggerSaveModal(null, 'Outlet')"
       :on-add="() => triggerAddModal('Outlet')"
@@ -715,22 +675,18 @@ onMounted(async () => {
       title="Outlet"
       with-add-button
     />
-<!--    <br>-->
-<!--    <TableData-->
-<!--      :on-submit="() => triggerSaveModal(null, 'Penyelia Halal')"-->
-<!--      :on-add="() => triggerAddModal('Penyelia Halal')"-->
-<!--      :data="halalData"-->
-<!--      :on-delete="(el: any) => deleteFactoryOrOutlet('halal data', el)"-->
-<!--      title="Penyelia Halal"-->
-<!--      with-add-button-->
-<!--    />-->
+    <!--    <br>-->
+    <!--    <TableData-->
+    <!--      :on-submit="() => triggerSaveModal(null, 'Penyelia Halal')"-->
+    <!--      :on-add="() => triggerAddModal('Penyelia Halal')"-->
+    <!--      :data="halalData"-->
+    <!--      :on-delete="(el: any) => deleteFactoryOrOutlet('halal data', el)"-->
+    <!--      title="Penyelia Halal"-->
+    <!--      with-add-button-->
+    <!--    />-->
   </div>
   <div v-else>
-    <VSkeletonLoader
-      v-for="i in 3"
-      :key="i"
-      type="list-item-two-line"
-    />
+    <VSkeletonLoader v-for="i in 3" :key="i" type="list-item-two-line" />
   </div>
 </template>
 

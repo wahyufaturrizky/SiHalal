@@ -62,7 +62,12 @@ const save = (form) => {
       <FormTambahPabrik :is-editable="props.isEditable" @confirm="save" />
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="pabrikHeader" :items="pabrikItem">
+      <VDataTable
+        disable-sort
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="pabrikHeader"
+        :items="pabrikItem"
+      >
         <template #item.action="{ item }">
           <v-btn color="primary" variant="plain">
             <VIcon>mdi-dots-vertical</VIcon>

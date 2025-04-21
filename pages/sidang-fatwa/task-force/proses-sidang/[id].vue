@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import { useI18n } from 'vue-i18n';
-const { t } = useI18n();
+
+const { t } = useI18n()
 
 const route = useRoute()
 const loading = ref(true)
@@ -26,6 +27,7 @@ const dataNamaProduk = ref<any>([])
 const dataPenetapan = ref<any>({})
 const dataTracking = ref<any>([])
 const fileUnduh = ref<any>({})
+const phoneNumber = ref('')
 
 const newDataSertifikatHalal = reactive({
   sertifikatHalal: {},
@@ -41,7 +43,7 @@ const newDataSertifikatHalal = reactive({
 const loadItemById = async () => {
   try {
     const response: any = await $api(
-      `/sidang-fatwa/task-force/detail-sidang`,
+      '/sidang-fatwa/task-force/detail-sidang',
       {
         method: 'get',
         query: {
@@ -51,7 +53,7 @@ const loadItemById = async () => {
     )
 
     if (response.code === 2000) {
-      const { aspek_legal, data_pengajuan, outlet, pabrik, penanggung_jawab, penyelia_halal, produk, tracking, penetapan } = response.data || {}
+      const { aspek_legal, data_pengajuan, outlet, pabrik, penanggung_jawab, penyelia_halal, produk, tracking, penetapan, no_hp } = response.data || {}
 
       dataPengajuan.value = data_pengajuan
       dataPenanggungJawab.value = penanggung_jawab
@@ -62,6 +64,7 @@ const loadItemById = async () => {
       dataNamaProduk.value = produk
       dataPenetapan.value = penetapan
       dataTracking.value = tracking
+      phoneNumber.value = no_hp
 
       return response
     }
@@ -79,24 +82,25 @@ const getDownloadForm = async (docName: string) => {
   const result: any = await $api(
     `/self-declare/submission/${route.params?.id}/file`,
     {
-      method: "get",
+      method: 'get',
       query: {
         document: docName,
       },
-    }
-  );
+    },
+  )
 
   if (result?.code === 2000) {
     fileUnduh.value.sttd = result?.data?.file
+
     return result?.data?.file
   }
-};
+}
 
 onMounted(async () => {
   loading.value = true
   await Promise.allSettled([
     loadItemById(),
-    getDownloadForm("sttd")
+    getDownloadForm('sttd'),
   ])
   loading.value = false
 })
@@ -195,7 +199,7 @@ watch(
         <VCol cols="12">
           <DokumenUnduhanFatwa
             :sertifikat="newDataSertifikatHalal.sertifikatHalal"
-            :fileUnduh="fileUnduh"
+            :file-unduh="fileUnduh"
           />
         </VCol>
       </VRow>
@@ -203,8 +207,10 @@ watch(
         <VCol cols="12">
           <InformasiPenetapanFatwa
             :data="dataPenetapan"
-            :dataPengajuan="dataPengajuan"
-            :idReg="idReg"
+            :data-pengajuan="dataPengajuan"
+            :id-reg="idReg"
+            :phoneNumber="phoneNumber"
+            @refresh="loadItemById"
           />
         </VCol>
       </VRow>

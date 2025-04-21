@@ -151,6 +151,11 @@
       "title": "Approval"
     }
   },
+  "common": {
+    "back": "Kembali",
+    "cancel": "Batal",
+    "save": "Simpan"
+  },
   "uam_role": "Role",
   "uam_user": "User",
   "Error": "Error",
@@ -205,6 +210,10 @@
     "title": "Halal Certificate Submission",
     "detail": "Check Submission Data"
   },
+  "sh-domestic": {
+    "success-update-kbli-message": "KBLI Berhasil Diperbarui",
+    "failed-update-kbli-message": "KBLI Gagal Diperbarui"
+  },
   "validation": {
     "fill": "Kolom ini wajib diisi"
   },
@@ -215,8 +224,8 @@
     "nav-1": "Butuh Bantuan?",
     "nav-1-phone": "Telepon",
     "header": "Selamat Datang di",
-    "subheader": "Login untuk mengakses fitur pada web SIHALAL",
-    "username-attr": "username",
+    "subheader": "Login untuk mengakses fitur pada web SiHalal",
+    "username-attr": "Username",
     "username-tip": "Masukkan Username",
     "password-attr": "Kata Sandi",
     "password-tip": "Masukkan kata sandi",
@@ -264,7 +273,8 @@
     "asal-attr-1": "Pilih Asal Pelaku Usaha",
     "asal-attr-2": "Luar Negeri",
     "asal-attr-3": "Dalam Negeri",
-    "asal-attr-4": "Instansi Pemerintah"
+    "asal-attr-4": "Instansi Pemerintah",
+    "back-login": "Kembali ke Halaman Login"
   },
   "new-foreign": {
     "title": "Formulir Profil Perusahaan",
@@ -303,6 +313,7 @@
     "msg": "NIB sudah didaftarkan oleh user",
     "msg-1": ",Silakan login dengan menggunakan email tersebut.",
     "msg-error": "NIB tidak ditemukan",
+    "msg-error-find": "Mohon lengkapi data 'Perseroan Daerah ID' Anda di sistem OSS sebelum melanjutkan proses.",
     "btn-1": "Kembali",
     "btn-2": "Kirim"
   },
@@ -338,7 +349,7 @@
     "pu-kbli-nama": "Nama KBLI",
     "pu-kbli-profil": "Alamat",
     "pu-profil-title": "Profil",
-    "pu-profil-namapu": "Nama Perusahaan",
+    "pu-profil-namapu": "Nama Pelaku Usaha",
     "pu-profil-address": "Alamat",
     "pu-profil-kota": "Kota/Kab",
     "pu-profil-prov": "Provinsi",
@@ -372,6 +383,9 @@
     "pu-ph-title": "Penyelia halal",
     "pu-ph-nama": "Nama",
     "pu-ph-ktp": "No KTP",
+    "pu-ph-download-ktp": "Unduh KTP",
+    "pu-ph-download-skph": "Unduh SKPH",
+    "pu-ph-download-spph": "Unduh SPPH",
     "pu-ph-telp": "No Kontak",
     "pu-ph-sertif": "No/Tgl Sertif Penyelia Halal",
     "pu-ph-sk": "No/Tanggal SK",
@@ -386,7 +400,7 @@
     "pu-kbli-address": "Alamat",
     "pu-kbli-modal": "Modal Usaha",
     "pu-edit-title": "Ubah Pelaku Usaha",
-    "pu-edit-cancel": "Batal",
+    "pu-edit-cancel": "Kembali",
     "pu-edit-save": "Simpan Perubahan",
     "pu-edit-add": "Tambah",
     "pu-edit-edit": "Ubah",
@@ -446,6 +460,7 @@
     "permohonan-list-title": "Status Permohonan",
     "permohonan-list-subtitle": "Data Pengajuan",
     "permohonan-list-search": "Cari",
+    "permohonan-list-reg-no": "No. Daftar",
     "permohonan-list-tanggal": "Tanggal",
     "permohonan-list-namapu": "Nama PU",
     "permohonan-list-jnsdaftar": "Jenis Daftar",
@@ -565,7 +580,7 @@
     "popup-kbli-combo-text": "Pilih Nama Usaha",
     "reguler-detail-header-back": "Kembali",
     "reguler-detail-header-title": "Pengajuan Sertifikasi Halal: Detail",
-    "reguler-detail-header-act-edt": "Ubah Laporan",
+    "reguler-detail-header-act-edt": "Ubah Pengajuan",
     "reguler-detail-header-act-send": "Kirim",
     "reguler-detail-pengajuan-title": "Pengajuan Sertifikat Halal",
     "reguler-detail-pengajuan-noid": "No. ID",
@@ -960,6 +975,10 @@
     "invoice-list-status": "Status",
     "invoice-list-invfile": "File Invoice"
   },
+  "shln-verification": {
+    "halal-registration-number": "Nomor Registrasi Halal",
+    "halal-registration-number-not-available": "Nomor registrasi belum tersedia"
+  },
   "task-force": {
     "tagihan-bpjph-title": "Daftar Tagihan ke BPJPH",
     "tagihan-bpjph-subtitle": "Daftar Tagihan",
@@ -1005,10 +1024,10 @@
       "title": "Tabel Pengajuan Proses Sidang",
       "subtitle": "Data Pengajuan",
       "filter": {
-        "service-type":"Jenis Layanan",
-        "product-type":"Jenis Produk",
-        "province":"Provinsi",
-        "lph":"LPH"
+        "service-type": "Jenis Layanan",
+        "product-type": "Jenis Produk",
+        "province": "Provinsi",
+        "lph": "LPH"
       },
       "detail": {
         "title": "Detail Data Proses Sidang",
@@ -1130,5 +1149,34 @@
         }
       }
     }
+  },
+  "self-declare": {
+    "title": "Data Pengajuan Self Declare",
+    "create": "Buat Pengajuan",
+    "search": "Cari Data",
+    "questionnaire": {
+      "1": "Saya tidak pernah mendapatkan fasilitas sertifikasi halal sebelumnya",
+      "2": "Aktivitas produksi yang dilakukan merupakan usaha rumahan (bukan usaha pabrikan)",
+      "3": "Proses produksi menggunakan bahan-bahan halal. (contoh bahan halal: 1. Bahan bersertifikat halal 2. Bahan berasal dari alam (tanpa melihat sertifikat): buah segar, sayur segar, telur segar, ikan segar, rempah, dll)",
+      "4": "Jika ada proses produksi produk lain yang menggunakan bahan non-halal, dilakukan pada tempat terpisah dan menggunakan alat yang berbeda.",
+      "5": "Proses produksi tidak menggunakan bahan berbahaya (contoh bahan berbahaya tertuang dalam Peraturan BPOM Nomor 7 Tahun 2018)",
+      "6": "Proses pengawetan produk sederhana dan tidak menggunakan kombinasi lebih dari 1 metode pengawetan",
+      "7": "Proses produksi menggunakan peralatan manual/ semi otomatis"
+    },
+    "questionnaire-response": {
+      "1": "Anda sudah pernah mendapatkan fasilitas self declare",
+      "2": "Aktivitas produksi yang dilakukan bukan merupakan usaha rumahan",
+      "3": "Tidak semua proses produksi menggunakan bahan-bahan halal",
+      "4": "Proses produksi produk lain yang menggunakan bahan non-halal tidak dilakukan pada tempat terpisah dan tidak menggunakan alat yang berbeda.",
+      "5": "Proses produksi menggunakan bahan berbahaya",
+      "6": "Proses pengawetan produk tidak sederhana atau menggunakan kombinasi lebih dari 1 metode pengawetan",
+      "7": "Proses produksi tidak menggunakan peralatan manual/semi otomatis"
+    }
+  },
+  "self-declare-mandiri": {
+    "title": "Pengajuan Self Declare Mandiri",
+    "table-title": "Data Pengajuan Self Declare Mandiri",
+    "create": "Buat Pengajuan",
+    "search": "Cari Data"
   }
 }

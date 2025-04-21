@@ -1,11 +1,10 @@
 <!-- eslint-disable camelcase -->
 <script setup lang="ts">
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
-import { ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 
-const { t } = useI18n();
 const props = defineProps({
   onComplete: {
     type: Function,
@@ -18,7 +17,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits();
-
+const { t } = useI18n();
 const route = useRoute();
 const store = useMyTabEditRegulerStore();
 
@@ -26,10 +25,10 @@ const id = route.params.id;
 
 const addDialog = ref(false);
 const confirmSaveDialog = ref(false);
-const titleDialog = ref('');
-const labelSaveBtn = ref('');
-const fileTemplate = ref('');
-const fileTemplateProduct = ref('');
+const titleDialog = ref("");
+const labelSaveBtn = ref("");
+const fileTemplate = ref("");
+const fileTemplateProduct = ref("");
 const hideFooterBtn = ref(false);
 const visiblePreview = ref(false);
 const tabs = ref(-1);
@@ -42,86 +41,89 @@ const loading = ref(false);
 const loadingRincian = ref(false);
 const reRender = ref(false);
 const tabBahan = ref(0);
+const dataCertifHalal = ref("");
+const isNotAllowedProduct = ref(false);
+
 const catatan = ref<any>({
-  name: '',
-  process: '',
-})
+  name: "",
+  process: "",
+});
 
 const itemDetail = ref<any>({});
 
 const formData = ref({
-  kode_rincian: '',
-  nama_produk: '',
+  kode_rincian: "",
+  nama_produk: "",
   foto_produk: null,
 });
 
 const formDataCatatan = ref({
   id_reg_bahan: id,
-  nama: '',
+  nama: "",
   jumlah: 0,
-  tgl_pembelian: '',
-  file_dok: '',
+  tgl_pembelian: "",
+  file_dok: "",
 });
 
 const formBahandanKemasan = ref({});
 
 const uploadedFile = ref({
-  name: '',
+  name: "",
   file: null,
 });
 
 const uploadedFileBahan = ref({
-  name: '',
+  name: "",
   file: null,
 });
 
 const uploadedFileProduct = ref({
-  name: '',
+  name: "",
   file: null,
 });
 
 const handleRemoveFile = () => {
-  uploadedFile.value.name = '';
+  uploadedFile.value.name = "";
   uploadedFile.value.file = null;
-  uploadedFileBahan.value.name = '';
+  uploadedFileBahan.value.name = "";
   uploadedFileBahan.value.file = null;
-  formData.value.foto_produk = '';
+  formData.value.foto_produk = "";
 };
 
 const documentList = ref([
-  { nama: 'Izin Edar', fileName: 'Surat Izin Usaha.pdf', file: null },
-  { nama: 'Izin Masuk', fileName: '', file: null },
+  { nama: "Izin Edar", fileName: "Surat Izin Usaha.pdf", file: null },
+  { nama: "Izin Masuk", fileName: "", file: null },
 ]);
 
-const pengisianValue = ref('Unggah Foto');
+const pengisianValue = ref("Unggah Foto");
 
 const materialName = ref<any>({
   label: [
-    { title: 'No.', key: 'no', nowrap: true },
+    { title: "No.", key: "no", nowrap: true },
     {
-      title: 'pengajuan-reguler.reguler-form--bahan-jenisbahan',
-      key: 'jenis_bahan',
+      title: "pengajuan-reguler.reguler-form--bahan-jenisbahan",
+      key: "jenis_bahan",
       nowrap: true,
     },
     {
-      title: 'pengajuan-reguler.reguler-form--bahan-namabahan',
-      key: 'nama_bahan',
+      title: "pengajuan-reguler.reguler-form--bahan-namabahan",
+      key: "nama_bahan",
       nowrap: true,
     },
     {
-      title: 'pengajuan-reguler.reguler-form--bahan-produsen',
-      key: 'produsen',
+      title: "pengajuan-reguler.reguler-form--bahan-produsen",
+      key: "produsen",
       nowrap: true,
     },
     {
-      title: 'pengajuan-reguler.reguler-form--bahan-nosert',
-      key: 'no_sertifikat',
+      title: "pengajuan-reguler.reguler-form--bahan-nosert",
+      key: "no_sertifikat",
       nowrap: true,
     },
     {
-      title: 'pengajuan-reguler.reguler-form--bahan-aksi',
-      key: 'action',
-      value: 'actionPopOver3',
+      title: "pengajuan-reguler.reguler-form--bahan-aksi",
+      key: "action",
+      value: "actionPopOver3",
       sortable: false,
       nowrap: true,
       popOver: true,
@@ -132,46 +134,58 @@ const materialName = ref<any>({
 
 const previewHeader = ref([
   {
-    title: 'No', key: 'no',
+    title: "No",
+    key: "no",
   },
   {
-    title: 'Nama Bahan', key: 'reg_nama_bahan',
+    title: "Nama Bahan",
+    key: "reg_nama_bahan",
   },
   {
-    title: 'No. Sertifikat', key: 'no_sertifikat_halal',
+    title: "No. Sertifikat",
+    key: "no_sertifikat_halal",
   },
   {
-    title: 'Jenis Bahan', key: 'kelompok',
+    title: "Jenis Bahan",
+    key: "kelompok",
   },
   {
-    title: 'Status', key: 'status',
+    title: "Status",
+    key: "status",
   },
   {
-    title: 'Action', key: 'action',
+    title: "Action",
+    key: "action",
   },
-])
+]);
 
 const previewProductHeader = ref([
   {
-    title: 'No', key: 'no',
+    title: "No",
+    key: "no",
   },
   {
-    title: 'Nama Produk', key: 'reg_prod_name',
+    title: "Nama Produk",
+    key: "reg_prod_name",
   },
   {
-    title: 'Action', key: 'actionProduct',
+    title: "Action",
+    key: "actionProduct",
   },
-])
+]);
 
 const productName = ref({
   label: [
-    { title: 'No.', key: 'no', nowrap: true },
-    { title: 'Nama Produk', key: 'nama', nowrap: true },
-    { title: 'Foto Produk', key: 'foto', nowrap: true },
+    { title: "No.", key: "no", nowrap: true },
+    { title: "Nama Produk", key: "nama", nowrap: true },
+    { title: "Foto Produk", key: "foto", nowrap: true },
+    { title: "Jumlah Bahan", key: "qtyBahan", nowrap: true },
+
     // { title: 'Jumlah Bahan', key: 'qtyBahan', nowrap: true },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-pemeriksaan-aksi', key :'action',
-      value: 'actionPopOver4',
+      title: "Action",
+      key: "actionV3",
+      value: "actionPopOver4",
       sortable: false,
       nowrap: true,
       popOver: true,
@@ -182,36 +196,36 @@ const productName = ref({
 
 const payNote = ref({
   label: [
-    { title: 'No.', key: 'no', nowrap: true },
+    { title: "No.", key: "no", nowrap: true },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-buy-nama',
-      key: 'nama',
+      title: "pengajuan-reguler.reguler_form-bahan-buy-nama",
+      key: "nama",
       nowrap: true,
     },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-buy-tipepenambahan',
-      key: 'addType',
+      title: "pengajuan-reguler.reguler_form-bahan-buy-tipepenambahan",
+      key: "addType",
       nowrap: true,
     },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-buy-jumlah',
-      key: 'jumlah',
+      title: "pengajuan-reguler.reguler_form-bahan-buy-jumlah",
+      key: "jumlah",
       nowrap: true,
     },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-buy-tanggalpembelian',
-      key: 'tgl_pembelian',
+      title: "pengajuan-reguler.reguler_form-bahan-buy-tanggalpembelian",
+      key: "tgl_pembelian",
       nowrap: true,
     },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-buy-filedok',
-      key: 'FileDok',
+      title: "pengajuan-reguler.reguler_form-bahan-buy-filedok",
+      key: "FileDok",
       nowrap: true,
     },
     {
-      title: t('pengajuan-reguler.reguler_form-bahan-buy-aksi'),
-      key: 'actionEdit',
-      value: 'actionEdit',
+      title: t("pengajuan-reguler.reguler_form-bahan-buy-aksi"),
+      key: "actionEdit",
+      value: "actionEdit",
       sortable: false,
       nowrap: true,
       popOver: true,
@@ -222,36 +236,36 @@ const payNote = ref({
 
 const materialCheck = ref({
   label: [
-    { title: 'No.', key: 'no', nowrap: true },
+    { title: "No.", key: "no", nowrap: true },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-produk-popupproduk-prodname',
-      key: 'nama',
+      title: "pengajuan-reguler.reguler_form-bahan-produk-popupproduk-prodname",
+      key: "nama",
       nowrap: true,
     },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-pemeriksaan-tipepenambahan',
-      key: 'addType',
+      title: "pengajuan-reguler.reguler_form-bahan-pemeriksaan-tipepenambahan",
+      key: "addType",
       nowrap: true,
     },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-pemeriksaan-lokasi',
-      key: 'lokasi',
+      title: "pengajuan-reguler.reguler_form-bahan-pemeriksaan-lokasi",
+      key: "lokasi",
       nowrap: true,
     },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-pemeriksaan-tglpembelian',
-      key: 'tgl_pembelian',
+      title: "pengajuan-reguler.reguler_form-bahan-pemeriksaan-tglpembelian",
+      key: "tgl_pembelian",
       nowrap: true,
     },
     {
-      title: 'pengajuan-reguler.reguler_form-bahan-pemeriksaan-filedok',
-      key: 'FileDok',
+      title: "pengajuan-reguler.reguler_form-bahan-pemeriksaan-filedok",
+      key: "FileDok",
       nowrap: true,
     },
     {
-      title: t('pengajuan-reguler.reguler_form-bahan-pemeriksaan-aksi'),
-      value: 'actionEdit',
-      key: 'actionEdit',
+      title: t("pengajuan-reguler.reguler_form-bahan-pemeriksaan-aksi"),
+      value: "actionEdit",
+      key: "actionEdit",
       sortable: false,
       nowrap: true,
       popOver: true,
@@ -264,44 +278,44 @@ const toggleAdd = (type: string) => {
   addDialog.value = true;
   titleDialog.value = `Tambah ${type}`;
   labelSaveBtn.value =
-    type === 'Data Bahan'
-      ? t('pengajuan-reguler.reguler_form-bahan-produk-popupproduk-produp2')
-      : t('pengajuan-reguler.reguler-form--bahan-add');
+    type === "Data Bahan"
+      ? t("pengajuan-reguler.reguler_form-bahan-produk-popupproduk-produp2")
+      : t("pengajuan-reguler.reguler-form--bahan-add");
 };
 
 const toggleEdit = (item: any, type: string) => {
-  tabBahan.value = '1';
+  tabBahan.value = "1";
   itemDetail.value = item;
   uploadedFileBahan.value.file = item.FileDok;
   uploadedFileBahan.value.name = item.FileDok;
   addDialog.value = true;
   titleDialog.value = `Ubah ${type}`;
-  labelSaveBtn.value = 'Ubah';
+  labelSaveBtn.value = "Ubah";
 };
 
 const toggleDetail = (item: any, type: string) => {
   itemDetail.value = item;
   addDialog.value = true;
   titleDialog.value = `Detail ${type}`;
-  labelSaveBtn.value = 'Detail';
+  labelSaveBtn.value = "Detail";
 };
 
 const uploadDocument = async (file: any) => {
   try {
     const formData = new FormData();
 
-    formData.append('id', String(id));
-    formData.append('file', file);
-    formData.append('type', 'produk');
+    formData.append("id", String(id));
+    formData.append("file", file);
+    formData.append("type", "produk");
 
-    return await $api('/shln/submission/document/upload', {
-      method: 'post',
+    return await $api("/shln/submission/document/upload", {
+      method: "post",
       body: formData,
     });
   } catch (error) {
     useSnackbar().sendSnackbar(
-      'ada kesalahan saat upload file, gagal menyimpan!',
-      'error'
+      "ada kesalahan saat upload file, gagal menyimpan!",
+      "error"
     );
   }
 };
@@ -309,16 +323,17 @@ const uploadDocument = async (file: any) => {
 const uploadDocumentBahan = async (file: any) => {
   try {
     const formData = new FormData();
-    formData.append('file', file);
 
-    return await $api('/reguler/pelaku-usaha/tab-bahan/products/upload', {
-      method: 'post',
+    formData.append("file", file);
+
+    return await $api("/reguler/pelaku-usaha/tab-bahan/products/upload", {
+      method: "post",
       body: formData,
     });
   } catch (error) {
     useSnackbar().sendSnackbar(
-      'ada kesalahan saat upload file, gagal menyimpan!',
-      'error'
+      "ada kesalahan saat upload file, gagal menyimpan!",
+      "error"
     );
   }
 };
@@ -326,16 +341,20 @@ const uploadDocumentBahan = async (file: any) => {
 const uploadDocumentProduct = async (file: any) => {
   try {
     const formData = new FormData();
-    formData.append('file', file);
 
-    return await $api('/reguler/pelaku-usaha/tab-bahan/products/upload-product', {
-      method: 'post',
-      body: formData,
-    });
+    formData.append("file", file);
+
+    return await $api(
+      "/reguler/pelaku-usaha/tab-bahan/products/upload-product",
+      {
+        method: "post",
+        body: formData,
+      }
+    );
   } catch (error) {
     useSnackbar().sendSnackbar(
-      'ada kesalahan saat upload file, gagal menyimpan!',
-      'error'
+      "ada kesalahan saat upload file, gagal menyimpan!",
+      "error"
     );
   }
 };
@@ -348,9 +367,8 @@ const handleUploadFile = async (event: any) => {
     uploadedFile.value.file = fileData;
     try {
       const response = await uploadDocument(fileData);
-      if (response.code === 2000) {
+      if (response.code === 2000)
         formData.value.foto_produk = response.data.file_url;
-      }
     } catch (error) {
       console.log(error);
     }
@@ -364,26 +382,26 @@ const handleUploadFileBahan = async (event: any) => {
     uploadedFile.value.name = fileData.name;
     uploadedFile.value.file = fileData;
     try {
-      loading.value = true
+      loading.value = true;
+
       const response = await uploadDocumentBahan(fileData);
       if (response.code === 2000) {
-        console.log(response?.data?.validated_bahan, '<<')
-        addDialog.value = false
+        addDialog.value = false;
         uploadedFileBahan.value.file = response.data.file_url;
-        listPreview.value = response?.data?.validated_bahan
-        visiblePreview.value = true
-        titleDialog.value = 'Preview Bahan'
-        loading.value = false
+        listPreview.value = response?.data?.validated_bahan;
+        visiblePreview.value = true;
+        titleDialog.value = "Preview Bahan";
+        loading.value = false;
       } else {
         useSnackbar().sendSnackbar(
           response.errors?.list_error?.join(),
-          'error'
+          "error"
         );
-        loading.value = false
+        loading.value = false;
       }
     } catch (error) {
       console.log(error);
-      loading.value = false
+      loading.value = false;
     }
   }
 };
@@ -395,26 +413,26 @@ const handleUploadFileProduct = async (event: any) => {
     uploadedFile.value.name = fileData.name;
     uploadedFile.value.file = fileData;
     try {
-      loading.value = true
+      loading.value = true;
+
       const response = await uploadDocumentProduct(fileData);
       if (response.code === 2000) {
-        console.log(response?.data?.validated_bahan, '<<')
-        addDialog.value = false
+        addDialog.value = false;
         uploadedFileProduct.value.file = response.data.file_url;
-        listPreview.value = response?.data?.validated_produk
-        visiblePreview.value = true
-        titleDialog.value = 'Preview Produk'
-        loading.value = false
+        listPreview.value = response?.data?.validated_produk;
+        visiblePreview.value = true;
+        titleDialog.value = "Preview Produk";
+        loading.value = false;
       } else {
         useSnackbar().sendSnackbar(
           response.errors?.list_error?.join(),
-          'error'
+          "error"
         );
-        loading.value = false
+        loading.value = false;
       }
     } catch (error) {
       console.log(error);
-      loading.value = false
+      loading.value = false;
     }
   }
 };
@@ -430,9 +448,9 @@ const handleSubmit = () => {
 const getListCatatan = async () => {
   try {
     const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-bahan/catatan/list',
+      "/reguler/pelaku-usaha/tab-bahan/catatan/list",
       {
-        method: 'get',
+        method: "get",
         params: { id },
       }
     );
@@ -446,21 +464,21 @@ const getListCatatan = async () => {
       return response;
     } else {
       useSnackbar().sendSnackbar(
-        response.errors.list_error.join(', '),
-        'error'
+        response.errors.list_error.join(", "),
+        "error"
       );
     }
   } catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error');
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
 const getListFormulir = async () => {
   try {
     const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-bahan/formulir/list',
+      "/reguler/pelaku-usaha/tab-bahan/formulir/list",
       {
-        method: 'get',
+        method: "get",
         query: { id },
       }
     );
@@ -474,21 +492,46 @@ const getListFormulir = async () => {
       return response;
     } else {
       useSnackbar().sendSnackbar(
-        response.errors.list_error.join(', '),
-        'error'
+        response.errors.list_error.join(", "),
+        "error"
       );
     }
   } catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error');
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const getChannel = async () => {
+  try {
+    const response: any = await $api("/reguler/pelaku-usaha/detail", {
+      method: "get",
+      params: { id },
+    });
+
+    if (response.code === 2000) {
+      dataCertifHalal.value = response?.data?.certificate_halal;
+
+      return response?.data?.certificate_halal;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
 const loadItemProductClasifications = async () => {
   try {
-    const response: any = await $api(
-      `/self-declare/verificator/produk/clasification/${id}`,
+    const params = {};
+    const productCode = await getChannel();
+
+    dataCertifHalal.value = productCode;
+
+    const response = await $api(
+      "/reguler/auditor/combobox-product-klasifikasi",
       {
-        method: 'get',
+        method: "get",
+        params: {
+          idLayanan: productCode?.id_produk,
+        },
       }
     );
 
@@ -498,37 +541,37 @@ const loadItemProductClasifications = async () => {
       return response;
     } else {
       useSnackbar().sendSnackbar(
-        response.errors.list_error.join(', '),
-        'error'
+        response.errors.list_error.join(", "),
+        "error"
       );
     }
   } catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error');
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
 const loadItemProductRincian = async (kode_rincian: string) => {
   loadingRincian.value = true;
   try {
-    const response: any = await $api(
-      `/self-declare/verificator/produk/rincian/${kode_rincian}`,
-      {
-        method: 'get',
-      }
-    );
+    const response = await $api("/reguler/auditor/combobox-product-rincian", {
+      method: "get",
+      params: {
+        idLayanan: kode_rincian,
+      },
+    });
 
     if (response.code === 2000) {
       listRincian.value = response.data || [];
       loadingRincian.value = false;
     } else {
       useSnackbar().sendSnackbar(
-        response.errors.list_error.join(', '),
-        'error'
+        response.errors.list_error.join(", "),
+        "error"
       );
       loadingRincian.value = false;
     }
   } catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan aaa', 'error');
+    useSnackbar().sendSnackbar("Ada Kesalahan aaa", "error");
     loadingRincian.value = false;
   }
 };
@@ -536,9 +579,9 @@ const loadItemProductRincian = async (kode_rincian: string) => {
 const getListIngredients = async () => {
   try {
     const response: any = await $api(
-      '/self-declare/business-actor/ingredient/list',
+      "/self-declare/business-actor/ingredient/list",
       {
-        method: 'get',
+        method: "get",
         query: {
           id_reg: id,
         },
@@ -552,22 +595,40 @@ const getListIngredients = async () => {
       };
 
       if (response.data !== null) {
-        const jenisBahan = response.data?.map((i) => i.jenis_bahan);
+        const jenisBahan = response.data?.map((i) =>
+          i.jenis_bahan?.toLowerCase()
+        );
 
         if (
-          ['Bahan', 'Cleaning Agent', 'Kemasan'].every((item) =>
-            jenisBahan.includes(item)
-          )
+          dataCertifHalal?.value?.jenis_layanan === "Makanan" ||
+          dataCertifHalal?.value?.jenis_layanan === "Minuman"
         ) {
-          emit('complete', true);
+          if (
+            ["Bahan", "Cleaning Agent", "Kemasan"].every((item) =>
+              jenisBahan.includes(item?.toLowerCase())
+            )
+          ) {
+            let count = 0;
+            jenisBahan.map((element: any) => {
+              if (element === "bahan") {
+                count++;
+              }
+            });
+            if (count < 3) emit("failed", "Bahan minimal 3");
+            else emit("complete", true);
+          } else {
+            const missing = ["Bahan", "Cleaning Agent", "Kemasan"].filter(
+              (item) => !jenisBahan.includes(item)
+            );
+
+            emit("failed", missing);
+          }
         } else {
-          const missing = ['Bahan', 'Cleaning Agent', 'Kemasan'].filter(
-            (item) => !jenisBahan.includes(item)
-          );
-          emit('failed', missing);
+          if (jenisBahan.length > 0) emit("complete", true);
+          else emit("failed", missing);
         }
       } else {
-        emit('failed', ['Bahan', 'Cleaning Agent', 'Kemasan']);
+        emit("failed", ["Bahan", "Cleaning Agent", "Kemasan"]);
       }
       reRender.value = !reRender.value;
     }
@@ -587,113 +648,131 @@ const refresh = async () => {
 };
 
 const bulkInsert = async () => {
-  const body: any[] = []
+  const body: any[] = [];
 
-  if (titleDialog.value === 'Preview Bahan') {
+  if (titleDialog.value === "Preview Bahan") {
     listPreview.value.map((a: any) => {
       if (a.Passed) {
         let payload = {
-          no_sertifikat_halal: a.HalalCertificateRegulerBahan.no_sertifikat_halal,
+          no_sertifikat_halal:
+            a.HalalCertificateRegulerBahan.no_sertifikat_halal,
           reg_publish: true,
           id_pabrik: null,
-          foto_bahan: '',
+          foto_bahan: "",
           merek: a.HalalCertificateRegulerBahan?.merek,
           produsen: a.HalalCertificateRegulerBahan?.produsen,
-          tgl_berlaku_sertifikat: a.HalalCertificateRegulerBahan?.tgl_berlaku_sertifikat,
+          tgl_berlaku_sertifikat:
+            a.HalalCertificateRegulerBahan?.tgl_berlaku_sertifikat,
           jenis_bahan: a.HalalCertificateRegulerBahan?.jenis_bahan,
           f_pendamping: false,
           kelompok: a.HalalCertificateRegulerBahan?.kelompok,
           id_reg: id,
           reg_nama_bahan: a.HalalCertificateRegulerBahan?.reg_nama_bahan,
-        }
+        };
         if (a.HalalCertificateRegulerBahan.id_reg_bahan) {
           payload = {
             ...payload,
             id_reg_bahan: a.HalalCertificateRegulerBahan.id_reg_bahan,
-          }
+          };
         }
-        body.push(payload)
+        body.push(payload);
       }
-    })
+    });
 
     const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-bahan/products/bulkInsert',
+      "/reguler/pelaku-usaha/tab-bahan/products/bulkInsert",
       {
-        method: 'put',
+        method: "put",
         params: { id_reg: id },
-        body: body,
-      },
+        body,
+      }
     );
 
     if (response.code === 2000) {
-      useSnackbar().sendSnackbar('Sukses menambah data', 'success');
+      useSnackbar().sendSnackbar("Sukses menambah data", "success");
       reRender.value = !reRender.value;
-      visiblePreview.value = false
-      getListIngredients()
-      getListCatatan()
-      getListFormulir()
+      visiblePreview.value = false;
+      getListIngredients();
+      getListCatatan();
+      getListFormulir();
     }
   } else {
     listPreview.value.map((el: any) => {
       if (el.Passed) {
         const payload = {
           reg_prod_name: el.HalalCertificateRegulerProduk?.reg_prod_name,
-        }
-        body.push(payload)
+        };
+
+        body.push(payload);
       }
-    })
+    });
+
     const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-bahan/products/bulkInsert-product',
+      "/reguler/pelaku-usaha/tab-bahan/products/bulkInsert-product",
       {
-        method: 'put',
+        method: "put",
         params: { id_reg: id },
-        body: body,
-      },
+        body,
+      }
     );
 
     if (response.code === 2000) {
-      useSnackbar().sendSnackbar('Sukses menambah data', 'success');
+      useSnackbar().sendSnackbar("Sukses menambah data", "success");
       reRender.value = !reRender.value;
-      visiblePreview.value = false
+      visiblePreview.value = false;
       uploadedFileProduct.value = {
-        name: '',
+        name: "",
         file: null,
-      }
+      };
     }
   }
-
-}
+};
 
 const addProduct = async () => {
-  if (titleDialog.value === 'Tambah Nama Produk') {
-    const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-bahan/products/create',
-      {
-        method: 'post',
-        params: { id_reg: id },
-        body: formData.value,
+  if (titleDialog.value === "Tambah Nama Produk") {
+    try {
+      const { kode_rincian, nama_produk, foto_produk } = formData.value;
+      if (!kode_rincian || !nama_produk || !foto_produk) {
+        throw {
+          message: "mandatory",
+        };
       }
-    );
 
-    if (response.code === 2000) {
-      formData.value = {
-        kode_rincian: '',
-        nama_produk: '',
-        foto_produk: uploadedFile.value.file || null,
-      };
-      uploadedFile.value = {
-        name: '',
-        file: '',
-      };
-      addDialog.value = false;
-      reRender.value = !reRender.value;
-      useSnackbar().sendSnackbar('Sukses menambah data', 'success');
+      const response: any = await $api(
+        "/reguler/pelaku-usaha/tab-bahan/products/create",
+        {
+          method: "post",
+          params: { id_reg: id },
+          body: formData.value,
+        }
+      );
+
+      if (response.code === 2000) {
+        formData.value = {
+          kode_rincian: "",
+          nama_produk: "",
+          foto_produk: uploadedFile.value.file || null,
+        };
+        uploadedFile.value = {
+          name: "",
+          file: "",
+        };
+        addDialog.value = false;
+        reRender.value = !reRender.value;
+        useSnackbar().sendSnackbar("Sukses menambah data", "success");
+      } else {
+        throw {
+          message: "mandatory",
+        };
+      }
+    } catch (error) {
+      if (error.message !== "mandatory") isNotAllowedProduct.value = true;
     }
-  } else if (titleDialog.value === 'Ubah Nama Produk') {
+  } else if (titleDialog.value === "Ubah Nama Produk") {
     const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-bahan/products/update',
+      "/reguler/pelaku-usaha/tab-bahan/products/update",
       {
-        method: 'put',
+        method: "put",
         params: { id_reg: id, product_id: itemDetail.value.id },
         body: {
           kode_rincian:
@@ -709,23 +788,23 @@ const addProduct = async () => {
 
     if (response.code === 2000) {
       formData.value = {
-        kode_rincian: '',
-        nama_produk: '',
+        kode_rincian: "",
+        nama_produk: "",
         foto_produk: null,
       };
       uploadedFile.value = {
-        name: '',
-        file: '',
+        name: "",
+        file: "",
       };
       addDialog.value = false;
       reRender.value = !reRender.value;
-      useSnackbar().sendSnackbar('Sukses menambah data', 'success');
+      useSnackbar().sendSnackbar("Sukses menambah data", "success");
     }
-  } else if (titleDialog.value === 'Tambah Pembelian Bahan') {
+  } else if (titleDialog.value === "Tambah Pembelian Bahan") {
     const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-bahan/catatan/create',
+      "/reguler/pelaku-usaha/tab-bahan/catatan/create",
       {
-        method: 'post',
+        method: "post",
         params: { id_reg: id },
         body: {
           nama: formData.value?.nama_produk,
@@ -736,20 +815,20 @@ const addProduct = async () => {
 
     if (response.code === 2000) {
       formDataCatatan.value = {
-        kode_rincian: '',
-        nama_produk: '',
+        kode_rincian: "",
+        nama_produk: "",
         foto_produk: null,
       };
       addDialog.value = false;
       getListCatatan();
-      useSnackbar().sendSnackbar('Sukses menambah data', 'success');
+      useSnackbar().sendSnackbar("Sukses menambah data", "success");
     }
-  } else if (titleDialog.value === 'Ubah Pembelian Bahan') {
+  } else if (titleDialog.value === "Ubah Pembelian Bahan") {
     let body: any = {};
-    let url = '';
-    let method = '';
-    if (tabBahan.value === 0 || tabBahan.value === '1') {
-      if (itemDetail.value?.id_reg_bahan !== '') {
+    let url = "";
+    let method = "";
+    if (tabBahan.value === 0 || tabBahan.value === "1") {
+      if (itemDetail.value?.id_reg_bahan !== "") {
         body = {
           id_reg_bahan: itemDetail.value.id_reg_bahan,
           nama: itemDetail.value.nama,
@@ -772,16 +851,16 @@ const addProduct = async () => {
         nama: itemDetail.value.nama,
         jumlah: +itemDetail.value.jumlah,
         tgl_pembelian: formatToISOString(itemDetail.value.tgl_pembelian),
-        file_dok: itemDetail.value.FileDok || '',
+        file_dok: itemDetail.value.FileDok || "",
       };
     }
 
-    if (itemDetail.value.id_reg_bahan_pembelian !== '') {
-      method = 'put';
-      url = '/reguler/pelaku-usaha/tab-bahan/catatan/update';
+    if (itemDetail.value.id_reg_bahan_pembelian !== "") {
+      method = "put";
+      url = "/reguler/pelaku-usaha/tab-bahan/catatan/update";
     } else {
-      method = 'post';
-      url = '/reguler/pelaku-usaha/tab-bahan/catatan/create';
+      method = "post";
+      url = "/reguler/pelaku-usaha/tab-bahan/catatan/create";
     }
 
     const response: any = await $api(url, {
@@ -795,20 +874,20 @@ const addProduct = async () => {
 
     if (response.code === 2000) {
       formDataCatatan.value = {
-        kode_rincian: '',
-        nama_produk: '',
+        kode_rincian: "",
+        nama_produk: "",
         foto_produk: null,
       };
       addDialog.value = false;
       reRender.value = !reRender.value;
       refresh();
-      useSnackbar().sendSnackbar('Sukses merubah data', 'success');
+      useSnackbar().sendSnackbar("Sukses merubah data", "success");
     }
-  } else if (titleDialog.value === 'Tambah Formulir Pemeriksaan Bahan') {
+  } else if (titleDialog.value === "Tambah Formulir Pemeriksaan Bahan") {
     const response: any = await $api(
-      '/reguler/pelaku-usaha/tab-bahan/formulir/add-formulir',
+      "/reguler/pelaku-usaha/tab-bahan/formulir/add-formulir",
       {
-        method: 'post',
+        method: "post",
         params: {
           id,
         },
@@ -822,14 +901,14 @@ const addProduct = async () => {
     if (response.code === 2000) {
       addDialog.value = false;
       getListFormulir();
-      useSnackbar().sendSnackbar('Sukses menambah data', 'success');
+      useSnackbar().sendSnackbar("Sukses menambah data", "success");
     }
-  } else if (titleDialog.value === 'Ubah Formulir Pemeriksaan Bahan') {
+  } else if (titleDialog.value === "Ubah Formulir Pemeriksaan Bahan") {
     let body: any = {};
-    let url = '';
-    let method = '';
-    if (tabBahan.value === 0 || tabBahan.value === '1') {
-      if (itemDetail.value?.id_reg_bahan !== '') {
+    let url = "";
+    let method = "";
+    if (tabBahan.value === 0 || tabBahan.value === "1") {
+      if (itemDetail.value?.id_reg_bahan !== "") {
         body = {
           id_reg_bahan: itemDetail.value.id_reg_bahan,
           nama: itemDetail.value.nama,
@@ -852,16 +931,16 @@ const addProduct = async () => {
         nama: itemDetail.value.nama,
         lokasi: itemDetail.value.lokasi,
         tgl_pembelian: formatToISOString(itemDetail.value.tgl_pembelian),
-        file_dok: itemDetail.value.FileDok || '',
+        file_dok: itemDetail.value.FileDok || "",
       };
     }
 
-    if (itemDetail.value.id_reg_bahan_cek !== '') {
-      method = 'put';
-      url = '/reguler/pelaku-usaha/tab-bahan/formulir/update';
+    if (itemDetail.value.id_reg_bahan_cek !== "") {
+      method = "put";
+      url = "/reguler/pelaku-usaha/tab-bahan/formulir/update";
     } else {
-      method = 'post';
-      url = '/reguler/pelaku-usaha/tab-bahan/formulir/create';
+      method = "post";
+      url = "/reguler/pelaku-usaha/tab-bahan/formulir/create";
     }
 
     const response: any = await $api(url, {
@@ -872,23 +951,23 @@ const addProduct = async () => {
 
     if (response.code === 2000) {
       formDataCatatan.value = {
-        kode_rincian: '',
-        nama_produk: '',
+        kode_rincian: "",
+        nama_produk: "",
         foto_produk: null,
       };
       addDialog.value = false;
       reRender.value = !reRender.value;
       refresh();
-      useSnackbar().sendSnackbar('Sukses merubah data', 'success');
+      useSnackbar().sendSnackbar("Sukses merubah data", "success");
     }
   }
 };
 
 const getDetailProduk = async (productId: string, type: string) => {
   const response: any = await $api(
-    '/reguler/pelaku-usaha/tab-bahan/products/detail',
+    "/reguler/pelaku-usaha/tab-bahan/products/detail",
     {
-      method: 'get',
+      method: "get",
       params: { id_reg: id, product_id: productId },
     }
   );
@@ -901,78 +980,74 @@ const getDetailProduk = async (productId: string, type: string) => {
     };
     addDialog.value = true;
     titleDialog.value =
-      type === 'edit' ? 'Ubah Nama Produk' : 'Detail Nama Produk';
-    labelSaveBtn.value = type === 'edit' ? 'Ubah' : 'Detail';
+      type === "edit" ? "Ubah Nama Produk" : "Detail Nama Produk";
+    labelSaveBtn.value = type === "edit" ? "Ubah" : "Detail";
   }
 };
 
 const getTemplateFile = async (productId: string, type: string) => {
   const response: any = await $api(
-    '/reguler/pelaku-usaha/tab-bahan/products/template',
+    "/reguler/pelaku-usaha/tab-bahan/products/template",
     {
-      method: 'get',
+      method: "get",
     }
   );
 
-  if (response.code === 2000) {
-    fileTemplate.value = response.data.file
-  }
+  if (response.code === 2000) fileTemplate.value = response.data.file;
 };
 
 const getTemplateFileProduct = async (productId: string, type: string) => {
   const response: any = await $api(
-    '/reguler/pelaku-usaha/tab-bahan/products/template-product',
+    "/reguler/pelaku-usaha/tab-bahan/products/template-product",
     {
-      method: 'get',
+      method: "get",
     }
   );
 
-  if (response.code === 2000) {
-    fileTemplateProduct.value = response.data.file
-  }
+  if (response.code === 2000) fileTemplateProduct.value = response.data.file;
 };
 
 const deleteIngredient = async (productId: string) => {
   const response: any = await $api(
-    '/reguler/pelaku-usaha/tab-bahan/ingredients/remove',
+    "/reguler/pelaku-usaha/tab-bahan/ingredients/remove",
     {
-      method: 'delete',
+      method: "delete",
       params: { id_reg: id, product_id: productId },
     }
   );
 
   if (response.code === 2000) {
     reRender.value = !reRender.value;
-    await refresh()
-    useSnackbar().sendSnackbar('Sukses menghapus data', 'success');
+    await refresh();
+    useSnackbar().sendSnackbar("Sukses menghapus data", "success");
   } else {
-    useSnackbar().sendSnackbar(response.errors?.list_error?.[0], 'error');
+    useSnackbar().sendSnackbar(response.errors?.list_error?.[0], "error");
   }
 };
 
 const deleteProduct = async (productId: string) => {
   const response: any = await $api(
-    '/reguler/pelaku-usaha/tab-bahan/products/remove',
+    "/reguler/pelaku-usaha/tab-bahan/products/remove",
     {
-      method: 'delete',
+      method: "delete",
       params: { id_reg: id, product_id: productId },
     }
   );
 
   if (response.code === 2000) {
     reRender.value = !reRender.value;
-    useSnackbar().sendSnackbar('Sukses menghapus data', 'success');
+    useSnackbar().sendSnackbar("Sukses menghapus data", "success");
   } else {
-    useSnackbar().sendSnackbar('Bahan tidak dapat dihapus', 'error');
+    useSnackbar().sendSnackbar("Bahan tidak dapat dihapus", "error");
   }
 };
 
 const handleInputBahan = async (selected, idProduk) => {
   try {
     const response: any = await $api(
-      '/self-declare/business-actor/product/add-ingredient',
+      "/self-declare/business-actor/product/add-ingredient",
       {
-        method: 'post',
+        method: "post",
         body: selected,
         query: {
           id_reg: id,
@@ -982,12 +1057,13 @@ const handleInputBahan = async (selected, idProduk) => {
     );
 
     if (response.code === 2000) {
-      useSnackbar().sendSnackbar('Berhasil menambahkan data', 'success');
+      useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
       await refresh();
     }
+
     return response;
   } catch (error) {
-    useSnackbar().sendSnackbar('Gagal menambahkan data', 'error');
+    useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
     console.log(error);
   } finally {
     store.isAllBahanSelected();
@@ -995,14 +1071,49 @@ const handleInputBahan = async (selected, idProduk) => {
 };
 
 const downloadTemplate = async (file: any) => {
-  await downloadDocument(file, 'FILES')
-}
+  await downloadDocument(file, "FILES");
+};
+
+const handleAddIngredient = async (payload: any, idProduct: string) => {
+  try {
+    const response: any = await $api(
+      "/self-declare/business-actor/product/add-ingredient",
+      {
+        method: "post",
+        body: payload,
+        query: {
+          id_reg: id,
+          product_id: idProduct,
+        },
+      } as any
+    );
+
+    if (response.code === 2000) {
+      useSnackbar().sendSnackbar("Berhasil menambahkan data", "success");
+      await refresh();
+    }
+    getListIngredients();
+
+    return response;
+  } catch (error) {
+    useSnackbar().sendSnackbar("Gagal menambahkan data", "error");
+    console.log(error);
+  } finally {
+    store.isAllBahanSelected();
+  }
+};
+
+const handleChange = () => {
+  isNotAllowedProduct.value = false;
+};
 
 onMounted(async () => {
   loading.value = true;
   tabs.value = 0;
+
+  const response = await loadItemProductClasifications();
+
   await Promise.allSettled([
-    loadItemProductClasifications(),
     getListCatatan(),
     getListFormulir(),
     getListIngredients(),
@@ -1013,12 +1124,13 @@ onMounted(async () => {
 });
 
 watch([titleDialog, tabAddBahan], () => {
-  if (titleDialog.value === 'Tambah Data Bahan' && (tabAddBahan.value === '2' || tabAddBahan.value === 2)) {
-    hideFooterBtn.value = false
-  } else {
-    hideFooterBtn.value = true
-  }
-})
+  if (
+    titleDialog.value === "Tambah Data Bahan" &&
+    (tabAddBahan.value === "2" || tabAddBahan.value === 2)
+  )
+    hideFooterBtn.value = false;
+  else hideFooterBtn.value = true;
+});
 </script>
 
 <template>
@@ -1035,8 +1147,8 @@ watch([titleDialog, tabAddBahan], () => {
       :toggle="() => (visiblePreview = false)"
       :label-save-btn="`Unggah (${
         titleDialog === 'Preview Bahan'
-        ? `${listPreview.filter((a: any) => a.Passed).length} Bahan`
-        : `${listPreview.filter((a: any) => a.Passed).length} Produk`
+          ? `${listPreview.filter((a: any) => a.Passed).length} Bahan`
+          : `${listPreview.filter((a: any) => a.Passed).length} Produk`
       })`"
       :label-back-btn="
         t('pengajuan-reguler.reguler_form-bahan-produk-popupbahan-cancel')
@@ -1047,14 +1159,14 @@ watch([titleDialog, tabAddBahan], () => {
       <template #content>
         <div v-if="titleDialog === 'Preview Produk'">
           <PreviewBahanTable
-            :previewHeader="previewProductHeader"
-            :listPreview="listPreview"
+            :preview-header="previewProductHeader"
+            :list-preview="listPreview"
           />
         </div>
         <div v-else>
           <PreviewBahanTable
-            :previewHeader="previewHeader"
-            :listPreview="listPreview"
+            :preview-header="previewHeader"
+            :list-preview="listPreview"
           />
         </div>
       </template>
@@ -1105,7 +1217,7 @@ watch([titleDialog, tabAddBahan], () => {
                 variant="flat"
                 height="40px"
               >
-                <span> Tambah Manual </span>
+                <span> Ubah Manual </span>
               </VTab>
             </VTabs>
           </div>
@@ -1125,8 +1237,9 @@ watch([titleDialog, tabAddBahan], () => {
                     </VBtn>
                   </VCol>
                 </VRow>
-                <VRow no-gutters>
-                  <VCol cols="6" class="d-flex align-center">
+                <br />
+                <VRow class="mb-3" align="center">
+                  <VCol cols="6">
                     <span> Unggah Bahan </span>
                   </VCol>
                   <VCol cols="6">
@@ -1136,7 +1249,6 @@ watch([titleDialog, tabAddBahan], () => {
                       density="compact"
                       placeholder="No file choosen"
                       rounded="xl"
-                      max-width="400"
                     >
                       <template #append-inner>
                         <VIcon
@@ -1150,11 +1262,10 @@ watch([titleDialog, tabAddBahan], () => {
                     <VFileInput
                       v-else
                       :model-value="uploadedFileBahan.file"
-                      class="custom-file-input mt-5"
+                      class="custom-file-input"
                       density="compact"
                       rounded="xl"
                       label="No file choosen"
-                      max-width="400"
                       prepend-icon=""
                       @change="handleUploadFileBahan"
                     >
@@ -1163,20 +1274,36 @@ watch([titleDialog, tabAddBahan], () => {
                       </template>
                     </VFileInput>
                   </VCol>
+                  <VCol cols="12">
+                    <VAlert
+                      type="info"
+                      color="primary"
+                      variant="tonal"
+                      density="compact"
+                      prominent
+                    >
+                      <template #prepend>
+                        <VIcon size="24px" icon="ri-information-2-fill" />
+                      </template>
+                      <template #text>
+                        File bahan harus berformat XLS atau XLSX
+                      </template>
+                    </VAlert>
+                  </VCol>
                 </VRow>
               </div>
               <div v-else class="mt-10">
                 <TambahBahanForm
-                  @loadList="
+                  @load-list="
                     async () => {
                       addDialog = false;
                       reRender = !reRender;
-                      getListIngredients()
-                      getListFormulir()
-                      getListCatatan()
+                      getListIngredients();
+                      getListFormulir();
+                      getListCatatan();
                     }
                   "
-                ></TambahBahanForm>
+                />
               </div>
             </VTabItem>
           </VTabsItems>
@@ -1212,7 +1339,7 @@ watch([titleDialog, tabAddBahan], () => {
                 variant="flat"
                 height="40px"
               >
-                <span> Tambah Manual </span>
+                <span> Ubah Manual </span>
               </VTab>
             </VTabs>
           </div>
@@ -1232,8 +1359,9 @@ watch([titleDialog, tabAddBahan], () => {
                     </VBtn>
                   </VCol>
                 </VRow>
-                <VRow no-gutters>
-                  <VCol cols="6" class="d-flex align-center">
+                <br />
+                <VRow class="mb-3" align="center">
+                  <VCol cols="6">
                     <span> Unggah Produk </span>
                   </VCol>
                   <VCol cols="6">
@@ -1243,7 +1371,6 @@ watch([titleDialog, tabAddBahan], () => {
                       density="compact"
                       placeholder="No file choosen"
                       rounded="xl"
-                      max-width="400"
                     >
                       <template #append-inner>
                         <VIcon
@@ -1257,11 +1384,10 @@ watch([titleDialog, tabAddBahan], () => {
                     <VFileInput
                       v-else
                       :model-value="uploadedFileProduct.file"
-                      class="custom-file-input mt-5"
+                      class="custom-file-input"
                       density="compact"
                       rounded="xl"
                       label="No file choosen"
-                      max-width="400"
                       prepend-icon=""
                       @change="handleUploadFileProduct"
                     >
@@ -1269,6 +1395,22 @@ watch([titleDialog, tabAddBahan], () => {
                         <VBtn rounded="e-xl" text="Choose" />
                       </template>
                     </VFileInput>
+                  </VCol>
+                  <VCol cols="12">
+                    <VAlert
+                      type="info"
+                      color="primary"
+                      variant="tonal"
+                      density="compact"
+                      prominent
+                    >
+                      <template #prepend>
+                        <VIcon size="24px" icon="ri-information-2-fill" />
+                      </template>
+                      <template #text>
+                        File produk harus berformat XLS atau XLSX
+                      </template>
+                    </VAlert>
                   </VCol>
                 </VRow>
               </div>
@@ -1304,9 +1446,18 @@ watch([titleDialog, tabAddBahan], () => {
                     class="-mt-10"
                     density="compact"
                     placeholder="Isi Nama Produk"
+                    @update:model-value="handleChange"
                   />
-                  <div class="d-flex justify-space-between mt-5">
-                    <label> Upload Foto </label>
+                  <div v-if="isNotAllowedProduct">
+                    <label style="color: red; font-size: 12px"
+                      >Nama Produk mengandung nama dilarang</label
+                    >
+                  </div>
+                  <br />
+                  <VRow class="mb-5" align="center">
+                    <VCol cols="6">
+                      <label> Upload Foto </label>
+                    </VCol>
                     <VCol cols="6">
                       <VTextField
                         v-if="uploadedFile.file"
@@ -1314,7 +1465,6 @@ watch([titleDialog, tabAddBahan], () => {
                         density="compact"
                         placeholder="No file choosen"
                         rounded="xl"
-                        max-width="400"
                       >
                         <template #append-inner>
                           <VIcon
@@ -1332,8 +1482,8 @@ watch([titleDialog, tabAddBahan], () => {
                         density="compact"
                         rounded="xl"
                         label="No file choosen"
-                        max-width="400"
                         prepend-icon=""
+                        accept="image/png, image/jpeg"
                         @change="handleUploadFile"
                       >
                         <template #append-inner>
@@ -1341,7 +1491,24 @@ watch([titleDialog, tabAddBahan], () => {
                         </template>
                       </VFileInput>
                     </VCol>
-                  </div>
+                    <VCol cols="12">
+                      <VAlert
+                        type="info"
+                        color="primary"
+                        variant="tonal"
+                        density="compact"
+                        prominent
+                      >
+                        <template #prepend>
+                          <VIcon size="24px" icon="ri-information-2-fill" />
+                        </template>
+                        <template #text>
+                          File foto produk harus dalam bentuk gambar berformat
+                          (jpeg/jpg/png)
+                        </template>
+                      </VAlert>
+                    </VCol>
+                  </VRow>
                 </div>
               </div>
             </VTabItem>
@@ -1381,8 +1548,10 @@ watch([titleDialog, tabAddBahan], () => {
               density="compact"
               placeholder="Isi Nama Produk"
             />
-            <div class="d-flex justify-space-between mt-5">
-              <label> Upload Foto </label>
+            <VRow class="mt-5 mb-3" align="center">
+              <VCol cols="6">
+                <label> Upload Foto </label>
+              </VCol>
               <VCol cols="6">
                 <VTextField
                   v-if="uploadedFile.file"
@@ -1390,7 +1559,6 @@ watch([titleDialog, tabAddBahan], () => {
                   density="compact"
                   placeholder="No file choosen"
                   rounded="xl"
-                  max-width="400"
                 >
                   <template #append-inner>
                     <VIcon
@@ -1408,8 +1576,8 @@ watch([titleDialog, tabAddBahan], () => {
                   density="compact"
                   rounded="xl"
                   label="No file choosen"
-                  max-width="400"
                   prepend-icon=""
+                  accept="image/png, image/jpeg"
                   @change="handleUploadFile"
                 >
                   <template #append-inner>
@@ -1417,7 +1585,24 @@ watch([titleDialog, tabAddBahan], () => {
                   </template>
                 </VFileInput>
               </VCol>
-            </div>
+              <VCol cols="12">
+                <VAlert
+                  type="info"
+                  color="primary"
+                  variant="tonal"
+                  density="compact"
+                  prominent
+                >
+                  <template #prepend>
+                    <VIcon size="24px" icon="ri-information-2-fill" />
+                  </template>
+                  <template #text>
+                    File foto produk harus dalam bentuk gambar berformat
+                    (jpeg/jpg/png)
+                  </template>
+                </VAlert>
+              </VCol>
+            </VRow>
           </div>
         </div>
         <div v-else-if="titleDialog === 'Detail Nama Produk'">
@@ -1454,8 +1639,10 @@ watch([titleDialog, tabAddBahan], () => {
               density="compact"
               placeholder="Isi Nama Produk"
             />
-            <div class="d-flex justify-space-between mt-5">
-              <label> Upload Foto </label>
+            <VRow class="mt-5 mb-3" align="center">
+              <VCol cols="6">
+                <label> Upload Foto </label>
+              </VCol>
               <VCol cols="6">
                 <VTextField
                   v-if="uploadedFile.file"
@@ -1463,7 +1650,6 @@ watch([titleDialog, tabAddBahan], () => {
                   density="compact"
                   placeholder="No file choosen"
                   rounded="xl"
-                  max-width="400"
                 />
                 <VFileInput
                   v-else
@@ -1472,8 +1658,8 @@ watch([titleDialog, tabAddBahan], () => {
                   density="compact"
                   rounded="xl"
                   label="No file choosen"
-                  max-width="400"
                   prepend-icon=""
+                  accept="image/png, image/jpeg"
                   @change="handleUploadFile"
                 >
                   <template #append-inner>
@@ -1481,7 +1667,24 @@ watch([titleDialog, tabAddBahan], () => {
                   </template>
                 </VFileInput>
               </VCol>
-            </div>
+              <VCol cols="12">
+                <VAlert
+                  type="info"
+                  color="primary"
+                  variant="tonal"
+                  density="compact"
+                  prominent
+                >
+                  <template #prepend>
+                    <VIcon size="24px" icon="ri-information-2-fill" />
+                  </template>
+                  <template #text>
+                    File foto produk harus dalam bentuk gambar berformat
+                    (jpeg/jpg/png)
+                  </template>
+                </VAlert>
+              </VCol>
+            </VRow>
           </div>
         </div>
         <div v-else-if="titleDialog === 'Ubah Catatan'">
@@ -1503,27 +1706,29 @@ watch([titleDialog, tabAddBahan], () => {
         </div>
         <div v-else-if="titleDialog === 'Tambah Pembelian Bahan'">
           <div class="d-flex justify-center align-center">
-            <VTabs
+            <!--
+              <VTabs
               v-model="tabBahan"
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px"
+              style="border-radius: 40px;"
               height="auto"
-            >
-              <VTab
-                value="1"
-                base-color="#f0dcf5"
-                active-color="primary"
-                style="border-radius: 40px"
-                hide-slider
-                color="primary"
-                variant="flat"
-                height="40px"
               >
-                <span>Unggah File </span>
+              <VTab
+              value="1"
+              base-color="#f0dcf5"
+              active-color="primary"
+              style="border-radius: 40px;"
+              hide-slider
+              color="primary"
+              variant="flat"
+              height="40px"
+              >
+              <span>Unggah File </span>
               </VTab>
-            </VTabs>
+              </VTabs>
+            -->
           </div>
           <VTabsWindow v-model="tabBahan">
             <VTabsWindowItem value="1">
@@ -1536,8 +1741,10 @@ watch([titleDialog, tabAddBahan], () => {
                   placeholder="Isi Nama"
                 />
               </div>
-              <div class="d-flex justify-space-between mt-5">
-                <label style="align-self: center"> Unggah Bahan </label>
+              <VRow class="mt-5 mb-3" align="center">
+                <VCol cols="6">
+                  <label style="align-self: center"> Bukti Pembelian </label>
+                </VCol>
                 <VCol cols="6">
                   <VTextField
                     v-if="uploadedFileBahan.file"
@@ -1545,7 +1752,6 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     placeholder="No file choosen"
                     rounded="xl"
-                    max-width="400"
                   >
                     <template #append-inner>
                       <VIcon
@@ -1563,8 +1769,8 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     rounded="xl"
                     label="No file choosen"
-                    max-width="400"
                     prepend-icon=""
+                    accept="image/png, image/jpeg"
                     @change="handleUploadFile"
                   >
                     <template #append-inner>
@@ -1572,7 +1778,24 @@ watch([titleDialog, tabAddBahan], () => {
                     </template>
                   </VFileInput>
                 </VCol>
-              </div>
+                <VCol cols="12">
+                  <VAlert
+                    type="info"
+                    color="primary"
+                    variant="tonal"
+                    density="compact"
+                    prominent
+                  >
+                    <template #prepend>
+                      <VIcon size="24px" icon="ri-information-2-fill" />
+                    </template>
+                    <template #text>
+                      File bahan harus dalam bentuk gambar berformat
+                      (jpeg/jpg/png)
+                    </template>
+                  </VAlert>
+                </VCol>
+              </VRow>
             </VTabsWindowItem>
             <VTabsWindowItem value="2">
               <div class="mt-5">
@@ -1600,7 +1823,7 @@ watch([titleDialog, tabAddBahan], () => {
                   v-model="formDataCatatan.tgl_pembelian"
                   teleport-center
                   :enable-time-picker="false"
-                  format="dd-MM-yyyy"
+                  format="dd/MM/yyyy"
                 />
               </div>
             </VTabsWindowItem>
@@ -1608,27 +1831,29 @@ watch([titleDialog, tabAddBahan], () => {
         </div>
         <div v-else-if="titleDialog === 'Tambah Formulir Pemeriksaan Bahan'">
           <div class="d-flex justify-center align-center">
-            <VTabs
+            <!--
+              <VTabs
               v-model="tabBahan"
               align-tabs="center"
               bg-color="#f0dcf5"
               class="border pa-2"
-              style="border-radius: 40px"
+              style="border-radius: 40px;"
               height="auto"
-            >
-              <VTab
-                value="1"
-                base-color="#f0dcf5"
-                active-color="primary"
-                style="border-radius: 40px"
-                hide-slider
-                color="primary"
-                variant="flat"
-                height="40px"
               >
-                <span>Unggah File </span>
+              <VTab
+              value="1"
+              base-color="#f0dcf5"
+              active-color="primary"
+              style="border-radius: 40px;"
+              hide-slider
+              color="primary"
+              variant="flat"
+              height="40px"
+              >
+              <span>Unggah File </span>
               </VTab>
-            </VTabs>
+              </VTabs>
+            -->
           </div>
           <VTabsWindow v-model="tabBahan">
             <VTabsWindowItem value="1">
@@ -1641,8 +1866,10 @@ watch([titleDialog, tabAddBahan], () => {
                   placeholder="Isi Nama"
                 />
               </div>
-              <div class="d-flex justify-space-between mt-5">
-                <label style="align-self: center"> Unggah Bahan </label>
+              <VRow class="mt-5 mb-3" align="center">
+                <VCol cols="6">
+                  <label> Pemeriksaan Bahan </label>
+                </VCol>
                 <VCol cols="6">
                   <VTextField
                     v-if="uploadedFileBahan.file"
@@ -1650,7 +1877,6 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     placeholder="No file choosen"
                     rounded="xl"
-                    max-width="400"
                   >
                     <template #append-inner>
                       <VIcon
@@ -1668,8 +1894,8 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     rounded="xl"
                     label="No file choosen"
-                    max-width="400"
                     prepend-icon=""
+                    accept="image/png, image/jpeg"
                     @change="handleUploadFile"
                   >
                     <template #append-inner>
@@ -1677,7 +1903,24 @@ watch([titleDialog, tabAddBahan], () => {
                     </template>
                   </VFileInput>
                 </VCol>
-              </div>
+                <VCol cols="12">
+                  <VAlert
+                    type="info"
+                    color="primary"
+                    variant="tonal"
+                    density="compact"
+                    prominent
+                  >
+                    <template #prepend>
+                      <VIcon size="24px" icon="ri-information-2-fill" />
+                    </template>
+                    <template #text>
+                      File bahan harus dalam bentuk gambar berformat
+                      (jpeg/jpg/png)
+                    </template>
+                  </VAlert>
+                </VCol>
+              </VRow>
             </VTabsWindowItem>
             <VTabsWindowItem value="2">
               <div class="mt-5">
@@ -1705,7 +1948,7 @@ watch([titleDialog, tabAddBahan], () => {
                   v-model="formDataCatatan.tgl_pembelian"
                   teleport-center
                   :enable-time-picker="false"
-                  format="dd-MM-yyyy"
+                  format="dd/MM/yyyy"
                 />
               </div>
             </VTabsWindowItem>
@@ -1743,7 +1986,7 @@ watch([titleDialog, tabAddBahan], () => {
                 variant="flat"
                 height="40px"
               >
-                <span> Tambah Manual </span>
+                <span> Ubah Manual </span>
               </VTab>
             </VTabs>
           </div>
@@ -1758,8 +2001,10 @@ watch([titleDialog, tabAddBahan], () => {
                   placeholder="Isi Nama"
                 />
               </div>
-              <div class="d-flex justify-space-between mt-5">
-                <label style="align-self: center"> Unggah Bahan </label>
+              <VRow class="mt-5 mb-3" align="center">
+                <VCol cols="6">
+                  <label> Unggah Bahan </label>
+                </VCol>
                 <VCol cols="6">
                   <VTextField
                     v-if="uploadedFileBahan.file"
@@ -1767,7 +2012,6 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     placeholder="No file choosen"
                     rounded="xl"
-                    max-width="400"
                   >
                     <template #append-inner>
                       <VIcon
@@ -1785,8 +2029,8 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     rounded="xl"
                     label="No file choosen"
-                    max-width="400"
                     prepend-icon=""
+                    accept="image/png, image/jpeg"
                     @change="handleUploadFile"
                   >
                     <template #append-inner>
@@ -1794,7 +2038,24 @@ watch([titleDialog, tabAddBahan], () => {
                     </template>
                   </VFileInput>
                 </VCol>
-              </div>
+                <VCol cols="12">
+                  <VAlert
+                    type="info"
+                    color="primary"
+                    variant="tonal"
+                    density="compact"
+                    prominent
+                  >
+                    <template #prepend>
+                      <VIcon size="24px" icon="ri-information-2-fill" />
+                    </template>
+                    <template #text>
+                      File bahan harus dalam bentuk gambar berformat
+                      (jpeg/jpg/png)
+                    </template>
+                  </VAlert>
+                </VCol>
+              </VRow>
             </VTabsWindowItem>
             <VTabsWindowItem value="2">
               <div class="mt-5">
@@ -1823,7 +2084,7 @@ watch([titleDialog, tabAddBahan], () => {
                   v-model="itemDetail.tgl_pembelian"
                   teleport-center
                   :enable-time-picker="false"
-                  format="dd-MM-yyyy"
+                  format="dd/MM/yyyy"
                 />
               </div>
             </VTabsWindowItem>
@@ -1861,7 +2122,7 @@ watch([titleDialog, tabAddBahan], () => {
                 variant="flat"
                 height="40px"
               >
-                <span> Tambah Manual </span>
+                <span> Ubah Manual </span>
               </VTab>
             </VTabs>
           </div>
@@ -1876,8 +2137,10 @@ watch([titleDialog, tabAddBahan], () => {
                   placeholder="Isi Nama"
                 />
               </div>
-              <div class="d-flex justify-space-between mt-5">
-                <label style="align-self: center"> Unggah Bahan </label>
+              <VRow class="mt-5 mb-3" align="center">
+                <VCol cols="6">
+                  <label> Unggah Bahan </label>
+                </VCol>
                 <VCol cols="6">
                   <VTextField
                     v-if="uploadedFileBahan.file"
@@ -1885,7 +2148,6 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     placeholder="No file choosen"
                     rounded="xl"
-                    max-width="400"
                   >
                     <template #append-inner>
                       <VIcon
@@ -1903,8 +2165,8 @@ watch([titleDialog, tabAddBahan], () => {
                     density="compact"
                     rounded="xl"
                     label="No file choosen"
-                    max-width="400"
                     prepend-icon=""
+                    accept="image/png, image/jpeg"
                     @change="handleUploadFile"
                   >
                     <template #append-inner>
@@ -1912,7 +2174,24 @@ watch([titleDialog, tabAddBahan], () => {
                     </template>
                   </VFileInput>
                 </VCol>
-              </div>
+                <VCol cols="12">
+                  <VAlert
+                    type="info"
+                    color="primary"
+                    variant="tonal"
+                    density="compact"
+                    prominent
+                  >
+                    <template #prepend>
+                      <VIcon size="24px" icon="ri-information-2-fill" />
+                    </template>
+                    <template #text>
+                      File bahan harus dalam bentuk gambar berformat
+                      (jpeg/jpg/png)
+                    </template>
+                  </VAlert>
+                </VCol>
+              </VRow>
             </VTabsWindowItem>
             <VTabsWindowItem value="2">
               <div class="mt-5">
@@ -1941,7 +2220,7 @@ watch([titleDialog, tabAddBahan], () => {
                   v-model="itemDetail.tgl_pembelian"
                   teleport-center
                   :enable-time-picker="false"
-                  format="dd-MM-yyyy"
+                  format="dd/MM/yyyy"
                 />
               </div>
             </VTabsWindowItem>
@@ -1961,7 +2240,21 @@ watch([titleDialog, tabAddBahan], () => {
       :title="t('pengajuan-reguler.reguler-form--bahan-title')"
       with-add-button
       :isviewonly="isviewonly"
-    />
+      :hide-default-footer="false"
+      :items-per-page="10"
+    >
+      <template #headerDialog>
+        <div class="bgContent">
+          <div class="d-flex flex-wrap mt-5">
+            <VIcon icon="ri-error-warning-line" color="#652672" />
+            <label class="subText"
+              >Jenis Bahan harus terdiri dari : Cleaning Agent, Kemasan dan
+              Bahan, sebelum dapat mengisi Produk.</label
+            >
+          </div>
+        </div>
+      </template>
+    </TableData>
     <br />
     <TableData
       :on-submit="() => (confirmSaveDialog = true)"
@@ -1975,14 +2268,17 @@ watch([titleDialog, tabAddBahan], () => {
       title="Daftar Nama Produk"
       with-add-button
       :isviewonly="isviewonly"
+      :input-bahan="handleAddIngredient"
+      :hide-default-footer="false"
+      :items-per-page="10"
     >
       <template #headerDialog>
         <div class="bgContent">
           <div class="d-flex flex-wrap mt-5">
             <VIcon icon="ri-error-warning-line" color="#652672" />
             <label class="subText"
-              >Setelah mengisi nama produk jangan lupa untuk menetapkan
-              bahan-bahan yang digunakan pada kolom pengisian bahan.</label
+              >Jenis Bahan harus terdiri dari : Cleaning Agent, Kemasan dan
+              Bahan, sebelum dapat mengisi Produk.</label
             >
           </div>
         </div>
@@ -1997,6 +2293,8 @@ watch([titleDialog, tabAddBahan], () => {
       title="Catatan Pembelian Bahan"
       :isviewonly="isviewonly"
       with-add-button
+      :hide-default-footer="false"
+      :items-per-page="10"
     />
     <br />
     <TableData
@@ -2006,6 +2304,8 @@ watch([titleDialog, tabAddBahan], () => {
       :data="materialCheck"
       title="Formulir Pemeriksaan Bahan"
       with-add-button
+      :hide-default-footer="false"
+      :items-per-page="10"
     />
   </div>
 </template>

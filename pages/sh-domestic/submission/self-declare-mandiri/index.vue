@@ -4,17 +4,40 @@ import { ref } from "vue";
 const searchQuery = ref("");
 const loadingAll = ref(true);
 
+const { t } = useI18n();
+
 const headers: any = [
   { title: "No", key: "no", nowrap: true },
   { title: "ID Reg", key: "id_reg", nowrap: true },
-  { title: "No. Daftar", key: "no_daftar", nowrap: true },
-  { title: "Tanggal", key: "tgl_daftar", nowrap: true },
-  { title: "Nama PU", key: "nama_pu", nowrap: true },
-  { title: "Jenis Produk", key: "jenis_produk", nowrap: true },
-  { title: "Status", key: "status", nowrap: true },
+  {
+    title: "status-permohoanan.reguler-detail-reg-nodaftar",
+    key: "no_daftar",
+    nowrap: true,
+  },
+  {
+    title: "status-permohoanan.permohonan-list-tanggal",
+    key: "tgl_daftar",
+    nowrap: true,
+  },
+  {
+    title: "status-permohoanan.permohonan-list-namapu",
+    key: "nama_pu",
+    nowrap: true,
+  },
+  {
+    title: "status-permohoanan.permohonan-list-jnsprod",
+    key: "jenis_produk",
+    nowrap: true,
+  },
+  {
+    title: "status-permohoanan.permohonan-list-status",
+    key: "status",
+    nowrap: true,
+  },
+
   // { title: "Merk Dagang", key: "merk_dagang", nowrap: true },
   {
-    title: "Action",
+    title: "status-permohoanan.permohonan-list-action",
     value: "action",
     sortable: false,
     nowrap: true,
@@ -26,24 +49,26 @@ const submission = ref([]);
 const currentPage = ref(1);
 const itemPerPage = ref(10);
 const totalItems = ref(0);
+const countResult = ref(0);
 
 const questions = [
-  "Saya tidak pernah mendapatkan fasilitas sertifikasi halal sebelumnya ",
-  "Aktivitas produksi yang dilakukan merupakan usaha rumahan (bukan usaha pabrikan)",
-  "Proses produksi menggunakan bahan-bahan halal. (contoh bahan halal: 1. Bahan bersertifikat halal 2. Bahan berasal dari alam (tanpa melihat sertifikat): buah segar, sayur segar, telur segar, ikan segar, rempah, dll)",
-  "Jika ada proses produksi produk lain yang menggunakan bahan non-halal, dilakukan pada tempat terpisah dan menggunakan alat yang berbeda.",
-  "Proses produksi tidak menggunakan bahan berbahaya (contoh bahan berbahaya tertuang dalam Peraturan BPOM Nomor 7 Tahun 2018)",
-  "Proses pengawetan produk sederhana dan tidak menggunakan kombinasi lebih dari 1 metode pengawetan ",
-  "Proses produksi menggunakan peralatan manual/ semi otomatis",
+  "self-declare.questionnaire.1",
+  "self-declare.questionnaire.2",
+  "self-declare.questionnaire.3",
+  "self-declare.questionnaire.4",
+  "self-declare.questionnaire.5",
+  "self-declare.questionnaire.6",
+  "self-declare.questionnaire.7",
 ];
+
 const questionResponse = [
-  "Anda sudah pernah mendapatkan fasilitas self declare",
-  "Aktivitas produksi yang dilakukan bukan merupakan usaha rumahan",
-  "Tidak semua proses produksi menggunakan bahan-bahan halal",
-  "Proses produksi produk lain yang menggunakan bahan non-halal tidak dilakukan pada tempat terpisah dan tidak menggunakan alat yang berbeda.",
-  "Proses produksi menggunakan bahan berbahaya",
-  "Proses pengawetan produk tidak sederhana atau menggunakan kombinasi lebih dari 1 metode pengawetan",
-  "Proses produksi tidak menggunakan peralatan manual/semi otomatis",
+  "self-declare.questionnaire-response.1",
+  "self-declare.questionnaire-response.2",
+  "self-declare.questionnaire-response.3",
+  "self-declare.questionnaire-response.4",
+  "self-declare.questionnaire-response.5",
+  "self-declare.questionnaire-response.6",
+  "self-declare.questionnaire-response.7",
 ];
 
 const questionareDialogVisible = ref(false);
@@ -55,6 +80,7 @@ const openModalsQuestionare = () => {
 };
 
 const isUnfulfilled = ref<Array<string>>([]);
+
 const handleSubmitQuestionare = (answers: Array<string>) => {
   let unfulfilledCount = 0;
   answers.map((item, idx) => {
@@ -67,11 +93,8 @@ const handleSubmitQuestionare = (answers: Array<string>) => {
     }
   });
 
-  if (unfulfilledCount > 0) {
-    infoDialogVisible.value = true;
-  } else {
-    requestDialogVisible.value = true;
-  }
+  if (unfulfilledCount > 0) infoDialogVisible.value = true;
+  else requestDialogVisible.value = true;
 };
 
 const router = useRouter();
@@ -96,14 +119,22 @@ const handleCreate = async (answer: string) => {
       router.push(
         `/sh-domestic/submission/self-declare-mandiri/${result.data.id_reg}`
       );
+    } else {
+      useSnackbar().sendSnackbar(result?.errors?.list_error?.[0], "error");
     }
-  } catch (error) {}
+  } catch (error) {
+    useSnackbar().sendSnackbar(
+      "KBLI tidak bisa digunakan untuk pengajuan Self Declare",
+      "error"
+    );
+  }
 };
 
 const alertData = ref({
   isValid: true,
   text: "",
 });
+
 const loadValidation = async () => {
   const response: any = await $api("/self-declare/submission/validation", {
     method: "get",
@@ -112,6 +143,7 @@ const loadValidation = async () => {
   if (response.code === 2000) {
     alertData.value.isValid = response.data.is_allow_submission;
     alertData.value.text = response.data.keterangan;
+
     return response;
   }
 };
@@ -133,6 +165,21 @@ const handleLoadList = async () => {
       submission.value = response.data;
       currentPage.value = response.current_page;
       totalItems.value = response.total_item;
+
+      return response;
+    }
+  } catch (error) {}
+};
+
+const checkCountFactory = async () => {
+  try {
+    const response: any = await $api("/self-declare/mandiri/check-count", {
+      method: "get",
+    });
+
+    if (response.code === 2000) {
+      countResult.value = response.data.count;
+
       return response;
     }
   } catch (error) {}
@@ -154,32 +201,31 @@ const handleSearchSubmission = useDebounceFn((val: string) => {
 }, 350);
 
 onMounted(async () => {
-  const res = await Promise.all([handleLoadList()]);
+  const res = await Promise.all([handleLoadList(), checkCountFactory()]);
 
   const checkResIfUndefined = res.every((item) => {
     return item !== undefined;
   });
 
-  if (checkResIfUndefined) {
-    loadingAll.value = false;
-  } else {
-    loadingAll.value = false;
-  }
+  if (checkResIfUndefined) loadingAll.value = false;
+  else loadingAll.value = false;
 });
 </script>
 
 <template>
   <div>
-    <di>
-      <h1 style="font-size: 32px">Pengajuan Self Declare Mandiri</h1>
+    <Di>
+      <h1 style="font-size: 32px">
+        {{ t("self-declare-mandiri.title") }}
+      </h1>
       <br />
-    </di>
+    </Di>
 
     <VCard v-if="!loadingAll" rounded class="bg-surface pa-4">
       <VRow>
         <VCol class="d-flex justify-sm-space-between align-center">
           <div class="text-h4 font-weight-bold">
-            Data Pengajuan Self Declare Mandiri
+            {{ t("self-declare-mandiri.table-title") }}
           </div>
         </VCol>
         <VCol class="d-flex justify-end align-center">
@@ -187,12 +233,13 @@ onMounted(async () => {
             v-if="alertData.isValid"
             color="primary"
             append-icon="fa-plus"
+            :disabled="countResult > 1"
             @click="openModalsQuestionare"
           >
-            Buat Pengajuan
+            {{ t("self-declare-mandiri.create") }}
           </VBtn>
           <VBtn v-else color="#A09BA1" append-icon="fa-plus">
-            Buat Pengajuan
+            {{ t("self-declare-mandiri.create") }}
           </VBtn>
         </VCol>
       </VRow>
@@ -215,30 +262,39 @@ onMounted(async () => {
           </VAlert>
         </VCol>
       </VRow>
+      <div v-if="countResult > 1" class="bgContent mb-5">
+        <div class="d-flex flex-wrap mt-5">
+          <VIcon icon="ri-error-warning-line" color="#FF4D49" />
+          <label class="subText">
+            Jumlah Pabrik melebihi batas ketetapan.
+          </label>
+        </div>
+      </div>
       <VRow>
         <VCol cols="7" class="d-flex justify-sm-space-between align-center">
           <VTextField
             v-model="searchQuery"
-            @update:model-value="handleSearchSubmission"
             density="compact"
-            placeholder="Cari Data"
+            :placeholder="t('self-declare-mandiri.search')"
             append-inner-icon="fa-search"
-            style="max-width: 100%"
+            style="max-inline-size: 100%"
+            @update:model-value="handleSearchSubmission"
           />
         </VCol>
       </VRow>
       <VRow>
         <VCol>
           <VDataTableServer
+            disable-sort
+            v-model:page="currentPage"
+            v-model:items-per-page="itemPerPage"
             class="elevation-1 custom-table"
             :headers="headers"
             :items="submission"
             :items-length="totalItems"
-            v-model:page="currentPage"
-            v-model:items-per-page="itemPerPage"
             :items-per-page-options="[5, 25, 50, 100]"
-            @update:options="handleLoadList"
             :hide-default-footer="!submission.length"
+            @update:options="handleLoadList"
           >
             <template #item.no="{ index }">
               {{ index + 1 + (currentPage - 1) * itemPerPage }}
@@ -246,19 +302,32 @@ onMounted(async () => {
             <template #item.no_daftar="{ item }: any">
               {{ item.no_daftar ? item.no_daftar : "-" }}
             </template>
+            <template #header.no_daftar="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
+            </template>
             <template #item.tgl_daftar="{ item }: any">
-              {{
-                item.tgl_daftar
-                  ? new Date(item.tgl_daftar).toISOString().substring(0, 10)
-                  : "-"
-              }}
+              {{ item.tgl_daftar ? formatDateId(item.tgl_daftar) : "-" }}
+            </template>
+            <template #header.tgl_daftar="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
             </template>
             <template #item.jenis_produk="{ item }: any">
               {{ item.jenis_produk ? item.jenis_produk : "-" }}
             </template>
-            <!-- <template #item.merk_dagang="{ item }: any">
+            <template #header.jenis_produk="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
+            </template>
+            <!--
+              <template #item.merk_dagang="{ item }: any">
               {{ item.merk_dagang ? item.merk_dagang : "-" }}
-            </template> -->
+              </template>
+            -->
             <template #item.action="{ item }: any">
               <VIcon
                 color="success"
@@ -271,6 +340,21 @@ onMounted(async () => {
               >
                 ri-arrow-right-line
               </VIcon>
+            </template>
+            <template #header.action="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
+            </template>
+            <template #header.status="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
+            </template>
+            <template #header.nama_pu="{ column }">
+              <div>
+                {{ t(column.title) }}
+              </div>
             </template>
             <template #no-data>
               <VCard variant="outlined" class="my-7 mx-1 py-2">
@@ -288,8 +372,8 @@ onMounted(async () => {
     </VCard>
 
     <VSkeletonLoader
-      type="table-heading, list-item-two-line, image, table-tfoot"
       v-else
+      type="table-heading, list-item-two-line, image, table-tfoot"
     />
 
     <Questionnaire
@@ -300,8 +384,8 @@ onMounted(async () => {
     />
     <InfoDialogue
       :dialog-visible="infoDialogVisible"
-      @update:dialog-visible="infoDialogVisible = $event"
       :data="isUnfulfilled"
+      @update:dialog-visible="infoDialogVisible = $event"
     />
     <RequestDialogueMandiri
       :dialog-visible="requestDialogVisible"
@@ -313,31 +397,50 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 .table-width-5 {
-  width: 5%;
+  inline-size: 5%;
 }
+
 .table-width-10 {
-  width: 10%;
+  inline-size: 10%;
 }
+
 .table-width-15 {
-  width: 15%;
+  inline-size: 15%;
 }
+
 .table-width-20 {
-  width: 20%;
+  inline-size: 20%;
 }
 
 :deep(.v-data-table.custom-table > .v-table__wrapper) {
   table {
     thead > tr > th:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
+
     tbody > tr > td:last-of-type {
-      right: 0;
       position: sticky;
-      border-left: 1px solid rgba(#000000, 0.12);
       background: white;
+      border-inline-start: 1px solid rgba(#000, 0.12);
+      inset-inline-end: 0;
     }
   }
+}
+
+.subText {
+  align-content: center;
+  color: #ff4d49 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 18px !important;
+  padding-inline-start: 10px;
+}
+
+.bgContent {
+  border-radius: 10px;
+  background-color: #ffe2e2;
+  padding-inline-start: 10px;
 }
 </style>

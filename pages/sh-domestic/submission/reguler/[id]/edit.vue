@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Bahan, Evaluasi, Produk } from "#components";
+import { Bahan, Evaluasi } from "#components";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -11,6 +11,8 @@ const loadingAll = ref<boolean>(true);
 
 const activeTab = ref(-1);
 const approveRequirements = ref(false);
+const approveRequirementsProses = ref<boolean>(false)
+const namaPj = ref<string>('')
 const listLegal = ref<any>(null);
 const listFactory = ref<any>(null);
 const listOutlet = ref<any>(null);
@@ -30,6 +32,7 @@ const tabList = ref([
 ]);
 
 const isBahanCompleted = ref(false);
+
 const bahanComplete = (isComplete) => {
   isBahanCompleted.value = isComplete;
 };
@@ -52,12 +55,35 @@ const getListLegal = async () => {
 
     if (response?.code === 2000) {
       listLegal.value = response.data;
+
       return response;
-    } else useSnackbar().sendSnackbar(t("global-error.error-mistake"), "error");
+    } else {
+      useSnackbar().sendSnackbar(t("global-error.error-mistake"), "error");
+    }
   } catch (error) {
     useSnackbar().sendSnackbar(t("global-error.error-mistake"), "error");
   }
 };
+
+const getFlagProcess = async () => {
+  try {
+    const response: any = await $api('/reguler/pelaku-usaha/flag-process', {
+      method: 'get',
+      params: { id },
+    })
+
+    if (response?.code === 2000) {
+      approveRequirementsProses.value = response?.data?.is_proses
+      namaPj.value = response?.data?.nama_pj
+    }
+    else {
+      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+    }
+  }
+  catch (err) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
 
 const getListPenyelia = async () => {
   try {
@@ -70,27 +96,6 @@ const getListPenyelia = async () => {
       listPenyelia.value = response.data;
 
       return response;
-    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
-
-const getChannel = async (path: string) => {
-  try {
-    const params = {
-      url: path,
-    };
-
-    const response: any = await $api("/reguler/lph/list", {
-      method: "get",
-      params,
-    });
-
-    if (response?.code === 2000) {
-      itemsChannel.value = response?.data;
-
-      return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
@@ -99,13 +104,50 @@ const getChannel = async (path: string) => {
   }
 };
 
+const getChannel = async (path: string) => {
+  try {
+    // const params = {
+    //   url: path,
+    // };
+    //
+    // const response: any = await $api("/reguler/lph/list", {
+    //   method: "get",
+    //   params,
+    // });
+
+    // const response = await $api(`/master/jenis-layanan-by-idreg/${id}`, {
+    //   method: "get",
+    // });
+
+    const response = await $api(`/master/jenis-layanan`, {
+      method: "get",
+      query: {
+        query: "empty",
+      },
+    });
+
+    itemsChannel.value = response;
+
+    //
+    // if (response?.code === 2000) {
+    //
+    //   return response;
+    // } else {
+    //   useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    // }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
 const getFactoryAndOutlet = async (type: string) => {
   try {
+    let id_reg = id;
     const response: any = await $api(
       "/reguler/pelaku-usaha/list-factory-outlet",
       {
         method: "get",
-        params: { id, type },
+        params: { id_reg, type },
       }
     );
 
@@ -119,6 +161,7 @@ const getFactoryAndOutlet = async (type: string) => {
         response?.data.map((el: any) => (el.checked = false));
         listOutlet.value = response?.data;
       }
+
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -142,14 +185,28 @@ const getListIngredients = async () => {
 
     if (response.code === 2000) {
       if (response.data !== null) {
-        const jenisBahan = response.data?.map((i) => i.jenis_bahan);
+        const jenisBahan = response.data?.map((i) =>
+          i.jenis_bahan?.toLowerCase()
+        );
 
         if (
           ["Bahan", "Cleaning Agent", "Kemasan"].every((item) =>
-            jenisBahan.includes(item)
+            jenisBahan.includes(item?.toLowerCase())
           )
         ) {
-          bahanComplete(true);
+          let count = 0;
+          jenisBahan.map((element: any) => {
+            if (element === "bahan") {
+              count++;
+            }
+          });
+          if (count < 3) {
+            bahanComplete(false);
+          } else {
+            bahanComplete(true);
+          }
+        } else {
+          bahanComplete(false);
         }
       }
     }
@@ -162,11 +219,12 @@ const getListIngredients = async () => {
 
 onMounted(async () => {
   activeTab.value = 0;
+
   const res: any = await Promise.all([
-    getFactoryAndOutlet("FAPAB"),
-    getFactoryAndOutlet("FAOUT"),
     getListLegal(),
     getListPenyelia(),
+    getFactoryAndOutlet("FAPAB"),
+    getFactoryAndOutlet("FAOUT"),
     getChannel(LIST_CHANNEL_PATH_JNLAY),
     getListIngredients(),
   ]);
@@ -175,12 +233,37 @@ onMounted(async () => {
     return item !== undefined;
   });
 
-  if (checkResIfUndefined) {
-    loadingAll.value = false;
-  } else {
-    loadingAll.value = false;
-  }
+  const sessionData = await useMyAuthUserStore().getSession();
+
+  const userRole = sessionData?.value?.roles?.[0]?.name;
+
+  if (userRole === 'Lembaga Pemeriksa Halal')
+    localStorage.setItem('commitmentAndResponsibility', true)
+  else
+    await getFlagProcess()
+
+  if (checkResIfUndefined) loadingAll.value = false;
+  else loadingAll.value = false;
 });
+
+onUnmounted(() => {
+  localStorage.removeItem('commitmentAndResponsibility');
+});
+
+const dataPengajuanRef = ref();
+
+const dataPengajuanEmitted = ref();
+
+const handleDataPengajuanEmitted = (value: any) => {
+  dataPengajuanEmitted.value = value;
+};
+
+const onclickTab = (tab: any) => {
+  if (tab == 2) {
+    dataPengajuanRef.value.emitRequestCertificateData();
+  }
+};
+const valid = ref(false);
 </script>
 
 <template>
@@ -219,14 +302,22 @@ onMounted(async () => {
       <VRow>
         <VCol cols="12" class="pl0">
           <VTabs v-model="activeTab" align-tabs="start" class="w-100">
-            <VTab
+            <div
               v-for="(item, index) in tabList"
-              :key="item"
-              :value="index"
-              :disabled="index > 2 && !isBahanCompleted"
+              :key="index"
+              class="position-relative d-inline-block"
             >
-              {{ `${t(item)}` }}
-            </VTab>
+              <!-- <VTooltip
+                v-if="index > 2 && !isBahanCompleted"
+                activator="parent"
+              >
+                Mohon lengkapi Bahan, Cleaning Agent, Kemasan agar menu ini
+                dapat di akses
+              </VTooltip> -->
+              <VTab :value="index" @click="onclickTab(index)">
+                {{ t(item) }}
+              </VTab>
+            </div>
           </VTabs>
         </VCol>
       </VRow>
@@ -242,6 +333,8 @@ onMounted(async () => {
               :list_penyelia="listPenyelia"
               :list_channel="itemsChannel"
               :isviewonly="isViewOnly"
+              ref="dataPengajuanRef"
+              @certificate-data-changed="handleDataPengajuanEmitted"
             />
           </div>
           <div v-if="activeTab === 1">
@@ -262,10 +355,11 @@ onMounted(async () => {
             />
           </div>
           <div v-if="activeTab === 3">
-            <div v-if="!approveRequirements">
+            <div v-if="!approveRequirementsProses">
               <ProsesLayanan
                 :id="id"
-                :on-complete="() => (approveRequirements = true)"
+                :on-complete="() => (approveRequirementsProses = true)"
+                :nama-pj="namaPj"
               />
             </div>
             <div v-else>
@@ -273,7 +367,8 @@ onMounted(async () => {
             </div>
           </div>
           <div v-if="activeTab === 4">
-            <Produk :isviewonly="isViewOnly" />
+            <!-- <Produk :isviewonly="isViewOnly" /> -->
+            <ProdukRegulerEdit :isviewonly="isViewOnly" />
           </div>
           <div v-if="activeTab === 5">
             <Evaluasi :isviewonly="isViewOnly" />
@@ -303,5 +398,9 @@ onMounted(async () => {
 .headerSection {
   display: flex;
   justify-content: space-between;
+}
+
+.tab-hover {
+  position: relative;
 }
 </style>

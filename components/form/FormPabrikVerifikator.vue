@@ -5,9 +5,8 @@ const pabrikHeader = [
   { title: "Alamat", key: "alamat_pabrik" },
   { title: "Status", key: "status_milik" },
 ];
-const store = useMyVerifikatorRegulerStore()
-const { pabrik } = storeToRefs(store)
-
+const store = useMyVerifikatorRegulerStore();
+const { pabrik } = storeToRefs(store);
 </script>
 
 <template>
@@ -16,9 +15,14 @@ const { pabrik } = storeToRefs(store)
       <span class="text-h3">Pabrik</span>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="pabrikHeader" :items="pabrik">
-        <template #item.no="{index}">
-          {{index + 1}}
+      <VDataTable
+        disable-sort
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="pabrikHeader"
+        :items="pabrik"
+      >
+        <template #item.no="{ index }">
+          {{ index + 1 }}
         </template>
       </VDataTable>
     </VCardItem>

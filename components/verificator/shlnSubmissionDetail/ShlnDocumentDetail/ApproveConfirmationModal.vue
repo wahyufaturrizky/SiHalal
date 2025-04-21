@@ -126,7 +126,7 @@ const dialogMaxWidth = computed(() => {
           </VCol>
         </VRow> -->
 
-        <p class="mb-2">Are you sure you want to Return this submission?</p>
+        <p class="mb-2">Are you sure you want to Approve this submission?</p>
       </VCardText>
       <VCardActions>
         <VBtn variant="outlined" :disabled="loading" @click="cancel">

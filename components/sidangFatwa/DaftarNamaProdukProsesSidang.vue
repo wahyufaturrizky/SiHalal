@@ -17,7 +17,6 @@ const headers = ref([
   { title: "Kelas Produk", key: "kelas_produk", align: "start" },
   { title: "Nama Produk", key: "nama_produk", align: "start" },
   { title: "Rincian Produk", key: "rincian_prooduk", align: "start" },
-  { title: "Publikasi", key: "publikasi", align: "start" },
 ]);
 
 const itemPerPage = ref(10);
@@ -34,6 +33,8 @@ const page = ref(1);
       <br />
       <VExpansionPanelText>
         <VDataTableServer
+          disable-sort
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
           :headers="headers"

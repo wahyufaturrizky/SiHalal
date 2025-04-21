@@ -1,63 +1,84 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
+import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 
 const tableHeaders: any[] = [
-  { title: 'No', key: 'no', sortable: false },
-  { title: t('task-force.tagihan-bpjph-table-key-tagihan'), key: 'nomor', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-table-key-tanggal'), key: 'tanggal', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-table-key-total'), key: 'total_harga', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-table-key-status'), key: 'status_payment', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-table-key-invoice'), key: 'invoice', nowrap: true },
-  { title: t('task-force.tagihan-bpjph-table-key-bukti-bayar'), key: 'file_bukti_transfer', nowrap: true },
-]
+  { title: "No", key: "no", sortable: false },
+  {
+    title: t("task-force.tagihan-bpjph-table-key-tagihan"),
+    key: "nomor",
+    nowrap: true,
+  },
+  {
+    title: t("task-force.tagihan-bpjph-table-key-tanggal"),
+    key: "tanggal",
+    nowrap: true,
+  },
+  {
+    title: t("task-force.tagihan-bpjph-table-key-total"),
+    key: "total_harga",
+    nowrap: true,
+  },
+  {
+    title: t("task-force.tagihan-bpjph-table-key-status"),
+    key: "status_payment",
+    nowrap: true,
+  },
+  {
+    title: t("task-force.tagihan-bpjph-table-key-invoice"),
+    key: "invoice",
+    nowrap: true,
+  },
+  {
+    title: t("task-force.tagihan-bpjph-table-key-bukti-bayar"),
+    key: "file_bukti_transfer",
+    nowrap: true,
+  },
+];
 
-const tableItems = ref<Array[]>([])
-const currentPage = ref(1)
-const itemPerPage = ref(10)
-const totalItems = ref(0)
-const selectedItem = ref([])
-const isLoading = ref(false)
-const tableType = ref('')
+const tableItems = ref<Array[]>([]);
+const currentPage = ref(1);
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const selectedItem = ref([]);
+const isLoading = ref(false);
+const tableType = ref("");
 
 const handleLoadList = async () => {
   try {
-    isLoading.value = true
-    const response: any = await $api('/bill/bpjph/list', {
-      method: 'get',
+    isLoading.value = true;
+    const response: any = await $api("/bill/bpjph/list", {
+      method: "get",
       query: {
         page: currentPage.value,
         size: itemPerPage.value,
       },
-    } as any)
+    } as any);
 
     if (response.code === 2000) {
       if (response.data !== null) {
-        tableItems.value = response.data
-        currentPage.value = response.current_page
-        totalItems.value = response.total_item
+        tableItems.value = response.data;
+        currentPage.value = response.current_page;
+        totalItems.value = response.total_item;
+      } else {
+        tableItems.value = [];
+        currentPage.value = 1;
+        totalItems.value = 0;
       }
-      else {
-        tableItems.value = []
-        currentPage.value = 1
-        totalItems.value = 0
-      }
-      isLoading.value = false
+      isLoading.value = false;
 
-      return response
+      return response;
+    } else {
+      tableItems.value = [];
+      currentPage.value = 1;
+      totalItems.value = 0;
     }
-    else {
-      tableItems.value = []
-      currentPage.value = 1
-      totalItems.value = 0
-    }
-    isLoading.value = false
+    isLoading.value = false;
+  } catch (error) {
+    isLoading.value = false;
+    console.error(error);
   }
-  catch (error) {
-    isLoading.value = false
-    console.error(error)
-  }
-}
+};
 
 // const refresh = async () => {
 //   await handleLoadList();
@@ -67,37 +88,40 @@ onMounted(async () => {
   // await Promise.allSetled([
   //   handleLoadList(),
   // ])
-})
+});
 
 const getChipColor = (status: string) => {
-  if (status === 'Terbayar')
-    return 'success'
+  if (status === "Terbayar") return "success";
 
-  return 'primary'
-}
+  return "primary";
+};
 
 const unduhFile = async (link: string, type: string) => {
-  await downloadDocument(link, type)
-}
+  await downloadDocument(link, type);
+};
 </script>
 
 <template>
   <VRow>
     <VCol>
       <h2 style="font-size: 32px">
-        {{ t('task-force.tagihan-bpjph-title') }}
+        {{ t("task-force.tagihan-bpjph-title") }}
       </h2>
     </VCol>
   </VRow>
   <VRow>
     <VCol>
       <VCard class="w-100 py-3">
-        <VCardTitle class="d-flex justify-space-between align-center font-weight-bold text-h4">
-          <div>{{ t('task-force.tagihan-bpjph-subtitle') }}</div>
+        <VCardTitle
+          class="d-flex justify-space-between align-center font-weight-bold text-h4"
+        >
+          <div>{{ t("task-force.tagihan-bpjph-subtitle") }}</div>
         </VCardTitle>
         <VCardItem>
           <VCard variant="outlined">
             <VDataTableServer
+              disable-sort
+              :items-per-page-options="[10, 25, 50, 100]"
               v-model:items-per-page="itemPerPage"
               v-model:page="currentPage"
               :items-length="totalItems"
@@ -109,21 +133,13 @@ const unduhFile = async (link: string, type: string) => {
               @update:options="handleLoadList(currentPage, itemPerPage)"
             >
               <template #no-data>
-                <VCard
-                  variant=""
-                  class="w-full mt-7 mb-5"
-                >
-                  <div
-                    class="pt-2"
-                    style="justify-items: center"
-                  >
+                <VCard variant="" class="w-full mt-7 mb-5">
+                  <div class="pt-2" style="justify-items: center">
                     <img
                       src="~/assets/images/empty-data.png"
                       alt="empty_data"
-                    >
-                    <div class="pt-2 pb-2 font-weight-bold">
-                      Data Kosong
-                    </div>
+                    />
+                    <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
                   </div>
                 </VCard>
               </template>
@@ -139,7 +155,17 @@ const unduhFile = async (link: string, type: string) => {
                 {{ formatCurrency(item.total_harga) }}
               </template>
               <template #item.invoice="{ item }">
-                <div style="background-color: #652672; width: 30px; height: 30px; border-radius: 8px; place-content: center; display: flex; align-items: center;">
+                <div
+                  style="
+                    background-color: #652672;
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 8px;
+                    place-content: center;
+                    display: flex;
+                    align-items: center;
+                  "
+                >
                   <VIcon
                     icon="fa-eye"
                     color="white"
@@ -148,7 +174,17 @@ const unduhFile = async (link: string, type: string) => {
                 </div>
               </template>
               <template #item.file_bukti_transfer="{ item }">
-                <div style="background-color: #652672; width: 30px; height: 30px; border-radius: 8px; place-content: center; display: flex; align-items: center;">
+                <div
+                  style="
+                    background-color: #652672;
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 8px;
+                    place-content: center;
+                    display: flex;
+                    align-items: center;
+                  "
+                >
                   <VIcon
                     icon="fa-eye"
                     color="white"

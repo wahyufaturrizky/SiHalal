@@ -18,6 +18,8 @@ const props = defineProps({
 
 const emit = defineEmits(["update:dialogVisible"]);
 
+const { t } = useI18n()
+
 const localDialogVisible = ref(props.dialogVisible);
 const answers = ref(Array(props.questions.length).fill(null));
 const isAllAnswered = computed(() => answers.value.some((el) => el == null));
@@ -57,7 +59,7 @@ const handleSubmit = () => {
               <div class="pe-1">
                 {{ `${index + 1}.` }}
               </div>
-              <div>{{ `${question}` }}</div>
+              <div>{{ `${t(question) ? t(question) : question}` }}</div>
             </div>
             <VRadioGroup v-model="answers[index]" inline class="ps-2">
               <VRadio label="Yes" value="yes" />
@@ -68,7 +70,7 @@ const handleSubmit = () => {
       </VCardText>
       <VCardActions>
         <VBtn @click="closeDialog" variant="outlined" color="error">
-          Batal
+          {{t('common.cancel')}}
         </VBtn>
         <VBtn
           color="primary"
@@ -76,7 +78,7 @@ const handleSubmit = () => {
           variant="flat"
           :disabled="isAllAnswered"
         >
-          Simpan
+        {{t('common.save')}}
         </VBtn>
       </VCardActions>
     </VCard>

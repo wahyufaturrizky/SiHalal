@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
+import { VDataTableServer } from "vuetify/components";
 
 const { t } = useI18n();
 const props = defineProps({
@@ -9,6 +10,11 @@ const props = defineProps({
     required: false,
   },
   onAdd: {
+    type: Function,
+    default: () => {},
+    required: false,
+  },
+  inputBahan: {
     type: Function,
     default: () => {},
     required: false,
@@ -69,10 +75,28 @@ const props = defineProps({
   isviewonly: {
     type: Boolean,
   },
+  isDisabled: {
+    type: Boolean,
+  },
   onInputBahan: {
     type: Function,
     default: () => {},
     required: false,
+  },
+  itemsPerPage: {
+    type: Number,
+    default: -1,
+    required: false,
+  },
+  tableType: {
+    type: String,
+    required: false,
+    default: "base",
+  },
+  serverFunction: {
+    type: Function,
+    required: false,
+    default: () => {},
   },
 });
 
@@ -85,10 +109,16 @@ const productItems = ref<any[]>([]);
 const dialogEdit = ref(false);
 const loading = ref(false);
 const itemDetail = ref<any>({});
+const bahanSelected = ref([]);
+const isDisabledForm = ref(false);
 
 const handleCheck = (item: any) => {
   if (item.checked) item.checked = false;
   else item.checked = true;
+};
+
+const handleInputBahan = (payload, idProduct) => {
+  props.inputBahan(payload, idProduct);
 };
 
 const getListIngredients = async () => {
@@ -127,6 +157,7 @@ const getListProducts = async () => {
     if (response.code === 2000) {
       if (response.data !== []) {
         response.data.map((item: any) => {
+          bahanSelected.value = item.bahan_selected;
           item.qtyBahan =
             item.bahan_selected !== null ? item.bahan_selected.length : 0;
         });
@@ -162,6 +193,22 @@ const handleDownloadV2 = async (filename: string, param: string = "") => {
       method: "post",
       body: {
         filename: filename,
+      },
+    });
+
+    if (response.url)
+      window.open(response.url, "_blank", "noopener,noreferrer");
+  } catch (error) {
+    console.log(error);
+  }
+};
+const handleDownloadV6 = async (filename: string, param: string = "") => {
+  try {
+    const response = await $api("/shln/submission/document/downloadV6", {
+      method: "post",
+      body: {
+        filename: filename,
+        param: 'dirName=FILES'
       },
     });
 
@@ -247,17 +294,39 @@ const detailClicked = (item: any) => {
 };
 
 onMounted(() => {
-  if (props?.title === "Daftar Nama Produk") getListProducts();
+  isDisabledForm.value = props.isDisabled;
+  if (
+    props?.title === "Daftar Nama Produk" ||
+    props?.title === "Daftar Nama Bahan dan Kemasan"
+  )
+    getListProducts();
 });
 
 watch(
   () => [props.reRender, props.refresh],
   async () => {
     loading.value = true;
-    getListProducts()
+    getListProducts();
     loading.value = false;
   }
 );
+const itemPerPageTable = ref(
+  props?.itemsPerPage != undefined ? props.itemsPerPage : 10
+);
+const pageTable = ref(1);
+
+watch(
+  productItems,
+  (newVal) => {
+    loading.value = true;
+    bahanSelected.value = newVal?.[0]?.bahan_selected;
+    loading.value = false;
+  },
+  { deep: true }
+);
+
+const pageServer = ref(1);
+const itemsPerPageServer = ref(10);
 </script>
 
 <template>
@@ -283,7 +352,7 @@ watch(
             ></TambahBahanModal>
           </div>
           <VBtn
-            v-if="withAddButton && !isviewonly"
+            v-if="withAddButton && !isviewonly && !isDisabledForm"
             variant="outlined"
             append-icon="ri-add-line"
             @click="props.onAdd"
@@ -305,8 +374,13 @@ watch(
       <br />
       <VRow>
         <VDataTable
+          disable-sort
+          v-if="props.tableType == 'base'"
           class="border rounded"
-          :items-per-page="-1"
+          :items-per-page="itemPerPageTable"
+          :page="pageTable"
+          @update:page="(page) => (pageTable = page)"
+          @update:items-per-page="(items) => (itemPerPageTable = items)"
           :hide-default-footer="props?.hideDefaultFooter"
           :headers="props.data.label"
           :items="
@@ -315,13 +389,17 @@ watch(
               : props?.data.value
           "
         >
-
-        <template #header.nama_produk="{ column }">
+          <template #item.no="{ index }">
+            <div>
+              {{ index + 1 + (pageTable - 1) * itemPerPageTable }}
+            </div>
+          </template>
+          <template #header.nama_produk="{ column }">
             <div>
               {{ t(column.title) }}
             </div>
           </template>
- 
+
           <template #header.nama_pabrik="{ column }">
             <div>
               {{ t(column.title) }}
@@ -434,8 +512,741 @@ watch(
               {{ t(column.title) }}
             </div>
           </template>
+          <template #header.alamat_pabrik="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
 
-          
+          <template #header.status_milik="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.nama_outlet="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.alamat_outlet="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.penyelia_nama="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.file_skph="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.file_spph="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.file_ktp="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.no_ktp="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.religion="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.tgl_penyelia_halal="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+          <template #item.addType="{ item }">
+            <div>
+              {{ item?.FileDok !== "" ? "Unggah" : "Manual" }}
+            </div>
+          </template>
+          <template #item.religion>
+            <label>Islam</label>
+          </template>
+          <template #item.productType="{ item }">
+            <div>
+              {{ item.productType }}
+            </div>
+          </template>
+          <template #item.productName="{ item }">
+            <div>
+              {{ item.productName }}
+            </div>
+          </template>
+
+          <template #item.tgl_pembelian="{ item }">
+            <div v-if="item.tgl_pembelian">
+              {{ formatDateIntl(new Date(item.tgl_pembelian)) }}
+            </div>
+          </template>
+          <template #item.tanggal_produksi="{ item }">
+            <div v-if="item.tanggal_produksi">
+              {{ formatDateIntl(new Date(item.tanggal_produksi)) }}
+            </div>
+            <div v-else>-</div>
+          </template>
+          <template #item.tanggal_kadaluarsa="{ item }">
+            <div v-if="item.tanggal_kadaluarsa">
+              {{ formatDateIntl(new Date(item.tanggal_kadaluarsa)) }}
+            </div>
+            <div v-else>-</div>
+          </template>
+          <template #item.tanggal="{ item }">
+            <div v-if="item.tanggal">
+              {{ formatDateIntl(new Date(item.tanggal)) }}
+            </div>
+            <div v-else>-</div>
+          </template>
+          <template #item.materialTypeLong="{ item }">
+            <div class="mw30">
+              {{ item.materialTypeLong }}
+            </div>
+          </template>
+          <template #item.publication="{ item }">
+            <!-- <VCheckbox true-value="true" /> -->
+            <VCheckbox
+              v-model="item.checked"
+              @change="() => handleCheck(item)"
+            />
+          </template>
+
+          <template v-if="!isviewonly" #item.action="{ item }">
+            <div
+              v-if="bahanSelected?.some((el: any) => el === item.id) || isDisabledForm"
+            >
+              <VBtn
+                v-bind="props"
+                variant="plain"
+                append-icon="fa-trash"
+                disabled
+              />
+            </div>
+            <div v-else>
+              <DialogDeleteAuditPengajuan
+                :title="t('pengajuan-reguler.reguler-remove-bahan-title')"
+                :button-text="t('pengajuan-reguler.reguler-remove-bahan-1')"
+                :content="props?.title"
+                :on-delete="() => props?.onDelete(item)"
+              >
+                <template #contentDelete>
+                  <p>{{ t("pengajuan-reguler.reguler-remove-bahan-2") }}</p>
+                </template>
+              </DialogDeleteAuditPengajuan>
+            </div>
+          </template>
+          <template v-if="!isviewonly" #item.actionEdit="{ item }">
+            <Vbtn
+              variant="plain"
+              class="cursor-pointer"
+              @click="() => props.onEdit(item)"
+            >
+              <VIcon end icon="ri-pencil-line" color="#652672" />
+            </Vbtn>
+          </template>
+          <template v-if="!isviewonly" #item.actionPopOver2="{ item }">
+            <VMenu>
+              <template #activator="{ props }">
+                <VBtn
+                  v-bind="props"
+                  append-icon="ri-more-2-line"
+                  variant="plain"
+                />
+              </template>
+              <VList>
+                <VListItem class="p0">
+                  <VListItemTitle>
+                    <Vbtn
+                      variant="plain"
+                      class="cursor-pointer"
+                      @click="() => props.onEdit(item)"
+                    >
+                      <VRow>
+                        <VCol sm="4">
+                          <VIcon end icon="ri-pencil-line" />
+                        </VCol>
+                        <VCol>
+                          <label class="cursor-pointer">Ubah </label>
+                        </VCol>
+                      </VRow>
+                    </Vbtn>
+                  </VListItemTitle>
+                </VListItem>
+                <VListItem class="p0">
+                  <div class="d-flex -ml10">
+                    <DialogDeleteAuditPengajuan
+                      title="Hapus Bahan"
+                      button-text="Ya, Hapus"
+                      :content="props?.title"
+                      :on-delete="() => props?.onDelete(item)"
+                      with-label-header="true"
+                    >
+                      <template #contentDelete>
+                        <p>Apakah anda yakin menghapus data ini?</p>
+                      </template>
+                    </DialogDeleteAuditPengajuan>
+                  </div>
+                </VListItem>
+              </VList>
+            </VMenu>
+          </template>
+          <template v-if="!isviewonly" #item.actionPopOver3="{ item }">
+            <VMenu>
+              <template #activator="{ props }">
+                <VBtn
+                  v-bind="props"
+                  append-icon="ri-more-2-line"
+                  variant="plain"
+                />
+              </template>
+              <VList>
+                <VListItem class="p0">
+                  <VListItemTitle>
+                    <Vbtn
+                      variant="plain"
+                      class="cursor-pointer"
+                      @click="() => props.onDetail(item)"
+                    >
+                      <VRow>
+                        <VCol sm="4">
+                          <VIcon end icon="ri-arrow-right-line" />
+                        </VCol>
+                        <VCol>
+                          <label class="cursor-pointer">Detail </label>
+                        </VCol>
+                      </VRow>
+                    </Vbtn>
+                  </VListItemTitle>
+                </VListItem>
+                <VListItem class="p0">
+                  <VListItemTitle>
+                    <Vbtn
+                      variant="plain"
+                      class="cursor-pointer"
+                      @click="() => detailClicked(item)"
+                    >
+                      <VRow>
+                        <VCol sm="4">
+                          <VIcon end icon="ri-pencil-line" />
+                        </VCol>
+                        <VCol>
+                          <label class="cursor-pointer">Ubah </label>
+                        </VCol>
+                      </VRow>
+                    </Vbtn>
+                  </VListItemTitle>
+                </VListItem>
+                <VListItem class="p0 d-flex">
+                  <div class="d-flex -ml10">
+                    <DialogDeleteAuditPengajuan
+                      title="Hapus Bahan"
+                      button-text="Ya, Hapus"
+                      :content="props?.title"
+                      :on-delete="() => handleDelete(item)"
+                      with-label-header="true"
+                    >
+                      <template #contentDelete>
+                        <p>Apakah anda yakin menghapus data ini?</p>
+                      </template>
+                    </DialogDeleteAuditPengajuan>
+                  </div>
+                </VListItem>
+              </VList>
+            </VMenu>
+          </template>
+          <template v-if="!isviewonly" #item.actionPopOver4="{ item }">
+            <VMenu>
+              <template #activator="{ props }">
+                <VBtn
+                  v-bind="props"
+                  append-icon="ri-more-2-line"
+                  variant="plain"
+                />
+              </template>
+              <VList>
+                <VListItem class="p0">
+                  <InputBahan
+                    :product-name="item.nama"
+                    :product-id="item.id"
+                    :bahan-selected="item.bahan_selected"
+                    @submit="
+                      (selected, produkId) =>
+                        props.onInputBahan(selected, produkId)
+                    "
+                    :embedded-in-module="'pelakuSelfDec'"
+                  />
+                </VListItem>
+                <VListItem class="p0">
+                  <VListItemTitle>
+                    <Vbtn
+                      variant="plain"
+                      class="cursor-pointer"
+                      @click="() => props.onDetail(item)"
+                    >
+                      <VRow>
+                        <VCol sm="4">
+                          <VIcon end icon="ri-arrow-right-line" />
+                        </VCol>
+                        <VCol>
+                          <label class="cursor-pointer">Detail </label>
+                        </VCol>
+                      </VRow>
+                    </Vbtn>
+                  </VListItemTitle>
+                </VListItem>
+                <VListItem class="p0">
+                  <VListItemTitle>
+                    <Vbtn
+                      variant="plain"
+                      class="cursor-pointer"
+                      @click="() => detailClicked(item)"
+                    >
+                      <VRow>
+                        <VCol sm="4">
+                          <VIcon end icon="ri-pencil-line" />
+                        </VCol>
+                        <VCol>
+                          <label class="cursor-pointer">Ubah </label>
+                        </VCol>
+                      </VRow>
+                    </Vbtn>
+                  </VListItemTitle>
+                </VListItem>
+                <VListItem class="p0 d-flex">
+                  <div class="d-flex -ml10">
+                    <DialogDeleteAuditPengajuan
+                      title="Hapus Bahan"
+                      button-text="Ya, Hapus"
+                      :content="props?.title"
+                      :on-delete="() => handleDelete(item)"
+                      with-label-header="true"
+                    >
+                      <template #contentDelete>
+                        <p>Apakah anda yakin menghapus data ini?</p>
+                      </template>
+                    </DialogDeleteAuditPengajuan>
+                  </div>
+                </VListItem>
+              </VList>
+            </VMenu>
+          </template>
+
+          <template #item.foto="{ item }">
+            <Vbtn
+              v-if="item.foto"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-inline-start: -10px"
+              @click="() => handleDownload(item.foto, 'PRODUCT')"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>-</label>
+            </div>
+          </template>
+          <template #item.file_dok="{ item }">
+            <Vbtn
+              v-if="item.file_dok"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-inline-start: -10px"
+              @click="() => handleDownload(item.file_dok)"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>-</label>
+            </div>
+          </template>
+          <template #item.file_skph="{ item }">
+            <Vbtn
+              v-if="item.file_skph"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-inline-start: -10px"
+              @click="() => handleDownload(item.file_skph)"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>-</label>
+            </div>
+          </template>
+          <template #item.file_spph="{ item }">
+            <Vbtn
+              v-if="item.file_spph"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-inline-start: -10px"
+              @click="() => handleDownload(item.file_spph)"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>-</label>
+            </div>
+          </template>
+          <template #item.file_ktp="{ item }">
+            <Vbtn
+              v-if="item.file_ktp"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-inline-start: -10px"
+              @click="() => handleDownload(item.file_ktp, 'FILES')"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>-</label>
+            </div>
+          </template>
+          <template #item.file_layout="{ item }">
+            <Vbtn
+              v-if="item.file_layout"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-inline-start: -10px"
+              @click="() => handleDownload(item.file_layout)"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>-</label>
+            </div>
+          </template>
+          <template #item.FileDok="{ item }">
+            <Vbtn
+              v-if="item.FileDok"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-inline-start: -10px"
+              @click="() => handleDownload(item.FileDok)"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>-</label>
+            </div>
+          </template>
+          <template #item.foto2="{ item }">
+            <Vbtn
+              v-if="item.id_reg"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-inline-start: -10px"
+              @click="() => handleDownloadV2(item)"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>Kosong</label>
+            </div>
+          </template>
+          <template #item.foto6="{ item }">
+            <Vbtn
+              v-if="item.id_reg"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-inline-start: -10px"
+              @click="() => handleDownloadV6(item)"
+            >
+              <div>
+                <VIcon end icon="ri-file-3-line" color="#652672" />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>Kosong</label>
+            </div>
+          </template>
+          <template #item.foto3="{ item }">
+            <Vbtn
+              v-if="item.file_dok"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-inline-start: -10px"
+            >
+              <div>
+                <VIcon
+                  end
+                  icon="ri-file-3-line"
+                  color="#652672"
+                  @click="() => handleDownloadV2(item.file_dok)"
+                />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>Kosong</label>
+            </div>
+          </template>
+
+          <template #item.foto4="{ item }">
+            <Vbtn
+              v-if="item.ttd_pj"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-inline-start: -10px"
+            >
+              <div>
+                <VIcon
+                  end
+                  icon="ri-file-3-line"
+                  color="#652672"
+                  @click="() => handleDownloadV2(item.ttd_pj)"
+                />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>Kosong</label>
+            </div>
+          </template>
+
+          <template #item.foto5="{ item }">
+            <Vbtn
+              v-if="item.ttd_ph"
+              class="d-flex gap-3 cursor-pointer"
+              style="margin-inline-start: -10px"
+            >
+              <div>
+                <VIcon
+                  end
+                  icon="ri-file-3-line"
+                  color="#652672"
+                  @click="() => handleDownloadV2(item.ttd_ph, 'FILES')"
+                />
+              </div>
+              <label class="cursor-pointer">file</label>
+            </Vbtn>
+            <div v-else>
+              <label>Kosong</label>
+            </div>
+          </template>
+
+          <template v-if="!isviewonly" #item.actionV2="{ item }">
+            <v-btn color="primary" variant="plain">
+              <VIcon>mdi-dots-vertical</VIcon>
+              <VMenu activator="parent" :close-on-content-click="true">
+                <VCard>
+                  <VBtn
+                    variant="text"
+                    color="primary"
+                    prepend-icon="ri-pencil-line"
+                    @click="() => props.onEdit(item)"
+                    block
+                  >
+                    Edit
+                  </VBtn>
+                  <VBtn
+                    variant="text"
+                    color="error"
+                    prepend-icon="ri-delete-bin-6-line"
+                    @click="() => props.onDelete(item)"
+                    block
+                  >
+                    Hapus
+                  </VBtn>
+                </VCard>
+              </VMenu>
+            </v-btn>
+          </template>
+          <template v-if="!isviewonly" #item.actionV3="{ item }">
+            <v-btn color="primary" variant="plain">
+              <VIcon>mdi-dots-vertical</VIcon>
+              <VMenu activator="parent" :close-on-content-click="true">
+                <VCard>
+                  <InputBahan
+                    :product-name="item.nama"
+                    :product-id="item.id"
+                    :bahan-selected="item.bahan_selected"
+                    :embedded-in-module="'pelakuSelfDec'"
+                    @submit="(a, b) => handleInputBahan(a, b)"
+                  />
+                  <VBtn
+                    variant="text"
+                    color="error"
+                    prepend-icon="ri-delete-bin-6-line"
+                    @click="() => props.onDelete(item)"
+                    block
+                  >
+                    Hapus
+                  </VBtn>
+                </VCard>
+              </VMenu>
+            </v-btn>
+          </template>
+        </VDataTable>
+        <VDataTableServer
+          disable-sort
+          v-else
+          :items-per-page-options="[10, 25, 50, 100]"
+          class="border rounded"
+          v-model:items-per-page="itemsPerPageServer"
+          v-model:page="pageServer"
+          :items-length="props?.data.totalItem"
+          :hide-default-footer="props?.hideDefaultFooter"
+          @update:options="serverFunction(pageServer, itemsPerPageServer)"
+          :headers="props.data.label"
+          :items="
+            props.title === 'Daftar Nama Produk'
+              ? productItems
+              : props?.data.value
+          "
+        >
+          <template #header.nama_produk="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.nama_pabrik="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.jenis_bahan="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+          <template #header.jumlah="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.nama="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.addType="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.lokasi="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.tgl_pembelian="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.FileDok="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.jabatan="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.posisi="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.nama_bahan="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.produsen="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.no_sertifikat="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.jenis_surat="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.no_surat="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.tanggal_surat="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.masa_berlaku="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.instansi_penerbit="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
+
+          <template #header.action="{ column }">
+            <div>
+              {{ t(column.title) }}
+            </div>
+          </template>
           <template #header.alamat_pabrik="{ column }">
             <div>
               {{ t(column.title) }}
@@ -504,7 +1315,7 @@ watch(
 
           <template #item.no="{ index }">
             <div>
-              {{ index + 1 }}
+              {{ index + 1 + (pageServer - 1) * itemsPerPageServer }}
             </div>
           </template>
           <template #item.addType="{ item }">
@@ -563,16 +1374,26 @@ watch(
           </template>
 
           <template v-if="!isviewonly" #item.action="{ item }">
-            <DialogDeleteAuditPengajuan
-              :title="t('pengajuan-reguler.reguler-remove-bahan-title')"
-              :button-text="t('pengajuan-reguler.reguler-remove-bahan-1')"
-              :content="props?.title"
-              :on-delete="() => props?.onDelete(item)"
-            >
-              <template #contentDelete>
-                <p>{{ t("pengajuan-reguler.reguler-remove-bahan-2") }}</p>
-              </template>
-            </DialogDeleteAuditPengajuan>
+            <div v-if="bahanSelected?.some((el: any) => el === item.id)">
+              <VBtn
+                v-bind="props"
+                variant="plain"
+                append-icon="fa-trash"
+                disabled
+              />
+            </div>
+            <div v-else>
+              <DialogDeleteAuditPengajuan
+                :title="t('pengajuan-reguler.reguler-remove-bahan-title')"
+                :button-text="t('pengajuan-reguler.reguler-remove-bahan-1')"
+                :content="props?.title"
+                :on-delete="() => props?.onDelete(item)"
+              >
+                <template #contentDelete>
+                  <p>{{ t("pengajuan-reguler.reguler-remove-bahan-2") }}</p>
+                </template>
+              </DialogDeleteAuditPengajuan>
+            </div>
           </template>
           <template v-if="!isviewonly" #item.actionEdit="{ item }">
             <Vbtn
@@ -988,7 +1809,32 @@ watch(
               </VMenu>
             </v-btn>
           </template>
-        </VDataTable>
+          <template v-if="!isviewonly" #item.actionV3="{ item }">
+            <v-btn color="primary" variant="plain">
+              <VIcon>mdi-dots-vertical</VIcon>
+              <VMenu activator="parent" :close-on-content-click="true">
+                <VCard>
+                  <InputBahan
+                    :product-name="item.nama"
+                    :product-id="item.id"
+                    :bahan-selected="item.bahan_selected"
+                    :embedded-in-module="'pelakuSelfDec'"
+                    @submit="(a, b) => handleInputBahan(a, b)"
+                  />
+                  <VBtn
+                    variant="text"
+                    color="error"
+                    prepend-icon="ri-delete-bin-6-line"
+                    @click="() => props.onDelete(item)"
+                    block
+                  >
+                    Hapus
+                  </VBtn>
+                </VCard>
+              </VMenu>
+            </v-btn>
+          </template>
+        </VDataTableServer>
       </VRow>
     </VCardText>
   </VCard>

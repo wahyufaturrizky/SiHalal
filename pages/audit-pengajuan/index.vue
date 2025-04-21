@@ -104,15 +104,17 @@ const handleInput = () => debouncedFetch(1, size.value, searchQuery.value);
       </VCardItem>
       <VCardItem>
         <VDataTableServer
+          disable-sort
           v-model:items-per-page="size"
           v-model:page="currentPage"
+          :items-per-page-options="[10, 25, 50, 100]"
           :items-length="totalItems"
           :headers="headers"
           :items="items"
           item-value="no"
           class="elevation-1 border rounded"
-          @update:options="loadItem(page, size, searchQuery)"
           :hide-default-footer="totalItems < 10"
+          @update:options="loadItem(page, size, searchQuery)"
         >
           <template #no-data>
             <div class="pt-2">
@@ -133,6 +135,11 @@ const handleInput = () => debouncedFetch(1, size.value, searchQuery.value);
               </VChip>
             </div>
           </template>
+
+          <template #item.tanggal="{ item }">
+            {{ formatDateId(item.tanggal) }}
+          </template>
+
           <template #item.action="{ item }">
             <VIcon
               color="primary"

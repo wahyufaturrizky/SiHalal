@@ -24,6 +24,7 @@ export default defineEventHandler(async (event: any) => {
         body: {
           status: body.status,
           notes: body.notes,
+          temuan: body.temuan,
         },
       } as any
     );

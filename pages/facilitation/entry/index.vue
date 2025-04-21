@@ -6,7 +6,8 @@ const loading = ref(false);
 
 const page = ref(1);
 const searchQuery = ref("");
-const status = ref("OF1,OF10,OF5,OF2,OF290,OF15");
+const status = ref("OF1,OF10,OF12,OF5,OF2,OF290,OF15");
+const loadingAll = ref(true);
 
 const defaultStatus = { color: "error", desc: "Unknown Status" };
 
@@ -14,6 +15,7 @@ const statusItem: any = new Proxy(
   {
     OF1: { color: "grey-300", desc: "Draft" },
     OF10: { color: "success", desc: "Submitted" },
+    OF12: { color: "success", desc: "Verifikasi LPH" },
     OF15: { color: "success", desc: "Verified" },
     OF2: { color: "error", desc: "Returned" },
     OF290: { color: "error", desc: "Rejected" },
@@ -76,15 +78,14 @@ const handleInput = () => {
 
 const tableHeader = [
   { title: "No", key: "id" },
-  { title: "Kode Fasilitasi", key: "kode_fac" },
-  { title: "Tahun", key: "tahun" },
   { title: "Nama Fasilitasi", key: "fac_name" },
-  { title: "Sumber Pembiayaan", key: "sumber_biaya_name" },
+  { title: "Tahun", key: "tahun" },
+  // { title: "Sumber Pembiayaan", key: "sumber_biaya_name" },
   { title: "Jenis", key: "jenis" },
   { title: "Tanggal Aktif", key: "tgl_selesai" },
   { title: "Tanggal Selesai", key: "tgl_aktif" },
   { title: "Kuota", key: "kuota" },
-  { title: "Sisa", key: "sisa" },
+  // { title: "Sisa", key: "sisa" },
   { title: "Status", key: "status_code" },
   { title: "Action", key: "action" },
 ];
@@ -122,6 +123,8 @@ const navigateAction = (id: string) => {
           </VRow>
           <VRow>
             <VDataTableServer
+              disable-sort
+              :items-per-page-options="[10, 25, 50, 100]"
               v-model:items-per-page="itemPerPage"
               v-model:page="page"
               :headers="tableHeader"

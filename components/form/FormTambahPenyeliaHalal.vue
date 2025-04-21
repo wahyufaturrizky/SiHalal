@@ -72,10 +72,10 @@ const dialogMaxWidth = computed(() => {
 <template>
   <div class="ma-1">
     <VBtn
+      v-if="props.isEditable"
       variant="outlined"
       append-icon="ri-add-line"
       @click="openDialog"
-      v-if="props.isEditable"
     >
       Tambah
     </VBtn>
@@ -164,6 +164,7 @@ const dialogMaxWidth = computed(() => {
                 placeholder="Isi Tanggal Sertifikat"
                 teleport-center
                 :enable-time-picker="false"
+                format="dd/MM/yyyy"
               />
             </VCol>
           </VRow>

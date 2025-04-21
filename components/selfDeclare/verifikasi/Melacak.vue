@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps<{data : any[]}>();
+const props = defineProps<{ data: any[] }>();
 
 interface TimelineItem {
   comment: string;
@@ -9,23 +9,16 @@ interface TimelineItem {
 }
 
 const timelineItems = ref<TimelineItem[]>(props.data);
+
 watchEffect(() => {
-  timelineItems.value = props.data
-})
+  timelineItems.value = props.data;
+});
 
 // const dummyData = [
 // { status: "Draft PU", username: "Ramen Grill Indonesia", created_at: "2024-11-01" },
 // { status: "Submitted PU", username: "Ramen Grill Indonesia", created_at: "2024-11-02" },
 // { status: "Verifikasi", username: "Yuan", created_at: "2024-11-03" },
 // ];
-
-const formatDate = (date: string): string => {
-  return new Date(date).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-};
 </script>
 
 <template>
@@ -42,15 +35,20 @@ const formatDate = (date: string): string => {
           </template>
           <div class="d-flex justify-space-between align-start">
             <div>
-              <div class="text-subtitle-2 font-weight-bold">
-                {{ item.status }}
+              <div class="d-flex justify-space-between align-center gap-2">
+                <span class="text-subtitle-2 font-weight-bold">
+                  {{ item.status }}
+                </span>
+                <span class="text-caption text-grey">
+                  {{ formatDateId(item.date) }}
+                </span>
               </div>
               <div class="text-caption text-grey">
                 {{ item.username }}
               </div>
-            </div>
-            <div class="text-caption text-grey">
-              {{ formatDate(item.date) }}
+              <div class="text-caption text-grey">
+                {{ item.comment }}
+              </div>
             </div>
           </div>
         </VTimelineItem>

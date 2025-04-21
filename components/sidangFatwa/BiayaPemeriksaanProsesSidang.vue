@@ -32,6 +32,8 @@ const page = ref(1);
       <br />
       <VExpansionPanelText>
         <VDataTableServer
+          disable-sort
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
           :headers="headers"

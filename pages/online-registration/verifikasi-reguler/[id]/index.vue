@@ -143,6 +143,7 @@ const panelOpenPabrik = ref(0);
 const panelOpenOutlet = ref(0);
 const panelOpenPenyelia = ref(0);
 const panelOpenProduk = ref(0);
+const panelDokumen = ref(0);
 
 const openPanelRegisterData = ref(0);
 const loading = ref(false);
@@ -151,6 +152,7 @@ const loadingDetailRegistration = ref(false);
 const data = ref();
 const dataDetailRegistration = ref();
 const dataTracking = ref();
+const dokumenLama = ref<any>([]);
 
 const showConfirmation = ref(false);
 const showReturn = ref(false);
@@ -217,6 +219,11 @@ const rejectSubmission = async () => {
     if (isValid) returnDocument();
   });
 };
+
+const handleDownloadFormDokumenLama = async (fileName: string) => {
+  window.open(fileName, "_blank");
+};
+  
 
 const dataDetail = ref<DetailVerifikatorReguler>({
   aspek_legal: [],
@@ -289,8 +296,15 @@ const getDetail = async () => {
       method: "post",
       body: {
         id_reg: route.params.id,
-      },
+      },      
     });
+    const noDaftar = response?.data?.pendaftaran?.nomor_daftar;
+        if (noDaftar) {
+          await OldDoc(noDaftar);
+        } else {
+          console.error("noDaftar tidak ditemukan dalam response API");
+        }
+
     if (response.code != 2000) {
       navigateTo("/online-registration/verifikasi-reguler");
       useSnackbar().sendSnackbar("ada kesalahan", "error");
@@ -305,6 +319,31 @@ const getDetail = async () => {
     loading.value = false;
   }
 };
+
+const OldDoc = async (noDaftar: string) => {
+  const url = `https://prod-api.halal.go.id/v1/referensi/dokumen_reguler?no_daftar=${noDaftar}`;
+  //console.log("berhasil");
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    dokumenLama.value = data.data;
+    return data;
+  } catch (error) {
+    console.error("Terjadi kesalahan saat mengambil data:", error);
+    return null;
+  }
+};
+
 const sttdData = ref("");
 const getSttd = async () => {
   try {
@@ -470,7 +509,7 @@ onMounted(async () => {
                       class="rounded"
                       variant="flat"
                       density="compact"
-                      @click="downloadDocument(sttdData)"
+                      @click="downloadDocument(sttdData, 'FILES')"
                       :disabled="sttdData == ''"
                     />
                   </VCol>
@@ -492,6 +531,47 @@ onMounted(async () => {
                 <Pendaftaran :data="dataDetail.pendaftaran" />
               </VExpansionPanelText>
             </VExpansionPanel>
+          </VExpansionPanels>
+        </VCol>
+      </VRow>
+      <VRow>
+        <VCol>
+          <VExpansionPanels v-model="panelDokumen">
+            <VExpansionPanel
+            v-if="dokumenLama.length > 0"
+            :value="2"
+            class="pt-3 mt-10"
+          >
+            <VExpansionPanelTitle class="font-weight-bold text-h4">
+              Dokumen Lama
+            </VExpansionPanelTitle>
+            <VExpansionPanelText class="mt-5">
+              <VRow
+                v-for="(item, idx) in dokumenLama"
+                :key="idx"
+                align="center"
+              >
+                <VCol cols="5" class="text-h6"> {{ item.ref_desc }} </VCol>
+                <VCol class="d-flex align-center">
+                  <div class="me-1">:</div>
+                  <VBtn
+                    :color="item?.file_dok ? 'primary' : '#A09BA1'"
+                    density="compact"
+                    class="px-2"
+                    @click="
+                      item?.file_dok
+                        ? handleDownloadFormDokumenLama(item.file_download)
+                        : null
+                    "
+                  >
+                    <template #default>
+                      <VIcon icon="fa-download" />
+                    </template>
+                  </VBtn>
+                </VCol>
+              </VRow>
+            </VExpansionPanelText>
+          </VExpansionPanel>
           </VExpansionPanels>
         </VCol>
       </VRow>

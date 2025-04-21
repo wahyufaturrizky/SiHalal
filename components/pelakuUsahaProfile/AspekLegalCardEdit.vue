@@ -1,13 +1,8 @@
 <script setup lang="ts">
+import { formatToDDMMYYYY } from "@/utils/formatToISOString";
 import { useI18n } from "vue-i18n";
 
-const { t } = useI18n();
-
 import type { legal } from "@/stores/interface/pelakuUsahaProfileIntf";
-
-const snackbar = useSnackbar();
-
-const panelOpen = ref(0);
 
 const props = defineProps({
   aspekLegalData: {
@@ -15,6 +10,12 @@ const props = defineProps({
     required: true,
   },
 });
+
+const { t } = useI18n();
+
+const snackbar = useSnackbar();
+
+const panelOpen = ref(0);
 
 const store = pelakuUsahaProfile();
 const storeDataMaster = dataMasterStore();
@@ -31,7 +32,8 @@ const legalHeader = [
 
 function handleDelete(item) {
   console.log("Delete item:", item);
-  const submitApi = $api(`pelaku-usaha-profile/delete-legal`, {
+
+  const submitApi = $api("pelaku-usaha-profile/delete-legal", {
     method: "post",
     body: {
       id: store.profileData?.id,
@@ -63,17 +65,20 @@ const handleAddAspekLegalConfirm = (formData) => {
       body: {
         document_type: formData.type,
         document_number: formData.doc_number,
-        date: new Date(formData.date).toISOString().substring(0, 10),
-        valid_date: new Date(formData.expiration_date)
-          .toISOString()
-          .substring(0, 10),
+        date: parseFlexibleDate(formData.date).toISOString().substring(0, 10),
+        valid_date:
+          formData.expiration_date !== ""
+            ? parseFlexibleDate(formData.expiration_date)
+                .toISOString()
+                .substring(0, 10)
+            : null,
         publish_agency: formData.publishing_agency,
       },
     }
   )
     .then((val: any) => {
       if (val.code == 2000) {
-        store.fetchProfile();
+        store.fetchProfile(null);
         snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
       } else {
         snackbar.sendSnackbar("Gagal Menambahkan Data ", "error");
@@ -87,15 +92,18 @@ const handleAddAspekLegalConfirm = (formData) => {
 const handleEditAspekLegalConfirm = (formData) => {
   console.log("Edit confirmed:", formData);
 
-  const submitApi = $api(`/pelaku-usaha-profile/update-legal`, {
+  const submitApi = $api("/pelaku-usaha-profile/update-legal", {
     method: "post",
     body: {
       id_profile: store.profileData?.id,
       legal_id: formData.id,
       document_type: formData.type,
       document_number: formData.doc_number,
-      date: new Date(formData.date).toISOString(),
-      valid_date: new Date(formData.expiration_date).toISOString(),
+      date: parseFlexibleDate(formData.date).toISOString(),
+      valid_date:
+        formData.expiration_date !== ""
+          ? parseFlexibleDate(formData.expiration_date).toISOString()
+          : null,
       publish_agency: formData.publishing_agency,
     },
   })
@@ -115,10 +123,8 @@ const handleEditAspekLegalConfirm = (formData) => {
 const initialDataAspekLegal = (item: any) => ({
   id: item.id,
   doc_number: item.doc_number,
-  expiration_date: new Date(item.expiration_date)
-    .toISOString()
-    .substring(0, 10),
-  date: new Date(item.date).toISOString().substring(0, 10),
+  expiration_date: formatToDDMMYYYY(item.expiration_date),
+  date: formatToDDMMYYYY(item.date),
   publishing_agency: item.publishing_agency,
   type: item.type,
 });
@@ -128,6 +134,7 @@ const convertDocType = (type: string | null) => {
     return storeDataMaster.masterJnlgl.filter((val) => val.code == type)[0]
       ?.name;
   }
+
   return type;
 };
 
@@ -141,7 +148,9 @@ onMounted(() => {
     <VCardTitle>
       <VRow>
         <VCol cols="6">
-          <div class="text-h4 font-weight-bold">{{t('detail-pu.pu-legal-title')}}</div>
+          <div class="text-h4 font-weight-bold">
+            {{ t("detail-pu.pu-legal-title") }}
+          </div>
         </VCol>
         <VCol cols="6" style="display: flex; justify-content: end">
           <AspekLegalModal
@@ -154,6 +163,7 @@ onMounted(() => {
     </VCardTitle>
     <VCardItem>
       <VDataTable
+        disable-sort
         :headers="legalHeader"
         :items="props.aspekLegalData"
         class="elevation-1"
@@ -185,22 +195,35 @@ onMounted(() => {
         <template #item.no="{ index }">
           {{ index + 1 }}
         </template>
+
+        <template #item.date="{ item }">
+          {{ item.date ? formatDateId(item.date) : "NA" }}
+        </template>
+
         <template #item.type="{ item }">
           {{ convertDocType(item.type) }}
         </template>
+
         <template #[`item.action`]="{ item }">
           <VMenu :close-on-content-click="false">
             <template #activator="{ props }">
-              <VBtn icon variant="text" v-bind="props"   v-if="item?.type !== 'NIB'">
+              <VBtn
+                v-if="item?.type !== 'NIB'"
+                icon
+                variant="text"
+                v-bind="props"
+              >
                 <VIcon>mdi-dots-vertical</VIcon>
               </VBtn>
             </template>
-            <VList >
+            <VList>
               <VListItem>
-                <!-- <VListItemTitle>
-                    <VIcon class="mr-2"> mdi-pencil </VIcon>
-                    Ubah
-                  </VListItemTitle> -->
+                <!--
+                  <VListItemTitle>
+                  <VIcon class="mr-2"> mdi-pencil </VIcon>
+                  Ubah
+                  </VListItemTitle>
+                -->
                 <AspekLegalModal
                   v-if="item?.type !== 'NIB'"
                   mode="edit"
@@ -215,7 +238,7 @@ onMounted(() => {
               >
                 <VListItemTitle class="text-red">
                   <VIcon color="red" class="mr-2"> mdi-delete </VIcon>
-                  {{t('detail-pu.pu-legal-modal-hapus')}}
+                  {{ t("detail-pu.pu-legal-modal-hapus") }}
                 </VListItemTitle>
               </VListItem>
             </VList>

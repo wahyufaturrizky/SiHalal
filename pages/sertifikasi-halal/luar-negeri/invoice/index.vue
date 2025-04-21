@@ -123,6 +123,7 @@ const statusInvoice = {
           <VRow>
             <VCol cols="12">
               <VDataTable
+                disable-sort
                 v-model:items-per-page="itemPerPage"
                 v-model:page="page"
                 :items-length="totalItems"
@@ -141,8 +142,11 @@ const statusInvoice = {
                 <template #item.invoice="{ item }">
                   <VBtn
                     variant="text"
+                    :disabled="!item.invoice_url"
                     @click="
-                      item.file! + '' ? downloadDocument(item.file) : () => {}
+                      item.invoice_url
+                        ? downloadDocument(item.invoice_url, 'INVOICE')
+                        : null
                     "
                   >
                     <v-icon>fa-file</v-icon>

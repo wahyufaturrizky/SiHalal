@@ -76,6 +76,8 @@ const loadingCertified = ref(true);
 const pageCertified = ref(1);
 const searchQueryUncertified = ref("");
 const searchQueryCertified = ref("");
+const tanggalBerlakuAll = ref("");
+
 const loadItemBahan = async (page: number, size: number, name: string = "") => {
   try {
     if (form.value.typeBahan == 0) {
@@ -83,6 +85,13 @@ const loadItemBahan = async (page: number, size: number, name: string = "") => {
     } else {
       loadingUncertified.value = true;
     }
+    // if (form.value.typeBahan == 0 && searchQueryUncertified.value == name) {
+    //   return;
+    // } else {
+    //   if (searchQueryCertified.value == name) {
+    //     return;
+    //   }
+    // }
 
     const response = await $api(
       `/self-declare/submission/bahan/${
@@ -100,6 +109,19 @@ const loadItemBahan = async (page: number, size: number, name: string = "") => {
     if (form.value.typeBahan == 0) {
       itemsCertified.value = response.data != null ? response.data : [];
       totalItemsCertified.value = response.total_item;
+
+      tanggalBerlakuAll.value = {
+        ...tanggalBerlakuAll.value, // Data sebelumnya
+        ...response.data.reduce((acc: Record<string, string>, item) => {
+          acc[item.nama_bahan] = item.tgl_berlaku_sertifikat
+            ? new Date(item.tgl_berlaku_sertifikat).toISOString().split("T")[0]
+            : "";
+          return acc;
+        }, {}),
+      };
+
+      console.log(tanggalBerlakuAll.value, "Semua tanggal berlaku");
+
       return;
     }
 
@@ -125,7 +147,6 @@ const handleInputUncertified = () => {
   );
 };
 const handleInputCertified = () => {
-  console.log(searchQueryCertified.value);
   pageCertified.value = 1;
   debouncedFetchCertified(
     pageCertified.value,
@@ -175,26 +196,43 @@ const insertBahan = async () => {
   submitAddBahanButton.value = true;
 
   try {
+    // Siapkan payload awal
+    let bodyData: Record<string, any> = {
+      jenis_bahan: `${
+        form.value.typeBahan == 0 ? "certified" : "uncertified"
+      }|${form.value.jenis_bahan}`,
+      nama_bahan: form.value.nama_bahan,
+      kelompok: form.value.kelompok,
+      merek: form.value.merek,
+      produsen: form.value.produsen,
+      no_sertifikat: form.value.no_sertifikat,
+    };
+
+    // Jika bahan bersertifikat, tambahkan tgl_berlaku jika ada
+    const namaBahanKey = Object.keys(tanggalBerlakuAll.value).find(
+      (key) =>
+        key.trim().toLowerCase() === form.value.nama_bahan.trim().toLowerCase()
+    );
+
+    if (namaBahanKey) {
+      bodyData.tgl_berlaku = tanggalBerlakuAll.value[namaBahanKey];
+    }
+
+    console.log("Data yang dikirim ke API:", bodyData);
+
     const response = await $api(
       `/self-declare/submission/bahan/${route.params.id}/add`,
       {
         method: "post",
-        body: {
-          jenis_bahan: `${
-            form.value.typeBahan == 0 ? "certified" : "uncertified"
-          }|${form.value.jenis_bahan}`,
-          nama_bahan: form.value.nama_bahan,
-          kelompok: form.value.kelompok,
-          merek: form.value.merek,
-          produsen: form.value.produsen,
-          no_sertifikat: form.value.no_sertifikat,
-        },
+        body: bodyData,
       }
     );
+
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("Gagal menambahkan bahan", "error");
       return;
     }
+
     emits("loadList", true);
     useSnackbar().sendSnackbar("Berhasil menambahkan bahan", "success");
   } catch (error) {
@@ -409,8 +447,8 @@ const insertBahan = async () => {
     <VCard>
       <VCardTitle>Cari Bahan</VCardTitle>
       <VCardText>
-        <VRow>
-          <VCol cols="12" md="4">
+        <VRow style="align-items: center">
+          <VCol cols="10" md="4">
             <VTextField
               v-model="searchQueryUncertified"
               label="Search"
@@ -420,13 +458,34 @@ const insertBahan = async () => {
               hide-details
               dense
               outlined
-              @input="handleInputUncertified"
+              @keyup.enter="
+                loadItemBahan(
+                  pageUncertified,
+                  itemPerPageUncertified,
+                  searchQueryUncertified
+                )
+              "
             />
+          </VCol>
+          <VCol cols="2" md="4">
+            <VBtn
+              @click="
+                loadItemBahan(
+                  pageUncertified,
+                  itemPerPageUncertified,
+                  searchQueryUncertified
+                )
+              "
+            >
+              Cari Bahan
+            </VBtn>
           </VCol>
         </VRow>
       </VCardText>
       <VCardItem>
         <VDataTableServer
+          disable-sort
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPageUncertified"
           v-model:page="pageUncertified"
           :items-length="totalItemsUncertified"
@@ -468,8 +527,8 @@ const insertBahan = async () => {
     <VCard>
       <VCardTitle>Cari Bahan</VCardTitle>
       <VCardText>
-        <VRow>
-          <VCol cols="12" md="4">
+        <VRow style="align-items: center">
+          <VCol cols="10" md="4">
             <VTextField
               v-model="searchQueryCertified"
               label="Search"
@@ -479,13 +538,34 @@ const insertBahan = async () => {
               hide-details
               dense
               outlined
-              @input="handleInputCertified"
+              @keyup.enter="
+                loadItemBahan(
+                  pageCertified,
+                  itemPerPageCertified,
+                  searchQueryCertified
+                )
+              "
             />
+          </VCol>
+          <VCol cols="2" md="4">
+            <VBtn
+              @click="
+                loadItemBahan(
+                  pageCertified,
+                  itemPerPageCertified,
+                  searchQueryCertified
+                )
+              "
+            >
+              Cari Bahan
+            </VBtn>
           </VCol>
         </VRow>
       </VCardText>
       <VCardItem>
         <VDataTableServer
+          disable-sort
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPageCertified"
           v-model:page="pageCertified"
           :items-length="totalItemsCertified"

@@ -42,6 +42,7 @@ const itemsSubmission = ref<
     verificator_name: string;
     nib: string;
     register_number: string;
+    pelaku_usaha: string;
     status_code: string;
   }[]
 >([]);
@@ -92,15 +93,16 @@ const handleInputSubmission = () => {
 };
 
 const verifikatorTablePopUpHeader = [
-  { title: "No", key: "id" },
-  { title: "Registration Number", key: "register_number" },
-  { title: "NIB / Business ID No", key: "nib" },
-  { title: "HCB", key: "hcb" },
-  { title: "Registration Date", key: "date" },
-  { title: "Submit Date", key: "date" },
-  { title: "Verifikator", key: "verificator_name" },
-  { title: "Status", key: "status_code" },
-  { title: "Action", key: "check" },
+  { title: "No", key: "id", sortable: false },
+  { title: "Registration Number", key: "register_number", sortable: false },
+  { title: "Pelaku Usaha", key: "pelaku_usaha", sortable: false },
+  { title: "NIB / Business ID No", key: "nib", sortable: false },
+  { title: "HCB", key: "hcb", sortable: false },
+  { title: "Registration Date", key: "date", sortable: false },
+  { title: "Submit Date", key: "date", sortable: false },
+  { title: "Verifikator", key: "verificator_name", sortable: false },
+  { title: "Status", key: "status_code", sortable: false },
+  { title: "Action", key: "check", sortable: false },
 ];
 
 const itemsWithCheckbox = computed(() => {
@@ -203,7 +205,7 @@ const openDialog = () => {
             density="compact"
             placeholder="Search Data"
             append-inner-icon="ri-search-line"
-            style="max-width: 100%"
+            style="max-inline-size: 100%"
             @input="handleInputSubmission"
           />
         </VCol>
@@ -211,8 +213,10 @@ const openDialog = () => {
       <VRow>
         <VCol>
           <VDataTableServer
+            disable-sort
             v-model:items-per-page="itemPerPageSubmission"
             v-model:page="pageSubmission"
+            :items-per-page-options="[10, 25, 50, 100]"
             :loading="loadingSubmission"
             :items-length="totalItemsSubmission"
             :headers="verifikatorTablePopUpHeader"
@@ -233,11 +237,17 @@ const openDialog = () => {
             <template #item.register_number="{ item }">
               {{ item.register_number || "NA" }}
             </template>
+            <template #item.pelaku_usaha="{ item }">
+              {{ item.pelaku_usaha || "NA" }}
+            </template>
             <template #item.nib="{ item }">
               {{ item.nib || "NA" }}
             </template>
             <template #item.hcb="{ item }">
               {{ item.hcb || "NA" }}
+            </template>
+            <template #item.date="{ item }">
+              {{ item.date ? formatDateId(item.date) : "NA" }}
             </template>
             <template #item.verificator_name="{ item }">
               {{ item.status_code === "OF10" ? item.verificator_name : "" }}

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-
-const searchQuery = ref(null)
+const searchQuery = ref(null);
 
 const itemPerPage = ref(10);
 const totalItems = ref(0);
@@ -8,37 +7,47 @@ const page = ref(1);
 const loading = ref(true);
 
 const menu = ref(false);
-const selectedYear = ref(null)
-const selectedFasilitas = ref(null)
+const selectedFasilitas = ref("4e792bfe-b16a-4ce0-8092-42b2185e2789");
 
-const fasilitas = ref([])
+const fasilitas = ref([]);
 
-const firstNoSelected = ref("")
-const secondNoSelected = ref("")
+const jenisFasilitas = ref([
+  { title: "SEHATI", value: "SEHATI" },
+  { title: "NON SEHATI", value: "NON SEHATI" },
+  { title: "SELFDECLARE MANDIRI", value: "SELFDECLARE MANDIRI" },
+]);
+
+const selectedJenisFasilitas = ref(jenisFasilitas.value[0].value);
+
+const firstNoSelected = ref("");
+const secondNoSelected = ref("");
 
 const items = ref([]);
 
-const selectOptionDisable = ref(true)
+const selectOptionDisable = ref(true);
 
 const selected = ref([]);
 
+const years = ref([{ title: 2025, value: 2025 }]);
+
+const selectedYear = ref(years.value[0].value);
+
 const onSelectUpdate = () => {
-  if(firstNoSelected.value !== "" && secondNoSelected.value !== ""){
-    selectOptionDisable.value = false
-  }else {
-    selectOptionDisable.value = true
-    selected.value = []
+  if (firstNoSelected.value !== "" && secondNoSelected.value !== "") {
+    selectOptionDisable.value = false;
+  } else {
+    selectOptionDisable.value = true;
+    selected.value = [];
   }
-}
+};
 
 const generateRange = (a, b) => [...Array(b - a + 1)].map((_, i) => a + i);
 
 const onNoSelected = () => {
+  firstNoSelected.value = firstNoSelected.value.replace(/\D/g, "");
+  secondNoSelected.value = secondNoSelected.value.replace(/\D/g, "");
 
-  firstNoSelected.value = firstNoSelected.value.replace(/\D/g, "")
-  secondNoSelected.value = secondNoSelected.value.replace(/\D/g, "")
-
-  if(firstNoSelected.value !== "" && secondNoSelected.value !== ""){
+  if (firstNoSelected.value !== "" && secondNoSelected.value !== "") {
     //
     // if(secondNoSelected.value > items.value.length){
     //   itemPerPage.value = secondNoSelected.value
@@ -48,105 +57,136 @@ const onNoSelected = () => {
     //   selected = []
     //   return
     // }
-    selected.value = generateRange(Number(firstNoSelected.value), Number(secondNoSelected.value))
-  }else{
-    selected.value = []
+    selected.value = generateRange(
+      Number(firstNoSelected.value),
+      Number(secondNoSelected.value)
+    );
+  } else {
+    selected.value = [];
   }
-}
-
-const years = [
-  { title: "Semua", value: null },
-  ...Array.from({ length: new Date().getFullYear() - 2021 + 1 }, (_, i) => {
-    const year = 2021 + i;
-    return { title: year.toString(), value: year.toString() };
-  })
-];
-
-
+};
 
 const headers = [
-  { title: 'No', key: 'no' },
-  { title: 'No. Daftar', key: 'no_daftar', nowrap: true },
-  { title: 'Tanggal', key: 'tanggal' , nowrap: true },
-  { title: 'Nama PU', key: 'nama_pu', nowrap: true , nowrap: true },
-  { title: 'Jenis Produk & Merek', key: 'jenis_produk' , nowrap: true},
-  { title: 'Nama Fasilitasi', key: 'nama_fasilitasi' , nowrap: true},
-  { title: 'Nama Pendamping', key: 'nama_pendamping' , nowrap: true},
-  { title: 'Catatan', key: 'catatan' },
-  { title: 'Status', key: 'status' },
+  { title: "No", key: "no" },
+  { title: "No. Daftar", key: "no_daftar", nowrap: true },
+  { title: "Tanggal", key: "tanggal", nowrap: true },
+  { title: "Nama PU", key: "nama_pu", nowrap: true },
+  { title: "Jenis Produk & Merek", key: "jenis_produk", nowrap: true },
+  { title: "Nama Fasilitasi", key: "nama_fasilitasi", nowrap: true },
+  { title: "Nama Pendamping", key: "nama_pendamping", nowrap: true },
+  { title: "Catatan", key: "catatan" },
+  { title: "Status", key: "status" },
 ];
 
 const dialog = ref(false);
-const buatInvoiceHandler = async () => {
-  //console.log("BUAT INVOICE, SELECTED ITEM : ", selected)
-  dialog.value = false
 
-  const listSelected = items.value.filter(i => selected.value.indexOf(i.no_urut) !== -1).map(j => j.id)
+const buatInvoiceHandler = async () => {
+  // console.log("BUAT INVOICE, SELECTED ITEM : ", selected)
+  dialog.value = false;
+
+  const listSelected = items.value
+    .filter((i) => selected.value.includes(i.no_urut))
+    .map((j) => j.id);
 
   const body = {
-    id_reg: listSelected
-  }
+    id_reg: listSelected,
+  };
 
   try {
     const response = await $api("/lp3h/create-invoice", {
       method: "post",
-      body
+      body,
     });
-    if(response.code !== 2000){
+
+    if (response.code !== 2000) {
       useSnackbar().sendSnackbar(response.message, "error");
-    }else{
-      selected.value = []
-      useSnackbar().sendSnackbar("Berhasil membuat invoice ", "success")
+    } else {
+      selected.value = [];
+      useSnackbar().sendSnackbar("Berhasil membuat invoice ", "success");
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 
-  debouncedFetch(1, itemPerPage.value , selectedFasilitas.value , selectedYear.value, searchQuery.value)
-}
-
+  debouncedFetch(
+    1,
+    itemPerPage.value,
+    selectedFasilitas.value,
+    selectedYear.value,
+    searchQuery.value,
+    selectedJenisFasilitas.value
+  );
+};
 
 const loadFasilitasi = async () => {
   try {
     loading.value = true;
+
     const response = await $api("/lp3h/list-fasilitasi", {
       method: "get",
     });
 
     const data = response.data;
 
+    if (selectedJenisFasilitas.value === "SEHATI") {
+      fasilitas.value = [
+        {
+          title: "BPJPH SEHATI",
+          value: "4e792bfe-b16a-4ce0-8092-42b2185e2789",
+        },
+      ];
 
-    fasilitas.value = [
-      { title: "Semua", value: null },
-      ...data.map(i => ({
-        title: i.fac_name,
-        value: i.fac_id
-      }))
-    ];
+      selectedFasilitas.value = "4e792bfe-b16a-4ce0-8092-42b2185e2789";
+
+      selectedYear.value = 2025;
+
+      years.value = [{ title: 2025, value: 2025 }];
+    } else {
+      fasilitas.value = [
+        { title: "Semua", value: null },
+        ...data.map((i) => ({
+          title: i.fac_name,
+          value: i.fac_id,
+        })),
+      ];
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
-const loadListDokumen = async (page: number, limit: number, fac_id: string, tahun: number, search: string  ) => {
+const loadListDokumen = async (
+  page: number,
+  limit: number,
+  fac_id: string,
+  tahun: number,
+  search: string,
+  jenis: string
+) => {
   try {
+    await loadFasilitasi();
+
     loading.value = true;
+
     const response = await $api("/lp3h/list-dokumen", {
       method: "get",
       params: {
         page,
-        limit,
+        limit: limit === -1 ? totalItems.value : limit,
         fac_id,
         tahun,
-        search
-      }
-    })
+        search,
+        jenis,
+      },
+    });
 
-    totalItems.value = response.totalItems
+    totalItems.value = response.totalItems;
+
     const data = response.data;
-    items.value = []
 
-    if(data !== null){
+    items.value = [];
+
+    if (data !== null) {
       data.forEach((v, i) => {
         items.value.push({
           no_urut: i + 1,
@@ -158,95 +198,161 @@ const loadListDokumen = async (page: number, limit: number, fac_id: string, tahu
           nama_fasilitasi: v.fac_name,
           nama_pendamping: v.nama_pendamping,
           catatan: v.catatan,
-        })
-      })
+        });
+      });
     }
+
     // console.log("items : ", items.value)
-    loading.value = false
+    loading.value = false;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
 const debouncedFetch = debounce(loadListDokumen, 500);
-const changeFilterBy = () => {
-  debouncedFetch(page.value, itemPerPage.value , selectedFasilitas.value , selectedYear.value, searchQuery.value)
+
+const changeFilterByJenisFasilitasi = () => {
+  if (selectedJenisFasilitas.value === "SEHATI") {
+    fasilitas.value = [
+      { title: "BPJPH SEHATI", value: "4e792bfe-b16a-4ce0-8092-42b2185e2789" },
+    ];
+
+    selectedFasilitas.value = "4e792bfe-b16a-4ce0-8092-42b2185e2789";
+
+    // asdasd
+    selectedYear.value = 2025; // Ensure it matches the value type in `years`
+    years.value = [{ title: 2025, value: 2025 }];
+  } else {
+    selectedFasilitas.value = null;
+
+    const currentYear = new Date().getFullYear();
+
+    years.value = [
+      { title: "Semua", value: null },
+      ...Array.from({ length: currentYear - 2020 }, (_, i) => {
+        const year = 2021 + i;
+
+        return { title: year.toString(), value: year };
+      }),
+    ];
+
+    selectedYear.value = null; // Ensure it resets properly
+  }
+
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    selectedFasilitas.value,
+    selectedYear.value,
+    searchQuery.value,
+    selectedJenisFasilitas.value
+  );
 };
 
-
+const changeFilterBy = () => {
+  debouncedFetch(
+    page.value,
+    itemPerPage.value,
+    selectedFasilitas.value,
+    selectedYear.value,
+    searchQuery.value,
+    selectedJenisFasilitas.value
+  );
+};
 
 onMounted(async () => {
-  await loadFasilitasi()
-})
-
-
+  await loadFasilitasi();
+});
 </script>
 
 <template>
   <VContainer>
-    <v-dialog v-model="dialog" max-width="700">
-      <v-card class="pa-4">
-        <v-card-title>Konfirmasi Buat Invoice </v-card-title>
-        <v-card-text>Yakin akan membuat tagihan untuk data data yang di contreng tersebut ?</v-card-text>
+    <VDialog v-model="dialog" max-width="700">
+      <VCard class="pa-4">
+        <VCardTitle>Konfirmasi Buat Invoice </VCardTitle>
+        <VCardText>
+          Yakin akan membuat tagihan untuk data data yang di contreng tersebut ?
+        </VCardText>
         <VRow>
           <VCol class="d-flex justify-end ga-4">
-            <v-btn variant="outlined" color="primary" @click="dialog = false">Batal</v-btn>
-            <v-btn variant="flat" color="primary" @click="buatInvoiceHandler">Ya, Setuju</v-btn>
+            <VBtn variant="outlined" color="primary" @click="dialog = false">
+              Batal
+            </VBtn>
+            <VBtn variant="flat" color="primary" @click="buatInvoiceHandler">
+              Ya, Setuju
+            </VBtn>
           </VCol>
         </VRow>
-      </v-card>
-    </v-dialog>
+      </VCard>
+    </VDialog>
     <VRow>
       <KembaliButton />
     </VRow>
     <VRow class="d-flex justify-space-between align-center">
       <VCol class="">
-        <h3 class="text-h3">
-          Buat Tagihan Ke BPJPH
-        </h3>
+        <h3 class="text-h3">Buat Tagihan Ke BPJPH</h3>
       </VCol>
     </VRow>
 
-    <VRow >
+    <VRow>
       <VCol cols="12">
         <VCard class="pa-2">
-          <VCardTitle class="text-h4 mx-0">
-            Daftar Dokumen
-          </VCardTitle>
+          <VCardTitle class="text-h4 mx-0"> Daftar Dokumen </VCardTitle>
           <VCardItem>
             <VRow class="pa-0">
               <VCol cols="9">
                 <VRow>
                   <VCol cols="2">
-                    <v-menu v-model="menu" :close-on-content-click="false">
-                      <template v-slot:activator="{ props }">
-                        <v-btn   class="d-flex justify-space-between"
-                                 v-bind="props" variant="outlined" append-icon="mdi-filter" min-width="130px">
+                    <VMenu v-model="menu" :close-on-content-click="false">
+                      <template #activator="{ props }">
+                        <VBtn
+                          class="d-flex justify-space-between"
+                          v-bind="props"
+                          variant="outlined"
+                          append-icon="mdi-filter"
+                          min-width="130px"
+                        >
                           Filter
-                        </v-btn>
+                        </VBtn>
                       </template>
                       <VCard class="pa-4 text-xs" min-width="400px">
-                        <VLabel for="fasilitas" class="mb-2">Fasilitas</VLabel>
-                        <v-select
+                        <VLabel for="fasilitas" class="mb-2">
+                          Jenis Fasilitasi
+                        </VLabel>
+                        <VSelect
                           id="fasilitas"
+                          v-model="selectedJenisFasilitas"
                           label=""
-                          :items="fasilitas"
-                          v-model="selectedFasilitas"
-                          @update:model-value="changeFilterBy"
+                          :items="jenisFasilitas"
                           variant="solo"
                           class="mb-2"
-                        ></v-select>
-                        <VLabel for="tahun" class="mb-2">Tahun Terbit SH</VLabel>
-                        <v-select
+                          @update:model-value="changeFilterByJenisFasilitasi"
+                        />
+                        <VLabel for="fasilitas" class="mb-2">
+                          Fasilitas
+                        </VLabel>
+                        <VSelect
+                          id="fasilitas"
+                          v-model="selectedFasilitas"
+                          label=""
+                          :items="fasilitas"
+                          variant="solo"
+                          class="mb-2"
+                          @update:model-value="changeFilterBy"
+                        />
+                        <VLabel for="tahun" class="mb-2">
+                          Tahun Terbit SH
+                        </VLabel>
+                        <VSelect
                           id="tahun"
+                          v-model="selectedYear"
                           label=""
                           :items="years"
-                          v-model="selectedYear"
-                          @update:model-value="changeFilterBy"
                           variant="solo"
-                        ></v-select>
+                          @update:model-value="changeFilterBy"
+                        />
                       </VCard>
-                    </v-menu>
+                    </VMenu>
                   </VCol>
                   <VCol cols="4">
                     <VTextField
@@ -276,12 +382,16 @@ onMounted(async () => {
                 </VRow>
               </VCol>
               <VCol cols="3">
-                <VRow >
+                <VRow>
                   <VCol cols="12" class="d-flex justify-space-between">
                     <VBtn :disabled="selectOptionDisable" @click="onNoSelected">
                       Pilih
                     </VBtn>
-                    <VBtn append-icon="mdi-file-document" :disabled="selected.length === 0" @click="dialog = true">
+                    <VBtn
+                      append-icon="mdi-file-document"
+                      :disabled="selected.length === 0"
+                      @click="dialog = true"
+                    >
                       Buat Invoice
                     </VBtn>
                   </VCol>
@@ -292,19 +402,34 @@ onMounted(async () => {
           <VCardItem>
             <VDataTableServer
               v-model="selected"
+              v-model:items-per-page="itemPerPage"
+              v-model:page="page"
+              disable-sort
+              :items-per-page-options="ITEMS_PER_PAGE_OPTIONS_HUGE"
               :headers="headers"
               :items="items"
               item-value="no_urut"
               show-select
-              v-model:items-per-page="itemPerPage"
-              v-model:page="page"
               :loading="loading"
               loading-text="Loading..."
               :items-length="totalItems"
-              @update:options="loadListDokumen(page, itemPerPage, selectedFasilitas, selectedYear, searchQuery)"
+              @update:options="
+                loadListDokumen(
+                  page,
+                  itemPerPage,
+                  selectedFasilitas,
+                  selectedYear,
+                  searchQuery,
+                  selectedJenisFasilitas
+                )
+              "
             >
               <template #item.no="{ index }">
                 {{ index + 1 }}
+              </template>
+
+              <template #item.tanggal="{ item }">
+                {{ formatDateId(item.tanggal) }}
               </template>
             </VDataTableServer>
           </VCardItem>
@@ -314,6 +439,4 @@ onMounted(async () => {
   </VContainer>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

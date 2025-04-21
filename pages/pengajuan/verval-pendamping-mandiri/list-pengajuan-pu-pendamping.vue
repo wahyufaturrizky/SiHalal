@@ -28,6 +28,7 @@ const items = ref([]);
 
 const getStatusColor = (status: string) => {
   if (status === "Verifikasi") return "primary";
+
   return "grey";
 };
 
@@ -45,21 +46,24 @@ const getpuApi = async (
   try {
     loading.value = true;
 
+    const params = { page, size };
+    if (status) params.status = status;
+
+    if (keyword) {
+      params.keyword = keyword;
+      params.query_by = query_by;
+    }
+
     const response: any = await $api("/self-declare/pendamping/getpu", {
       method: "get",
-      params: {
-        page,
-        size,
-        keyword,
-        status,
-        query_by,
-      },
+      params,
     });
 
     if (response.code === 2000) {
       items.value = response.data;
       totalItems.value = response.total_item;
       loading.value = false;
+
       return response;
     } else {
       loading.value = false;
@@ -98,11 +102,8 @@ onMounted(async () => {
     return item !== undefined;
   });
 
-  if (checkResIfUndefined) {
-    loadingAll.value = false;
-  } else {
-    loadingAll.value = false;
-  }
+  if (checkResIfUndefined) loadingAll.value = false;
+  else loadingAll.value = false;
 });
 </script>
 
@@ -112,38 +113,37 @@ onMounted(async () => {
     <h1 style="font-size: 32px">Cek Data Pengajuan PU</h1>
     <br />
 
-    <v-card class="pa-4">
-      <v-card-title class="text-h4 font-weight-bold">
-        Data Pengajuan
-      </v-card-title>
-      <v-card-item>
-        <VRadioGroup inline v-model="queryBy" label="Cari Berdasarkan">
-          <v-radio label="Pelaku Usaha" value="pelaku_usaha"></v-radio>
-          <v-radio label="Nomor Daftar" value="no_daftar"></v-radio>
+    <VCard class="pa-4">
+      <VCardTitle class="text-h4 font-weight-bold"> Data Pengajuan </VCardTitle>
+      <VCardItem>
+        <VRadioGroup v-model="queryBy" inline label="Cari Berdasarkan">
+          <VRadio label="Pelaku Usaha" value="pelaku_usaha" />
+          <VRadio label="Nomor Daftar" value="no_daftar" />
         </VRadioGroup>
 
-        <v-text-field
+        <VTextField
           v-model="searchQuery"
           density="compact"
           placeholder="Search Data"
           append-inner-icon="ri-search-line"
-          style="max-width: 100%"
-          @input="handleInput"
+          style="max-inline-size: 100%"
           clearable
+          @input="handleInput"
           @click:clear="handleInput"
         />
-      </v-card-item>
-      <v-card-item>
-        <v-data-table
+      </VCardItem>
+      <VCardItem>
+        <VDataTableServer
+          v-model:items-per-page="itemPerPage"
+          v-model:page="page"
           :headers="headers"
           :items="items"
           class="elevation-1"
           fixed-header
-          v-model:items-per-page="itemPerPage"
-          v-model:page="page"
           :loading="loading"
           :items-length="totalItems"
           loading-text="Loading..."
+          :items-per-page-options="[10, 25, 50, 100]"
           @update:options="
             getpuApi(page, itemPerPage, searchQuery, status, queryBy)
           "
@@ -154,33 +154,31 @@ onMounted(async () => {
           <template #item.create_on="{ item }">
             {{
               (item as any).create_on
-                ? new Date((item as any).create_on)
-                    ?.toISOString()
-                    .substring(0, 10)
+                ? formatDateId((item as any).create_on)
                 : "-"
             }}
           </template>
           <template #item.status="{ item }">
-            <v-chip
+            <VChip
               :color="getStatusColor((item as any).status_reg)"
               label
               variant="outlined"
             >
               {{ (item as any).status_reg }}
-            </v-chip>
+            </VChip>
           </template>
           <template #item.action="{ item }">
-            <v-icon
+            <VIcon
               color="primary"
               style="cursor: pointer"
               @click="navigateTo(`/sh-submission/detail/${(item as any).id}`)"
             >
               ri-arrow-right-line
-            </v-icon>
+            </VIcon>
           </template>
-        </v-data-table>
-      </v-card-item>
-    </v-card>
+        </VDataTableServer>
+      </VCardItem>
+    </VCard>
   </div>
-  <VSkeletonLoader type="card" v-else />
+  <VSkeletonLoader v-else type="card" />
 </template>

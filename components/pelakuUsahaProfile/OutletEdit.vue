@@ -13,10 +13,12 @@ const editOutletRef = ref();
 
 const panelOpen = ref(0);
 
+const { t } = useI18n();
+
 const tableOutletHeader = [
   { title: "No", key: "no" },
-  { title: "Nama", key: "name" },
-  { title: "Alamat", key: "address" },
+  { title: "detail-pu.pu-out-nama", key: "name" },
+  { title: "detail-pu.pu-out-address", key: "address" },
   { title: "Action", key: "action" },
 ];
 
@@ -43,7 +45,7 @@ const handleAddAspekLegalConfirm = (formData) => {
     }
   ).then((val: any) => {
     if (val.code == 2000) {
-      store.fetchProfile();
+      store.fetchProfile(null);
       snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
       addOutletRef.value.hideErrorProhbName();
       addOutletRef.value.closeDialog();
@@ -73,7 +75,7 @@ const handleEditOutletConfirm = (formData, id_outlet) => {
   })
     .then((val: any) => {
       if (val.code == 2000) {
-        store.fetchProfile();
+        store.fetchProfile(null);
         snackbar.sendSnackbar("Berhasil Menambahkan Data ", "success");
         editOutletRef.value.hideErrorProhbName();
         editOutletRef.value.closeDialog();
@@ -100,7 +102,7 @@ function handleDelete(item) {
   })
     .then((val: any) => {
       if (val.code == 2000) {
-        store.fetchProfile();
+        store.fetchProfile(null);
         snackbar.sendSnackbar("Berhasil Menghapus Data ", "success");
       } else {
         snackbar.sendSnackbar("Gagal Menghapus Data ", "error");
@@ -135,11 +137,23 @@ function handleDelete(item) {
     </VCardTitle>
     <VCardItem>
       <VDataTable
+        disable-sort
         :headers="tableOutletHeader"
         :items="props.outletData ? props.outletData : []"
       >
         <template #item.no="{ index }">
           {{ index + 1 }}
+        </template>
+        <template #header.name="{ column }">
+          <div>
+            {{ t(column.title) }}
+          </div>
+        </template>
+
+        <template #header.address="{ column }">
+          <div>
+            {{ t(column.title) }}
+          </div>
         </template>
         <template #item.action="{ item }">
           <VMenu :close-on-content-click="false">

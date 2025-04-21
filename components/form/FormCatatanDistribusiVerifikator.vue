@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import FormEditCatatanDistribusi from "@/components/form/FormEditCatatanDistribusi.vue";
-import FormEditLayoutProduksi from "@/components/form/FormEditLayoutProduksi.vue";
-import FormTambahCatatanDistribusi from "@/components/form/FormTambahCatatanDistribusi.vue";
-import FormTambahLayoutProduksi from "@/components/form/FormTambahLayoutProduksi.vue";
-
 const catatanHeaders = [
   { title: "No", key: "no" },
   { title: "Nama Catatan", key: "nama_produk", nowrap: true },
@@ -21,8 +16,12 @@ const catatanHeaders = [
 ];
 
 const catatanItems = ref([]);
+const size = ref(10);
+const page = ref(1);
+const totalData = ref(0);
 
 const route = useRoute();
+
 const getCatatanDistribusi = async () => {
   try {
     const response = await $api(
@@ -32,23 +31,28 @@ const getCatatanDistribusi = async () => {
         body: {
           id_reg: route.params.id,
         },
+        params: {
+          page: page.value,
+          size: size.value,
+        },
       }
     );
+
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan", "error");
+
       return;
     }
     catatanItems.value = response.data;
+    totalData.value = response.total_data;
   } catch (error) {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
 };
-onMounted(async () => {
-  await getCatatanDistribusi();
-});
+
 // TODO -> LOGIc DOWNLOAD
 const download = async (item) => {
-  await downloadDocument(item);
+  await downloadDocument(item, "FILE");
 };
 </script>
 
@@ -58,22 +62,36 @@ const download = async (item) => {
       <span class="text-h3">Catatan Distribusi / Penjualan Produk </span>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="catatanHeaders" :items="catatanItems">
+      <VDataTableServer
+        disable-sort
+        v-model:items-per-page="size"
+        v-model:page="page"
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="catatanHeaders"
+        :items="catatanItems"
+        :items-length="totalData"
+        @update:options="getCatatanDistribusi"
+      >
         <template #item.no="{ index }">
-          {{ index + 1 }}
+          {{ (page - 1) * size + index + 1 }}
         </template>
+
         <template #item.file="{ item }">
-          <v-btn
-            :disabled="item.file_dok == ''"
+          <VBtn
+            :disabled="item.file_dok === ''"
             color="primary"
             variant="plain"
             prepend-icon="mdi-download"
             @click="download(item)"
           >
             File
-          </v-btn>
+          </VBtn>
         </template>
-      </VDataTable>
+
+        <template #item.tanggal="{ item }">
+          {{ formatDateId(item.tanggal) }}
+        </template>
+      </VDataTableServer>
     </VCardItem>
   </VCard>
 </template>

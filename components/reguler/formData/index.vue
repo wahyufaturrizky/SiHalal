@@ -4,9 +4,6 @@ import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import { useI18n } from "vue-i18n";
 
-const { t } = useI18n();
-const emit = defineEmits();
-
 const props = defineProps({
   id: {
     type: String,
@@ -48,16 +45,26 @@ const props = defineProps({
   isviewonly: {
     type: Boolean,
   },
+  isDisabled: {
+    type: Boolean,
+  },
   facId: {
+    type: String,
+    required: false,
+  },
+  facMessage: {
     type: String,
     required: false,
   },
 });
 
+const emit = defineEmits();
+const { t } = useI18n();
 const itemsLph = ref<any>([]);
 const searchRegisType = ref<string>(props?.facId);
-const messageFasilitator = ref<string>("");
+const messageFasilitator = ref<string>(props?.facMessage);
 const productList = ref<any[]>([]);
+const isDisabledForm = ref(false);
 
 const listAreaPemasaran = [
   { name: "Kabupaten/Kota", code: "Kabupaten/Kota" },
@@ -122,27 +129,31 @@ const getLph = async (path: string, layanan: string, area: string) => {
     });
 
     if (response?.code === 2000) itemsLph.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    // useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
   }
 };
 
 const onSubmit = async () => {
- 
-  if (props?.title === t(`pengajuan-reguler.reguler-form--pengajuan-pengajuan-title`)) {
+  if (
+    props?.title ===
+    t("pengajuan-reguler.reguler-form--pengajuan-pengajuan-title")
+  ) {
     const jenisLayanan = props?.service_type?.find(
       (item: any) =>
         props.data?.[3]?.value === item.name ||
         props.data?.[3]?.value === item.code
     );
+
     const jenisProduk = props?.product_type?.find(
       (item: any) =>
         props.data?.[4]?.value === item.name ||
         props.data?.[4]?.value === item.code
     );
+
     const tanggalDaftar =
       props.data[2]?.value && formatDateIntl(new Date(props.data[2]?.value));
+
     const lphId = itemsLph.value?.find(
       (item: any) =>
         props.data[7]?.value === item.nama_lph ||
@@ -156,23 +167,31 @@ const onSubmit = async () => {
       tgl_daftar: `${tanggalDaftar?.split("/")?.[2]}-${
         tanggalDaftar?.split("/")?.[1]
       }-${tanggalDaftar?.split("/")?.[0]}`,
-      jenis_layanan: jenisLayanan?.code || props.data?.[3]?.value,
-      jenis_produk: jenisProduk?.code || props.data?.[4]?.value,
+      jenis_layanan:
+        jenisLayanan?.code ||
+        props?.service_type?.[0].code ||
+        props.data?.[3]?.value,
+      jenis_produk: jenisProduk?.code || props.data?.[4]?.code,
       merk_dagang: props.data[5]?.value,
       area_pemasaran: props.data?.[6]?.value,
-      lph_id: lphId ? lphId.lph_id : props.data[7]?.value,
+      lph_id: lphId
+        ? lphId.lph_id
+        : props.data[7]?.id
+        ? props.data[7]?.id
+        : props.data[7]?.value,
       channel_id: "",
       fac_id: props.data[9]?.value,
     };
-    if (lphId) {
-      props.onSubmit(payload);
-    } else {
-      props.onSubmit("error");
-    }
+
+    if (lphId || props.data[7]?.id) props.onSubmit(payload);
+    else props.onSubmit("error");
   } else {
     props.onSubmit();
   }
 };
+
+const route = useRoute<"">();
+const submissionId = route.params?.id;
 
 const getProductType = async (id: string) => {
   try {
@@ -180,6 +199,25 @@ const getProductType = async (id: string) => {
       method: "get",
       params: { id },
     });
+
+    console.log(" id product = ", id);
+
+    const jenisLayanan = props?.service_type?.find(
+      (item: any) =>
+        props.data?.[3]?.value === item.name ||
+        props.data?.[3]?.value === item.code ||
+        props.data?.[3]?.value === id
+    );
+
+    // const response = await $api("/master/product-filter-by-regid", {
+    //   method: "get",
+    //   params: {
+    //     id: jenisLayanan?.code,
+    //     idReg: submissionId,
+    //   },
+    // })
+
+    if (!response) return;
 
     if (response.length) {
       productList.value = response;
@@ -199,20 +237,20 @@ const lphValidation = async (title: string, value: string, index: number) => {
       if (
         el.title ===
         "pengajuan-reguler.reguler-form--pengajuan-pengajuan-jnsprod"
-      ) {
+      )
         el.value = "";
-      } else if (
+      else if (
         el.title === "pengajuan-reguler.reguler-form--pengajuan-pengajuan-lph"
-      ) {
+      )
         el.value = "";
-      } else if (
+      else if (
         el.title ===
         "pengajuan-reguler.reguler-form--pengajuan-pengajuan-marketing"
-      ) {
+      )
         el.value = "";
-      }
     });
   }
+
   const jenisLayanan = props?.service_type?.find(
     (item: any) =>
       props.data?.[3]?.value === item.name ||
@@ -229,47 +267,150 @@ const lphValidation = async (title: string, value: string, index: number) => {
   if (props.title === "halal_cert_submission.title") {
     const checkData = props.data.map((el: any) => {
       if (el.required && el.value === "") return false;
+
       return true;
     });
   }
 };
-const route = useRoute<"">();
-const submissionId = route.params?.id;
+
 const checkCodeFasilitas = async () => {
   try {
-    const response: any = await $api("/reguler/pelaku-usaha/find-facility", {
-      method: "get",
-      query: { facCode: searchRegisType.value,idReg : submissionId },
-    });
+    messageFasilitator.value = "Mohon tunggu";
 
-    if (response) {
-      messageFasilitator.value = response?.message;
-      emit("complete", response?.data?.[0]?.id);
-
-      return response;
-    }
-  } catch (error) {
-    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-  }
-};
-
-onMounted(async () => {
-  setTimeout(async () => {
     const jenisLayanan = props?.service_type?.find(
       (item: any) =>
         props.data?.[3]?.value === item.name ||
         props.data?.[3]?.value === item.code
     );
-    if (props.data?.[3]?.value)
-      await getProductType(jenisLayanan?.code || props.data?.[3]?.value);
 
-    if (jenisLayanan && props.data[6])
+    if (!jenisLayanan) {
+      useSnackbar().sendSnackbar("Jenis layanan tidak boleh kosong", "error");
+      messageFasilitator.value = null;
+
+      return;
+    }
+
+    const jenisProduk = props?.product_type?.find(
+      (item: any) =>
+        props.data?.[4]?.value === item.name ||
+        props.data?.[4]?.value === item.code
+    );
+
+    if (!jenisProduk) {
+      useSnackbar().sendSnackbar("Jenis produk tidak boleh kosong", "error");
+      messageFasilitator.value = null;
+
+      return;
+    }
+
+    const lphId = itemsLph.value?.find(
+      (item: any) =>
+        props.data[7]?.value === item.nama_lph ||
+        props.data[7]?.value === item.lph_id
+    );
+
+    if (!jenisProduk) {
+      useSnackbar().sendSnackbar("LPH tidak boleh kosong", "error");
+      messageFasilitator.value = null;
+
+      return;
+    }
+
+    if (!props.data?.[6]?.value) {
+      useSnackbar().sendSnackbar("Area pemasaran tidak boleh kosong", "error");
+      messageFasilitator.value = null;
+
+      return;
+    }
+
+    if (!searchRegisType.value) {
+      useSnackbar().sendSnackbar("Kode fasilitasi tidak boleh kosong", "error");
+      messageFasilitator.value = null;
+
+      return;
+    }
+
+    const response: any = await $api(
+      "/reguler/pelaku-usaha/find-facility-reguler",
+      {
+        method: "post",
+        body: {
+          lingkup_wilayah: props.data?.[6]?.value,
+          kode_fac: searchRegisType.value,
+          id_reg: submissionId,
+          jenis_layanan: jenisLayanan?.code || props.data?.[3]?.value,
+          jenis_produk: jenisProduk?.code || props.data?.[4]?.value,
+          lph_id: lphId.lph_id,
+        },
+      }
+    );
+
+    if (response) {
+      messageFasilitator.value = response?.message;
+      emit("complete", response?.data?.[0]?.id);
+
+      if (response?.code === 2000) onSubmit();
+
+      return response;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    messageFasilitator.value = null;
+  }
+};
+
+const onSubmitReguler = async () => {
+  try {
+    // Ensure props.data is not readonly or create a local copy
+    const updatedData = [...(props.data ?? [])];
+    if (updatedData[9]) updatedData[9].value = "";
+
+    const response: any = await $api(
+      "/reguler/pelaku-usaha/delete-facility-reguler",
+      {
+        method: "delete",
+        body: {
+          idReg: submissionId,
+        },
+      }
+    );
+
+    if (response) {
+      if (response?.code === 2000) {
+        searchRegisType.value = "";
+        messageFasilitator.value = "";
+
+        useSnackbar().sendSnackbar("Kode fasilitasi dihapus", "success");
+      }
+
+      return response;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+
+    // Ensure messageFasilitator is a ref before setting it
+    if (messageFasilitator) messageFasilitator.value = null;
+  }
+};
+
+onMounted(async () => {
+  if (props?.service_type) {
+    const jenisLayanan = props?.service_type?.find(
+      (item: any) =>
+        props.data?.[3]?.value === item.name ||
+        props.data?.[3]?.value === item.code
+    );
+
+    if (jenisLayanan || props.data?.[3]?.value)
+      await getProductType(jenisLayanan?.code || props.data?.[3]?.value);
+    if (jenisLayanan && props.data[6]) {
       await getLph(
         LIST_BUSINESS_ACTOR,
         jenisLayanan?.code,
         props.data?.[6]?.value
       );
-  }, 1000);
+    }
+  }
 });
 
 watchEffect(async () => {
@@ -279,15 +420,17 @@ watchEffect(async () => {
       props.data?.[3]?.value === item.name ||
       props.data?.[3]?.value === item.code
   );
+
   if (props.data?.[3]?.value)
     await getProductType(jenisLayanan?.code || props.data?.[3]?.value);
 
-  if (jenisLayanan && props.data[6])
+  if (jenisLayanan && props.data[6]) {
     await getLph(
       LIST_BUSINESS_ACTOR,
       jenisLayanan?.code,
       props.data?.[6]?.value
     );
+  }
 });
 </script>
 
@@ -322,11 +465,16 @@ watchEffect(async () => {
                 v-model="item.value"
                 teleport-center
                 :enable-time-picker="false"
-                format="dd-MM-yyyy"
+                format="dd/MM/yyyy"
+                :disabled="isDisabledForm"
               />
             </div>
             <div v-else>
-              <VTextField v-model="item.value" class="-mt-10" />
+              <VTextField
+                v-model="item.value"
+                class="-mt-10"
+                :disabled="isDisabledForm"
+              />
             </div>
           </div>
           <div v-if="item.type === 'select'">
@@ -348,6 +496,7 @@ watchEffect(async () => {
             <VSelect
               v-if="!item.disabled"
               v-model="item.value"
+              :disabled="isDisabledForm"
               :items="
                 item.title ===
                 'pengajuan-reguler.reguler-form--pengajuan-pengajuan-lph'
@@ -404,7 +553,11 @@ watchEffect(async () => {
                 {{ t(item.title) }}
                 <span v-if="item.required" class="required">*</span>
               </p>
-              <VTextarea v-model="item.value" class="-mt-10" />
+              <VTextarea
+                v-model="item.value"
+                class="-mt-10"
+                :disabled="isDisabledForm"
+              />
             </div>
           </div>
         </VCol>
@@ -429,6 +582,15 @@ watchEffect(async () => {
             >
               {{ t("pengajuan-reguler.reguler-kode-facilitas-1") }}
             </VBtn>
+
+            <VBtn
+              variant="outlined"
+              color="#E1442E"
+              style="block-size: 45px"
+              @click="onSubmitReguler"
+            >
+              <VIcon color="red"> fa-trash </VIcon>
+            </VBtn>
           </div>
           <VAlert
             v-if="messageFasilitator"
@@ -438,6 +600,11 @@ watchEffect(async () => {
             class="mt-3"
           >
             {{ messageFasilitator }}
+            <br />
+
+            <span class="text-xs" style="padding-block-start: 20px">
+              Klik <VIcon color="red"> fa-trash </VIcon> untuk mengubah data
+            </span>
           </VAlert>
         </VCol>
       </VRow>

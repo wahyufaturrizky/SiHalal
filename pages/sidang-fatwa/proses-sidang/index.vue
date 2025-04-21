@@ -217,7 +217,11 @@ const handleInput = () => {
 };
 
 const navigateAction = (id: string) => {
-  navigateTo(`/sidang-fatwa/proses-sidang/${id}`);
+  navigateTo(`/sidang-fatwa/proses-sidang/${id}`, {
+    open: {
+      target: "_blank",
+    },
+  });
 };
 
 // Filter state
@@ -281,21 +285,20 @@ const reset = () => {
             </template>
             <VCard class="pa-3" width="300">
               <VAutocomplete
-                v-model="fasilitas"
+                v-model="fasilitasi"
                 label="Fasilitas"
                 placeholder="Pilih Fasilitas"
                 :items="filterFasilitasi"
                 item-title="name"
                 item-value="id"
                 :loading="loading"
-                :search="onSearch"
-                @update:search="onSearch"
-                @scroll="onScroll"
                 class="mt-3"
                 density="compact"
+                clearable
               />
 
               <VSelect
+                clearable
                 v-model="lembaga"
                 label="Lembaga"
                 placeholder="Pilih Lembaga"
@@ -306,6 +309,7 @@ const reset = () => {
               />
               <br />
               <VAutocomplete
+                clearable
                 label="Pendamping"
                 :items="filterPendamping"
                 v-model="pendamping"
@@ -354,6 +358,8 @@ const reset = () => {
       <VRow>
         <VCol>
           <VDataTableServer
+            disable-sort
+            :items-per-page-options="[10, 25, 50, 100]"
             v-model:items-per-page="itemPerPage"
             v-model:page="page"
             :headers="verifikatorTableHeader"

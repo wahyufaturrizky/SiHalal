@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { themeConfig } from "@themeConfig";
+import { useI18n } from "vue-i18n";
 import { useDisplay } from "vuetify";
 import { VForm } from "vuetify/components/VForm";
 
@@ -14,7 +15,6 @@ import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-il
 import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
 import authV2LoginMaskDark from "@images/pages/auth-v2-login-mask-dark.png";
 import authV2LoginMaskLight from "@images/pages/auth-v2-login-mask-light.png";
-import { useI18n } from "vue-i18n";
 
 const MAX_LENGTH_PHONE_NUMBER = 16;
 
@@ -74,11 +74,10 @@ const validateEmail = () => {
 
 const validateNomorHandphone = async (event: Event) => {
   const target = event.target as HTMLInputElement;
+
   target.value = target.value.replace(/\D/g, "");
 
-  if (target.value.startsWith(0)) {
-    target.value = target.value.substring(1);
-  }
+  if (target.value.startsWith(0)) target.value = target.value.substring(1);
 
   form.value.noHandphone = target.value;
   if (!form.value.noHandphone) errors.noHandphone = "Wajib diisi";
@@ -87,6 +86,7 @@ const validateNomorHandphone = async (event: Event) => {
 
 const handlePasteNomorTelepon = (event: ClipboardEvent) => {
   event.preventDefault();
+
   const target = event.target as HTMLInputElement;
 
   const clipboardData = event.clipboardData?.getData("text") || "";
@@ -97,11 +97,8 @@ const handlePasteNomorTelepon = (event: ClipboardEvent) => {
 
   form.value.noHandphone = filteredData;
 
-  if (!target.value) {
-    errors.noHandphone = "Wajib diisi";
-  } else {
-    errors.noHandphone = "";
-  }
+  if (!target.value) errors.noHandphone = "Wajib diisi";
+  else errors.noHandphone = "";
 };
 
 const refVForm = ref<VForm>();
@@ -143,6 +140,7 @@ watch([() => form.value.password, () => form.value.passwordConfirm], () => {
 const router = useRouter();
 
 const selectedPhoneCode = ref();
+
 const onSubmit = async () => {
   // localStorage.setItem('formData', JSON.stringify(form.value))
 
@@ -151,7 +149,7 @@ const onSubmit = async () => {
       const payload = {
         role_id: form.value.typeUser.id,
         name: form.value.name,
-        email: form.value.email,
+        email: form.value.email.toLowerCase(),
         phone_number: form.value.noHandphone,
         password: form.value.password,
         confirm_password: form.value.passwordConfirm,
@@ -159,7 +157,7 @@ const onSubmit = async () => {
       };
 
       const payloadcheck = {
-        email: form.value.email,
+        email: form.value.email.toLowerCase(),
         phone_number: `${selectedPhoneCode.value}${form.value.noHandphone}`,
       };
 
@@ -172,7 +170,18 @@ const onSubmit = async () => {
           body: JSON.stringify(payloadcheck),
         });
 
-        console.log("RESPONSE CHECK EMAIL PHONE : ", response);
+        const isErrorExistEmail = Boolean(
+          response?.errors?.list_error.find((e) => e === "username is exist")
+        );
+
+        const messageErrorExistEmail =
+          "Email sudah terdaftar, silahkan gunakan email lain!";
+
+        if (isErrorExistEmail) {
+          errors.email = messageErrorExistEmail;
+
+          return;
+        }
 
         if (!response.data) {
           (errors.noHandphone = ""), (errors.email = "");
@@ -186,8 +195,9 @@ const onSubmit = async () => {
 
           return;
         }
+
         if (response.data.email_is_exist) {
-          errors.email = "Email sudah terdaftar, silahkan gunakan email lain!";
+          errors.email = messageErrorExistEmail;
 
           return;
         }
@@ -252,7 +262,8 @@ onMounted(async () => {
     }).then((resp: any) => {
       console.log("fetch type = ", resp);
 
-      const eligibleRole = ["r.10", "r.45", "r.5", "r.50"];
+      const eligibleRole = ["r.10", "r.50"];
+
       fetchType.value = resp?.filter(
         (val: any) =>
           val.name !== "" && eligibleRole.includes(val.code?.toLowerCase())
@@ -307,10 +318,12 @@ const handleLoadImageAuth = async () => {
 
     if (response.code === 2000) {
       fileType.value = response.data.type.toUpperCase();
+
       // const fileExt = response.data.file_name.split(".").pop();
       // fileType.value = !["webp"].includes(fileExt) ? "VID" : "IMG";
       if (fileType.value === "VID") {
         const orientationStr = response.data.file_name.split("-").pop();
+
         videOrientation.value = orientationStr.split(".")[0];
       }
 
@@ -323,6 +336,7 @@ const handleLoadImageAuth = async () => {
     console.error(error);
   }
 };
+
 const handleLoadImageFile = async (filename: string) => {
   try {
     const response: any = await $api("/admin/images/download", {
@@ -331,6 +345,7 @@ const handleLoadImageFile = async (filename: string) => {
         filename,
       },
     } as any);
+
     currentDisplayFile.value = response.url;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -343,12 +358,14 @@ onMounted(() => {
 });
 
 const country = ref();
+
 onMounted(async () => {
-  const response: MasterCountry[] = await $api("/master/country", {
+  const response: MasterCountry[] = await $api("/master/list-phone", {
     method: "get",
   });
+
   country.value = response.map((item) => {
-    return { name: item.name, cc: item.kode_telepon };
+    return { name: item.namanegara, cc: item.kode_telepon };
   });
   selectedPhoneCode.value = "62";
 });
@@ -445,6 +462,7 @@ const { t } = useI18n();
                   <VRow no-gutters>
                     <VCol cols="4" style="padding-inline-end: 0">
                       <VSelect
+                        v-model="selectedPhoneCode"
                         rounded="s-xl e-0"
                         density="comfortable"
                         hide-details
@@ -453,22 +471,20 @@ const { t } = useI18n();
                         :items="country"
                         item-value="cc"
                         item-title="name"
-                        v-model="selectedPhoneCode"
                         style="border-radius: 10px 0 0 10px"
                       >
                         <!-- Custom item slot -->
-                        <template v-slot:item="{ props, item }">
+                        <template #item="{ props, item }">
                           <VListItem
                             v-bind="props"
                             :title="item.raw.cc"
                             :subtitle="item.raw.name"
                             style="inline-size: 200px"
-                          >
-                          </VListItem>
+                          />
                         </template>
 
                         <!-- Custom selection slot -->
-                        <template v-slot:selection="{ item }">
+                        <template #selection="{ item }">
                           <p style="margin-block-end: 0">
                             {{ `+${item.raw.cc}` }}
                           </p>
@@ -477,16 +493,15 @@ const { t } = useI18n();
                     </VCol>
                     <VCol cols="8" style="padding-inline-start: 0">
                       <VTextField
+                        v-model="form.noHandphone"
                         style="padding: 0"
                         rounded="s-0 e-xl"
-                        v-model="form.noHandphone"
                         type="tel"
                         :maxlength="MAX_LENGTH_PHONE_NUMBER"
                         :placeholder="t('register.place-phone')"
                         @input="validateNomorHandphone"
                         @paste="handlePasteNomorTelepon"
-                      >
-                      </VTextField>
+                      />
                     </VCol>
                   </VRow>
 

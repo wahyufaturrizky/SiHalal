@@ -24,8 +24,6 @@ export default defineEventHandler(async (event: any) => {
       body,
     },
   ).catch((err: NuxtError) => {
-    setResponseStatus(event, 400)
-
     return err.data
   })
 

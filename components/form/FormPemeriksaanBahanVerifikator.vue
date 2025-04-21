@@ -14,9 +14,9 @@ const headers = [
   },
 ];
 
-const items = ref([
-
-]);
+const items = ref([]);
+const page = ref(1);
+const itemsPerPage = ref(10);
 
 const route = useRoute();
 const getBahan = async () => {
@@ -41,7 +41,7 @@ onMounted(async () => {
 });
 // TODO -> LOGIc DOWNLOAD
 const download = async (item) => {
-  await downloadDocument(item);
+  await downloadDocument(item, "FILES");
 };
 </script>
 
@@ -51,21 +51,32 @@ const download = async (item) => {
       <span class="text-h3">Formulir Pemeriksaan Bahan</span>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="headers" :items="items">
-        <template #item.no="{index}"> 
-          {{index + 1}}
+      <VDataTable
+        disable-sort
+        :headers="headers"
+        :items="items"
+        :items-per-page="itemsPerPage"
+        :page="page"
+        @update:page="(newPage) => (page = newPage)"
+        @update:items-per-page="(newSize) => (itemsPerPage = newSize)"
+      >
+        <template v-slot:item.no="{ index }">
+          {{ (page - 1) * itemsPerPage + index + 1 }}
         </template>
-        <template #item.type="{item}"> 
-          {{item.FileDok == '' ? 'Manual' : 'Unggah Foto'}}
+        <template #item.type="{ item }">
+          {{ item.FileDok == "" ? "Manual" : "Unggah Foto" }}
         </template>
         <template #item.file="{ item }">
-          <v-btn :disabled="item.FileDok == ''" color="primary" variant="plain" @click="download(item.FileDok)">
+          <v-btn
+            :disabled="item.FileDok == ''"
+            color="primary"
+            variant="plain"
+            @click="download(item.FileDok)"
+          >
             <VIcon>mdi-download</VIcon>
             File
           </v-btn>
         </template>
-
-        
       </VDataTable>
     </VCardItem>
   </VCard>

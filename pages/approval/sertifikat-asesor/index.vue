@@ -1,128 +1,124 @@
 <script setup lang="ts">
 interface DataUser {
-  id: string
-  username: string
-  nama: string
-  email: string
-  password?: string
-  phone_no: string
-  is_verify: boolean
-  roles: Array<{ name: string }>
+  id: string;
+  username: string;
+  nama: string;
+  email: string;
+  password?: string;
+  phone_no: string;
+  is_verify: boolean;
+  roles: Array<{ name: string }>;
 }
 
 const tableHeaders: any[] = [
-  { title: 'No', key: 'no', sortable: false },
-  { title: 'Nama Asesor', key: 'nama', nowrap: true },
-  { title: 'Instansi', key: 'instansi', nowrap: true },
-  { title: 'No. Sertifikat', key: 'no_sertifikat', nowrap: true },
-  { title: 'Keterangan', key: 'keterangan', nowrap: true },
-  { title: 'Sertifikat', key: 'actions', sortable: false, align: 'center' },
-]
+  { title: "No", key: "no", sortable: false },
+  { title: "Nama Asesor", key: "nama", nowrap: true },
+  { title: "Instansi", key: "instansi", nowrap: true },
+  { title: "No. Sertifikat", key: "no_sertifikat", nowrap: true },
+  { title: "Keterangan", key: "keterangan", nowrap: true },
+  { title: "Sertifikat", key: "actions", sortable: false, align: "center" },
+];
 
-const tableItems = ref<Array[]>([])
-const currentPage = ref(1)
-const itemPerPage = ref(10)
-const totalItems = ref(0)
-const selectedItem = ref([])
-const isLoading = ref(false)
-const tableType = ref('Semua')
+const tableItems = ref<Array[]>([]);
+const currentPage = ref(1);
+const itemPerPage = ref(10);
+const totalItems = ref(0);
+const selectedItem = ref([]);
+const isLoading = ref(false);
+const tableType = ref("Semua");
 
-const searchQuery = ref('')
+const searchQuery = ref("");
 
 const handleLoadList = async () => {
   try {
-    const response: any = await $api('/approval/assesor/list', {
-      method: 'get',
+    const response: any = await $api("/approval/assesor/list", {
+      method: "get",
       params: {
         page: currentPage.value,
         size: itemPerPage.value,
         search: searchQuery.value,
       },
-    } as any)
+    } as any);
 
     if (response.code === 2000) {
       if (response.data !== null) {
-        response.data.map((el: any) => el.id = el.assesor_id)
-        tableItems.value = response.data
-        currentPage.value = response.current_page
-        totalItems.value = response.total_item
-      }
-      else {
-        tableItems.value = []
-        currentPage.value = 1
-        totalItems.value = 0
+        response.data.map((el: any) => (el.id = el.assesor_id));
+        tableItems.value = response.data;
+        currentPage.value = response.current_page;
+        totalItems.value = response.total_item;
+      } else {
+        tableItems.value = [];
+        currentPage.value = 1;
+        totalItems.value = 0;
       }
 
-      return response
+      return response;
     }
+  } catch (error) {
+    console.error(error);
   }
-  catch (error) {
-    console.error(error)
-  }
-}
+};
 
 const { refresh } = await useAsyncData(
-  'user-list',
+  "user-list",
   async () => await handleLoadList(),
   {
     watch: [currentPage, itemPerPage],
-  },
-)
+  }
+);
 
 const onApprove = async () => {
   try {
-    const response: any = await $api(
-      '/approval/assesor/approve',
-      {
-        method: 'post',
-        body: selectedItem.value,
-      },
-    )
+    const response: any = await $api("/approval/assesor/approve", {
+      method: "post",
+      body: selectedItem.value,
+    });
 
     if (response.code !== 2000) {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-      selectedItem.value = []
-      refresh()
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      selectedItem.value = [];
+      refresh();
 
-      return
+      return;
     }
-    const totalError = response?.message?.errors
-    const totalSuccess = response?.message?.success
-    const message: any[] = []
-    if (totalError > 0)
-      message.push(`Gagal setujui sebanyak ${totalError}`)
+    const totalError = response?.message?.errors;
+    const totalSuccess = response?.message?.success;
+    const message: any[] = [];
+    if (totalError > 0) message.push(`Gagal setujui sebanyak ${totalError}`);
     if (totalSuccess > 0)
-      message.push(`Sukses setujui sebanyak ${totalSuccess}`)
-    useSnackbar().sendSnackbar(`Asesor ${message.join()}`, totalSuccess > 0 ? 'success' : 'error')
-    selectedItem.value = []
-    refresh()
+      message.push(`Sukses setujui sebanyak ${totalSuccess}`);
+    useSnackbar().sendSnackbar(
+      `Asesor ${message.join()}`,
+      totalSuccess > 0 ? "success" : "error"
+    );
+    selectedItem.value = [];
+    refresh();
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (error) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 onMounted(() => {
-  handleLoadList()
-})
+  handleLoadList();
+});
 
 const unduhFile = async (link: string) => {
-  await downloadDocument(link, 'ASSESOR')
-}
+  await downloadDocument(link, "ASSESOR");
+};
 </script>
 
 <template>
   <VRow>
     <VCol>
-      <h2 style="font-size: 32px">
-        Sertifikat Asesor
-      </h2>
+      <h2 style="font-size: 32px">Sertifikat Asesor</h2>
     </VCol>
   </VRow>
   <VRow>
     <VCol>
       <VCard class="w-100 py-3">
-        <VCardTitle class="d-flex justify-space-between align-center font-weight-bold text-h4">
+        <VCardTitle
+          class="d-flex justify-space-between align-center font-weight-bold text-h4"
+        >
           <div>List Sertifikat Asesor</div>
           <DialogApprovalData
             title="Persetujui data"
@@ -131,13 +127,15 @@ const unduhFile = async (link: string) => {
             :disabled="selectedItem.length === 0"
           >
             <template #contentDelete>
-              Anda yakin setujui {{selectedItem.length}} data ?
+              Anda yakin setujui {{ selectedItem.length }} data ?
             </template>
           </DialogApprovalData>
         </VCardTitle>
         <VCardItem>
           <VCard variant="outlined">
             <VDataTableServer
+              disable-sort
+              :items-per-page-options="[10, 25, 50, 100]"
               v-model:items-per-page="itemPerPage"
               v-model:page="currentPage"
               v-model="selectedItem"
@@ -151,21 +149,13 @@ const unduhFile = async (link: string) => {
               hover
             >
               <template #no-data>
-                <VCard
-                  variant=""
-                  class="w-full mt-7 mb-5"
-                >
-                  <div
-                    class="pt-2"
-                    style="justify-items: center"
-                  >
+                <VCard variant="" class="w-full mt-7 mb-5">
+                  <div class="pt-2" style="justify-items: center">
                     <img
                       src="~/assets/images/empty-data.png"
                       alt="empty_data"
-                    >
-                    <div class="pt-2 pb-2 font-weight-bold">
-                      Data Kosong
-                    </div>
+                    />
+                    <div class="pt-2 pb-2 font-weight-bold">Data Kosong</div>
                   </div>
                 </VCard>
               </template>
@@ -186,16 +176,11 @@ const unduhFile = async (link: string) => {
                     class="d-inline-block"
                   >
                     <div>
-                      <span
-                        v-if="idx !== 0"
-                        class="mx-2"
-                      >|</span>{{ el.name }}
+                      <span v-if="idx !== 0" class="mx-2">|</span>{{ el.name }}
                     </div>
                   </div>
                 </div>
-                <div v-else>
-                  -
-                </div>
+                <div v-else>-</div>
               </template>
               <template #item.actions="{ item }">
                 <div class="d-flex gap-1">
@@ -208,7 +193,7 @@ const unduhFile = async (link: string) => {
                       />
                     </div>
                   </IconBtn>
-                <!-- Right arrow icon for action -->
+                  <!-- Right arrow icon for action -->
                 </div>
               </template>
             </VDataTableServer>
@@ -233,7 +218,7 @@ const unduhFile = async (link: string) => {
       background: white;
       border-inline-start: 1px solid rgba(#000, 0.12);
       inset-inline-end: 0;
-      justify-items: center,
+      justify-items: center;
     }
   }
 }

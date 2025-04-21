@@ -138,15 +138,15 @@ const profilData = ref([
   },
 ]);
 
-const modalDasarRule = reactive([requiredValidator]);
+let modalDasarRule = reactive([requiredValidator]);
 const refModalDasar = ref();
 const addModalDasarRule = (value: any) => {
   console.log("modal dasar value = ", value);
 
-  modalDasarRule.push(integerValidator);
   if (value?.data?.length === 1) {
-    refModalDasar.value?.validate();
+    modalDasarRule.push(integerValidator);
   }
+  refModalDasar.value?.validate();
 };
 
 async function getMasterData(mastertype: string) {
@@ -163,6 +163,7 @@ const profileFormRef = ref<VForm>();
 const profileSecondFormRef = ref<VForm>();
 
 async function submitProfile() {
+  modalDasarRule.push(integerValidator);
   Promise.all([
     profileFormRef.value?.validate(),
     profileSecondFormRef.value?.validate(),
@@ -177,7 +178,7 @@ async function submitProfile() {
         negara_pu: profilData.value[5].value,
         no_tlp: profilData.value[6].value,
         email: profilData.value[7].value,
-        jenis_badan_usaha: form.value.jenis_badan_usaha,
+        jenis_usaha: form.value.jenis_badan_usaha,
         modal_dasar: parseInt(form.value.modal_dasar),
       };
 
@@ -189,7 +190,10 @@ async function submitProfile() {
         }
       ).then((val: any) => {
         if (val.code == 2000) {
-          store.fetchProfile();
+          if (modalDasarRule.length > 1) {
+            modalDasarRule = [requiredValidator];
+          }
+          store.fetchProfile(null);
           snackbar.sendSnackbar("Berhasil Mengubah Data ", "success");
         } else {
           snackbar.sendSnackbar("Gagal Mengubah Data ", "error");
@@ -200,11 +204,12 @@ async function submitProfile() {
 }
 
 async function submitProfilePemerintah() {
+  modalDasarRule.push(integerValidator);
   profileSecondFormRef.value?.validate().then(({ valid: isValid }) => {
     if (isValid) {
       const body = {
         email: profilData.value[7].value,
-        jenis_badan_usaha: form.value.jenis_badan_usaha,
+        jenis_usaha: form.value.jenis_badan_usaha,
         modal_dasar: parseInt(form.value.modal_dasar),
       };
 
@@ -216,7 +221,10 @@ async function submitProfilePemerintah() {
         }
       ).then((val: any) => {
         if (val.code == 2000) {
-          store.fetchProfile();
+          if (modalDasarRule.length > 1) {
+            modalDasarRule = [requiredValidator];
+          }
+          store.fetchProfile(null);
           snackbar.sendSnackbar("Berhasil Mengubah Data ", "success");
         } else {
           snackbar.sendSnackbar("Gagal Mengubah Data ", "error");
@@ -229,7 +237,7 @@ async function submitProfilePemerintah() {
 defineExpose({ submitProfile, submitProfilePemerintah });
 
 onMounted(async () => {
-  await store.fetchProfile();
+  await store.fetchProfile(null);
   jenisBadanUsahaOption.value = await getMasterData("bustype");
   skalaUsahaOption.value = await getMasterData("busscale");
 });

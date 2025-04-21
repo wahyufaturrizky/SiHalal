@@ -62,6 +62,7 @@ onMounted(async () => {
           </VTabsWindowItem>
           <VTabsWindowItem value="2">
             <PengajuanMain
+              :id-reg="submissionId"
               :hide-kode-fasilitasi="true"
               :hide-alert-kode-unik="true"
               :hide-on-search-fasilitator-function="true"

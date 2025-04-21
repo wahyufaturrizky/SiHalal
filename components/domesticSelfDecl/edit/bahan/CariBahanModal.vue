@@ -15,7 +15,11 @@ const showDialog = ref(false);
     <VCard>
       <VCardTitle>Cari Bahan</VCardTitle>
       <VCardItem>
-        <VDataTable :headers="tableHeader">
+        <VDataTable
+          disable-sort
+          :items-per-page-options="[10, 25, 50, 100]"
+          :headers="tableHeader"
+        >
           <template #item.action="{ item }">
             <VIcon icon="fa-arrow-right"></VIcon>
           </template>

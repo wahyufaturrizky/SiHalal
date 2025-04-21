@@ -13,6 +13,8 @@ const emit = defineEmits(["refresh"]);
 
 const { item, reqfile } = props || {};
 
+const loaType = ["loa", "letter of application", "letter of application / loa"];
+
 const isVisible = ref(false);
 const loading = ref(false);
 const openDialog = () => {
@@ -49,12 +51,16 @@ const saveReqDocument = async () => {
       if (fileDoc.code != 2000) {
         isVisible.value = false;
         loading.value = false;
-        useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
+        useSnackbar().sendSnackbar(
+          "ada kesalahan, gagal menyimpan! 1",
+          "error"
+        );
         return;
       }
     }
 
     const { type, no } = item || {};
+    console.log("type = ", type);
 
     const response: any = await $api(
       "/shln/submission/document/add-requirement",
@@ -62,10 +68,13 @@ const saveReqDocument = async () => {
         method: "post",
         body: {
           id: shlnId,
-          id_loa: type == "LOA" ? no : "",
+          id_loa: loaType.includes(type?.toLowerCase().trim()) ? no : "",
           id_nib: type == "NIB" ? no : "",
-          file_url_loa:
-            type == "LOA" ? (fileDoc ? fileDoc.data.file_url : "") : "",
+          file_url_loa: loaType.includes(type?.toLowerCase().trim())
+            ? fileDoc
+              ? fileDoc.data.file_url
+              : ""
+            : "",
           file_url_nib:
             type == "NIB" ? (fileDoc ? fileDoc.data.file_url : "") : "",
           comment_loa: "",
@@ -77,10 +86,7 @@ const saveReqDocument = async () => {
     );
 
     if (response.code != 2000) {
-      useSnackbar().sendSnackbar(
-        "ada kesalahan, gagal menyimpan!",
-        "error"
-      );
+      useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan! 2", "error");
       loading.value = false;
       isVisible.value = false;
     } else {
@@ -92,7 +98,7 @@ const saveReqDocument = async () => {
   } catch (error) {
     isVisible.value = false;
     loading.value = false;
-    useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan!", "error");
+    useSnackbar().sendSnackbar("ada kesalahan, gagal menyimpan! 4", "error");
   }
 };
 

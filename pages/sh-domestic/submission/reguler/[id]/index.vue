@@ -23,7 +23,8 @@ const dialogData = ref<any>({});
 const loading = ref(false);
 
 const aspectLegalHeader = [
-  { title: "No.", key: "id_reg_legal", nowrap: true },
+  { title: "No.", key: "no", nowrap: true },
+  { title: "No register", key: "id_reg_legal", nowrap: true },
   {
     title: "pengajuan-reguler.reguler-detail-legal-jenis",
     key: "jenis_surat",
@@ -144,6 +145,23 @@ const getChipColor = (status: string) => {
   return "success";
 };
 
+const itemsPerPage = ref(10);
+
+const totalPageAspek = ref(0);
+const allPagesAspek = ref<any[]>([]);
+
+const totalPagePabrik = ref(0);
+const allPagesPabrik = ref<any[]>([]);
+
+const totalPageOutlet = ref(0);
+const allPagesOutlet = ref<any[]>([]);
+
+const totalPagePenyelia = ref(0);
+const allPagesPenyelia = ref<any[]>([]);
+
+const totalPageProduk = ref(0);
+const allPagesProduk = ref<any[]>([]);
+
 const getDetailData = async () => {
   try {
     const response: any = await $api("/reguler/pelaku-usaha/detail", {
@@ -151,26 +169,129 @@ const getDetailData = async () => {
       params: { id },
     });
 
-    if (response?.code === 2000) data.value = response.data;
-    else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    if (response?.code === 2000) {
+      data.value = response.data;
+      totalPageAspek.value = response.data?.aspek_legal.length;
+      allPagesAspek.value = response.data?.aspek_legal || [];
+
+      totalPagePabrik.value = response.data?.pabrik.length;
+      allPagesPabrik.value = response.data?.pabrik || [];
+
+      totalPageOutlet.value = response.data?.outlet.length;
+      allPagesOutlet.value = response.data?.outlet || [];
+
+      totalPagePenyelia.value = response.data?.penyelia_halal.length;
+      allPagesPenyelia.value = response.data?.penyelia_halal || [];
+
+      totalPageProduk.value = response.data?.produk.length;
+      allPagesProduk.value = response.data?.produk || [];
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
+const currentPageAspek = ref(1);
+
+const halamanAspek = computed(() =>
+  Math.ceil(totalPageAspek.value / itemsPerPage.value)
+);
+
+const paginatedAspek = computed(() => {
+  const start = (currentPageAspek.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+
+  return allPagesAspek.value.slice(start, end);
+});
+
+const changePageAspek = (page: number) => {
+  currentPageAspek.value = page;
+};
+
+const currentPagePabrik = ref(1);
+
+const halamanPabrik = computed(() =>
+  Math.ceil(totalPagePabrik.value / itemsPerPage.value)
+);
+
+const paginatedPabrik = computed(() => {
+  const start = (currentPagePabrik.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+
+  return allPagesPabrik.value.slice(start, end);
+});
+
+const changePagePabrik = (page: number) => {
+  currentPagePabrik.value = page;
+};
+
+const currentPageOutlet = ref(1);
+
+const halamanOutlet = computed(() =>
+  Math.ceil(totalPageOutlet.value / itemsPerPage.value)
+);
+
+const paginatedOutlet = computed(() => {
+  const start = (currentPageOutlet.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+
+  return allPagesOutlet.value.slice(start, end);
+});
+
+const changePageOutlet = (page: number) => {
+  currentPageOutlet.value = page;
+};
+
+const currentPagePenyelia = ref(1);
+
+const halamanPenyelia = computed(() =>
+  Math.ceil(totalPagePenyelia.value / itemsPerPage.value)
+);
+
+const paginatedPenyelia = computed(() => {
+  const start = (currentPagePenyelia.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+
+  return allPagesPenyelia.value.slice(start, end);
+});
+
+const changePagePenyelia = (page: number) => {
+  currentPagePenyelia.value = page;
+};
+
+const currentPageProduk = ref(1);
+
+const halamanProduk = computed(() =>
+  Math.ceil(totalPageProduk.value / itemsPerPage.value)
+);
+
+const paginatedProduk = computed(() => {
+  const start = (currentPageProduk.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+
+  return allPagesProduk.value.slice(start, end);
+});
+
+const changePageProduk = (page: number) => {
+  currentPageProduk.value = page;
+};
+
 const handleKirim = (type: string) => {
-  if (type === "kirim")
+  if (type === "kirim") {
     dialogData.value = {
       title: "Mengirim Pengajuan",
       description: "Apakah yakin ingin mengirimkan pengajuan data ini?",
       label: "Ya, Kirim",
     };
-  else if (type === "delete")
+  } else if (type === "delete") {
     dialogData.value = {
       title: "Menghapus Pengajuan",
       description: "Apakah yakin ingin menghapus pengajuan data ini?",
       label: "Ya, Hapus",
     };
+  }
   dialogKirim.value = true;
 };
 
@@ -204,7 +325,9 @@ const dialogDecision = async (type: string) => {
         router.push("/sh-domestic/submission/reguler");
       }, 500);
     } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+      if (response.errors?.list_error)
+        useSnackbar().sendSnackbar(response.errors.list_error[0], "error");
+      else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
   } catch (error) {
     dialogKirim.value = false;
@@ -246,7 +369,27 @@ onMounted(async () => {
           {{ dialogData?.title }}
         </VCardTitle>
         <VCardText>
-          <p>
+          <div
+            v-if="dialogData.title === 'Mengirim Pengajuan'"
+            style="color: black; text-wrap: wrap"
+          >
+            <p style="font-weight: bolder">Disclaimer</p>
+            <p>Dengan sungguh-sungguh menyatakan bahwa:</p>
+            <ul style="padding-inline-start: 20px">
+              <li>
+                Seluruh pernyataan data dan informasi beserta seluruh dokumen
+                yang saya lampirkan dalam berkas pendaftaran adalah benar.
+              </li>
+              <li>
+                Apabila dikemudian ditemukan bahwa data/dokumen yang saya
+                sampaikan tidak benar dan/atau ada pemalsuan, maka seluruh
+                keputusan yang telah ditetapkan berdasarkan berkas batal
+                berdasarkan hukum dan saya bersedia dikenakan sanksi sesuai
+                ketentuan peraturan perundang-undangan yang berlaku.
+              </li>
+            </ul>
+          </div>
+          <p v-else>
             {{ dialogData?.description }}
           </p>
         </VCardText>
@@ -415,7 +558,7 @@ onMounted(async () => {
                   cols-value="6"
                   :name="t(`pengajuan-reguler.reguler-detail-pengajuan-lph`)"
                 >
-                  {{ data?.certificate_halal?.lembaga_pendamping || "-" }}
+                  {{ data?.certificate_halal?.nama_lph || "-" }}
                 </InfoRow>
                 <ThinLine :thickness="1" />
                 <InfoRow
@@ -600,11 +743,17 @@ onMounted(async () => {
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
+                  disable-sort
                   :headers="aspectLegalHeader"
-                  :items="data?.aspek_legal"
+                  :items="paginatedAspek"
                   class="border rounded"
                   hide-default-footer
                 >
+                  <template #item.no="{ index }">
+                    <div>
+                      {{ (currentPageAspek - 1) * itemsPerPage + index + 1 }}
+                    </div>
+                  </template>
                   <template #header.jenis_surat="{ column }">
                     <div class="mw-170">
                       {{ t(column.title) }}
@@ -645,12 +794,16 @@ onMounted(async () => {
                       {{ item.productName }}
                     </div>
                   </template>
-                  <template #item.id_reg_legal="{ index }">
-                    <div class="mw-170">
-                      {{ index + 1 }}
-                    </div>
+                  <template #item.tanggal_surat="{ item }">
+                    {{ formatDateId(item.tanggal_surat) }}
                   </template>
                 </VDataTable>
+                <VPagination
+                  v-model="currentPageAspek"
+                  :length="halamanAspek"
+                  :style="{ marginTop: '20px' }"
+                  @update:model-value="changePageAspek"
+                />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -663,11 +816,17 @@ onMounted(async () => {
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
+                  disable-sort
                   :headers="factoryHeader"
-                  :items="data?.pabrik"
+                  :items="paginatedPabrik"
                   hide-default-footer
                   class="border rounded"
                 >
+                  <template #item.no="{ index }">
+                    <div class="mw-170">
+                      {{ (currentPagePabrik - 1) * itemsPerPage + index + 1 }}
+                    </div>
+                  </template>
                   <template #header.nama_pabrik="{ column }">
                     <div class="mw-170">
                       {{ t(column.title) }}
@@ -685,13 +844,14 @@ onMounted(async () => {
                       {{ t(column.title) }}
                     </div>
                   </template>
-
-                  <template #item.no="{ index }">
-                    <div class="mw-170">
-                      {{ index + 1 }}
-                    </div>
-                  </template>
                 </VDataTable>
+
+                <VPagination
+                  v-model="currentPagePabrik"
+                  :length="halamanPabrik"
+                  :style="{ marginTop: '20px' }"
+                  @update:model-value="changePagePabrik"
+                />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -717,8 +877,9 @@ onMounted(async () => {
                   <!--                    </div> -->
                   <!--                  </div> -->
                   <VDataTable
+                    disable-sort
                     :headers="outletHeader"
-                    :items="data?.outlet"
+                    :items="paginatedOutlet"
                     hide-default-footer
                     class="border rounded"
                   >
@@ -742,10 +903,16 @@ onMounted(async () => {
 
                     <template #item.no="{ index }">
                       <div class="mw-170">
-                        {{ index + 1 }}
+                        {{ (currentPageOutlet - 1) * itemsPerPage + index + 1 }}
                       </div>
                     </template>
                   </VDataTable>
+                  <VPagination
+                    v-model="currentPageOutlet"
+                    :length="halamanOutlet"
+                    :style="{ marginTop: '20px' }"
+                    @update:model-value="changePageOutlet"
+                  />
                 </div>
               </VExpansionPanelText>
             </VExpansionPanel>
@@ -759,8 +926,9 @@ onMounted(async () => {
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
+                  disable-sort
                   :headers="penyeliaHalalHeaders"
-                  :items="data?.penyelia_halal"
+                  :items="paginatedPenyelia"
                   hide-default-footer
                   class="border rounded"
                 >
@@ -793,10 +961,19 @@ onMounted(async () => {
 
                   <template #item.no="{ index }">
                     <div class="mw-170">
-                      {{ index + 1 }}
+                      {{ (currentPagePenyelia - 1) * itemsPerPage + index + 1 }}
                     </div>
                   </template>
+                  <template #item.tanggal_sk="{ item }">
+                    {{ formatDateId(item.tanggal_sk) }}
+                  </template>
                 </VDataTable>
+                <VPagination
+                  v-model="currentPagePenyelia"
+                  :length="halamanPenyelia"
+                  :style="{ marginTop: '20px' }"
+                  @update:model-value="changePagePenyelia"
+                />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -808,6 +985,7 @@ onMounted(async () => {
               </VExpansionPanelTitle>
               <VExpansionPanelText>
                 <VDataTable
+                  disable-sort
                   :headers="produkHeader"
                   :items="data?.produk"
                   hide-default-footer
@@ -827,27 +1005,33 @@ onMounted(async () => {
 
                   <template #item.no="{ index }">
                     <div class="mw-170">
-                      {{ index + 1 }}
+                      {{ (currentPageProduk - 1) * itemsPerPage + index + 1 }}
                     </div>
                   </template>
                 </VDataTable>
-                <!--                <div-->
-                <!--                  class="border rounded w-100"-->
-                <!--                  style="justify-items: center"-->
-                <!--                >-->
-                <!--                  <div-->
-                <!--                    v-if="data?.produk?.length === 0"-->
-                <!--                    class="pt-2"-->
-                <!--                  >-->
-                <!--                    <img-->
-                <!--                      src="~/assets/images/empty-data.png"-->
-                <!--                      alt="empty_data"-->
-                <!--                    >-->
-                <!--                    <div class="pt-2 pb-2 font-weight-bold">-->
-                <!--                      Data Kosong-->
-                <!--                    </div>-->
-                <!--                  </div>-->
-                <!--                </div>-->
+                <!--                <div -->
+                <!--                  class="border rounded w-100" -->
+                <!--                  style="justify-items: center" -->
+                <!--                > -->
+                <!--                  <div -->
+                <!--                    v-if="data?.produk?.length === 0" -->
+                <!--                    class="pt-2" -->
+                <!--                  > -->
+                <!--                    <img -->
+                <!--                      src="~/assets/images/empty-data.png" -->
+                <!--                      alt="empty_data" -->
+                <!--                    > -->
+                <!--                    <div class="pt-2 pb-2 font-weight-bold"> -->
+                <!--                      Data Kosong -->
+                <!--                    </div> -->
+                <!--                  </div> -->
+                <!--                </div> -->
+                <VPagination
+                  v-model="currentPageProduk"
+                  :length="halamanProduk"
+                  :style="{ marginTop: '20px' }"
+                  @update:model-value="changePageProduk"
+                />
               </VExpansionPanelText>
             </VExpansionPanel>
           </VExpansionPanels>
@@ -875,7 +1059,7 @@ onMounted(async () => {
                       class="px-2"
                       @click="
                         downloadForms.sttd
-                          ? handleDownloadForm(downloadForms.sttd)
+                          ? handleDownloadForm(downloadForms.sttd, 'FILES')
                           : null
                       "
                     >

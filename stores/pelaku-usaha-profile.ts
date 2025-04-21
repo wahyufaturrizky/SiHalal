@@ -38,12 +38,17 @@ export const pelakuUsahaProfile = defineStore({
     getSupervisorData: (state) => state.supervisorData,
   },
   actions: {
-    async fetchProfile() {
+    async fetchProfile(nib: string | null) {
+      const params = {};
+      if (nib) {
+        params["nib"] = nib;
+      }
       this.isLoading = true;
       const response = await $api<apiProfileIntf | any>(
         `/pelaku-usaha-profile`,
         {
           method: "get",
+          params,
         }
       );
 
@@ -62,7 +67,6 @@ export const pelakuUsahaProfile = defineStore({
         this.perizinan = response.data.business_actor.perizinan;
       }
       this.isLoading = false;
-
     },
     setProfileData(input: profileMain) {
       this.profileData = { ...this.profileData, ...input };
@@ -103,6 +107,9 @@ export const pelakuUsahaProfile = defineStore({
     deleteFactory(idFactory: string) {
       const idxOldData = this.factory.findIndex((val) => val.id == idFactory);
       this.legal.splice(idxOldData, 1);
+    },
+    setsIsLoading(loading: boolean) {
+      this.isLoading = loading;
     },
   },
 });

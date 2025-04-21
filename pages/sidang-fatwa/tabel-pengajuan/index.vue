@@ -21,6 +21,7 @@ const getProvince = async () => {
 
   if (response.length > 0) {
     province.value = response;
+
     return response;
   }
 };
@@ -53,6 +54,7 @@ const loadItem = async ({
       items.value = response.data || [];
       totalItems.value = response.total_item || 0;
       loading.value = false;
+
       return response;
     } else {
       loading.value = false;
@@ -80,11 +82,8 @@ onMounted(async () => {
     return item !== undefined;
   });
 
-  if (checkResIfUndefined) {
-    loadingAll.value = false;
-  } else {
-    loadingAll.value = false;
-  }
+  if (checkResIfUndefined) loadingAll.value = false;
+  else loadingAll.value = false;
 });
 
 const verifikatorTableHeader = [
@@ -96,6 +95,7 @@ const verifikatorTableHeader = [
   { title: "Skala Usaha", key: "skala_usaha" },
   { title: "Jenis Produk", key: "jenis_produk" },
   { title: "Merek Dagang", key: "merek_dagang" },
+
   // { title: "Lihat Laporan SPH", key: "laporan_sph" },
   { title: "Action", key: "action" },
 ];
@@ -109,7 +109,11 @@ const handleInput = () => {
 };
 
 const navigateAction = (id: string) => {
-  navigateTo(`/sidang-fatwa/tabel-pengajuan/${id}`);
+  navigateTo(`/sidang-fatwa/tabel-pengajuan/${id}`, {
+    open: {
+      target: "_blank",
+    },
+  });
 };
 </script>
 
@@ -135,20 +139,20 @@ const navigateAction = (id: string) => {
         </VCol>
         <VCol :cols="6">
           <VSelect
+            v-model="provinsi_code"
             require
             :clearable="true"
             density="compact"
             placeholder="Pilih Provinsi"
-            v-model="provinsi_code"
             :items="province"
             item-value="code"
             item-title="name"
-            v-on:update:model-value="
+            @update:model-value="
               loadItem({
-                page: page,
+                page,
                 size: itemPerPage,
                 keyword: searchQuery,
-                provinsi_code: provinsi_code,
+                provinsi_code,
               })
             "
           />
@@ -157,6 +161,8 @@ const navigateAction = (id: string) => {
       <VRow v-if="!loadingAll">
         <VCol>
           <VDataTableServer
+            disable-sort
+            :items-per-page-options="[10, 25, 50, 100]"
             v-model:items-per-page="itemPerPage"
             v-model:page="page"
             :headers="verifikatorTableHeader"
@@ -166,10 +172,10 @@ const navigateAction = (id: string) => {
             loading-text="Loading..."
             @update:options="
               loadItem({
-                page: page,
+                page,
                 size: itemPerPage,
                 keyword: searchQuery,
-                provinsi_code: provinsi_code,
+                provinsi_code,
               })
             "
           >
@@ -201,7 +207,7 @@ const navigateAction = (id: string) => {
         </VCol>
       </VRow>
 
-      <VSkeletonLoader type="card" v-else />
+      <VSkeletonLoader v-else type="card" />
     </VCard>
   </div>
 </template>

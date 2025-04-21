@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import FormEditCatatan from "@/components/form/FormEditCatatan.vue";
-
 const headers = [
   { title: "No", key: "no" },
   { title: "Nama", key: "nama" },
@@ -17,6 +15,9 @@ const headers = [
 ];
 const items = ref([]);
 const route = useRoute();
+const page = ref(1);
+const itemsPerPage = ref(10);
+
 const getBahan = async () => {
   try {
     const response = await $api("/reguler/verifikator/detail/bahan/note", {
@@ -38,8 +39,8 @@ onMounted(async () => {
   await getBahan();
 });
 // TODO -> LOGIc DOWNLOAD
-const download =async (item) => {
-  await downloadDocument(item)
+const download = async (item) => {
+  await downloadDocument(item, "FILES");
 };
 </script>
 
@@ -49,20 +50,32 @@ const download =async (item) => {
       <span class="text-h3">Catatan Pembelian Bahan</span>
     </VCardTitle>
     <VCardItem>
-      <VDataTable :headers="headers" :items="items">
-        <template #item.no="{index}"> 
-          {{index + 1}}
+      <VDataTable
+        disable-sort
+        :headers="headers"
+        :items="items"
+        :items-per-page="itemsPerPage"
+        :page="page"
+        @update:page="(newPage) => (page = newPage)"
+        @update:items-per-page="(newSize) => (itemsPerPage = newSize)"
+      >
+        <template v-slot:item.no="{ index }">
+          {{ (page - 1) * itemsPerPage + index + 1 }}
         </template>
-        <template #item.type="{item}"> 
-          {{item.FileDok == '' ? 'Manual' : 'Unggah Foto'}}
+        <template #item.type="{ item }">
+          {{ item.FileDok == "" ? "Manual" : "Unggah Foto" }}
         </template>
         <template #item.file="{ item }">
-          <v-btn :disabled="item.FileDok == ''" color="primary" variant="plain" @click="download(item.FileDok)">
+          <v-btn
+            :disabled="item.FileDok == ''"
+            color="primary"
+            variant="plain"
+            @click="download(item.FileDok)"
+          >
             <VIcon>mdi-download</VIcon>
             File
           </v-btn>
         </template>
-
       </VDataTable>
     </VCardItem>
   </VCard>

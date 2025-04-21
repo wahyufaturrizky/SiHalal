@@ -64,6 +64,21 @@ const download = async () => {
 const navigateAction = (id: string) => {
   navigateTo(`/facilitator/verifikasi/${id}`);
 };
+const handleInvoice = async (fileName: string, type: string, id: string) => {
+  if (fileName == "") {
+    const response = await $api(`/certificate/regenerate`, {
+      method: "post",
+      body: {
+        document_type: "invoice-fasilitator",
+        ref_id: id,
+      },
+    });
+    if (response) {
+      fileName = response.filename;
+    }
+  }
+  return await downloadDocument(fileName, type);
+};
 </script>
 <template>
   <VRow>
@@ -92,6 +107,7 @@ const navigateAction = (id: string) => {
         </VCardTitle>
         <VCardItem>
           <VDataTable
+            disable-sort
             v-model:items-per-page="itemPerPage"
             v-model:page="page"
             :headers="tableHeader"
@@ -134,11 +150,7 @@ const navigateAction = (id: string) => {
               <VBtn
                 variant="text"
                 icon
-                @click="
-                  item.invoice_url != ''
-                    ? downloadDocument(item.invoice_url)
-                    : () => {}
-                "
+                @click="handleInvoice(item.invoice_url, 'INVOICE', item.id)"
               >
                 <VIcon>fa-file</VIcon>
               </VBtn>

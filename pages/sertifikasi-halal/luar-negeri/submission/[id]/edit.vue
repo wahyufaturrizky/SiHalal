@@ -74,6 +74,7 @@ const getMra = async () => {
       return;
     }
     mra.value = response.data;
+    reloadkey.value++;
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -98,6 +99,13 @@ const changeHcb = (item: string) => {
 onMounted(async () => {
   await Promise.allSettled([getidentity(), getManufacture(), getMra()]);
 });
+
+const handleUploadBulk = async (value: Boolean) => {
+  if (value) {
+    await getManufacture();
+  }
+};
+
 const updateData = useMyUpdateSubmissionEditStore();
 watch(
   () => updateData.dataUpdate,
@@ -133,6 +141,7 @@ const disabledTab = (
 ) => {
   tabDisable.value[type] = value;
 };
+const reloadkey = ref(0);
 </script>
 
 <template>
@@ -162,8 +171,9 @@ const disabledTab = (
       <VTabsWindowItem value="manufacture">
         <EditManufacture
           v-if="manufacture != undefined && identity != undefined"
+          :key="reloadkey"
           :manufacture="manufacture"
-          :hcb-country="identity.hcb.country"
+          :hcb-country="mra?.country"
         />
       </VTabsWindowItem>
       <VTabsWindowItem value="product">
@@ -171,6 +181,7 @@ const disabledTab = (
           v-if="manufacture != undefined"
           :manufacture="manufacture"
           :scope="identity?.hcn.scope"
+          @upload-bulk="handleUploadBulk"
         />
       </VTabsWindowItem>
     </VTabsWindow>

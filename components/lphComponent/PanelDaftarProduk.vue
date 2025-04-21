@@ -1,72 +1,62 @@
 <script setup lang="ts">
-const props = defineProps<{
-  data?: object
-}>()
+const props = defineProps({
+  data: {
+    type: Object,
+    required: false,
+  },
+  handlePageChange: {
+    type: Function,
+    required: false,
+  },
+  page: {
+    type: Number,
+    required: false,
+  },
+  perPage: {
+    type: Number,
+    required: false,
+  },
+  total: {
+    type: Number,
+    required: false,
+  },
+});
+
+const currentPage = ref(props.page);
+const itemPerPage = ref(props.perPage);
+const totalItems = ref(props.total);
 
 const productNameHeader: any[] = [
-  { title: 'No', key: 'index' },
-  { title: 'Layanan Produk', key: 'layanan_produk', nowrap: true },
-  { title: 'Jenis Produk', key: 'jenis_produk', nowrap: true },
-  { title: 'Kelas Produk', key: 'kelas_produk', nowrap: true },
-  { title: 'Rincian Produk', key: 'rincian_produk', nowrap: true },
-  { title: 'Nama Produk', key: 'nama_produk', nowrap: true },
-  { title: 'Publikasi', key: 'publikasi_produk' },
-]
+  { title: "No", key: "index" },
+  { title: "Layanan Produk", key: "layanan_produk", nowrap: true },
+  { title: "Jenis Produk", key: "jenis_produk", nowrap: true },
+  { title: "Kelas Produk", key: "kelas_produk", nowrap: true },
+  { title: "Rincian Produk", key: "rincian_produk", nowrap: true },
+  { title: "Nama Produk", key: "nama_produk", nowrap: true },
+  { title: "Publikasi", key: "publikasi_produk" },
+];
 
-const productNameData = ref([
-  {
-    service: 'Makanan',
-    type: 'Penyedia minuman dan makanan dengan pengolahan',
-    class: 'Resto',
-    detail: 'Makanan Mie',
-    name: 'Ramen Double Spicy lvl 2',
-    isPublished: true,
-  },
-  {
-    service: 'Makanan',
-    type: 'Penyedia minuman dan makanan dengan pengolahan',
-    class: 'Resto',
-    detail: 'Makanan Mie',
-    name: 'Ramen Double Spicy lvl 2',
-    isPublished: false,
-  },
-  {
-    service: 'Makanan',
-    type: 'Penyedia minuman dan makanan dengan pengolahan',
-    class: 'Resto',
-    detail: 'Makanan Mie',
-    name: 'Ramen Double Spicy lvl 2',
-    isPublished: true,
-  },
-])
 </script>
 
 <template>
-  <VDataTable
-    :headers="productNameHeader"
+  <VDataTableServer
+    v-model:items-per-page="itemPerPage"
+    v-model:page="currentPage"
+    :items-length="totalItems"
     :items="props?.data"
-    hide-default-footer
-    class="border rounded"
+    :headers="productNameHeader"
+    class="custom-table"
+    hover
+    disable-sort
+    @update:options="props.handlePageChange"
   >
     <template #item.index="{ index }">
-      {{ index + 1 }}
+      {{ index + 1 + (+currentPage - 1) * +itemPerPage }}
     </template>
     <template #item.publikasi_produk="{ item }">
-      <VCheckbox
-        :model-value="item.publikasi_produk"
-        class="non-clickable"
-      />
+      <VCheckbox :model-value="item.publikasi_produk" class="non-clickable" />
     </template>
-    <template #bottom>
-      <VDataTableFooter
-        v-if="productNameData.length > 5"
-        class="custom-table"
-        first-icon="mdi-chevron-double-left"
-        last-icon="mdi-chevron-double-right"
-        show-current-page
-      />
-    </template>
-  </VDataTable>
+  </VDataTableServer>
 </template>
 
 <style scoped lang="scss">

@@ -29,8 +29,10 @@ const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
-const startDate = ref("");
-const endDate = ref("");
+const startDate = ref(
+  formatToYYYYMMDD(new Date(new Date().setDate(new Date().getDate() - 30)))
+);
+const endDate = ref(formatToYYYYMMDD(new Date()));
 const filterFasilitasi = ref([]);
 const filterPendamping = ref([]);
 const filterProduk = ref([]);
@@ -62,12 +64,9 @@ const loadItem = async (
     );
 
     if (response.code === 2000) {
-      console.log(response.data, "ini response data");
       items.value = response.data || [];
       totalItems.value = response.total_item || 0;
       loading.value = false;
-      console.log("Total Items:", totalItems.value);
-
       return response;
     } else {
       loading.value = false;
@@ -79,7 +78,7 @@ const loadItem = async (
   }
 };
 
-const debouncedFetch = debounce(loadItem, 500);
+const debouncedFetch = debounce(loadItem, 1000);
 
 const handleInput = () => {
   debouncedFetch(
@@ -128,7 +127,7 @@ const loadFilter = async () => {
     filterPendamping.value = response3.data || [];
     filterProduk.value = response4.data || [];
     loading.value = false;
-    console.log(response1.data, "ini response filter fasilitasi");
+    // console.log(response1.data, "ini response filter fasilitasi");
 
     return response1;
   } catch (error) {
@@ -176,10 +175,14 @@ const currentMonth = now.toLocaleString("default", { month: "2-digit" });
 const currentYear = now.getFullYear();
 const currentDay = now.getDate();
 const date = ref("");
+const datePlaceholder = ref(startDate.value + " to " + endDate.value);
 const changeData = (item) => {
+  if (!date.value.includes("to")) return;
+
   const rangeDate = date.value.split(" to ");
-  startDate.value = formatToISOString(rangeDate[0]);
-  endDate.value = formatToISOString(rangeDate[1]);
+  startDate.value = convertDDMMYYYYtoISO(rangeDate[0]);
+  endDate.value = convertDDMMYYYYtoISO(rangeDate[1]);
+
   debouncedFetch(
     page.value,
     itemPerPage.value,
@@ -204,7 +207,7 @@ const changeData = (item) => {
           <VCol cols="12" md="4">
             <AppDateTimePicker
               v-model="date"
-              placeholder="Select Range Date"
+              :placeholder="datePlaceholder"
               :config="{
                 mode: 'range',
                 dateFormat: 'd-m-Y',
@@ -215,7 +218,7 @@ const changeData = (item) => {
                   },
                 ],
               }"
-              @change="changeData"
+              @update:model-value="changeData"
             />
           </VCol>
           <VCol cols="12" md="8">
@@ -230,6 +233,8 @@ const changeData = (item) => {
       </VCardItem>
       <VCardItem>
         <VDataTableServer
+          disable-sort
+          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
           :headers="tableHeader"
@@ -237,10 +242,28 @@ const changeData = (item) => {
           :loading="loading"
           :items-length="totalItems"
           loading-text="Loading..."
-          @update:options="loadItem(page, itemPerPage)"
+          @update:options="loadItem(page, itemPerPage, startDate, endDate)"
         >
           <template #item.no="{ index }">
             {{ index + 1 + (page - 1) * itemPerPage }}
+          </template>
+          <template #item.ditetapkan="{ item }">
+            {{ parseInt(item.ditetapkan).toLocaleString("id") }}
+          </template>
+          <template #item.dikembalikan="{ item }">
+            {{ parseInt(item.dikembalikan).toLocaleString("id") }}
+          </template>
+          <template #item.ditolak="{ item }">
+            {{ parseInt(item.ditolak).toLocaleString("id") }}
+          </template>
+          <template #item.sub_total="{ item }">
+            {{ parseInt(item.sub_total).toLocaleString("id") }}
+          </template>
+          <template #item.belum_ditetapkan="{ item }">
+            {{ parseInt(item.belum_ditetapkan).toLocaleString("id") }}
+          </template>
+          <template #item.total="{ item }">
+            {{ parseInt(item.total).toLocaleString("id") }}
           </template>
         </VDataTableServer>
       </VCardItem>

@@ -13,8 +13,16 @@ const content = ref([]);
 
 const props = defineProps({
   data: {
-    type: Object,
+    type: Object as PropType<Record<string, any>>,
     required: true,
+  },
+  itemsPerPage: {
+    type: Number,
+    default: 10,
+  },
+  currentPage: {
+    type: Number,
+    default: 1,
   },
 });
 
@@ -99,9 +107,21 @@ defineExpose({
         </VCol>
       </VRow>
       <br />
-      <VDataTable :headers="tableHeader" :items="content" hide-default-footer>
+      <VDataTable
+        disable-sort
+        :items-per-page-options="[10, 25, 50, 100]"
+        :headers="tableHeader"
+        :items="content"
+        hide-default-footer
+      >
         <template #item.no="{ index }">
-          {{ index + 1 }}
+          <div>
+            {{
+              ((props.currentPage || 1) - 1) * (props.itemsPerPage || 10) +
+              index +
+              1
+            }}
+          </div>
         </template>
         <template #item.action="{ item }">
           <VBtn variant="text" @click="handleDeleteProduk(item.id)">

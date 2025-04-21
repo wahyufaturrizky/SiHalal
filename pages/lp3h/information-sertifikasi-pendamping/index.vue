@@ -24,37 +24,37 @@ const headers = [
     nowrap: true,
   },
   {
-    title: `Tanggal Daftar`,
+    title: "Tanggal Daftar",
     key: "tgl_daftar",
     nowrap: true,
   },
   {
-    title: `NamaPU`,
+    title: "NamaPU",
     key: "nama_pu",
     nowrap: true,
   },
   {
-    title: `Alamat`,
+    title: "Alamat",
     key: "alamat_pu",
     nowrap: true,
   },
   {
-    title: `Nama Pendamping`,
+    title: "Nama Pendamping",
     key: "nama_pj",
     nowrap: true,
   },
   {
-    title: `Merk Dagang`,
+    title: "Merk Dagang",
     key: "merek_dagang",
     nowrap: true,
   },
   {
-    title: `Status Pembayaran oleh Oleh BPJH`,
+    title: "Status Pembayaran oleh Oleh BPJH",
     key: "status",
     nowrap: true,
   },
   {
-    title: `action`,
+    title: "action",
     value: "action",
     sortable: false,
     nowrap: true,
@@ -66,27 +66,31 @@ const { mdAndUp } = useDisplay();
 const dialogMaxWidth = computed(() => {
   return mdAndUp.value ? 400 : "90%";
 });
+
 const itemPerPage = ref(10);
+
 // TODO -> BIKIN LOGIC BUAT SET CHIP COLOR
-const getChipColor = (stats: string) => {
-  if (stats === "Lunas") return "success";
-  return "primary";
+const getChipColor = (stats: any) => {
+  if (stats === "Pengajuan" || stats === 1) return "";
+  if (stats === "Disetujui" || stats === 2) return "primary";
+  if (stats === "Terbayar ke LP3H" || stats === 3) return "success";
+  if (stats === "Terbayar ke Pendamping" || stats === 4) return "success";
+
+  return "";
 };
+
 const downloadExcel = async (
   statusData: string,
   search: string,
   file_url: boolean
 ) => {
   try {
-    let datePayload: any = null;
+    const datePayload: any = null;
     const params = {};
 
-    if (statusData) {
-      params.status = statusData;
-    }
-    if (search) {
-      params.search = search;
-    }
+    if (statusData) params.status = statusData;
+
+    if (search) params.search = search;
 
     // params.file_url = false;
 
@@ -95,18 +99,14 @@ const downloadExcel = async (
       params,
     });
 
-    if (response) {
-      downloadFileExcel(response);
-      // response?.data?.map((item: any) => {
-      //   item.typeAndTotal = [item?.jenis_usaha, item?.jumlah_produk];
-      // });
-
-      // totalItems.value = response.totalPages;
-      // data.value = response.data;
-      // return response;
-    } else {
-      useSnackbar().sendSnackbar("Ada Kesalahan 1", "error");
-    }
+    if (response) downloadFileExcel(response);
+    // response?.data?.map((item: any) => {
+    //   item.typeAndTotal = [item?.jenis_usaha, item?.jumlah_produk];
+    // });
+    // totalItems.value = response.totalPages;
+    // data.value = response.data;
+    // return response;
+    else useSnackbar().sendSnackbar("Ada Kesalahan 1", "error");
   } catch (error) {
     loading.value = false;
     useSnackbar().sendSnackbar("Ada Kesalahan 2", "error");
@@ -120,8 +120,9 @@ const loadItem = async (
   search: string
 ) => {
   try {
-    let datePayload: any = null;
-    let params = {
+    const datePayload: any = null;
+
+    const params = {
       page: pageNumber,
       size: sizeData,
       status: statusData,
@@ -143,7 +144,7 @@ const loadItem = async (
 
       totalItems.value = response.totalPages;
       data.value = response.data ?? [];
-  
+
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -168,11 +169,15 @@ const getListStatus = async () => {
       { code: "OF71", name: "Selesai P3H" },
       { code: "OF74", name: "Dikirim ke Komite Fatwa" },
       { code: "OF280", name: "Dikembalikan ke PU" },
+      { code: "OF285", name: "Dikembakikan Oleh Komite Fatwa" },
+      { code: "OF56", name: "Pembayaran" },
+      { code: "OF72", name: "Selesai Verifikasi LP3H" },
       { code: "OF100", name: "Selesai Sidang Fatwa" },
       { code: "OF120", name: "Penerbitan Sertifikat" },
       { code: "OF300", name: "Sertifikat Halal Terbit" },
     ];
     loading.value = false;
+
     //   return response;
     // } else {
     // loading.value = false;
@@ -192,28 +197,28 @@ const handleInput = (e: any) => {
   debounce(loadItem(page.value, size.value, status.value, e.target.value), 500);
 };
 
-
-
 function formatDate(isoString: string): string {
-  if(isoString!=null||isoString!=""){
-  const date = new Date(isoString);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-based
-  const year = date.getFullYear();
+  if (isoString != null || isoString != "") {
+    const date = new Date(isoString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-based
+    const year = date.getFullYear();
 
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const seconds = String(date.getSeconds()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
 
-  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-} else{
-  return  ""
-}
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+  } else {
+    return "";
+  }
 }
 
 const downloadExcelHandler = () => {
   downloadExcel(status.value, searchQuery.value, true);
 };
+
+const router = useRouter();
 
 onMounted(async () => {
   loading.value = true;
@@ -232,16 +237,18 @@ watch([status, outDated, page], () => {
 <template>
   <div v-if="!loading">
     <!-- <KembaliButton class="pl-0" /> -->
-    <div class="d-flex align-center" style="justify-content: space-between;">
-      <h1 style="font-size: 32px;">Informasi Sertifikat Self Declare</h1>
-      <!-- <VBtn
+    <div class="d-flex align-center" style="justify-content: space-between">
+      <h1 style="font-size: 32px">Informasi Sertifikat Self Declare</h1>
+      <!--
+        <VBtn
         v-if="!loading"
         append-icon="fa-download"
         variant="flat"
         @click="() => unduhFile()"
-      >
+        >
         {{ t("reguler-invoice.invoice-list-donwloadstep") }}
-      </VBtn> -->
+        </VBtn>
+      -->
     </div>
     <br />
     <VCard>
@@ -261,16 +268,16 @@ watch([status, outDated, page], () => {
               <VMenu
                 activator="parent"
                 :close-on-content-click="false"
-                @update:modelValue="onUpdate"
+                @update:model-value="onUpdate"
               >
                 <VCard :min-width="dialogMaxWidth">
                   <VCardItem>
                     <VLabel for="status">
-                      {{ t("reguler-invoice.invoice-list-status") }}</VLabel
-                    >
+                      {{ t("reguler-invoice.invoice-list-status") }}
+                    </VLabel>
                     <VSelect
-                      v-model="status"
                       id="status"
+                      v-model="status"
                       :items="lovStatus"
                       :placeholder="
                         t(`reguler-invoice.invoice-list-search-status`)
@@ -278,15 +285,15 @@ watch([status, outDated, page], () => {
                       class="mb-1"
                       item-value="code"
                       item-title="name"
-                      @update:modelValue="searchQuery = ''"
+                      @update:model-value="searchQuery = ''"
                     />
                   </VCardItem>
                 </VCard>
               </VMenu>
             </VBtn>
             <VTextField
-              style="margin-inline-start: 1svw;"
               v-model="searchQuery"
+              style="margin-inline-start: 1svw"
               density="compact"
               placeholder="Cari No. Daftar/ Nama PU"
               append-inner-icon="ri-search-line"
@@ -294,9 +301,9 @@ watch([status, outDated, page], () => {
             />
           </VCol>
           <VCol cols="4" class="d-flex justify-end">
-            <VBtn variant="flat" @click="downloadExcelHandler()">
+            <VBtn variant="flat" @click="downloadExcelHandler">
               Export XLS
-              <VIcon right>mdi-file-excel</VIcon>
+              <VIcon right> mdi-file-excel </VIcon>
             </VBtn>
           </VCol>
         </VRow>
@@ -304,6 +311,7 @@ watch([status, outDated, page], () => {
 
       <VCardItem>
         <VDataTable
+          disable-sort
           :headers="headers"
           :items="data"
           item-value="no"
@@ -323,33 +331,51 @@ watch([status, outDated, page], () => {
             <label>{{ index + 1 + (page - 1) * itemPerPage }}</label>
           </template>
           <template #item.tgl_daftar="{ item }">
-            {{ formatDate(item.tgl_daftar) }}
+            {{ item.tgl_daftar ? formatDateId(item.tgl_daftar) : "" }}
           </template>
-          <template v-slot:[`item.status`]="{ item }">
+          <template #[`item.status`]="{ item }">
             <div class="d-flex flex-wrap">
               <VChip
+                v-if="item.f_lph !== ''"
                 :key="index"
-                :color="getChipColor(item.status)"
+                :color="getChipColor(item.status_pembayaran)"
                 label
                 class="ma-1"
               >
-                {{ item.status }}
+                {{ item.status_pembayaran }}
               </VChip>
+              <!-- <p v-if="item.status_pembayaran === ''">-</p> -->
             </div>
           </template>
 
-          <template #item.action="{ item }">
+          <!--
+            <template #item.action="{ item }">
             <Vbtn
-              variant="plain"
-              class="cursor-pointer"
-              @click="() => navigateToDetail(item)"
+            variant="plain"
+            class="cursor-pointer"
+            @click="() => navigateToDetail(item)"
             >
-              <VRow>
-                <VCol sm="3">
-                  <VIcon end icon="ri-arrow-right-line" color="primary" />
-                </VCol>
-              </VRow>
+            <VRow>
+            <VCol sm="3">
+            <VIcon end icon="ri-arrow-right-line" color="primary" />
+            </VCol>
+            </VRow>
             </Vbtn>
+            </template>
+          -->
+
+          <template #item.action="{ item }: any">
+            <VIcon
+              color="success"
+              style="cursor: pointer"
+              @click="
+                router.push(
+                  `/lp3h/information-sertifikasi-pendamping/${item.id_reg}`
+                )
+              "
+            >
+              ri-arrow-right-line
+            </VIcon>
           </template>
         </VDataTable>
         <VPagination

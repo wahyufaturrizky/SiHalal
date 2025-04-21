@@ -8,9 +8,9 @@ const props = defineProps({
   isEditable: { type: Boolean, default: true },
 });
 
-const form = ref(props.initialData);
-
 const emit = defineEmits(["confirm"]);
+
+const form = ref(props.initialData);
 
 const isVisible = ref(false);
 
@@ -44,9 +44,9 @@ const documentTypes = ["SIUP", "ANOTHER"];
   <VBtn
     variant="text"
     prepend-icon="ri-edit-line"
-    @click="openDialog"
     block
     :disabled="!props.isEditable"
+    @click="openDialog"
   >
     Ubah
   </VBtn>
@@ -98,24 +98,26 @@ const documentTypes = ["SIUP", "ANOTHER"];
         </VRow>
         <VRow class="mb-1">
           <VCol cols="12">
-            <VLabel for="tanggalDocument">Tanggal Document</VLabel>
+            <VLabel for="tanggalDocument"> Tanggal Document </VLabel>
             <VueDatePicker
-              teleport-center
               id="tanggalDocument"
               v-model="form.date"
+              teleport-center
               :enable-time-picker="false"
+              format="dd/MM/yyyy"
             />
           </VCol>
         </VRow>
 
         <VRow class="mb-1">
           <VCol cols="12">
-            <VLabel for="masaBerlaku">Masa Berlaku</VLabel>
+            <VLabel for="masaBerlaku"> Masa Berlaku </VLabel>
             <VueDatePicker
-              teleport-center
               id="masaBerlaku"
               v-model="form.validDate"
+              teleport-center
               :enable-time-picker="false"
+              format="dd/MM/yyyy"
             />
           </VCol>
         </VRow>
