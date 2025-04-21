@@ -349,10 +349,10 @@ const openEditOutlet = () => {
   getFactoryAndOutlet("FAOUT");
 };
 
-const openModalAddFactory = () => {
-  isAddFactoryModalOpen.value = !isAddFactoryModalOpen.value;
-  getListFacNotTaken("FAPAB");
-};
+// const openModalAddFactory = () => {
+//   isAddFactoryModalOpen.value = !isAddFactoryModalOpen.value;
+//   getListFacNotTaken("FAPAB");
+// };
 
 const HandleEditPabrik = async (fasId) => {
   await getDetailFasilitasPabrik(fasId);
@@ -376,6 +376,10 @@ const handleEditProduct = async (productId) => {
 
 const openModalAddOutlet = () => {
   isAddOutletModalOpen.value = !isAddOutletModalOpen.value;
+};
+
+const openModalAddFactory2 = () => {
+  isAddFactoryModalOpen.value = !isAddFactoryModalOpen.value;
 };
 
 const handleRemoveFile = async (uploadedFile: any) => {
@@ -949,28 +953,28 @@ const addProduct = async () => {
   }
 };
 
-const addPabrik = async (item) => {
+// const addPabrik = async (item) => {
 
-  const body = {
-    id_reg: id,
-    id_pabrik: [item.id],
-  };
+//   const body = {
+//     id_reg: id,
+//     id_pabrik: [item.id],
+//   };
 
-  const response: any = await $api("/reguler/pelaku-usaha/add-factory", {
-    method: "post",
-    body,
-  });
+//   const response: any = await $api("/reguler/pelaku-usaha/add-factory", {
+//     method: "post",
+//     body,
+//   });
 
-  if (response.code === 2000) {
-    isAddFactoryModalOpen.value = false;
-    addDialog.value = false;
-    reRender.value = !reRender.value;
-    useSnackbar().sendSnackbar("Sukses menambah data", "success");
-  } else {
-    console.error("Gagal menambah data:", response);
-    useSnackbar().sendSnackbar("Gagal menambah data", "error");
-  }
-};
+//   if (response.code === 2000) {
+//     isAddFactoryModalOpen.value = false;
+//     addDialog.value = false;
+//     reRender.value = !reRender.value;
+//     useSnackbar().sendSnackbar("Sukses menambah data", "success");
+//   } else {
+//     console.error("Gagal menambah data:", response);
+//     useSnackbar().sendSnackbar("Gagal menambah data", "error");
+//   }
+// };
 
 const updateProduct = async () => {
   try {
@@ -2413,7 +2417,8 @@ const handlePageChange = async (payload: any) => {
       </VCardTitle>
       <VCardText>
         <div class="d-flex justify-end">
-          <VBtn color="primary" variant="outlined" @click="openModalAddFactory">
+          <!-- <VBtn color="primary" variant="outlined" @click="openModalAddFactory"> -->
+            <VBtn color="primary" variant="outlined" @click="openModalAddFactory2">
             <VIcon class="mr-2"> fa-plus </VIcon>
             Tambah
           </VBtn>
@@ -2474,7 +2479,7 @@ const handlePageChange = async (payload: any) => {
     </VCard>
   </VDialog>
 
-  <VDialog v-model="isAddFactoryModalOpen" max-width="840px" persistent>
+  <!-- <VDialog v-model="isAddFactoryModalOpen" max-width="840px" persistent>
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
         {{ modalTitle }}
@@ -2525,6 +2530,17 @@ const handlePageChange = async (payload: any) => {
           Tutup
         </VBtn>
       </VCardActions>
+    </VCard>
+  </VDialog> -->
+
+  <VDialog v-model="isAddFactoryModalOpen" max-width="840px" persistent>
+    <VCard>
+      <VCardText>
+        <FormTambahPabrikLPH
+          :initial-data="{ idReg: id }"
+          @close="  isAddFactoryModalOpen = false"
+        />
+      </VCardText>
     </VCard>
   </VDialog>
 
