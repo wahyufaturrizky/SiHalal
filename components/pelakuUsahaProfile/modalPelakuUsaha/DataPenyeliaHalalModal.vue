@@ -361,7 +361,8 @@ const { t } = useI18n();
                   model-type="dd/MM/yyyy"
                   :enable-time-picker="false"
                   clearable
-                  position="auto"
+                  position="center"
+                  auto-position="top"
                 >
                   <template #trigger>
                     <VTextField
