@@ -1030,6 +1030,10 @@ const updateDataPU = async () => {
       body: {
         nama_pu_sh: formDataPU.value.nama_pu_sh,
         alamat: formDataPU.value.alamat,
+        kota: formDataPU.value.kota,
+        provinsi: formDataPU.value.provinsi,
+        negara: formDataPU.value.negara,
+        kodepos: formDataPU.value.kodepos,
       },
       headers: {
         "Content-Type": "application/json",
@@ -2582,25 +2586,21 @@ const handlePageChange = async (payload: any) => {
             <VTextField
               v-model="formDataPU.kota"
               label="Kota/Kabupaten"
-              disabled
               class="mb-3"
             />
             <VTextField
               v-model="formDataPU.provinsi"
               label="Provinsi"
-              disabled
               class="mb-3"
             />
             <VTextField
               v-model="formDataPU.negara"
               label="Negara"
-              disabled
               class="mb-3"
             />
             <VTextField
               v-model="formDataPU.kodepos"
               label="Kode Pos"
-              disabled
               class="mb-3"
             />
             <VTextField
