@@ -17,6 +17,7 @@ const formattedKemasan = ref("");
 const sertifikatHalal = ref<Record<string, any>>({});
 const penanggungJawab = ref<Record<string, any>>({});
 const dataDukungBahan = ref<Array<Record<string, any>>>([]);
+const dataPersyaratan = ref<Array<Record<string, any>>>([]);
 const melacak = ref<Array<Record<string, any>>>([]);
 const listProduk = ref<Array<Record<string, any>>>([]);
 
@@ -24,6 +25,7 @@ const newDataSertifikatHalal = reactive({
   sertifikatHalal: {},
   penanggungJawab: {},
   dataDukungBahan: [],
+  dataPersyaratan: [],
   melacak: [],
   combinedNamaProduk: "",
   formattedBahan: "",
@@ -51,12 +53,14 @@ const loadItemById = async () => {
         produk,
         bahan,
         data_dukung,
+        data_dukung_proses,
         tracking,
       } = response.data || {};
 
       sertifikatHalal.value = certificate_halal;
       penanggungJawab.value = penanggung_jawab;
       dataDukungBahan.value = Array.isArray(data_dukung) ? data_dukung : [];
+      dataPersyaratan.value = Array.isArray(data_dukung_proses) ? data_dukung_proses : [];
       melacak.value = Array.isArray(tracking) ? tracking : [];
       listProduk.value = produk;
 
@@ -131,6 +135,7 @@ watch(
   () => ({
     sertifikatHalal: sertifikatHalal.value,
     dataDukungBahan: dataDukungBahan.value,
+    dataPersyaratan: dataPersyaratan.value,
     melacak: melacak.value,
     penanggungJawab: penanggungJawab.value,
     combinedNamaProduk: combinedNamaProduk.value,
@@ -203,6 +208,14 @@ watch(
           <DaftarNamaBahanPendampingan
             v-if="Object.keys(newDataSertifikatHalal).length > 0"
             :databahan="newDataSertifikatHalal.dataDukungBahan"
+          />
+        </VCol>
+      </VRow>
+      <VRow v-if="!loading">
+        <VCol cols="12">
+          <DaftarPersyaratan
+            v-if="Object.keys(newDataSertifikatHalal).length > 0"
+            :databahan="newDataSertifikatHalal.dataPersyaratan"
           />
         </VCol>
       </VRow>
