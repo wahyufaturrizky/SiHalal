@@ -27,7 +27,6 @@ timelineItems.value = props.data?.map((item: any) => {
     color: "grey",
   };
 });
-console.log("@timelineItems", timelineItems);
 
 const defaultStatus = { color: "error", desc: "Unknown Status" };
 
