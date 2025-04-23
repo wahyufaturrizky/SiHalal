@@ -901,18 +901,20 @@ onMounted(async () => {
                       dot-color="#FFFFFF"
                     >
                       <VRow>
-                        <VCol cols="7">
-                          <div class="text-h6">
-                            {{ item.comment }}
+                        <VCol cols="12">
+                          <div
+                            class="d-flex justify-space-between align-center"
+                          >
+                            <h6 class="text-h6">
+                              {{ item.comment }}
+                            </h6>
+                            <span v-if="item.tanggal">
+                              {{ formatDateIntl(new Date(item.tanggal)) }}
+                            </span>
                           </div>
                           <div>{{ item.username }}</div>
                           <div v-if="item.keterangan" class="tracking-info">
                             {{ item.keterangan }}
-                          </div>
-                        </VCol>
-                        <VCol v-if="item.tanggal" cols="5">
-                          <div>
-                            {{ formatDateIntl(new Date(item.tanggal)) }}
                           </div>
                         </VCol>
                       </VRow>
