@@ -237,7 +237,8 @@
     "msg-err-login": "Gagal masuk, mohon periksa kembali kelengkapan data!",
     "msg-err-username": "Username tidak ditemukan",
     "msg-err-password": "Kata sandi tidak tepat!",
-    "msg-err-ishuman": "Silakan verifikasi bahwa Anda bukan robot."
+    "msg-err-ishuman": "Silakan verifikasi bahwa Anda bukan robot.",
+    "browser-capability-info": "⚠️ Disarankan menggunakan Google Chrome versi terbaru untuk hasil terbaik."
   },
   "register": {
     "create": "Buat Akun",

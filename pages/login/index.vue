@@ -250,7 +250,7 @@ const { t } = useI18n();
   >
     <VCol cols="12" md="6" class="d-flex align-center justify-center login-bg">
       <VCard flat :max-width="500" class="mt-3 mt-sm-0 pa-2 pa-lg-3">
-        <VCardText>
+        <VCardText class="pt-0">
           <NuxtLink to="/">
             <div class="auth-logo app-logo">
               <VNodeRenderer :nodes="themeConfig.app.logo" />
@@ -379,6 +379,18 @@ const { t } = useI18n();
             </VCol>
           </VRow>
           <VRow>
+            <VCol
+              cols="12"
+              align="center"
+              justify="center"
+              class="browser-info"
+            >
+              <p class="">
+                {{ t("login.browser-capability-info") }}
+              </p>
+            </VCol>
+          </VRow>
+          <VRow>
             <VCol cols="12" align="center" justify="center">
               Update:
               {{ getDate() }}
@@ -452,5 +464,13 @@ const { t } = useI18n();
 
 .login-bg {
   background-color: rgb(var(--v-theme-surface));
+}
+
+.browser-info {
+  p {
+    font-size: 1rem;
+    line-height: 1.25rem;
+    margin-block-end: 0.5rem;
+  }
 }
 </style>
