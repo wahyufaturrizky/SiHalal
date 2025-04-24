@@ -367,6 +367,13 @@ const { t } = useI18n();
           </VForm>
         </VCardText>
         <VCardText>
+          <VAlert
+            :title="t('login.browser-compatibility-title')"
+            :text="t('login.browser-compatibility-info')"
+            type="info"
+            variant="outlined"
+            color="primary"
+          />
           <VCol cols="12" class="text-body-1 text-center">
             <span class="d-inline-block"> {{ t("login.tip-2") }}</span>
           </VCol>
@@ -376,18 +383,6 @@ const { t } = useI18n();
             </VCol>
             <VCol cols="auto" class="d-flex align-center">
               <img :src="bseImage" width="100" height="44" />
-            </VCol>
-          </VRow>
-          <VRow>
-            <VCol
-              cols="12"
-              align="center"
-              justify="center"
-              class="browser-info"
-            >
-              <p class="">
-                {{ t("login.browser-capability-info") }}
-              </p>
             </VCol>
           </VRow>
           <VRow>

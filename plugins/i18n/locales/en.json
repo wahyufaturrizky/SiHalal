@@ -238,7 +238,8 @@
     "msg-err-username": "Username address not found.",
     "msg-err-password": "Incorrect password!",
     "msg-err-ishuman": "Please verify that you are not a robot",
-    "browser-capability-info": "⚠️ Recommended to use latest version of Google Chrome for optimal experience."
+    "browser-compatibility-title": "Browser Compatibility Info",
+    "browser-compatibility-info": "Recommended to use latest version of Google Chrome for optimal experience."
   },
   "register": {
     "create": "Create Account",
