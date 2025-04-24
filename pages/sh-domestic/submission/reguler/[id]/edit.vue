@@ -11,8 +11,8 @@ const loadingAll = ref<boolean>(true);
 
 const activeTab = ref(-1);
 const approveRequirements = ref(false);
-const approveRequirementsProses = ref<boolean>(false)
-const namaPj = ref<string>('')
+const approveRequirementsProses = ref<boolean>(false);
+const namaPj = ref<string>("");
 const listLegal = ref<any>(null);
 const listFactory = ref<any>(null);
 const listOutlet = ref<any>(null);
@@ -67,23 +67,21 @@ const getListLegal = async () => {
 
 const getFlagProcess = async () => {
   try {
-    const response: any = await $api('/reguler/pelaku-usaha/flag-process', {
-      method: 'get',
+    const response: any = await $api("/reguler/pelaku-usaha/flag-process", {
+      method: "get",
       params: { id },
-    })
+    });
 
     if (response?.code === 2000) {
-      approveRequirementsProses.value = response?.data?.is_proses
-      namaPj.value = response?.data?.nama_pj
+      approveRequirementsProses.value = response?.data?.is_proses;
+      namaPj.value = response?.data?.nama_pj;
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
-    else {
-      useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-    }
+  } catch (err) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
-  catch (err) {
-    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
-  }
-}
+};
 
 const getListPenyelia = async () => {
   try {
@@ -119,7 +117,7 @@ const getChannel = async (path: string) => {
     //   method: "get",
     // });
 
-    const response = await $api(`/master/jenis-layanan`, {
+    const response = await $api("/master/jenis-layanan", {
       method: "get",
       query: {
         query: "empty",
@@ -142,12 +140,11 @@ const getChannel = async (path: string) => {
 
 const getFactoryAndOutlet = async (type: string) => {
   try {
-    let id_reg = id;
     const response: any = await $api(
       "/reguler/pelaku-usaha/list-factory-outlet",
       {
         method: "get",
-        params: { id_reg, type },
+        params: { id_reg: id, type },
       }
     );
 
@@ -196,15 +193,10 @@ const getListIngredients = async () => {
         ) {
           let count = 0;
           jenisBahan.map((element: any) => {
-            if (element === "bahan") {
-              count++;
-            }
+            if (element === "bahan") count++;
           });
-          if (count < 3) {
-            bahanComplete(false);
-          } else {
-            bahanComplete(true);
-          }
+          if (count < 3) bahanComplete(false);
+          else bahanComplete(true);
         } else {
           bahanComplete(false);
         }
@@ -237,17 +229,16 @@ onMounted(async () => {
 
   const userRole = sessionData?.value?.roles?.[0]?.name;
 
-  if (userRole === 'Lembaga Pemeriksa Halal')
-    localStorage.setItem('commitmentAndResponsibility', true)
-  else
-    await getFlagProcess()
+  if (userRole === "Lembaga Pemeriksa Halal")
+    localStorage.setItem("commitmentAndResponsibility", true);
+  else await getFlagProcess();
 
   if (checkResIfUndefined) loadingAll.value = false;
   else loadingAll.value = false;
 });
 
 onUnmounted(() => {
-  localStorage.removeItem('commitmentAndResponsibility');
+  localStorage.removeItem("commitmentAndResponsibility");
 });
 
 const dataPengajuanRef = ref();
@@ -259,10 +250,9 @@ const handleDataPengajuanEmitted = (value: any) => {
 };
 
 const onclickTab = (tab: any) => {
-  if (tab == 2) {
-    dataPengajuanRef.value.emitRequestCertificateData();
-  }
+  if (tab == 2) dataPengajuanRef.value.emitRequestCertificateData();
 };
+
 const valid = ref(false);
 </script>
 
@@ -307,13 +297,15 @@ const valid = ref(false);
               :key="index"
               class="position-relative d-inline-block"
             >
-              <!-- <VTooltip
+              <!--
+                <VTooltip
                 v-if="index > 2 && !isBahanCompleted"
                 activator="parent"
-              >
+                >
                 Mohon lengkapi Bahan, Cleaning Agent, Kemasan agar menu ini
                 dapat di akses
-              </VTooltip> -->
+                </VTooltip>
+              -->
               <VTab :value="index" @click="onclickTab(index)">
                 {{ t(item) }}
               </VTab>
@@ -327,14 +319,18 @@ const valid = ref(false);
           <div v-if="activeTab === 0">
             <DataPengajuan
               :id="id"
+              ref="dataPengajuanRef"
               :list_legal="listLegal"
               :list_factory="listFactory"
               :list_outlet="listOutlet"
               :list_penyelia="listPenyelia"
               :list_channel="itemsChannel"
               :isviewonly="isViewOnly"
-              ref="dataPengajuanRef"
               @certificate-data-changed="handleDataPengajuanEmitted"
+              @refetch-list-legal="getListLegal"
+              @refetch-list-factory="() => getFactoryAndOutlet('FAPAB')"
+              @refetch-list-outlet="() => getFactoryAndOutlet('FAOUT')"
+              @refetch-list-penyelia="getListPenyelia"
             />
           </div>
           <div v-if="activeTab === 1">
