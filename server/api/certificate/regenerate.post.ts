@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { document_type, ref_id } = await readBody(event);
+  const { document_type, ref_id, retry } = await readBody(event);
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/dokumen/generate?is_download=true`,
     {
@@ -20,6 +20,7 @@ export default defineEventHandler(async (event) => {
       body: {
         document_type,
         ref_id,
+        retry
       },
     }
   ).catch((err: NuxtError) => {
