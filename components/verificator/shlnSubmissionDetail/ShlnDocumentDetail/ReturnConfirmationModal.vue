@@ -10,6 +10,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  isDisabled: {
+    type: Boolean,
+    required: false,
+  },
 });
 
 const emit = defineEmits<{
@@ -85,6 +89,7 @@ const dialogMaxWidth = computed(() => {
     variant="outlined"
     color="primary"
     append-icon="ri-reset-left-line"
+    :disabled="props.isDisabled"
     @click="openDialog"
   >
     Return

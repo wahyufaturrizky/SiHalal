@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-const emit = defineEmits<{
-  (e: "refresh"): void;
-}>();
-
 const props = defineProps({
   datalistmanufacturetracking: {
     type: Object,
     required: true,
   },
+  loadingListTrackingManufacture: {
+    type: Boolean,
+    required: false,
+  },
 });
+
+const emit = defineEmits<{
+  (e: "refresh"): void;
+}>();
 
 const route = useRoute();
 
@@ -58,6 +62,10 @@ const headers = [
   { title: "Address", key: "address" },
   { title: "Country", key: "country" },
 ];
+
+const latestStatus = computed(() =>
+  checkStatusTracking(props.datalistmanufacturetracking)
+);
 </script>
 
 <template>
@@ -72,11 +80,13 @@ const headers = [
             <VRow no-gutters>
               <VCol cols="6">
                 <VerificationManufactureReturnConfirmation
+                  :is-disabled="latestStatus === 'returned'"
                   @refresh="emit('refresh')"
                 />
               </VCol>
               <VCol cols="6">
                 <VerificationManufactureSaveConfirmation
+                  :is-disabled="latestStatus === 'verified'"
                   @refresh="emit('refresh')"
                 />
               </VCol>
@@ -84,10 +94,10 @@ const headers = [
           </VCol>
         </VRow>
         <VDataTableServer
-          disable-sort
-          :items-per-page-options="[10, 25, 50, 100]"
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
+          disable-sort
+          :items-per-page-options="[10, 25, 50, 100]"
           :headers="headers"
           :items="dataListManufacture"
           :loading="loadingListManufacture"
@@ -103,8 +113,17 @@ const headers = [
     </VCol>
 
     <VCol cols="4">
-      <VCard class="pa-4">
-        <p class="text-h3">Tracking</p>
+      <VCard class="pa-0">
+        <VCardTitle class="pt-4 pb-0">
+          <h3 :class="`${props.loadingListTrackingManufacture ? 'mb-2' : ''}`">
+            Tracking
+          </h3>
+          <VProgressLinear
+            v-if="props.loadingListTrackingManufacture"
+            color="primary"
+            indeterminate
+          />
+        </VCardTitle>
         <VerificatorTrackingManufactureTimeLine
           :datalistmanufacturetracking="props.datalistmanufacturetracking"
         />
