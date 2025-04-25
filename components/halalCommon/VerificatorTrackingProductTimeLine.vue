@@ -21,7 +21,7 @@ const tracking = props.datalistproducttracking?.map((item) => {
 <template>
   <VContainer
     :style="tracking?.length > 5 ? 'max-height: 300px; overflow-y: auto' : ''"
-    class="pa-2"
+    class="pa-4"
   >
     <VTimeline
       side="end"
