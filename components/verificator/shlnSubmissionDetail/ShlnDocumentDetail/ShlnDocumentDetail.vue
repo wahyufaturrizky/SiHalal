@@ -16,9 +16,17 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  loadingTrackingLoa: {
+    type: Boolean,
+    required: false,
+  },
   datatrackingfhc: {
     type: Object,
     required: true,
+  },
+  loadingTrackingFhc: {
+    type: Boolean,
+    required: false,
   },
   data: {
     type: Object,
@@ -182,6 +190,14 @@ const onRefresh = (type: string) => {
   if (type === "loa") emit("refreshloa");
   else if (type === "fhc") emit("refreshfhc");
 };
+
+const latestStatusLoa = computed(() =>
+  checkStatusTracking(props.datatrackingloa)
+);
+
+const latestStatusFhc = computed(() =>
+  checkStatusTracking(props.datatrackingfhc)
+);
 </script>
 
 <template>
@@ -266,11 +282,13 @@ const onRefresh = (type: string) => {
           <div>
             <ReturnConfirmationModal
               :id="id"
+              :is-disabled="latestStatusLoa === 'returned'"
               documenttype="loa"
               @refresh="onRefresh('loa')"
             />
             <ApproveConfirmationModal
               :id="id"
+              :is-disabled="latestStatusLoa === 'verified'"
               documenttype="loa"
               @refresh="onRefresh('loa')"
             />
@@ -280,8 +298,17 @@ const onRefresh = (type: string) => {
     </VCol>
     <VCol cols="4">
       <VCard>
-        <VCardTitle>Tracking of LoA</VCardTitle>
-        <VCardItem>
+        <VCardTitle class="pt-4 pb-0">
+          <h3 :class="`${loadingTrackingLoa ? 'mb-2' : ''}`">
+            Tracking of LoA
+          </h3>
+          <VProgressLinear
+            v-if="loadingTrackingLoa"
+            color="primary"
+            indeterminate
+          />
+        </VCardTitle>
+        <VCardItem class="pa-0">
           <VContainer
             :style="
               trackingLOA?.length > 5
@@ -395,11 +422,13 @@ const onRefresh = (type: string) => {
           <div>
             <ReturnConfirmationModal
               :id="idFHC"
+              :is-disabled="latestStatusFhc === 'returned'"
               documenttype="fhc"
               @refresh="onRefresh('fhc')"
             />
             <ApproveConfirmationModal
               :id="idFHC"
+              :is-disabled="latestStatusFhc === 'verified'"
               documenttype="fhc"
               @refresh="onRefresh('fhc')"
             />
@@ -409,8 +438,17 @@ const onRefresh = (type: string) => {
     </VCol>
     <VCol cols="4">
       <VCard>
-        <VCardTitle>Tracking of Certificate</VCardTitle>
-        <VCardItem>
+        <VCardTitle class="pt-4 pb-0">
+          <h3 :class="`${loadingTrackingFhc ? 'mb-2' : ''}`">
+            Tracking of Certificate
+          </h3>
+          <VProgressLinear
+            v-if="loadingTrackingFhc"
+            color="primary"
+            indeterminate
+          />
+        </VCardTitle>
+        <VCardItem class="pa-0">
           <VContainer
             :style="
               trackingFHC?.length > 5

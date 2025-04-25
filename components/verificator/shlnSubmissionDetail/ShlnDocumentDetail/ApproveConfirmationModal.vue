@@ -10,6 +10,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  isDisabled: {
+    type: Boolean,
+    required: false,
+  },
 });
 
 const emit = defineEmits<{
@@ -81,7 +85,14 @@ const dialogMaxWidth = computed(() => {
 </script>
 
 <template>
-  <VBtn variant="outlined" color="#49a84c" @click="openDialog"> Approve </VBtn>
+  <VBtn
+    variant="outlined"
+    color="#49a84c"
+    :disabled="props.isDisabled"
+    @click="openDialog"
+  >
+    Approve
+  </VBtn>
   <VDialog v-model="isVisible" :max-width="dialogMaxWidth">
     <VCard max-width="50svw">
       <VCardTitle>
@@ -95,36 +106,38 @@ const dialogMaxWidth = computed(() => {
         </VRow>
       </VCardTitle>
       <VCardText>
-        <!-- <VRow>
+        <!--
+          <VRow>
           <VCol cols="12">
-            <VTable>
-              <thead>
-                <tr>
-                  <th>Tanggal</th>
-                  <th>Catatan</th>
-                  <th>Verifikator</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>18/10/2024, 09:00:00 AM</td>
-                  <td />
-                  <td>JoeyHLN</td>
-                </tr>
-              </tbody>
-            </VTable>
+          <VTable>
+          <thead>
+          <tr>
+          <th>Tanggal</th>
+          <th>Catatan</th>
+          <th>Verifikator</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+          <td>18/10/2024, 09:00:00 AM</td>
+          <td />
+          <td>JoeyHLN</td>
+          </tr>
+          </tbody>
+          </VTable>
           </VCol>
-        </VRow>
-        <VRow>
+          </VRow>
+          <VRow>
           <VCol cols="12">
-            <p><b>Are you sure you want to approve this submission?</b></p>
+          <p><b>Are you sure you want to approve this submission?</b></p>
           </VCol>
-        </VRow>
-        <VRow>
+          </VRow>
+          <VRow>
           <VCol cols="12">
-            <VTextarea placeholder="Input Additional Notes" />
+          <VTextarea placeholder="Input Additional Notes" />
           </VCol>
-        </VRow> -->
+          </VRow>
+        -->
 
         <p class="mb-2">Are you sure you want to Approve this submission?</p>
       </VCardText>
@@ -136,8 +149,8 @@ const dialogMaxWidth = computed(() => {
           :disabled="loading"
           color="#49A84C"
           variant="elevated"
-          @click="onConfirm"
           :loading="loading"
+          @click="onConfirm"
         >
           {{ loading ? "Loading..." : "Approve" }}
         </VBtn>
