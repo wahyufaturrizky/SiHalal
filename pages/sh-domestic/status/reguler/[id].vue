@@ -235,6 +235,7 @@ const handleCertificate = async (fileName: string, type: string) => {
       body: {
         document_type: "certificate-reguler",
         ref_id: id,
+        retry: true,
       },
     });
 
