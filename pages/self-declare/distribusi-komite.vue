@@ -36,7 +36,7 @@ const permohonanHeaders: any = [
   // { title: "Merk Dagang", key: "merek_dagang", nowrap: true },
   { title: "Status", key: "status" },
 
-  // { title: "Action", key: "action", align: "center" },
+  { title: "Action", key: "action", align: "center" },
 ];
 
 const listData = ref<Array<DataItem>>([]);
@@ -45,11 +45,9 @@ const selectedItems = ref<string[]>([]);
 const searchQuery = ref("");
 
 const handleSelectAll = () => {
-  if (selectAll.value.length === 1) {
+  if (selectAll.value.length === 1)
     for (const item of listData.value) selectedItems.value.push(item.id_daftar);
-  } else {
-    selectedItems.value = [];
-  }
+  else selectedItems.value = [];
 };
 
 const isVisible = ref(false);
@@ -115,6 +113,8 @@ const selectedPendamping = ref();
 const searchBy: Ref<number> = ref(1);
 
 const handleLoadList = async () => {
+  loading.value = true;
+
   try {
     const response: any = await $api(
       "/self-declare/verificator/submission/list",
@@ -148,6 +148,8 @@ const handleLoadList = async () => {
     return response;
   } catch (error) {
     console.log(error);
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -249,6 +251,21 @@ const { refresh } = await useAsyncData(
     watch: [currentPage, itemPerPage],
   }
 );
+
+const batalkanStatusHijau = async (selfDeclareId: string) => {
+  try {
+    await $api(`/self-declare/verificator/tandai-not-ok/${selfDeclareId}`, {
+      method: "put",
+    });
+
+    useSnackbar().sendSnackbar("Batalkan Status Hijau Success", "success");
+
+    handleLoadList();
+  } catch (error) {
+    console.error("error ", error);
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
 
 const handleSearchSubmission = useDebounceFn((val: string) => {
   searchQuery.value = val;
@@ -523,6 +540,20 @@ onMounted(() => {
               </VChip>
             </div>
             <!-- </div> -->
+          </template>
+          <template #item.action="{ item }">
+            <div class="d-flex gap-1">
+              <IconBtn size="small">
+                <VIcon
+                  icon="mdi-close"
+                  color="danger"
+                  @click="batalkanStatusHijau((item as any).id_daftar)"
+                />
+                <VTooltip activator="parent" location="top">
+                  Batalkan Status Hijau
+                </VTooltip>
+              </IconBtn>
+            </div>
           </template>
         </VDataTableServer>
       </VRow>

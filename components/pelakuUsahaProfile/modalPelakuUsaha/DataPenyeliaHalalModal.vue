@@ -118,9 +118,29 @@ const fillEditForm = async (newData) => {
     );
     form.value.nomorSk = val.data.sk_number;
     form.value.tanggalSk = formatToDDMMYYYY(new Date(val.data.sk_date));
-    form.value.sertifikatKompetensi = val.data.skph_file;
-    form.value.sertifikatPelatihan = val.data.spph_file;
-    form.value.ktpFile = val.data.ktp_file;
+    form.value.sertifikatKompetensi = new File(
+      [val.data.skph_file],
+      val.data.skph_file,
+      {
+        type: val.data.skph_file.endsWith("pdf")
+          ? "application/pdf"
+          : `image/${val.data.skph_file.split(".")[1]}`,
+      }
+    );
+    form.value.sertifikatPelatihan = new File(
+      [val.data.spph_file],
+      val.data.spph_file,
+      {
+        type: val.data.spph_file.endsWith("pdf")
+          ? "application/pdf"
+          : `image/${val.data.spph_file.split(".")[1]}`,
+      }
+    );
+    form.value.ktpFile = new File([val.data.ktp_file], val.data.ktp_file, {
+      type: val.data.ktp_file.endsWith("pdf")
+        ? "application/pdf"
+        : `image/${val.data.ktp_file.split(".")[1]}`,
+    });
   }
 };
 
@@ -197,7 +217,7 @@ const { t } = useI18n();
             <span>{{
               props.mode === "add"
                 ? t("detail-pu.pu-penyelia-halal-tambah-title")
-                : t("detail-pu.pu-penyelial-halal-edit-title")
+                : t("detail-pu.pu-penyelia-halal-edit-title")
             }}</span>
             <VBtn
               icon
@@ -361,7 +381,8 @@ const { t } = useI18n();
                   model-type="dd/MM/yyyy"
                   :enable-time-picker="false"
                   clearable
-                  position="auto"
+                  position="center"
+                  auto-position="top"
                 >
                   <template #trigger>
                     <VTextField

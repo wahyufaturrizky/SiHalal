@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import type { MasterDistrict } from "@/server/interface/master.iface";
 import { useDisplay } from "vuetify";
-
 const props = defineProps({
   initialData: { type: Object, default: () => ({}) },
   isEditable: { type: Boolean, default: true },
 });
 
-const statusOptions = ref([]);
-
-const emit = defineEmits(["confirm", "close"]); 
+const emit = defineEmits(["confirm","close"]);
 
 const isVisible = ref(false);
 
@@ -21,89 +18,55 @@ const closeDialog = () => {
   isVisible.value = false;
 };
 
-const convertstfas = async (code: string) => {
-  const api = statusOptions.value.filter((val) => val.code == code)[0]?.code;
+const formPabrik = ref({
+  location: null,
+  name: "",
+  address: "",
+  regency: "",
+  provinsi: "",
+  country: "",
+  zipCode: "",
+  status: "",
+});
 
-  return api;
+const resetForm = () => {
+  formPabrik.value = {
+    location: null,
+    name: "",
+    address: "",
+    regency: "",
+    provinsi: "",
+    country: "",
+    zipCode: "",
+    status: "",
+  };
 };
-
-const updatePabrik = async () => {
-  try {
-    console.log("Form data:", form.value);
-    
-    let kabKotaNama = form.value.regency;
-    if (kabKotaOptions.value && kabKotaOptions.value.length) {
-      const selectedKabKota = kabKotaOptions.value.find(
-        item => item.code === form.value.regency
-      );
-      if (selectedKabKota) {
-        kabKotaNama = selectedKabKota.name;
-      }
-    }
-    
-    let statusNama = form.value.status;
-    if (statusOptions.value && statusOptions.value.length) {
-      const selectedStatus = statusOptions.value.find(
-        item => item.code === form.value.status
-      );
-    }
-    
-    
-    const response = await $api("/reguler/lph/update-fasilitas/update-fasilitas-pabrik", {
-      method: "PUT",
-      params: { id_reg: form.value.idReg, id_pabrik: form.value.idPabrik },
-      headers: { "Content-Type": "application/json" },
-      body: {
-        alamat: form.value.address, 
-        kab_kota: kabKotaNama, 
-        kode_pos: form.value.zipCode,
-        nama: form.value.name,
-        negara: form.value.country,
-        provinsi: form.value.provinsi,
-        status_milik: form.value.status,
-        fasil_id: form.value.fasilId,
-        id_fas: form.value.idFas
-      },
-    });
-
-    if (response.code === 2000) {
-      useSnackbar().sendSnackbar("Sukses memperbarui data", "success");
-      emit("close");
-    } else {
-      useSnackbar().sendSnackbar("Gagal memperbarui data", "error");
-    }
-  } catch (error) {
-    console.error("Error detail:", error.response?.data || error);
-  }
-};
-
-
-const form = ref(props.initialData);
-
-const status = [
-  { title: "Milik Sendiri", value: "1" },
-  { title: "Publik", value: "2" },
-];
-const location = [
-  { title: "Lokasi 1", value: "1" },
-  { title: "Lokasi 2", value: "2" },
-];
-
-// const confirm = () => {
-//   emit("confirm", form.value);
-//   closeDialog();
-// };
-
-const cancel = () => {
-  emit("close"); 
-};
-
-
-
 
 const provinsiOptions = ref();
 const kabKotaOptions = ref();
 const kodeposOptions = ref();
+const statusOptions = ref([]);
+
+// const status = [
+//   { title: "Milik Sendiri", value: "1" },
+//   { title: "Publik", value: "2" },
+// ];
+const location = [
+  { title: "Dalam Negeri", value: "1" },
+  { title: "Luar Negeri", value: "2" },
+];
+
+const confirm = () => {
+  emit("confirm", formPabrik.value);
+  resetForm();
+  closeDialog();
+};
+
+const cancel = () => {
+  emit("close");
+};
+
+const form = ref(props.initialData);
 
 const { mdAndUp } = useDisplay();
 
@@ -111,12 +74,22 @@ const dialogMaxWidth = computed(() => {
   return mdAndUp.value ? 700 : "90%";
 });
 
+const isDalamNegeri = computed(() => formPabrik.value.location === "1");
+
+async function getMasterStatusPabrik() {
+  const response = await $api(`master/common-code?type=factorystatus`, {
+    method: "get",
+  });
+
+  return response;
+}
+
 const getKodePos = async () => {
   const response: Array<{ code: string }> = await $api("/master/kode-pos", {
     method: "get",
     query: {
-      kabupaten: form.value.regency,
-      provinsi: form.value.provinsi,
+      kabupaten: formPabrik.value.regency,
+      provinsi: formPabrik.value.provinsi,
     },
   });
   kodeposOptions.value = response.map((kode) => kode.code);
@@ -139,61 +112,101 @@ const getProvince = async () => {
   provinsiOptions.value = response;
 };
 
+const simpanPabrik = async () => {
+try {        
+  const payload = {
+      address: formPabrik.value.address,
+      city: formPabrik.value.regency,
+      zip_code: formPabrik.value.zipCode,
+      name: formPabrik.value.name,
+      country: formPabrik.value.country,
+      province: formPabrik.value.provinsi,
+      id_reg: form.value.idReg,
+      status: formPabrik.value.status,
+    };
+
+    console.log("Payload yang dikirim:", JSON.stringify(payload, null, 2));
+
+    const response = await $api("/reguler/lph/update-fasilitas/add-pabrik-lph", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: {
+      address: formPabrik.value.address,
+      city: formPabrik.value.regency,
+      zip_code: formPabrik.value.zipCode,
+      name: formPabrik.value.name,
+      country: formPabrik.value.country,
+      province: formPabrik.value.provinsi,
+      id_reg: form.value.idReg,
+      status: formPabrik.value.status,
+    },
+  });
+
+
+  if (response.code === 2000) {
+    useSnackbar().sendSnackbar("Sukses memperbarui data", "success");
+    emit("close");
+  } else {
+    useSnackbar().sendSnackbar("Gagal memperbarui data", "error");
+  }
+} catch (error) {
+  console.error("Error detail:", error.response?.data || error);
+}
+};
+
+
 onMounted(async () => {
     getProvince();
 
-    if(form.value.provinsi){
-      await getDistrict(form.value.provinsi);
+    if(formPabrik.value.provinsi){
+      await getDistrict(formPabrik.value.provinsi);
     };
 
   statusOptions.value = await getMasterStatusPabrik();
     
 })
 
-watch(
-  () => form.value.provinsi, 
-  async (newProvinsi) => {
-    if (newProvinsi) {
-      await getDistrict(newProvinsi); 
-      form.value.regency = ""; 
-      form.value.zipCode = ""; 
-    }
+watch(() => formPabrik.value.location, (newVal) => {
+  if (newVal === "1") {
+    formPabrik.value.country = "Indonesia";
+  } else {
+    formPabrik.value.country = "";
   }
-);
+});
 
-async function getMasterStatusPabrik() {
-  const response = await $api(`master/common-code?type=factorystatus`, {
-    method: "get",
-  });
-
-  return response;
-}
 
 </script>
 
 <template>
- 
-      <VCardTitle
-        class="text-h5 font-weight-bold d-flex justify-space-between align-center"
-      >
-        <span>Edit Data Pabrik</span>
-        <VBtn
-          icon
-          color="transparent"
-          style="border: none"
-          elevation="0"
-          @click="cancel"
+  <div class="mb-2">
+        <VCardTitle
+          class="text-h5 font-weight-bold d-flex justify-space-between align-center"
         >
-          <VIcon color="black">ri-close-line</VIcon>
-        </VBtn>
-      </VCardTitle>
+          <span>Tambah Data Pabrik</span>
+        </VCardTitle>
 
-      <VCardText>
+        <VCardText>
+          <!-- Lokasi Pabrik -->
+          <VRow class="mb-1">
+            <VCol cols="12">
+              <VLabel>Lokasi Pabrik</VLabel>
+              <VAutocomplete
+                v-model="formPabrik.location"
+                :items="location"
+                placeholder="Pilih Lokasi Pabrik"
+                outlined
+                dense
+                required
+                class="input-field"
+              />
+            </VCol>
+          </VRow>
+
         <VRow class="mb-1">
           <VCol cols="12">
             <VLabel>Nama Pabrik</VLabel>
             <VTextField
-              v-model="form.name"
+              v-model="formPabrik.name"
               placeholder="Isi Nama Pabrik"
               outlined
               dense
@@ -207,7 +220,7 @@ async function getMasterStatusPabrik() {
           <VCol cols="12">
             <VLabel>Alamat Pabrik</VLabel>
             <VTextField
-              v-model="form.address"
+              v-model="formPabrik.address"
               placeholder="Isi Alamat Pabrik"
               outlined
               dense
@@ -223,8 +236,8 @@ async function getMasterStatusPabrik() {
           <VLabel>Kab/Kota</VLabel>
 
           <VAutocomplete
-            v-if="form.country.toLowerCase() === 'indonesia'"
-            v-model="form.regency"
+            v-if="isDalamNegeri"
+            v-model="formPabrik.regency"
             v-on:update:model-value="getKodePos"
             :items="kabKotaOptions"
             item-title="name"
@@ -238,7 +251,7 @@ async function getMasterStatusPabrik() {
 
           <VTextField
             v-else
-            v-model="form.regency"
+            v-model="formPabrik.regency"
             placeholder="Isi Kab/Kota"
             outlined
             dense
@@ -252,8 +265,8 @@ async function getMasterStatusPabrik() {
           <VLabel>Provinsi</VLabel>
 
           <VAutocomplete
-            v-if="form.country.toLowerCase() === 'indonesia'"
-            v-model="form.provinsi"
+            v-if="isDalamNegeri"
+            v-model="formPabrik.provinsi"
             v-on:update:model-value="getDistrict"
             :items="provinsiOptions"
             item-title="name"
@@ -267,7 +280,7 @@ async function getMasterStatusPabrik() {
 
           <VTextField
             v-else
-            v-model="form.provinsi"
+            v-model="formPabrik.provinsi"
             placeholder="Isi Provinsi"
             outlined
             dense
@@ -283,21 +296,22 @@ async function getMasterStatusPabrik() {
           <VCol cols="6" class="pe-1">
             <VLabel>Negara</VLabel>
             <VTextField
-              v-model="form.country"
+              v-model="formPabrik.country"
               placeholder="Isi Negara"
               outlined
               dense
               required
               class="input-field"
+              :disabled="isDalamNegeri"
             />
             
           </VCol>
           <VCol cols="6" class="ps-1">
             <VLabel>Kode Pos</VLabel>
             <VAutocomplete
-              v-if="form.country.toLowerCase() === 'indonesia'"
-              v-model="form.zipCode"
-              :disabled="form.provinsi== '' || form.regency == ''"
+              v-if="isDalamNegeri"
+              v-model="formPabrik.zipCode"
+              :disabled="formPabrik.provinsi == '' || formPabrik.regency == ''"
               :items="kodeposOptions"
               item-value="code"
               item-title="code"
@@ -305,7 +319,7 @@ async function getMasterStatusPabrik() {
 
             <VTextField
               v-else
-              v-model="form.zipCode"
+              v-model="formPabrik.zipCode"
               placeholder="Kode Pos"
               outlined
               dense
@@ -320,7 +334,7 @@ async function getMasterStatusPabrik() {
           <VCol cols="12">
             <VLabel>Status Pabrik</VLabel>
             <VAutocomplete
-              v-model="form.status"
+              v-model="formPabrik.status"
               :items="statusOptions"
               item-title="name"
               item-value="code"
@@ -332,10 +346,13 @@ async function getMasterStatusPabrik() {
             />
           </VCol>
         </VRow>
+        </VCardText>
+
         <div class="d-flex justify-end ga-2">
           <VBtn @click="cancel" variant="outlined"> Batal </VBtn>
-          <VBtn @click="updatePabrik"> Simpan </VBtn>
+          <VBtn @click="simpanPabrik"> Tambah </VBtn>
         </div>
-      </VCardText>
+  </div>
 </template>
 
+<style scoped></style>

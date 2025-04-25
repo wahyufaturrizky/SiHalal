@@ -42,7 +42,13 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["certificateDataChanged"]);
+const emit = defineEmits([
+  "certificateDataChanged",
+  "refetchListLegal",
+  "refetchListFactory",
+  "refetchListOutlet",
+  "refetchListPenyelia",
+]);
 
 const { t } = useI18n();
 
@@ -104,6 +110,13 @@ const listFactory = ref<any>({
   value: props?.list_factory || [],
 });
 
+watch(
+  () => props?.list_factory,
+  (newValue) => {
+    listFactory.value.value = newValue;
+  }
+);
+
 const listOutlet = ref<any>({
   label: [
     { title: "No.", key: "no", nowrap: true },
@@ -131,6 +144,13 @@ const listOutlet = ref<any>({
   ],
   value: props?.list_outlet || [],
 });
+
+watch(
+  () => props?.list_outlet,
+  (newValue) => {
+    listOutlet.value.value = newValue;
+  }
+);
 
 const listPenyelia = ref<any>({
   label: [
@@ -169,6 +189,17 @@ const listPenyelia = ref<any>({
       tgl_penyelia_halal: i.no_sertifikat,
     })) || [],
 });
+
+watch(
+  () => props?.list_penyelia,
+  (newValue) => {
+    listPenyelia.value.value = newValue.map((i) => ({
+      ...i,
+      agama: "Islam", // HARDCODE ISLAM
+      tgl_penyelia_halal: i.no_sertifikat,
+    }));
+  }
+);
 
 // const factoryModel = ref({
 //   id_fas: 'ae661a8b-be9b-45a9-b6cc-e26ee63d374e',
@@ -252,7 +283,6 @@ const loadItemProduct = async () => {
 };
 
 const emitRequestCertificateData = () => {
-  console.log("emitted cert data");
   emit("certificateDataChanged", requestCertificateData);
 
   storeDataPengajuan.setCertData(requestCertificateData.value);
@@ -558,115 +588,91 @@ const editResponsibility = async (body: PayloadPenanggungJawab) => {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
 
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
 };
 
+const refetchList = async () => {
+  selectedLegalToAdd.value = null;
+  listFactory.value.value = [];
+  listOutlet.value.value = [];
+  listPenyelia.value.value = [];
+
+  emit("refetchListLegal");
+  emit("refetchListFactory");
+  emit("refetchListOutlet");
+  emit("refetchListPenyelia");
+};
+
 const handleAddOrEdit = async () => {
   addDialog.value = false;
-  let body: any = {
-    id_reg: props?.id,
-  };
-  const idPabrik: any = [];
-  let url = "";
-  let method = "";
-  switch (titleAddDialog.value) {
-    case t("pengajuan-reguler.reguler-detail-legal-title"):
-      body = {
-        ...body,
-        id_legal: [selectedLegalToAdd?.value?.id_legal],
-      };
-      url = "/reguler/pelaku-usaha/add-legal";
-      method = "post";
-      break;
-    case "Tambah Aspek Legal":
-      body = {
-        ...body,
-        id_legal: [selectedLegalToAdd?.value?.id_legal],
-      };
-      url = "/reguler/pelaku-usaha/add-legal";
-      method = "post";
-      break;
-    case t("pengajuan-reguler.reguler-form--pengajuan-fac-popup-title"):
-      listFactory?.value?.value?.map((el: any) => {
-        if (el.checked) idPabrik.push(el.id);
-      });
-      body = {
-        ...body,
-        id_pabrik: idPabrik,
-      };
-      url = "/reguler/pelaku-usaha/add-factory";
-      method = "post";
-      break;
-    case "Tambah Data Pabrik":
-      listFactory?.value?.value?.map((el: any) => {
-        if (el.checked) idPabrik.push(el.id);
-      });
-      body = {
-        ...body,
-        id_pabrik: idPabrik,
-      };
-      url = "/reguler/pelaku-usaha/add-factory";
-      method = "post";
-      break;
-    case t("pengajuan-reguler.reguler-form--pengajuan-out-title"):
-      listOutlet?.value?.value?.map((el: any) => {
-        if (el.checked) idPabrik.push(el.id);
-      });
-      body = {
-        ...body,
-        id_pabrik: idPabrik,
-      };
-      url = "/reguler/pelaku-usaha/add-factory";
-      method = "post";
-      break;
-    case "Tambah Outlet":
-      listOutlet?.value?.value?.map((el: any) => {
-        if (el.checked) idPabrik.push(el.id);
-      });
-      body = {
-        ...body,
-        id_pabrik: idPabrik,
-      };
-      url = "/reguler/pelaku-usaha/add-factory";
-      method = "post";
-      break;
-    case t("pengajuan-reguler.reguler-detail-ph-title"):
-      url = "/self-declare/business-actor/supervisor/create";
-      body = {
-        ...body,
-        id_penyelia: listPenyelia.value.value
-          .filter((item) => item.checked)
-          .map((i) => i.id_penyelia),
-      };
-      method = "post";
-      break;
-    case "Tambah Penyelia Halal":
-      url = "/self-declare/business-actor/supervisor/create";
-      body = {
-        ...body,
-        id_penyelia: listPenyelia.value.value
-          .filter((item) => item.checked)
-          .map((i) => i.id_penyelia),
-      };
-      method = "post";
-      break;
 
-    default:
-      break;
+  const baseBody = { id_reg: props?.id };
+  let body = { ...baseBody };
+  let url = "";
+  const method = "post";
+
+  const getCheckedIds = (list: any[], key: string) =>
+    list.filter((item) => item.checked).map((item) => item[key]);
+
+  const title = addContentType.value;
+
+  const isLegalTitle = [
+    t("pengajuan-reguler.reguler-detail-legal-title"),
+    "Tambah Aspek Legal",
+  ].includes(title);
+
+  const isFactoryTitle = [
+    t("pengajuan-reguler.reguler-form--pengajuan-fac-popup-title"),
+    "Tambah Data Pabrik",
+  ].includes(title);
+
+  const isOutletTitle = [
+    t("pengajuan-reguler.reguler-form--pengajuan-out-title"),
+    "Tambah Outlet",
+  ].includes(title);
+
+  const isSupervisorTitle = [
+    t("pengajuan-reguler.reguler-detail-ph-title"),
+    "Tambah Penyelia Halal",
+  ].includes(title);
+
+  if (isLegalTitle && selectedLegalToAdd?.value?.id_legal) {
+    body = {
+      ...body,
+      id_legal: [selectedLegalToAdd.value.id_legal],
+    };
+    url = "/reguler/pelaku-usaha/add-legal";
+  } else if (isFactoryTitle && listFactory?.value?.value) {
+    body = {
+      ...body,
+      id_pabrik: getCheckedIds(listFactory.value.value, "id"),
+    };
+    url = "/reguler/pelaku-usaha/add-factory";
+  } else if (isOutletTitle && listOutlet?.value?.value) {
+    body = {
+      ...body,
+      id_pabrik: getCheckedIds(listOutlet.value.value, "id"),
+    };
+    url = "/reguler/pelaku-usaha/add-factory";
+  } else if (isSupervisorTitle && listPenyelia?.value?.value) {
+    body = {
+      ...body,
+      id_penyelia: getCheckedIds(listPenyelia.value.value, "id_penyelia"),
+    };
+    url = "/self-declare/business-actor/supervisor/create";
   }
+
   try {
-    const response: any = await $api(url, {
-      method,
-      body,
-    });
+    const response: any = await $api(url, { method, body });
 
     if (response?.code === 2000) {
       useSnackbar().sendSnackbar("Sukses add data", "success");
       getDetailData();
-      selectedLegalToAdd.value = {};
+
+      refetchList();
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
@@ -1068,7 +1074,10 @@ onMounted(async () => {
       :on-add="
         () => triggerAddModal(t('pengajuan-reguler.reguler-detail-legal-title'))
       "
-      :on-delete="(el: any) => deleteFactoryOrOutlet('aspek legal', el)"
+      :on-delete="async (el: any) => {
+        await deleteFactoryOrOutlet('aspek legal', el)
+        emit('refetchListLegal')
+      }"
       :data="aspectLegalData"
       :title="t('pengajuan-reguler.reguler-form--pengajuan-legal-title')"
       with-add-button
@@ -1085,7 +1094,10 @@ onMounted(async () => {
             t('pengajuan-reguler.reguler-form--pengajuan-fac-popup-title')
           )
       "
-      :on-delete="(el: any) => deleteFactoryOrOutlet('pabrik', el)"
+      :on-delete="async (el: any) => {
+        await deleteFactoryOrOutlet('pabrik', el)
+        emit('refetchListFactory')
+      }"
       :data="factoryData"
       :title="t('pengajuan-reguler.reguler-form--pengajuan-fac-title')"
       with-add-button
@@ -1101,7 +1113,10 @@ onMounted(async () => {
             t('pengajuan-reguler.reguler-form--pengajuan-out-title')
           )
       "
-      :on-delete="(el: any) => deleteFactoryOrOutlet('outlet', el)"
+      :on-delete="async (el: any) => {
+        await deleteFactoryOrOutlet('outlet', el)
+        emit('refetchListOutlet')
+      }"
       :data="outletData"
       :title="t('pengajuan-reguler.reguler-form--pengajuan-out-title')"
       with-add-button
@@ -1115,7 +1130,10 @@ onMounted(async () => {
         () => triggerAddModal(t('pengajuan-reguler.reguler-detail-ph-title'))
       "
       :data="halalData"
-      :on-delete="(el: any) => deleteFactoryOrOutlet('halal data', el)"
+      :on-delete="async (el: any) => {
+        await deleteFactoryOrOutlet('halal data', el)
+        emit('refetchListPenyelia')
+      }"
       :title="t('pengajuan-reguler.reguler-form--pengajuan-ph-title')"
       with-add-button
       :isviewonly="props?.isviewonly"

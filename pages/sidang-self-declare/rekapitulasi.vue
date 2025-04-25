@@ -29,7 +29,9 @@ const itemPerPage = ref(10);
 const totalItems = ref(0);
 const loading = ref(false);
 const page = ref(1);
-const startDate = ref(formatToYYYYMMDD(new Date(0)));
+const startDate = ref(
+  formatToYYYYMMDD(new Date(new Date().setDate(new Date().getDate() - 30)))
+);
 const endDate = ref(formatToYYYYMMDD(new Date()));
 const filterFasilitasi = ref([]);
 const filterPendamping = ref([]);
@@ -173,6 +175,7 @@ const currentMonth = now.toLocaleString("default", { month: "2-digit" });
 const currentYear = now.getFullYear();
 const currentDay = now.getDate();
 const date = ref("");
+const datePlaceholder = ref(startDate.value + " to " + endDate.value);
 const changeData = (item) => {
   if (!date.value.includes("to")) return;
 
@@ -204,7 +207,7 @@ const changeData = (item) => {
           <VCol cols="12" md="4">
             <AppDateTimePicker
               v-model="date"
-              placeholder="Select Range Date"
+              :placeholder="datePlaceholder"
               :config="{
                 mode: 'range',
                 dateFormat: 'd-m-Y',

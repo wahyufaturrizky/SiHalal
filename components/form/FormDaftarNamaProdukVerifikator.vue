@@ -1,9 +1,18 @@
 <script setup lang="ts">
-const snackBar = useSnackbar();
+const dialogDaftarBahan = ref(false);
+const listIngredient = ref([]);
+const currentSelectedBahan = ref([]);
+
+const selectedIngredients = computed(() => {
+  return listIngredient.value.filter((item) =>
+    currentSelectedBahan.value.includes(item.id)
+  );
+});
 
 const headers = [
   { title: "No", key: "no" },
   { title: "Nama Produk", key: "nama" },
+  { title: "Jumlah Bahan", key: "jumlah_bahan", align: "center" },
   {
     title: "Foto Produk",
     key: "foto",
@@ -11,6 +20,7 @@ const headers = [
     sortable: false,
     nowrap: true,
   },
+  { title: "Action", key: "action", align: "center" },
 ];
 
 const items = ref([]);
@@ -26,8 +36,10 @@ const getProduct = async () => {
         id_reg: route.params.id,
       },
     });
+
     if (response.code != 2000) {
       useSnackbar().sendSnackbar("ada kesalahan", "error");
+
       return;
     }
     items.value = response.data;
@@ -35,9 +47,39 @@ const getProduct = async () => {
     useSnackbar().sendSnackbar("ada kesalahan", "error");
   }
 };
+
+const handleListIngredient = async () => {
+  try {
+    const response: any = await $api(
+      "/self-declare/business-actor/ingredient/list",
+      {
+        method: "get",
+        query: {
+          id_reg: route.params.id,
+        },
+      } as any
+    );
+
+    listIngredient.value = response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const onShowDaftarBahan = (selectedBahan: any) => {
+  currentSelectedBahan.value = selectedBahan;
+  dialogDaftarBahan.value = true;
+};
+
+const onCloseDaftarBahan = () => {
+  dialogDaftarBahan.value = false;
+};
+
 onMounted(async () => {
   await getProduct();
+  await handleListIngredient();
 });
+
 // TODO -> LOGIc DOWNLOAD
 const download = async (item) => {
   await downloadDocument(item, "PRODUCT");
@@ -59,22 +101,52 @@ const download = async (item) => {
         @update:page="(newPage) => (page = newPage)"
         @update:items-per-page="(newSize) => (itemsPerPage = newSize)"
       >
-        <template v-slot:item.no="{ index }">
+        <template #item.no="{ index }">
           {{ (page - 1) * itemsPerPage + index + 1 }}
         </template>
         <template #item.foto="{ item }">
-          <v-btn
+          <VBtn
             :color="Boolean(item.foto) ? 'primary' : 'secondary'"
             variant="plain"
-            @click="download(item.foto)"
             :disabled="Boolean(!item.foto)"
+            @click="download(item.foto)"
           >
             <VIcon>mdi-download</VIcon> File
-          </v-btn>
+          </VBtn>
+        </template>
+        <template #item.action="{ item }">
+          <div class="d-flex justify-center gap-1">
+            <IconBtn size="small">
+              <VIcon
+                icon="mdi-eye"
+                color="danger"
+                @click="() => onShowDaftarBahan(item.bahan_selected)"
+              />
+              <VTooltip activator="parent" location="top">
+                Lihat Daftar Bahan
+              </VTooltip>
+            </IconBtn>
+          </div>
         </template>
       </VDataTable>
     </VCardItem>
   </VCard>
+
+  <VDialog v-model="dialogDaftarBahan" max-width="640px" persistent>
+    <VCard class="px-4 pb-2">
+      <VCardTitle class="pa-4 d-flex justify-space-between align-center">
+        <h4 class="text-h4 font-weight-bold">Daftar Bahan</h4>
+        <VIcon size="large" @click="onCloseDaftarBahan">
+          mdi-close-thick
+        </VIcon>
+      </VCardTitle>
+      <ol class="pr-4 pb-4 ml-8">
+        <li v-for="(item, index) in selectedIngredients" :key="index">
+          {{ item.nama_bahan }}
+        </li>
+      </ol>
+    </VCard>
+  </VDialog>
 </template>
 
 <style scoped lang="scss"></style>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const router = useRouter();
+
 const profileData = reactive({
   // Data -> Profil Komisi Fatwa
   id: "",
@@ -14,6 +15,7 @@ const profileData = reactive({
   kecamatan: "",
   wilayah_id: "",
   email: "",
+
   // Data -> Penanggung Jawab
   nama_pimpinan: "",
   no_hp_pimpinan: "",
@@ -26,6 +28,7 @@ const profileData = reactive({
   bidang_fatwa_tte: "",
   nama_kontak: "",
   no_hp_kontak: "",
+
   // Data -> Rekening Bank & NPWP
   rekening: {
     unik_id: "",
@@ -51,6 +54,16 @@ const download = async (item: any) => {
   await downloadDocument(item, "FILES");
 };
 
+const getProvince = async (provinceCode: string) => {
+  const response = await $api("/master/province", {
+    method: "get",
+  } as any);
+
+  profileData.provinsi = (response as any[]).filter((item: any) => {
+    return item.code === provinceCode;
+  })[0]?.name;
+};
+
 const getSubDistrict = async (kode: string) => {
   const response = await $api("/master/subdistrict", {
     method: "post",
@@ -58,20 +71,23 @@ const getSubDistrict = async (kode: string) => {
       district: kode,
     },
   } as any);
+
   profileData.kecamatan = (response as any[]).filter((item: any) => {
     return item.code === profileData.kd_kec;
   })[0]?.name;
 };
+
 const handleLoadProfile = async () => {
   try {
     const response: any = await $api("/komisi-fatwa/profile", {
       method: "get",
     } as any);
+
     if (response.code === 2000) {
       Object.assign(profileData, response.data);
-      if (profileData.kd_kec && profileData.kd_kab) {
+      if (profileData.kd_prov) getProvince(profileData.kd_prov);
+      if (profileData.kd_kec && profileData.kd_kab)
         getSubDistrict(profileData.kd_kab);
-      }
     }
   } catch (error) {
     console.error(error);
