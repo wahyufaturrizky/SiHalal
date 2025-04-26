@@ -138,19 +138,22 @@ const MRA = [
   { id: 4, key: "Country", value: country },
 ];
 
-const trackingLOA = props.datatrackingloa?.map((item: any) => {
-  const { username, status, id, created_at, comment } = item || {};
+const trackingLOA = computed(() => {
+  return props.datatrackingloa?.map((item: any) => {
+    const { username, status, id, created_at, comment } = item || {};
 
-  return {
-    id,
-    key: status,
-    value: username,
-    created_at,
-    comment,
-  };
+    return {
+      id,
+      key: status,
+      value: username,
+      created_at,
+      comment,
+    };
+  }) || [];
 });
 
-const trackingFHC = props.datatrackingfhc?.map((item: any) => {
+const trackingFHC = computed(() => {
+  return props.datatrackingfhc?.map((item: any) => {
   const { username, status, id, created_at, comment } = item || {};
 
   return {
@@ -160,6 +163,7 @@ const trackingFHC = props.datatrackingfhc?.map((item: any) => {
     created_at,
     comment,
   };
+}) || []
 });
 
 const headers = [
@@ -544,7 +548,7 @@ const latestStatusFhc = computed(() =>
               </p>
             </template>
             <template #item.action="{ item, index }">
-              <div class="d-flex gap-1">
+              <div class="d-flex gap-1" v-if="item?.file && item?.no && item?.no !== '00000000-0000-0000-0000-000000000000'">
                 <IconBtn
                   size="small"
                   @click="getReqTrackingModal((item as any).tracking)"
