@@ -6,7 +6,8 @@ const props = defineProps({
   },
 });
 
-const tracking = props.datalistproducttracking?.map((item) => {
+const tracking = computed(() => {
+  return props.datalistproducttracking?.map((item) => {
   const { created_at, status, username, comment } = item || {};
 
   return {
@@ -15,6 +16,7 @@ const tracking = props.datalistproducttracking?.map((item) => {
     username,
     comment,
   };
+  }) || []
 });
 </script>
 
