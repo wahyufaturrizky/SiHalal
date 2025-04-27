@@ -2,6 +2,13 @@
 import { computed, ref } from "vue";
 import { useDisplay } from "vuetify";
 
+const props = defineProps({
+  isDisabled: {
+    type: Boolean,
+    required: false,
+  },
+});
+
 const emit = defineEmits<{
   (e: "refresh"): void;
 }>();
@@ -75,6 +82,7 @@ const dialogMaxWidth = computed(() => {
       variant="outlined"
       color="primary"
       append-icon="ri-reset-left-line"
+      :disabled="props.isDisabled"
       @click="openDialog"
     >
       Return

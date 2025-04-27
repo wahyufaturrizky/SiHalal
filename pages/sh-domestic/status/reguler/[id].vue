@@ -220,11 +220,8 @@ const getDownloadForm = async (docName: string, propName: string) => {
     },
   });
 
-  if (result?.code === 2000) {
-    downloadForms[propName] = result?.data?.file;
-  } else {
-    downloadForms[propName] = "";
-  }
+  if (result?.code === 2000) downloadForms[propName] = result?.data?.file;
+  else downloadForms[propName] = "";
 };
 
 const handleDownloadForm = async (fileName: string, type: string) => {
@@ -238,6 +235,7 @@ const handleCertificate = async (fileName: string, type: string) => {
       body: {
         document_type: "certificate-reguler",
         ref_id: id,
+        retry: true,
       },
     });
 
@@ -889,8 +887,8 @@ onMounted(async () => {
             </VExpansionPanelText>
             </VExpansionPanel>
           -->
-          <VExpansionPanel :value="5" class="pt-3">
-            <div v-if="detailData?.tracking">
+          <VExpansionPanel :value="5" class="mt-3">
+            <template v-if="detailData?.tracking">
               <!-- <PanelTracking :data="detailData?.tracking" /> -->
               <VCard class="pa-5">
                 <VCardlTitle class="font-weight-bold text-h4">
@@ -904,15 +902,20 @@ onMounted(async () => {
                       dot-color="#FFFFFF"
                     >
                       <VRow>
-                        <VCol cols="7">
-                          <div class="text-h6">
-                            {{ item.comment }}
+                        <VCol cols="12">
+                          <div
+                            class="d-flex justify-space-between align-center"
+                          >
+                            <h6 class="text-h6">
+                              {{ item.comment }}
+                            </h6>
+                            <span v-if="item.tanggal">
+                              {{ formatDateIntl(new Date(item.tanggal)) }}
+                            </span>
                           </div>
                           <div>{{ item.username }}</div>
-                        </VCol>
-                        <VCol v-if="item.tanggal" cols="5">
-                          <div>
-                            {{ formatDateIntl(new Date(item.tanggal)) }}
+                          <div v-if="item.keterangan" class="tracking-info">
+                            {{ item.keterangan }}
                           </div>
                         </VCol>
                       </VRow>
@@ -920,7 +923,7 @@ onMounted(async () => {
                   </VTimeline>
                 </VCardText>
               </VCard>
-            </div>
+            </template>
           </VExpansionPanel>
           <!--
             <VExpansionPanel :value="6" class="pt-3">
@@ -1099,5 +1102,25 @@ onMounted(async () => {
       inset-inline-end: 0;
     }
   }
+}
+
+:deep(.v-timeline) {
+  margin-inline-start: -1rem !important;
+
+  > .v-timeline-item > .v-timeline-divider {
+    padding-block-start: 0 !important;
+  }
+
+  > .v-timeline-item:nth-child(1) {
+    .v-row {
+      > .v-col {
+        padding-block-start: 0 !important;
+      }
+    }
+  }
+}
+
+.tracking-info {
+  font-size: 0.75rem;
 }
 </style>

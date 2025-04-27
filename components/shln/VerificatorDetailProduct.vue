@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import { ref } from "vue";
-
-const emit = defineEmits<{
-  (e: "refresh"): void;
-}>();
-
 const props = defineProps({
   datalistproducttracking: {
     type: Object,
     required: true,
   },
+  loadingListTrackingProduct: {
+    type: Boolean,
+    required: false,
+  },
 });
+
+const emit = defineEmits<{
+  (e: "refresh"): void;
+}>();
 
 const route = useRoute();
 const shlnId = route.params.id;
@@ -53,6 +55,10 @@ const headers = [
   { title: "Product Name", key: "name" },
   { title: "HS Code", key: "hc_code" },
 ];
+
+const latestStatus = computed(() =>
+  checkStatusTracking(props.datalistproducttracking)
+);
 </script>
 
 <template>
@@ -67,11 +73,13 @@ const headers = [
             <VRow no-gutters>
               <VCol cols="6">
                 <VerificationProductReturnConfirmation
+                  :is-disabled="latestStatus === 'returned'"
                   @refresh="emit('refresh')"
                 />
               </VCol>
               <VCol cols="6">
                 <VerificationProductSaveConfirmation
+                  :is-disabled="latestStatus === 'verified'"
                   @refresh="emit('refresh')"
                 />
               </VCol>
@@ -79,9 +87,9 @@ const headers = [
           </VCol>
         </VRow>
         <VDataTableServer
-          disable-sort
           v-model:items-per-page="itemPerPage"
           v-model:page="page"
+          disable-sort
           :headers="headers"
           :items="dataListProduct"
           :loading="loadingListProduct"
@@ -100,8 +108,17 @@ const headers = [
     </VCol>
 
     <VCol cols="4">
-      <VCard class="pa-4">
-        <p class="text-h3">Tracking</p>
+      <VCard class="pa-0">
+        <VCardTitle class="pt-4 pb-0">
+          <h3 :class="`${props.loadingListTrackingProduct ? 'mb-2' : ''}`">
+            Tracking
+          </h3>
+          <VProgressLinear
+            v-if="props.loadingListTrackingProduct"
+            color="primary"
+            indeterminate
+          />
+        </VCardTitle>
         <VerificatorTrackingProductTimeLine
           :datalistproducttracking="props.datalistproducttracking"
         />

@@ -503,7 +503,7 @@ watch(loaFile, (newValue, oldValue) => {
               label="Unggah Letter Of Authorization"
               outlined
               dense
-              accept=".doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.pdf,.csv"
+              accept="application/pdf, image/jpg, image/jpeg, image/png"
               class="mb-2"
               :rules="[
                 requiredValidator,
@@ -561,7 +561,7 @@ watch(loaFile, (newValue, oldValue) => {
               label="Unggah Foreign Halal Certificate"
               outlined
               dense
-              accept=".doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.pdf,.csv"
+              accept="application/pdf, image/jpg, image/jpeg, image/png"
               class="mb-2"
               :rules="[
                 requiredValidator,
