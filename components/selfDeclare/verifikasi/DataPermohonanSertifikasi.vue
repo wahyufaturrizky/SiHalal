@@ -24,17 +24,17 @@ const loadingAddSubmission = ref(false);
 const selectedItems = ref<any[]>([]);
 
 const headers: any = [
-  { title: "Pilih", key: "pilih", fixed: true },
-  { title: "No", key: "no", align: "center" },
-  { title: "ID Daftar", key: "id_daftar" },
-  { title: "No Daftar", key: "no_daftar" },
-  { title: "Tanggal Daftar", key: "tgl_daftar" },
-  { title: "Nama PU", key: "nama" },
-  { title: "Alamat", key: "alamat" },
-  { title: "Jenis Produk", key: "jenis_produk" },
-  { title: "Merk Dagang", key: "merek_dagang" },
-  { title: "Status", key: "status_code" },
-  { title: "Action", key: "action", fixed: true },
+  { title: "Pilih", key: "pilih", fixed: true, sortable: false},
+  { title: "No", key: "no", align: "center", sortable: false},
+  { title: "ID Daftar", key: "id_daftar", sortable: false},
+  { title: "No Daftar", key: "no_daftar", sortable: true},
+  { title: "Tanggal Daftar", key: "tgl_daftar", sortable: true},
+  { title: "Nama PU", key: "nama", sortable: false},
+  { title: "Alamat", key: "alamat", sortable: false},
+  { title: "Jenis Produk", key: "jenis_produk", sortable: false},
+  { title: "Merk Dagang", key: "merek_dagang", sortable: false},
+  { title: "Status", key: "status_code", sortable: false},
+  { title: "Action", key: "action", fixed: true, sortable: false},
 ];
 
 const defaultStatus = { color: "error", desc: "Unknown Status" };
@@ -94,6 +94,8 @@ const loadItem = async ({
   lembaga,
   pendamping,
   kabupaten,
+  sortBy,
+  sortByField,
 }: {
   page: number;
   size: number;
@@ -104,6 +106,8 @@ const loadItem = async ({
   lembaga: string;
   pendamping: string;
   kabupaten: string;
+  sortBy: string;
+  sortByField: string;
 }) => {
   try {
     loading.value = true;
@@ -122,6 +126,8 @@ const loadItem = async ({
         kabupaten,
         status: "OF71",
         channel_id: "CH003,CH004",
+        shortBy: sortBy,
+        shortByField: sortByField,
       },
     });
 
@@ -641,7 +647,6 @@ const handleInputPendamping = (val: any) => {
         </VRow>
         <VRow>
           <VDataTableServer
-            disable-sort
             :items-per-page-options="[10, 25, 50, 100]"
             v-model:items-per-page="itemPerPage"
             v-model:page="page"
@@ -652,17 +657,20 @@ const handleInputPendamping = (val: any) => {
             loading-text="Loading..."
             style="white-space: nowrap"
             @update:options="
-              loadItem({
-                page: page,
-                size: itemPerPage,
-                keyword: searchQuery,
-                fasilitas: selectedFilters.fasilitas,
-                jenis_produk: selectedFilters.jenisProduk,
-                provinsi: selectedFilters.provinsi,
-                lembaga: selectedFilters.lembaga,
-                pendamping: selectedFilters.pendamping,
-                kabupaten: selectedFilters.kabupaten,
-              })
+              (newFilter) =>
+                loadItem({
+                  page: page,
+                  size: itemPerPage,
+                  keyword: searchQuery,
+                  fasilitas: selectedFilters.fasilitas,
+                  jenis_produk: selectedFilters.jenisProduk,
+                  provinsi: selectedFilters.provinsi,
+                  lembaga: selectedFilters.lembaga,
+                  pendamping: selectedFilters.pendamping,
+                  kabupaten: selectedFilters.kabupaten,
+                  sortBy: newFilter?.sortBy?.[0]?.order || '',
+                  sortByField: newFilter?.sortBy?.[0]?.key || ''
+                })
             "
           >
             <template #item.no="{ index }">
