@@ -412,6 +412,11 @@ const handleSave = async () => {
   //   }
   // });
 };
+
+const onlyNumbers = (event, item) => {
+  // Mengganti semua karakter non-digit dengan string kosong
+  item.value = item.value.replace(/\D/g, '');
+}
 </script>
 
 <template>
@@ -506,7 +511,7 @@ const handleSave = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    :readonly="!isEditing"
+                    disabled
                   />
                   <VTextarea
                     v-if="item.label === 'Alamat'"
@@ -514,7 +519,7 @@ const handleSave = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    :readonly="!isEditing"
+                    disabled
                     rows="2"
                     auto-grow
                   />
@@ -529,7 +534,7 @@ const handleSave = async () => {
                     item-value="code"
                     density="compact"
                     rounded="xl"
-                    :readonly="!isEditing"
+                    disabled
                     @update:model-value="getDistrict"
                   />
 
@@ -543,7 +548,7 @@ const handleSave = async () => {
                     item-value="code"
                     density="compact"
                     rounded="xl"
-                    :readonly="!isEditing"
+                    disabled
                     @update:model-value="getSubDistrict"
                   />
 
@@ -557,7 +562,7 @@ const handleSave = async () => {
                     item-value="code"
                     density="compact"
                     rounded="xl"
-                    :readonly="!isEditing"
+                    disabled
                   />
                   <Vuepicdatepicker v-if="item.label === 'Tanggal Lahir'">
                     <template #trigger>
@@ -569,7 +574,7 @@ const handleSave = async () => {
                         :rules="[requiredValidator]"
                         teleport
                         clearable
-                        :readonly="!isEditing"
+                        disabled
                       >
                         <template #trigger>
                           <VTextField
@@ -579,7 +584,7 @@ const handleSave = async () => {
                             append-inner-icon="fa-calendar"
                             :model-value="item.value"
                             color="#757575"
-                            :readonly="!isEditing"
+                            disabled
                           />
                         </template>
                       </Vuepicdatepicker>
@@ -594,7 +599,7 @@ const handleSave = async () => {
                     append-inner-icon="fa-calendar"
                     :model-value="item.value"
                     color="#757575"
-                    :readonly="!isEditing"
+                    disabled
                     />
                   -->
                 </VCol>
@@ -610,7 +615,7 @@ const handleSave = async () => {
                     density="compact"
                     hide-details
                     label="Pilih Pekerjaan"
-                    :readonly="!isEditing"
+                    disabled
                   />
 
                   <VSelect
@@ -623,7 +628,7 @@ const handleSave = async () => {
                     density="compact"
                     hide-details
                     label="Pilih Pekerjaan"
-                    :readonly="!isEditing"
+                    disabled
                   />
 
                   <VTextField
@@ -638,7 +643,7 @@ const handleSave = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    :readonly="!isEditing"
+                    disabled
                   />
                 </VCol>
               </VRow>
@@ -668,7 +673,7 @@ const handleSave = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    :readonly="!isEditing"
+                    disabled
                   />
                 </VCol>
 
@@ -679,7 +684,7 @@ const handleSave = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    :readonly="!isEditing"
+                    disabled
                   />
                 </VCol>
               </VRow>
@@ -811,22 +816,19 @@ const handleSave = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    :readonly="!isEditing"
+                    :disabled="!isEditing"
                   />
                 </VCol>
 
-                <VCol
-                  v-if="
-                    item.label !== 'File Rekening' && item.label !== 'Nama Bank'
-                  "
-                  cols="12"
-                >
+                <VCol v-if="item.label !== 'File Rekening' && item.label !== 'Nama Bank'" cols="12">
                   <VTextField
                     v-model="item.value"
                     variant="outlined"
                     density="compact"
                     hide-details
-                    :readonly="!isEditing"
+                    :disabled="!isEditing"
+                    :maxlength="item.label === 'No. Rekening' ? 16 : undefined"
+                    @input="item.label === 'No. Rekening' ? onlyNumbers($event, item) : null"
                   />
                 </VCol>
 
@@ -877,7 +879,7 @@ const handleSave = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    :readonly="!isEditing"
+                    :disabled="!isEditing"
                   />
                 </VCol>
 

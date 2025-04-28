@@ -319,9 +319,6 @@ onMounted(() => {
             <template #item.index="{ index }">
               {{ index + 1 + (currentPage - 1) * itemPerPage }}
             </template>
-            <template #item.tanggal_daftar="{ item }">
-              {{ formatDateId(item.tanggal_daftar) }}
-            </template>
             <template #item.jenis_produk="{ item }">
               <div>{{ `${item.jenis_produk} & ${item.merek_dagang}` }}</div>
             </template>
