@@ -109,8 +109,12 @@ const getProfile = async () => {
 
         if (el.label === "Tempat Lahir")
           el.value = response.data.pendamping.tempat_lahir;
-        if (el.label === "Tanggal Lahir")
-          el.value = formatDateId(response.data.pendamping.tgl_lahir);
+        if (el.label === 'Tanggal Lahir') {
+          const formatedDate = `${formatDateId(response.data.pendamping.tgl_lahir)}`
+          const replacedDate = formatedDate.replaceAll('/', '-')
+
+          el.value = replacedDate
+        }
         if (el.label === "Pekerjaan")
           el.value = response.data.pendamping.pekerjaan;
         if (el.label === "IDLembaga")
@@ -148,8 +152,12 @@ const getProfile = async () => {
         if (el.label === "Status") el.value = response.data.pendamping.status;
         if (el.label === "No. Registrasi")
           el.value = `${Math.floor(response.data.pendamping.no_register)}`;
-        if (el.label === "Tanggal Terbit")
-          el.value = formatDateId(response.data.pendamping.tgl_terbit);
+        if (el.label === 'Tanggal Terbit') {
+          const formatedDate = `${formatDateId(response.data.pendamping.tgl_terbit)}`
+          const replacedDate = formatedDate.replaceAll('/', '-')
+
+          el.value = replacedDate
+        }
       });
 
       documentLMS.value.forEach((el) => {
@@ -556,7 +564,7 @@ const handleSave = async () => {
                       <Vuepicdatepicker
                         v-model:model-value="item.value"
                         auto-apply
-                        model-type="dd/MM/yyyy"
+                        model-type="dd-MM-yyyy"
                         :enable-time-picker="false"
                         :rules="[requiredValidator]"
                         teleport
