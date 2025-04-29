@@ -23,6 +23,8 @@ export default defineEventHandler(async (event) => {
     kabupaten,
     status,
     channel_id,
+    shortBy,
+    shortByField,
   } = (await getQuery(event)) as {
     page: string;
     size: string;
@@ -35,6 +37,8 @@ export default defineEventHandler(async (event) => {
     kabupaten: string;
     status: string;
     channel_id: string;
+    shortBy: string;
+    shortByField: string;
   };
 
   const params: any = {
@@ -74,6 +78,12 @@ export default defineEventHandler(async (event) => {
   }
   if (channel_id != "") {
     params["channel_id"] = channel_id;
+  }
+  if (shortBy != "") {
+    params["shortBy"] = shortBy;
+  }
+  if (shortByField != "") {
+    params["shortByField"] = shortByField;
   }
   console.log(params);
   const data = await $fetch<any>(
