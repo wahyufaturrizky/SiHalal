@@ -229,10 +229,30 @@ const insertBahan = async () => {
     modalAddBahan.value = false;
   }
 };
+
+const backupTipeBahan = () => {
+  form.value.id = props.data.id;
+  form.value.typeBahan = props.data.typeBahan;
+  form.value.jenis_bahan = props.data.jenis_bahan;
+  form.value.nama_bahan = props.data.nama_bahan;
+  form.value.kelompok = props.data.kelompok;
+  form.value.merek = props.data.merek;
+  form.value.produsen = props.data.produsen;
+  form.value.no_sertifikat = props.data.no_sertifikat;
+};
+
+const changeTipeBahan = () => {
+  form.value.jenis_bahan = "";
+  form.value.nama_bahan = "";
+  form.value.kelompok = "";
+  form.value.merek = "";
+  form.value.produsen = "";
+  form.value.no_sertifikat = "";
+};
 </script>
 
 <template>
-  <VDialog max-width="60svw" v-model="modalAddBahan">
+  <VDialog persistent max-width="60svw" v-model="modalAddBahan">
     <template #activator="{ props: openModal }">
       <VBtn v-bind="openModal" prepend-icon="ri-pencil-line" variant="text">
         Edit
@@ -247,7 +267,10 @@ const insertBahan = async () => {
               ><VIcon
                 size="small"
                 icon="fa-times"
-                @click="isActive.value = false"
+                @click="
+                  isActive.value = false;
+                  backupTipeBahan();
+                "
               ></VIcon
             ></VCol>
           </VRow>
@@ -273,6 +296,7 @@ const insertBahan = async () => {
                     :rules="[requiredValidator]"
                     density="compact"
                     placeholder="Pilih Tipe Bahan"
+                    @update:modelValue="changeTipeBahan"
                   ></VSelect>
                 </VItemGroup>
               </VCol>
@@ -396,7 +420,12 @@ const insertBahan = async () => {
             style="display: flex; justify-content: end; padding: 1.5svw"
           >
             <div>
-              <VBtn @click="isActive.value = false" variant="outlined"
+              <VBtn
+                @click="
+                  isActive.value = false;
+                  backupTipeBahan();
+                "
+                variant="outlined"
                 >Batal</VBtn
               >
               <VBtn

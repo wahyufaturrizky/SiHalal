@@ -5,6 +5,7 @@ const {
   hideAlertKodeUnik,
   hideKodeFasilitasi,
   idReg,
+  selectedProductTypes,
 } = defineProps({
   hideKodeFasilitasi: {
     type: Boolean,
@@ -21,6 +22,10 @@ const {
   idReg: {
     type: String,
     default: null,
+  },
+  selectedProductTypes: {
+    type: Array,
+    default: () => [],
   },
 });
 
@@ -265,6 +270,14 @@ const handleGetJenisProdukFilter = async (item) => {
     // console.log(error);
   }
 };
+
+const filteredListProduk = computed(() => {
+  let tempListProduk = [...listProduk?.value]
+  if (selectedProductTypes?.length)
+    tempListProduk = tempListProduk.filter(e => !selectedProductTypes.find(j => j === e?.name))
+
+  return tempListProduk
+})
 
 const handleGetLembagaPendampingInitial = async (lokasi: string) => {
   try {
@@ -880,7 +893,7 @@ const getItemData = (item) => {
                 :disabled="isPengembangan()"
                 placeholder="Pilih Jenis Produk"
                 density="compact"
-                :items="listProduk"
+                :items="filteredListProduk"
                 item-title="name"
                 :rules="[requiredValidator]"
                 item-value="code"

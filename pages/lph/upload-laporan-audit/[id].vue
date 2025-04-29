@@ -877,23 +877,22 @@ const deleteProduct = async (productId: string) => {
   }
 };
 
-// const deletePabrik = async (pabrikId: string) => {
-//   const response: any = await $api(
-//     "/reguler/pelaku-usaha/delete-factory",
-//     {
-//       method: "DELETE",
-//       body: { id: pabrikId }
-//     }
-//   );
+const deletePabrik = async (pabrikId: string) => {
+  const response: any = await $api(
+    "/reguler/pelaku-usaha/delete-factory",
+    {
+      method: "DELETE",
+      body: { id: pabrikId }
+    }
+  );
 
-//   if (response.code === 2000) {
-//     await getFactoryAndOutlet('FAPAB');
-//     reRender.value = !reRender.value;
-//     useSnackbar().sendSnackbar("Sukses menghapus data", "success");
-//   } else {
-//     useSnackbar().sendSnackbar("Data tidak dapat dihapus", "error");
-//   }
-// };
+  if (response.code === 2000) {
+    reRender.value = !reRender.value;
+    useSnackbar().sendSnackbar("Sukses menghapus data", "success");
+  } else {
+    useSnackbar().sendSnackbar("Data tidak dapat dihapus", "error");
+  }
+};
 
 const loadItemProductRincian = async (kode_rincian: string) => {
   loadingRincian.value = true;
@@ -1030,6 +1029,10 @@ const updateDataPU = async () => {
       body: {
         nama_pu_sh: formDataPU.value.nama_pu_sh,
         alamat: formDataPU.value.alamat,
+        kota: formDataPU.value.kota,
+        provinsi: formDataPU.value.provinsi,
+        negara: formDataPU.value.negara,
+        kodepos: formDataPU.value.kodepos,
       },
       headers: {
         "Content-Type": "application/json",
@@ -2462,7 +2465,7 @@ const handlePageChange = async (payload: any) => {
                       title="Edit"
                       @click="HandleEditPabrik(item.id)"
                     />
-                    <!-- <VListItem prepend-icon="fa-trash" title="Hapus" @click="deletePabrik(item.id)" /> -->
+                    <VListItem prepend-icon="fa-trash" title="Hapus" @click="deletePabrik(item.id)" />
                   </VList>
                 </VMenu>
               </td>
@@ -2582,25 +2585,21 @@ const handlePageChange = async (payload: any) => {
             <VTextField
               v-model="formDataPU.kota"
               label="Kota/Kabupaten"
-              disabled
               class="mb-3"
             />
             <VTextField
               v-model="formDataPU.provinsi"
               label="Provinsi"
-              disabled
               class="mb-3"
             />
             <VTextField
               v-model="formDataPU.negara"
               label="Negara"
-              disabled
               class="mb-3"
             />
             <VTextField
               v-model="formDataPU.kodepos"
               label="Kode Pos"
-              disabled
               class="mb-3"
             />
             <VTextField
@@ -2676,7 +2675,7 @@ const handlePageChange = async (payload: any) => {
                       title="Edit"
                       @click="HandleEditOutlet(item.id)"
                     />
-                    <!-- <VListItem prepend-icon="fa-trash" title="Hapus" @click="deletePabrik(item.id)" /> -->
+                    <VListItem prepend-icon="fa-trash" title="Hapus" @click="deletePabrik(item.id)" />
                   </VList>
                 </VMenu>
               </td>

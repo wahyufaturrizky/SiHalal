@@ -26,8 +26,11 @@ const loadItemById = async () => {
 
     if (response.code === 2000) {
       data.value = response.data;
+
       return response;
-    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -46,7 +49,9 @@ const loadItemDetailRegistrationById = async () => {
       dataDetailRegistration.value = response.data;
 
       return response;
-    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -62,7 +67,9 @@ const loadItemTrackingById = async () => {
       dataTracking.value = response.data;
 
       return response;
-    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -81,6 +88,7 @@ const loadItemListProductTrackingById = async () => {
     if (response.code === 2000) {
       dataListProductTracking.value = response.data;
       loadingListTrackingProduct.value = false;
+
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -104,6 +112,7 @@ const loadItemListManufactureTrackingById = async () => {
     if (response.code === 2000) {
       dataListManufactureTracking.value = response.data;
       loadingListTrackingManufacture.value = false;
+
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -153,6 +162,7 @@ const loadItemFHCTrackingById = async () => {
     if (response.code === 2000) {
       dataFHCTracking.value = response.data;
       loadingListTrackingFHC.value = false;
+
       return response;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -174,7 +184,9 @@ const loadDocumentLOAById = async () => {
       dataDocumentLOA.value = response.data;
 
       return response;
-    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -190,7 +202,9 @@ const loadDocumentFHCById = async () => {
       dataDocumentFHC.value = response.data;
 
       return response;
-    } else useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    } else {
+      useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+    }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   }
@@ -207,9 +221,8 @@ const loadDocumentMRAById = async () => {
 
       return response;
     }
-    if (response.code === 4000) {
+    if (response.code === 4000)
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
-    }
   } catch (error) {
     if (error.data.code === 4000) {
       useSnackbar().sendSnackbar(
@@ -240,11 +253,8 @@ onMounted(async () => {
     return item !== undefined;
   });
 
-  if (checkResIfUndefined) {
-    loading.value = false;
-  } else {
-    loading.value = false;
-  }
+  if (checkResIfUndefined) loading.value = false;
+  else loading.value = false;
 });
 </script>
 
@@ -282,28 +292,29 @@ onMounted(async () => {
         </VTabsWindowItem>
         <VTabsWindowItem value="2">
           <ShlnDocumentDetail
-            v-if="!loadingListTrackingFHC && !loadingListTrackingLOA"
             :datadocumentfhc="dataDocumentFHC"
             :data="data"
             :datadocumentloa="dataDocumentLOA"
             :datadocumentmra="dataDocumentMRA"
             :datatrackingloa="dataLOATracking"
+            :loading-tracking-loa="loadingListTrackingLOA"
             :datatrackingfhc="dataFHCTracking"
+            :loading-tracking-fhc="loadingListTrackingFHC"
             @refreshloa="loadItemLOATrackingById"
             @refreshfhc="loadItemFHCTrackingById"
           />
         </VTabsWindowItem>
         <VTabsWindowItem value="3">
           <VerificatorDetailManufacture
-            v-if="!loadingListTrackingManufacture"
             :datalistmanufacturetracking="dataListManufactureTracking"
+            :loading-list-tracking-manufacture="loadingListTrackingManufacture"
             @refresh="loadItemListManufactureTrackingById"
           />
         </VTabsWindowItem>
         <VTabsWindowItem value="4">
           <VerificatorDetailProduct
-            v-if="!loadingListTrackingProduct"
             :datalistproducttracking="dataListProductTracking"
+            :loading-list-tracking-product="loadingListTrackingProduct"
             @refresh="loadItemListProductTrackingById"
           />
         </VTabsWindowItem>

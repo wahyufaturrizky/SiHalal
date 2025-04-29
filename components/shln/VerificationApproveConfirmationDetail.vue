@@ -46,6 +46,7 @@ const putVerificatorApprove = async () => {
 
 const confirm = () => {
   putVerificatorApprove();
+  router.push("/sertifikasi-halal/luar-negeri/verification");
 };
 
 const cancel = () => {

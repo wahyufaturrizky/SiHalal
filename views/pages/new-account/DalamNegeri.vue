@@ -134,7 +134,7 @@ const checkNib = async () => {
 
       domesticWindow.value = 2;
     } catch (err) {
-      nibError.value = `${t("new-domestic-nib-data.msg-error-find")}`;
+      nibError.value = err.data.message;
     }
   } else {
     nibError.value = `${t("new-domestic-nib-data.msg-error")}`;

@@ -109,8 +109,12 @@ const getProfile = async () => {
 
         if (el.label === "Tempat Lahir")
           el.value = response.data.pendamping.tempat_lahir;
-        if (el.label === "Tanggal Lahir")
-          el.value = formatDateId(response.data.pendamping.tgl_lahir);
+        if (el.label === 'Tanggal Lahir') {
+          const formatedDate = `${formatDateId(response.data.pendamping.tgl_lahir)}`
+          const replacedDate = formatedDate.replaceAll('/', '-')
+
+          el.value = replacedDate
+        }
         if (el.label === "Pekerjaan")
           el.value = response.data.pendamping.pekerjaan;
         if (el.label === "IDLembaga")
@@ -148,8 +152,12 @@ const getProfile = async () => {
         if (el.label === "Status") el.value = response.data.pendamping.status;
         if (el.label === "No. Registrasi")
           el.value = `${Math.floor(response.data.pendamping.no_register)}`;
-        if (el.label === "Tanggal Terbit")
-          el.value = formatDateId(response.data.pendamping.tgl_terbit);
+        if (el.label === 'Tanggal Terbit') {
+          const formatedDate = `${formatDateId(response.data.pendamping.tgl_terbit)}`
+          const replacedDate = formatedDate.replaceAll('/', '-')
+
+          el.value = replacedDate
+        }
       });
 
       documentLMS.value.forEach((el) => {
@@ -210,9 +218,24 @@ const getSubDistrict = async (kode: string) => {
 const provinceList = ref();
 const districtList = ref();
 const subDistrictList = ref();
+const bankList = ref([])
+
+const getListBank = async () => {
+  try {
+    const response = await $api('/reguler/lph/list-rekening', {
+      method: 'get',
+    })
+
+    if (response.code === 2000)
+      bankList.value = response?.data?.list?.map(e => (e?.bank_name))
+  }
+  catch (err) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
 
 onMounted(async () => {
-  await Promise.allSettled([getProfile(), getProvince()]);
+  await Promise.allSettled([getProfile(), getProvince(), getListBank(),]);
 });
 
 const isEditing = ref(false);
@@ -404,6 +427,11 @@ const handleSave = async () => {
   //   }
   // });
 };
+
+const onlyNumbers = (event, item) => {
+  // Mengganti semua karakter non-digit dengan string kosong
+  item.value = item.value.replace(/\D/g, '');
+}
 </script>
 
 <template>
@@ -498,7 +526,7 @@ const handleSave = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    :readonly="!isEditing"
+                    disabled
                   />
                   <VTextarea
                     v-if="item.label === 'Alamat'"
@@ -506,7 +534,7 @@ const handleSave = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    :readonly="!isEditing"
+                    disabled
                     rows="2"
                     auto-grow
                   />
@@ -521,7 +549,7 @@ const handleSave = async () => {
                     item-value="code"
                     density="compact"
                     rounded="xl"
-                    :readonly="!isEditing"
+                    disabled
                     @update:model-value="getDistrict"
                   />
 
@@ -535,7 +563,7 @@ const handleSave = async () => {
                     item-value="code"
                     density="compact"
                     rounded="xl"
-                    :readonly="!isEditing"
+                    disabled
                     @update:model-value="getSubDistrict"
                   />
 
@@ -549,19 +577,19 @@ const handleSave = async () => {
                     item-value="code"
                     density="compact"
                     rounded="xl"
-                    :readonly="!isEditing"
+                    disabled
                   />
                   <Vuepicdatepicker v-if="item.label === 'Tanggal Lahir'">
                     <template #trigger>
                       <Vuepicdatepicker
                         v-model:model-value="item.value"
                         auto-apply
-                        model-type="dd/MM/yyyy"
+                        model-type="dd-MM-yyyy"
                         :enable-time-picker="false"
                         :rules="[requiredValidator]"
                         teleport
                         clearable
-                        :readonly="!isEditing"
+                        disabled
                       >
                         <template #trigger>
                           <VTextField
@@ -571,7 +599,7 @@ const handleSave = async () => {
                             append-inner-icon="fa-calendar"
                             :model-value="item.value"
                             color="#757575"
-                            :readonly="!isEditing"
+                            disabled
                           />
                         </template>
                       </Vuepicdatepicker>
@@ -586,7 +614,7 @@ const handleSave = async () => {
                     append-inner-icon="fa-calendar"
                     :model-value="item.value"
                     color="#757575"
-                    :readonly="!isEditing"
+                    disabled
                     />
                   -->
                 </VCol>
@@ -602,7 +630,7 @@ const handleSave = async () => {
                     density="compact"
                     hide-details
                     label="Pilih Pekerjaan"
-                    :readonly="!isEditing"
+                    disabled
                   />
 
                   <VSelect
@@ -615,7 +643,7 @@ const handleSave = async () => {
                     density="compact"
                     hide-details
                     label="Pilih Pekerjaan"
-                    :readonly="!isEditing"
+                    disabled
                   />
 
                   <VTextField
@@ -630,7 +658,7 @@ const handleSave = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    :readonly="!isEditing"
+                    disabled
                   />
                 </VCol>
               </VRow>
@@ -660,7 +688,7 @@ const handleSave = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    :readonly="!isEditing"
+                    disabled
                   />
                 </VCol>
 
@@ -671,7 +699,7 @@ const handleSave = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    :readonly="!isEditing"
+                    disabled
                   />
                 </VCol>
               </VRow>
@@ -793,32 +821,23 @@ const handleSave = async () => {
                 <VCol v-if="item.label === 'Nama Bank'" cols="12">
                   <VSelect
                     v-model="item.value"
-                    :items="[
-                      'Bank Syariah Indonesia',
-                      'BCA',
-                      'Mandiri',
-                      'BNI',
-                      'BRI',
-                    ]"
+                    :items="bankList"
                     variant="outlined"
                     density="compact"
                     hide-details
-                    :readonly="!isEditing"
+                    :disabled="!isEditing"
                   />
                 </VCol>
 
-                <VCol
-                  v-if="
-                    item.label !== 'File Rekening' && item.label !== 'Nama Bank'
-                  "
-                  cols="12"
-                >
+                <VCol v-if="item.label !== 'File Rekening' && item.label !== 'Nama Bank'" cols="12">
                   <VTextField
                     v-model="item.value"
                     variant="outlined"
                     density="compact"
                     hide-details
-                    :readonly="!isEditing"
+                    :disabled="!isEditing"
+                    :maxlength="item.label === 'No. Rekening' ? 16 : undefined"
+                    @input="item.label === 'No. Rekening' ? onlyNumbers($event, item) : null"
                   />
                 </VCol>
 
@@ -869,7 +888,7 @@ const handleSave = async () => {
                     variant="outlined"
                     density="compact"
                     hide-details
-                    :readonly="!isEditing"
+                    :disabled="!isEditing"
                   />
                 </VCol>
 
