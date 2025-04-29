@@ -218,9 +218,24 @@ const getSubDistrict = async (kode: string) => {
 const provinceList = ref();
 const districtList = ref();
 const subDistrictList = ref();
+const bankList = ref([])
+
+const getListBank = async () => {
+  try {
+    const response = await $api('/reguler/lph/list-rekening', {
+      method: 'get',
+    })
+
+    if (response.code === 2000)
+      bankList.value = response?.data?.list?.map(e => (e?.bank_name))
+  }
+  catch (err) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error')
+  }
+}
 
 onMounted(async () => {
-  await Promise.allSettled([getProfile(), getProvince()]);
+  await Promise.allSettled([getProfile(), getProvince(), getListBank(),]);
 });
 
 const isEditing = ref(false);
@@ -806,13 +821,7 @@ const onlyNumbers = (event, item) => {
                 <VCol v-if="item.label === 'Nama Bank'" cols="12">
                   <VSelect
                     v-model="item.value"
-                    :items="[
-                      'Bank Syariah Indonesia',
-                      'BCA',
-                      'Mandiri',
-                      'BNI',
-                      'BRI',
-                    ]"
+                    :items="bankList"
                     variant="outlined"
                     density="compact"
                     hide-details
