@@ -24,18 +24,19 @@ const loadingAddSubmission = ref(false);
 const selectedItems = ref<any[]>([]);
 
 const headers: any = [
-  { title: "Pilih", key: "pilih", fixed: true, sortable: false},
-  { title: "No", key: "no", align: "center", sortable: false},
-  { title: "ID Daftar", key: "id_daftar", sortable: false},
-  { title: "No Daftar", key: "no_daftar", sortable: true},
-  { title: "Tanggal Daftar", key: "tgl_daftar", sortable: true},
-  { title: "Nama PU", key: "nama", sortable: false},
-  { title: "Alamat", key: "alamat", sortable: false},
-  { title: "Jenis Produk", key: "jenis_produk", sortable: false},
-  { title: "Merk Dagang", key: "merek_dagang", sortable: false},
-  { title: "Status", key: "status_code", sortable: false},
-  { title: "Action", key: "action", fixed: true, sortable: false},
+  { title: "Pilih", key: "pilih", fixed: true, sortable: false },
+  { title: "No", key: "no", align: "center", sortable: false },
+  { title: "ID Daftar", key: "id_daftar", sortable: false },
+  { title: "No Daftar", key: "no_daftar", sortable: true },
+  { title: "Tanggal Daftar", key: "tgl_daftar", sortable: true },
+  { title: "Nama PU", key: "nama", sortable: false },
+  { title: "Alamat", key: "alamat", sortable: false },
+  { title: "Jenis Produk", key: "jenis_produk", sortable: false },
+  { title: "Merk Dagang", key: "merek_dagang", sortable: false },
+  { title: "Status", key: "status_code", sortable: false },
+  { title: "Action", key: "action", fixed: true, sortable: false },
 ];
+const authUser = useMyAuthUserStore();
 
 const defaultStatus = { color: "error", desc: "Unknown Status" };
 
@@ -111,7 +112,11 @@ const loadItem = async ({
 }) => {
   try {
     loading.value = true;
-
+    // Ambil user & cek pelaku_usaha_id dengan lebih singkat
+    const user = authUser?.user;
+    if (user?.roles?.[0]?.code === "R.44" && user.pelaku_usaha_id?.Valid) {
+      lembaga = user.pelaku_usaha_id.String;
+    }
     const response: any = await $api("/self-declare/verificator/submission", {
       method: "get",
       params: {
@@ -329,8 +334,18 @@ const loadItemFacility = async () => {
 
 const loadItemLembaga = async () => {
   try {
+    const user = authUser?.user;
+    let idLp: string | undefined;
+    if (user?.roles?.[0]?.code === "R.44" && user.pelaku_usaha_id?.Valid) {
+      idLp = user.pelaku_usaha_id.String;
+    }
+
     const response: any = await $api("/master/lembaga", {
       method: "get",
+      params: {
+        // hanya tambahkan id_lp kalau idLp !== undefined
+        ...(idLp ? { id_lp: idLp } : {}),
+      },
     });
 
     if (response.length) {
@@ -669,7 +684,7 @@ const handleInputPendamping = (val: any) => {
                   pendamping: selectedFilters.pendamping,
                   kabupaten: selectedFilters.kabupaten,
                   sortBy: newFilter?.sortBy?.[0]?.order || '',
-                  sortByField: newFilter?.sortBy?.[0]?.key || ''
+                  sortByField: newFilter?.sortBy?.[0]?.key || '',
                 })
             "
           >
