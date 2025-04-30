@@ -349,7 +349,7 @@ const loadItemLembaga = async () => {
     });
     if (response.length) {
       if (idLp && itemsLembaga.value.length > 0) {
-        selectedFilters.value.lembaga = itemsLembaga.value[0].id;
+        selectedFilters.value.lembaga = response[0].id;
       }
       itemsLembaga.value = response;
       return response;
