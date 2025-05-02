@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { NuxtError } from 'nuxt/app'
+import { useI18n } from 'vue-i18n'
 import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 import pages404 from '@images/pages/404.png'
 
@@ -19,26 +20,61 @@ const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
 
 const isDev = process.dev
 
-const errToShow = computed(() => {
-  const is404 = props.error?.statusCode === 404 || props.error.message?.includes('404')
+const { t } = useI18n()
 
+const errToShow = computed(() => {
+  const message = props.error?.message || ''
+  const statusCode = props.error?.statusCode
+  const statusMessage = props.error?.statusMessage || 'Error'
+
+  // 1. Halaman tidak ditemukan (404)
+  const is404 = statusCode === 404 || message.includes('404')
   if (is404) {
     return {
-      title: 'Page Not Found',
-      description: 'We couldn\'t find the page you are looking for.',
+      title: t('error.title-not-found'),
+      description: t('error.description-not-found'),
     }
   }
 
-  else if (isDev) {
+  // 2. Kesalahan dari server (500+)
+  const isServerError = statusCode >= 500 && statusCode < 600
+  if (isServerError) {
     return {
-      title: props.error?.statusMessage,
-      description: props.error.message,
+      title: t('error.title-server-error'),
+      description: t('error.description-server-error'),
     }
   }
 
+  // 3. Gagal mounting app di browser
+  const isClientMountingError = message.includes('mount') || message.includes('hydration')
+  if (isClientMountingError) {
+    return {
+      title: t('error.title-mounting-error'),
+      description: t('error.description-mounting-error'),
+    }
+  }
+
+  // 4. Kesalahan konfigurasi plugin/hook Nuxt
+  const isPluginError = message.includes('plugin') || message.includes('hook') || message.includes('Nuxt error')
+  if (isPluginError) {
+    return {
+      title: t('error.title-plugin-error'),
+      description: t('error.description-plugin-error'),
+    }
+  }
+
+  // 5. Mode development (khusus dev)
+  if (isDev) {
+    return {
+      title: statusMessage,
+      description: message,
+    }
+  }
+
+  // 6. Default fallback
   return {
-    title: 'Oops! Something went wrong.',
-    description: 'We are working on it and we\'ll get it fixed as soon as we can',
+    title: t('error.title-default-error'),
+    description: t('error.description-default-error'),
   }
 })
 

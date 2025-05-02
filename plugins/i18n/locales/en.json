@@ -220,6 +220,18 @@
   "global-error": {
     "error-mistake": "There is a mistake"
   },
+  "error":{
+    "title-not-found": "Page Not Found",
+    "description-not-found": "We couldn't find the page you are looking for. Please check the URL or try again later.",
+    "title-server-error": "Server Error",
+    "description-server-error": "Something went wrong on our end while processing your request. We're working to fix it.",
+    "title-mounting-error": "Page Load Error",
+    "description-mounting-error": "Something went wrong while loading this page. Try refreshing the page or clearing your cache.",
+    "title-plugin-error": "Configuration Error",
+    "description-plugin-error": "There seems to be a problem in the application setup. Our team has been notified.",
+    "title-default-fallback": "Oops! Something went wrong.",
+    "description-default-fallback": "We're working on it and we'll get it fixed as soon as we can."
+  },
   "login": {
     "nav-1": "Need Help?",
     "nav-1-phone": "Phone",
