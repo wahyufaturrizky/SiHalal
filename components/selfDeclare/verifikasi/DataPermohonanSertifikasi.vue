@@ -685,8 +685,8 @@ const handleInputPendamping = (val: any) => {
                   lembaga: selectedFilters.lembaga,
                   pendamping: selectedFilters.pendamping,
                   kabupaten: selectedFilters.kabupaten,
-                  sortBy: newFilter?.sortBy?.[0]?.order || '',
-                  sortByField: newFilter?.sortBy?.[0]?.key || '',
+                  sortBy: newFilter?.sortBy?.[0]?.order || 'desc',
+                  sortByField: newFilter?.sortBy?.[0]?.key || 'tgl_daftar',
                 })
             "
           >
