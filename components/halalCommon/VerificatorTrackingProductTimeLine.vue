@@ -6,7 +6,8 @@ const props = defineProps({
   },
 });
 
-const tracking = props.datalistproducttracking?.map((item) => {
+const tracking = computed(() => {
+  return props.datalistproducttracking?.map((item) => {
   const { created_at, status, username, comment } = item || {};
 
   return {
@@ -15,13 +16,14 @@ const tracking = props.datalistproducttracking?.map((item) => {
     username,
     comment,
   };
+  }) || []
 });
 </script>
 
 <template>
   <VContainer
     :style="tracking?.length > 5 ? 'max-height: 300px; overflow-y: auto' : ''"
-    class="pa-2"
+    class="pa-4"
   >
     <VTimeline
       side="end"

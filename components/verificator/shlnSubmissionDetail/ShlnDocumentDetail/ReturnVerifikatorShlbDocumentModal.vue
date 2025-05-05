@@ -19,6 +19,8 @@ const loading = ref(false);
 
 const comment = ref("");
 
+const loaType = ["loa", "letter of application", "letter of application / loa"];
+
 const uploadDocument = async (file: any) => {
   try {
     const formData = new FormData();
@@ -55,19 +57,26 @@ const saveReqDocument = async () => {
 
     const { type, no } = item || {};
 
+    console.log("type = ", type);
+
     const response: any = await $api(
       "/shln/submission/document/add-requirement",
       {
         method: "post",
         body: {
           id: shlnId,
-          id_loa: type == "LOA" ? no : "",
+          id_loa: loaType.includes(type?.toLowerCase().trim()) ? no : "",
           id_nib: type == "NIB" ? no : "",
-          file_url_loa:
-            type == "LOA" ? (fileDoc ? fileDoc.data.file_url : "") : "",
+          file_url_loa: loaType.includes(type?.toLowerCase().trim())
+            ? fileDoc
+              ? fileDoc.data.file_url
+              : ""
+            : "",
           file_url_nib:
             type == "NIB" ? (fileDoc ? fileDoc.data.file_url : "") : "",
-          comment_loa: type == "LOA" ? comment.value : "",
+          comment_loa: loaType.includes(type?.toLowerCase().trim())
+            ? comment.value
+            : "",
           comment_nib: type == "NIB" ? comment.value : "",
           is_return: true,
           is_accept: false,

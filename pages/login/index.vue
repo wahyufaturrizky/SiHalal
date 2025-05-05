@@ -250,7 +250,7 @@ const { t } = useI18n();
   >
     <VCol cols="12" md="6" class="d-flex align-center justify-center login-bg">
       <VCard flat :max-width="500" class="mt-3 mt-sm-0 pa-2 pa-lg-3">
-        <VCardText>
+        <VCardText class="pt-0">
           <NuxtLink to="/">
             <div class="auth-logo app-logo">
               <VNodeRenderer :nodes="themeConfig.app.logo" />
@@ -367,6 +367,13 @@ const { t } = useI18n();
           </VForm>
         </VCardText>
         <VCardText>
+          <VAlert
+            :title="t('login.browser-compatibility-title')"
+            :text="t('login.browser-compatibility-info')"
+            type="info"
+            variant="outlined"
+            color="primary"
+          />
           <VCol cols="12" class="text-body-1 text-center">
             <span class="d-inline-block"> {{ t("login.tip-2") }}</span>
           </VCol>
@@ -452,5 +459,13 @@ const { t } = useI18n();
 
 .login-bg {
   background-color: rgb(var(--v-theme-surface));
+}
+
+.browser-info {
+  p {
+    font-size: 1rem;
+    line-height: 1.25rem;
+    margin-block-end: 0.5rem;
+  }
 }
 </style>

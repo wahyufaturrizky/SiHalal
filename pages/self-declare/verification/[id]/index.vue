@@ -817,11 +817,11 @@ const tandaiOK = async () => {
     );
 
     if (res?.code === 2000) {
-      useSnackbar().sendSnackbar("Success", "success");
+      router.push("/self-declare/verification");
       loadingTandaiOK.value = false;
 
       setTimeout(() => {
-        router.go(-1);
+        useSnackbar().sendSnackbar("Tandai OK Success", "success");
       }, 1000);
     } else {
       useSnackbar().sendSnackbar(res.errors.list_error.join(", "), "error");
@@ -972,15 +972,17 @@ const onSelectFasilitator = (selectedId: string) => {
         >
           Tandai OK
         </VBtn>
-        <VBtn
+        <!--
+          <VBtn
           :loading="loadingTandaiNotOK"
           variant="outlined"
           color="error"
           class="mx-2"
           @click="batalkanStatusHijau"
-        >
+          >
           Batalkan Status Hijau
-        </VBtn>
+          </VBtn>
+        -->
         <!--
           <VBtn
           :loading="loadingPengembalian"
@@ -1128,9 +1130,9 @@ const onSelectFasilitator = (selectedId: string) => {
             <VRow>
               <VCol>
                 <VDataTableServer
-                  disable-sort
                   v-model:items-per-page="itemPerPageAspekLegal"
                   v-model:page="pageAspekLegal"
+                  disable-sort
                   :items-per-page-options="[10, 25, 50, 100]"
                   :headers="legalTableHeader"
                   :items="aspekLegal"
@@ -1184,9 +1186,9 @@ const onSelectFasilitator = (selectedId: string) => {
             <VRow>
               <VCol>
                 <VDataTableServer
-                  disable-sort
                   v-model:items-per-page="itemPerPagePenyelia"
                   v-model:page="pagePenyelia"
+                  disable-sort
                   :items-per-page-options="[10, 25, 50, 100]"
                   :headers="penyeliaTableHeader"
                   :items="penyeliaHalal"
@@ -1313,9 +1315,9 @@ const onSelectFasilitator = (selectedId: string) => {
             <VRow>
               <VCol>
                 <VDataTableServer
-                  disable-sort
                   v-model:items-per-page="itemPerPagePabrik"
                   v-model:page="pagePabrik"
+                  disable-sort
                   :items-per-page-options="[10, 25, 50, 100]"
                   :headers="pabrikTableHeader"
                   :items="itemsPabrik"
@@ -1364,9 +1366,9 @@ const onSelectFasilitator = (selectedId: string) => {
             <VRow>
               <VCol>
                 <VDataTableServer
-                  disable-sort
                   v-model:items-per-page="itemPerPageOutlet"
                   v-model:page="pageOutlet"
+                  disable-sort
                   :items-per-page-options="[10, 25, 50, 100]"
                   :headers="outletTableHeader"
                   :items="itemsOutlet"
@@ -1459,9 +1461,9 @@ const onSelectFasilitator = (selectedId: string) => {
           <VRow>
             <VCol>
               <VDataTableServer
-                disable-sort
                 v-model:items-per-page="itemPerPageBahan"
                 v-model:page="pageBahan"
+                disable-sort
                 :items-per-page-options="[10, 25, 50, 100]"
                 :headers="bahanTableHeader"
                 :items="listBahan"
@@ -1530,9 +1532,9 @@ const onSelectFasilitator = (selectedId: string) => {
           <VRow>
             <VCol>
               <VDataTableServer
-                disable-sort
                 v-model:items-per-page="itemPerPageTableProduk"
                 v-model:page="pageTableProduk"
+                disable-sort
                 :items-per-page-options="[10, 25, 50, 100]"
                 :headers="headersProduk"
                 :items="listTableProduk"

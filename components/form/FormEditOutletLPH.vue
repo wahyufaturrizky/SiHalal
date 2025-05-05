@@ -41,15 +41,7 @@ const updatePabrik = async () => {
       }
     }
     
-    let statusNama = form.value.status;
-    if (statusOptions.value && statusOptions.value.length) {
-      const selectedStatus = statusOptions.value.find(
-        item => item.code === form.value.status
-      );
-    }
-    
-    
-    const response = await $api("/reguler/lph/update-fasilitas/update-fasilitas-pabrik", {
+    const response = await $api("/reguler/lph/update-fasilitas/update-fasilitas-outlet", {
       method: "PUT",
       params: { id_reg: form.value.idReg, id_pabrik: form.value.idPabrik },
       headers: { "Content-Type": "application/json" },
@@ -79,6 +71,8 @@ const updatePabrik = async () => {
 
 
 const form = ref(props.initialData);
+
+console.log("data:", form);
 
 const status = [
   { title: "Milik Sendiri", value: "1" },
@@ -176,7 +170,7 @@ async function getMasterStatusPabrik() {
       <VCardTitle
         class="text-h5 font-weight-bold d-flex justify-space-between align-center"
       >
-        <span>Edit Data Pabrik</span>
+        <span>Edit Data Outlet</span>
         <VBtn
           icon
           color="transparent"
@@ -189,9 +183,10 @@ async function getMasterStatusPabrik() {
       </VCardTitle>
 
       <VCardText>
+
         <VRow class="mb-1">
           <VCol cols="12">
-            <VLabel>Nama Pabrik</VLabel>
+            <VLabel>Nama Outlet</VLabel>
             <VTextField
               v-model="form.name"
               placeholder="Isi Nama Pabrik"
@@ -205,7 +200,7 @@ async function getMasterStatusPabrik() {
 
         <VRow class="mb-1">
           <VCol cols="12">
-            <VLabel>Alamat Pabrik</VLabel>
+            <VLabel>Alamat Outlet</VLabel>
             <VTextField
               v-model="form.address"
               placeholder="Isi Alamat Pabrik"
@@ -290,48 +285,19 @@ async function getMasterStatusPabrik() {
               required
               class="input-field"
             />
-            
           </VCol>
           <VCol cols="6" class="ps-1">
             <VLabel>Kode Pos</VLabel>
             <VAutocomplete
-              v-if="form.country.toLowerCase() === 'indonesia'"
               v-model="form.zipCode"
               :disabled="form.provinsi== '' || form.regency == ''"
               :items="kodeposOptions"
               item-value="code"
               item-title="code"
             />
-
-            <VTextField
-              v-else
-              v-model="form.zipCode"
-              placeholder="Kode Pos"
-              outlined
-              dense
-              required
-              class="input-field"
-            />
           </VCol>
         </VRow>
 
-        <!-- Status Pabrik -->
-        <VRow class="mb-1">
-          <VCol cols="12">
-            <VLabel>Status Pabrik</VLabel>
-            <VAutocomplete
-              v-model="form.status"
-              :items="statusOptions"
-              item-title="name"
-              item-value="code"
-              laceholder="Pilih Status Pabrik"
-              outlined
-              dense
-              required
-              class="input-field"
-            />
-          </VCol>
-        </VRow>
         <div class="d-flex justify-end ga-2">
           <VBtn @click="cancel" variant="outlined"> Batal </VBtn>
           <VBtn @click="updatePabrik"> Simpan </VBtn>

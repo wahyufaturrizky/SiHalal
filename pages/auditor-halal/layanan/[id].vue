@@ -82,7 +82,7 @@ const getFactoryAndOutlet = async (type: string) => {
       "/reguler/pelaku-usaha/list-factory-outlet",
       {
         method: "get",
-        params: { id, type },
+        params: { id_reg:id, type },
       }
     );
 

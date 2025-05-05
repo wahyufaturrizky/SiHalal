@@ -10,26 +10,28 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
+  const { filename, param } = await readBody(event);
 
-  const { document_type, ref_id, retry } = await readBody(event);
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/dokumen/generate?is_download=true`,
+    `${runtimeConfig.coreBaseUrl}/api/documents/${filename?.nama_file}?${param}`,
     {
-      method: "post",
+      method: "get",
       headers: { Authorization: authorizationHeader },
-      body: {
-        document_type,
-        ref_id,
-        retry
-      },
     }
   ).catch((err: NuxtError) => {
-    console.log(err);
-    // setResponseStatus(event, 400);
+    // console.log("event = ", err.data);
+    if (err.data?.code == "404") {
+      throw createError({
+        statusCode: err.data?.code,
+        statusMessage: err.data?.errors?.list_error[0],
+        data: err.data,
+      });
+    } else {
+      setResponseStatus(event, 400);
+    }
 
-    return err.data;
+    // return err.data;
   });
-  console.log(data);
 
   return data || null;
 });

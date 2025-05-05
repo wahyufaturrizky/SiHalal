@@ -49,7 +49,9 @@ const uploadDocument = async (file) => {
       bulkingDialog.value = false;
       return;
     }
+    loadItem(1, 10);
     emit("upload-bulk", true);
+    useSnackbar().sendSnackbar("Berhasil mengunggah produk", "success");
     return response;
   } catch (error) {
     useSnackbar().sendSnackbar(

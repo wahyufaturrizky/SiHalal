@@ -220,6 +220,18 @@
   "global-error": {
     "error-mistake": "Ada Kesalahan"
   },
+  "error":{
+    "title-not-found": "Halaman Tidak Ditemukan",
+    "description-not-found": "Kami tidak menemukan halaman yang Anda cari. Silakan periksa kembali URL-nya.",
+    "title-server-error": "Kesalahan Server",
+    "description-server-error": "Terjadi gangguan pada server kami. Kami sedang memperbaikinya.",
+    "title-mounting-error": "Gagal Memuat Halaman",
+    "description-mounting-error": "Terjadi kesalahan saat memuat halaman. Coba muat ulang atau hapus cache browser Anda.",
+    "title-plugin-error": "Kesalahan Konfigurasi Aplikasi",
+    "description-plugin-error": "Ada masalah pada pengaturan aplikasi. Tim kami telah diberi tahu.",
+    "title-default-fallback": "Oops! Terjadi Kesalahan",
+    "description-default-fallback": "Kami sedang berusaha memperbaikinya secepat mungkin."
+  },
   "login": {
     "nav-1": "Butuh Bantuan?",
     "nav-1-phone": "Telepon",
@@ -237,7 +249,9 @@
     "msg-err-login": "Gagal masuk, mohon periksa kembali kelengkapan data!",
     "msg-err-username": "Username tidak ditemukan",
     "msg-err-password": "Kata sandi tidak tepat!",
-    "msg-err-ishuman": "Silakan verifikasi bahwa Anda bukan robot."
+    "msg-err-ishuman": "Silakan verifikasi bahwa Anda bukan robot.",
+    "browser-compatibility-title": "Info Kompatibilitas Peramban",
+    "browser-compatibility-info": "Disarankan menggunakan Google Chrome versi terbaru untuk hasil terbaik."
   },
   "register": {
     "create": "Buat Akun",

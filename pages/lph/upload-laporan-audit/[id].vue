@@ -40,6 +40,7 @@ const modalContent = ref("");
 const isUpdateDataMappingModalOpen = ref(false);
 const isUpdateDataProdukModalOpen = ref(false);
 const isUpdateDataPabrikModalOpen = ref(false);
+const isUpdateDataOutletModalOpen = ref(false);
 const productItems = ref<any>([]);
 const bahanSelected = ref([]);
 const tabAddBahan = ref("1");
@@ -58,7 +59,9 @@ const hideFooterBtn = ref(false);
 const totalItems = ref(0);
 const page = ref(1);
 const isAddFactoryModalOpen = ref(false);
+const isAddOutletModalOpen = ref(false);
 const isEditFactoryModalOpen = ref(false);
+const isEditOutletModalOpen = ref(false);
 const isUpdateDataPuModalOpen = ref(false);
 const draftCertif = ref("");
 const pageProduct = ref(1)
@@ -86,6 +89,16 @@ const listFactoryNoTaken = ref({
     { title: "Action", key: "actions", sortable: false, nowrap: true },
   ],
   value: props?.listFactoryNoTaken || [],
+});
+
+const listOutlet = ref({
+  label: [
+    { title: "No.", key: "no", nowrap: true },
+    { title: "Nama", key: "nama", nowrap: true },
+    { title: "Alamat", key: "alamat", nowrap: true },
+    { title: "Action", key: "publication", sortable: false, nowrap: true },
+  ],
+  value: props?.listOutlet || [],
 });
 
 const EditProdukModalOpen = ref(false);
@@ -330,14 +343,25 @@ const openEditPabrik = () => {
   getFactoryAndOutlet("FAPAB");
 };
 
-const openModalAddFactory = () => {
-  isAddFactoryModalOpen.value = !isAddFactoryModalOpen.value;
-  getListFacNotTaken("FAPAB");
+const openEditOutlet = () => {
+  modalTitle.value = "Update Outlet";
+  isUpdateDataOutletModalOpen.value = true;
+  getFactoryAndOutlet("FAOUT");
 };
 
+// const openModalAddFactory = () => {
+//   isAddFactoryModalOpen.value = !isAddFactoryModalOpen.value;
+//   getListFacNotTaken("FAPAB");
+// };
+
 const HandleEditPabrik = async (fasId) => {
-  await getDetailFasilitasi(fasId);
+  await getDetailFasilitasPabrik(fasId);
   isEditFactoryModalOpen.value = !isEditFactoryModalOpen.value;
+};
+
+const HandleEditOutlet = async (fasId) => {
+  await getDetailFasilitasOutlet(fasId);
+  isEditOutletModalOpen.value = !isEditOutletModalOpen.value;
 };
 
 const openEditProfile = () => {
@@ -348,6 +372,14 @@ const openEditProfile = () => {
 const handleEditProduct = async (productId) => {
   await getDetailProduk(productId, "edit");
   EditProdukModalOpen.value = true;
+};
+
+const openModalAddOutlet = () => {
+  isAddOutletModalOpen.value = !isAddOutletModalOpen.value;
+};
+
+const openModalAddFactory2 = () => {
+  isAddFactoryModalOpen.value = !isAddFactoryModalOpen.value;
 };
 
 const handleRemoveFile = async (uploadedFile: any) => {
@@ -845,23 +877,22 @@ const deleteProduct = async (productId: string) => {
   }
 };
 
-// const deletePabrik = async (pabrikId: string) => {
-//   const response: any = await $api(
-//     "/reguler/pelaku-usaha/delete-factory",
-//     {
-//       method: "DELETE",
-//       body: { id: pabrikId }
-//     }
-//   );
+const deletePabrik = async (pabrikId: string) => {
+  const response: any = await $api(
+    "/reguler/pelaku-usaha/delete-factory",
+    {
+      method: "DELETE",
+      body: { id: pabrikId }
+    }
+  );
 
-//   if (response.code === 2000) {
-//     await getFactoryAndOutlet('FAPAB');
-//     reRender.value = !reRender.value;
-//     useSnackbar().sendSnackbar("Sukses menghapus data", "success");
-//   } else {
-//     useSnackbar().sendSnackbar("Data tidak dapat dihapus", "error");
-//   }
-// };
+  if (response.code === 2000) {
+    reRender.value = !reRender.value;
+    useSnackbar().sendSnackbar("Sukses menghapus data", "success");
+  } else {
+    useSnackbar().sendSnackbar("Data tidak dapat dihapus", "error");
+  }
+};
 
 const loadItemProductRincian = async (kode_rincian: string) => {
   loadingRincian.value = true;
@@ -921,28 +952,28 @@ const addProduct = async () => {
   }
 };
 
-const addPabrik = async (item) => {
+// const addPabrik = async (item) => {
 
-  const body = {
-    id_reg: id,
-    id_pabrik: [item.id],
-  };
+//   const body = {
+//     id_reg: id,
+//     id_pabrik: [item.id],
+//   };
 
-  const response: any = await $api("/reguler/pelaku-usaha/add-factory", {
-    method: "post",
-    body,
-  });
+//   const response: any = await $api("/reguler/pelaku-usaha/add-factory", {
+//     method: "post",
+//     body,
+//   });
 
-  if (response.code === 2000) {
-    isAddFactoryModalOpen.value = false;
-    addDialog.value = false;
-    reRender.value = !reRender.value;
-    useSnackbar().sendSnackbar("Sukses menambah data", "success");
-  } else {
-    console.error("Gagal menambah data:", response);
-    useSnackbar().sendSnackbar("Gagal menambah data", "error");
-  }
-};
+//   if (response.code === 2000) {
+//     isAddFactoryModalOpen.value = false;
+//     addDialog.value = false;
+//     reRender.value = !reRender.value;
+//     useSnackbar().sendSnackbar("Sukses menambah data", "success");
+//   } else {
+//     console.error("Gagal menambah data:", response);
+//     useSnackbar().sendSnackbar("Gagal menambah data", "error");
+//   }
+// };
 
 const updateProduct = async () => {
   try {
@@ -998,6 +1029,10 @@ const updateDataPU = async () => {
       body: {
         nama_pu_sh: formDataPU.value.nama_pu_sh,
         alamat: formDataPU.value.alamat,
+        kota: formDataPU.value.kota,
+        provinsi: formDataPU.value.provinsi,
+        negara: formDataPU.value.negara,
+        kodepos: formDataPU.value.kodepos,
       },
       headers: {
         "Content-Type": "application/json",
@@ -1053,9 +1088,9 @@ const getDetailProduk = async (productId, type) => {
   }
 };
 
-const getDetailFasilitasi = async (fasId) => {
+const getDetailFasilitasPabrik = async (fasId) => {
   const response = await $api(
-    "/reguler/lph/update-fasilitas/detail-fasilitas",
+    "/reguler/lph/update-fasilitas/detail-fasilitas-pabrik",
     {
       method: "get",
       params: { id_reg: id, id_pabrik: fasId },
@@ -1080,6 +1115,35 @@ const getDetailFasilitasi = async (fasId) => {
     };
   }
 };
+
+const getDetailFasilitasOutlet = async (fasId) => {
+  const response = await $api(
+    "/reguler/lph/update-fasilitas/detail-fasilitas-outlet",
+    {
+      method: "get",
+      params: { id_reg: id, id_pabrik: fasId },
+    }
+  );
+
+  if (response.code === 2000) {
+    itemDetailFasilitas.value = response.data || {};
+
+    formDataPabrik.value = {
+      name: response.data.nama,
+      address: response.data.alamat,
+      country: response.data.negara,
+      provinsi: response.data.provinsi,
+      regency: response.data.kab_kota,
+      zipCode: response.data.kode_pos,
+      status: response.data.status_milik,
+      fasilId: response.data.fasil_id,
+      idReg: response.data.id_reg,
+      idPabrik: response.data.id_pabrik,
+      idFas: response.data.id_fas,
+    };
+  }
+};
+
 
 const getDetailData = async (type: string) => {
   try {
@@ -1204,8 +1268,7 @@ const getFactoryAndOutlet = async (type: string) => {
         }
       } else {
         response.data.forEach((el: any) => (el.checked = false));
-
-        // listOutlet.value = response?.data;
+        listOutlet.value.value = response?.data;
       }
 
       return response;
@@ -1458,7 +1521,7 @@ const handlePageChange = async (payload: any) => {
             <VBtn
               variant="outlined"
               class="me-2"
-              @click="downloadDocument(draftCertif, 'FILES')"
+              @click="previewDocument(draftCertif, 'FILES')"
             >
               Lihat Draft Sertif
             </VBtn>
@@ -1477,6 +1540,9 @@ const handlePageChange = async (payload: any) => {
                 </VListItem>
                 <VListItem @click="openEditPabrik">
                   <VListItemTitle>Update Pabrik</VListItemTitle>
+                </VListItem>
+                <VListItem @click="openEditOutlet">
+                  <VListItemTitle>Update Outlet</VListItemTitle>
                 </VListItem>
                 <VListItem @click="openEditProfile">
                   <VListItemTitle>Edit Data Pengajuan</VListItemTitle>
@@ -2354,7 +2420,8 @@ const handlePageChange = async (payload: any) => {
       </VCardTitle>
       <VCardText>
         <div class="d-flex justify-end">
-          <VBtn color="primary" variant="outlined" @click="openModalAddFactory">
+          <!-- <VBtn color="primary" variant="outlined" @click="openModalAddFactory"> -->
+            <VBtn color="primary" variant="outlined" @click="openModalAddFactory2">
             <VIcon class="mr-2"> fa-plus </VIcon>
             Tambah
           </VBtn>
@@ -2398,7 +2465,7 @@ const handlePageChange = async (payload: any) => {
                       title="Edit"
                       @click="HandleEditPabrik(item.id)"
                     />
-                    <!-- <VListItem prepend-icon="fa-trash" title="Hapus" @click="deletePabrik(item.id)" /> -->
+                    <VListItem prepend-icon="fa-trash" title="Hapus" @click="deletePabrik(item.id)" />
                   </VList>
                 </VMenu>
               </td>
@@ -2415,7 +2482,7 @@ const handlePageChange = async (payload: any) => {
     </VCard>
   </VDialog>
 
-  <VDialog v-model="isAddFactoryModalOpen" max-width="840px" persistent>
+  <!-- <VDialog v-model="isAddFactoryModalOpen" max-width="840px" persistent>
     <VCard>
       <VCardTitle class="d-flex justify-space-between align-center">
         {{ modalTitle }}
@@ -2467,6 +2534,17 @@ const handlePageChange = async (payload: any) => {
         </VBtn>
       </VCardActions>
     </VCard>
+  </VDialog> -->
+
+  <VDialog v-model="isAddFactoryModalOpen" max-width="840px" persistent>
+    <VCard>
+      <VCardText>
+        <FormTambahPabrikLPH
+          :initial-data="{ idReg: id }"
+          @close="  isAddFactoryModalOpen = false"
+        />
+      </VCardText>
+    </VCard>
   </VDialog>
 
   <VDialog v-model="isEditFactoryModalOpen" max-width="840px" persistent>
@@ -2507,25 +2585,21 @@ const handlePageChange = async (payload: any) => {
             <VTextField
               v-model="formDataPU.kota"
               label="Kota/Kabupaten"
-              disabled
               class="mb-3"
             />
             <VTextField
               v-model="formDataPU.provinsi"
               label="Provinsi"
-              disabled
               class="mb-3"
             />
             <VTextField
               v-model="formDataPU.negara"
               label="Negara"
-              disabled
               class="mb-3"
             />
             <VTextField
               v-model="formDataPU.kodepos"
               label="Kode Pos"
-              disabled
               class="mb-3"
             />
             <VTextField
@@ -2548,6 +2622,98 @@ const handlePageChange = async (payload: any) => {
       </VCardActions>
     </VCard>
   </VDialog>
+
+  <VDialog v-model="isUpdateDataOutletModalOpen" max-width="840px" persistent>
+    <VCard>
+      <VCardTitle class="d-flex justify-space-between align-center">
+        {{ modalTitle }}
+        <VBtn icon @click="isUpdateDataOutletModalOpen = false">
+          <VIcon>mdi-close</VIcon>
+        </VBtn>
+      </VCardTitle>
+      <VCardText>
+        <div class="d-flex justify-end">
+          <VBtn color="primary" variant="outlined" @click="openModalAddOutlet">
+            <VIcon class="mr-2"> fa-plus </VIcon>
+            Tambah
+          </VBtn>
+        </div>
+        <VDataTable
+          :id="id"
+          v-model:page="page"
+          class="domestic-table border rounded mt-5"
+          :headers="listOutlet.label"
+          :items="listOutlet.value || []"
+          :items-per-page="10"
+        >
+          <template #body="{ items }">
+            <tr v-if="items.length === 0">
+              <td colspan="7" class="text-center">
+                <div class="pt-2">
+                  <img src="~/assets/images/empty-data.png" alt="Data Kosong" />
+                  <div class="pt-2 font-weight-bold">Data Kosong</div>
+                </div>
+              </td>
+            </tr>
+            <tr v-for="(item, idx) in items" :key="idx">
+              <td>{{ (page - 1) * 10 + idx + 1 }}</td>
+              <td>{{ item.nama }}</td>
+              <td>{{ item.alamat }}</td>
+              <td class="text-center">
+                <VMenu>
+                  <template #activator="{ props }">
+                    <VIcon
+                      icon="fa-ellipsis-v"
+                      color="primary"
+                      class="cursor-pointer"
+                      v-bind="props"
+                    />
+                  </template>
+                  <VList>
+                    <VListItem
+                      prepend-icon="mdi-pen"
+                      title="Edit"
+                      @click="HandleEditOutlet(item.id)"
+                    />
+                    <VListItem prepend-icon="fa-trash" title="Hapus" @click="deletePabrik(item.id)" />
+                  </VList>
+                </VMenu>
+              </td>
+            </tr>
+          </template>
+        </VDataTable>
+      </VCardText>
+
+      <VCardActions class="d-flex justify-end">
+        <VBtn color="primary" @click="isUpdateDataOutletModalOpen = false">
+          Tutup
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
+
+  <VDialog v-model="isEditOutletModalOpen" max-width="840px" persistent>
+    <VCard>
+      <VCardText>
+        <FormEditOutletLPH
+          :initial-data="formDataPabrik"
+          @close="isEditOutletModalOpen = false"
+        />
+      </VCardText>
+    </VCard>
+  </VDialog>
+
+  <VDialog v-model="  isAddOutletModalOpen" max-width="840px" persistent>
+    <VCard>
+      <VCardText>
+        <FormTambahOutletLPH
+          :initial-data="{ idReg: id }"
+          @close="  isAddOutletModalOpen = false"
+        />
+      </VCardText>
+    </VCard>
+  </VDialog>
+
 </template>
 
 <style scoped lang="scss">
