@@ -35,7 +35,7 @@ const tableHeaders = [
     sortable: false,
   },
   {
-    title: "detail-pu.pu-ph-download-skph",
+    title: "detail-pu.pu-ph-download-spph",
     key: "unduh_spph",
     align: "start",
     sortable: false,
