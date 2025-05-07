@@ -326,7 +326,7 @@ watch(dataTable, () => {
               {{ index + 1 + (page - 1) * size }}
             </template>
             <template #item.tanggal_daftar="{ item }">
-              {{ formatDateId(item.tanggal_daftar) }}
+              {{ item.tanggal_daftar }}
             </template>
             <template #item.businessType="{ item }">
               <div
