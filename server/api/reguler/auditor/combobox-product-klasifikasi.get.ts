@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
     idLayanan: string;
   };
 
-  console.info("===>> url combobox klasifikasi product", {
+  console.log("===>> url combobox klasifikasi product", {
     url: `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${idLayanan}/combobox`,
   });
   console.debug("===>> url combobox klasifikasi product", {
