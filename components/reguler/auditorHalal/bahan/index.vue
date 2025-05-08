@@ -769,14 +769,22 @@ const addProduct = async () => {
       if (error.message !== "mandatory") isNotAllowedProduct.value = true;
     }
   } else if (titleDialog.value === "Ubah Nama Produk") {
+    const { koderincian_desc, nama } = itemDetail.value;
+    if (!koderincian_desc || !nama || !uploadedFile.value.file) {
+      useSnackbar().sendSnackbar(
+        "Kualitas, rincian dan nama produk tidak boleh kosong",
+        "error"
+      );
+
+      return;
+    }
     const response: any = await $api(
       "/reguler/pelaku-usaha/tab-bahan/products/update",
       {
         method: "put",
         params: { id_reg: id, product_id: itemDetail.value.id },
         body: {
-          kode_rincian:
-            formData.value.kode_rincian || itemDetail.value.koderincian,
+          kode_rincian: itemDetail.value.koderincian_desc,
           nama_produk: itemDetail.value.nama,
           foto_produk: formData.value.foto_produk
             ? formData.value.foto_produk
@@ -2259,7 +2267,7 @@ watch([titleDialog, tabAddBahan], () => {
     <TableData
       :on-submit="() => (confirmSaveDialog = true)"
       :on-add="() => toggleAdd('Nama Produk')"
-      :on-edit="(item: any) => getDetailProduk(item.id, 'edit')"
+      :on-edit="(item: any) => toggleEdit(item, 'Nama Produk')"
       :on-delete="(item: any) => deleteProduct(item.id)"
       :on-detail="(el: any) => getDetailProduk(el.id, 'detail')"
       :on-input-bahan="handleInputBahan"
