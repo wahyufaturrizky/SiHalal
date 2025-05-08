@@ -13,20 +13,17 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { idLayanan } = (await getQuery(event)) as {
+  let { idLayanan } = (await getQuery(event)) as {
     idLayanan: string;
   };
 
-  console.log("===>> url combobox klasifikasi product", {
-    url: `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${
-      idLayanan ?? "-"
-    }/combobox`,
+  idLayanan = idLayanan?.trim() || "-";
+  console.log("===>> url combobox klasifikasi product new", {
+    url: `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${idLayanan}/combobox`,
   });
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${
-      idLayanan ?? "-"
-    }/combobox`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${idLayanan}/combobox`,
     {
       method: "GET",
       headers: { Authorization: authorizationHeader },
