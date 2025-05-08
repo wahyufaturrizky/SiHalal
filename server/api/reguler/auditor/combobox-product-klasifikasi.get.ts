@@ -2,6 +2,7 @@ import type { NuxtError } from "nuxt/app";
 
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
+
   const runtimeConfig = useRuntimeConfig();
 
   if (typeof authorizationHeader === "undefined") {
@@ -19,7 +20,12 @@ export default defineEventHandler(async (event) => {
   console.info("===>> url combobox klasifikasi product", {
     url: `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${idLayanan}/combobox`,
   });
-
+  console.debug("===>> url combobox klasifikasi product", {
+    url: `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${idLayanan}/combobox`,
+  });
+  console.error("===>> url combobox klasifikasi product", {
+    url: `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${idLayanan}/combobox`,
+  });
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${idLayanan}/combobox`,
     {
