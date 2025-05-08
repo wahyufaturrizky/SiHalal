@@ -18,16 +18,15 @@ export default defineEventHandler(async (event) => {
   };
 
   console.log("===>> url combobox klasifikasi product", {
-    url: `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${idLayanan}/combobox`,
+    url: `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${
+      idLayanan ?? "-"
+    }/combobox`,
   });
-  console.debug("===>> url combobox klasifikasi product", {
-    url: `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${idLayanan}/combobox`,
-  });
-  console.error("===>> url combobox klasifikasi product", {
-    url: `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${idLayanan}/combobox`,
-  });
+
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${idLayanan}/combobox`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${
+      idLayanan ?? "-"
+    }/combobox`,
     {
       method: "GET",
       headers: { Authorization: authorizationHeader },
