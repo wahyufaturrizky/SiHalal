@@ -220,7 +220,7 @@
   "global-error": {
     "error-mistake": "Ada Kesalahan"
   },
-  "error":{
+  "error": {
     "title-not-found": "Halaman Tidak Ditemukan",
     "description-not-found": "Kami tidak menemukan halaman yang Anda cari. Silakan periksa kembali URL-nya.",
     "title-server-error": "Kesalahan Server",
@@ -247,7 +247,7 @@
     "tip-1a": "Daftar di sini",
     "tip-2": "Terhubung Ke",
     "msg-err-login": "Gagal masuk, mohon periksa kembali kelengkapan data!",
-    "msg-err-username": "Username tidak ditemukan",
+    "msg-err-username": "Username / Password salah",
     "msg-err-password": "Kata sandi tidak tepat!",
     "msg-err-ishuman": "Silakan verifikasi bahwa Anda bukan robot.",
     "browser-compatibility-title": "Info Kompatibilitas Peramban",
