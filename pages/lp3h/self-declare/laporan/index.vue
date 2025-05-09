@@ -11,6 +11,7 @@ const selectedFasilitas = ref(null);
 const selectedStatus = ref(null); // GANTI JADI SEMUA
 
 const status = [
+  { title: "Draft PU", value: "OF1" },
   { title: "Pengajuan", value: "OF10" },
   { title: "Selesai P3H", value: "OF71" },
   { title: "Verifikasi LP3H", value: "OF72" },
