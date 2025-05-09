@@ -136,8 +136,8 @@ const loadItem = async ({
       },
     });
 
-    items.value = response.data;
-    totalItems.value = response.total_item;
+    items.value = response.data || [];
+    totalItems.value = response.total_item || 0;
     loading.value = false;
     return response;
   } catch (error) {
