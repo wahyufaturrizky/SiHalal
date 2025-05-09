@@ -16,6 +16,7 @@ const sjphFile = ref<any>(null);
 const suratMohonFile = ref<any>(null);
 const invoiceFile = ref<string>("");
 const regNumber = ref<string>("");
+const paginationProduct = ref<any>({});
 
 const isSendModalOpen = ref(false);
 
@@ -116,6 +117,14 @@ const getDetailData = async (type: string) => {
         biayaValidasi.value = data?.biaya.length;
         if (noDaftar) await OldDoc(noDaftar);
         else console.error("noDaftar tidak ditemukan dalam response API");
+      }
+      if (type === 'produk') {
+        paginationProduct.value = {
+          limit: response?.limit,
+          totalItems: response?.totalItems,
+          totalPages: response?.totalPages,
+          currentPage: response?.currentPage,
+        }
       }
 
       return data;
@@ -320,7 +329,7 @@ onMounted(async () => {
               Daftar Nama Produk
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelDaftarProduk :data="dataProduk" />
+              <PanelDaftarProduk :data="dataProduk" :total="paginationProduct?.totalItems" :perPage="paginationProduct?.limit" :page="paginationProduct?.currentPage" />
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="3" class="pt-3">
