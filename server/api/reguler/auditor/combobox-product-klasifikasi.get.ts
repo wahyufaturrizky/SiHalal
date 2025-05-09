@@ -18,10 +18,6 @@ export default defineEventHandler(async (event) => {
   };
 
   idLayanan = idLayanan?.trim() || "-";
-  console.log("===>> url combobox klasifikasi product new", {
-    url: `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${idLayanan}/combobox`,
-  });
-
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${idLayanan}/combobox`,
     {
