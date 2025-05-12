@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
-import { useSnackbar } from "@/composables/useSnackbar"; // Pastikan ini ada
+import { useSnackbar } from "@/composables/useSnackbar"; 
 import { navigateTo } from "#app";
 
 const loading = ref<boolean>(false);
@@ -9,9 +9,8 @@ const size = ref<number>(10);
 const searchQuery = ref<string>("");
 const dataTable = ref<any[]>([]);
 const totalItems = ref<number>(0);
+const loadingDownloadExcel = ref(false);
 
-const startDate = ref<string>(new Date().toISOString().slice(0, 10));
-const endDate = ref<string>(new Date().toISOString().slice(0, 10));
 const nomorPendaftaran = ref<string>("");
 const nomorSertifikat = ref<string>("");
 const namaPelakuUsaha = ref<string>("");
@@ -20,9 +19,14 @@ const jenisPermohonan = ref<string>("");
 const statusPermohonan = ref<string>("");
 const jenisPendaftaran = ref<string>("");
 const namaFasilitator = ref<string>("");
+const jenisLayanan = ref<string>("");
+const listJenisLayanan = ref([]);
 
 const statusPermohonanOptions = ref([
-  { label: "Dikirim ke LPH", value: "OF50" },
+  { label: "Draft PU", value: "OF1" },
+  { label: "Submitted", value: "OF10" },
+  { label: "Verifikasi", value: "OF15" },
+  { label: "DIkirim ke LPH", value: "OF50" },
   { label: "Penetapan Biaya", value: "OF55" },
   { label: "Pembayaran", value: "OF56" },
   { label: "Proses di LPH", value: "OF60" },
@@ -37,29 +41,29 @@ const jenisPermohonanOptions = ref([
 ]);
 
 const jenisPendaftaranOptions = ref([
-  { label: "Pendaftaran Mandiri/Regular", value: "CH001" },
-  { label: "Pendaftaran Melalui Fasilitasi", value: "CH002" },
+  { label: "Baru", value: "JD.1" },
+  { label: "Pengembangan", value: "JD.3" },
 ]);
 
 const tableHeader = [
   { title: "No", value: "no" },
-  { title: "No. Daftar", value: "nomor_daftar" },
-  { title: "Tanggal", value: "tanggal" },
+  { title: "No. Daftar", value: "no_daftar" },
+  { title: "Tanggal", value: "tgl_daftar" },
   { title: "Nama PU", value: "nama_pu" },
-  { title: "Jenis Daftar", value: "jenis_daftar" },
-  { title: "Jenis Produk", value: "jenis_produk" },
+  { title: "Jenis Daftar", value: "jenis_pendaftaran" },
+  { title: "Jenis Layanan", value: "jenis_layanan" },
+  { title: "Status", value: "status" },
   { title: "Action", value: "action" },
 ];
 
-const navigateToDetail = (id: string) => {
-  navigateTo(`/lph/list-accepted/detail/${id}`);
+const navigateToDetail = (id_reg: string) => {
+  navigateTo(`/lph/inquiry-lph/${id_reg}`);
 };
+
 
 const loadItem = async () => {
   try {
-    loading.value = true;
-
-    const response: any = await $api("/lph/inquiry-lph", {
+    const response: any = await $api("/inquiry-lph", {
       method: "get",
       params: {
         page: page.value,
@@ -68,42 +72,95 @@ const loadItem = async () => {
         no_sertifikat: nomorSertifikat.value,
         nama_pu: namaPelakuUsaha.value,
         merek_dagang: merekDagangan.value,
-        jenis: jenisPermohonan.value,
+        jenis_permohonan: jenisPermohonan.value,
         status: statusPermohonan.value,
         jenis_pendaftaran: jenisPendaftaran.value,
         nama_fasilitator: namaFasilitator.value,
-        start_date: startDate.value,
-        end_date: endDate.value,
+        jenis_layanan: jenisLayanan.value
       },
     });
 
     if (response.code === 2000) {
-      items.value = response.data || [];
+      dataTable.value = response.data || [];
       totalItems.value = response.total_item || 0;
     } else {
       useSnackbar().sendSnackbar("Ada Kesalahan", "error");
     }
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
+  }
+};
+
+const downloadExcel = async () => {
+  loadingDownloadExcel.value = true;
+
+  try {
+    const response: any = await $api("/inquiry-lph/download", {
+      method: "get",
+      params: {
+        page: page.value,
+        size: size.value,
+        no_daftar: nomorPendaftaran.value,
+        no_sertifikat: nomorSertifikat.value,
+        nama_pu: namaPelakuUsaha.value,
+        merek_dagang: merekDagangan.value,
+        jenis_permohonan: jenisPermohonan.value,
+        status: statusPermohonan.value,
+        jenis_pendaftaran: jenisPendaftaran.value,
+        nama_fasilitator: namaFasilitator.value,
+        jenis_layanan: jenisLayanan.value
+      },
+    });
+
+    if (response) {
+      downloadFileExcel(response);
+    } else {
+      useSnackbar().sendSnackbar(
+        response.errors?.list_error?.join(", ") || "Gagal mengunduh file",
+        "error"
+      );
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan", "error");
   } finally {
-    loading.value = false;
+    loadingDownloadExcel.value = false;
+  }
+};
+
+const loadJenisLayanan = async () => {
+  try {
+    const response = await $api("/master/jenis-layanan", {
+      method: "get",
+      query: {
+        query: "empty",
+      },
+    });
+
+    if (response.length > 0) {
+      listJenisLayanan.value = response;
+
+      return response;
+    }
+  } catch (error) {
+    useSnackbar().sendSnackbar("Ada Kesalahan 5", "error");
   }
 };
 
 const handleInput = (e: any) => {
   debounce(() => {
-    loadItem(page.value, size.value, e.target.value);
+    loadItem();
   }, 500)();
 };
 
 onMounted(() => {
   loading.value = true;
-  loadItem(page.value, size.value, searchQuery.value);
+  //loadItem();
   loading.value = false;
+  loadJenisLayanan();
 });
 
 watch([page, size], () => {
-  loadItem(page.value, size.value, searchQuery.value);
+  loadItem();
 });
 </script>
 
@@ -125,31 +182,6 @@ watch([page, size], () => {
           <VCardItem>
             <VRow dense>
               <VCol cols="12" md="6" lg="4">
-                <div class="d-flex flex-column">
-                  <label class="text-body-1 mb-1">Tanggal Awal</label>
-                  <VTextField
-                    v-model="startDate"
-                    type="date"
-                    density="comfortable"
-                    hide-details="auto"
-                  />
-                </div>
-              </VCol>
-              <VCol cols="12" md="6" lg="4">
-                <div class="d-flex flex-column">
-                  <label class="text-body-1 mb-1">Tanggal Akhir</label>
-                  <VTextField
-                    v-model="endDate"
-                    type="date"
-                    density="comfortable"
-                    hide-details="auto"
-                  />
-                </div>
-              </VCol>
-            </VRow>
-
-            <VRow dense>
-              <VCol cols="12" md="6" lg="4">
                 <VTextField v-model="nomorPendaftaran" label="Nomor Pendaftaran" />
               </VCol>
               <VCol cols="12" md="6" lg="4">
@@ -160,6 +192,18 @@ watch([page, size], () => {
               </VCol>
               <VCol cols="12" md="6" lg="4">
                 <VTextField v-model="merekDagangan" label="Merek Dagang" />
+              </VCol>
+
+              <VCol cols="12" md="6" lg="4">
+                <VSelect
+                  v-model="jenisLayanan"
+                  :items="listJenisLayanan"
+                  item-title="name"
+                  item-value="code"
+                  label="Jenis Layanan"
+                  density="comfortable"
+                  hide-details="auto"
+                />
               </VCol>
 
               <VCol cols="12" md="6" lg="4">
@@ -204,7 +248,14 @@ watch([page, size], () => {
             </VRow>
 
             <VRow>
-              <VCol cols="12" class="text-right">
+              <VCol cols="12" class="d-flex justify-end" style="gap: 12px;">
+                <VBtn
+                  :loading="loadingDownloadExcel"
+                  @click="downloadExcel"
+                  variant="flat"
+                >
+                  Download Excel
+                </VBtn>
                 <VBtn color="primary" @click="loadItem">View</VBtn>
               </VCol>
             </VRow>
@@ -222,7 +273,7 @@ watch([page, size], () => {
             <div class="text-h4 font-weight-bold">Data Pengajuan Sertifikasi Halal</div>
           </VCardTitle>
           <VCardItem>
-            <VRow>
+            <!-- <VRow>
               <VCol cols="12">
                 <VTextField
                   v-model="searchQuery"
@@ -232,8 +283,8 @@ watch([page, size], () => {
                   style="max-inline-size: 100%"
                   @input="handleInput"
                 />
-              </VCol>
-            </VRow>
+              </VCol>                              
+            </VRow> -->
 
             <VRow>
               <VCol cols="12">
