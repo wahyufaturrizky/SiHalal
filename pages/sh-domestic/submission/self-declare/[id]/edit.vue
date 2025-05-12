@@ -6,6 +6,58 @@ const tabs = ref("1");
 const submissionId = route.params?.id;
 const store = useMyTabEditRegulerStore();
 const { bahan, produk, produkAllBahan, bahanCheck } = storeToRefs(store);
+const selectedProductTypes = ref([])
+
+const getSelectedProductTypes = async () => {
+  try {
+    const responseStatusPermohonan: any = await $api('/reguler/list', {
+      method: 'get',
+      query: {
+        url: LIST_MENU_STATUS,
+      },
+    })
+
+    const responseSelfDeclare: any = await $api('/self-declare/submission/list', {
+      method: 'get',
+      params: {
+        status: 'OF1,OF280,OF285',
+        channel_id: 'CH003',
+      },
+    });
+
+    let data = []
+
+
+    if (responseStatusPermohonan?.code === 2000) {
+      data = [...responseStatusPermohonan?.data ]
+    }
+
+    if (responseStatusPermohonan?.code === 2000){
+      data = [...data, responseSelfDeclare?.data]
+    }
+
+    if (data?.length > 0) {
+      const getUniqueProductTypes = () => {
+        const jenisProdukSet = new Set()
+
+        data.forEach(item => {
+          if (item.jenis_produk) {
+            jenisProdukSet.add(item.jenis_produk)
+          }
+        })
+
+        return Array.from(jenisProdukSet)
+      }
+
+      const uniqueProducts = getUniqueProductTypes()
+
+      selectedProductTypes.value = uniqueProducts
+    }
+
+  } catch (err) {
+    useSnackbar().sendSnackbar('Ada Kesalahan', 'error');
+  }
+}
 
 onMounted(async () => {
   await store.getProduct(submissionId);
@@ -13,6 +65,7 @@ onMounted(async () => {
   store.isAllBahanSelected();
   store.isBahan();
   tabs.value = route.query?.tab ? String(route.query.tab) : "1";
+  await getSelectedProductTypes()
 });
 </script>
 
@@ -57,7 +110,9 @@ onMounted(async () => {
             <PelakuUsahaMain />
           </VTabsWindowItem>
           <VTabsWindowItem value="2">
-            <PengajuanMain :id-reg="submissionId"  />
+            <PengajuanMain :id-reg="submissionId" 
+              :selectedProductTypes="selectedProductTypes"
+            />
           </VTabsWindowItem>
           <VTabsWindowItem value="3">
             <PabrikOutletMain />

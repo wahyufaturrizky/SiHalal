@@ -190,8 +190,12 @@ const IDRupiah = new Intl.NumberFormat("id-ID", {
           </VRow>
           <VRow class="flex-row-reverse">
             <VCol cols="12" md="auto">
-              <VBtn block type="submit" :disabled="buttonClicked">
+              <VBtn block style="min-width: 110px" type="submit" :disabled="buttonClicked" :loading="buttonClicked">
                 {{ t("new-domestic-nib.btn-2") }}
+                <template v-slot:loader>
+                  <span class="mr-1">Loading</span>
+                  <VProgressCircular color="white" indeterminate />
+                </template>
               </VBtn>
             </VCol>
             <VCol cols="12" md="auto">

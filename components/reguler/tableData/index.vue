@@ -208,7 +208,7 @@ const handleDownloadV6 = async (filename: string, param: string = "") => {
       method: "post",
       body: {
         filename: filename,
-        param: 'dirName=FILES'
+        param: "dirName=FILES",
       },
     });
 
@@ -1098,6 +1098,15 @@ const itemsPerPageServer = ref(10);
                     :embedded-in-module="'pelakuSelfDec'"
                     @submit="(a, b) => handleInputBahan(a, b)"
                   />
+                  <VBtn
+                    variant="text"
+                    color="primary"
+                    prepend-icon="ri-pencil-line"
+                    @click="() => props.onEdit(item)"
+                    block
+                  >
+                    Edit
+                  </VBtn>
                   <VBtn
                     variant="text"
                     color="error"

@@ -75,7 +75,7 @@ const selectedItem = ref([]);
 const isLoading = ref(false);
 const isLoadingFacility = ref(false);
 const tableType = ref("");
-const totalData = ref(30);
+const totalData = ref(0);
 const showFilterMenu = ref(false);
 
 // const filterData = ref({

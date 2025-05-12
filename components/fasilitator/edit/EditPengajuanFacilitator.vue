@@ -2,9 +2,7 @@
 import { ref } from "vue";
 import { useDisplay } from "vuetify";
 
-import type {
-  MasterDistrict
-} from "@/server/interface/master.iface";
+import type { MasterDistrict } from "@/server/interface/master.iface";
 
 const props = defineProps({
   dataform: {
@@ -50,7 +48,7 @@ const form = ref({
   picName: "",
   picPhoneNumber: "",
   provinsi_id: "",
-  kabupaten_id: ""
+  kabupaten_id: "",
 });
 
 const isFormError = ref(false);
@@ -61,7 +59,7 @@ const openPanelRegisterData = ref(0);
 const onInitData = () => {
   form.value = { ...dataform };
 
-  getDistrict(form.value.provinsi_id)
+  getDistrict(form.value.provinsi_id);
 };
 
 const getProvince = async () => {
@@ -81,7 +79,7 @@ const getDistrict = async (kode: string) => {
   district.value = response;
 };
 
-onMounted( async () => {
+onMounted(async () => {
   await Promise.allSettled([onInitData(), getProvince()]);
 });
 
@@ -114,7 +112,7 @@ const putFacilitate = async () => {
       picName,
       picPhoneNumber,
       provinsi_id,
-      kabupaten_id
+      kabupaten_id,
     } = form.value;
 
     const res = await $api(`/facilitate/update/${facilitateId}`, {
@@ -131,8 +129,8 @@ const putFacilitate = async () => {
         kuota: Number(kuota),
         nama_pic_program: picName,
         no_hp_pic_program: picPhoneNumber,
-        provinsi_id: provinsi_id,
-        kabupaten_id: kabupaten_id
+        provinsi_id: regionalScope !== "Nasional" ? provinsi_id : "",
+        kabupaten_id: regionalScope !== "Nasional" ? kabupaten_id : "",
       },
     });
 
@@ -162,7 +160,20 @@ const cancel = () => {
 
 const checkIsFieldEMpty = (data: any) => {
   return Object.keys(data)?.find((key: any) => {
-    if (key !== "facilitatorName" && key !== "kuota") return !data[key];
+    if (data.regionalScope === "Nasional") {
+      if (
+        key !== "facilitatorName" &&
+        key !== "kuota" &&
+        key !== "provinsi_id" &&
+        key !== "kabupaten_id"
+      ) {
+        return !data[key];
+      }
+    } else {
+      if (key !== "facilitatorName" && key !== "kuota") {
+        return !data[key];
+      }
+    }
   });
 };
 
@@ -293,7 +304,7 @@ const limitCharProgramNameFacilitate = (v: string) => {
             </VCol>
           </VRow>
           <VRow>
-             <VCol :cols="12">
+            <VCol :cols="12">
               <VItemGroup>
                 <VLabel text="Lingkup Wilayah Fasilitasi"></VLabel>
                 <VAutocomplete
@@ -308,11 +319,12 @@ const limitCharProgramNameFacilitate = (v: string) => {
               </VItemGroup>
             </VCol>
           </VRow>
-          <VRow>
+          <VRow v-if="form.regionalScope !== 'Nasional'">
             <VCol :cols="12">
               <VItemGroup>
                 <VLabel text="Provinsi"></VLabel>
                 <VAutocomplete
+                  id="provinsi"
                   :rules="[requiredValidator]"
                   require
                   v-on:update:model-value="getDistrict"
@@ -321,15 +333,16 @@ const limitCharProgramNameFacilitate = (v: string) => {
                   :items="province"
                   item-value="code"
                   item-title="name"
-                />  
+                />
               </VItemGroup>
             </VCol>
           </VRow>
-           <VRow>
+          <VRow v-if="form.regionalScope !== 'Nasional'">
             <VCol :cols="12">
               <VItemGroup>
                 <VLabel text="Kabupaten/Kota"></VLabel>
                 <VAutocomplete
+                  id="kabupaten"
                   :items="district"
                   item-value="code"
                   item-title="name"
@@ -469,7 +482,7 @@ const limitCharProgramNameFacilitate = (v: string) => {
                       <VBtn
                         icon
                         color="transparent"
-                        style="border: none;"
+                        style="border: none"
                         elevation="0"
                         @click="closeDialog"
                       >

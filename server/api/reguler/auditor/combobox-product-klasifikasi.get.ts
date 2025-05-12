@@ -13,10 +13,11 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const { idLayanan } = (await getQuery(event)) as {
+  let { idLayanan } = (await getQuery(event)) as {
     idLayanan: string;
   };
 
+  idLayanan = idLayanan?.trim() || "-";
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/klasifikasi-product-regular/${idLayanan}/combobox`,
     {

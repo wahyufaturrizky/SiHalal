@@ -21,6 +21,7 @@ const draftCertif = ref("");
 const detailLph = ref("");
 const sjphFile = ref<any>(null);
 const suratMohonFile = ref<any>(null);
+const paginationProduct = ref<any>({});
 
 const assignAuditorHeader: any[] = [
   { title: "No", key: "index" },
@@ -163,6 +164,15 @@ const getDetailData = async (type: string) => {
       method: "get",
       params: { url: `${POST_AUDIT_DETAIL}/${id}/${type}` },
     });
+
+    if (type === 'produk') {
+      paginationProduct.value = {
+        limit: response?.limit,
+        totalItems: response?.totalItems,
+        totalPages: response?.totalPages,
+        currentPage: response?.currentPage,
+      }
+    }
 
     if (response?.code === 2000) return response?.data;
     else
@@ -446,7 +456,7 @@ onMounted(async () => {
               Daftar Nama Produk
             </VExpansionPanelTitle>
             <VExpansionPanelText class="mt-5">
-              <PanelDaftarProduk :data="dataPemeriksaanProduk" />
+              <PanelDaftarProduk :data="dataPemeriksaanProduk" :total="paginationProduct?.totalItems" :perPage="paginationProduct?.limit" :page="paginationProduct?.currentPage" />
             </VExpansionPanelText>
           </VExpansionPanel>
           <VExpansionPanel :value="3" class="pt-3">

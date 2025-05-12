@@ -107,6 +107,8 @@ export const useMyAuthUserStore = defineStore("myAuthUserStore", () => {
     return user.value?.roles.some((data) => roleArray.includes(data.name));
   }
 
+  const userId = computed(() => user.value?.user?.id ?? null);
+
   return {
     user,
     getSession,
