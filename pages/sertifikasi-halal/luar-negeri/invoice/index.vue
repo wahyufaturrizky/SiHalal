@@ -55,7 +55,6 @@ const loadItem = async (page: number, size: number, keyword: string = "") => {
         keyword,
       },
     });
-
     items.value = response.data;
     totalItems.value = response.total_item;
     loading.value = false;
@@ -122,7 +121,7 @@ const statusInvoice = {
           </VRow>
           <VRow>
             <VCol cols="12">
-              <VDataTable
+              <VDataTableServer
                 disable-sort
                 v-model:items-per-page="itemPerPage"
                 v-model:page="page"
@@ -178,7 +177,7 @@ const statusInvoice = {
                     >{{ statusInvoice[item.status].desc }}</VChip
                   >
                 </template>
-              </VDataTable>
+              </VDataTableServer>
             </VCol>
           </VRow>
         </VCardItem>
