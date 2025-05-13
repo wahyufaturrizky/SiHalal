@@ -65,6 +65,7 @@ export interface ShlnRegistration {
 const route = useRoute();
 const shlnId = route.params.id;
 const deleteDialog = ref(false);
+const submitNotes = ref('')
 
 const deleteItem = () => {
   deleteDialog.value = true;
@@ -106,6 +107,7 @@ const submitShln = async () => {
       method: "post",
       body: {
         id: shlnId,
+        noted: submitNotes?.value
       },
     });
 
@@ -646,17 +648,25 @@ const getDocShln = async (pathname: string) => {
     <VDialog v-model="submitDialog" width="auto">
       <VCard>
         <VCardText>
-          <p class="text-h5 font-weight-bold">Delete Submission</p>
+          <p class="text-h5 font-weight-bold">Submit Submission</p>
           <VRow>
             <VCol cols="12">
-              <div class="text-subtitle-1 text-high-emphasis mb-1">
+              <div class="text-subtitle-1 text-high-emphasis mb-2">
                 Are you sure you want to submit this requirement submission?
               </div>
+              <VTextarea
+                v-model="submitNotes"
+                placeholder="Input Note"
+                auto-grow
+                dense
+                outlined
+                :style="{ maxWidth: '100%' }"
+              />
             </VCol>
           </VRow>
           <VRow class="flex-row-reverse">
             <VCol cols="12" md="auto">
-              <VBtn block color="primary" @click="submitShln"> Submit </VBtn>
+              <VBtn block color="primary" @click="submitShln" :disabled="!submitNotes.trim()"> Submit </VBtn>
             </VCol>
             <VCol cols="12" md="auto">
               <VBtn block variant="outlined" @click="submitDialog = false">
