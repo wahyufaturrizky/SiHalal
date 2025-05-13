@@ -266,18 +266,19 @@ const handleGetJenisProdukFilter = async (item) => {
               id: item,
             },
           });
-  } catch (error) {
-    // console.log(error);
-  }
+  } catch (error) {}
 };
 
 const filteredListProduk = computed(() => {
-  let tempListProduk = [...listProduk?.value]
-  if (selectedProductTypes?.length)
-    tempListProduk = tempListProduk.filter(e => !selectedProductTypes.find(j => j === e?.name))
-
-  return tempListProduk
-})
+  let tempListProduk = [...listProduk?.value];
+  // console.debug("==>selectedProductTypes:", selectedProductTypes);
+  // if (selectedProductTypes?.length)
+  //   tempListProduk = tempListProduk.filter(
+  //     (e) => !selectedProductTypes.find((j) => j === e?.name)
+  //   );
+  // console.debug("==>Filtered List Produk:", tempListProduk);
+  return tempListProduk;
+});
 
 const handleGetLembagaPendampingInitial = async (lokasi: string) => {
   try {
