@@ -169,7 +169,7 @@ const getListStatus = async () => {
       { code: "OF71", name: "Selesai P3H" },
       { code: "OF74", name: "Dikirim ke Komite Fatwa" },
       { code: "OF280", name: "Dikembalikan ke PU" },
-      { code: "OF285", name: "Dikembakikan Oleh Komite Fatwa" },
+      { code: "OF285", name: "Dikembalikan Oleh Komite Fatwa" },
       { code: "OF56", name: "Pembayaran" },
       { code: "OF72", name: "Selesai Verifikasi LP3H" },
       { code: "OF100", name: "Selesai Sidang Fatwa" },
