@@ -220,7 +220,7 @@
   "global-error": {
     "error-mistake": "There is a mistake"
   },
-  "error":{
+  "error": {
     "title-not-found": "Page Not Found",
     "description-not-found": "We couldn't find the page you are looking for. Please check the URL or try again later.",
     "title-server-error": "Server Error",
@@ -977,7 +977,7 @@
   "shln-invoice": {
     "invoice-list-title": "Invoice",
     "invoice-list-subtitle": "Invoice List",
-    "invoice-list-cari": "Search Data",
+    "invoice-list-cari": "Please enter your invoice number",
     "invoice-list-downloadpaymentinst": "Download Payment Instructions",
     "invoice-list-noinv": "Invoice No",
     "invoice-list-tglinv": "Invoice Date",
