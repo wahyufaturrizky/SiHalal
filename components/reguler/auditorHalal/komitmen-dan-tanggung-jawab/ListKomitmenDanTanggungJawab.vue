@@ -20,6 +20,8 @@ const loadingAll = ref(true);
 
 const addDialog = ref(false);
 const titleDialog = ref("");
+const page = ref(1);
+const size = ref(10);
 
 const formAdd = ref<any>({
   nama: "",
@@ -60,6 +62,7 @@ const comitmentData = ref({
     },
   ],
   value: [],
+  totalItem: 0,
 });
 
 const toggleAdd = () => {
@@ -84,12 +87,18 @@ const getDetailData: any = async () => {
   try {
     const response = await $api("/reguler/pelaku-usaha/detail-tab", {
       method: "get",
-      params: { id, type: "tim-manajemen-halal" },
+      params: {
+        id,
+        type: "tim-manajemen-halal",
+        page: page.value,
+        size: size.value
+      },
     });
 
     comitmentData.value = {
       ...comitmentData.value,
       value: response?.data || [],
+      totalItem: response?.total_item
     };
   } catch (error) {
     useSnackbar().sendSnackbar("Ada Kesalahan", "error");
@@ -182,6 +191,16 @@ onMounted(async () => {
     loadingAll.value = false;
   }
 });
+
+watch([page, size], () => {
+  getDetailData()
+});
+
+const handlePagination = (cp: number, ps: number) => {
+  page.value = cp;
+  size.value = ps;
+}
+
 </script>
 
 <template>
@@ -243,6 +262,9 @@ onMounted(async () => {
       with-add-button
       with-approve-button
       :isviewonly="isviewonly"
+      table-type="server"
+      :hide-default-footer="false"
+      :server-function="handlePagination"
     />
   </div>
 
