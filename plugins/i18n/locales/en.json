@@ -220,7 +220,7 @@
   "global-error": {
     "error-mistake": "There is a mistake"
   },
-  "error":{
+  "error": {
     "title-not-found": "Page Not Found",
     "description-not-found": "We couldn't find the page you are looking for. Please check the URL or try again later.",
     "title-server-error": "Server Error",
@@ -544,6 +544,8 @@
     "reguler-detail-ph-sk": "Decree No/Date",
     "reguler-detail-produk-title": "Product List",
     "reguler-detail-produk-nama": "Product Name",
+    "reguler-detail-produk-ktp": "ID Number",
+    "reguler-detail-produk-telp": "Contact Number",
     "reguler-detail-produk-publikasi": "Publication",
     "reguler-detail-inspection-title": "Inspection",
     "reguler-detail-inspection-lph": "LPH (Halal Inspection Agency)",
@@ -977,7 +979,7 @@
   "shln-invoice": {
     "invoice-list-title": "Invoice",
     "invoice-list-subtitle": "Invoice List",
-    "invoice-list-cari": "Search Data",
+    "invoice-list-cari": "Please enter your invoice number",
     "invoice-list-downloadpaymentinst": "Download Payment Instructions",
     "invoice-list-noinv": "Invoice No",
     "invoice-list-tglinv": "Invoice Date",

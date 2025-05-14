@@ -10,13 +10,14 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-  const { id } = await readBody(event);
+  const { id, noted } = await readBody(event);
 
   const data = await $fetch<any>(
     `${runtimeConfig.coreBaseUrl}/api/v1/certificate-halal-foreign/${id}/submit`,
     {
       method: "post",
       headers: { Authorization: authorizationHeader },
+      body: { noted },
     }
   ).catch((err: NuxtError) => {
     setResponseStatus(event, 400);
