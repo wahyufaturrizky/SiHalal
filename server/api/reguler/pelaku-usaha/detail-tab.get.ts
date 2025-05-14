@@ -11,14 +11,18 @@ export default defineEventHandler(async (event: any) => {
     })
   }
 
-  const { id, type } = (await getQuery(event)) as {
+  const { id, type, page, size } = (await getQuery(event)) as {
     id: string
     type: string
+    page: number
+    size: number
   }
 
   const params = {
     id,
     type,
+    page,
+    size
   }
 
   const data = await $fetch<any>(
