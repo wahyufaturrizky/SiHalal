@@ -72,7 +72,7 @@ const refVForm = ref<VForm>();
 
 const returnDocument = async () => {
   try {
-    const response = await $api("/reguler/verifikator/detail/decline", {
+    const response = await $api("/reguler/lph/post-audit/return", {
       method: "post",
       body: {
         id_reg: route.params.id,
