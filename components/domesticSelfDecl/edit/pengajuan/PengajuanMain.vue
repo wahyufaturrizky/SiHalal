@@ -877,7 +877,6 @@ const getItemData = (item) => {
               <VSelect
                 v-model="formData.id_jenis_layanan"
                 placeholder="Pilih Jenis Layanan"
-                :disabled="isPengembangan()"
                 density="compact"
                 :items="listLayanan"
                 item-title="name"
@@ -891,7 +890,6 @@ const getItemData = (item) => {
               <VLabel>Jenis Produk</VLabel>
               <VSelect
                 v-model="formData.id_jenis_produk"
-                :disabled="isPengembangan()"
                 placeholder="Pilih Jenis Produk"
                 density="compact"
                 :items="filteredListProduk"

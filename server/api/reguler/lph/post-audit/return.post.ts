@@ -1,5 +1,4 @@
-import type { NuxtError } from "nuxt/app";
-
+import { NuxtError } from "nuxt/app";
 const runtimeConfig = useRuntimeConfig();
 export default defineEventHandler(async (event) => {
   const authorizationHeader = getRequestHeader(event, "Authorization");
@@ -10,19 +9,20 @@ export default defineEventHandler(async (event) => {
         "Need to pass valid Bearer-authorization header to access this endpoint",
     });
   }
-  const { id, noted } = await readBody(event);
+  const { id_reg, keterangan } = await readBody(event);
 
   const data = await $fetch<any>(
-    `${runtimeConfig.coreBaseUrl}/api/v1/certificate-halal-foreign/${id}/submit`,
+    `${runtimeConfig.coreBaseUrl}/api/v1/halal-certificate-reguler/auditor/return`,
     {
-      method: "post",
+      method: "put",
       headers: { Authorization: authorizationHeader },
-      body: { noted },
+      body: {
+        id_reg,
+        keterangan,
+      },
     }
   ).catch((err: NuxtError) => {
-    setResponseStatus(event, 400);
     return err.data;
   });
-
   return data || null;
 });

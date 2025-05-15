@@ -39,8 +39,8 @@ const headers = [
     nowrap: true,
   },
   {
-    title: "Nama Pendamping",
-    key: "nama_pj",
+    title: "Nama",
+    key: "nama",
     nowrap: true,
   },
   {
