@@ -145,7 +145,12 @@ const isAllSelected = computed(
 
 // Toggle select all
 const toggleSelectAll = () => {
-  selectedItems.value = isAllSelected.value ? [] : tableData.value.slice();
+  if (isAllSelected.value) {
+    selectedItems.value = []
+  } else {
+    const idRegs = tableData.value.map(item => item.id_reg);
+    selectedItems.value = idRegs;
+  }
 };
 
 // Adaptive button text
