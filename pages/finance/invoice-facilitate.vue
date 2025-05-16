@@ -4,6 +4,8 @@ import Vuepicdatepicker from "@/components/Vuepicdatepicker.client.vue";
 const tableHeader = [
   { title: "No", key: "no" },
   { title: "Kode Fasilitasi", key: "code_fasilitasi" },
+  { title: "Nomor VA", key: "no_va" },
+  { title: "Nomor Invoice", key: "no_invoice" },
   { title: "Nama Fasilitasi", key: "nama_program" },
   { title: "Jenis Transaksi", key: "jenis_transaksi" },
   { title: "Jumlah Tagihan", key: "jumlah_tagihan" },
@@ -77,6 +79,10 @@ const loadItem = async (page: number, size: number) => {
       params.end_tgl_jatuh_tempo = filter.value?.tgl_jatuh_tempo[1];
     }
 
+    if (filter.value?.no_va) {
+      params.no_va = filter.value?.no_va;
+    }
+
     const response = await $api("/facilitate/finance/invoice", {
       method: "get",
       params,
@@ -101,6 +107,7 @@ const filter = ref({
   tgl_tagihan: "",
   tgl_jatuh_tempo: "",
   status: null,
+  no_va: "",
 });
 
 const navigateAction = (id: string) => {
@@ -236,7 +243,19 @@ onMounted(async () => {
                 @update:model-value="loadItem(page, itemPerPage)"
               />
             </VCol>
-            <VCol cols="6" style="display: flex; justify-content: end">
+            <VCol cols="3">
+              <VTextField
+                v-model="filter.no_va"
+                label="No VA"
+                density="compact"
+                :rules="[(v) => !v || /^[0-9]*$/.test(v) || 'Number only']"
+                @input="
+                  (e) => (filter.no_va = e.target.value.replace(/[^0-9]/g, ''))
+                "
+                @keyup.enter="loadItem(page, itemPerPage)"
+              />
+            </VCol>
+            <VCol cols="3" style="display: flex; justify-content: end">
               <VBtn
                 variant="flat"
                 append-icon="fa-download"
